@@ -1109,6 +1109,15 @@ class Routines:
         """
             Wrapper function for water optimizing routines.
         """
+        run = 0
+        for atom in self.protein.getAtoms():
+            res = atom.get("residue")
+            if res.get("type") == 3:
+                if res.getAtom("H1") == None or \
+                   res.getAtom("H2") == None:
+                    run = 1
+                    break
+        if run == 0: return
         from hydrogens import hydrogenRoutines
         self.write("Optimizing water hydrogens.\n")
         mywatRoutines = hydrogenRoutines(self)
@@ -1121,6 +1130,15 @@ class Routines:
             Instead of optimizing, find each WAT O and place H1 and H2
             while giving it a random orientation
         """
+        run = 0
+        for atom in self.protein.getAtoms():
+            res = atom.get("residue")
+            if res.get("type") == 3:
+                if res.getAtom("H1") == None or \
+                   res.getAtom("H2") == None:
+                    run = 1
+                    break
+        if run == 0: return
         from hydrogens import hydrogenRoutines
         self.write("Randomizing water hydrogens.\n")
         myrandRoutines = hydrogenRoutines(self)

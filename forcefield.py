@@ -122,7 +122,7 @@ class Forcefield:
             resname, atomname = self.getCharmmParams(residue, name)
         elif self.name == "parse":
             resname, atomname = self.getParseParams(residue, name)
-        
+
         defresidue = self.getResidue(resname)
         if defresidue == None:
             return charge, radius
@@ -184,6 +184,7 @@ class Forcefield:
         if resname[0] == "N": # N-terminal
             if atomname == "H": atomname = "H1"
         if (resname == "CCYS" or resname == "NCYS") and atomname == "HG": atomname = "HSG"
+        if resname == "GLH" and atomname == "HE1": atomname = "HE2"
         return resname, atomname
 
     def getParseParams(self, residue, name):
@@ -239,6 +240,9 @@ class Forcefield:
                 resname = "HID"
             elif "HE2" in residue.get("map"):
                 resname = "HIS"
+        elif resname == "GLH":
+            if atomname == "HE1": atomname = "HE2"
+            resname = "GL0"
 
         # Hydrogen Substitutions
 
@@ -249,7 +253,7 @@ class Forcefield:
         elif atomname == "HB3" and resname not in ["ALA"]: atomname = "HB2"
         elif atomname == "HD2" and resname not in ["HIS","HI+","HID"]: atomname = "HD1"
         elif atomname == "HD3" and resname not in ["HIS","HI+","HID"]: atomname = "HD2"
-        elif atomname == "HE2" and resname not in ["TRP","HIS","HI+","HID"]: atomname = "HE1"
+        elif atomname == "HE2" and resname not in ["TRP","HIS","HI+","HID","GL0"]: atomname = "HE1"
         elif atomname == "HE3" and resname not in ["TRP","HIS","HI+","HID"]: atomname = "HE2"
         elif atomname == "HG2": atomname = "HG1"
         elif atomname == "HG3": atomname = "HG2"
@@ -302,10 +306,13 @@ class Forcefield:
                     atomname = "OT1"
                 elif atomname == "OXT":
                     atomname = "OT2"
+        elif resname == "GLH":
+            if atomname == "HE1": atomname = "HE2"
+            if atomname in ["CG","HG3","HG1","HG2","CD","OE1","OE2","HE2"]: resname = "GLUP"
+            else: resname = "GLU"
         elif residue.get("type") == 3:
             resname = "TP3M"
             if atomname == "O": atomname = "OH2"
-
 
         # Residue substitutions
             
@@ -352,7 +359,7 @@ class Forcefield:
         elif atomname == "HB3" and resname not in ["ALA"]: atomname = "HB2"
         elif atomname == "HD2" and resname not in ["HSP","HSE","HSD"]: atomname = "HD1"
         elif atomname == "HD3" and resname not in ["HIS","HSE","HSD"]: atomname = "HD2"
-        elif atomname == "HE2" and resname not in ["TRP","HSP","HSE","HSD"]: atomname = "HE1"
+        elif atomname == "HE2" and resname not in ["TRP","HSP","HSE","HSD","GLUP"]: atomname = "HE1"
         elif atomname == "HE3" and resname not in ["TRP","HSP","HSE","HSD"]: atomname = "HE2"
         elif atomname == "HG2": atomname = "HG1"
         elif atomname == "HG3": atomname = "HG2"

@@ -16,8 +16,8 @@ __date__ = "8 March 2004"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
 HYDROGENFILE = "HYDROGENS.DAT"
-HACCEPTOR=[0,1,1,0,1,1,0,1,0,1,0,0,1]
-HDONOR   =[0,0,1,1,1,0,1,0,1,0,0,0,1]
+HACCEPTOR=[0,1,1,0,1,1,0,1,0,1,0,0,1,0]
+HDONOR   =[0,0,1,1,1,0,1,0,1,0,0,0,1,1]
 HYDROGEN_DIST = 6.0
 WATER_DIST=4.0
 
@@ -81,12 +81,12 @@ class hydrogenRoutines:
 
         # Now make the states
 
-        if type == 1: # CTR
+        if type == 1: # CTR/ASP/GLU
             states.append([()])
-            states.append([confs[0]]) # H on O' cis
-            states.append([confs[1]]) # H on O' trans
-            states.append([confs[2]]) # H on OXT cis
-            states.append([confs[3]]) # H on OXT trans
+            states.append([confs[0]]) # H on O1 cis
+            states.append([confs[1]]) # H on O1 trans
+            states.append([confs[2]]) # H on O2 cis
+            states.append([confs[3]]) # H on O2 trans
         elif type == 3: # NTR
             states.append([()]) # No Hs
             states.append([confs[0]]) # H3 only
@@ -102,7 +102,11 @@ class hydrogenRoutines:
             states.append([confs[0]])
             states.append([confs[1]])
             states.append([confs[0], confs[1]])
-
+        elif type == 13: #GLH
+            states.append([confs[0]]) # H on O1 cis
+            states.append([confs[1]]) # H on O1 trans
+            states.append([confs[2]]) # H on O2 cis
+            states.append([confs[3]]) # H on O2 trans
         return states          
                 
     def switchstate(self, states, amb, id):
@@ -193,7 +197,7 @@ class hydrogenRoutines:
 
                 # Brute force for fixed states
 
-                if type in [1,4,3,10]:
+                if type in [1,4,3,10,13]:
                     if type == 4:
                         raise ValueError, "We shouldn't have a brute force HIS without the FLIP!"
                     states = self.getstates(amb)
@@ -269,7 +273,7 @@ class hydrogenRoutines:
                     residue = amb[0]
                     hdef = amb[1]
                     type = hdef.type
-                    if type in [1,4,3,10]:
+                    if type in [1,4,3,10,13]:
                         states = self.getstates(amb)
                         statemap[id] = states
                         self.switchstate(states, amb, 0)
@@ -311,7 +315,7 @@ class hydrogenRoutines:
                     oldenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
                     
                     newstate = None
-                    if type in [1,4,3,10]:
+                    if type in [1,4,3,10,13]:
                         states = statemap[id]
                         newstate = randint(0, len(states) - 1)
                         while newstate == curmap[id] and type != 3: #Don't waste a step switching to same state
@@ -352,7 +356,7 @@ class hydrogenRoutines:
 
                     if rejected == 1: # Switch Back
                         #self.debug("Rejected!")
-                        if type in [1,4,3,10]:
+                        if type in [1,4,3,10,13]:
                             self.switchstate(states, amb, curmap[id])
                         elif type in [2,11]:
                             self.routines.setChiangle(residue, chinum, curmap[id], defresidue)
@@ -378,7 +382,7 @@ class hydrogenRoutines:
                     residue = amb[0]
                     hdef = amb[1]
                     type = hdef.type
-                    if type in [1,4,3,10]:
+                    if type in [1,4,3,10,13]:
                         newstate = bestmap[id]
                         states = statemap[id]
                         self.switchstate(states, amb, newstate)
@@ -453,6 +457,13 @@ class hydrogenRoutines:
                     state = "Neutral GLU"
                 else:
                     state = "Negative GLU"
+
+            elif residue.get("name") == "GLH":
+                HE1 = residue.getAtom("HE1")
+                HE2 = residue.getAtom("HE2")
+                if HE1 != None: state = "Neutral GLU (HE1)"
+                elif HE2 != None: state = "Neutral GLU (HE2)"
+                else: raise ValueError, "GLH should always be neutral!"
 
             if state != "":
                 self.routines.write("Ambiguity #: %i, chain: %s, residue: %i %s - %s\n" \

@@ -149,7 +149,8 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt):
         print "Parsed Amino Acid definition file."
 
 
-    myRoutines = Routines(myProtein, verbose, myDefinition)
+    myRoutines = Routines(myProtein, verbose, myDefinition)              
+    
     myRoutines.updateResidueTypes()
     myRoutines.updateSSbridges()
     myRoutines.updateExtraBonds()

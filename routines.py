@@ -32,8 +32,8 @@ PEP_TRANS_N = [-1.252,1.877,0.883]
 PEP_TRANS_CA = [-2.313,2.784,1.023]
 OXT_COORDS = [-1.529,1.858,0.695]
 HISTIDINES = ["HID","HIE","HIP","HSD","HSE","HSP"]
-AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLY","HIS","ILE","LEU",\
-       "LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
+AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLH","GLY","HIS","ILE",\
+       "LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
 
 import random
 from pdb import *

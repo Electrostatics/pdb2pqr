@@ -81,17 +81,17 @@ class hydrogenRoutines:
 
         # Now make the states
 
-        if type == 1:
+        if type == 1: # CTR
             states.append([()])
             states.append([confs[0]]) # H on O' cis
             states.append([confs[1]]) # H on O' trans
             states.append([confs[2]]) # H on OXT cis
             states.append([confs[3]]) # H on OXT trans
         elif type == 3: # NTR
-            states.append([()])
-            states.append([confs[0]])
-            states.append([confs[1]])
-            states.append([confs[0], confs[1]])
+            states.append([()]) # No Hs
+            states.append([confs[0]]) # H3 only
+            states.append([confs[1]]) # H2 only
+            states.append([confs[0], confs[1]]) # H3 and H2
         elif type == 4: # HIS 
             states.append([()]) # Negative HIS
             states.append([confs[0]]) # HSD

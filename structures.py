@@ -476,7 +476,7 @@ class Atom(ATOM):
     """
         Class Atom
 
-        The Atom class in herits off the ATOM object in pdb.py.  It is used
+        The Atom class inherits off the ATOM object in pdb.py.  It is used
         for adding fields not found in the pdb that may be useful for analysis.
         Also simplifies code by combining ATOM and HETATM objects into a
         single class.

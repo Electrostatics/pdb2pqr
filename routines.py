@@ -488,7 +488,7 @@ class Routines:
                     pass
                 prevres = residue
         self.write("Done.\n")
-                                        
+
     def repairHeavy(self):
         """
             Repair all heavy atoms in residues with missing atoms

@@ -2140,7 +2140,8 @@ class HEADER:
 def readAtom(line):
     """
         If the ATOM/HETATM is not column-formatted, try to get some
-        information by parsing whitespace
+        information by parsing whitespace from the right.  Look for
+        five floating point numbers followed by the residue number.
 
         Parameters
             line:  The line to parse(string)
@@ -2179,18 +2180,20 @@ def readAtom(line):
         try:
             val = float(entry)
             consec = consec + 1
-            if consec == 5:
+            if consec == 5:      
                 break                
         except ValueError:
             consec = 0
 
     record = string.strip(line[0:6])
-    newline = line[0:30]
-    newline = newline + string.rjust(words[i],8)
-    newline = newline + string.rjust(words[i+1],8)
-    newline = newline + string.rjust(words[i+2],8)
-    newline = newline + string.rjust(words[i+3],6)
-    newline = newline + string.rjust(words[i+4],6)
+    newline = line[0:22]
+    newline = newline + string.rjust(words[size-i-1],4)
+    newline = newline + string.rjust("",3)
+    newline = newline + string.rjust(words[size-i],8)
+    newline = newline + string.rjust(words[size-i+1],8)
+    newline = newline + string.rjust(words[size-i+2],8)
+    newline = newline + string.rjust(words[size-i+3],6)
+    newline = newline + string.rjust(words[size-i+4],6)
     cmdstr = "%s(newline)" % record
     obj = eval(cmdstr)
     return obj

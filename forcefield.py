@@ -402,20 +402,20 @@ class Forcefield:
                 elif atomname == "OE1": atomname = "OE2"
                 elif atomname == "OE2": atomname = "OE1"
                 if atomname in ["CG","HG3","HG1","HG2","CD","OE1","OE2","HE2"]: resname = "GLUP"
-                else: resname == "GLU"
+                else: resname = "GLU"
             elif "HE2" in residue.get("map"):
                 if atomname in ["CG","HG3","HG1","HG2","CD","OE1","OE2","HE2"]: resname = "GLUP"
-                else: resname == "GLU"
+                else: resname = "GLU"
         elif resname == "ASP" or resname == "ASH":
             if "HD1" in residue.get("map"):
                 if atomname == "HD1": atomname = "HD2"
                 elif atomname == "OD1": atomname = "OD2"
                 elif atomname == "OD2": atomname = "OD1"
                 if atomname in ["CB","HB3","HB1","HB2","CG","OD1","OD2","HD2"]: resname = "ASPP"
-                else: resname == "ASP"
+                else: resname = "ASP"
             elif "HD2" in residue.get("map"):
                 if atomname in ["CB","HB3","HB1","HB2","CG","OD1","OD2","HD2"]: resname = "ASPP"
-                else: resname == "ASP"
+                else: resname = "ASP"
                 
         # HETATM Substitutions
 

@@ -577,7 +577,7 @@ class hydrogenRoutines:
                     elif atom.get("name") == "N" and not residue.get("isNterm"): continue
                     elif nearatom.get("name") == "O" and not nearatom.residue.get("name") == "WAT": continue
                     if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:                
-                        pair = self.getPairEnergy(atom, nearatom)      
+                        pair = self.getPairEnergy(atom, nearatom)
                         energy = energy + pair
                 if atom.get("hacceptor"):
                     if not nearatom.get("hdonor"): continue
@@ -647,10 +647,10 @@ class hydrogenRoutines:
                         energy += -1 * max_hbond_energy
                         continue
                     
-                    angle1 = self.getHbondangle(donor, acceptor, donorhatom)
+                    angle1 = self.getHbondangle(acceptor, donor, donorhatom)
                     if angle1 <= maxangle:
                         angleterm = (maxangle - angle1)/maxangle
-                        angle2 = self.getHbondangle(donorhatom, acceptor, acceptorhatom)
+                        angle2 = self.getHbondangle(donorhatom, acceptorhatom, acceptor)
                         if angle2 < 110.0: angle2 = 1.0
                         else: angle2=-1.0/110.0*(angle2-110.0)
                         energy+=max_hbond_energy/pow(dist,3)*angleterm*angle2
@@ -679,21 +679,21 @@ class hydrogenRoutines:
                   
             return energy
 
-    def getHbondangle(self, donor, acceptor, donorhatom):
+    def getHbondangle(self, atom1, atom2, atom3):
         """
-            Get the angle between the donor hydrogen, the acceptor, and donor
+            Get the angle between three atoms
 
             Parameters
-                donor:      The donor atom (Atom)
-                acceptor:   The acceptor atom (Atom)
-                donorhatom: The donor hydrogen atom (Atom)
+                atom1:  The first atom (atom)
+                atom2:  The second (vertex) atom (atom)
+                atom3:  The third atom (atom)
             Returns
-                angle:      The angle between the atoms (float)
+                angle:  The angle between the atoms (float)
         """
         angle = 0.0
-        accCoords = acceptor.getCoords()
-        coords1 = subtract(donorhatom.getCoords(), accCoords)
-        coords2 = subtract(donor.getCoords(), accCoords)
+        atom2Coords = atom2.getCoords()
+        coords1 = subtract(atom3.getCoords(), atom2Coords)
+        coords2 = subtract(atom1.getCoords(), atom2Coords)
         norm1 = normalize(coords1)
         norm2 = normalize(coords2)
         dotted = dot(norm1, norm2)

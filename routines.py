@@ -31,9 +31,9 @@ NTERM3_COORDS = [-24.869, 48.846, -22.770]
 PEP_TRANS_N = [-1.252,1.877,0.883]
 PEP_TRANS_CA = [-2.313,2.784,1.023]
 OXT_COORDS = [-1.529,1.858,0.695]
-AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLH","GLY","HIS",\
-       "HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","MET",\
-       "PHE","PRO","SER","THR","TRP","TYR","VAL"]
+AAS = ["ALA","ARG","ASH","ASN","ASP","CYS","GLN","GLU","GLH","GLY",\
+       "HIS","HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS",\
+       "MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
 NAS = ["A","A5","A3","C","C5","C3","G","G5","G3","T","T5","T3","U",\
        "U5","U3","RA","RG","RC","RU","DA","DG","DC","DT"]
        
@@ -1267,8 +1267,13 @@ class Routines:
         for atom in residue.get("atoms"):
             atomname = atom.get("name")
             defatom = defresidue.getAtom(atomname)
-            if defatom == None and (residue.get("isCterm") or residue.get("isNterm")):
-                continue
+            if defatom == None:
+                if residue.get("isCterm") or residue.get("isNterm"):
+                    continue
+                elif residue.get("name") == "ASH" and atomname == "HD1":
+                    defatom = defresidue.getAtom("HD2")
+                elif residue.get("name") == "GLH" and atomname == "HE1":
+                    defatom = defresidue.getAtom("HE2")
            
             if defatom.get("refdistance") > initdist:
                 if residue.get("name") == "ILE" and rootname == "CG1":

@@ -144,7 +144,7 @@ class hydrogenRoutines:
             states.append([confs[0]])
             states.append([confs[1]])
             states.append([confs[0], confs[1]])
-        elif type == 13: #GLH
+        elif type == 13: #ASH/GLH
             states.append([confs[0]]) # H on O1 cis
             states.append([confs[1]]) # H on O1 trans
             states.append([confs[2]]) # H on O2 cis
@@ -487,6 +487,13 @@ class hydrogenRoutines:
                     state = "Neutral ASP"
                 else:
                     state = "Negative ASP"
+
+            elif resname == "ASH":
+                HD1 = residue.getAtom("HD1")
+                HD2 = residue.getAtom("HD2")
+                if HD1 != None: state = "Neutral ASP (HD1)"
+                elif HD2 != None: state = "Neutral ASP (HD2)"
+                else: raise ValueError, "ASH should always be neutral!"
 
             elif resname == "GLU":
                 HE1 = residue.getAtom("HE1")

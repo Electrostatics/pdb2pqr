@@ -286,7 +286,7 @@ class Forcefield:
         elif atomname == "HA3": atomname = "HA2"
         elif atomname == "HB2" and resname not in ["ALA"]: atomname = "HB1"
         elif atomname == "HB3" and resname not in ["ALA"]: atomname = "HB2"
-        elif atomname == "HD2" and resname not in ["HIS","HI+","HID"]: atomname = "HD1"
+        elif atomname == "HD2" and resname not in ["HIS","HI+","HID","AS0"]: atomname = "HD1"
         elif atomname == "HD3" and resname not in ["HIS","HI+","HID"]: atomname = "HD2"
         elif atomname == "HE2" and resname not in ["TRP","HIS","HI+","HID","GL0"]: atomname = "HE1"
         elif atomname == "HE3" and resname not in ["TRP","HIS","HI+","HID"]: atomname = "HE2"

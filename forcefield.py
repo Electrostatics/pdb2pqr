@@ -171,7 +171,21 @@ class Forcefield:
             resname = "HIE"
         elif residue.get("name") == "HSD":
             resname = "HID"
-
+        elif residue.get("name") == "GLU" or residue.get("name") == "GLH":
+            if "HE1" in residue.get("map"):
+                resname = "GLH"
+                if atomname == "HE1": atomname = "HE2"
+                elif atomname == "OE1": atomname = "OE2"
+                elif atomname == "OE2": atomname = "OE1"
+            elif "HE2" in residue.get("map"): resname = "GLH"
+        elif residue.get("name") == "ASP" or residue.get("name") == "ASH":
+            if "HD1" in residue.get("map"):
+                resname = "ASH"
+                if atomname == "HD1": atomname = "HD2"
+                elif atomname == "OD1": atomname = "OD2"
+                elif atomname == "OD2": atomname = "OD1"
+            elif "HD2" in residue.get("map"): resname = "ASH"
+               
         if residue.get("isCterm") == 1:
             resname = "C" + resname
         elif residue.get("isNterm") == 1:
@@ -188,7 +202,6 @@ class Forcefield:
         if resname[0] == "N": # N-terminal
             if atomname == "H": atomname = "H1"
         if (resname == "CCYS" or resname == "NCYS") and atomname == "HG": atomname = "HSG"
-        if resname == "GLH" and atomname == "HE1": atomname = "HE2"
         return resname, atomname
 
     def getParseParams(self, residue, name):
@@ -244,9 +257,20 @@ class Forcefield:
                 resname = "HID"
             elif "HE2" in residue.get("map"):
                 resname = "HIS"
-        elif resname == "GLH":
-            if atomname == "HE1": atomname = "HE2"
-            resname = "GL0"
+        elif resname == "GLU" or resname == "GLH":
+            if "HE1" in residue.get("map"):
+                resname = "GL0"
+                if atomname == "HE1": atomname = "HE2"
+                elif atomname == "OE1": atomname = "OE2"
+                elif atomname == "OE2": atomname = "OE1"
+            elif "HE2" in residue.get("map"): resname = "GL0"
+        elif resname == "ASP" or resname == "ASH":
+            if "HD1" in residue.get("map"):
+                resname = "AS0"
+                if atomname == "HD1": atomname = "HD2"
+                elif atomname == "OD1": atomname = "OD2"
+                elif atomname == "OD2": atomname = "OD1"
+            elif "HD2" in residue.get("map"): resname = "AS0"
 
         # Hydrogen Substitutions
 
@@ -338,10 +362,6 @@ class Forcefield:
                     atomname = "OT1"
                 elif atomname == "OXT":
                     atomname = "OT2"
-        elif resname == "GLH":
-            if atomname == "HE1": atomname = "HE2"
-            if atomname in ["CG","HG3","HG1","HG2","CD","OE1","OE2","HE2"]: resname = "GLUP"
-            else: resname = "GLU"
         elif residue.get("type") == 3:
             resname = "TP3M"
             if atomname == "O": atomname = "OH2"
@@ -369,7 +389,27 @@ class Forcefield:
                 resname = "HSD"
             elif "HE2" in residue.get("map"):
                 resname = "HSE"
-
+        elif resname == "GLU" or resname == "GLH":
+            if "HE1" in residue.get("map"):
+                if atomname == "HE1": atomname = "HE2"
+                elif atomname == "OE1": atomname = "OE2"
+                elif atomname == "OE2": atomname = "OE1"
+                if atomname in ["CG","HG3","HG1","HG2","CD","OE1","OE2","HE2"]: resname = "GLUP"
+                else: resname == "GLU"
+            elif "HE2" in residue.get("map"):
+                if atomname in ["CG","HG3","HG1","HG2","CD","OE1","OE2","HE2"]: resname = "GLUP"
+                else: resname == "GLU"
+        elif resname == "ASP" or resname == "ASH":
+            if "HD1" in residue.get("map"):
+                if atomname == "HD1": atomname = "HD2"
+                elif atomname == "OD1": atomname = "OD2"
+                elif atomname == "OD2": atomname = "OD1"
+                if atomname in ["CB","HB3","HB1","HB2","CG","OD1","OD2","HD2"]: resname = "ASPP"
+                else: resname == "ASP"
+            elif "HD2" in residue.get("map"):
+                if atomname in ["CB","HB3","HB1","HB2","CG","OD1","OD2","HD2"]: resname = "ASPP"
+                else: resname == "ASP"
+                
         # HETATM Substitutions
 
         if resname == "ACE":
@@ -389,7 +429,7 @@ class Forcefield:
         elif atomname == "HA3": atomname = "HA2"
         elif atomname == "HB2" and resname not in ["ALA"]: atomname = "HB1"
         elif atomname == "HB3" and resname not in ["ALA"]: atomname = "HB2"
-        elif atomname == "HD2" and resname not in ["HSP","HSE","HSD"]: atomname = "HD1"
+        elif atomname == "HD2" and resname not in ["HSP","HSE","HSD","ASPP"]: atomname = "HD1"
         elif atomname == "HD3" and resname not in ["HIS","HSE","HSD"]: atomname = "HD2"
         elif atomname == "HE2" and resname not in ["TRP","HSP","HSE","HSD","GLUP"]: atomname = "HE1"
         elif atomname == "HE3" and resname not in ["TRP","HSP","HSE","HSD"]: atomname = "HE2"

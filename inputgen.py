@@ -128,7 +128,7 @@ class inputGen:
             Set the center of the inputGen to a specific point
 
             Parameters
-                center:  The desired center for the input file (string)
+                center:  The desired center for the input file (list)
         """
         self.center = center
         
@@ -225,7 +225,7 @@ class inputGen:
             Do some setting up for input generation
         """
         size = self.size
-        size.runPsize(self.fullpath)
+        size.runPsize()
         self.coarsedim = size.getCoarseGridDims()
         self.finedim = size.getFineGridDims()
         self.procgrid = size.getProcGrid()
@@ -366,6 +366,7 @@ def main():
         if o == "--REDFAC":
             size.setConstant("REDFAC", float(a))
 
+    size.parseInput(filename)
     igen = inputGen(filename, size, method, async)
     igen.printInput()
 

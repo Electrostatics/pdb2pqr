@@ -74,7 +74,7 @@ class inputGen:
             Initialize the inputGen class
             
             Parameters
-                pqrpath: The path to the PQR file (string)
+                pqrpath: The full path to the PQR file (string)
                 size:    The psize object with appropriate constant values (Psize)
                 method:  The APBS ELEC method (string)
                 async:   A flag to denote whether to generate
@@ -89,10 +89,11 @@ class inputGen:
         self.finegridpoints = []
         self.id = None
         self.center = []
-
+        self.fullpath = pqrpath
+       
         i = string.rfind(pqrpath, "/") + 1
-        self.pqrpath = pqrpath[i:]
-
+        self.pqrname = pqrpath[i:]
+   
         self.setup()
 
     def getCenter(self):
@@ -140,7 +141,7 @@ class inputGen:
         """
         
         text  = "read\n"
-        text += "    mol pqr %s\n" % self.pqrpath
+        text += "    mol pqr %s\n" % self.pqrname
         text += "end\n"
         text += "elec\n"
         text += "    %s\n" % self.method
@@ -224,7 +225,7 @@ class inputGen:
             Do some setting up for input generation
         """
         size = self.size
-        size.runPsize(self.pqrpath)
+        size.runPsize(self.fullpath)
         self.coarsedim = size.getCoarseGridDims()
         self.finedim = size.getFineGridDims()
         self.procgrid = size.getProcGrid()
@@ -247,8 +248,8 @@ class inputGen:
         if self.async == 1:
             self.method = "mg-para"
             self.async = 0
-            period = string.find(self.pqrpath,".")
-            outname = self.pqrpath[0:period] + "-para.in"
+            period = string.find(self.fullpath,".")
+            outname = self.fullpath[0:period] + "-para.in"
 
             file = open(outname, "w")
             file.write(self.getText())
@@ -257,16 +258,16 @@ class inputGen:
             self.async = 1
             nproc = self.procgrid[0] * self.procgrid[1] * self.procgrid[2]
             for i in range(nproc):
-                period = string.find(self.pqrpath,".")
-                outname = self.pqrpath[0:period] + "-PE%i.in" % i
+                period = string.find(self.fullpath,".")
+                outname = self.fullpath[0:period] + "-PE%i.in" % i
                 self.id = i
                 file = open(outname, "w")
                 file.write(self.getText())
                 file.close()
         
         else:      
-            period = string.find(self.pqrpath,".")
-            outname = self.pqrpath[0:period] + ".in"
+            period = string.find(self.fullpath,".")
+            outname = self.fullpath[0:period] + ".in"
             file = open(outname, "w")
             file.write(self.getText())
             file.close()

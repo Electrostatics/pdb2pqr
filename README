@@ -1,0 +1,43 @@
+README for tools/conversion/pdb2pqr directory
+---------------------------------------------
+
+Authors: Todd Dolinsky (todd@ccb.wustl.edu)
+Portions based on C code by Jens Erik Nielsen
+
+Date: 1/15/2004
+
+This directory contains a pdb2pqr script which allows a user to
+convert a standard PDB file to a PQR file using the amber, charmm,
+or parse forcefields.
+
+Usage:
+
+Usage: pdb2pqr.py [options] --ff=<forcefield> <path> [output-path]
+    Required Arguments:
+        <path>        :  The path to the PDB file or an ID
+                         to obtain from the PDB archive
+        <forcefield>  :  The forcefield to use - currently
+                         amber, charmm, and parse are supported.
+    Optional Arguments:
+        --verbose (-v):  Print information to stdout
+        --help    (-h):  Display the usage information
+    If no output-path is specified, the PQR file is printed to stdout
+
+Notes:
+    At this time, the script will only assign charges and radii to atoms
+    present in the PDB file - in the future it will be able to detect
+    missing atoms and rebuild them, add hydrogens and optimize the entire
+    protein.
+
+    PDB files without hydrogens will generate a long list of warning messages 
+    about non-integral charges for residues - this is due to the missing 
+    hydrogens, and thus can be expected.  Any warnings that PDB2PQR
+    was unable to assign a charge to a non-HETATM heavy atom should be
+    addressed before proceeding - it may be a naming issue not handled 
+    within the script.
+
+
+If you would like to automatically generate an input file from the new PQR
+file, please see
+
+apbs/tools/manip/inputgen.py

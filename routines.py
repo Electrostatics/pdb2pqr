@@ -596,27 +596,32 @@ class Routines:
                     missing.reverse()
 
                     if atomname == "O" or atomname == "C":
+                        N = None
                         if residue.getAtom("CA") != None:
                             bonds.append("CA")
                         if atomname == "O" and residue.getAtom("C") != None:
                             bonds.append("C")
                         elif atomname == "C" and residue.getAtom("O") != None:
                             bonds.append("O")
+
                         try:
-                            nextres = residues[resnum + 1]
-                            N = nextres.getAtom("N")
-                            if N == None: raise IndexError
                             if len(bonds) != 2: raise IndexError
+                            if residue.get("isCterm") and residue.getAtom("N") != None:
+                                bonds.append("N")
+                            else:
+                                nextres = residues[resnum + 1]
+                                N = nextres.getAtom("N")
                         except IndexError:
-                            text = "\tUnable to repair %s %i\n" % (resname, resSeq)
+                            text = "\tUnable to repair %s %i %s\n" % (resname, resSeq, atomname)
                             raise ValueError, text
                         for i in range(len(bonds)):
                             refcoords.append(residue.getAtom(bonds[i]).getCoords())
                             defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
-                        refcoords.append(N.getCoords())
-                        defcoords.append(PEP_TRANS_N)
                         defatomcoords = defresidue.getAtom(atomname).getCoords()
-                        bonds.append("N")
+                        if N != None:
+                            refcoords.append(N.getCoords())
+                            defcoords.append(PEP_TRANS_N)
+                            bonds.append("N")
 
                     elif atomname == "N" and not residue.get("isNterm"):# and resname == "GLY":
                         try:

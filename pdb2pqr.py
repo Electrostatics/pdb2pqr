@@ -112,7 +112,7 @@ def printHeader(atomlist, reslist, charge, ff, warnings):
 
     return header
   
-def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt):
+def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
     """
         Run the PDB2PQR Suite
 
@@ -188,9 +188,12 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt):
     header = printHeader(misslist, reslist, charge, ff, myRoutines.getWarnings())
         
     lines = myProtein.printAtoms(hitlist)
+
+    if hbond:
+        myRoutines.printHbond()
+    
     if verbose:
         print "Total time taken: %.2f seconds\n" % (time.time() - start)
-
     return header, lines
 
 def mainCommand():
@@ -198,7 +201,7 @@ def mainCommand():
         Main driver for running program from the command line.
     """
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt"]
+    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt","hbond"]
 
     try: opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
     except getopt.GetoptError, details:
@@ -216,6 +219,7 @@ def mainCommand():
     hopt = 1
     hdebump = 1
     watopt = 1
+    hbond = 0
     for o,a in opts:
         if o in ("-v","--verbose"):
             verbose = 1
@@ -230,6 +234,8 @@ def mainCommand():
             hdebump = 0
         elif o == "--nowatopt":
             watopt = 0
+        elif o == "--hbond":
+            hbond = 1
         elif o == "--ff":
             if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE"]:
                 ff = string.lower(a)
@@ -252,7 +258,7 @@ def mainCommand():
         print "Warning: %s is a non-standard PDB file.\n" % path
         print errlist
 
-    header, lines = runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt)
+    header, lines = runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond)
 
     if len(args) == 2:
         outpath = args[1]

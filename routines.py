@@ -401,6 +401,80 @@ class Routines:
         else:
             self.write("No heavy atoms found missing - Done.\n")
 
+    def rebuildMethyl(self, atomname, residue, defresidue):
+        """
+            Rebuild the final methyl hydrogen atom using equations from its
+            tetrahedral geometry.  The normal quaternion/reference frame
+            method does NOT work, since
+                A.  It only works with 3 reference atoms, and
+                B.  For methyl hydrogens, 3 reference atoms provide TWO
+                    possible locations, where only one is potentially correct.
+
+            Parameters
+                atomname:   The name of the atom to rebuild (string)
+                residue:    The residue (residue)
+                defresidue: The definition residue (definitionResidue)
+            Returns
+                coords :  The new coords of the atom (list)
+        """
+        hyds = []
+        rads = 109.5*math.pi/180.0
+        bondname = None
+        restname = None
+        
+        if not atomname.startswith("H"): return None
+    
+        # Get bonded atom that is one bond length away
+    
+        defatom = defresidue.getAtom(atomname)
+        bondname = defatom.get("intrabonds")[0]
+        if bondname not in residue.get("map"):
+            return None
+    
+        # In methyl groups there are four atoms bonded to the bondatom -
+        # the three hydrogens and the atom the bondatom is bonded to.
+        
+        bonds = defresidue.getAtom(bondname).get("intrabonds")
+        if len(bonds) != 4: return None
+
+        for bond in bonds:
+            if bond.startswith("H") and bond in residue.get("map"):
+                hyds.append(bond)
+            elif restname == None:
+                restname = bond
+            elif bond.startswith("H"): pass
+            else: return None
+
+        if len(hyds) != 2: return None
+
+        # We now have a methyl group - do the matrix math
+        rows = []
+        b = []
+    
+        bondatom = residue.getAtom(bondname)
+        restatom  = residue.getAtom(restname)
+        bonddist = distance(bondatom.getCoords(),residue.getAtom(hyds[0]).getCoords())
+        restdist = distance(bondatom.getCoords(),restatom.getCoords())
+
+        for hyd in hyds:
+            hatom = residue.getAtom(hyd)
+            lhs = cos(rads) * bonddist * bonddist
+            rhs = bondatom.x*bondatom.x + bondatom.y*bondatom.y + bondatom.z*bondatom.z
+            rhs = rhs - bondatom.x*hatom.x - bondatom.y*hatom.y - bondatom.z*hatom.z
+            rhs = rhs - lhs
+            rows.append([bondatom.x-hatom.x, bondatom.y-hatom.y, bondatom.z-hatom.z])
+            b.append(rhs)
+            
+        lhs = cos(rads) * bonddist * restdist
+        rhs = bondatom.x*bondatom.x + bondatom.y*bondatom.y + bondatom.z*bondatom.z
+        rhs = rhs - bondatom.x*restatom.x - bondatom.y*restatom.y - bondatom.z*restatom.z
+        rhs = rhs - lhs
+        rows.append([bondatom.x-restatom.x, bondatom.y-restatom.y, bondatom.z-restatom.z])
+        b.append(rhs)
+        
+        mat = Matrix(rows)
+        return mat.LU(b)
+
     def addHydrogens(self):
         """
             Add hydrogens to the residue by using the definition.
@@ -436,6 +510,11 @@ class Routines:
                                 elif residue.get("SSbonded") and defname == "HG":
                                     pass
                                 else:
+                                    newcoords = self.rebuildMethyl(defname, residue, defresidue)
+                                    if newcoords != None:
+                                        residue.createAtom(defname, newcoords,"ATOM")
+                                        residue.addDebumpAtom(residue.getAtom(defname))
+                                        continue
                                     bonds = defresidue.makeBondList(residue,defname)
                                     if len(bonds) < REFATOM_SIZE:
                                         error = "Not enough bonds to remake hydrogen in %s %i" % \

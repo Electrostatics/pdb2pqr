@@ -35,7 +35,7 @@ AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLH","GLY","HIS",\
        "HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","MET",\
        "PHE","PRO","SER","THR","TRP","TYR","VAL"]
 NAS = ["A","A5","A3","C","C5","C3","G","G5","G3","T","T5","T3","U",\
-       "U5","U3"]
+       "U5","U3","RA","RG","RC","RU","DA","DG","DC","DT"]
        
 
 import random
@@ -224,14 +224,17 @@ class Routines:
 
     def updateExtraBonds(self):
         """
-            Update peptide bonds between amino acids.
+            Update peptide bonds between amino acids. Set the Termini.
         """
         self.write("Determining peptide bonds and termini... \n")
         for chain in self.protein.getChains():
             for i in range(chain.numResidues() - 1):
                 residue1 = chain.get("residues")[i]
                 residue2 = chain.get("residues")[i+1]
-                if residue1.get("type") == 1 and residue2.get("type") == 1: 
+                res1type = residue1.get("type")
+                res2type = residue2.get("type")
+                
+                if res1type == 1 and res2type == 1: 
                     atom1 = residue1.getAtom("C")
                     atom2 = residue2.getAtom("N")
                     if atom1 != None and atom2 != None:
@@ -246,11 +249,13 @@ class Routines:
                             self.write("%s and %s %s\n"%(residue1.get("resSeq"),\
                                                          residue2.get("name"),\
                                                          residue2.get("resSeq")))
-        
-                if residue1.get("type") == 1 and i == 0:
+
+                """ Set the appropriate termini """
+                
+          
+                if res1type == 1 and i == 0:
                     residue1.set("isNterm",1)
-                elif residue1.get("type") == 1 and residue2.get("type") != 1 \
-                         and residue2.get("name") not in ["ACE","HMS"]:
+                elif res1type == 1 and res2type != 1 and residue2.get("name") not in ["ACE","HMS"]:
                     # Check to make sure this is the last AA in the chain
                     if (i+2) > (chain.numResidues() - 1):
                          residue1.set("isCterm",1)
@@ -261,12 +266,19 @@ class Routines:
                             break
                     if cterm == 1:
                         residue1.set("isCterm",1)
-                elif residue2.get("type") == 1 and i+2 == chain.numResidues():
+                elif res2type == 1 and i+2 == chain.numResidues():
                     residue2.set("isCterm",1)
-                elif residue1.get("type") == 4 and i == 0:
+                elif res1type == 4 and i == 0:
                     residue1.set("is5term",1) 
-                elif residue2.get("type") == 4 and i+2 == chain.numResidues():
+                elif res2type == 4 and i+2 == chain.numResidues():
                     residue2.set("is3term",1)
+                elif res1type == 4 and residue1.getAtom("H3T") != None:      
+                    residue1.set("is3term",1)
+                    if res2type == 4: residue2.set("is5term",1)
+                elif res2type == 4 and residue2.getAtom("H5T") != None:
+                    residue2.set("is5term",1)
+                    if res1type == 4: residue1.set("is3term",1)
+                    
         self.write("Done.\n")
 
     def updateIntraBonds(self):
@@ -380,18 +392,14 @@ class Routines:
                             newname = string.replace(atomname,"5M","7")
                             residue.renameAtom(atomname,newname)
                             self.write("Renaming %s to %s" % (atomname, newname),1)
-                            self.write("\n")
-                            
+                            self.write("\n")                     
            
-                    # Determine if this is DNA/RNA or a Terminus
+                    # Determine if this is DNA/RNA and Definition name
                     
                     rna = 0
                     dna = 0 
                     name = residue.get("name")
-                    if residue.getAtom("H3T") != None:
-                        residue.set("is3term",1)
-                    if residue.getAtom("H5T") != None:
-                        residue.set("is5term",1)
+                    if name[0] == "R" or name[0] == "D": name = name[1:]
                     if residue.getAtom("O2\'") != None: rna = 1
                     else: dna = 1
 

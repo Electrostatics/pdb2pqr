@@ -325,10 +325,11 @@ def mainCGI():
         if input:
             import inputgen
             import psize
-            igen = inputgen.inputgen()
-            igen.method = "mg-auto"
+            method = "mg-auto"
             size = psize.Psize()
-            igen.runinputgen(pqrpath, size)
+            async = 0 # No async files here!
+            igen = inputgen.inputGen(pqrpath, size, method, async)
+            igen.printInput()
                     
         endtime = time.time() - starttime
         createResults(header, input, name, endtime)

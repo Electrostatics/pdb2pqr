@@ -42,15 +42,14 @@ class hydrogenRoutines:
             Parameters
                 routines:  The parent routines object (Routines)
         """
-        self.hdebug = 1
+        self.hdebug = 0
         self.routines = routines
         self.protein = routines.protein
         self.hydrodefs = []
         self.groups = []
         self.watermap = {}
         self.accmap = {}
-        self.count = 0
-
+    
     def debug(self, text):
         """
             Print text to stdout for debugging purposes.
@@ -174,18 +173,12 @@ class hydrogenRoutines:
         import time
         starttime = time.time()
         allatoms = self.findAmbiguities(0)
-        print "Allatoms size: ", len(allatoms)
         self.printAmbiguities()
         networks = self.findNetworks(HYDROGEN_DIST)
-        print networks
         
         for cluster in networks:
             initt = time.time()
             clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
-            print "Clusteratoms size: ", len(clusteratoms)
-            print "Compatoms size: ", len(compatoms)
-            for atom in compatoms:
-                print atom
             if len(cluster) == 1:
                 t = time.time()
                 amb = self.groups[cluster[0]]
@@ -405,7 +398,6 @@ class hydrogenRoutines:
 
         self.debug("Total time %.2f" % (time.time() - starttime))
         self.liststates()
-        print "Ran pairenergy %i times" % self.count
 
     def liststates(self):
         """

@@ -206,7 +206,7 @@ class Forcefield:
             elif atomname == "H2": atomname = "HW"
         elif resname == "ILE":
             if atomname == "CD": atomname = "CD1"
-        if resname[0] == "N": # N-terminal
+        if resname[0] == "N" and resname != "NME": # N-terminal
             if atomname == "H": atomname = "H1"
         if (resname == "CCYS" or resname == "NCYS") and atomname == "HG": atomname = "HSG"
         return resname, atomname
@@ -278,6 +278,11 @@ class Forcefield:
                 elif atomname == "OD1": atomname = "OD2"
                 elif atomname == "OD2": atomname = "OD1"
             elif "HD2" in residue.get("map"): resname = "AS0"
+        elif resname == "ACE":
+            if atomname == "HH31": atomname = "HA1"
+            elif atomname == "HH32": atomname = "HA2"
+            elif atomname == "HH33": atomname = "HA3"
+            elif atomname == "CH3": atomname = "CA"    
 
         # Hydrogen Substitutions
 
@@ -428,6 +433,14 @@ class Forcefield:
             elif atomname == "O": atomname = "OY"
         elif resname == "ADP":
             atomname = string.replace(atomname,"*","\'")
+        elif resname == "NME":
+            resname = "CT3"
+            if atomname == "HH31": atomname = "HT1"
+            elif atomname == "HH32": atomname = "HT2"
+            elif atomname == "HH33": atomname = "HT3"
+            elif atomname == "CH3": atomname = "CAT"
+            elif atomname == "N": atomname = "NT"
+            elif atomname == "H": atomname = "HNT"
             
         # Hydrogen Substitutions
 

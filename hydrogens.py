@@ -137,8 +137,6 @@ class hydrogenRoutines:
         # Update the IntraBonds
         name = residue.get("name")
         defresidue = self.routines.aadef.getResidue(name)
-        if name in HISTIDINES:
-            defresidue = self.routines.aadef.getResidue("HIS")
         residue.updateIntraBonds(defresidue)
                               
         # Now build appropriate atoms
@@ -215,8 +213,6 @@ class hydrogenRoutines:
                 elif type in [2]:
                     name = residue.get("name")
                     defresidue = self.routines.aadef.getResidue(name)
-                    if name in HISTIDINES:
-                        defresidue = self.routines.aadef.getResidue("HIS")
                     chinum = hdef.chiangle - 1
                     for angle in range(-180, 180, 5):
                         oldangle = residue.get("chiangles")[chinum]
@@ -331,8 +327,6 @@ class hydrogenRoutines:
                     elif type in [11]:
                         name = residue.get("name")
                         defresidue = self.routines.aadef.getResidue(name)
-                        if name in HISTIDINES:
-                            defresidue = self.routines.aadef.getResidue("HIS")
                         chinum = hdef.chiangle - 1
                         oldangle = residue.get("chiangles")[chinum]
                         newstate = 180.0 + oldangle 
@@ -389,8 +383,6 @@ class hydrogenRoutines:
                     elif type in [2,11]:
                         name = residue.get("name")
                         defresidue = self.routines.aadef.getResidue(name)
-                        if name in HISTIDINES:
-                            defresidue = self.routines.aadef.getResidue("HIS")
                         chinum = hdef.chiangle - 1
                         self.routines.setChiangle(residue, chinum, bestmap[id], defresidue)
                     
@@ -413,6 +405,7 @@ class hydrogenRoutines:
             state = ""
             residue = self.groups[i][0]
             hdef = self.groups[i][1]
+            resname = residue.get("name")
             if residue.get("isNterm"):
                 H2 = residue.getAtom("H2")
                 H3 = residue.getAtom("H3")
@@ -430,7 +423,8 @@ class hydrogenRoutines:
                 else:
                     state = "Negative C-Terminus"
 
-            elif residue.get("name") == "HIS" and hdef.name != "HISFLIP":
+            elif (resname == "HIS" and hdef.name != "HISFLIP") or \
+                  resname in ["HSP","HSE","HSD","HID","HIE","HIP"]:
                 HD1 = residue.getAtom("HD1")
                 HE2 = residue.getAtom("HE2")
                 if HD1 != None and HE2 != None:
@@ -442,7 +436,7 @@ class hydrogenRoutines:
                 else:
                     state = "Negative HIS"
 
-            elif residue.get("name") == "ASP":
+            elif resname == "ASP":
                 HD1 = residue.getAtom("HD1")
                 HD2 = residue.getAtom("HD2")
                 if HD1 != None or HD2 != None:
@@ -450,7 +444,7 @@ class hydrogenRoutines:
                 else:
                     state = "Negative ASP"
 
-            elif residue.get("name") == "GLU":
+            elif resname == "GLU":
                 HE1 = residue.getAtom("HE1")
                 HE2 = residue.getAtom("HE2")
                 if HE1 != None or HE2 != None:
@@ -458,7 +452,7 @@ class hydrogenRoutines:
                 else:
                     state = "Negative GLU"
 
-            elif residue.get("name") == "GLH":
+            elif resname == "GLH":
                 HE1 = residue.getAtom("HE1")
                 HE2 = residue.getAtom("HE2")
                 if HE1 != None: state = "Neutral GLU (HE1)"
@@ -659,7 +653,7 @@ class hydrogenRoutines:
         if atom.get("hdonor"):
             if atomname in ["OD1","OD2","OE1","OE2","O","OXT"] and resname != "WAT":
                 penalty = penalty + acidpenalty
-            elif resname == "HIS" or resname in HISTIDINES:
+            elif resname == "HIS":
                 if residue.getAtom("HD1") != None and \
                    residue.getAtom("HE2") != None: 
                     penalty = penalty + hispos
@@ -1265,8 +1259,7 @@ class hydrogenRoutines:
                 nter = residue.get("isNterm")
                 cter = residue.get("isCterm")
                 type = residue.get("type")
-                if type == 2:
-                    continue
+                if type == 2: continue
                 for group in hydrodefs:
                     groupname = group.name
                     htype = group.type
@@ -1274,6 +1267,7 @@ class hydrogenRoutines:
                        (groupname == "APR") or \
                        (groupname == "APP" and resname != "PRO") or \
                        (groupname.endswith("FLIP") and resname == groupname[0:3]) or \
+                       (groupname == "HISFLIP" and resname in ["HIP","HID","HIE","HSP","HSE","HSD"]) or \
                        (groupname == "NTR" and nter and resname != "PRO") or \
                        (groupname == "PNTR" and nter and resname == "PRO") or \
                        (groupname == "CTR" and cter):

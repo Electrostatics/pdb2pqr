@@ -228,7 +228,7 @@ class Routines:
         """
         self.write("Determining peptide bonds and termini... \n")
         for chain in self.protein.getChains():
-            for i in range(chain.numResidues() - 1):
+            for i in range(chain.numResidues() - 1):           
                 residue1 = chain.get("residues")[i]
                 residue2 = chain.get("residues")[i+1]
                 res1type = residue1.get("type")
@@ -614,7 +614,7 @@ class Routines:
                 name = residue.get("name")
                 type = residue.get("type")
                 if type == 1:
-                    if residue.get("isNterm"):
+                    if residue.get("isNterm") or len(chain.get("residues")) == 1:
                         prevres = residue
                     defresidue = self.aadef.getResidue(name)
                     for defatom in defresidue.get("atoms"):

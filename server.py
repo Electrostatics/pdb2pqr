@@ -5,7 +5,7 @@
     from a web server.
 """
 
-__date__   = "April 14th, 2004"
+__date__   = "May 3rd, 2004"
 __author__ = "Todd Dolinsky"
 
 import string
@@ -226,7 +226,7 @@ def createResults(header, input, name, time):
         Create the results web page for CGI-based runs
 
         Parameters
-            hreader: The header of the PQR file (string)
+            header: The header of the PQR file (string)
             input:   A flag whether an input file has been created (int)
             tmpdir:  The resulting file directory (string)
             name:    The result file root name, based on local time (string)
@@ -266,6 +266,35 @@ def createResults(header, input, name, time):
     file.write("</body>\n")
     file.write("</html>\n")
 
+def createError(name, details):
+    """
+        Create an error results page for CGI-based runs
+
+        Parameters
+            name:    The result file root name, based on local time (string)
+            details: The details of the error (string)
+    """
+    filename = "%s%s%s.html" % (LOCALPATH, TMPDIR, name)
+    file = open(filename, "w")
+
+    file.write("<html>\n")
+    file.write("<head>\n")
+    file.write("<title>PDB2PQR Error</title>\n")
+    file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET)
+    file.write("</head>\n")
+
+    file.write("<body>\n")
+    file.write("<h2>PDB2PQR Error</h2>\n")
+    file.write("<P>\n")
+    file.write("An error occurred when attempting to run PDB2PQR:<P>\n")
+    file.write("%s<P>\n" % details)
+    file.write("If you believe this error is due to a bug, please contact the server administrator.<BR>\n")
+    file.write("If you would like to try running PDB2QR again, please click <a href=\"%s\">\n" % WEBSITE)
+    file.write("here</a>.<P>\n")
+    file.write("<font size=\"-1\"><CENTER><I>Last Updated %s</I></CENTER></font>\n" % __date__) 
+    file.write("</body>\n")
+    file.write("</html>\n")
+    
 def startServer(name):
     """
         Start the PDB2PQR server.  This function is necessary so

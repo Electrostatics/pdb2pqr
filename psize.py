@@ -91,28 +91,45 @@ class Psize:
         self.nsmall = [0,0,0]
         self.nfocus = 0
 
+    def parseLine(self, line):
+        """
+            Parse a line from a PQR file
+
+            Parameters:
+                line:  The line to parse (string)
+        """
+        if string.find(line,"ATOM") == 0:
+            subline = string.replace(line[30:], "-", " -")
+            words = string.split(subline)
+            if len(words) < 4:  return
+            self.gotatom = self.gotatom + 1
+            self.q = self.q + float(words[3])
+            if self.minlen[0] > float(words[0]): self.minlen[0] = float(words[0])
+            if self.minlen[1] > float(words[1]): self.minlen[1] = float(words[1])
+            if self.minlen[2] > float(words[2]): self.minlen[2] = float(words[2])
+            if self.maxlen[0] < float(words[0]): self.maxlen[0] = float(words[0])
+            if self.maxlen[1] < float(words[1]): self.maxlen[1] = float(words[1])
+            if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
+        elif string.find(line, "HETATM") == 0:
+            self.gothet = self.gothet + 1
+
+    def parseText(self, text):
+        """
+            Parse an input structure file in PDB or PQR format as a string
+
+            Parameters
+                text:  The string to parse (string)
+        """
+        lines = string.split(text,"\n")
+        for line in lines:
+            self.parseLine(line)
+        
+
     def parseInput(self, filename):
         """ Parse input structure file in PDB or PQR format """
         file = open(filename, "r")
         for line in file.readlines():
-            if string.find(line,"ATOM") == 0:
-                subline = string.replace(line[30:], "-", " -")
-                words = string.split(subline)
-                if len(words) < 4:    
-                    #sys.stderr.write("Can't parse following line:\n")
-                    #sys.stderr.write("%s\n" % line)
-                    #sys.exit(2)
-                    continue
-                self.gotatom = self.gotatom + 1
-                self.q = self.q + float(words[3])
-                if self.minlen[0] > float(words[0]): self.minlen[0] = float(words[0])
-                if self.minlen[1] > float(words[1]): self.minlen[1] = float(words[1])
-                if self.minlen[2] > float(words[2]): self.minlen[2] = float(words[2])
-                if self.maxlen[0] < float(words[0]): self.maxlen[0] = float(words[0])
-                if self.maxlen[1] < float(words[1]): self.maxlen[1] = float(words[1])
-                if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
-            elif string.find(line, "HETATM") == 0:
-                self.gothet = self.gothet + 1
+            self.parseLine(line)
 
     def setConstant(self, name, value):
         """ Set a constant to a value; returns 0 if constant not found """
@@ -213,7 +230,7 @@ class Psize:
         if nfocus > 0: nfocus = nfocus + 1
         self.nfocus = nfocus
 
-    def setAll(self):
+    def runPsize(self):
         """ Set up all of the things calculated individually above """
         maxlen = self.getMax()
         minlen = self.getMin()
@@ -252,11 +269,6 @@ class Psize:
     def getSmallest(self): return self.nsmall
     def getProcGrid(self): return self.np
     def getFocus(self): return self.nfocus
-
-    def runPsize(self, filename):
-        """ Parse input PQR file and set parameters """
-        self.parseInput(filename)
-        self.setAll()
     
     def printResults(self):
         """ Return a string with the formatted results """
@@ -426,7 +438,8 @@ def main():
         if o == "--TFAC_SPARC":    
             psize.setConstant("TFAC_SPARC",  float(a))
 
-    psize.runPsize(filename)
+    psize.parseInput(filename)
+    psize.runPsize()
     sys.stdout.write("Default constants used (./psize.py --help for more information):\n")
     sys.stdout.write("%s\n" % psize.constants)
     sys.stdout.write(psize.printResults())

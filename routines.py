@@ -237,13 +237,13 @@ class Routines:
         
                 if residue1.get("type") == 1 and i == 0:
                     residue1.set("isNterm",1)
-                elif residue1.get("type") == 1 and residue2.get("type") != 1 and \
-                         residue2.get("name") not in ["ACE","HMS"]:
+                elif residue1.get("type") == 1 and residue2.get("type") != 1 \
+                         and residue2.get("name") not in ["ACE","HMS"]:
                     # Check to make sure this is the last AA in the chain
                     if (i+2) > (chain.numResidues() - 1):
                          residue1.set("isCterm",1)
+                    cterm = 1
                     for j in range(i+2, chain.numResidues()):
-                        cterm = 1
                         if chain.get("residues")[j].type == 1:
                             cterm = 0
                             break

@@ -243,6 +243,16 @@ def mainCommand():
 
     if ff == None:
         raise ValueError, "Forcefield not specified!"
+
+    text =  "\n--------------------------\n"
+    text += "PDB2PQR - a Python-based structural conversion utility\n"
+    text += "--------------------------\n"
+    text += "Please cite your use of PDB2PQR as:\n"
+    text += "  Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA.\n"
+    text += "  PDB2PQR: an automated pipeline for the setup, execution,\n"
+    text += "  and analysis of Poisson-Boltzmann electrostatics calculations.\n"
+    text += "  Nucleic Acids Research 32 W665-W667 (2004).\n"
+    sys.stderr.write(text)
             
     path = args[0]
     file = getFile(path)

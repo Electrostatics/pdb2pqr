@@ -29,6 +29,7 @@ from utilities import *
 from math import *
 from quatfit import *
 from random import *
+from time import *
 
 class hydrogenRoutines:
     """
@@ -166,103 +167,110 @@ class hydrogenRoutines:
             residue.getAtom(boundname).hacceptor = 0
             residue.getAtom(boundname).hdonor = 1
 
+    def optimizeSingle(self,amb, clusteratoms, compatoms):
+        """
+            Use brute force optimization for a single ambiguity - try all
+            energy configurations and pick the best.
+
+            Parameters
+                amb:  The ambiguity object (tuple)
+                clusteratoms: The list of donor/acceptors in the residue (list)
+                compatoms:    A list of nearby atoms (list)
+        """
+
+        residue = amb[0]
+        hdef = amb[1]
+        type = hdef.type
+        self.debug("Brute Force Optimization for residue %s %i - type %i" %\
+                   (residue.get("name"), residue.get("resSeq"), type))
+        
+        best = 0
+        energy = None
+        bestenergy = 1000.0
+        
+        # Brute force for fixed states
+        
+        if type in [1,4,3,10,13]:
+            if type == 4:
+                raise ValueError, "We shouldn't have a brute force HIS without the FLIP!"
+            states = self.getstates(amb)
+            for i in range(len(states)): 
+                self.switchstate(states, amb, i)
+                energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+                if energy < bestenergy:
+                    bestenergy = energy
+                    best = i        
+            self.switchstate(states, amb, best)
+            
+        # Brute force for chi angle
+             
+        elif type in [2]:
+            name = residue.get("name")
+            defresidue = self.routines.aadef.getResidue(name)
+            chinum = hdef.chiangle - 1
+            for angle in range(-180, 180, 5):
+                oldangle = residue.get("chiangles")[chinum]
+                chiangle = float(angle) + oldangle
+                self.routines.setChiangle(residue, chinum, chiangle, defresidue)
+                energy = self.getHbondEnergy(clusteratoms, compatoms, residue)    
+                if energy < bestenergy:
+                    bestenergy = energy
+                    best = chiangle
+            self.routines.setChiangle(residue, chinum, best, defresidue)
+
+        # Brute force for flips
+
+        elif type in [11]:
+            bestenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+            name = residue.get("name")
+            defresidue = self.routines.aadef.getResidue(name)
+            chinum = hdef.chiangle - 1
+            oldangle = residue.get("chiangles")[chinum]
+            chiangle = 180.0 + oldangle
+            self.routines.setChiangle(residue, chinum, chiangle, defresidue)
+            energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+            if energy >= bestenergy: # switch back!
+                self.routines.setChiangle(residue, chinum, oldangle, defresidue)
+
+        else:
+            raise ValueError, "Invalid Hydrogen type %i in %s %i!" % \
+                  (type, residue.get("name"), residue.get("resSeq"))
+
     def optimizeHydrogens(self):
         """
             Optimize hydrogens according to HYDROGENS.DAT.  This
             function serves as the main driver for the optimizing
             script.
         """
-        import time
-        starttime = time.time()
+        starttime = time()
         allatoms = self.findAmbiguities(0)
         self.printAmbiguities()
         networks = self.findNetworks(HYDROGEN_DIST)
         
         for cluster in networks:
-            initt = time.time()
             clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
             if len(cluster) == 1:
-                t = time.time()
                 amb = self.groups[cluster[0]]
-                residue = amb[0]
-                hdef = amb[1]
-                type = hdef.type
-                self.debug("Brute Force Optimization for Cluster %i - type %i" % (cluster[0], type))
-                
-                best = 0
-                energy = None
-                bestenergy = 1000.0
-
-                # Brute force for fixed states
-
-                if type in [1,4,3,10,13]:
-                    if type == 4:
-                        raise ValueError, "We shouldn't have a brute force HIS without the FLIP!"
-                    states = self.getstates(amb)
-                    for i in range(len(states)): 
-                        self.switchstate(states, amb, i)
-                        energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
-                        if energy < bestenergy:
-                            bestenergy = energy
-                            best = i
-      
-                    self.switchstate(states, amb, best)
-
-                # Brute force for chi angle
-             
-                elif type in [2]:
-                    name = residue.get("name")
-                    defresidue = self.routines.aadef.getResidue(name)
-                    chinum = hdef.chiangle - 1
-                    for angle in range(-180, 180, 5):
-                        oldangle = residue.get("chiangles")[chinum]
-                        chiangle = float(angle) + oldangle
-                        self.routines.setChiangle(residue, chinum, chiangle, defresidue)
-                        energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
-                    
-                        if energy < bestenergy:
-                            bestenergy = energy
-                            best = chiangle
-                    self.routines.setChiangle(residue, chinum, best, defresidue)
-
-                # Brute force for flips
-
-                elif type in [11]:
-                    bestenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
-                    name = residue.get("name")
-                    defresidue = self.routines.aadef.getResidue(name)
-                    chinum = hdef.chiangle - 1
-                    oldangle = residue.get("chiangles")[chinum]
-                    chiangle = 180.0 + oldangle
-                    self.routines.setChiangle(residue, chinum, chiangle, defresidue)
-                    energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
-                    if energy >= bestenergy: # switch back!
-                        self.routines.setChiangle(residue, chinum, oldangle, defresidue)
-
-                else:
-                    raise ValueError, "Invalid Hydrogen type %i in %s %i!" % \
-                          (type, residue.get("name"), residue.get("resSeq"))
+                self.optimizeSingle(amb, clusteratoms, compatoms)
 
             else:
                 # Use Monte Carlo algorithm to optimize
-
-                import time
-                s  = time.time()
                 
                 steps = 0
                 if len(cluster) == 2: steps = 10
                 elif len(cluster) == 3: steps = 15
                 elif len(cluster) >= 4 and len(cluster) < 10: steps = pow(2,len(cluster))
                 if steps > 200 or len(cluster) >= 10: steps = 200
-                #if steps > 3000 or len(cluster) >= 10: steps = 3000
-
+            
                 # Initialize
 
                 statemap = {}
                 curmap = {}
                 bestmap = {}
-                energymap = {}
-                hismap = {}
+                energy = self.getHbondEnergy(clusteratoms, compatoms)  
+                maxenergy = energy + 1000
+                bestenergy = energy
+                newenergy = energy
                 
                 for id in range(len(cluster)):
                     amb = self.groups[cluster[id]]
@@ -275,18 +283,11 @@ class hydrogenRoutines:
                         self.switchstate(states, amb, 0)
                         curmap[id] = 0
                         bestmap[id] = 0                       
-                
                     elif type in [2,11]:
                         chinum = hdef.chiangle - 1
                         oldangle = residue.get("chiangles")[chinum]
                         curmap[id] = oldangle
                         bestmap[id] = oldangle
-
-                energy = self.getHbondEnergy(clusteratoms, compatoms)
-         
-                maxenergy = energy + 1000
-                bestenergy = energy
-                newenergy = energy
 
                 self.debug("Initial Best energy: %.2f" % bestenergy)
                 self.debug("Initial Cur energy: %.2f" % energy)
@@ -392,7 +393,7 @@ class hydrogenRoutines:
                 self.debug("Best state map: %s" % bestmap)
                 self.debug("*******************\n")
 
-        self.debug("Total time %.2f" % (time.time() - starttime))
+        self.debug("Total time %.2f" % (time() - starttime))
         self.liststates()
 
     def liststates(self):
@@ -503,7 +504,7 @@ class hydrogenRoutines:
             energy = energy + self.getPenalty(atom1)
             res1 = atom1.get("residue")
             if res != None and res1 != res: continue
-            #elif res != None and not res1.get("isNterm") and atom1.get("name") == "N": continue
+            elif not res1.get("isNterm") and atom1.get("name") == "N": continue
             elif not atom1.get("hdonor"): continue
             for atom2 in compatoms:
                 if res1 == atom2.get("residue"): continue
@@ -562,15 +563,15 @@ class hydrogenRoutines:
                         raise ValueError, text
             
                     dist = distance(donorhatom.getCoords(), acceptor.getCoords())
-                    hdist = distance(donorhatom.getCoords(), acceptorhatom.getCoords())
-
-                    if hdist < 1.5: # Are the hydrogens too close?
-                        energy += -1 * max_hbond_energy
-                        continue
-                    if dist > max_dha_dist and dist < max_ele_dist: # Or too far?
+                    if dist > max_dha_dist and dist < max_ele_dist: # Are the Hs too far?
                         energy += max_ele_energy/(dist*dist)
                         continue
-
+                    
+                    hdist = distance(donorhatom.getCoords(), acceptorhatom.getCoords())
+                    if hdist < 1.5: # Are the Hs too close?
+                        energy += -1 * max_hbond_energy
+                        continue
+                    
                     angle1 = self.getHbondangle(donor, acceptor, donorhatom)
                     if angle1 <= maxangle:
                         angleterm = (maxangle - angle1)/maxangle
@@ -614,8 +615,9 @@ class hydrogenRoutines:
                 angle:      The angle between the atoms (float)
         """
         angle = 0.0
-        coords1 = subtract(donorhatom.getCoords(), acceptor.getCoords())
-        coords2 = subtract(donor.getCoords(), acceptor.getCoords())
+        accCoords = acceptor.getCoords()
+        coords1 = subtract(donorhatom.getCoords(), accCoords)
+        coords2 = subtract(donor.getCoords(), accCoords)
         norm1 = normalize(coords1)
         norm2 = normalize(coords2)
         dotted = dot(norm1, norm2)

@@ -31,9 +31,9 @@ NTERM3_COORDS = [-24.869, 48.846, -22.770]
 PEP_TRANS_N = [-1.252,1.877,0.883]
 PEP_TRANS_CA = [-2.313,2.784,1.023]
 OXT_COORDS = [-1.529,1.858,0.695]
-HISTIDINES = ["HID","HIE","HIP","HSD","HSE","HSP"]
-AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLH","GLY","HIS","ILE",\
-       "LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
+AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLH","GLY","HIS",\
+       "HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","MET",\
+       "PHE","PRO","SER","THR","TRP","TYR","VAL"]
 
 import random
 from pdb import *
@@ -115,7 +115,7 @@ class Routines:
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
                 name = residue.get("name")
-                if name in AAS or name in HISTIDINES:
+                if name in AAS:
                     residue.set("type",1)
                 elif name == "WAT":
                     residue.set("type",3)
@@ -186,8 +186,6 @@ class Routines:
                 residue.set("chiangles",[])
                 name = residue.get("name")
                 definitionres = self.aadef.getResidue(name)
-                if name in HISTIDINES:
-                    definitionres = self.aadef.getResidue("HIS")
                 if definitionres != None:
                     defdihedrals = definitionres.get("dihedralatoms")
                     for i in range(0, len(defdihedrals), 4):       
@@ -254,8 +252,6 @@ class Routines:
                 if residue.get("type") == 2: return
                 name = residue.get("name")    
                 defresidue = self.aadef.getResidue(name)
-                if name in HISTIDINES:
-                    defresidue = self.aadef.getResidue("HIS")
                 if defresidue == None:
                     error = "Could not find definition for %s " % name
                     error += "even though it is type 1!"
@@ -344,8 +340,6 @@ class Routines:
                 if residue.get("type") == 1:
                     name = residue.get("name")
                     defresidue = self.aadef.getResidue(name)
-                    if name in HISTIDINES:
-                        defresidue = self.aadef.getResidue("HIS")
                     if defresidue == None:
                         error = "Could not find definition for %s " % name
                         error += "even though it is type 1!"
@@ -420,8 +414,6 @@ class Routines:
                     if residue.get("isNterm"):
                         prevres = residue
                     defresidue = self.aadef.getResidue(name)
-                    if name in HISTIDINES:
-                        defresidue = self.aadef.getResidue("HIS")
                     for defatom in defresidue.get("atoms"):
                         refcoords = []
                         defcoords = []
@@ -429,10 +421,6 @@ class Routines:
                             pass
                         else:
                             defname = defatom.get("name")
-
-                            if name in ["HID","HSD"] and defname == "HE2": continue
-                            elif name in ["HIE","HSE"] and defname == "HD1": continue
-                            
                             atom = residue.getAtom(defname)
                             if atom == None:
                                 prevC = prevres.getAtom("C")

@@ -267,44 +267,45 @@ def jacobi(a, nrot):
             dnorm = dnorm + abs(d[j])
             for i in range(j):
                 onorm = onorm + abs(a[i][j])
-        if onorm/dnorm <= 1e-12:
-            break
-        else:
-            for j in range(1,4):
-                for i in range(j):
-                    b = a[i][j]
-                    if abs(b) > 0.0:
-                        dma = d[j] - d[i]
-                        if abs(dma) + abs(b) <= abs(dma):
-                            t = b / dma
-                        else:
-                            q = 0.5 * dma/b
-                            t = 1.0/(abs(q) + math.sqrt(1 + q*q))
-                            if q < 0:
-                                t = t * -1
-                        c = 1.0/math.sqrt(t*t + 1)
-                        s = t*c
-                        a[i][j] = 0.0
-                        for k in range(i):
-                            atemp = c * a[k][i] - s * a[k][j]
-                            a[k][j] = s * a[k][i] + c * a[k][j]
-                            a[k][i] = atemp
-                        for k in range(i+1 ,j):
-                            atemp = c * a[i][k] - s * a[k][j]
-                            a[k][j] = s * a[i][k] + c * a[k][j]
-                            a[i][k] = atemp
-                        for k in range(j+1, 4):
-                            atemp = c * a[i][k] - s * a[j][k]
-                            a[j][k] = s * a[i][k] + c * a[j][k]
-                            a[i][k] = atemp
-                        for k in range(4):
-                            vtemp = c * v[k][i] - s * v[k][j]
-                            v[k][j] = s * v[k][i] + c * v[k][j]
-                            v[k][i] = vtemp
+
+        if dnorm != 0:
+            if onorm/dnorm <= 1e-12: break
+            
+        for j in range(1,4):
+            for i in range(j):
+                b = a[i][j]
+                if abs(b) > 0.0:
+                    dma = d[j] - d[i]
+                    if abs(dma) + abs(b) <= abs(dma):
+                        t = b / dma
+                    else:
+                        q = 0.5 * dma/b
+                        t = 1.0/(abs(q) + math.sqrt(1 + q*q))
+                        if q < 0:
+                            t = t * -1
+                    c = 1.0/math.sqrt(t*t + 1)
+                    s = t*c
+                    a[i][j] = 0.0
+                    for k in range(i):
+                        atemp = c * a[k][i] - s * a[k][j]
+                        a[k][j] = s * a[k][i] + c * a[k][j]
+                        a[k][i] = atemp
+                    for k in range(i+1 ,j):
+                        atemp = c * a[i][k] - s * a[k][j]
+                        a[k][j] = s * a[i][k] + c * a[k][j]
+                        a[i][k] = atemp
+                    for k in range(j+1, 4):
+                        atemp = c * a[i][k] - s * a[j][k]
+                        a[j][k] = s * a[i][k] + c * a[j][k]
+                        a[i][k] = atemp
+                    for k in range(4):
+                        vtemp = c * v[k][i] - s * v[k][j]
+                        v[k][j] = s * v[k][i] + c * v[k][j]
+                        v[k][i] = vtemp
                             
-                        dtemp = c*c*d[i] + s*s*d[j] - 2.0*c*s*b
-                        d[j] = s*s*d[i] + c*c*d[j] +  2.0*c*s*b
-                        d[i] = dtemp
+                    dtemp = c*c*d[i] + s*s*d[j] - 2.0*c*s*b
+                    d[j] = s*s*d[i] + c*c*d[j] +  2.0*c*s*b
+                    d[i] = dtemp
 
     nrot = l
     for j in range(3):

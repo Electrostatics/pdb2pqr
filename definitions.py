@@ -159,32 +159,39 @@ class Definition:
 
             Returns
                 def:  The definition chain (AADefinition)
-        """        
-        if os.path.isfile(defpath):
-            file = open(defpath)
-            lines = file.readlines()
-            file.close()
-            reslines = []
-            thisdef = DefinitionChain(defpath)
-
-            for line in lines:
-                if line.startswith("//"): pass
-                elif line.startswith("*"):
-                    if len(reslines) > 0:
-                        ids = string.split(reslines[0])
-                        name = ids[0]
-                        restype = int(ids[1])
-                        reslines = reslines[1:]  
-                        residue = self.parseDefinition(reslines, name, restype)
-                        thisdef.addResidue(residue)
-                        reslines = []
-                else:
-                    reslines.append(string.strip(line))
-
-            thisdef.renumberResidues()
-            return thisdef        
-        else:
+        """
+        if not os.path.isfile(defpath):
+            for path in sys.path:
+                testpath = "%s/%s" % (path, defpath)
+                if os.path.isfile(testpath):
+                    defpath = testpath
+                    break
+                    
+        if not os.path.isfile(defpath):
             raise ValueError, "%s not found!" % defpath
+        
+        file = open(defpath)
+        lines = file.readlines()
+        file.close()
+        reslines = []
+        thisdef = DefinitionChain(defpath)
+
+        for line in lines:
+            if line.startswith("//"): pass
+            elif line.startswith("*"):
+                if len(reslines) > 0:
+                    ids = string.split(reslines[0])
+                    name = ids[0]
+                    restype = int(ids[1])
+                    reslines = reslines[1:]  
+                    residue = self.parseDefinition(reslines, name, restype)
+                    thisdef.addResidue(residue)
+                    reslines = []
+            else:
+                reslines.append(string.strip(line))
+
+        thisdef.renumberResidues()
+        return thisdef        
 
     def readRotamerDefinition(self):
         """

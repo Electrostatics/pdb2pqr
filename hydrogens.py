@@ -545,7 +545,6 @@ class hydrogenRoutines:
         if donorhs == []: return energy
 
         # Case 1: Both donor and acceptor hydrogens are present
-        self.count += 1
 
         if acceptorhs != []:
             for donorh in donorhs:

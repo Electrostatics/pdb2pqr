@@ -148,6 +148,20 @@ Returns<br>
 <dl><dt><a name="Routines-randomizeWaters"><strong>randomizeWaters</strong></a>(self)</dt><dd><tt>Instead&nbsp;of&nbsp;optimizing,&nbsp;find&nbsp;each&nbsp;WAT&nbsp;O&nbsp;and&nbsp;place&nbsp;H1&nbsp;and&nbsp;H2<br>
 while&nbsp;giving&nbsp;it&nbsp;a&nbsp;random&nbsp;orientation</tt></dd></dl>
 
+<dl><dt><a name="Routines-rebuildMethyl"><strong>rebuildMethyl</strong></a>(self, atomname, residue, defresidue)</dt><dd><tt>Rebuild&nbsp;the&nbsp;final&nbsp;methyl&nbsp;hydrogen&nbsp;atom&nbsp;using&nbsp;equations&nbsp;from&nbsp;its<br>
+tetrahedral&nbsp;geometry.&nbsp;&nbsp;The&nbsp;normal&nbsp;quaternion/reference&nbsp;frame<br>
+method&nbsp;does&nbsp;NOT&nbsp;work,&nbsp;since<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A.&nbsp;&nbsp;It&nbsp;only&nbsp;works&nbsp;with&nbsp;3&nbsp;reference&nbsp;atoms,&nbsp;and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;B.&nbsp;&nbsp;For&nbsp;methyl&nbsp;hydrogens,&nbsp;3&nbsp;reference&nbsp;atoms&nbsp;provide&nbsp;TWO<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;possible&nbsp;locations,&nbsp;where&nbsp;only&nbsp;one&nbsp;is&nbsp;potentially&nbsp;correct.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atomname:&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;atom&nbsp;to&nbsp;rebuild&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;residue&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;defresidue:&nbsp;The&nbsp;definition&nbsp;residue&nbsp;(definitionResidue)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;coords&nbsp;:&nbsp;&nbsp;The&nbsp;new&nbsp;coords&nbsp;of&nbsp;the&nbsp;atom&nbsp;(list)</tt></dd></dl>
+
 <dl><dt><a name="Routines-removeCell"><strong>removeCell</strong></a>(self, atom)</dt><dd><tt>Remove&nbsp;the&nbsp;atom&nbsp;from&nbsp;a&nbsp;cell<br>
 &nbsp;<br>
 Parameters<br>
@@ -278,7 +292,7 @@ Return&nbsp;the&nbsp;hyperbolic&nbsp;tangent&nbsp;of&nbsp;x.</tt></dd></dl>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;&nbsp;</td>
 <td width="100%"><strong>AAFILE</strong> = 'AA.DAT'<br>
-<strong>AAS</strong> = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HIS', 'ILE', 'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL']<br>
+<strong>AAS</strong> = ['ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLH', 'GLY', 'HIS', 'HID', 'HIE', 'HIP', 'HSD', 'HSE', 'HSP', 'ILE', 'LEU', 'LYS', 'MET', ...]<br>
 <strong>AMBER_FILE</strong> = 'AMBER.DAT'<br>
 <strong>BACKBONE</strong> = ['N', 'CA', 'C', 'O', 'O2', 'HA', 'HN', 'H', 'tN']<br>
 <strong>BONDED_SS_LIMIT</strong> = 2.5<br>
@@ -287,7 +301,6 @@ Return&nbsp;the&nbsp;hyperbolic&nbsp;tangent&nbsp;of&nbsp;x.</tt></dd></dl>
 <strong>CELL_SIZE</strong> = 2<br>
 <strong>CHARMM_FILE</strong> = 'CHARMM.DAT'<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
-<strong>HISTIDINES</strong> = ['HID', 'HIE', 'HIP', 'HSD', 'HSE', 'HSP']<br>
 <strong>HYDRO_BONDCOORDS</strong> = [[7.5810000000000004, 2.0899999999999999, 12.506], [6.4580000000000002, 2.1619999999999999, 13.159000000000001], [5.1449999999999996, 2.2090000000000001, 12.452999999999999]]<br>
 <strong>HYDRO_COORDS</strong> = [6.476, 2.1859999999999999, 14.159000000000001]<br>
 <strong>LARGE_TORSION_ANGLE</strong> = 1000.0<br>

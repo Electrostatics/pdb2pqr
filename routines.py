@@ -356,17 +356,33 @@ class Routines:
 
                 elif residue.get("type") == 4:
                     id = ""
+
+                    # Perform 3 Atom Naming Scheme Checks:
+                    #   1. Replace all * with '
+                    #   2. Convert 1H2' to H2'1
+                    #   3. Replace all 5M with 7
+                    
                     for atom in residue.get("atoms"):
                         atomname = atom.get("name")
                         newname = string.replace(atomname,"*","'")
                         if atomname != newname:
-                            residue.renameAtom(atom.get("name"),newname)
+                            residue.renameAtom(atomname,newname)
 
-                    if residue.getAtom("C5M") != None:
-                        residue.renameAtom("C5M","C7")
-                        self.write("Renaming C5M to C7",1)
-                        self.write("\n")
-                    
+                        try:
+                            atomname = atom.get("name")
+                            firstint = int(atomname[0])
+                            newname = atomname[1:] + atomname[0]
+                            residue.renameAtom(atomname,newname)
+                        except ValueError: pass
+
+                        atomname = atom.get("name")
+                        if string.find(atomname,"5M") != -1:
+                            newname = string.replace(atomname,"5M","7")
+                            residue.renameAtom(atomname,newname)
+                            self.write("Renaming %s to %s" % (atomname, newname),1)
+                            self.write("\n")
+                            
+           
                     # Determine if this is DNA/RNA or a Terminus
                     
                     rna = 0
@@ -976,6 +992,10 @@ class Routines:
             if atomname == "H": continue
             residue1 = atom1.get("residue")
             if residue1.get("isNterm") or residue1.get("isCterm"): continue
+
+            # NOTE: For now, disable NA debumping
+            if residue1.get("type") == 4: continue
+            
             closeatoms = []
             coords1 = atom1.getCoords()
 
@@ -1009,8 +1029,7 @@ class Routines:
             if type == 1:
                 defresidue = self.aadef.getResidue(residue.get("name"))
             elif type == 4:
-                #defresidue = self.nadef.getResidue(residue.get("naname"))
-                continue
+                defresidue = self.nadef.getResidue(residue.get("naname"))
             self.write("Starting to debump %s %i...\n" % \
                        (residue.get("name"), residue.get("resSeq")))
             value = self.debumpResidue(residue, causenames, defresidue)

@@ -296,7 +296,7 @@ class Forcefield:
             if atomname == "H5'1": atomname = "H5'"
             elif atomname == "H5'2": atomname = "H5''"
             elif atomname == "H2'1": atomname = "H2'"
-            elif atomname == "H2'2": atomname = "H2''"
+            elif atomname in ["H2'2","HO'2"]: atomname = "H2''"
             
             if residue.getAtom("O2'") == None:
                 if atomname in ["C2'","H2'","H2''"]: resname = "DEO1"

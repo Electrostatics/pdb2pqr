@@ -8,9 +8,9 @@ TT { font-family: lucidatypewriter, lucida console, courier }
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>server</strong></big></big> (April 14th, 2004)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>server</strong></big></big> (May 3rd, 2004)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/todd/public_html/cgi-bin/pdb2pqr/server.py">/home/todd/public_html/cgi-bin/pdb2pqr/server.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/todd/release/pdb2pqr/server.py">/home/todd/release/pdb2pqr/server.py</a></font></td></tr></table>
     <p><tt>CGI&nbsp;Server&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;various&nbsp;functions&nbsp;necessary&nbsp;to&nbsp;run&nbsp;PDB2PQR<br>
@@ -37,10 +37,15 @@ from&nbsp;a&nbsp;web&nbsp;server.</tt></p>
 is&nbsp;greater&nbsp;than&nbsp;LIMIT,&nbsp;delete&nbsp;the&nbsp;older&nbsp;half&nbsp;of&nbsp;the&nbsp;files.&nbsp;&nbsp;Since<br>
 the&nbsp;files&nbsp;are&nbsp;stored&nbsp;by&nbsp;system&nbsp;time&nbsp;of&nbsp;creation,&nbsp;this&nbsp;is&nbsp;an<br>
 easier&nbsp;task.</tt></dd></dl>
+ <dl><dt><a name="-createError"><strong>createError</strong></a>(name, details)</dt><dd><tt>Create&nbsp;an&nbsp;error&nbsp;results&nbsp;page&nbsp;for&nbsp;CGI-based&nbsp;runs<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;file&nbsp;root&nbsp;name,&nbsp;based&nbsp;on&nbsp;local&nbsp;time&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;details:&nbsp;The&nbsp;details&nbsp;of&nbsp;the&nbsp;error&nbsp;(string)</tt></dd></dl>
  <dl><dt><a name="-createResults"><strong>createResults</strong></a>(header, input, name, time)</dt><dd><tt>Create&nbsp;the&nbsp;results&nbsp;web&nbsp;page&nbsp;for&nbsp;CGI-based&nbsp;runs<br>
 &nbsp;<br>
 Parameters<br>
-&nbsp;&nbsp;&nbsp;&nbsp;hreader:&nbsp;The&nbsp;header&nbsp;of&nbsp;the&nbsp;PQR&nbsp;file&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;header:&nbsp;The&nbsp;header&nbsp;of&nbsp;the&nbsp;PQR&nbsp;file&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;input:&nbsp;&nbsp;&nbsp;A&nbsp;flag&nbsp;whether&nbsp;an&nbsp;input&nbsp;file&nbsp;has&nbsp;been&nbsp;created&nbsp;(int)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;tmpdir:&nbsp;&nbsp;The&nbsp;resulting&nbsp;file&nbsp;directory&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;file&nbsp;root&nbsp;name,&nbsp;based&nbsp;on&nbsp;local&nbsp;time&nbsp;(string)<br>
@@ -104,7 +109,7 @@ Returns<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>WEBSITE</strong> = 'http://ocotillo.wustl.edu/~todd/pdb2pqr/'<br>
 <strong>__author__</strong> = 'Todd Dolinsky'<br>
-<strong>__date__</strong> = 'April 14th, 2004'<br>
+<strong>__date__</strong> = 'May 3rd, 2004'<br>
 <strong>__file__</strong> = './server.pyc'<br>
 <strong>__name__</strong> = 'server'</td></tr></table>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -10,7 +10,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>pdb</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/todd/public_html/cgi-bin/pdb2pqr/pdb.py">/home/todd/public_html/cgi-bin/pdb2pqr/pdb.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/todd/release/pdb2pqr/pdb.py">/home/todd/release/pdb2pqr/pdb.py</a></font></td></tr></table>
     <p><tt>&nbsp;PDB&nbsp;parsing&nbsp;class<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;parses&nbsp;PDBs&nbsp;in&nbsp;accordance&nbsp;to&nbsp;PDB&nbsp;Format&nbsp;Description&nbsp;Version&nbsp;2.2<br>
@@ -1985,7 +1985,8 @@ Returns<br>
 &nbsp;&nbsp;path&nbsp;name&nbsp;of&nbsp;downloaded&nbsp;file</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>&nbsp;Main&nbsp;driver&nbsp;for&nbsp;testing.&nbsp;&nbsp;Parses&nbsp;set&nbsp;number&nbsp;of&nbsp;random&nbsp;PDBs</tt></dd></dl>
  <dl><dt><a name="-readAtom"><strong>readAtom</strong></a>(line)</dt><dd><tt>&nbsp;If&nbsp;the&nbsp;<a href="#ATOM">ATOM</a>/<a href="#HETATM">HETATM</a>&nbsp;is&nbsp;not&nbsp;column-formatted,&nbsp;try&nbsp;to&nbsp;get&nbsp;some<br>
-&nbsp;information&nbsp;by&nbsp;parsing&nbsp;whitespace<br>
+&nbsp;information&nbsp;by&nbsp;parsing&nbsp;whitespace&nbsp;from&nbsp;the&nbsp;right.&nbsp;&nbsp;Look&nbsp;for<br>
+&nbsp;five&nbsp;floating&nbsp;point&nbsp;numbers&nbsp;followed&nbsp;by&nbsp;the&nbsp;residue&nbsp;number.<br>
 &nbsp;<br>
 &nbsp;Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line:&nbsp;&nbsp;The&nbsp;line&nbsp;to&nbsp;parse(string)<br>

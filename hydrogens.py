@@ -42,13 +42,14 @@ class hydrogenRoutines:
             Parameters
                 routines:  The parent routines object (Routines)
         """
-        self.hdebug = 0
+        self.hdebug = 1
         self.routines = routines
         self.protein = routines.protein
         self.hydrodefs = []
         self.groups = []
         self.watermap = {}
         self.accmap = {}
+        self.count = 0
 
     def debug(self, text):
         """
@@ -173,12 +174,18 @@ class hydrogenRoutines:
         import time
         starttime = time.time()
         allatoms = self.findAmbiguities(0)
+        print "Allatoms size: ", len(allatoms)
         self.printAmbiguities()
         networks = self.findNetworks(HYDROGEN_DIST)
-          
+        print networks
+        
         for cluster in networks:
             initt = time.time()
             clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
+            print "Clusteratoms size: ", len(clusteratoms)
+            print "Compatoms size: ", len(compatoms)
+            for atom in compatoms:
+                print atom
             if len(cluster) == 1:
                 t = time.time()
                 amb = self.groups[cluster[0]]
@@ -254,6 +261,7 @@ class hydrogenRoutines:
                 elif len(cluster) == 3: steps = 15
                 elif len(cluster) >= 4 and len(cluster) < 10: steps = pow(2,len(cluster))
                 if steps > 200 or len(cluster) >= 10: steps = 200
+                #if steps > 400 or len(cluster) >= 10: steps = 400
 
                 # Initialize
 
@@ -321,7 +329,7 @@ class hydrogenRoutines:
                         defresidue = self.routines.aadef.getResidue(name)
                         chinum = hdef.chiangle - 1
                         oldangle = residue.get("chiangles")[chinum]
-                        newstate = randint(0,71)*5.0 - 180 + oldangle 
+                        newstate = randint(0,71)*5.0 - 180 + oldangle
                         self.routines.setChiangle(residue, chinum, newstate, defresidue)
                     elif type in [11]:
                         name = residue.get("name")
@@ -397,6 +405,7 @@ class hydrogenRoutines:
 
         self.debug("Total time %.2f" % (time.time() - starttime))
         self.liststates()
+        print "Ran pairenergy %i times" % self.count
 
     def liststates(self):
         """
@@ -544,6 +553,7 @@ class hydrogenRoutines:
         if donorhs == []: return energy
 
         # Case 1: Both donor and acceptor hydrogens are present
+        self.count += 1
 
         if acceptorhs != []:
             for donorh in donorhs:
@@ -663,7 +673,6 @@ class hydrogenRoutines:
                 if residue.getAtom("HD1") == None and \
                    residue.getAtom("HE2") == None: 
                     penalty = penalty + hisminus
-
         return penalty
                 
     def initHbondEnergy(self, cluster, allatoms):

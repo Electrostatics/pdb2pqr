@@ -337,6 +337,8 @@ if __name__ == "__main__":
     """ Determine if called from command line or CGI """
     
     if not os.environ.has_key("REQUEST_METHOD"):
+        #import profile
+        #profile.run("mainCommand()")
         mainCommand()    
     else:
         mainCGI()

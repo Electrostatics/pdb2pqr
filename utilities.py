@@ -13,7 +13,108 @@ __author__ = "Todd Dolinsky"
 SMALL = 1.0e-7
 DIHEDRAL = 57.2958
 
+import string
 from math import *
+
+class Matrix:
+    """
+        Matrix class
+
+        A class for handling matrices
+    """
+    def __init__(self, lists):
+        """
+            Create a new matrix object.
+
+            Parameters
+                lists:  A list of lists containing the matrix (list)
+        """
+        self.info = lists
+        self.rows = len(lists)
+        self.cols = 0
+        for row in lists:
+            if self.cols == 0: self.cols = len(row)
+            if len(row) != self.cols:
+                raise ValueError, "Irregularly sized matrix!"
+
+    def __str__(self):
+        """
+            Print the contents of the matrix
+
+            Returns
+                out:  The printed matrix (string)
+        """
+        out = ""
+        for row in self.info:
+            for item in row:
+                out = "%s %s" % (out, string.rjust(str(item),6))
+            out = "%s\n" % out
+        return out
+
+    def LU(self, b):
+        """
+            Solve the matrix Ax = b by LU decomposition:
+            Given Ax = b and LU = A,
+                Ax = (LU)x = L(Ux) = b
+                Solve Ly = b, and then Ux = y. 
+            Parameters:
+                b = 1 x N matrix, where N is the number of variables
+                    (Matrix)
+            Returns:
+                x = The solved N-element list (list)
+        """
+        m = self.rows
+        n = self.cols
+        x = []
+        y = []
+        
+        for i in range(n):
+            x.append(0.0)
+
+        # Intialize L to identity, U as a copy of this matrix
+        
+        ident = []
+        for i in range(m):
+            list = []
+            for j in range(n):
+                if i == j: list.append(1.0)
+                else: list.append(0.0)
+            ident.append(list)
+        L = Matrix(ident)
+        U = Matrix(self.info)
+
+        # Perform LU decomp
+
+        for i in range(m):
+            for j in range(i+1,m):
+                if U.info[i][i] == 0.0:
+                    raise ValueError, "LU decomposition needs non-zero diags!"
+                val = float(U.info[j][i])/U.info[i][i]
+                L.info[j][i] = val
+                for k in range(n):
+                    U.info[j][k] -= U.info[i][k] * val
+
+        # Solve Ly = b, where y = Ux
+        
+        for i in range(m):
+            mult = 1/L.info[i][i]
+            sum = b[i]
+            for j in range(0,i):
+                sum -= L.info[i][j] * y[j]
+            y.append((mult*sum))
+
+        # Solve Ux = y
+        
+        for i in range(m):
+            rev = (m-1) - i
+            mult = 1/U.info[rev][rev]
+            sum = y[rev]
+            for j in range(0,i):
+                j = (m-1) - j
+                sum -= U.info[rev][j] * x[j]
+            x[rev] = (mult*sum)
+            
+        return x
 
 def shortestPath(graph, start, end, path=[]):
     """

@@ -142,9 +142,12 @@ class Residue:
         self.chiangles = []
         self.isNterm = 0
         self.isCterm = 0
+        self.is3term = 0
+        self.is5term = 0
         self.missing = []
         self.debumpAtoms = []
-
+        self.naname = None
+        
         atomclass = ""
         for a in atoms:
             if isinstance(a,ATOM):

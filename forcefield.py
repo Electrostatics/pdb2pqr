@@ -146,7 +146,11 @@ class Forcefield:
                 atomname: The name of the amber atom
         """
         atomname = name
-        resname = residue.get("name")
+        type = residue.get("type")
+        if type == 4:
+            resname = residue.get("naname")
+        else:
+            resname = residue.get("name")
         
         # Residue Substitutions
             
@@ -274,6 +278,34 @@ class Forcefield:
         resname = residue.get("name")
         atomname = name
 
+        #  Nucleic Acid Substitutions
+        
+        if residue.get("type") == 4:
+            resname = resname[0]
+            if resname == "A": resname = "ADE"
+            elif resname == "C": resname = "CYT"
+            elif resname == "G": resname = "GUA"
+            elif resname == "T":
+                resname = "THY"
+                if atomname == "C7": atomname = "C5M"
+                elif atomname == "H71": atomname = "H51"
+                elif atomname == "H72": atomname = "H52"
+                elif atomname == "H73": atomname = "H53" 
+            elif resname == "U": resname = "URA"
+
+            if atomname == "H5'1": atomname = "H5'"
+            elif atomname == "H5'2": atomname = "H5''"
+            elif atomname == "H2'1": atomname = "H2'"
+            elif atomname == "H2'2": atomname = "H2''"
+            
+            if residue.getAtom("O2'") == None:
+                if atomname in ["C2'","H2'","H2''"]: resname = "DEO1"
+
+            if residue.getAtom("H5T") != None:
+                if atomname in ["H5T","O5'","C5'"]: resname = "5TER"
+            if residue.getAtom("H3T") != None:
+                if atomname in ["H3T","O3'","C3'"]: resname = "3TER"
+                
         # Terminal/Water Substitutions
 
         if residue.get("isNterm"):

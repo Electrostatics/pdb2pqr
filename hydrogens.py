@@ -93,9 +93,9 @@ class hydrogenRoutines:
             states.append([confs[1]]) # H2 only
             states.append([confs[0], confs[1]]) # H3 and H2
         elif type == 4: # HIS 
-            states.append([()]) # Negative HIS
             states.append([confs[0]]) # HSD
             states.append([confs[1]]) # HSE
+            states.append([()]) # Negative HIS
             states.append([confs[0], confs[1]]) #HSP
         elif type == 10: #PNTR
             states.append([()])
@@ -258,7 +258,7 @@ class hydrogenRoutines:
                 elif len(cluster) == 3: steps = 15
                 elif len(cluster) >= 4 and len(cluster) < 10: steps = pow(2,len(cluster))
                 if steps > 200 or len(cluster) >= 10: steps = 200
-                #if steps > 400 or len(cluster) >= 10: steps = 400
+                #if steps > 3000 or len(cluster) >= 10: steps = 3000
 
                 # Initialize
 

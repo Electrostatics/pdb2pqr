@@ -23,6 +23,7 @@ PARSE_FILE = "PARSE.DAT"
 import string
 import sys
 import getopt
+import os
 
 class Forcefield:
     """
@@ -57,11 +58,17 @@ class Forcefield:
         else:
             raise ValueError, "Invalid forcefield %s!" % ff
 
-        try:
-            file = open(defpath)
-        except IOError:
-            raise ValueError, "Unable to find forcefield %s!" % ff
-            
+        if not os.path.isfile(defpath):
+            for path in sys.path:
+                testpath = "%s/%s" % (path, defpath)
+                if os.path.isfile(testpath):
+                    defpath = testpath
+                    break
+        if not os.path.isfile(defpath):
+            raise ValueError, "Unable to find forcefield %s!" % defpath
+
+        file = open(defpath)
+
         lines = file.readlines()
 
         for line in lines:

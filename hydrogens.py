@@ -1457,25 +1457,31 @@ class hydrogenRoutines:
             Returns
                 hydrodef:  The hydrogen definition ()
         """
-        
-        if os.path.isfile(HYDROGENFILE):
-            file = open(HYDROGENFILE)
-            lines = file.readlines()
-            file.close()
-            info = []
+        defpath = HYDROGENFILE
+        if not os.path.isfile(defpath):
+            for path in sys.path:
+                testpath = "%s/%s" % (path, defpath)
+                if os.path.isfile(testpath):
+                    defpath = testpath
+                    break
+        if not os.path.isfile(defpath):
+            raise ValueError, "%s not found!" % defpath
 
-            for line in lines:
-                if line.startswith("//"): pass
-                elif line.startswith("*") or line.startswith("!"):
-                    if info == []: continue
-                    mydef = self.parseHydrogen(info)
-                    self.hydrodefs.append(mydef)
-                    info = []
-                else:
-                    info.append(string.strip(line))
+       
+        file = open(defpath)
+        lines = file.readlines()
+        file.close()
+        info = []
 
-        else:
-            raise ValueError, "%s not found!" % HYDROGENFILE
+        for line in lines:
+            if line.startswith("//"): pass
+            elif line.startswith("*") or line.startswith("!"):
+                if info == []: continue
+                mydef = self.parseHydrogen(info)
+                self.hydrodefs.append(mydef)
+                info = []
+            else:
+                info.append(string.strip(line))
 
 class HydrogenDefinition:
     """

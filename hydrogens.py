@@ -572,16 +572,12 @@ class hydrogenRoutines:
                         continue
 
                     angle1 = self.getHbondangle(donor, acceptor, donorhatom)
-                    angle2 = self.getHbondangle(donorhatom, acceptor, acceptorhatom)
-                    angleterm = 0.0
                     if angle1 <= maxangle:
                         angleterm = (maxangle - angle1)/maxangle
-                    if angle2 < 110.0:
-                        angle2 = 1.0
-                    else:
-                        angle2=-1.0/110.0*(angle2-110.0)
-
-                    energy+=max_hbond_energy/pow(dist,3)*angleterm*angle2
+                        angle2 = self.getHbondangle(donorhatom, acceptor, acceptorhatom)
+                        if angle2 < 110.0: angle2 = 1.0
+                        else: angle2=-1.0/110.0*(angle2-110.0)
+                        energy+=max_hbond_energy/pow(dist,3)*angleterm*angle2
                     
             return energy
 
@@ -600,7 +596,6 @@ class hydrogenRoutines:
                     continue
               
                 angle1 = self.getHbondangle(donor, acceptor, donorhatom)
-                angleterm = 0.0
                 if angle1 <= maxangle:
                     angleterm = (maxangle - angle1)/maxangle
                     energy += max_hbond_energy/pow(dist,2)*angleterm

@@ -31,6 +31,47 @@ from quatfit import *
 from random import *
 from time import *
 
+class hydrogenAmbiguity:
+    """
+        A class containing information about the ambiguity
+    """
+    def __init__(self, residue, hdef):
+        """
+            Initialize the class
+
+            Parameters
+                residue:  The residue in question (residue)
+                hdef:     The hydrogen definition matching the residue
+        """
+        self.residue = residue
+        self.hdef = hdef
+        self.nearatoms = []
+
+    def setNearatoms(self, allatoms):
+        """
+            Set the nearby atoms to this residue.  The only donors/acceptors
+            that will be changing positions are the flips, with maximum change
+            of 2.5 A.
+
+            Parameters
+                allatoms:  A list of all donors/acceptors (list)
+        """
+        nearatoms = []
+        resname = self.residue.get("name")
+        for atom in self.residue.get("atoms"):
+            if (atom.get("hacceptor") or atom.get("hdonor")):
+                for nearatom in allatoms:
+                    if nearatom.get("residue") == self.residue: continue
+                    nearres = atom.get("residue")
+                    nearname = nearres.get("name")
+                    dist = distance(atom.getCoords(), nearatom.getCoords())
+                    compdist = HYDROGEN_DIST
+                    if resname in ["HIS","ASN","GLN"]: compdist += 2.5
+                    if nearname in ["HIS","ASN","GLN"]: compdist += 2.5
+                    if dist < compdist and nearatom not in nearatoms:
+                        nearatoms.append(nearatom)     
+        self.nearatoms = nearatoms
+        
 class hydrogenRoutines:
     """
         The main class of routines in the hydrogen optimization process.
@@ -74,8 +115,8 @@ class hydrogenRoutines:
                         is a list of conformations of the atom. (list)
         """
         states = []
-        residue = amb[0]
-        hdef = amb[1]
+        residue = getattr(amb,"residue")
+        hdef = getattr(amb,"hdef")
         type = hdef.type
 
         confs = hdef.conformations
@@ -124,8 +165,8 @@ class hydrogenRoutines:
             raise ValueError, "Invalid State ID!"
         
         # First Remove all Hs
-        residue = amb[0]
-        hdef = amb[1]
+        residue = getattr(amb,"residue")
+        hdef = getattr(amb,"hdef")
         type = hdef.type
         for conf in hdef.conformations:
             hname = conf.hname
@@ -167,19 +208,17 @@ class hydrogenRoutines:
             residue.getAtom(boundname).hacceptor = 0
             residue.getAtom(boundname).hdonor = 1
 
-    def optimizeSingle(self,amb, clusteratoms, compatoms):
+    def optimizeSingle(self,amb):
         """
             Use brute force optimization for a single ambiguity - try all
             energy configurations and pick the best.
 
             Parameters
                 amb:  The ambiguity object (tuple)
-                clusteratoms: The list of donor/acceptors in the residue (list)
-                compatoms:    A list of nearby atoms (list)
         """
 
-        residue = amb[0]
-        hdef = amb[1]
+        residue = getattr(amb,"residue")
+        hdef = getattr(amb,"hdef")
         type = hdef.type
         self.debug("Brute Force Optimization for residue %s %i - type %i" %\
                    (residue.get("name"), residue.get("resSeq"), type))
@@ -196,7 +235,7 @@ class hydrogenRoutines:
             states = self.getstates(amb)
             for i in range(len(states)): 
                 self.switchstate(states, amb, i)
-                energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+                energy = self.getHbondEnergy(amb)
                 if energy < bestenergy:
                     bestenergy = energy
                     best = i        
@@ -212,7 +251,7 @@ class hydrogenRoutines:
                 oldangle = residue.get("chiangles")[chinum]
                 chiangle = float(angle) + oldangle
                 self.routines.setChiangle(residue, chinum, chiangle, defresidue)
-                energy = self.getHbondEnergy(clusteratoms, compatoms, residue)    
+                energy = self.getHbondEnergy(amb)    
                 if energy < bestenergy:
                     bestenergy = energy
                     best = chiangle
@@ -221,14 +260,14 @@ class hydrogenRoutines:
         # Brute force for flips
 
         elif type in [11]:
-            bestenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+            bestenergy = self.getHbondEnergy(amb)
             name = residue.get("name")
             defresidue = self.routines.aadef.getResidue(name)
             chinum = hdef.chiangle - 1
             oldangle = residue.get("chiangles")[chinum]
             chiangle = 180.0 + oldangle
             self.routines.setChiangle(residue, chinum, chiangle, defresidue)
-            energy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+            energy = self.getHbondEnergy(amb)
             if energy >= bestenergy: # switch back!
                 self.routines.setChiangle(residue, chinum, oldangle, defresidue)
 
@@ -248,10 +287,12 @@ class hydrogenRoutines:
         networks = self.findNetworks(HYDROGEN_DIST)
         
         for cluster in networks:
-            clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
+            #clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
             if len(cluster) == 1:
                 amb = self.groups[cluster[0]]
-                self.optimizeSingle(amb, clusteratoms, compatoms)
+                residue = getattr(amb, "residue")
+                amb.setNearatoms(allatoms)
+                self.optimizeSingle(amb)
 
             else:
                 # Use Monte Carlo algorithm to optimize
@@ -267,15 +308,12 @@ class hydrogenRoutines:
                 statemap = {}
                 curmap = {}
                 bestmap = {}
-                energy = self.getHbondEnergy(clusteratoms, compatoms)  
-                maxenergy = energy + 1000
-                bestenergy = energy
-                newenergy = energy
+                energy = 0.0
                 
                 for id in range(len(cluster)):
                     amb = self.groups[cluster[id]]
-                    residue = amb[0]
-                    hdef = amb[1]
+                    residue = getattr(amb,"residue")
+                    hdef = getattr(amb,"hdef")
                     type = hdef.type
                     if type in [1,4,3,10,13]:
                         states = self.getstates(amb)
@@ -288,6 +326,14 @@ class hydrogenRoutines:
                         oldangle = residue.get("chiangles")[chinum]
                         curmap[id] = oldangle
                         bestmap[id] = oldangle
+
+                    if getattr(amb,"nearatoms") == []:
+                        amb.setNearatoms(allatoms)
+                        energy += self.getHbondEnergy(amb)
+                  
+                maxenergy = energy + 1000
+                bestenergy = energy
+                newenergy = energy
 
                 self.debug("Initial Best energy: %.2f" % bestenergy)
                 self.debug("Initial Cur energy: %.2f" % energy)
@@ -304,12 +350,13 @@ class hydrogenRoutines:
                     #self.debug("Trying step %i out of %i" % (step, steps))
                     id = randint(0, len(cluster) - 1)
                     amb = self.groups[cluster[id]]
-                    residue = amb[0]
-                    hdef = amb[1]
+                    residue = getattr(amb,"residue")
+                    hdef = getattr(amb,"hdef")
                     type = hdef.type
                     states = []
 
-                    oldenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+                    #oldenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
+                    oldenergy = self.getHbondEnergy(amb)
                     
                     newstate = None
                     if type in [1,4,3,10,13]:
@@ -337,8 +384,8 @@ class hydrogenRoutines:
 
                     # Evaluate the change
 
-                    newenergy = energy - oldenergy + self.getHbondEnergy(clusteratoms, compatoms, residue)
-                    #newenergy = self.getHbondEnergy(clusteratoms, compatoms)
+                    #newenergy = energy - oldenergy + self.getHbondEnergy(clusteratoms, compatoms, residue)
+                    newenergy = energy - oldenergy + self.getHbondEnergy(amb)
                     ediff = newenergy - energy
 
                     rejected = 0
@@ -374,8 +421,8 @@ class hydrogenRoutines:
                 for id in range(len(cluster)):
                     if bestmap[id] == curmap[id]: continue
                     amb = self.groups[cluster[id]]
-                    residue = amb[0]
-                    hdef = amb[1]
+                    residue = getattr(amb,"residue")
+                    hdef = getattr(amb,"hdef")
                     type = hdef.type
                     if type in [1,4,3,10,13]:
                         newstate = bestmap[id]
@@ -387,9 +434,9 @@ class hydrogenRoutines:
                         chinum = hdef.chiangle - 1
                         self.routines.setChiangle(residue, chinum, bestmap[id], defresidue)
                     
-                finalenergy = self.getHbondEnergy(clusteratoms, compatoms)        
+                #finalenergy = self.getHbondEnergy(clusteratoms, compatoms)        
                 self.debug("Final Best energy: %.2f" % bestenergy)
-                self.debug("Final Actual energy: %.2f" % finalenergy)
+                #self.debug("Final Actual energy: %.2f" % finalenergy)
                 self.debug("Best state map: %s" % bestmap)
                 self.debug("*******************\n")
 
@@ -404,8 +451,9 @@ class hydrogenRoutines:
         
         for i in range(len(self.groups)):
             state = ""
-            residue = self.groups[i][0]
-            hdef = self.groups[i][1]
+            amb = self.groups[i]
+            residue = getattr(amb,"residue")
+            hdef = getattr(amb,"hdef")
             resname = residue.get("name")
             if residue.get("isNterm"):
                 H2 = residue.getAtom("H2")
@@ -464,7 +512,7 @@ class hydrogenRoutines:
                 self.routines.write("Ambiguity #: %i, chain: %s, residue: %i %s - %s\n" \
                                     % (i, residue.chainID, residue.resSeq, residue.name, state),1)
 
-    def getHbondEnergy(self,clusteratoms, compatoms, res=None):
+    def getHbondEnergy2(self,clusteratoms, compatoms, res=None):
         """
             Get the hydrogen bond energy for a cluster of donors
             and acceptors. If res is not present, compare each atom
@@ -514,6 +562,33 @@ class hydrogenRoutines:
                     energy = energy + pair
                     #print "\tComparing %s %i to %s %i %.2f" % (atom1.name, atom1.residue.resSeq, atom2.name, atom2.residue.resSeq, pair)
         return energy
+
+    def getHbondEnergy(self, amb):
+        """
+        """
+        energy = 0.0
+        residue = getattr(amb,"residue")
+        nearatoms = getattr(amb,"nearatoms")
+        energy = energy + self.getPenalty(residue)
+        for nearatom in nearatoms:
+            for atom in residue.get("atoms"):
+                if atom.get("hdonor"):
+                    if not nearatom.get("hacceptor"): continue
+                    elif atom.get("name") == "N" and not residue.get("isNterm"): continue
+                    elif nearatom.get("name") == "O" and not nearatom.residue.get("name") == "WAT": continue
+                    if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:                
+                        pair = self.getPairEnergy(atom, nearatom)      
+                        energy = energy + pair
+                if atom.get("hacceptor"):
+                    if not nearatom.get("hdonor"): continue
+                    elif atom.get("name") == "O" and not residue.get("name") == "WAT": continue
+                    elif nearatom.get("name") == "N" and not nearatom.residue.get("isNterm"): continue
+                    if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:             
+                        pair = self.getPairEnergy(nearatom, atom)
+                        energy = energy + pair
+              
+        return energy
+                
 
     def getPairEnergy(self, donor, acceptor):
         """
@@ -591,6 +666,7 @@ class hydrogenRoutines:
                     text = "Couldn't find bonded hydrogen even though "
                     text = text + "it is present in intrabonds!"
                     raise ValueError, text
+                
                 dist = distance(donorhatom.getCoords(), acceptor.getCoords())
                 if dist > max_dha_dist and dist < max_ele_dist: # Or too far?
                     energy += max_ele_energy/(dist*dist)               
@@ -629,12 +705,12 @@ class hydrogenRoutines:
             angle = 360.0 - angle
         return angle
 
-    def getPenalty(self, atom):
+    def getPenalty(self, residue):
         """
             Add penalties for unusual protonation states.
 
             Parameters
-                atom:    The atom to examine (Atom)
+                atom:    The residue to examine (Atom)
             Returns
                 penalty: The amount of the penalty (float)
         """
@@ -644,16 +720,7 @@ class hydrogenRoutines:
         nterm = 5.0
         penalty = 0.0
 
-        atomname = atom.get("name")
-        residue = atom.get("residue")
         resname = residue.get("name")
-        if atom.get("hdonor"):
-            if atomname in ["OD1","OD2","OE1","OE2","O","OXT"] and resname != "WAT":
-                penalty = penalty + acidpenalty
-            elif resname == "HIS":
-                if residue.getAtom("HD1") != None and \
-                   residue.getAtom("HE2") != None: 
-                    penalty = penalty + hispos
 
         if residue.get("isNterm"):
             charge = 1
@@ -661,12 +728,23 @@ class hydrogenRoutines:
             if residue.getAtom("H3") == None: charge = charge - 1
             penalty = penalty + (1- charge)*nterm
 
-        if atom.get("hacceptor"):
-            if resname == "HIS":
-                if residue.getAtom("HD1") == None and \
-                   residue.getAtom("HE2") == None: 
-                    penalty = penalty + hisminus
+        if resname == "HIS":
+            hd1 = residue.getAtom("HD1")
+            he2 = residue.getAtom("HE2")
+            if hd1 == None and he2 == None: 
+                penalty = penalty + hisminus
+            elif hd1 != None and he2 != None:
+                penalty = penalty + hispos
+
+        if resname != "WAT":
+            for atom in residue.get("atoms"):
+                atomname = atom.get("name")
+                if atomname in ["OD1","OD2","OE1","OE2","O","OXT"] and atom.get("hdonor"):
+                    penalty = penalty + acidpenalty
+                    break
+
         return penalty
+                
                 
     def initHbondEnergy(self, cluster, allatoms):
         """
@@ -709,13 +787,15 @@ class hydrogenRoutines:
         done = []
         groups = self.groups
         for i in range(len(groups)):
-            residue1 = groups[i][0]
-            hydrodef1 = groups[i][1]
+            amb1 = groups[i]
+            residue1 = getattr(amb1, "residue")
+            hydrodef1 = getattr(amb1,"hdef")
             for conf1 in hydrodef1.conformations:
                 boundatom1 = residue1.getAtom(conf1.boundatom)
                 for j in range(i+1, len(groups)):
-                    residue2 = groups[j][0]
-                    hydrodef2 = groups[j][1]
+                    amb2 = groups[j]
+                    residue2 = getattr(amb2, "residue")
+                    hydrodef2 = getattr(amb2,"hdef")
                     for conf2 in hydrodef2.conformations:
                         boundatom2 = residue2.getAtom(conf2.boundatom)
                         if distance(boundatom1.getCoords(), boundatom2.getCoords()) < limit:
@@ -744,8 +824,6 @@ class hydrogenRoutines:
             all possible 5 degree increments, simply choose a random
             angle.
         """
-        import time
-        starttime = time.time()
         allatoms = self.findAmbiguities(1)
         closeatoms = {}
         overallenergy = 0.0
@@ -754,7 +832,7 @@ class hydrogenRoutines:
 
         waters = []
         for group in self.groups:
-            residue = group[0]
+            residue = getattr(group,"residue")
             waters.append(residue)
 
         # Step 2: Shuffle waters
@@ -978,8 +1056,6 @@ class hydrogenRoutines:
         """
             Optimize the waters found in a protein
         """
-        import time
-        starttime = time.time()
         allatoms = self.findAmbiguities(1)
         closeatoms = {}
         overallenergy = 0.0
@@ -988,7 +1064,7 @@ class hydrogenRoutines:
 
         waters = []
         for group in self.groups:
-            residue = group[0]
+            residue = getattr(group,"residue")
             waters.append(residue)
 
         # Step 2: Shuffle waters
@@ -1060,15 +1136,18 @@ class hydrogenRoutines:
                 self.watermap[residue] = bestdon
 
                 # Now optimize
-                
-                energy = self.getHbondEnergy([oxygen], closeatoms[residue])
+
+                amb = hydrogenAmbiguity(residue,None)
+                setattr(amb,"nearatoms",closeatoms[residue])
+                #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
+                energy = self.getHbondEnergy(amb)
                 bestangle = None
                 bestenergy = energy
                 
                 for angle in range(-180,180,5):
                     self.setWaterHydrogens(residue, angle)
-                    energy = self.getHbondEnergy([oxygen], closeatoms[residue])
-              
+                    #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
+                    energy = self.getHbondEnergy(amb)
                     if energy < bestenergy:
                         bestenergy = energy
                         bestangle = angle
@@ -1175,14 +1254,20 @@ class hydrogenRoutines:
                 self.watermap[residue] = residue.getAtom("H1")
 
             # Now optimize
-                    
-            energy = self.getHbondEnergy([oxygen], closeatoms[residue])
+
+            amb = hydrogenAmbiguity(residue,None)
+            setattr(amb,"nearatoms",closeatoms[residue])
+
+            energy = self.getHbondEnergy(amb)
+            #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
             bestangle = None
             bestenergy = energy
 
             for angle in range(-180,180,5):
                 self.setWaterHydrogens(residue, angle)
-                energy = self.getHbondEnergy([oxygen], closeatoms[residue])
+
+                energy = self.getHbondEnergy(amb)
+                #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
     
                 if energy < bestenergy:
                     bestenergy = energy
@@ -1271,9 +1356,11 @@ class hydrogenRoutines:
 
                         if group.method != 0:
                             if not water and type == 1:
-                                self.groups.append((residue, group))
+                                amb = hydrogenAmbiguity(residue, group)
+                                self.groups.append(amb)
                             if water and type == 3:
-                                self.groups.append((residue, group))
+                                amb = hydrogenAmbiguity(residue, group)
+                                self.groups.append(amb)
 
                         for conf in group.conformations:
                             boundatom = conf.boundatom
@@ -1291,13 +1378,14 @@ class hydrogenRoutines:
             Print the list of ambiguities to stdout
         """
         if self.hdebug == 0: return
-        for i in range(len(self.groups)):
-            residue = self.groups[i][0]
-            hydrodef = self.groups[i][1]
+        i = 0
+        for amb in self.groups:
+            residue = getattr(amb,"residue")
+            hydrodef = getattr(amb,"hdef")
             conf = hydrodef.conformations[0]
             self.routines.write("Ambiguity #: %i, chain: %s, residue: %i %s, hyd_type: %i state: %i Grp_name: %s Hname: %s Boundatom: %s\n" % (i, residue.chainID, residue.resSeq, residue.name, hydrodef.type, hydrodef.standardconf, hydrodef.name, conf.hname, conf.boundatom))
-
- 
+            i += 1
+            
     def parseHydrogen(self, lines):
         """
             Parse a list of lines in order to make a hydrogen

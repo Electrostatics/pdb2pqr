@@ -406,7 +406,10 @@ class HETATM:
         str = str + string.rjust(tstr, 5)[:5]
         str = str + " "
         tstr = self.name
-        str = str + string.rjust(tstr, 4)[:4]
+        if len(tstr) == 4:
+            str = str + string.ljust(tstr, 4)[:4]
+        else:
+            str = str + " " + string.ljust(tstr, 3)[:3]
         tstr = self.altLoc
         str = str + string.ljust(tstr, 1)[:1]
         tstr = self.resName
@@ -531,7 +534,10 @@ class ATOM:
         str = str + string.rjust(tstr, 5)[:5]
         str = str + " "
         tstr = self.name
-        str = str + string.rjust(tstr, 4)[:4]
+        if len(tstr) == 4:
+            str = str + string.ljust(tstr, 4)[:4]
+        else:
+            str = str + " " + string.ljust(tstr, 3)[:3]
         tstr = self.altLoc
         str = str + string.ljust(tstr, 1)[:1]
         tstr = self.resName

@@ -110,7 +110,7 @@ Parameters:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;warnings:&nbsp;A&nbsp;list&nbsp;of&nbsp;warnings&nbsp;generated&nbsp;from&nbsp;routines&nbsp;(list)<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;header:&nbsp;&nbsp;&nbsp;The&nbsp;header&nbsp;for&nbsp;the&nbsp;PQR&nbsp;file&nbsp;(string)</tt></dd></dl>
- <dl><dt><a name="-runPDB2PQR"><strong>runPDB2PQR</strong></a>(pdblist, verbose, ff, debump, hopt, hdebump, watopt)</dt><dd><tt>Run&nbsp;the&nbsp;PDB2PQR&nbsp;Suite<br>
+ <dl><dt><a name="-runPDB2PQR"><strong>runPDB2PQR</strong></a>(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond)</dt><dd><tt>Run&nbsp;the&nbsp;PDB2PQR&nbsp;Suite<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pdblist:&nbsp;The&nbsp;list&nbsp;of&nbsp;objects&nbsp;that&nbsp;was&nbsp;read&nbsp;from&nbsp;the&nbsp;PDB&nbsp;file<br>
@@ -168,6 +168,8 @@ Parameters<br>
 <strong>LOADPATH</strong> = '/proc/loadavg'<br>
 <strong>LOCALPATH</strong> = '/home/todd/public_html/pdb2pqr/'<br>
 <strong>LOGPATH</strong> = '/home/todd/public_html/pdb2pqr/log/pdb2pqr.log'<br>
+<strong>NAFILE</strong> = 'NA.DAT'<br>
+<strong>NAS</strong> = ['A', 'A5', 'A3', 'C', 'C5', 'C3', 'G', 'G5', 'G3', 'T', 'T5', 'T3', 'U', 'U5', 'U3']<br>
 <strong>NTERM2_COORDS</strong> = [-24.001000000000001, 50.223999999999997, -22.225999999999999]<br>
 <strong>NTERM3_COORDS</strong> = [-24.869, 48.845999999999997, -22.77]<br>
 <strong>NTERM_COORDS</strong> = [[-24.196000000000002, 48.789999999999999, -20.800000000000001], [-25.552, 49.881, -21.847999999999999], [-24.645, 49.491, -22.007000000000001]]<br>

@@ -145,6 +145,10 @@ Parameters<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;chinum&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;new&nbsp;chiangle&nbsp;number&nbsp;(int)</tt></dd></dl>
 
+<dl><dt><a name="Routines-printHbond"><strong>printHbond</strong></a>(self)</dt><dd><tt>Print&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;hydrogen&nbsp;bonds&nbsp;to&nbsp;stdout.&nbsp;&nbsp;A&nbsp;hydrogen&nbsp;bond<br>
+is&nbsp;defined&nbsp;when&nbsp;a&nbsp;donor&nbsp;has&nbsp;a&nbsp;hydrogen&nbsp;within&nbsp;3.3&nbsp;Angstroms,&nbsp;and<br>
+the&nbsp;Hyd-Donor-Accepor&nbsp;angle&nbsp;is&nbsp;less&nbsp;than&nbsp;20&nbsp;degrees.</tt></dd></dl>
+
 <dl><dt><a name="Routines-randomizeWaters"><strong>randomizeWaters</strong></a>(self)</dt><dd><tt>Instead&nbsp;of&nbsp;optimizing,&nbsp;find&nbsp;each&nbsp;WAT&nbsp;O&nbsp;and&nbsp;place&nbsp;H1&nbsp;and&nbsp;H2<br>
 while&nbsp;giving&nbsp;it&nbsp;a&nbsp;random&nbsp;orientation</tt></dd></dl>
 
@@ -167,12 +171,27 @@ Returns<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atom:&nbsp;&nbsp;&nbsp;The&nbsp;atom&nbsp;to&nbsp;add&nbsp;(atom)</tt></dd></dl>
 
+<dl><dt><a name="Routines-repairAA"><strong>repairAA</strong></a>(self, residues, resnum)</dt><dd><tt>Repair&nbsp;heavy&nbsp;atoms&nbsp;in&nbsp;Amino&nbsp;Acid&nbsp;(type&nbsp;1)&nbsp;residues<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residues:&nbsp;The&nbsp;list&nbsp;of&nbsp;residues&nbsp;in&nbsp;the&nbsp;chain&nbsp;(list)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resnum:&nbsp;&nbsp;&nbsp;The&nbsp;index&nbsp;of&nbsp;the&nbsp;residue&nbsp;to&nbsp;fix&nbsp;(int)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sgadded:&nbsp;&nbsp;1&nbsp;if&nbsp;an&nbsp;CYS&nbsp;SG&nbsp;is&nbsp;added,&nbsp;0&nbsp;otherwise<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Used&nbsp;to&nbsp;detect&nbsp;if&nbsp;updateSSbridges&nbsp;must&nbsp;be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;called</tt></dd></dl>
+
 <dl><dt><a name="Routines-repairHeavy"><strong>repairHeavy</strong></a>(self)</dt><dd><tt>Repair&nbsp;all&nbsp;heavy&nbsp;atoms&nbsp;in&nbsp;residues&nbsp;with&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;sgadded:&nbsp;&nbsp;1&nbsp;if&nbsp;an&nbsp;CYS&nbsp;SG&nbsp;is&nbsp;added,&nbsp;0&nbsp;otherwise<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Used&nbsp;to&nbsp;detect&nbsp;if&nbsp;updateSSbridges&nbsp;must&nbsp;be<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;called.</tt></dd></dl>
+
+<dl><dt><a name="Routines-repairNA"><strong>repairNA</strong></a>(self, residue)</dt><dd><tt>Repair&nbsp;heavy&nbsp;atoms&nbsp;in&nbsp;Nucleic&nbsp;Acid&nbsp;(type&nbsp;4)&nbsp;residues<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;to&nbsp;repair&nbsp;(residue)</tt></dd></dl>
 
 <dl><dt><a name="Routines-setChiangle"><strong>setChiangle</strong></a>(self, residue, chinum, chiangle, defresidue, causenames<font color="#909090">=[]</font>)</dt><dd><tt>Set&nbsp;the&nbsp;chiangle&nbsp;and&nbsp;move&nbsp;the&nbsp;appropriate&nbsp;atoms<br>
 &nbsp;<br>
@@ -186,6 +205,8 @@ Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;A&nbsp;value&nbsp;indicating&nbsp;whether&nbsp;any&nbsp;atoms&nbsp;are&nbsp;too<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;close&nbsp;or&nbsp;not&nbsp;-&nbsp;any&nbsp;non-zero&nbsp;value&nbsp;means&nbsp;that<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;there&nbsp;is&nbsp;still&nbsp;a&nbsp;conflict.</tt></dd></dl>
+
+<dl><dt><a name="Routines-setDonorsAndAcceptors"><strong>setDonorsAndAcceptors</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;donors&nbsp;and&nbsp;acceptors&nbsp;within&nbsp;the&nbsp;protein</tt></dd></dl>
 
 <dl><dt><a name="Routines-updateExtraBonds"><strong>updateExtraBonds</strong></a>(self)</dt><dd><tt>Update&nbsp;peptide&nbsp;bonds&nbsp;between&nbsp;amino&nbsp;acids.</tt></dd></dl>
 
@@ -304,6 +325,8 @@ Return&nbsp;the&nbsp;hyperbolic&nbsp;tangent&nbsp;of&nbsp;x.</tt></dd></dl>
 <strong>HYDRO_BONDCOORDS</strong> = [[7.5810000000000004, 2.0899999999999999, 12.506], [6.4580000000000002, 2.1619999999999999, 13.159000000000001], [5.1449999999999996, 2.2090000000000001, 12.452999999999999]]<br>
 <strong>HYDRO_COORDS</strong> = [6.476, 2.1859999999999999, 14.159000000000001]<br>
 <strong>LARGE_TORSION_ANGLE</strong> = 1000.0<br>
+<strong>NAFILE</strong> = 'NA.DAT'<br>
+<strong>NAS</strong> = ['A', 'A5', 'A3', 'C', 'C5', 'C3', 'G', 'G5', 'G3', 'T', 'T5', 'T3', 'U', 'U5', 'U3']<br>
 <strong>NTERM2_COORDS</strong> = [-24.001000000000001, 50.223999999999997, -22.225999999999999]<br>
 <strong>NTERM3_COORDS</strong> = [-24.869, 48.845999999999997, -22.77]<br>
 <strong>NTERM_COORDS</strong> = [[-24.196000000000002, 48.789999999999999, -20.800000000000001], [-25.552, 49.881, -21.847999999999999], [-24.645, 49.491, -22.007000000000001]]<br>

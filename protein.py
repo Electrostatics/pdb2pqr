@@ -175,7 +175,11 @@ class Protein:
     def getCharge(self):
         """
             Get the total charge on the protein
-
+            NOTE:  Since the misslist is used to identify incorrect
+                   charge assignments, this routine does not list the
+                   3 and 5 termini of nucleic acid chains as having
+                   non-integer charge even though they are (correctly)
+                   non-integer.
             Returns:
                 misslist: List of residues with non-integer
                           charges (list)
@@ -186,9 +190,11 @@ class Protein:
         for chain in self.chains:
             for residue in chain.get("residues"):
                 rescharge = residue.getCharge()
+                charge = charge + rescharge
+                if residue.get("is3term") or residue.get("is5term"):
+                    continue
                 if float("%i" % rescharge) != rescharge:
                     misslist.append(residue)
-                charge = charge + rescharge
         return misslist, charge
 
     def getChains(self):

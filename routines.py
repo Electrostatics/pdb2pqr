@@ -34,6 +34,9 @@ OXT_COORDS = [-1.529,1.858,0.695]
 AAS = ["ALA","ARG","ASN","ASP","CYS","GLN","GLU","GLH","GLY","HIS",\
        "HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","MET",\
        "PHE","PRO","SER","THR","TRP","TYR","VAL"]
+NAS = ["A","A5","A3","C","C5","C3","G","G5","G3","T","T5","T3","U",\
+       "U5","U3"]
+       
 
 import random
 from pdb import *
@@ -56,7 +59,8 @@ class Routines:
         self.cells = {}
         if definition != None:
             self.aadef = definition.getAA()
-
+            self.nadef = definition.getNA()
+            
     def write(self, message, indent=0):
         """
             Write a message to stderr for debugging if verbose
@@ -119,6 +123,8 @@ class Routines:
                     residue.set("type",1)
                 elif name == "WAT":
                     residue.set("type",3)
+                elif name in NAS:
+                    residue.set("type",4)
                 else: # Residue is a ligand or unknown
                     residue.set("type",2)
                  
@@ -185,7 +191,13 @@ class Routines:
             for residue in chain.get("residues"):
                 residue.set("chiangles",[])
                 name = residue.get("name")
-                definitionres = self.aadef.getResidue(name)
+                type = residue.get("type")
+                definitionres = None
+                if type == 1 or type == 3:
+                    definitionres = self.aadef.getResidue(name)
+                elif type == 4:
+                    name = residue.get("naname")
+                    definitionres = self.nadef.getResidue(name)
                 if definitionres != None:
                     defdihedrals = definitionres.get("dihedralatoms")
                     for i in range(0, len(defdihedrals), 4):       
@@ -204,7 +216,7 @@ class Routines:
                                                             atom4.getCoords()))
              
                 else:
-                    if residue.get("type") == 1:
+                    if residue.get("type") != 2:
                         error = "Unable to find Amino Acid definition for "
                         error += "%s!" % name
                         raise ValueError, error
@@ -251,6 +263,10 @@ class Routines:
                         residue1.set("isCterm",1)
                 elif residue2.get("type") == 1 and i+2 == chain.numResidues():
                     residue2.set("isCterm",1)
+                elif residue1.get("type") == 4 and i == 0:
+                    residue1.set("is5term",1) 
+                elif residue2.get("type") == 4 and i+2 == chain.numResidues():
+                    residue2.set("is3term",1)
         self.write("Done.\n")
 
     def updateIntraBonds(self):
@@ -259,12 +275,17 @@ class Routines:
         """
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
-                if residue.get("type") == 2: return
-                name = residue.get("name")    
-                defresidue = self.aadef.getResidue(name)
+                type = residue.get("type")
+                name = residue.get("name")
+                if type == 1 or type == 3:
+                    defresidue = self.aadef.getResidue(name)
+                elif type == 4:
+                    name = residue.get("naname")
+                    defresidue = self.nadef.getResidue(name)
+                else: continue
                 if defresidue == None:
                     error = "Could not find definition for %s " % name
-                    error += "even though it is type 1!"
+                    error += "even though it is type %i!" % type
                     raise ValueError, error
                 residue.updateIntraBonds(defresidue)
 
@@ -332,6 +353,42 @@ class Routines:
                                 "Oxygen is missing!: See %s %i\n" % \
                                 (resname, resnum)
                         raise ValueError, error
+
+                elif residue.get("type") == 4:
+                    id = ""
+                    for atom in residue.get("atoms"):
+                        atomname = atom.get("name")
+                        newname = string.replace(atomname,"*","'")
+                        if atomname != newname:
+                            residue.renameAtom(atom.get("name"),newname)
+
+                    if residue.getAtom("C5M") != None:
+                        residue.renameAtom("C5M","C7")
+                        self.write("Renaming C5M to C7",1)
+                        self.write("\n")
+                    
+                    # Determine if this is DNA/RNA or a Terminus
+                    
+                    rna = 0
+                    dna = 0 
+                    name = residue.get("name")
+                    if residue.getAtom("H3T") != None:
+                        residue.set("is3term",1)
+                    if residue.getAtom("H5T") != None:
+                        residue.set("is5term",1)
+                    if residue.getAtom("O2\'") != None: rna = 1
+                    else: dna = 1
+
+                    if rna and not dna: id = "R"
+                    elif not rna and dna: id = "D"
+                    else:
+                        text = "Nucleic Acid %s %i" % (name, residue.resSeq)
+                        text += "was found to be both DNA and RNA!"
+                        raise ValueError, text
+                    id += name[0]
+                    if residue.get("is3term"): id += "3"
+                    elif residue.get("is5term"): id += "5"
+                    residue.set("naname",id)
                             
                 else:   #residue is an unknown type
                     raise ValueError, "Unknown residue type!"
@@ -347,12 +404,13 @@ class Routines:
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
                 resSeq = residue.get("resSeq")
-                if residue.get("type") == 1:
+                type = residue.get("type")
+                if type == 1:
                     name = residue.get("name")
                     defresidue = self.aadef.getResidue(name)
                     if defresidue == None:
                         error = "Could not find definition for %s " % name
-                        error += "even though it is type 1!"
+                        error += "even though it is an amino acid!"
                         raise ValueError, error
                     
                     # Check for Missing Heavy Atoms
@@ -393,6 +451,42 @@ class Routines:
                             residue.removeAtom(atomname)
                             self.write("Deleted this atom.\n")
 
+                elif type == 4:
+                    name = residue.get("naname")
+                    defresidue = self.nadef.getResidue(name)
+                    if defresidue == None:
+                        error = "Could not find definition for %s " % name
+                        error += "even though it is a nucleic acid!"
+                        raise ValueError, error
+                    
+                    # Check for Missing Heavy Atoms
+                    
+                    for defatom in defresidue.get("atoms"):
+                        if not defatom.isHydrogen():
+                            defname = defatom.get("name")
+                            atom = residue.getAtom(defname)
+                            if atom == None:
+                                resname = residue.get("name")
+                                self.write("Missing %s in %s %i\n" % \
+                                           (defname, resname, resSeq), 1)
+                                misscount += 1
+                                residue.addMissing(defname)
+                            
+                    # Check for Extra Atoms
+
+                    atomlist = []
+                    for atom in residue.get("atoms"):
+                        atomlist.append(atom)
+
+                    for atom in atomlist:
+                        atomname = atom.get("name")
+                        defatom = defresidue.getAtom(atomname)
+                        if defatom == None:
+                            self.write("Extra atom %s in %s %i! - " % \
+                                       (atomname, name, resSeq), 1)
+                            residue.removeAtom(atomname)
+                            self.write("Deleted this atom.\n")
+                            
         numatoms = self.protein.numAtoms()
         misspct = float(misscount) / (numatoms + misscount)
         if misspct > REPAIR_LIMIT / 100.0:
@@ -494,7 +588,8 @@ class Routines:
             prevres = None
             for residue in chain.get("residues"):
                 name = residue.get("name")
-                if residue.get("type") == 1:
+                type = residue.get("type")
+                if type == 1:
                     if residue.get("isNterm"):
                         prevres = residue
                     defresidue = self.aadef.getResidue(name)
@@ -560,11 +655,199 @@ class Routines:
                         newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                         residue.createAtom("H3", newcoords, "ATOM")
                         residue.addDebumpAtom(residue.getAtom("H3"))
+
+                elif type == 4:
+                    name = residue.get("naname")
+                    defresidue = self.nadef.getResidue(name)
+                    for defatom in defresidue.get("atoms"):
+                        refcoords = []
+                        defcoords = []
+                        if not defatom.isHydrogen(): continue
+                        defname = defatom.get("name")
+                        atom = residue.getAtom(defname)
+                        if atom == None:
+                            bonds = defresidue.makeBondList(residue,defname)
+                            if len(bonds) < REFATOM_SIZE:
+                                error = "Not enough bonds to remake hydrogen in %s %i" % \
+                                        (name, residue.get("resSeq"))
+                                raise ValueError, error
+                            for i in range(REFATOM_SIZE):
+                                refcoords.append(residue.getAtom(bonds[i]).getCoords())
+                                defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
+                            defatomcoords = defresidue.getAtom(defname).getCoords()
+                            newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                            residue.createAtom(defname, newcoords, "ATOM")
+                            residue.addDebumpAtom(residue.getAtom(defname))
                         
                 else:
                     pass
                 prevres = residue
         self.write("Done.\n")
+
+    def repairAA(self, residues, resnum):
+        """
+            Repair heavy atoms in Amino Acid (type 1) residues
+
+            Parameters
+                residues: The list of residues in the chain (list)
+                resnum:   The index of the residue to fix (int)
+            Returns
+                sgadded:  1 if an CYS SG is added, 0 otherwise
+                          Used to detect if updateSSbridges must be
+                          called
+        """
+        sgadded = 0
+        residue = residues[resnum]
+        seen = {}
+        resname = residue.get("name")
+        resSeq = residue.get("resSeq")
+        missing = residue.get("missing")
+        origlen = len(missing)
+        defresidue = self.aadef.getResidue(resname)
+        while len(missing) > 0:
+            bonds = []
+            refcoords = []
+            defcoords = []
+            missing.reverse()
+            atomname = missing.pop()
+            missing.reverse()
+
+            if atomname == "O" or atomname == "C":
+                N = None
+                if residue.getAtom("CA") != None:
+                    bonds.append("CA")
+                if atomname == "O" and residue.getAtom("C") != None:
+                    bonds.append("C")
+                elif atomname == "C" and residue.getAtom("O") != None:
+                    bonds.append("O")
+
+                try:
+                    if len(bonds) != 2: raise IndexError
+                    if residue.get("isCterm") and residue.getAtom("N") != None:
+                        bonds.append("N")
+                    else:
+                        nextres = residues[resnum + 1]
+                        N = nextres.getAtom("N")
+                except IndexError:
+                    text = "\tUnable to repair %s %i %s\n" % (resname, resSeq, atomname)
+                    raise ValueError, text
+                for i in range(len(bonds)):
+                    refcoords.append(residue.getAtom(bonds[i]).getCoords())
+                    defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
+                defatomcoords = defresidue.getAtom(atomname).getCoords()
+                if N != None:
+                    refcoords.append(N.getCoords())
+                    defcoords.append(PEP_TRANS_N)
+                    bonds.append("N")
+
+            elif atomname == "N" and not residue.get("isNterm"):# and resname == "GLY":
+                try:
+                    prevres = residues[resnum - 1]
+                except IndexError:
+                    text = "\tUnable to repair %s %i\n" % (resname, resSeq)
+                    raise ValueError, text
+                if prevres.getAtom("C") != None:
+                    bonds.append("C")
+                    refcoords.append(prevres.getAtom("C").getCoords())
+                    defcoords.append(defresidue.getAtom("C").getCoords())
+                if prevres.getAtom("CA") != None:
+                    bonds.append("CA")
+                    refcoords.append(prevres.getAtom("CA").getCoords())
+                    defcoords.append(defresidue.getAtom("CA").getCoords())  
+                elif prevres.getAtom("O") != None:
+                    bonds.append("O")
+                    refcoords.append(prevres.getAtom("O").getCoords())
+                    defcoords.append(defresidue.getAtom("O").getCoords()) 
+
+                if residue.getAtom("CA") != None:
+                    bonds.append("CA")
+                    refcoords.append(residue.getAtom("CA").getCoords())
+                    defcoords.append(PEP_TRANS_CA)
+                        
+                defatomcoords = PEP_TRANS_N
+                        
+            else:
+                bonds = defresidue.makeBondList(residue, atomname)
+                if atomname == "OXT":
+                    defatomcoords = OXT_COORDS
+                else:
+                    defatomcoords = defresidue.getAtom(atomname).getCoords()
+                for i in range(len(bonds)):
+                    refcoords.append(residue.getAtom(bonds[i]).getCoords())
+                    defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
+                            
+            # Now refcoords has the reference atom coordinates from the PDB
+            #     defcoords has the reference atom frame coordinates from AA.DAT
+            #     defatomcoords has the reference frame new atom coordinates
+                    
+            if len(bonds) < REFATOM_SIZE:
+                if atomname not in seen and origlen > 1:
+                    seen[atomname] = 1
+                    missing.append(atomname)
+                elif seen[atomname] < origlen - 1:
+                    seen[atomname] += 1
+                    missing.append(atomname)
+                else:
+                    text = "\tUnable to repair %s %i\n" % (resname, resSeq)
+                    raise ValueError, text
+            else:
+                newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                residue.createAtom(atomname, newcoords,"ATOM")
+                self.write("Added %s to %s %i at coordinates " % (atomname, resname, resSeq),1)
+                self.write("%.3f %.3f %.3f\n" % (newcoords[0], newcoords[1], newcoords[2]))
+                residue.addDebumpAtom(residue.getAtom(atomname))
+                if atomname == "SG" and resname == "CYS":
+                    sgadded = 1
+
+        return sgadded
+
+    def repairNA(self, residue):
+        """
+            Repair heavy atoms in Nucleic Acid (type 4) residues
+
+            Parameters
+                residue:  The residue to repair (residue)
+        """
+        seen = {}
+        resname = residue.get("name")
+        resSeq = residue.get("resSeq")
+        missing = residue.get("missing")
+        origlen = len(missing)
+        defresidue = self.nadef.getResidue(residue.get("naname"))
+        while len(missing) > 0:
+            bonds = []
+            refcoords = []
+            defcoords = []
+            missing.reverse()
+            atomname = missing.pop()
+            missing.reverse()
+
+            bonds = defresidue.makeBondList(residue, atomname)
+            defatomcoords = defresidue.getAtom(atomname).getCoords()
+            for i in range(len(bonds)):
+                refcoords.append(residue.getAtom(bonds[i]).getCoords())
+                defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
+                            
+            # Now refcoords has the reference atom coordinates from the PDB file
+            #     defcoords has the reference atom frame coordinates from NA.DAT
+            #     defatomcoords has the reference frame new atom coordinates
+                    
+            if len(bonds) < REFATOM_SIZE:
+                if atomname not in seen and origlen > 1:
+                    seen[atomname] = 1
+                    missing.append(atomname)
+                elif seen[atomname] < origlen - 1:
+                    seen[atomname] += 1
+                    missing.append(atomname)
+                else:
+                    text = "\tUnable to repair %s %i\n" % (resname, resSeq)
+                    raise ValueError, text
+            else:
+                newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                residue.createAtom(atomname, newcoords,"ATOM")
+                self.write("Added %s to %s %i at coordinates " % (atomname, resname, resSeq),1)
+                self.write("%.3f %.3f %.3f\n" % (newcoords[0], newcoords[1], newcoords[2]))
+                residue.addDebumpAtom(residue.getAtom(atomname))
 
     def repairHeavy(self):
         """
@@ -581,107 +864,12 @@ class Routines:
             residues = chain.get("residues")
             for resnum in range(len(residues)):
                 residue = residues[resnum]
-                seen = {}
-                resname = residue.get("name")
-                resSeq = residue.get("resSeq")
-                missing = residue.get("missing")
-                origlen = len(missing)
-                defresidue = self.aadef.getResidue(resname)
-                while len(missing) > 0:
-                    bonds = []
-                    refcoords = []
-                    defcoords = []
-                    missing.reverse()
-                    atomname = missing.pop()
-                    missing.reverse()
-
-                    if atomname == "O" or atomname == "C":
-                        N = None
-                        if residue.getAtom("CA") != None:
-                            bonds.append("CA")
-                        if atomname == "O" and residue.getAtom("C") != None:
-                            bonds.append("C")
-                        elif atomname == "C" and residue.getAtom("O") != None:
-                            bonds.append("O")
-
-                        try:
-                            if len(bonds) != 2: raise IndexError
-                            if residue.get("isCterm") and residue.getAtom("N") != None:
-                                bonds.append("N")
-                            else:
-                                nextres = residues[resnum + 1]
-                                N = nextres.getAtom("N")
-                        except IndexError:
-                            text = "\tUnable to repair %s %i %s\n" % (resname, resSeq, atomname)
-                            raise ValueError, text
-                        for i in range(len(bonds)):
-                            refcoords.append(residue.getAtom(bonds[i]).getCoords())
-                            defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
-                        defatomcoords = defresidue.getAtom(atomname).getCoords()
-                        if N != None:
-                            refcoords.append(N.getCoords())
-                            defcoords.append(PEP_TRANS_N)
-                            bonds.append("N")
-
-                    elif atomname == "N" and not residue.get("isNterm"):# and resname == "GLY":
-                        try:
-                            prevres = residues[resnum - 1]
-                        except IndexError:
-                            text = "\tUnable to repair %s %i\n" % (resname, resSeq)
-                            raise ValueError, text
-                        if prevres.getAtom("C") != None:
-                            bonds.append("C")
-                            refcoords.append(prevres.getAtom("C").getCoords())
-                            defcoords.append(defresidue.getAtom("C").getCoords())
-                        if prevres.getAtom("CA") != None:
-                            bonds.append("CA")
-                            refcoords.append(prevres.getAtom("CA").getCoords())
-                            defcoords.append(defresidue.getAtom("CA").getCoords())  
-                        elif prevres.getAtom("O") != None:
-                            bonds.append("O")
-                            refcoords.append(prevres.getAtom("O").getCoords())
-                            defcoords.append(defresidue.getAtom("O").getCoords()) 
-
-                        if residue.getAtom("CA") != None:
-                            bonds.append("CA")
-                            refcoords.append(residue.getAtom("CA").getCoords())
-                            defcoords.append(PEP_TRANS_CA)
-                        
-                        defatomcoords = PEP_TRANS_N
-                        
-                    else:
-                        bonds = defresidue.makeBondList(residue, atomname)
-                        if atomname == "OXT":
-                            defatomcoords = OXT_COORDS
-                        else:
-                            defatomcoords = defresidue.getAtom(atomname).getCoords()
-                        for i in range(len(bonds)):
-                            refcoords.append(residue.getAtom(bonds[i]).getCoords())
-                            defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
-                            
-                    # Now refcoords has the reference atom coordinates from the PDB
-                    #     defcoords has the reference atom frame coordinates from AA.DAT
-                    #     defatomcoords has the reference frame new atom coordinates
-
-                    if len(bonds) < REFATOM_SIZE:
-                        if atomname not in seen and origlen > 1:
-                            seen[atomname] = 1
-                            missing.append(atomname)
-                        elif seen[atomname] < origlen - 1:
-                            seen[atomname] += 1
-                            missing.append(atomname)
-                        else:
-                            text = "\tUnable to repair %s %i\n" % (resname, resSeq)
-                            raise ValueError, text
-                    else:
-                        newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
-                        residue.createAtom(atomname, newcoords,"ATOM")
-                        self.write("Added %s to %s %i at coordinates " % (atomname, resname, resSeq),1)
-                        self.write("%.3f %.3f %.3f\n" % (newcoords[0], newcoords[1], newcoords[2]))
-                        residue.addDebumpAtom(residue.getAtom(atomname))
-                        if atomname == "SG" and resname == "CYS":
-                            sgadded = 1
-
+                type = residue.get("type")
+                if type == 1:
+                    sgadded = self.repairAA(residues, resnum)
+                elif type == 4:
+                    self.repairNA(residue)
+            
         self.write("Done.\n")
 
         return sgadded
@@ -817,7 +1005,12 @@ class Routines:
         for i in range(len(bumpresidues)):
             residue = bumpresidues[i]
             causenames = debumpmap[residue]
-            defresidue = self.aadef.getResidue(residue.get("name"))
+            type = residue.get("type")
+            if type == 1:
+                defresidue = self.aadef.getResidue(residue.get("name"))
+            elif type == 4:
+                #defresidue = self.nadef.getResidue(residue.get("naname"))
+                continue
             self.write("Starting to debump %s %i...\n" % \
                        (residue.get("name"), residue.get("resSeq")))
             value = self.debumpResidue(residue, causenames, defresidue)
@@ -1043,14 +1236,14 @@ class Routines:
         """
         movenames = []
         rootatom = defresidue.getAtom(rootname)
-        initdist = rootatom.get("CAdistance")
+        initdist = rootatom.get("refdistance")
         for atom in residue.get("atoms"):
             atomname = atom.get("name")
             defatom = defresidue.getAtom(atomname)
             if defatom == None and (residue.get("isCterm") or residue.get("isNterm")):
                 continue
            
-            if defatom.get("CAdistance") > initdist:
+            if defatom.get("refdistance") > initdist:
                 if residue.get("name") == "ILE" and rootname == "CG1":
                     if atomname in ["CD1","HD11","HD12","HD13","HG12","HG13"]:
                         movenames.append(atomname)
@@ -1061,6 +1254,29 @@ class Routines:
                     movenames.append(atomname)
         return movenames
 
+    def setDonorsAndAcceptors(self):
+        """
+            Set the donors and acceptors within the protein
+        """
+        self.updateIntraBonds()
+        for atom in self.protein.getAtoms():
+            atomname = atom.get("name")
+            resname = atom.residue.get("name")
+            if atomname.startswith("N"):
+                for bond in atom.get("intrabonds"):
+                    if bond[0] == "H":
+                        atom.set("hdonor",1)
+                        break
+                if not ((atomname == "NZ" and resname == "LYS") or \
+                       atom.residue.get("isNterm") or atomname == "N"):
+                    atom.set("hacceptor",1)
+            elif atomname.startswith("O") or atomname.startswith("S"):
+                atom.set("hacceptor",1)
+                for bond in atom.get("intrabonds"):
+                    if bond[0] == "H":
+                        atom.set("hdonor",1)
+                        break
+                    
     def printHbond(self):
         """
             Print a list of all hydrogen bonds to stdout.  A hydrogen bond
@@ -1072,9 +1288,11 @@ class Routines:
         hydRoutines = hydrogenRoutines(self)
         dlist = []
         alist = []
+        self.setDonorsAndAcceptors()
         for atom in self.protein.getAtoms():
             if atom.get("hdonor"): dlist.append(atom)
-            if atom.get("hacceptor"): alist.append(atom)
+            if atom.get("hacceptor"):
+                alist.append(atom)
         
         for donor in dlist:
             donorhs = []
@@ -1092,6 +1310,7 @@ class Routines:
                         print "Donor: %s %s %i  \tAcceptor: %s %s %i\tHdist: %.2f\tAngle: %.2f" % \
                               (donor.resName, donor.name, donor.residue.resSeq, acc.resName, \
                                acc.name, acc.residue.resSeq, dist, angle)
+                        
     def optimizeHydrogens(self):
         """
             Wrapper function for hydrogen optimizing routines.  The routines

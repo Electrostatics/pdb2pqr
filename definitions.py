@@ -11,10 +11,11 @@
     Washington University in St. Louis
 """
     
-__date__ = "25 September 2003"
+__date__ = "8 September 2004"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
 AAFILE = "AA.DAT"
+NAFILE = "NA.DAT"
 ROTAMERFILE = "ROTAMER.DAT"
 
 import os
@@ -30,22 +31,32 @@ class Definition:
         The Definition class contains the structured definitions found
         in the files and several mappings for easy access to the information.
     """
-
     def __init__(self):
         """
             Create a new Definition Object
         """
-        self.AAdef = self.readAADefinition()
+        self.AAdef = self.readDefinition(AAFILE)
+        self.NAdef = self.readDefinition(NAFILE)
 
     def getAA(self):
         """
             Get the Amino Acid definition
 
-            returns:
+            Returns
                 The Amino Acid definition in self.chains[0]
         """
         return self.AAdef
-        
+
+    def getNA(self):
+        """
+            Get the Nucleic Acid definition
+
+            Returns
+                 The Nucleic Acid definition - a list of Nucleic Acid
+                 residues
+        """
+        return self.NAdef
+    
     def parseRotamer(self, reslines):
         """
             Parse ROTAMER.DAT, obtaining information about each atom and its
@@ -72,10 +83,10 @@ class Definition:
 
         return myResidue
 
-    def parseAA(self, reslines, name, restype):
+    def parseDefinition(self, reslines, name, restype):
         """
-            Parse AA.DAT, obtaining information about each atom, its position,
-            and its bonding information.
+            Parse the definition file, obtaining information about each atom,
+            its position, and its bonding information.
 
             Parameters
                 reslines:  A list of lines containing each of the atoms of the
@@ -86,7 +97,7 @@ class Definition:
                 myResidue: The parsed residue (DefinitionResidue)
         """
         myResidue = DefinitionResidue(name, restype)
-        CA = -1 
+        refatom = -1 
     
         for i in range(0,len(reslines)-2):
             entries = string.split(reslines[i])
@@ -98,9 +109,8 @@ class Definition:
             atom = DefinitionAtom(i, atomname, name, x, y, z)
             myResidue.addAtom(atom)
         
-            if atomname == "CA":
-                CA = i
-            
+            if atomname == "CA" and restype == 1: refatom = i
+          
         line = reslines[-2]
         bonds = string.split(line)
         bondmap = {}
@@ -131,30 +141,31 @@ class Definition:
         if len(myResidue.get("dihedralatoms")) != int(dihedrals[0]) * 4:
             raise ValueError, "Corrupt entry for torsion angles when parsing %s" % name
 
-        if restype != 1:
-            return myResidue
-  
-        for i in range(myResidue.numAtoms()):
-            atom = myResidue.get("atoms")[i]
-            if atom.isBackbone():
-                atom.set("CAdistance",-1)
-            else:
-                atom.set("CAdistance", len(shortestPath(bondmap, i, CA)) - 1)
+        if restype == 1:
+            for i in range(myResidue.numAtoms()):
+                atom = myResidue.get("atoms")[i]
+                if atom.isBackbone():
+                    atom.set("refdistance",-1)
+                else:
+                    atom.set("refdistance", len(shortestPath(bondmap, i, refatom)) - 1)
         return myResidue
     
-    def readAADefinition(self):
+    def readDefinition(self, defpath):
         """
-            Read the Amino Acid definitions
+            Read a definition file
+
+            Parameters
+                deffile: The path to the definition file (string)
 
             Returns
-                aadef:  The amino acid definition (AADefinition)
+                def:  The definition chain (AADefinition)
         """        
-        if os.path.isfile(AAFILE):
-            file = open(AAFILE)
+        if os.path.isfile(defpath):
+            file = open(defpath)
             lines = file.readlines()
             file.close()
             reslines = []
-            aadef = AADefinition("AA")
+            thisdef = DefinitionChain(defpath)
 
             for line in lines:
                 if line.startswith("//"): pass
@@ -164,16 +175,16 @@ class Definition:
                         name = ids[0]
                         restype = int(ids[1])
                         reslines = reslines[1:]  
-                        residue = self.parseAA(reslines, name, restype)
-                        aadef.addResidue(residue)
+                        residue = self.parseDefinition(reslines, name, restype)
+                        thisdef.addResidue(residue)
                         reslines = []
                 else:
                     reslines.append(string.strip(line))
 
-            aadef.renumberResidues()
-            return aadef        
+            thisdef.renumberResidues()
+            return thisdef        
         else:
-            raise ValueError, "%s not found!" % AAFILE
+            raise ValueError, "%s not found!" % defpath
 
     def readRotamerDefinition(self):
         """
@@ -201,12 +212,12 @@ class Definition:
         else:
             raise ValueError, "%s not found!" % ROTAMERFILE
 
-class AADefinition(Chain):
+class DefinitionChain(Chain):
     """
-        AADefinition class
+        DefinitionChain class
 
-        AADefinition class extends the chain class to provide lookups for
-        atom information.
+        The DefinitionChain class extends the chain class to provide
+        lookups for atom information.
     """
     def __init__(self, ID):
         """
@@ -363,7 +374,7 @@ class DefinitionAtom(Atom):
 
         self.intrabonds = []
         self.residue = None
-        self.CAdistance = None
+        self.refdistance = None
 
     def isBackbone(self):
         """

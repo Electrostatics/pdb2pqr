@@ -174,8 +174,7 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
         myRoutines.optimizeWaters()
     else:
         myRoutines.randomizeWaters()
-
-
+        
     if hdebump:
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein()

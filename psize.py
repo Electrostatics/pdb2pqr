@@ -77,18 +77,18 @@ from math import log
 class Psize:
     def __init__(self):
         self.constants = {"CFAC":1.7, "FADD":20, "SPACE":0.50, "GMEMFAC":160, "GMEMCEIL":400, "OFAC":0.1, "REDFAC":0.25, "TFAC_ALPHA":9e-5, "TFAC_XEON":3e-4, "TFAC_SPARC": 5e-4}
-        self.min = [360.0, 360.0, 360.0]
-        self.max = [0.0, 0.0, 0.0]
+        self.minlen = [360.0, 360.0, 360.0]
+        self.maxlen = [0.0, 0.0, 0.0]
         self.q = 0.0
         self.gotatom = 0
         self.gothet = 0
-        self.len = [0.0, 0.0, 0.0]
+        self.olen = [0.0, 0.0, 0.0]
         self.cen = [0.0, 0.0, 0.0]
         self.clen = [0.0, 0.0, 0.0]
         self.flen = [0.0, 0.0, 0.0]
         self.n = [0, 0, 0]
         self.np = [0.0, 0.0, 0.0]
-        self.nsmall = 0
+        self.nsmall = [0,0,0]
         self.nfocus = 0
 
     def parseInput(self, filename):
@@ -105,12 +105,12 @@ class Psize:
                     continue
                 self.gotatom = self.gotatom + 1
                 self.q = self.q + float(words[3])
-                if self.min[0] > float(words[0]): self.min[0] = float(words[0])
-                if self.min[1] > float(words[1]): self.min[1] = float(words[1])
-                if self.min[2] > float(words[2]): self.min[2] = float(words[2])
-                if self.max[0] < float(words[0]): self.max[0] = float(words[0])
-                if self.max[1] < float(words[1]): self.max[1] = float(words[1])
-                if self.max[2] < float(words[2]): self.max[2] = float(words[2])
+                if self.minlen[0] > float(words[0]): self.minlen[0] = float(words[0])
+                if self.minlen[1] > float(words[1]): self.minlen[1] = float(words[1])
+                if self.minlen[2] > float(words[2]): self.minlen[2] = float(words[2])
+                if self.maxlen[0] < float(words[0]): self.maxlen[0] = float(words[0])
+                if self.maxlen[1] < float(words[1]): self.maxlen[1] = float(words[1])
+                if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
             elif string.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
 
@@ -126,34 +126,36 @@ class Psize:
         """ Get a constant value; raises KeyError if constant not found """
         return self.constants[name]
 
-    def setLength(self, max, min):
-        """ Comput molecule dimensions """
+    def setLength(self, maxlen, minlen):
+        """ Compute molecule dimensions """
         for i in range(3):
-            self.len[i] = max[i] - min[i]
-        return self.len
+            self.olen[i] = maxlen[i] - minlen[i]
+            if self.olen[i] < 0.1:
+                self.olen[i] = 0.1
+        return self.olen
 
 
-    def setCoarseGridDims(self, len):
+    def setCoarseGridDims(self, olen):
         """ Compute coarse mesh dimensions """
         for i in range(3):
-            self.clen[i] = self.constants["CFAC"] * len[i]
+            self.clen[i] = self.constants["CFAC"] * olen[i]
         return self.clen
 
-    def setFineGridDims(self, len, clen):
+    def setFineGridDims(self, olen, clen):
         """ Compute fine mesh dimensions """
         for i in range(3):
-            self.flen[i] = len[i] + self.constants["FADD"]
+            self.flen[i] = olen[i] + self.constants["FADD"]
             if self.flen[i] > clen[i]:
-                #str = "WARNING: Fine length (%.2f) cannot be larger than course length (%.2f)\n" % (self.flen[i], clen[i])
+                #str = "WARNING: Fine length (%.2f) cannot be larger than coarse length (%.2f)\n" % (self.flen[i], clen[i])
                 #str = str + "         Setting fine grid length equal to coarse grid length\n"
                 #stdout.write(str)
                 self.flen[i] = clen[i]
         return self.flen
 
-    def setCenter(self, max, min):
+    def setCenter(self, maxlen, minlen):
         """ Compute molecule center """
         for i in range(3):
-            self.cen[i] = (max[i] + min[i]) / 2
+            self.cen[i] = (maxlen[i] + minlen[i]) / 2
         return self.cen
 
 
@@ -172,20 +174,18 @@ class Psize:
         Find the smallest dimension and see if the number of grid points in
         that dimension will fit below the memory ceiling
         Reduce nsmall until an nsmall^3 domain will fit into memory """
-
-        nsmall = n[0]
-        if n[1] <= n[0] and n[1] <= n[2]:
-            nsmall = n[1]
-        elif n[2] <= n[0] and n[2] <= n[1]:
-            nsmall = n[2]
+        nsmall = []
+        for i in range(3):
+            nsmall.append(n[i])
         while 1:
-            nsmem = 160.0 * nsmall * nsmall * nsmall / 1024 / 1024
+            nsmem = 160.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             if nsmem < self.constants["GMEMCEIL"]: break
             else:
-                nsmall = 32 * ((nsmall - 1)/32 - 1) + 1
+                i = nsmall.index(max(nsmall))
+                nsmall[i] = 32 * ((nsmall[i] - 1)/32 - 1) + 1
                 if nsmall <= 0:
                     stdout.write("You picked a memory ceiling that is too small\n")
-                    exit(0)        
+                    sys.exit(0)        
 
         self.nsmall = nsmall
         return nsmall
@@ -196,8 +196,8 @@ class Psize:
 
         zofac = 1 + 2 * self.constants["OFAC"]
         for i in range(3):
-            self.np[i] = n[i]/float(nsmall)
-            if self.np[i] > 1: self.np[i] = int(zofac*n[1]/nsmall + 1.0)
+            self.np[i] = n[i]/float(nsmall[i])
+            if self.np[i] > 1: self.np[i] = int(zofac*n[1]/nsmall[i] + 1.0)
         return self.np
                                                 
     def setFocus(self, flen, np, clen):
@@ -215,18 +215,18 @@ class Psize:
 
     def setAll(self):
         """ Set up all of the things calculated individually above """
-        max = self.getMax()
-        min = self.getMin()
-        self.setLength(max, min)
-        len = self.getLength()
+        maxlen = self.getMax()
+        minlen = self.getMin()
+        self.setLength(maxlen, minlen)
+        olen = self.getLength()
         
-        self.setCoarseGridDims(len)
+        self.setCoarseGridDims(olen)
         clen = self.getCoarseGridDims()        
         
-        self.setFineGridDims(len, clen)
+        self.setFineGridDims(olen, clen)
         flen = self.getFineGridDims()
         
-        self.setCenter(max, min)
+        self.setCenter(maxlen, minlen)
         cen = self.getCenter()
         
         self.setFineGridPoints(flen)
@@ -241,10 +241,10 @@ class Psize:
         self.setFocus(flen, np, clen)
         nfocus = self.getFocus()
         
-    def getMax(self): return self.max
-    def getMin(self): return self.min
+    def getMax(self): return self.maxlen
+    def getMin(self): return self.minlen
     def getCharge(self): return self.q
-    def getLength(self): return self.len
+    def getLength(self): return self.olen
     def getCoarseGridDims(self): return self.clen
     def getFineGridDims(self): return self.flen
     def getCenter(self): return self.cen
@@ -265,10 +265,10 @@ class Psize:
         
         if self.gotatom > 0:
 
-            max = self.getMax()
-            min = self.getMin()
+            maxlen = self.getMax()
+            minlen = self.getMin()
             q = self.getCharge()
-            len = self.getLength()
+            olen = self.getLength()
             clen = self.getCoarseGridDims()        
             flen = self.getFineGridDims()
             cen = self.getCenter()
@@ -279,41 +279,51 @@ class Psize:
 
             # Compute memory requirements
 
-            nsmem = 160.0 * nsmall * nsmall * nsmall / 1024 / 1024
+            nsmem = 160.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             gmem = 160.0 * n[0] * n[1] * n[2] / 1024 / 1024
             
             # Calculate VERY ROUGH wall clock times
 
-            tsolve_alpha = nfocus*nsmall*nsmall*nsmall*self.constants["TFAC_ALPHA"];
-            tsolve_xeon = nfocus*nsmall*nsmall*nsmall*self.constants["TFAC_XEON"];
-            tsolve_sparc = nfocus*nsmall*nsmall*nsmall*self.constants["TFAC_SPARC"];
+            tsolve_alpha = nfocus*nsmall[0]*nsmall[1]*nsmall[2]*self.constants["TFAC_ALPHA"];
+            tsolve_xeon = nfocus*nsmall[0]*nsmall[1]*nsmall[2]*self.constants["TFAC_XEON"];
+            tsolve_sparc = nfocus*nsmall[0]*nsmall[1]*nsmall[2]*self.constants["TFAC_SPARC"];
 
             # Print the calculated entries
             str = str + "################# MOLECULE INFO ####################\n"
             str = str + "Number of ATOM entries = %i\n" % self.gotatom
             str = str + "Number of HETATM entries (ignored) = %i\n" % self.gothet
             str = str + "Total charge = %.3f e\n" % q
-            str = str + "Dimensions = %.3f x %.3f x %.3f A\n" % (len[0], len[1], len[2])
+            str = str + "Dimensions = %.3f x %.3f x %.3f A\n" % (olen[0], olen[1], olen[2])
             str = str + "Center = %.3f x %.3f x %.3f A\n" % (cen[0], cen[1], cen[2])
-            str = str + "Lower corner = %.3f x %.3f x %.3f A\n" % (min[0], min[1], min[2])
-            str = str + "Upper corner = %.3f x %.3f x %.3f A\n" % (max[0], max[1], max[2])
+            str = str + "Lower corner = %.3f x %.3f x %.3f A\n" % (minlen[0], minlen[1], minlen[2])
+            str = str + "Upper corner = %.3f x %.3f x %.3f A\n" % (maxlen[0], maxlen[1], maxlen[2])
 
             str = str + "\n"
-            str = str + "################# CALCULATION INFO ####################\n"
+            str = str + "############## GENERAL CALCULATION INFO #############\n"
             str = str + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (clen[0],
 clen[1], clen[2])
             str = str + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (flen[0], flen[1], flen[2])
             str = str + "Num. fine grid pts. = %i x %i x %i\n" % (n[0], n[1], n[2])
-            str = str + "Fine mesh spacing = %g x %g x %g A\n" % (flen[0]/(n[0]-1), flen[1]/(n[1]-1), flen[2]/(n[2]-1))
-            str = str + "Estimated mem. required for sequential solve = %.3f MB\n" % gmem
-        
-            ntot = n[0]*n[1]*n[2]
+
             if gmem > self.constants["GMEMCEIL"]:
                 str = str + "Parallel solve required (%.3f MB > %.3f MB)\n" % (gmem, self.constants["GMEMCEIL"])
+                str = str + "Total processors required = %i\n" % (np[0]*np[1]*np[2])
                 str = str + "Proc. grid = %i x %i x %i\n" % (np[0], np[1], np[2])
-                str = str + "Grid pts. on each proc. = %i x %i x %i\n" % (nsmall, nsmall, nsmall)
+                str = str + "Grid pts. on each proc. = %i x %i x %i\n" % (nsmall[0], nsmall[1], nsmall[2])
+                xglob = np[0]*round(nsmall[0]/(1 + 2*self.constants["OFAC"]) - .001)
+                yglob = np[1]*round(nsmall[1]/(1 + 2*self.constants["OFAC"]) - .001)
+                zglob = np[2]*round(nsmall[2]/(1 + 2*self.constants["OFAC"]) - .001)
+                if np[0] == 1: xglob = nsmall[0]
+                if np[1] == 1: yglob = nsmall[1]
+                if np[2] == 1: zglob = nsmall[2]
+                str = str + "Fine mesh spacing = %g x %g x %g A\n" % (flen[0]/(xglob-1), flen[1]/(yglob-1), flen[2]/(zglob-1))
                 str = str + "Estimated mem. required for parallel solve = %.3f MB/proc.\n" % nsmem
-                ntot = nsmall*nsmall*nsmall
+                ntot = nsmall[0]*nsmall[1]*nsmall[2]
+
+            else:
+                str = str + "Fine mesh spacing = %g x %g x %g A\n" % (flen[0]/(n[0]-1), flen[1]/(n[1]-1), flen[2]/(n[2]-1))
+                str = str + "Estimated mem. required for sequential solve = %.3f MB\n" % gmem
+                ntot = n[0]*n[1]*n[2]
 
             str = str + "Number of focusing operations = %i\n" % nfocus
 
@@ -339,7 +349,7 @@ def usage():
     usage = usage + "Usage: psize.py [opts] <filename>\n"
     usage = usage + "Optional Arguments:\n"
     usage = usage + "  --help               : Display this text\n"
-    usage = usage + "  --CFAC=<value>       : Factor by which to expand mol dimsto\n"
+    usage = usage + "  --CFAC=<value>       : Factor by which to expand mol dims to\n"
     usage = usage + "                         get coarse grid dims\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("CFAC")
     usage = usage + "  --FADD=<value>       : Amount to add to mol dims to get fine\n"
@@ -360,13 +370,13 @@ def usage():
     usage = usage + "  --REDFAC=<value>     : The maximum factor by which a domain\n"
     usage = usage + "                         dimension can be reduced during focusing\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("REDFAC")
-    usage = usage + "  --TFAC_ALPHA=<value> : Number of sec/unkown for setup/solve on 667\n"
+    usage = usage + "  --TFAC_ALPHA=<value> : Number of sec/unknown for setup/solve on 667\n"
     usage = usage + "                         MHz EV67 Alpha CPU -- VERY ROUGH ESTIMATE\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_ALPHA")
-    usage = usage + "  --TFAC_XEON=<value>  : Number of sec/unkown for setup/solve on 500\n"
+    usage = usage + "  --TFAC_XEON=<value>  : Number of sec/unknown for setup/solve on 500\n"
     usage = usage + "                         MHz PIII Xeon CPU -- VERY ROUGH ESTIMATE\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_XEON")
-    usage = usage + "  --TFAC_SPARC=<value> : Number of sec/unkown for setup/solve on 400\n"
+    usage = usage + "  --TFAC_SPARC=<value> : Number of sec/unknown for setup/solve on 400\n"
     usage = usage + "                         MHz UltraSPARC II CPU -- VERY ROUGH ESTIMATE\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_SPARC")
 

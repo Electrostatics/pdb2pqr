@@ -40,8 +40,6 @@ Usage:
         --nohopt      :  Do not perform hydrogen optimization
         --nowatopt    :  Do not perform water optimization
         --hbond       :  Print a list of all hydrogen bonds
-        --verbose (-v):  Print information to stdout
-        --help    (-h):  Display the usage information
 
     If no output-path is specified, the PQR file is printed to stdout
 

@@ -16,7 +16,7 @@ import sys,string
 CHARGEMAP1 = "all_amino94.lib"
 CHARGEMAP2 = "all_aminoct94.lib"
 CHARGEMAP3 = "all_aminont94.lib"
-#CHARGEMAP4 = "all_nucleic94.lib"
+CHARGEMAP4 = "all_nucleic94.lib"
 
 RADIUSMAP = "parm99.dat"
 OUTFILE = "AMBER.DAT"
@@ -57,7 +57,7 @@ def makeamber():
 
     # Get residues, atoms, and charges
 
-    filelist = [CHARGEMAP1, CHARGEMAP2, CHARGEMAP3]
+    filelist = [CHARGEMAP1, CHARGEMAP2, CHARGEMAP3, CHARGEMAP4]
 
     outfile = open(OUTFILE, "w")    
     outfile.write("# Amber 99 parameters\n")

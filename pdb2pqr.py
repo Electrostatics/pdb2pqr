@@ -331,7 +331,7 @@ def mainCGI():
     except StandardError, details:
         print "Content-type: text/html\n"
         print details
-        
+        createError(name, details)
     
 if __name__ == "__main__":
     """ Determine if called from command line or CGI """

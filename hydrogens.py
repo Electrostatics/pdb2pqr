@@ -248,13 +248,11 @@ class hydrogenRoutines:
             defresidue = self.routines.aadef.getResidue(name)
             chinum = hdef.chiangle - 1
             for angle in range(-180, 180, 5):
-                oldangle = residue.get("chiangles")[chinum]
-                chiangle = float(angle) + oldangle
-                self.routines.setChiangle(residue, chinum, chiangle, defresidue)
+                self.routines.setChiangle(residue, chinum, angle, defresidue)
                 energy = self.getHbondEnergy(amb)    
                 if energy < bestenergy:
                     bestenergy = energy
-                    best = chiangle
+                    best = angle
             self.routines.setChiangle(residue, chinum, best, defresidue)
 
         # Brute force for flips
@@ -265,12 +263,11 @@ class hydrogenRoutines:
             defresidue = self.routines.aadef.getResidue(name)
             chinum = hdef.chiangle - 1
             oldangle = residue.get("chiangles")[chinum]
-            chiangle = 180.0 + oldangle
-            self.routines.setChiangle(residue, chinum, chiangle, defresidue)
+            angle = 180.0 + oldangle
+            self.routines.setChiangle(residue, chinum, angle, defresidue)
             energy = self.getHbondEnergy(amb)
             if energy >= bestenergy: # switch back!
                 self.routines.setChiangle(residue, chinum, oldangle, defresidue)
-
         else:
             raise ValueError, "Invalid Hydrogen type %i in %s %i!" % \
                   (type, residue.get("name"), residue.get("resSeq"))
@@ -285,7 +282,6 @@ class hydrogenRoutines:
         allatoms = self.findAmbiguities(0)
         self.printAmbiguities()
         networks = self.findNetworks(HYDROGEN_DIST)
-        
         for cluster in networks:
             #clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
             if len(cluster) == 1:
@@ -294,7 +290,7 @@ class hydrogenRoutines:
                 amb.setNearatoms(allatoms)
                 self.optimizeSingle(amb)
 
-            else:
+            else:     
                 # Use Monte Carlo algorithm to optimize
                 
                 steps = 0
@@ -311,7 +307,7 @@ class hydrogenRoutines:
                 energy = 0.0
                 
                 for id in range(len(cluster)):
-                    amb = self.groups[cluster[id]]
+                    amb = self.groups[cluster[id]] 
                     residue = getattr(amb,"residue")
                     hdef = getattr(amb,"hdef")
                     type = hdef.type
@@ -369,15 +365,14 @@ class hydrogenRoutines:
                         name = residue.get("name")
                         defresidue = self.routines.aadef.getResidue(name)
                         chinum = hdef.chiangle - 1
-                        oldangle = residue.get("chiangles")[chinum]
-                        newstate = randint(0,71)*5.0 - 180 + oldangle
+                        newstate = randint(0,71)*5.0 - 180 
                         self.routines.setChiangle(residue, chinum, newstate, defresidue)
                     elif type in [11]:
                         name = residue.get("name")
                         defresidue = self.routines.aadef.getResidue(name)
                         chinum = hdef.chiangle - 1
                         oldangle = residue.get("chiangles")[chinum]
-                        newstate = 180.0 + oldangle 
+                        newstate = 180.0 + oldangle
                         self.routines.setChiangle(residue, chinum, newstate, defresidue)
               
                     #self.debug("Trying to change amb %i to new state %.2f" % (cluster[id], newstate))

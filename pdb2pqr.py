@@ -327,6 +327,7 @@ def mainCGI():
             import psize
             method = "mg-auto"
             size = psize.Psize()
+            size.parseInput(pqrpath)
             async = 0 # No async files here!
             igen = inputgen.inputGen(pqrpath, size, method, async)
             igen.printInput()

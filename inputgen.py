@@ -180,10 +180,10 @@ class inputgen:
             j = string.find(filename,".")
             outname = filename[0:j] + "-para.in"
             returns.append(outname)
+            n = size.getSmallest()
             self.printInput(pqrname, coarsedim, finedim, procgrid, n, outname, 0)
             self.async = 1
             nproc = procgrid[0] * procgrid[1] * procgrid[2]
-    
             for i in range(nproc):
                 j = string.find(filename,".")
                 outname = filename[0:j] + "-PE%s.in" % str(i)
@@ -199,6 +199,8 @@ class inputgen:
                 else:
                     #sys.stderr.write("***Sequential solve allowed\n")
                     self.method = "mg-auto"
+            if self.method == "mg-para":
+                 n = size.getSmallest()
             j = string.find(filename,".")
             outname = filename[0:j] + ".in"
             self.printInput(pqrname, coarsedim, finedim, procgrid, n, outname, 0)

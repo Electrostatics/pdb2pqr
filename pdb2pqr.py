@@ -316,7 +316,7 @@ def mainCGI():
         name = setID(starttime)
  
         pqrpath = startServer(name)
-        header, lines = runPDB2PQR(pdblist, 0, ff, debump, hopt, hdebump, watopt)
+        header, lines = runPDB2PQR(pdblist, 0, ff, debump, hopt, hdebump, watopt, 0)
         file = open(pqrpath, "w")
         file.write(header)
         for line in lines:

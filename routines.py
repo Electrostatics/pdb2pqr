@@ -234,11 +234,21 @@ class Routines:
                             self.write("%s and %s %s\n"%(residue1.get("resSeq"),\
                                                          residue2.get("name"),\
                                                          residue2.get("resSeq")))
+        
                 if residue1.get("type") == 1 and i == 0:
                     residue1.set("isNterm",1)
                 elif residue1.get("type") == 1 and residue2.get("type") != 1 and \
-                         residue2.get("name") not in ["ACE","HSP","HSE","HMS"]:
-                    residue1.set("isCterm",1)
+                         residue2.get("name") not in ["ACE","HMS"]:
+                    # Check to make sure this is the last AA in the chain
+                    if (i+2) > (chain.numResidues() - 1):
+                         residue1.set("isCterm",1)
+                    for j in range(i+2, chain.numResidues()):
+                        cterm = 1
+                        if chain.get("residues")[j].type == 1:
+                            cterm = 0
+                            break
+                    if cterm == 1:
+                        residue1.set("isCterm",1)
                 elif residue2.get("type") == 1 and i+2 == chain.numResidues():
                     residue2.set("isCterm",1)
         self.write("Done.\n")

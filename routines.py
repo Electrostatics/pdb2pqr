@@ -250,11 +250,12 @@ class Routines:
                                                          residue2.get("name"),\
                                                          residue2.get("resSeq")))
 
-                """ Set the appropriate termini """
-                
+                # Set the appropriate termini 
           
                 if res1type == 1 and i == 0:
                     residue1.set("isNterm",1)
+                elif res1type == 1 and residue2.get("name") == "NME":
+                    pass
                 elif res1type == 1 and res2type != 1 and residue2.get("name") not in ["ACE","HMS"]:
                     # Check to make sure this is the last AA in the chain
                     if (i+2) > (chain.numResidues() - 1):

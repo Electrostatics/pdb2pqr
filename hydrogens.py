@@ -667,7 +667,7 @@ class hydrogenRoutines:
                     energy += max_ele_energy/(dist*dist)               
                     continue
               
-                angle1 = self.getHbondangle(donor, acceptor, donorhatom)
+                angle1 = self.getHbondangle(acceptor, donor, donorhatom)
                 if angle1 <= maxangle:
                     angleterm = (maxangle - angle1)/maxangle
                     energy += max_hbond_energy/pow(dist,2)*angleterm

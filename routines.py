@@ -1046,7 +1046,37 @@ class Routines:
                     movenames.append(atomname)
         return movenames
 
-
+    def printHbond(self):
+        """
+            Print a list of all hydrogen bonds to stdout.  A hydrogen bond
+            is defined when a donor has a hydrogen within 3.3 Angstroms, and
+            the Hyd-Donor-Accepor angle is less than 20 degrees.
+        """
+        self.write("Printing hydrogen bond list...\n")
+        from hydrogens import hydrogenRoutines
+        hydRoutines = hydrogenRoutines(self)
+        dlist = []
+        alist = []
+        for atom in self.protein.getAtoms():
+            if atom.get("hdonor"): dlist.append(atom)
+            if atom.get("hacceptor"): alist.append(atom)
+        
+        for donor in dlist:
+            donorhs = []
+            for bond in donor.get("intrabonds"):
+                if bond[0] == "H":
+                    donorhs.append(bond)
+            for acc in alist:
+                if acc == donor: continue
+                for donorh in donorhs:
+                    donorhatom = donor.get("residue").getAtom(donorh)
+                    dist = distance(donorhatom.getCoords(), acc.getCoords())
+                    if dist > 3.3: continue
+                    angle = hydRoutines.getHbondangle(acc, donor, donorhatom)
+                    if angle <= 20.0:
+                        print "Donor: %s %s %i  \tAcceptor: %s %s %i\tHdist: %.2f\tAngle: %.2f" % \
+                              (donor.resName, donor.name, donor.residue.resSeq, acc.resName, \
+                               acc.name, acc.residue.resSeq, dist, angle)
     def optimizeHydrogens(self):
         """
             Wrapper function for hydrogen optimizing routines.  The routines

@@ -16,9 +16,9 @@
 __date__ = "6 October 2003"
 __author__ = "Todd Dolinsky"
 
-AMBER_FILE = "AMBER.DAT"
-CHARMM_FILE = "CHARMM.DAT"
-PARSE_FILE = "PARSE.DAT"
+AMBER_FILE = "../dat/AMBER.DAT"
+CHARMM_FILE = "../dat/CHARMM.DAT"
+PARSE_FILE = "../dat/PARSE.DAT"
 
 import string
 import sys

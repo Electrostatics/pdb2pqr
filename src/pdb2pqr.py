@@ -13,7 +13,7 @@
     Washington University in St. Louis
 """
 
-__date__ = "14 April 2004"
+__date__ = "18 April 2005"
 __author__ = "Todd Dolinsky, Nathan Baker"
 
 import string
@@ -58,6 +58,10 @@ def usage(rc):
     str = str + "        --nohopt      :  Do not perform hydrogen optimization\n"
     str = str + "        --nohdebump   :  Do not perform hydrogen debumping\n"
     str = str + "        --nowatopt    :  Do not perform water optimization\n"
+    str = str + "        --hbond       :  Print a list of hydrogen bonds to stdout\n "
+    str = str + "        --assign-only :  Only assign charges and radii, but no\n"
+    str = str + "                         optimizations - effectively turns on the\n "
+    str = str + "                         nodebump, nohopt, nohdebump, and nowatopt flags\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
     str = str + "    If no output-path is specified, the PQR file is\n"
@@ -200,7 +204,7 @@ def mainCommand():
         Main driver for running program from the command line.
     """
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt","hbond"]
+    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt","hbond", "assign-only"]
 
     try: opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
     except getopt.GetoptError, details:
@@ -235,6 +239,11 @@ def mainCommand():
             watopt = 0
         elif o == "--hbond":
             hbond = 1
+        elif o == "--assign-only":
+            debump = 0
+            hopt = 0
+            hdebump = 0
+            watopt = 0
         elif o == "--ff":
             if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE"]:
                 ff = string.lower(a)

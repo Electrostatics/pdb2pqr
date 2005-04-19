@@ -168,16 +168,26 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein()  
 
+    ### DEVELOPMENTAL ###
+
+    #myRoutines.runPROPKA(12.0, ff)
+    myRoutines.runPROPKA(3.0, ff)
+    pkaflag = 1
+
+    ### END DEVELOPMENTAL ###
+
     myRoutines.addHydrogens()
 
     if hopt:
-        myRoutines.optimizeHydrogens()
+        myRoutines.optimizeHydrogens(pkaflag)
 
     if watopt:
         if not hopt: myRoutines.optimizeHydrogens()
         myRoutines.optimizeWaters()
     else:
         myRoutines.randomizeWaters()
+
+    myRoutines.convertPlacenames()
         
     if hdebump:
         myRoutines.calculateChiangles()

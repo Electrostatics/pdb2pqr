@@ -31,9 +31,9 @@ NTERM3_COORDS = [-24.869, 48.846, -22.770]
 PEP_TRANS_N = [-1.252,1.877,0.883]
 PEP_TRANS_CA = [-2.313,2.784,1.023]
 OXT_COORDS = [-1.529,1.858,0.695]
-AAS = ["ALA","ARG","ASH","ASN","ASP","CYS","GLN","GLU","GLH","GLY",\
-       "HIS","HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS",\
-       "MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
+AAS = ["ALA","ARG","ASH","ASN","ASP","CYS","CYM","GLN","GLU","GLH","GLY",\
+       "HIS","HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","LYN",\
+       "MET","PHE","PRO","SER","THR","TRP","TYR","TYM","VAL"]
 NAS = ["A","A5","A3","C","C5","C3","G","G5","G3","T","T5","T3","U",\
        "U5","U3","RA","RG","RC","RU","DA","DG","DC","DT"]
        
@@ -158,7 +158,7 @@ class Routines:
                     if i<partner:
                         self.write("CYS %4d - CYS %4d\n" % \
                                    (res1.get("resSeq"), res2.get("resSeq")), 1)
-                    if res1.get("name") == "CYS":
+                    if res1.get("name") in ["CYS", "CYM"]:
                         res1.set("SSbonded", 1)
                         res1.set("SSbondpartner", SGatoms[partner])
                     else:
@@ -1303,13 +1303,13 @@ class Routines:
                 if not ((atomname == "NZ" and resname == "LYS") or \
                        atom.residue.get("isNterm") or atomname == "N"):
                     atom.set("hacceptor",1)
-            elif atomname.startswith("O") or atomname.startswith("S"):
+            elif atomname.startswith("O") or (atomname.startswith("S") and resname == "CYS"):
                 atom.set("hacceptor",1)
                 for bond in atom.get("intrabonds"):
                     if bond[0] == "H":
                         atom.set("hdonor",1)
                         break
-                    
+            
     def printHbond(self):
         """
             Print a list of all hydrogen bonds to stdout.  A hydrogen bond
@@ -1343,8 +1343,19 @@ class Routines:
                         print "Donor: %s %s %i  \tAcceptor: %s %s %i\tHdist: %.2f\tAngle: %.2f" % \
                               (donor.resName, donor.name, donor.residue.resSeq, acc.resName, \
                                acc.name, acc.residue.resSeq, dist, angle)
-                        
-    def optimizeHydrogens(self):
+
+    def convertPlacenames(self):
+        """
+            Convert any name placeholders back to the appropriate name.
+            For now this includes the following:  HSN (HIS). 
+        """
+        for chain in self.protein.getChains():
+            for residue in chain.get("residues"):
+                resname = residue.name
+                if resname == "HSN":
+                    residue.renameResidue("HIS")
+                    
+    def optimizeHydrogens(self, pkaflag):
         """
             Wrapper function for hydrogen optimizing routines.  The routines
             were too extensive to properly fit within this file.
@@ -1355,7 +1366,8 @@ class Routines:
         self.calculateChiangles()
         myhydRoutines = hydrogenRoutines(self)
         myhydRoutines.readHydrogenDefinition()
-        myhydRoutines.optimizeHydrogens()
+        self.setDonorsAndAcceptors()
+        myhydRoutines.optimizeHydrogens(pkaflag)
 
     def optimizeWaters(self):
         """
@@ -1397,3 +1409,116 @@ class Routines:
         myrandRoutines.readHydrogenDefinition()
         myrandRoutines.randomizeWaters()
         self.write("Done randomizing hydrogens.\n")
+
+    def runPROPKA(self, ph, ff):
+        """
+            Run PROPKA on the current protein, setting protonation states to
+            the correct values
+
+            FOR NOW ASSUME THAT PROPKA IS INSTALLED
+
+            Parameters
+               ph:  The desired pH of the system
+               ff:  The forcefield name to be used
+        """
+        linelen = 70 # This should go elsewhere
+        try:
+            from propka.propkalib import runPKA
+        except ImportError:
+            print "Couldn't find propka - possibly not installed?!"
+            sys.exit()
+
+        txt = ""
+        for atom in self.protein.getAtoms():
+            if atom.isHydrogen() == 0:
+                atomtxt = str(atom)
+                if len(atomtxt) + 1 != linelen:
+                    print "Atom line length (%i) does not match constant (%i)!" % \
+                          ((len(atomtext) +1), linelen)
+                    sys.exit()
+                txt += "%s\n" % str(atom)
+
+        # The length of the overall text/line length ratio should be
+        # the number of atoms without remainder
+
+        txtlen = len(txt)
+        if txtlen % linelen != 0:
+            print "Extra characters in pka string!"
+            sys.exit()
+
+        numatoms = int(txtlen) / linelen
+        pkaresults = runPKA(txt, txtlen, numatoms)
+        pkaresults = string.strip(pkaresults)
+        pkas = string.split(pkaresults, "|end")
+        pkas = pkas[:-1] # The last entry is null
+        pkadic = {}
+
+        # Make a dictionary of pkas
+        
+        for pka in pkas:
+            words = string.split(pka)
+            key = "%s %s" % (words[0], words[1])
+            pkadic[key] = float(words[2])
+
+        if len(pkadic) == 0: return
+
+        # Now apply each pka to the residue at hand
+
+        warnings = []
+
+        for chain in self.protein.getChains():
+            for residue in chain.get("residues"):
+                resname = residue.name
+                key = "%s %s" % (resname, residue.resSeq)
+                if key in pkadic:
+                    value = pkadic[key]
+                    print resname, residue.resSeq, value
+                    del pkadic[key]
+
+                    if resname == "ARG" and ph >= value:
+                        warn = ("ARG %i" % residue.resSeq, "neutral")
+                        warnings.append(warn)
+                    elif resname == "ASP" and ph < value:
+                        residue.renameResidue("ASH")
+                    elif resname == "CYS" and ph >= value:
+                        if ff == "charmm":
+                            warn = ("CYS %i" % residue.resSeq, "negative")
+                            warnings.append(warn)
+                        else:
+                            residue.renameResidue("CYM")
+                    elif resname == "GLU" and ph < value:
+                        residue.renameResidue("GLH")
+                    elif resname == "HIS" and ph >= value:
+                        residue.renameResidue("HSN")                
+                    elif resname == "LYS" and ph >= value:
+                        if ff == "charmm":
+                            warn = ("LYS %i" % residue.resSeq, "neutral")
+                            warnings.append(warn)
+                        elif ff == "amber" and residue.get("isCterm"):
+                            warn = ("LYS %i" % residue.resSeq, "neutral at C-Terminal")
+                            warnings.append(warn)
+                        else:
+                            residue.renameResidue("LYN")
+                    elif resname == "TYR" and ph >= value:
+                        if ff in ["charmm", "amber"]:
+                            warn = ("TYR %i" % residue.resSeq, "negative")
+                            warnings.append(warn)
+                        else:
+                            residue.renameResidue("TYM")
+                    
+        print pkadic
+
+        if len(warnings) > 0:
+            init = "WARNING: Propka determined the following residues to be\n"
+            self.warnings.append(init)
+            init = "         in a protonation state not supported by the\n"
+            self.warnings.append(init)
+            init = "         %s forcefield!\n" % ff
+            self.warnings.append(init)
+            init = "         All were reset to their standard pH 7.0 state.\n"
+            self.warnings.append(init)
+            self.warnings.append("\n")
+            for warn in warnings:
+                text = "             %s (%s)\n" % (warn[0], warn[1])
+                self.warnings.append(text)
+   

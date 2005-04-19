@@ -122,8 +122,8 @@ C                6: ARG
 C
 C PDB2PQR-RELATED VARIABLES
 C
-C   NOTE:  LINE must be set to the length of a PDB file line
-C              In most cases this is 70.
+C   NOTE:  LINE must be set to the length of the PQR file line
+C              This should be 70.
 C          RESULT must be large enough to handle the resulting
 C              pKa info seen at the end of this code.
 C

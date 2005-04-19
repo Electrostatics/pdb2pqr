@@ -209,6 +209,7 @@ class Forcefield:
         if resname[0] == "N" and resname != "NME": # N-terminal
             if atomname == "H": atomname = "H1"
         if (resname == "CCYS" or resname == "NCYS") and atomname == "HG": atomname = "HSG"
+        if resname == "CYM" and atomname == "H": atomname = "HN"
         return resname, atomname
 
     def getParseParams(self, residue, name):
@@ -283,7 +284,10 @@ class Forcefield:
             elif atomname == "HH32": atomname = "HA2"
             elif atomname == "HH33": atomname = "HA3"
             elif atomname == "CH3": atomname = "CA"    
-
+        elif resname == "TYM": resname = "TY-"
+        elif resname == "CYM": resname = "CY-"
+        elif resname == "LYN": resname = "LY0"
+        
         # Hydrogen Substitutions
 
         if atomname == "H": atomname = "HN"
@@ -297,6 +301,8 @@ class Forcefield:
         elif atomname == "HE3" and resname not in ["TRP","HIS","HI+","HID"]: atomname = "HE2"
         elif atomname == "HG2": atomname = "HG1"
         elif atomname == "HG3": atomname = "HG2"
+        elif atomname == "HZ2" and resname == "LY0": atomname = "HZ1"
+        elif atomname == "HZ3" and resname == "LY0": atomname = "HZ2"
 
         return resname, atomname
 
@@ -388,6 +394,7 @@ class Forcefield:
             elif atomname == "HG12": atomname = "HG11"
             elif atomname == "HG13": atomname = "HG12"
         elif resname == "CYS" and "HG" not in residue.get("map"):
+            resname = "CYS"
             if atomname == "CB":
                 resname = "DISU"
                 atomname = "1CB"

@@ -82,7 +82,7 @@ class hydrogenRoutines:
             Initialize the routines and run the hydrogen optimization
 
             Parameters
-                routines:  The parent routines object (Routines)
+                routines: The parent routines object (Routines)             
         """
         self.hdebug = 0
         self.routines = routines
@@ -91,7 +91,7 @@ class hydrogenRoutines:
         self.groups = []
         self.watermap = {}
         self.accmap = {}
-    
+   
     def debug(self, text):
         """
             Print text to stdout for debugging purposes.
@@ -149,6 +149,9 @@ class hydrogenRoutines:
             states.append([confs[1]]) # H on O1 trans
             states.append([confs[2]]) # H on O2 cis
             states.append([confs[3]]) # H on O2 trans
+        elif type == 14: #HSD/HSE ONLY!
+            states.append([confs[0]]) # HSD
+            states.append([confs[1]]) # HSE
         return states          
                 
     def switchstate(self, states, amb, id):
@@ -229,7 +232,7 @@ class hydrogenRoutines:
         
         # Brute force for fixed states
         
-        if type in [1,4,3,10,13]:
+        if type in [1,4,3,10,13, 14]:
             if type == 4:
                 raise ValueError, "We shouldn't have a brute force HIS without the FLIP!"
             states = self.getstates(amb)
@@ -272,14 +275,20 @@ class hydrogenRoutines:
             raise ValueError, "Invalid Hydrogen type %i in %s %i!" % \
                   (type, residue.get("name"), residue.get("resSeq"))
 
-    def optimizeHydrogens(self):
+    def optimizeHydrogens(self, pkaflag):
         """
             Optimize hydrogens according to HYDROGENS.DAT.  This
             function serves as the main driver for the optimizing
             script.
+
+            Parameters:
+                pkaflag: 1 if pka calculations have already been done.  This
+                         will ignore all protonation ambiguities (but not
+                         necessarily the placement of hydrogens).  Otherwise
+                         set to 0.
         """
         starttime = time()
-        allatoms = self.findAmbiguities(0)
+        allatoms = self.findAmbiguities(0, pkaflag)
         self.printAmbiguities()
         networks = self.findNetworks(HYDROGEN_DIST)
         for cluster in networks:
@@ -513,57 +522,6 @@ class hydrogenRoutines:
             if state != "":
                 self.routines.write("Ambiguity #: %i, chain: %s, residue: %i %s - %s\n" \
                                     % (i, residue.chainID, residue.resSeq, residue.name, state),1)
-
-    def getHbondEnergy2(self,clusteratoms, compatoms, res=None):
-        """
-            Get the hydrogen bond energy for a cluster of donors
-            and acceptors. If res is not present, compare each atom
-            in clusteratoms to all nearby atoms in compatoms.  If res is
-            present, we are trying to find the new energy of the residue
-            res that has just switched states, and thus need to include
-            all comparisons where atoms within the residue is an
-            acceptor.
-
-            Parameters
-                clusteratoms: A list of hydrogen donor/acceptor atoms in
-                              the cluster(list)
-                compatoms:    A list of all hydrogen donor/acceptor
-                              atoms within a given distance of the
-                              cluster (list)
-                res:          (Optional) Residue to get the energy of
-                              (Residue)
-            Returns
-                energy:       The energy of this hydrogen bond network
-                              (float)
-        """
-        energy = 0.0
-        if res != None:
-            for atom2 in compatoms:
-                res2 = atom2.get("residue")
-                if res2 != res: continue
-                elif not atom2.get("hacceptor"): continue
-                for atom1 in clusteratoms:        
-                    if atom1.get("residue") == res2: continue
-                    elif not atom1.get("hdonor"): continue
-                    elif distance(atom1.getCoords(), atom2.getCoords()) < HYDROGEN_DIST:
-                        pair = self.getPairEnergy(atom1, atom2)
-                        energy = energy + pair
-                        #print "\tComparing %s %i to %s %i %.2f" % (atom1.name, atom1.residue.resSeq, atom2.name, atom2.residue.resSeq, pair)
-        
-        for atom1 in clusteratoms:
-            energy = energy + self.getPenalty(atom1)
-            res1 = atom1.get("residue")
-            if res != None and res1 != res: continue
-            elif not res1.get("isNterm") and atom1.get("name") == "N": continue
-            elif not atom1.get("hdonor"): continue
-            for atom2 in compatoms:
-                if res1 == atom2.get("residue"): continue
-                elif not atom2.get("hacceptor"): continue
-                elif distance(atom1.getCoords(), atom2.getCoords()) < HYDROGEN_DIST:
-                    pair = self.getPairEnergy(atom1, atom2)
-                    energy = energy + pair
-                    #print "\tComparing %s %i to %s %i %.2f" % (atom1.name, atom1.residue.resSeq, atom2.name, atom2.residue.resSeq, pair)
-        return energy
 
     def getHbondEnergy(self, amb):
         """
@@ -1322,7 +1280,7 @@ class hydrogenRoutines:
                 
         return angles
     
-    def findAmbiguities(self, water):
+    def findAmbiguities(self, water, pkaflag):
         """
             Find the amibiguities within a protein according to the
             DAT file, and set all boundatoms to their hydrogen donor/
@@ -1334,6 +1292,7 @@ class hydrogenRoutines:
                            protein (list)
                 water:     If 1, only put waters in groups, but fill allatoms
                            appropriately
+                pkaflag:   If 1, ignore all protonation ambiguities.
         """
         allatoms = []
         hydrodefs = self.hydrodefs
@@ -1347,6 +1306,7 @@ class hydrogenRoutines:
                 for group in hydrodefs:
                     groupname = group.name
                     htype = group.type
+                    if htype in [1,3,4] and pkaflag: continue
                     if resname == groupname or \
                        (groupname == "APR") or \
                        (groupname == "APP" and resname != "PRO") or \
@@ -1363,16 +1323,10 @@ class hydrogenRoutines:
                             if water and type == 3:
                                 amb = hydrogenAmbiguity(residue, group)
                                 self.groups.append(amb)
-
-                        for conf in group.conformations:
-                            boundatom = conf.boundatom
-                            atom = residue.getAtom(boundatom)
-                            if atom != None:
-                                atom.set("hacceptor",HACCEPTOR[htype])
-                                atom.set("hdonor",HDONOR[htype])   
-                                if atom not in allatoms:
-                                    allatoms.append(atom)
-                                    
+               
+        for atom in self.protein.getAtoms():
+            if atom.get("hacceptor") or atom.get("hdonor"): allatoms.append(atom)
+            
         return allatoms
                                 
     def printAmbiguities(self):

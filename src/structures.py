@@ -474,6 +474,17 @@ class Residue:
                 atom:  The atom to add to the list
         """
         self.debumpAtoms.append(atom)
+
+    def renameResidue(self, name):
+        """
+            Rename a given residue
+
+            Parameters
+                name:  The new name of the residue
+        """
+        self.name = name
+        for atom in self.atoms:
+            atom.resName = name
         
 class Atom(ATOM):
     """

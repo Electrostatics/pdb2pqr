@@ -263,6 +263,25 @@ NE2 -10.895  10.676  16.891
 CE1 -10.141  11.139  15.977 
 CD2 -11.226  11.671  17.782
 //
+// HSN: HD1 on ND1 and HE2 on NE2
+//  This is a holder for a neutral HIS where
+//  it is either HSD or HSE (not HIP or HIS-)
+//
+*
+HSN base 1 2 1 14 -1 30
+>1
+HD1 ND1 1.0
+HD1 -9.427  13.018  15.624 
+ND1 -9.975  12.423  16.211 
+CG -10.649  12.795  17.345
+CE1 -10.141  11.139  15.977 
+>2
+HE2 NE2 1.0
+HE2 -11.174   9.716  16.906
+NE2 -10.895  10.676  16.891 
+CE1 -10.141  11.139  15.977 
+CD2 -11.226  11.671  17.782
+//
 // ASP - four protonation conformations
 //
 *

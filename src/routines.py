@@ -1559,6 +1559,7 @@ class Routines:
             for warn in warnings:
                 text = "             %s (%s)\n" % (warn[0], warn[1])
                 self.warnings.append(text)
+            self.warnings.append("\n")
    
         if len(pkadic) > 0:
             warn = "         PDB2PQR could not identify the following residues\n"
@@ -1569,5 +1570,5 @@ class Routines:
             for item in pkadic:
                 text = "             %s\n" % item
                 self.warnings.append(text)
-
+            self.warnings.append("\n")
         self.write("Done.\n")

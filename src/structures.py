@@ -324,6 +324,8 @@ class Residue:
                     continue
                 elif self.isNterm and atomname in ["H2","H3"]:
                     continue
+                elif self.name == "GLH" and atomname == "HE1": continue
+                elif self.name == "ASH" and atomname == "HD1": continue
                 else:
                     raise ValueError, "Atom %s not found in updateIntraBonds!" % atomname
             for bondatomname in defatom.get("intrabonds"):

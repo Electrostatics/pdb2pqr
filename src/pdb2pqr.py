@@ -328,7 +328,7 @@ def mainCGI():
     if form.has_key("HOPT"): options["hopt"] = 1
     if form.has_key("HDEBUMP"): options["hdebump"] = 1
     if form.has_key("WATOPT"): options["watopt"] = 1
-    if form.has_key("PH"):
+    if form.has_key("PROPKA"):
         try:
             ph = float(form["PH"].value)
             options["ph"] = ph

@@ -14,8 +14,8 @@
 __date__ = "8 September 2004"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
-AAFILE = "../dat/AA.DAT"
-NAFILE = "../dat/NA.DAT"
+AAFILE = "dat/AA.DAT"
+NAFILE = "dat/NA.DAT"
 
 import os
 from pdb import *

@@ -84,7 +84,7 @@ class hydrogenRoutines:
             Parameters
                 routines: The parent routines object (Routines)             
         """
-        self.hdebug = 0
+        self.hdebug =0
         self.routines = routines
         self.protein = routines.protein
         self.hydrodefs = []
@@ -1314,7 +1314,8 @@ class hydrogenRoutines:
                        (groupname == "HISFLIP" and resname in ["HIP","HID","HIE","HSP","HSE","HSD"]) or \
                        (groupname == "NTR" and nter and resname != "PRO") or \
                        (groupname == "PNTR" and nter and resname == "PRO") or \
-                       (groupname in ["CTR", "CTN"] and cter):
+                       (groupname == "CTR" and cter) or \
+                       (groupname == "CTN" and cter == 2):
 
                         if group.method != 0:
                             if not water and type == 1:

@@ -58,10 +58,12 @@ def usage(rc):
     str = str + "        --nohopt      :  Do not perform hydrogen optimization\n"
     str = str + "        --nohdebump   :  Do not perform hydrogen debumping\n"
     str = str + "        --nowatopt    :  Do not perform water optimization\n"
-    str = str + "        --hbond       :  Print a list of hydrogen bonds to stdout\n "
+    str = str + "        --hbond       :  Print a list of hydrogen bonds to stdout\n"
     str = str + "        --assign-only :  Only assign charges and radii, but no\n"
-    str = str + "                         optimizations - effectively turns on the\n "
+    str = str + "                         optimizations - effectively turns on the\n"
     str = str + "                         nodebump, nohopt, nohdebump, and nowatopt flags\n"
+    str = str + "        --with-ph=<ph>:  Use propka to calculate pKas and apply them\n"
+    str = str + "                         to the molecule given the pH value.\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
     str = str + "    If no output-path is specified, the PQR file is\n"
@@ -70,7 +72,7 @@ def usage(rc):
     sys.stderr.write(str)
     sys.exit(rc)
 
-def printHeader(atomlist, reslist, charge, ff, warnings):
+def printHeader(atomlist, reslist, charge, ff, warnings, ph):
     """
         Print the header for the PQR file
 
@@ -82,6 +84,7 @@ def printHeader(atomlist, reslist, charge, ff, warnings):
             charge:   The total charge on the protein (float)
             ff:       The forcefield name (string)
             warnings: A list of warnings generated from routines (list)
+            ph:       Value of ph, indicates propka used (float)
         Returns
             header:   The header for the PQR file (string)
     """
@@ -89,6 +92,10 @@ def printHeader(atomlist, reslist, charge, ff, warnings):
     header = header + "REMARK   1\n"
     header = header + "REMARK   1 Forcefield Used: %s\n" % ff
     header = header + "REMARK   1\n"
+    
+    if ph != None:
+        header = header + "REMARK   1 pKas calculated by propka and assigned using pH %.2f\n" % ph
+        header = header + "REMARK   1\n"
 
     for warning in warnings:
         header = header + "REMARK   5 " + warning 
@@ -116,25 +123,35 @@ def printHeader(atomlist, reslist, charge, ff, warnings):
 
     return header
   
-def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
+def runPDB2PQR(pdblist, ff, options):
     """
         Run the PDB2PQR Suite
 
         Parameters
             pdblist: The list of objects that was read from the PDB file
                      given as input (list)
-            verbose: When 1, script will print information to stdout
-                     When 0, no detailed information will be printed (int)
             ff:      The name of the forcefield (string)
-            debump:  When 1, debump heavy atoms (int)
-            hopt:    When 1, run hydrogen optimization (int)
-            hdebump: When 1, debump hydrogens (int)
-            watopt:  When 1, optimize water hydrogens (int)
+            options: A dictionary of PDB2PQR options, including:
+                     verbose: When 1, script will print information to stdout
+                              When 0, no detailed information will be printed (int)
+                     debump:  When 1, debump heavy atoms (int)
+                     hopt:    When 1, run hydrogen optimization (int)
+                     hdebump: When 1, debump hydrogens (int)
+                     watopt:  When 1, optimize water hydrogens (int)
+                     ph:      The desired ph of the system (float)
         Returns
             header:  The PQR file header (string)
             lines:   The PQR file atoms (list)
     """
+    ph = None
     lines = []
+    if "verbose" in options: verbose = 1
+    else: verbose = 0
+
+    if "ph" in options:
+        pka = 1
+        ph = options["ph"]
+    else: pka = 0
     
     start = time.time()
 
@@ -164,33 +181,27 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
     
     myRoutines.findMissingHeavy()
 
-    if debump:
+    if "debump" in options:
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein()  
 
-    ### DEVELOPMENTAL ###
-
-    #myRoutines.runPROPKA(10.0, ff)
-    myRoutines.runPROPKA(3.0, ff)
-    pkaflag = 1
-    #pkaflag = 0
-
-    ### END DEVELOPMENTAL ###
+    if pka:
+        myRoutines.runPROPKA(ph, ff)
 
     myRoutines.addHydrogens()
 
-    if hopt:
-        myRoutines.optimizeHydrogens(pkaflag)
+    if "hopt" in options:
+        myRoutines.optimizeHydrogens(pka)
 
-    if watopt:
-        if not hopt: myRoutines.optimizeHydrogens()
+    if "watopt" in options:
+        if "hopt" not in options: myRoutines.optimizeHydrogens(pka)
         myRoutines.optimizeWaters()
     else:
         myRoutines.randomizeWaters()
 
     myRoutines.convertPlacenames()
         
-    if hdebump:
+    if "hdebump" in options:
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein()
 
@@ -199,11 +210,11 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
     reslist, charge = myProtein.getCharge()
 
-    header = printHeader(misslist, reslist, charge, ff, myRoutines.getWarnings())
+    header = printHeader(misslist, reslist, charge, ff, myRoutines.getWarnings(), ph)
         
     lines = myProtein.printAtoms(hitlist)
 
-    if hbond:
+    if "hbond" in options:
         myRoutines.printHbond()
     
     if verbose:
@@ -215,7 +226,7 @@ def mainCommand():
         Main driver for running program from the command line.
     """
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt","hbond", "assign-only"]
+    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt","hbond", "assign-only","with-ph="]
 
     try: opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
     except getopt.GetoptError, details:
@@ -226,35 +237,32 @@ def mainCommand():
         sys.stderr.write("Incorrect number (%d) of arguments!\n" % len(args))
         usage(2)
 
-    verbose = 0
+    options = {"debump":1,"hopt":1,"hdebump":1,"watopt":1}
+ 
     outpath = None
     ff = None
-    debump = 1
-    hopt = 1
-    hdebump = 1
-    watopt = 1
-    hbond = 0
     for o,a in opts:
         if o in ("-v","--verbose"):
-            verbose = 1
+            options["verbose"] = 1
         elif o in ("-h","--help"):
             usage(2)
             sys.exit()
-        elif o == "--nodebump":
-            debump = 0
-        elif o == "--nohopt":
-            hopt = 0
-        elif o == "--nohdebump":
-            hdebump = 0
-        elif o == "--nowatopt":
-            watopt = 0
-        elif o == "--hbond":
-            hbond = 1
+        elif o == "--nodebump":  del options["debump"]
+        elif o == "--nohopt":    del options["hopt"]
+        elif o == "--nohdebump": del options["hdebump"]
+        elif o == "--nowatopt":  del options["watopt"]
+        elif o == "--hbond":     options["hbond"] = 1
+        elif o == "--with-ph":
+            try:
+                options["ph"] = float(a)
+            except ValueError:
+                text = "%s is not a valid pH!" % a
+                raise ValueError, text
         elif o == "--assign-only":
-            debump = 0
-            hopt = 0
-            hdebump = 0
-            watopt = 0
+            del options["debump"]
+            del options["hopt"]
+            del options["hdebump"]
+            del options["watopt"]
         elif o == "--ff":
             if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE"]:
                 ff = string.lower(a)
@@ -283,11 +291,11 @@ def mainCommand():
         os.remove(path)
         sys.exit(2)
 
-    if len(errlist) != 0 and verbose:
+    if len(errlist) != 0 and "verbose" in options:
         print "Warning: %s is a non-standard PDB file.\n" % path
         print errlist
 
-    header, lines = runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond)
+    header, lines = runPDB2PQR(pdblist, ff, options)
 
     if len(args) == 2:
         outpath = args[1]
@@ -311,27 +319,31 @@ def mainCGI():
     cgitb.enable()
     form = cgi.FieldStorage()
 
-    ff = form["FF"].value
-    debump = 0
-    hopt = 0
+    options = {}
+ 
+    ff = form["FF"].value 
     input = 0
-    hdebump = 0
-    watopt = 0
-    if form.has_key("DEBUMP"):
-        debump = 1
-    if form.has_key("HOPT"):
-        hopt = 1
-    if form.has_key("INPUT"):
-        input = 1
-    if form.has_key("HDEBUMP"):
-        hdebump = 1
-    if form.has_key("WATOPT"):
-        watopt = 1 
+  
+    if form.has_key("DEBUMP"): options["debump"] = 1
+    if form.has_key("HOPT"): options["hopt"] = 1
+    if form.has_key("HDEBUMP"): options["hdebump"] = 1
+    if form.has_key("WATOPT"): options["watopt"] = 1
+    if form.has_key("PH"):
+        try:
+            ph = float(form["PH"].value)
+            options["ph"] = ph
+        except ValueError:
+             text = "The entered pH of %.2f is invalid!" % form["PH"].value
+             print "Content-type: text/html\n"
+             print text
+             sys.exit(2)
     if form.has_key("PDBID"):
         file = getFile(form["PDBID"].value)
     elif form.has_key("PDB"):
         file = StringIO(form["PDB"].value)
-
+    if form.has_key("INPUT"):
+        input = 1
+        
     pdblist, errlist = readPDB(file)    
     if len(pdblist) == 0 and len(errlist) == 0:
         text = "Unable to find PDB file - Please make sure this is "
@@ -339,7 +351,7 @@ def mainCGI():
         print "Content-type: text/html\n"
         print text
         sys.exit(2)
-    elif len(pdblist) > 8000 and (watopt or hopt):
+    elif len(pdblist) > 8000 and ("watopt" in options or "hopt" in options):
         text = "<HTML><HEAD>"
         text += "<TITLE>PDB2PQR Error</title>"
         text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
@@ -361,7 +373,7 @@ def mainCGI():
         name = setID(starttime)
  
         pqrpath = startServer(name)
-        header, lines = runPDB2PQR(pdblist, 0, ff, debump, hopt, hdebump, watopt, 0)
+        header, lines = runPDB2PQR(pdblist, ff, options)
         file = open(pqrpath, "w")
         file.write(header)
         for line in lines:
@@ -391,8 +403,6 @@ if __name__ == "__main__":
     """ Determine if called from command line or CGI """
     
     if not os.environ.has_key("REQUEST_METHOD"):
-        #import profile
-        #profile.run("mainCommand()")
         mainCommand()    
     else:
         mainCGI()

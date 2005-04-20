@@ -15,7 +15,7 @@
 __date__ = "8 March 2004"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
-HYDROGENFILE = "../dat/HYDROGENS.DAT"
+HYDROGENFILE = "dat/HYDROGENS.DAT"
 HACCEPTOR=[0,1,1,0,1,1,0,1,0,1,0,0,1,0]
 HDONOR   =[0,0,1,1,1,0,1,0,1,0,0,0,1,1]
 HYDROGEN_DIST = 6.0

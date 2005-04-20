@@ -1440,8 +1440,8 @@ class Routines:
         try:
             from propka.propkalib import runPKA
         except ImportError:
-            print "Couldn't find propka - possibly not installed?!"
-            sys.exit()
+            text = "Couldn't find propka - possibly not installed?!"
+            raise ValueError, text
 
         txt = ""
         for atom in self.protein.getAtoms():

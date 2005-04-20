@@ -21,16 +21,21 @@ import sys
 import getopt
 import os
 import time
-from pdb import *
-from utilities import *
-from structures import *
-from definitions import *
-from forcefield import *
-from routines import *
-from protein import *
+from src import pdb
+from src import utilities
+from src import structures
+from src import routines
+from src import protein
+from src import server
+from src.pdb import *
+from src.utilities import *
+from src.structures import *
+from src.definitions import *
+from src.forcefield import *
+from src.routines import *
+from src.protein import *
+from src.server import *
 from StringIO import *
-from server import *
-
 
 def usage(rc):
     """

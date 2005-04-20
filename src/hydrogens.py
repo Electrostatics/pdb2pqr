@@ -787,7 +787,7 @@ class hydrogenRoutines:
         allatoms = self.findAmbiguities(1,0)
         closeatoms = {}
         overallenergy = 0.0
-
+        
         # Step 1: Get list of water residues
 
         waters = []
@@ -1294,6 +1294,7 @@ class hydrogenRoutines:
                            appropriately
                 pkaflag:   If 1, ignore all protonation ambiguities.
         """
+        self.routines.setDonorsAndAcceptors()
         allatoms = []
         hydrodefs = self.hydrodefs
         for chain in self.protein.getChains():

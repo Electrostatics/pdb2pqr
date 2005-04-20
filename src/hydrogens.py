@@ -784,7 +784,7 @@ class hydrogenRoutines:
             all possible 5 degree increments, simply choose a random
             angle.
         """
-        allatoms = self.findAmbiguities(1)
+        allatoms = self.findAmbiguities(1,0)
         closeatoms = {}
         overallenergy = 0.0
 
@@ -1016,7 +1016,7 @@ class hydrogenRoutines:
         """
             Optimize the waters found in a protein
         """
-        allatoms = self.findAmbiguities(1)
+        allatoms = self.findAmbiguities(1,0)
         closeatoms = {}
         overallenergy = 0.0
 

@@ -144,7 +144,7 @@ class hydrogenRoutines:
             states.append([confs[0]])
             states.append([confs[1]])
             states.append([confs[0], confs[1]])
-        elif type == 13: #ASH/GLH
+        elif type == 13: #ASH/GLH/CTR
             states.append([confs[0]]) # H on O1 cis
             states.append([confs[1]]) # H on O1 trans
             states.append([confs[2]]) # H on O2 cis
@@ -1314,7 +1314,7 @@ class hydrogenRoutines:
                        (groupname == "HISFLIP" and resname in ["HIP","HID","HIE","HSP","HSE","HSD"]) or \
                        (groupname == "NTR" and nter and resname != "PRO") or \
                        (groupname == "PNTR" and nter and resname == "PRO") or \
-                       (groupname == "CTR" and cter):
+                       (groupname in ["CTR", "CTN"] and cter):
 
                         if group.method != 0:
                             if not water and type == 1:

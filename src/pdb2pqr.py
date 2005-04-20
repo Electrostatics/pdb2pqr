@@ -170,9 +170,10 @@ def runPDB2PQR(pdblist, verbose, ff, debump, hopt, hdebump, watopt, hbond):
 
     ### DEVELOPMENTAL ###
 
-    #myRoutines.runPROPKA(12.0, ff)
+    #myRoutines.runPROPKA(10.0, ff)
     myRoutines.runPROPKA(3.0, ff)
     pkaflag = 1
+    #pkaflag = 0
 
     ### END DEVELOPMENTAL ###
 

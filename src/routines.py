@@ -31,6 +31,7 @@ NTERM3_COORDS = [-24.869, 48.846, -22.770]
 PEP_TRANS_N = [-1.252,1.877,0.883]
 PEP_TRANS_CA = [-2.313,2.784,1.023]
 OXT_COORDS = [-1.529,1.858,0.695]
+CTERM_COORDS = [-2.998, 1.241, -0.768]
 AAS = ["ALA","ARG","ASH","ASN","ASP","CYS","CYM","GLN","GLU","GLH","GLY",\
        "HIS","HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","LYN",\
        "MET","PHE","PRO","SER","THR","TRP","TYR","TYM","VAL"]
@@ -253,7 +254,7 @@ class Routines:
                 # Set the appropriate termini 
           
                 if res1type == 1 and i == 0:
-                    residue1.set("isNterm",1)
+                    residue1.set("isNterm",3)
                 elif res1type == 1 and residue2.get("name") == "NME":
                     pass
                 elif res1type == 1 and res2type != 1 and residue2.get("name") not in ["ACE","HMS"]:
@@ -321,7 +322,7 @@ class Routines:
                         if atom !=  None:
                             residue.renameAtom("CD", "CD1")
            
-                    if residue.get("isCterm") == 1:
+                    if residue.get("isCterm"):
                         for atomname in ["OT1","O\'"]:
                             atom = residue.getAtom(atomname)
                             if atom != None:
@@ -336,7 +337,7 @@ class Routines:
                                 self.write("\n")
                                 self.write("Renaming %s to OXT\n" % atomname,1)
                                 
-                    elif residue.get("isNterm") == 1:
+                    elif residue.get("isNterm"):
                         if residue.getAtom("HT1") != None:
                             residue.renameAtom("HT1", "H")
                             self.write("\n")
@@ -450,7 +451,7 @@ class Routines:
                                 misscount += 1
                                 residue.addMissing(defname)
 
-                    if residue.get("isCterm") == 1:
+                    if residue.get("isCterm"):
                         atom = residue.getAtom("OXT")
                         if atom == None:
                             residue.addMissing("OXT")
@@ -621,47 +622,49 @@ class Routines:
                     for defatom in defresidue.get("atoms"):
                         refcoords = []
                         defcoords = []
-                        if not defatom.isHydrogen():
+                        if not defatom.isHydrogen(): continue
+                        defname = defatom.get("name")
+                        atom = residue.getAtom(defname)
+                        if atom != None: continue
+                        prevC = prevres.getAtom("C")
+
+                        # For most backbone Hs, use the previous C atom and this residue's
+                        #  N and CA atoms
+                        
+                        if defname == "H" and not residue.get("isNterm") and prevC != None:
+                            refcoords.append(prevC.getCoords())
+                            refcoords.append(residue.getAtom("N").getCoords())
+                            refcoords.append(residue.getAtom("CA").getCoords())
+                            defcoords = HYDRO_BONDCOORDS
+                            defatomcoords = HYDRO_COORDS
+                            newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                            residue.createAtom(defname, newcoords, "ATOM")
+                            residue.addDebumpAtom(residue.getAtom(defname))     
+                        elif residue.get("SSbonded") and defname == "HG":
                             pass
                         else:
-                            defname = defatom.get("name")
-                            atom = residue.getAtom(defname)
-                            if atom == None:
-                                prevC = prevres.getAtom("C")
-                                if defname == "H" and not residue.get("isNterm") and prevC != None:
-                                    refcoords.append(prevC.getCoords())
-                                    refcoords.append(residue.getAtom("N").getCoords())
-                                    refcoords.append(residue.getAtom("CA").getCoords())
-                                    defcoords = HYDRO_BONDCOORDS
-                                    defatomcoords = HYDRO_COORDS
-                                    newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
-                                    residue.createAtom(defname, newcoords, "ATOM")
-                                    residue.addDebumpAtom(residue.getAtom(defname))     
-                                elif residue.get("SSbonded") and defname == "HG":
-                                    pass
-                                else:
-                                    newcoords = self.rebuildMethyl(defname, residue, defresidue)
-                                    if newcoords != None:
-                                        residue.createAtom(defname, newcoords,"ATOM")
-                                        residue.addDebumpAtom(residue.getAtom(defname))
-                                        continue
-                                    bonds = defresidue.makeBondList(residue,defname)
-                                    if len(bonds) < REFATOM_SIZE:
-                                        error = "Not enough bonds to remake hydrogen in %s %i" % \
-                                                (name, residue.get("resSeq"))
-                                        raise ValueError, error
-                                    for i in range(REFATOM_SIZE):
-                                        refcoords.append(residue.getAtom(bonds[i]).getCoords())
-                                        defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
-                                    defatomcoords = defresidue.getAtom(defname).getCoords()
-                                    newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
-                                    residue.createAtom(defname, newcoords, "ATOM")
-                                    residue.addDebumpAtom(residue.getAtom(defname))
+                            newcoords = self.rebuildMethyl(defname, residue, defresidue)
+                            if newcoords != None:
+                                residue.createAtom(defname, newcoords,"ATOM")
+                                residue.addDebumpAtom(residue.getAtom(defname))
+                                continue
+                            bonds = defresidue.makeBondList(residue,defname)
+                            if len(bonds) < REFATOM_SIZE:
+                                error = "Not enough bonds to remake hydrogen in %s %i" % \
+                                        (name, residue.get("resSeq"))
+                                raise ValueError, error
+                            for i in range(REFATOM_SIZE):
+                                refcoords.append(residue.getAtom(bonds[i]).getCoords())
+                                defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
+                                defatomcoords = defresidue.getAtom(defname).getCoords()
+                            newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                            residue.createAtom(defname, newcoords, "ATOM")
+                            residue.addDebumpAtom(residue.getAtom(defname))
                                     
                     # Add N-Terminal Hydrogens if Necessary
-
-                    if residue.get("isNterm") and "H2" not in residue.get("map") and \
-                           "H3" not in residue.get("map"): 
+                    nterm = residue.get("isNterm")
+                    cterm = residue.get("isCterm")
+                    if nterm > 0:
                         refcoords = []
                         refcoords.append(residue.getAtom("C").getCoords())
                         refcoords.append(residue.getAtom("N").getCoords())
@@ -671,16 +674,32 @@ class Routines:
                             refcoords.append(residue.getAtom("HA").getCoords())
                         defcoords = NTERM_COORDS
 
-                        defatomcoords = NTERM2_COORDS
+                        if nterm >= 2 and "H2" not in residue.get("map"):
+                            defatomcoords = NTERM2_COORDS
+                            newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                            residue.createAtom("H2", newcoords, "ATOM")
+                            residue.addDebumpAtom(residue.getAtom("H2"))
+                        
+                        if nterm == 3 and "H3" not in residue.get("map"):
+                            defatomcoords = NTERM3_COORDS
+                            newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                            residue.createAtom("H3", newcoords, "ATOM")
+                            residue.addDebumpAtom(residue.getAtom("H3"))
+                            
+                    elif cterm == 2: # Neutral C-terminus
+                        refcoords = []
+                        defcoords = []
+                        refcoords.append(residue.getAtom("C").getCoords())
+                        refcoords.append(residue.getAtom("O").getCoords())
+                        refcoords.append(residue.getAtom("OXT").getCoords())
+                        defcoords.append(defresidue.getAtom("C").getCoords())
+                        defcoords.append(defresidue.getAtom("O").getCoords())
+                        defcoords.append(OXT_COORDS)
+                        defatomcoords = CTERM_COORDS
                         newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
-                        residue.createAtom("H2", newcoords, "ATOM")
-                        residue.addDebumpAtom(residue.getAtom("H2"))
-  
-                        defatomcoords = NTERM3_COORDS
-                        newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
-                        residue.createAtom("H3", newcoords, "ATOM")
-                        residue.addDebumpAtom(residue.getAtom("H3"))
-
+                        residue.createAtom("HO", newcoords, "ATOM")
+                        residue.addDebumpAtom(residue.getAtom("HO"))
+         
                 elif type == 4:
                     name = residue.get("naname")
                     defresidue = self.nadef.getResidue(name)
@@ -690,22 +709,20 @@ class Routines:
                         if not defatom.isHydrogen(): continue
                         defname = defatom.get("name")
                         atom = residue.getAtom(defname)
-                        if atom == None:
-                            bonds = defresidue.makeBondList(residue,defname)
-                            if len(bonds) < REFATOM_SIZE:
-                                error = "Not enough bonds to remake hydrogen in %s %i" % \
-                                        (name, residue.get("resSeq"))
-                                raise ValueError, error
-                            for i in range(REFATOM_SIZE):
-                                refcoords.append(residue.getAtom(bonds[i]).getCoords())
-                                defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
-                            defatomcoords = defresidue.getAtom(defname).getCoords()
-                            newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
-                            residue.createAtom(defname, newcoords, "ATOM")
-                            residue.addDebumpAtom(residue.getAtom(defname))
+                        if atom != None: continue
+                        bonds = defresidue.makeBondList(residue,defname)
+                        if len(bonds) < REFATOM_SIZE:
+                            error = "Not enough bonds to remake hydrogen in %s %i" % \
+                                    (name, residue.get("resSeq"))
+                            raise ValueError, error
+                        for i in range(REFATOM_SIZE):
+                            refcoords.append(residue.getAtom(bonds[i]).getCoords())
+                            defcoords.append(defresidue.getAtom(bonds[i]).getCoords())
+                        defatomcoords = defresidue.getAtom(defname).getCoords()
+                        newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
+                        residue.createAtom(defname, newcoords, "ATOM")
+                        residue.addDebumpAtom(residue.getAtom(defname))
                         
-                else:
-                    pass
                 prevres = residue
         self.write("Done.\n")
 
@@ -985,7 +1002,7 @@ class Routines:
              all nearby atoms so the entire protein need not be searched for
              every new dihedral angle.
         """
-        self.write("Checking if we must debump any residues...\n")
+        self.write("Checking if we must debump any residues... ")
         self.createCells()
         cells = self.cells  
         bumpresidues = []
@@ -1414,13 +1431,12 @@ class Routines:
         """
             Run PROPKA on the current protein, setting protonation states to
             the correct values
-
-            FOR NOW ASSUME THAT PROPKA IS INSTALLED
-
+            
             Parameters
                ph:  The desired pH of the system
                ff:  The forcefield name to be used
         """
+        self.write("Running propka... ")
         linelen = 70 # This should go elsewhere
         try:
             from propka.propkalib import runPKA
@@ -1459,30 +1475,55 @@ class Routines:
             words = string.split(pka)
             key = "%s %s" % (words[0], words[1])
             pkadic[key] = float(words[2])
-
+            
         if len(pkadic) == 0: return
 
-        # Now apply each pka to the residue at hand
-
+        # Now apply each pka to the appropriate residue
         warnings = []
-
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
                 resname = residue.name
-                key = "%s %s" % (resname, residue.resSeq)
+                resnum = residue.resSeq
+               
+                if residue.get("isNterm"):
+                    key = "N+ %i" % resnum
+                    if key in pkadic: 
+                         value = pkadic[key]
+                         del pkadic[key]
+                         if ph >= value:
+                             if ff in ["amber","charmm"]:
+                                 warn = ("N-terminal %s %i" \
+                                         % (resname, resnum), "neutral")
+                                 warnings.append(warn)
+                             else:
+                                 residue.set("isNterm",2)
+
+                if residue.get("isCterm"):
+                    key = "C- %i" % resnum
+                    if key in pkadic:
+                         value = pkadic[key]
+                         del pkadic[key]
+                         if ph < value:
+                             if ff in ["amber","charmm"]:
+                                 warn = ("C-terminal %s %i" \
+                                         % (resname, resnum), "neutral")
+                                 warnings.append(warn)
+                             else:
+                                 residue.set("isCterm",2)
+
+                key = "%s %s" % (resname, resnum)
                 if key in pkadic:
                     value = pkadic[key]
-                    print resname, residue.resSeq, value
                     del pkadic[key]
 
                     if resname == "ARG" and ph >= value:
-                        warn = ("ARG %i" % residue.resSeq, "neutral")
+                        warn = ("ARG %i" % resnum, "neutral")
                         warnings.append(warn)
                     elif resname == "ASP" and ph < value:
                         residue.renameResidue("ASH")
                     elif resname == "CYS" and ph >= value:
                         if ff == "charmm":
-                            warn = ("CYS %i" % residue.resSeq, "negative")
+                            warn = ("CYS %i" % resnum, "negative")
                             warnings.append(warn)
                         else:
                             residue.renameResidue("CYM")
@@ -1492,22 +1533,20 @@ class Routines:
                         residue.renameResidue("HSN")                
                     elif resname == "LYS" and ph >= value:
                         if ff == "charmm":
-                            warn = ("LYS %i" % residue.resSeq, "neutral")
+                            warn = ("LYS %i" % resnum, "neutral")
                             warnings.append(warn)
                         elif ff == "amber" and residue.get("isCterm"):
-                            warn = ("LYS %i" % residue.resSeq, "neutral at C-Terminal")
+                            warn = ("LYS %i" % resnum, "neutral at C-Terminal")
                             warnings.append(warn)
                         else:
                             residue.renameResidue("LYN")
                     elif resname == "TYR" and ph >= value:
                         if ff in ["charmm", "amber"]:
-                            warn = ("TYR %i" % residue.resSeq, "negative")
+                            warn = ("TYR %i" % resnum, "negative")
                             warnings.append(warn)
                         else:
                             residue.renameResidue("TYM")
-                    
-        print pkadic
-
+                
         if len(warnings) > 0:
             init = "WARNING: Propka determined the following residues to be\n"
             self.warnings.append(init)
@@ -1522,3 +1561,14 @@ class Routines:
                 text = "             %s (%s)\n" % (warn[0], warn[1])
                 self.warnings.append(text)
    
+        if len(pkadic) > 0:
+            warn = "         PDB2PQR could not identify the following residues\n"
+            self.warnings.append(warn)
+            warn = "         and residue numbers as returned by propka:\n"
+            self.warnings.append(warn)
+            self.warnings.append("\n")
+            for item in pkadic:
+                text = "             %s\n" % item
+                self.warnings.append(text)
+
+        self.write("Done.\n")

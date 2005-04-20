@@ -1436,7 +1436,7 @@ class Routines:
                ph:  The desired pH of the system
                ff:  The forcefield name to be used
         """
-        self.write("Running propka... ")
+        self.write("Running propka and applying at pH %.2f... " % ph)
         linelen = 70 # This should go elsewhere
         try:
             from propka.propkalib import runPKA
@@ -1488,29 +1488,29 @@ class Routines:
                 if residue.get("isNterm"):
                     key = "N+ %i" % resnum
                     if key in pkadic: 
-                         value = pkadic[key]
-                         del pkadic[key]
-                         if ph >= value:
-                             if ff in ["amber","charmm"]:
-                                 warn = ("N-terminal %s %i" \
-                                         % (resname, resnum), "neutral")
-                                 warnings.append(warn)
-                             else:
-                                 residue.set("isNterm",2)
-
+                        value = pkadic[key]
+                        del pkadic[key]
+                        if ph >= value:
+                            if ff in ["amber","charmm"]:
+                                warn = ("N-terminal %s %i" \
+                                        % (resname, resnum), "neutral")
+                                warnings.append(warn)
+                            else:
+                                residue.set("isNterm",2)
+                                
                 if residue.get("isCterm"):
                     key = "C- %i" % resnum
                     if key in pkadic:
-                         value = pkadic[key]
-                         del pkadic[key]
-                         if ph < value:
-                             if ff in ["amber","charmm"]:
-                                 warn = ("C-terminal %s %i" \
-                                         % (resname, resnum), "neutral")
-                                 warnings.append(warn)
-                             else:
-                                 residue.set("isCterm",2)
-
+                        value = pkadic[key]
+                        del pkadic[key]
+                        if ph < value:
+                            if ff in ["amber","charmm"]:
+                                warn = ("C-terminal %s %i" \
+                                        % (resname, resnum), "neutral")
+                                warnings.append(warn)
+                            else:
+                                residue.set("isCterm",2)
+                                
                 key = "%s %s" % (resname, resnum)
                 if key in pkadic:
                     value = pkadic[key]

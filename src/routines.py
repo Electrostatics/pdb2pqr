@@ -1383,7 +1383,6 @@ class Routines:
         self.calculateChiangles()
         myhydRoutines = hydrogenRoutines(self)
         myhydRoutines.readHydrogenDefinition()
-        self.setDonorsAndAcceptors()
         myhydRoutines.optimizeHydrogens(pkaflag)
 
     def optimizeWaters(self):

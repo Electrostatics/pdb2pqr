@@ -182,7 +182,7 @@ class Residue:
                 SSbonded:      1 if the residue has a SS bond, 0 otherwise
                 SSbondpartner: The residue of the bond partner
                 type:          The type associated with this residue
-                isNterm:       1 if the residue is the N-Terminus, 0 otherwise
+                isNterm:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
                 isCterm:       1 if the residue is the C-Terminus, 0 otherwise
                 missing:     List of missing atoms of the residue
             Returns
@@ -211,7 +211,7 @@ class Residue:
                 SSbonded:      1 if the residue has a SS bond, 0 otherwise
                 SSbondpartner: The residue of the bond partner
                 type:          The type associated with this residue
-                isNterm:       1 if the residue is the N-Terminus, 0 otherwise
+                isNterm:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
                 isCterm:       1 if the residue is the C-Terminus, 0 otherwise
                 isDirty:       1 if the residue is not missing atoms,
                                0 otherwise
@@ -320,7 +320,7 @@ class Residue:
             defatom = defresidue.getAtom(atomname)
             atom.set("intrabonds",[])
             if defatom == None:
-                if self.isCterm and atomname == "OXT":
+                if self.isCterm and atomname in ["HO","OXT"]:
                     continue
                 elif self.isNterm and atomname in ["H2","H3"]:
                     continue

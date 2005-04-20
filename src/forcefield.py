@@ -193,9 +193,9 @@ class Forcefield:
                 elif atomname == "OD2": atomname = "OD1"
             elif "HD2" in residue.get("map"): resname = "ASH"
                
-        if residue.get("isCterm") == 1:
+        if residue.get("isCterm"):
             resname = "C" + resname
-        elif residue.get("isNterm") == 1:
+        elif residue.get("isNterm"):
             resname = "N" + resname
 
         # Atom Substitutions
@@ -228,19 +228,30 @@ class Forcefield:
 
         # Terminal/Water Substitutions
 
-        if residue.get("isNterm") and resname != "ACE":
+        nterm = residue.get("isNterm")
+        cterm = residue.get("isCterm")
+        if nterm and resname != "ACE":
             if resname == "PRO":
                 resname = "PR+"
                 if atomname == "H2": atomname = "HN1"
                 elif atomname == "H3": atomname = "HN2"
-            elif atomname in ["N","H","H2","H3","CA","HA","C","O"]:
-                resname = "BK+"
+            elif nterm == 2: # Neutral
+                if atomname in ["N","H","H2","CA","HA","C","O"]:
+                    resname = "BKN"
                 if atomname == "H": atomname = "H1"
-        elif residue.get("isCterm"):
-            if atomname in ["N","H","HA","CA","C","O","OXT"]:
+            elif nterm == 3: # Positive
+                if atomname in ["N","H","H2","H3","CA","HA","C","O"]:
+                    resname = "BK+"
+                if atomname == "H": atomname = "H1"
+        elif cterm:
+            if atomname == "O": atomname = "O1"
+            elif atomname == "OXT": atomname = "O2"
+            if cterm == 1 and atomname in ["N","H","HA","CA","C","O1","O2"]:
                 resname = "BK-"
-                if atomname == "O": atomname = "O1"
-                elif atomname == "OXT": atomname = "O2"
+            elif cterm == 2 and atomname in ["N","H","HA","CA","C","O1","O2","HO"]:
+                if atomname == "HO": atomname = "H2"
+                resname = "BKC"
+               
 
         elif residue.get("type") == 3:
             resname = "H2O"

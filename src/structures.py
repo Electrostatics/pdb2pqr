@@ -326,7 +326,9 @@ class Residue:
                     continue
                 elif self.name == "GLH" and atomname == "HE1": continue
                 elif self.name == "ASH" and atomname == "HD1": continue
+                elif self.name == "HSN" and atomname == "HE2": continue
                 else:
+                    print str(atom)
                     raise ValueError, "Atom %s not found in updateIntraBonds!" % atomname
             for bondatomname in defatom.get("intrabonds"):
                 if self.getAtom(bondatomname):
@@ -482,11 +484,11 @@ class Residue:
             Rename a given residue
 
             Parameters
-                name:  The new name of the residue
+                name:       The new name of the residue
         """
         self.name = name
         for atom in self.atoms:
-            atom.resName = name
+            atom.resName = name     
         
 class Atom(ATOM):
     """

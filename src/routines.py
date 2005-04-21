@@ -625,7 +625,7 @@ class Routines:
                         if not defatom.isHydrogen(): continue
                         defname = defatom.get("name")
                         atom = residue.getAtom(defname)
-                        if atom != None: continue
+                        if atom != None: continue 
                         prevC = prevres.getAtom("C")
 
                         # For most backbone Hs, use the previous C atom and this residue's
@@ -1514,7 +1514,7 @@ class Routines:
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
-
+                  
                     if resname == "ARG" and ph >= value:
                         warn = ("ARG %i" % resnum, "neutral")
                         warnings.append(warn)
@@ -1529,6 +1529,7 @@ class Routines:
                     elif resname == "GLU" and ph < value:
                         residue.renameResidue("GLH")
                     elif resname == "HIS" and ph >= value:
+                        if "HE2" in residue.map: residue.removeAtom("HE2")
                         residue.renameResidue("HSN")                
                     elif resname == "LYS" and ph >= value:
                         if ff == "charmm":
@@ -1538,6 +1539,8 @@ class Routines:
                             warn = ("LYS %i" % resnum, "neutral at C-Terminal")
                             warnings.append(warn)
                         else:
+                            if "HZ1" in residue.map: # If already there remove
+                                residue.removeAtom("HZ1")
                             residue.renameResidue("LYN")
                     elif resname == "TYR" and ph >= value:
                         if ff in ["charmm", "amber"]:

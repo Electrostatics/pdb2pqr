@@ -84,7 +84,7 @@ class hydrogenRoutines:
             Parameters
                 routines: The parent routines object (Routines)             
         """
-        self.hdebug =0
+        self.hdebug = 0
         self.routines = routines
         self.protein = routines.protein
         self.hydrodefs = []
@@ -320,7 +320,7 @@ class hydrogenRoutines:
                     residue = getattr(amb,"residue")
                     hdef = getattr(amb,"hdef")
                     type = hdef.type
-                    if type in [1,4,3,10,13]:
+                    if type in [1,4,3,10,13,14]:
                         states = self.getstates(amb)
                         statemap[id] = states
                         self.switchstate(states, amb, 0)
@@ -388,7 +388,6 @@ class hydrogenRoutines:
 
                     # Evaluate the change
 
-                    #newenergy = energy - oldenergy + self.getHbondEnergy(clusteratoms, compatoms, residue)
                     newenergy = energy - oldenergy + self.getHbondEnergy(amb)
                     ediff = newenergy - energy
 

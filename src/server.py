@@ -43,6 +43,9 @@ LOADPATH    = "/proc/loadavg"
     this directory. """
 LOGPATH     = "/home/todd/public_html/pdb2pqr/log/pdb2pqr.log"
 
+""" SET IF HASFORTUNE IS PRESENT """
+HASFORTUNE  = 1
+
 def setID(time):
     """
         Given a floating point time.time(), generate an ID.
@@ -126,6 +129,21 @@ def cleanTmpdir():
             except OSError: pass
             newcount += 1
 
+def getQuote():
+    """
+        Get a quote to display for the refresh page.
+        Uses fortune to generate a quote.
+        
+        Returns:
+            quote:   The quote to display (str)
+    """
+    fortune = os.popen("/usr/games/fortune")
+    quote = fortune.read()
+    quote = string.replace(quote, "\n", "<BR>")
+    quote = string.replace(quote, "\t", "&nbsp;"*5)
+    quote = "%s<P>" % quote
+    return quote
+
 def printProgress(name, refreshname, reftime, starttime):
     """
         Print the progress of the server
@@ -163,6 +181,11 @@ def printProgress(name, refreshname, reftime, starttime):
 
     file.write("<font size=2>Server time:</font> <code>%s</code><BR>\n" % (time.asctime(time.localtime())))
     file.write("</blockquote>\n")
+    if HASFORTUNE:
+        file.write("Words of Wisdom:<P>\n")
+        file.write("<blockquote><code>")
+        file.write(getQuote())
+        file.write("</code></blockquote>")
     file.write("</BODY></HTML>")
     file.close()
 

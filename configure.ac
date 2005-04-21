@@ -137,6 +137,7 @@ esac
 AC_SUBST(PY_SHARED,[$PY_SHARED])
 AC_SUBST(PY_LDFLAGS,[$PY_LDFLAGS])
 AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
+AC_FORTUNES
 AC_MSG_RESULT([------------- end processing PDB2PQR configure options -----------])
 dnl ##########################################################################
 dnl 11. generate the makefiles

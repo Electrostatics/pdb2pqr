@@ -12,6 +12,7 @@ import string
 import os
 import sys
 import time
+import constants
 
 # GLOBAL SERVER VARIABLES
 
@@ -42,9 +43,6 @@ LOADPATH    = "/proc/loadavg"
     included.  The web server (i.e. Apache) MUST be able to write to
     this directory. """
 LOGPATH     = "/home/todd/public_html/pdb2pqr/log/pdb2pqr.log"
-
-""" SET IF HASFORTUNE IS PRESENT """
-HASFORTUNE  = 1
 
 def setID(time):
     """
@@ -129,15 +127,17 @@ def cleanTmpdir():
             except OSError: pass
             newcount += 1
 
-def getQuote():
+def getQuote(path):
     """
         Get a quote to display for the refresh page.
         Uses fortune to generate a quote.
-        
+
+        Parameters:
+            path:   The path to the fortune script (str)
         Returns:
             quote:   The quote to display (str)
     """
-    fortune = os.popen("/usr/games/fortune")
+    fortune = os.popen(path)
     quote = fortune.read()
     quote = string.replace(quote, "\n", "<BR>")
     quote = string.replace(quote, "\t", "&nbsp;"*5)
@@ -154,6 +154,7 @@ def printProgress(name, refreshname, reftime, starttime):
             reftime:     The length of time to set the refresh wait to (int)
             starttime:   The time as returned by time.time() that the run started (float)
     """
+    fortunePath = constants.getFortunePath()
     elapsedtime = time.time() - starttime + REFRESHTIME/2.0 # Add in time offset
     filename = "%s%s%s-tmp.html" % (LOCALPATH, TMPDIR, name)
     file = open(filename,"w")
@@ -181,10 +182,10 @@ def printProgress(name, refreshname, reftime, starttime):
 
     file.write("<font size=2>Server time:</font> <code>%s</code><BR>\n" % (time.asctime(time.localtime())))
     file.write("</blockquote>\n")
-    if HASFORTUNE:
+    if fortunePath != "":
         file.write("Words of Wisdom:<P>\n")
         file.write("<blockquote><code>")
-        file.write(getQuote())
+        file.write(getQuote(fortunePath))
         file.write("</code></blockquote>")
     file.write("</BODY></HTML>")
     file.close()

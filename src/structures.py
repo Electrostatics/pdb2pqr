@@ -538,14 +538,11 @@ class Atom(ATOM):
         self.hacceptor = 0
         self.cell = None
         
-    def __str__(self, nochain=1):
+    def __str__(self):
         """
             Returns a string of the new atom type.  Uses the ATOM string
             output but changes the first field to either by ATOM or
             HETATM as necessary.
-
-            Parameters
-                nochain: Do not print the chainID (int)
 
             Returns
                 out: String with ATOM/HETATM field set appropriately
@@ -557,8 +554,7 @@ class Atom(ATOM):
         charge = string.rjust(ffcharge, 7)[:7]
         radius = string.ljust(ffradius, 6)[:6]
         out = "%s%s %s %s" % (type, orig[6:-20], charge, radius)
-        if nochain:
-            out = "%s %s" % (out[:21], out[22:]) # Eliminate the chain ID
+        out = "%s %s" % (out[:21], out[22:]) # Eliminate the chain ID
         return out
 
     def get(self, name):

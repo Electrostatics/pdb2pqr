@@ -391,8 +391,8 @@ def mainCGI():
         file.close()
                 
         if input:
-            import inputgen
-            import psize
+            import src.inputgen
+            import src.psize
             method = "mg-auto"
             size = psize.Psize()
             size.parseInput(pqrpath)

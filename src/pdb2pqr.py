@@ -259,9 +259,12 @@ def mainCommand():
         elif o == "--hbond":     options["hbond"] = 1
         elif o == "--with-ph":
             try:
-                options["ph"] = float(a)
+                ph = float(a)
+                options["ph"] = ph
+                if ph < 0.0 or ph > 14.0: raise ValueError
             except ValueError:
-                text = "%s is not a valid pH!" % a
+                text = "%s is not a valid pH!  " % a
+                text += "Please choose a pH between 0.0 and 14.0."
                 raise ValueError, text
         elif o == "--assign-only":
             del options["debump"]
@@ -336,9 +339,11 @@ def mainCGI():
     if form.has_key("PROPKA"):
         try:
             ph = float(form["PH"].value)
+            if ph < 0.0 or ph > 14.0: raise ValueError
             options["ph"] = ph
         except ValueError:
-             text = "The entered pH of %.2f is invalid!" % form["PH"].value
+             text = "The entered pH of %s is invalid!  " % form["PH"].value
+             text += "Please choose a pH between 0.0 and 14.0."
              print "Content-type: text/html\n"
              print text
              sys.exit(2)

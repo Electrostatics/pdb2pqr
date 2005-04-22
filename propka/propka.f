@@ -3504,7 +3504,7 @@ C
        END DO
        DO ICYS=1,NCYS
          WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'CYS', LCYSRS(ICYS), SPACE1, LCYSCH(IHIS), PKACYS(ICYS), 
+     $   'CYS', LCYSRS(ICYS), SPACE1, LCYSCH(ICYS), PKACYS(ICYS), 
      $   "|end"
          I = I + 1
        END DO

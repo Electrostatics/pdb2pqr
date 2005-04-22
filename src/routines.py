@@ -1447,11 +1447,14 @@ class Routines:
         for atom in self.protein.getAtoms():
             if atom.isHydrogen() == 0:
                 atomtxt = str(atom)
+                # Add the chain ID back in if present
+                if atom.chainID != "":
+                    atomtxt = "%s%s%s" % (atomtxt[:21], atom.chainID, atomtxt[22:])
                 if len(atomtxt) + 1 != linelen:
                     print "Atom line length (%i) does not match constant (%i)!" % \
-                          ((len(atomtext) +1), linelen)
+                          ((len(atomtxt) +1), linelen)
                     sys.exit()
-                txt += "%s\n" % str(atom)
+                txt += "%s\n" % atomtxt
 
         # The length of the overall text/line length ratio should be
         # the number of atoms without remainder
@@ -1472,8 +1475,11 @@ class Routines:
         
         for pka in pkas:
             words = string.split(pka)
-            key = "%s %s" % (words[0], words[1])
-            pkadic[key] = float(words[2])
+            key = ""
+            for i in range(len(words) - 1):
+                key = "%s %s" % (key,words[i])
+            key = string.strip(key)
+            pkadic[key] = float(words[-1])
             
         if len(pkadic) == 0: return
 
@@ -1483,46 +1489,48 @@ class Routines:
             for residue in chain.get("residues"):
                 resname = residue.name
                 resnum = residue.resSeq
+                chainID = residue.chainID
                
                 if residue.get("isNterm"):
-                    key = "N+ %i" % resnum
+                    key = "N+ %i %s" % (resnum, chainID)
+                    key = string.strip(key)
                     if key in pkadic: 
                         value = pkadic[key]
                         del pkadic[key]
                         if ph >= value:
                             if ff in ["amber","charmm"]:
-                                warn = ("N-terminal %s %i" \
-                                        % (resname, resnum), "neutral")
+                                warn = ("N-terminal %s" % key, "neutral")
                                 warnings.append(warn)
                             else:
                                 residue.set("isNterm",2)
                                 
                 if residue.get("isCterm"):
-                    key = "C- %i" % resnum
+                    key = "C- %i %s" % (resnum, chainID)
+                    key = string.strip(key)
                     if key in pkadic:
                         value = pkadic[key]
                         del pkadic[key]
                         if ph < value:
                             if ff in ["amber","charmm"]:
-                                warn = ("C-terminal %s %i" \
-                                        % (resname, resnum), "neutral")
+                                warn = ("C-terminal %s" % key, "neutral")
                                 warnings.append(warn)
                             else:
                                 residue.set("isCterm",2)
                                 
-                key = "%s %s" % (resname, resnum)
+                key = "%s %i %s" % (resname, resnum, chainID)
+                key = string.strip(key)
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
                   
                     if resname == "ARG" and ph >= value:
-                        warn = ("ARG %i" % resnum, "neutral")
+                        warn = (key, "neutral")
                         warnings.append(warn)
                     elif resname == "ASP" and ph < value:
                         residue.renameResidue("ASH")
                     elif resname == "CYS" and ph >= value:
                         if ff == "charmm":
-                            warn = ("CYS %i" % resnum, "negative")
+                            warn = (key, "negative")
                             warnings.append(warn)
                         else:
                             residue.renameResidue("CYM")
@@ -1533,10 +1541,10 @@ class Routines:
                         residue.renameResidue("HSN")                
                     elif resname == "LYS" and ph >= value:
                         if ff == "charmm":
-                            warn = ("LYS %i" % resnum, "neutral")
+                            warn = (key, "neutral")
                             warnings.append(warn)
                         elif ff == "amber" and residue.get("isCterm"):
-                            warn = ("LYS %i" % resnum, "neutral at C-Terminal")
+                            warn = (key, "neutral at C-Terminal")
                             warnings.append(warn)
                         else:
                             if "HZ1" in residue.map: # If already there remove
@@ -1544,7 +1552,7 @@ class Routines:
                             residue.renameResidue("LYN")
                     elif resname == "TYR" and ph >= value:
                         if ff in ["charmm", "amber"]:
-                            warn = ("TYR %i" % resnum, "negative")
+                            warn = (key, "negative")
                             warnings.append(warn)
                         else:
                             residue.renameResidue("TYM")

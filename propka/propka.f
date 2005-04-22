@@ -28,14 +28,18 @@ C
      $           NAMPRT*3,
      $           TYPHIS*6,TYPCYS*6,TYPLYS*6,TYPTYR*6,
      $           TYPARG*6,
-     $           SPACE7*7, HYDRGN*1, SPAC60*60
+     $           SPACE7*7, HYDRGN*1, SPAC60*60,
+     $           SPACE1*1, CHAIN*1, LCARCH*1,
+     $           LTYRCH*1, LCYSCH*1, LARGCH*1,
+     $           LHISCH*1, LLYSCH*1
 C
        LOGICAL   CONV
 C
 C-PDB
        DIMENSION HEAD(100000),NAMATM(100000),
      $           NAMRES(100000),NUMRES(100000),
-     $           X(100000),Y(100000),Z(100000), 
+     $           X(100000),Y(100000),Z(100000),
+     $           CHAIN(100000),
 C-BACKBONE O=C-N-H
      $           NUMPRT(10000),NAMPRT(10000),
      $           XPRTON(10000),YPRTON(10000),ZPRTON(10000),
@@ -48,6 +52,7 @@ C-CARBOXYL
      $           LCARO1(1000),LCARO2(1000),LCARRS(1000),
      $           NSDCAR(1000),NBKCAR(1000),NCLCAR(1000),
      $           PK1CAR(1000),PK2CAR(1000),NHBCAR(1000),
+     $           LCARCH(1000),
 C-HIS
      $           XHISP1(1000),YHISP1(1000),ZHISP1(1000),
      $           XHISP2(1000),YHISP2(1000),ZHISP2(1000),
@@ -56,21 +61,22 @@ C-HIS
      $           TYPHIS(1000),PKAHIS(1000),
      $           NSDHIS(1000),NBKHIS(1000),NCLHIS(1000),
      $           PK1HIS(1000),PK2HIS(1000),NHBHIS(1000),
+     $           LHISCH(1000),
 C-CYS
      $           LCYSSG(1000),LCYSRS(1000),
      $           TYPCYS(1000),PKACYS(1000),
      $           NSDCYS(1000),NBKCYS(1000),NCLCYS(1000),
-     $           PK1CYS(1000),PK2CYS(1000),
+     $           PK1CYS(1000),PK2CYS(1000),LCYSCH(1000),
 C-TYR
      $           LTYROH(1000),LTYRRS(1000),
      $           TYPTYR(1000),PKATYR(1000),
      $           NSDTYR(1000),NBKTYR(1000),NCLTYR(1000),
-     $           PK1TYR(10000),PK2TYR(1000),
+     $           PK1TYR(1000),PK2TYR(1000),LTYRCH(1000),
 C-LYS
      $           LLYSNZ(1000),LLYSRS(1000),
      $           TYPLYS(1000),PKALYS(1000),
      $           NSDLYS(1000),NBKLYS(1000),NCLLYS(1000),
-     $           PK1LYS(1000),PK2LYS(1000),
+     $           PK1LYS(1000),PK2LYS(1000),LLYSCH(1000),
 C-ARG
      $           XARGP1(1000),YARGP1(1000),ZARGP1(1000),
      $           XARGP2(1000),YARGP2(1000),ZARGP2(1000),
@@ -81,7 +87,7 @@ C-ARG
      $           LARGCD(1000),LARGCZ(1000),LARGRS(1000),
      $           TYPARG(1000),PKAARG(1000),
      $           NSDARG(1000),NBKARG(1000),NCLARG(1000),
-     $           PK1ARG(1000),PK2ARG(1000),
+     $           PK1ARG(1000),PK2ARG(1000),LARGCH(1000),
 C
 C -NONE PKA GROUPS-
 C-GLN
@@ -150,9 +156,9 @@ C
        LINELEN=70
        DO I = 1, NATOM
          LINE=PDB(((I-1)*LINELEN)+1:(I*LINELEN)+1)
-         READ(LINE,'(A6,I5,A5,A1,A3,A2,I4,A4,F8.3,F8.3,F8.3)') 
+         READ(LINE,'(A6,I5,A5,A1,A3,A1,A1,I4,A4,F8.3,F8.3,F8.3)') 
      $              HEAD(I), NUMATM, NAMATM(I), AORB,
-     $              NAMRES(I), SPACE2, 
+     $              NAMRES(I), SPACE1, CHAIN(I), 
      $              NUMRES(I), SPACE4, X(I), Y(I), Z(I)
 C
          IF(NAMRES(I).EQ.'ASP' .OR. NAMRES(I).EQ.'GLU') THEN
@@ -160,6 +166,7 @@ C
              NCAR=NCAR+1
              LCARRS(NCAR)=NUMRES(I)
              NAMCAR(NCAR)=NAMRES(I)
+             LCARCH(NCAR)=CHAIN(I)
            END IF
            IF(NAMATM(I).EQ.'  OD1' .OR. NAMATM(I).EQ.'  OE1')
      $                  LCARO1(NCAR)=I
@@ -171,6 +178,7 @@ C
            LCARRS(NCAR)=NUMRES(I)
            NAMCAR(NCAR)='C- '
            LCARO1(NCAR)=I
+           LCARCH(NCAR)=CHAIN(I)
            DO K=1,50
              IF(NAMATM(I-K).EQ.'  O  ')THEN
                LCARO2(NCAR)=I-K
@@ -188,16 +196,19 @@ C
            NLYS=NLYS+1
            LLYSNZ(NLYS)=I
            LLYSRS(NLYS)=NUMRES(I)
+           LLYSCH(NLYS)=CHAIN(I)
          END IF
          IF(NAMRES(I).EQ.'TYR'.AND.NAMATM(I).EQ.'  OH ') THEN
            NTYR=NTYR+1
            LTYROH(NTYR)=I
            LTYRRS(NTYR)=NUMRES(I)
+           LTYRCH(NTYR)=CHAIN(I)
          END IF
          IF(NAMRES(I).EQ.'CYS'.AND.NAMATM(I).EQ.'  SG ') THEN
            NCYS=NCYS+1
            LCYSSG(NCYS)=I
            LCYSRS(NCYS)=NUMRES(I)
+           LCYSCH(NCYS)=CHAIN(I)
          END IF
          IF(NAMRES(I).EQ.'SER'.AND.NAMATM(I).EQ.'  OG ') THEN
            NSER=NSER+1
@@ -231,6 +242,7 @@ C
            IF(NAMATM(I).EQ.'  N  ')THEN
              NARG=NARG+1
              LARGRS(NARG)=NUMRES(I)
+             LARGCH(NARG)=CHAIN(I)
            END IF
            IF(NAMATM(I).EQ.'  NE ')LARGN1(NARG)=I
            IF(NAMATM(I).EQ.'  NH2')LARGN2(NARG)=I
@@ -242,6 +254,7 @@ C
            IF(NAMATM(I).EQ.'  N  ')THEN
              NHIS=NHIS+1
              LHISRS(NHIS)=NUMRES(I)
+             LHISCH(NHIS)=CHAIN(I)
            END IF
            IF(NAMATM(I).EQ.'  CG ')LHISCG(NHIS)=I
            IF(NAMATM(I).EQ.'  ND1')LHISND(NHIS)=I
@@ -3461,56 +3474,64 @@ C
        I = 1
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'ASP')THEN
-           WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR), "|end"
+           WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $     NAMCAR(ICAR), LCARRS(ICAR), SPACE1, 
+     $     LCARCH(ICAR), PKACAR(ICAR), "|end"
            I = I + 1
          END IF
        END DO
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'GLU')THEN
-           WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR), "|end"
+           WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $     NAMCAR(ICAR), LCARRS(ICAR), SPACE1,
+     $     LCARCH(ICAR), PKACAR(ICAR), "|end"
            I = I + 1
          END IF
        END DO
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'C- ')THEN
-           WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR), "|end"
+           WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $     NAMCAR(ICAR), LCARRS(ICAR), SPACE1,
+     $     LCARCH(ICAR), PKACAR(ICAR), "|end"
            I = I + 1
          END IF
        END DO
        DO IHIS=1,NHIS
-         WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $   'HIS', LHISRS(IHIS), PKAHIS(IHIS), "|end"
+         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $   'HIS', LHISRS(IHIS), SPACE1, LHISCH(IHIS), PKAHIS(IHIS),
+     $   "|end"
          I = I + 1
        END DO
        DO ICYS=1,NCYS
-         WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $   'CYS', LCYSRS(ICYS), PKACYS(ICYS), "|end"
+         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $   'CYS', LCYSRS(ICYS), SPACE1, LCYSCH(IHIS), PKACYS(ICYS), 
+     $   "|end"
          I = I + 1
        END DO
        DO ITYR=1,NTYR
-         WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $   'TYR', LTYRRS(ITYR), PKATYR(ITYR), "|end"
+         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $   'TYR', LTYRRS(ITYR), SPACE1, LTYRCH(ITYR), PKATYR(ITYR), 
+     $    "|end"
          I = I + 1
        END DO
-       WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $   'N+ ', LLYSRS(1), PKALYS(1), "|end"
+       WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $   'N+ ', LLYSRS(1), SPACE1, LLYSCH(1), PKALYS(1), "|end"
        I = I + 1
        DO ILYS=2,NLYS
-         WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $   'LYS', LLYSRS(ILYS), PKALYS(ILYS), "|end"
+         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $   'LYS', LLYSRS(ILYS), SPACE1, LLYSCH(ILYS),PKALYS(ILYS), 
+     $    "|end"
          I = I + 1
        END DO
        DO IARG=1,NARG
-         WRITE(PDB(((I-1)*19)+1:(I*19)+1),'(A3,I4,F8.2,A4)')
-     $   'ARG', LARGRS(IARG), PKAARG(IARG), "|end"
+         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
+     $   'ARG', LARGRS(IARG), SPACE1, LARGCH(IARG), PKAARG(IARG), 
+     $    "|end"
          I = I + 1
        END DO
 C
 C CLEAR OUT THE REST OF THE ARRAY
-       DO J = ((I-1)*19)+1, STRLEN-1
+       DO J = ((I-1)*20)+1, STRLEN-1
          PDB(J:J) = " "
        END DO
 C

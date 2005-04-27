@@ -59,18 +59,36 @@ class hydrogenAmbiguity:
         nearatoms = []
         resname = self.residue.get("name")
         for atom in self.residue.get("atoms"):
-            if (atom.get("hacceptor") or atom.get("hdonor")):
+            atomname = atom.get("name")
+            if atomname == "O": continue
+            if atomname == "N" and not self.residue.get("isNterm"): continue
+            if atom.get("hdonor"):
                 for nearatom in allatoms:
-                    if nearatom.get("residue") == self.residue: continue
-                    nearres = atom.get("residue")
+                    nearres = nearatom.get("residue")
                     nearname = nearres.get("name")
+                    if nearres == self.residue: continue
+                    if not nearatom.get("hacceptor"): continue
                     dist = distance(atom.getCoords(), nearatom.getCoords())
                     compdist = HYDROGEN_DIST
                     if resname in ["HIS","ASN","GLN"]: compdist += 2.5
-                    if nearname in ["HIS","ASN","GLN"]: compdist += 2.5
+                    if nearname in ["HIS","ASN","GLN"] and nearatom.name not in ["N","O"]: compdist += 2.5
                     if dist < compdist and nearatom not in nearatoms:
-                        nearatoms.append(nearatom)     
+                        nearatoms.append(nearatom)
+            if atom.get("hacceptor"):
+                for nearatom in allatoms:
+                    nearres = nearatom.get("residue")
+                    nearname = nearres.get("name")
+                    if nearres == self.residue: continue
+                    if not nearatom.get("hdonor"): continue
+                    dist = distance(atom.getCoords(), nearatom.getCoords())
+                    compdist = HYDROGEN_DIST
+                    if resname in ["HIS","ASN","GLN"]: compdist += 2.5
+                    if nearname in ["HIS","ASN","GLN"] and nearatom.name not in ["N","O"] : compdist += 2.5
+                    if dist < compdist and nearatom not in nearatoms:
+                        nearatoms.append(nearatom)
+                    
         self.nearatoms = nearatoms
+
         
 class hydrogenRoutines:
     """
@@ -257,6 +275,7 @@ class hydrogenRoutines:
                     bestenergy = energy
                     best = angle
             self.routines.setChiangle(residue, chinum, best, defresidue)
+            #print best
 
         # Brute force for flips
 
@@ -298,7 +317,6 @@ class hydrogenRoutines:
                 residue = getattr(amb, "residue")
                 amb.setNearatoms(allatoms)
                 self.optimizeSingle(amb)
-
             else:     
                 # Use Monte Carlo algorithm to optimize
                 
@@ -529,23 +547,23 @@ class hydrogenRoutines:
         residue = getattr(amb,"residue")
         nearatoms = getattr(amb,"nearatoms")
         energy = energy + self.getPenalty(residue)
-        for nearatom in nearatoms:
-            for atom in residue.get("atoms"):
-                if atom.get("hdonor"):
+        for atom in residue.get("atoms"):
+            if atom.get("name") == "N" and not residue.get("isNterm"): continue
+            if atom.get("name") == "O" and not residue.get("name") == "WAT": continue
+            if atom.get("hdonor"):
+                for nearatom in nearatoms:
                     if not nearatom.get("hacceptor"): continue
-                    elif atom.get("name") == "N" and not residue.get("isNterm"): continue
-                    elif nearatom.get("name") == "O" and not nearatom.residue.get("name") == "WAT": continue
+                    dist = distance(atom.getCoords(), nearatom.getCoords())
                     if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:                
                         pair = self.getPairEnergy(atom, nearatom)
-                        energy = energy + pair
-                if atom.get("hacceptor"):
+                        energy = energy + pair             
+            if atom.get("hacceptor"):
+                for nearatom in nearatoms:
                     if not nearatom.get("hdonor"): continue
-                    elif atom.get("name") == "O" and not residue.get("name") == "WAT": continue
-                    elif nearatom.get("name") == "N" and not nearatom.residue.get("isNterm"): continue
+                    dist = distance(atom.getCoords(), nearatom.getCoords()) 
                     if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:             
                         pair = self.getPairEnergy(nearatom, atom)
                         energy = energy + pair
-              
         return energy
                 
 
@@ -748,14 +766,15 @@ class hydrogenRoutines:
         for i in range(len(groups)):
             amb1 = groups[i]
             residue1 = getattr(amb1, "residue")
-            hydrodef1 = getattr(amb1,"hdef")
-            for conf1 in hydrodef1.conformations:
+            hdef1 = getattr(amb1,"hdef")
+            for conf1 in hdef1.conformations:
                 boundatom1 = residue1.getAtom(conf1.boundatom)
                 for j in range(i+1, len(groups)):
                     amb2 = groups[j]
                     residue2 = getattr(amb2, "residue")
-                    hydrodef2 = getattr(amb2,"hdef")
-                    for conf2 in hydrodef2.conformations:
+                    hdef2 = getattr(amb2,"hdef")
+                    if hdef1.type in [2,11] and hdef2.type in [2,11]: limit = 4.3
+                    for conf2 in hdef2.conformations:
                         boundatom2 = residue2.getAtom(conf2.boundatom)
                         if distance(boundatom1.getCoords(), boundatom2.getCoords()) < limit:
                             if i not in map:
@@ -772,8 +791,15 @@ class hydrogenRoutines:
                 networks.append(list)
             elif i not in map and i not in done:
                 networks.append([i])
-
+                
         self.debug(networks)
+        sum = 0
+        max = 0
+        for item in networks:
+            num = len(item)
+            if num > max: max = num
+            sum += num
+        #print "average degree: %.2f, max %i" % (float(sum)/len(networks), max)
         return networks
 
     def randomizeWaters(self):
@@ -1407,9 +1433,25 @@ class hydrogenRoutines:
             mydef.addConf(myconf)
 
         if lines[1:] == []:  # FLIPS
-            myconf = HydrogenConformation(None, "CA", 0.0)
-            mydef.addConf(myconf)
-            
+            # ASN: OD1, ND2
+            # GLN: OE1, NE2
+            # HIS: ND1, CD2, CE1, NE2
+            #boundatom = "CG"
+            #if name == "GLNFLIP": boundatom = "CD"
+            #myconf = HydrogenConformation(None, boundatom, 0.0)
+            #mydef.addConf(myconf)
+            if name == "ASNFLIP":
+                for boundatom in ["OD1","ND2"]:
+                    myconf = HydrogenConformation(None, boundatom, 0.0)
+                    mydef.addConf(myconf)
+            elif name == "GLNFLIP":
+                for boundatom in ["OE1","NE2"]:
+                    myconf = HydrogenConformation(None, boundatom, 0.0)
+                    mydef.addConf(myconf)
+            elif name == "HISFLIP":
+                for boundatom in ["ND1","CD2","CE1","NE2"]:
+                    myconf = HydrogenConformation(None, boundatom, 0.0)
+                    mydef.addConf(myconf)      
         return mydef
 
     def readHydrogenDefinition(self):

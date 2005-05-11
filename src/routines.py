@@ -1008,6 +1008,7 @@ class Routines:
                            something that should be debumped.
         """
         self.write("Checking if we must debump any residues... ")
+        self.setDonorsAndAcceptors()
         self.createCells()
         cells = self.cells  
         bumpresidues = []
@@ -1055,6 +1056,14 @@ class Routines:
                     (atom2name in ["HD1","HD2","HE1","HE2"] and residue2.name in \
                      ["HIS","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
                         continue
+
+                # Also, if one of the atoms is a donated Hydrogen and the other is
+                # an acceptor, ignore this case
+                if atom1.name.startswith("H") and residue1.getAtom(atom1.intrabonds[0]).hdonor \
+                   and atom2.hacceptor: continue
+                if atom2.name.startswith("H") and not residue2.get("isNterm") and \
+                   residue2.getAtom(atom2.intrabonds[0]).hdonor and atom1.hacceptor: continue
+                    
                 dist = distance(coords1, coords2)
                 compdist = BUMP_DIST
                 if atom1.isHydrogen(): compdist = BUMP_HDIST

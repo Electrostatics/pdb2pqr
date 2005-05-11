@@ -995,12 +995,17 @@ class Routines:
                         
         return closeatoms
     
-    def debumpProtein(self):
+    def debumpProtein(self, optflag):
         """
              Ensure that an added atom is not on top of another atom.  If it
              is, debump the residue.  A threshold is used to determine
              all nearby atoms so the entire protein need not be searched for
              every new dihedral angle.
+
+             Parameters:
+                 optflag:  If 1 this means that we're going to optimize.  Thus
+                           don't consider anything that can be rotated as
+                           something that should be debumped.
         """
         self.write("Checking if we must debump any residues... ")
         self.createCells()
@@ -1018,6 +1023,14 @@ class Routines:
             if atomname == "H": continue
             residue1 = atom1.get("residue")
             if residue1.get("isNterm") or residue1.get("isCterm"): continue
+            if optflag:
+                if ((atomname.startswith("HG") and residue1.name in ["SER","THR"]) or \
+                    (atomname == "HH" and residue1.name == "TYR") or \
+                    (atomname.startswith("HD2") and residue1.name == "ASN") or \
+                    (atomname.startswith("HE2") and residue1.name == "GLN") or \
+                    (atomname in ["HD1","HD2","HE1","HE2"] and residue1.name in \
+                     ["HIS","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
+                    continue
 
             # NOTE: For now, disable NA debumping
             if residue1.get("type") == 4: continue
@@ -1030,8 +1043,17 @@ class Routines:
             for atom2 in closeatoms:
                 if atom2.get("residue") == residue1: continue
                 elif residue1.get("SSbondpartner") == atom2: continue
+                atom2name = atom2.name
                 coords2 = atom2.getCoords()
                 residue2 = atom2.get("residue")
+                if optflag:
+                    if ((atom2name.startswith("HG") and residue2.name in ["SER","THR"]) or \
+                    (atom2name == "HH" and residue2.name == "TYR") or \
+                    (atom2name.startswith("HD2") and residue2.name == "ASN") or \
+                    (atom2name.startswith("HE2") and residue2.name == "GLN") or \
+                    (atom2name in ["HD1","HD2","HE1","HE2"] and residue2.name in \
+                     ["HIS","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
+                        continue
                 dist = distance(coords1, coords2)
                 compdist = BUMP_DIST
                 if atom1.isHydrogen(): compdist = BUMP_HDIST
@@ -1313,12 +1335,13 @@ class Routines:
             atomname = atom.get("name")
             resname = atom.residue.get("name")
             if atomname.startswith("N"):
+                bonded = 0
                 for bond in atom.get("intrabonds"):
                     if bond[0] == "H":
                         atom.set("hdonor",1)
+                        bonded = 1
                         break
-                if not ((atomname == "NZ" and resname == "LYS") or \
-                       atom.residue.get("isNterm") or atomname == "N"):
+                if not bonded and resname == "HIS":
                     atom.set("hacceptor",1)
             elif atomname.startswith("O") or (atomname.startswith("S") and resname == "CYS"):
                 atom.set("hacceptor",1)
@@ -1522,7 +1545,6 @@ class Routines:
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
-                  
                     if resname == "ARG" and ph >= value:
                         warn = (key, "neutral")
                         warnings.append(warn)

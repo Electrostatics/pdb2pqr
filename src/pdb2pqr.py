@@ -13,7 +13,7 @@
     Washington University in St. Louis
 """
 
-__date__ = "18 April 2005"
+__date__ = "11 May 2005"
 __author__ = "Todd Dolinsky, Nathan Baker"
 
 import string
@@ -60,13 +60,11 @@ def usage(rc):
     str = str + "                         amber, charmm, and parse are supported.\n"
     str = str + "    Optional Arguments:\n"
     str = str + "        --nodebump    :  Do not perform the debumping operation\n"
-    str = str + "        --nohopt      :  Do not perform hydrogen optimization\n"
-    str = str + "        --nohdebump   :  Do not perform hydrogen debumping\n"
-    str = str + "        --nowatopt    :  Do not perform water optimization\n"
+    str = str + "        --noopt       :  Do not perform hydrogen optimization\n"
     str = str + "        --hbond       :  Print a list of hydrogen bonds to stdout\n"
     str = str + "        --assign-only :  Only assign charges and radii, but no\n"
     str = str + "                         optimizations - effectively turns on the\n"
-    str = str + "                         nodebump, nohopt, nohdebump, and nowatopt flags\n"
+    str = str + "                         nodebump and noopt flags\n"
     str = str + "        --with-ph=<ph>:  Use propka to calculate pKas and apply them\n"
     str = str + "                         to the molecule given the pH value.\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
@@ -140,9 +138,7 @@ def runPDB2PQR(pdblist, ff, options):
                      verbose: When 1, script will print information to stdout
                               When 0, no detailed information will be printed (int)
                      debump:  When 1, debump heavy atoms (int)
-                     hopt:    When 1, run hydrogen optimization (int)
-                     hdebump: When 1, debump hydrogens (int)
-                     watopt:  When 1, optimize water hydrogens (int)
+                     opt:    When 1, run hydrogen optimization (int)
                      ph:      The desired ph of the system (float)
         Returns
             header:  The PQR file header (string)
@@ -157,6 +153,9 @@ def runPDB2PQR(pdblist, ff, options):
         pka = 1
         ph = options["ph"]
     else: pka = 0
+
+    if "opt" in options: optflag = 1
+    else: optflag = 0
     
     start = time.time()
 
@@ -188,29 +187,22 @@ def runPDB2PQR(pdblist, ff, options):
 
     if "debump" in options:
         myRoutines.calculateChiangles()
-        myRoutines.debumpProtein()  
+        myRoutines.debumpProtein(optflag)  
 
     if pka:
         myRoutines.runPROPKA(ph, ff)
 
     myRoutines.addHydrogens()
 
-    if "hopt" in options:
-        myRoutines.optimizeHydrogens(pka)
+    if "debump" in options:
+        myRoutines.calculateChiangles()
+        myRoutines.debumpProtein(optflag)  
 
-    if "watopt" in options:
-        if "hopt" not in options: myRoutines.optimizeHydrogens(pka)
-        myRoutines.optimizeWaters()
-    else:
-        myRoutines.randomizeWaters()
+    if "opt" in options:
+        myRoutines.optimizeHydrogens(pka)
 
     myRoutines.convertPlacenames()
         
-    if "hdebump" in options:
-        myRoutines.calculateChiangles()
-        myRoutines.debumpProtein()
-
-
     myForcefield = Forcefield(ff)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
     reslist, charge = myProtein.getCharge()
@@ -231,7 +223,7 @@ def mainCommand():
         Main driver for running program from the command line.
     """
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","nodebump","nohopt","nohdebump","nowatopt","hbond", "assign-only","with-ph="]
+    longOptlist = ["help","verbose","ff=","nodebump","noopt","hbond", "assign-only","with-ph="]
 
     try: opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
     except getopt.GetoptError, details:
@@ -242,7 +234,7 @@ def mainCommand():
         sys.stderr.write("Incorrect number (%d) of arguments!\n" % len(args))
         usage(2)
 
-    options = {"debump":1,"hopt":1,"hdebump":1,"watopt":1}
+    options = {"debump":1,"opt":1}
  
     outpath = None
     ff = None
@@ -253,9 +245,7 @@ def mainCommand():
             usage(2)
             sys.exit()
         elif o == "--nodebump":  del options["debump"]
-        elif o == "--nohopt":    del options["hopt"]
-        elif o == "--nohdebump": del options["hdebump"]
-        elif o == "--nowatopt":  del options["watopt"]
+        elif o == "--noopt":    del options["opt"]
         elif o == "--hbond":     options["hbond"] = 1
         elif o == "--with-ph":
             try:
@@ -268,9 +258,7 @@ def mainCommand():
                 raise ValueError, text
         elif o == "--assign-only":
             del options["debump"]
-            del options["hopt"]
-            del options["hdebump"]
-            del options["watopt"]
+            del options["opt"]
         elif o == "--ff":
             if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE"]:
                 ff = string.lower(a)
@@ -333,16 +321,14 @@ def mainCGI():
     input = 0
   
     if form.has_key("DEBUMP"): options["debump"] = 1
-    if form.has_key("HOPT"): options["hopt"] = 1
-    if form.has_key("HDEBUMP"): options["hdebump"] = 1
-    if form.has_key("WATOPT"): options["watopt"] = 1
+    if form.has_key("OPT"): options["opt"] = 1
     if form.has_key("PROPKA"):
         try:
             ph = float(form["PH"].value)
             if ph < 0.0 or ph > 14.0: raise ValueError
             options["ph"] = ph
         except ValueError:
-             text = "The entered pH of %s is invalid!  " % form["PH"].value
+             text = "The entered pH of %.2f is invalid!  " % form["PH"].value
              text += "Please choose a pH between 0.0 and 14.0."
              print "Content-type: text/html\n"
              print text
@@ -391,8 +377,8 @@ def mainCGI():
         file.close()
                 
         if input:
-            from src import inputgen
-            from src import psize
+            import inputgen
+            import psize
             method = "mg-auto"
             size = psize.Psize()
             size.parseInput(pqrpath)

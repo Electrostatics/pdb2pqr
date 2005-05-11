@@ -12,14 +12,10 @@
     Washington University in St. Louis
 """
 
-__date__ = "8 March 2004"
+__date__ = "11 May 2005"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
 HYDROGENFILE = "dat/HYDROGENS.DAT"
-HACCEPTOR=[0,1,1,0,1,1,0,1,0,1,0,0,1,0]
-HDONOR   =[0,0,1,1,1,0,1,0,1,0,0,0,1,1]
-HYDROGEN_DIST = 6.0
-WATER_DIST=4.0
 
 import os
 import string
@@ -31,11 +27,24 @@ from quatfit import *
 from random import *
 from time import *
 
+def sortdict(dict):
+	items = [(v, k) for k, v in dict.items()]
+	items.sort()
+	items.reverse()             
+	items = [(k, v) for v, k in items]
+	return items
+
+class hbond:
+    def __init__(self, atom1, atom2, dist):
+        self.atom1 = atom1
+        self.atom2 = atom2
+        self.dist = dist
+      
 class hydrogenAmbiguity:
     """
         A class containing information about the ambiguity
     """
-    def __init__(self, residue, hdef):
+    def __init__(self, residue, hdef, routines):
         """
             Initialize the class
 
@@ -46,49 +55,226 @@ class hydrogenAmbiguity:
         self.residue = residue
         self.hdef = hdef
         self.nearatoms = []
+        self.routines = routines
+        self.fixed = 0 
 
-    def setNearatoms(self, allatoms):
+        if residue.name in ["HIS","HSN","HSE","HSD","HSP","HIE","HID","HIP"]:
+            nd1atom = residue.getAtom("ND1").getCoords()
+            cd2atom = residue.getAtom("CD2").getCoords()
+            ce1atom = residue.getAtom("CE1").getCoords()
+            ne2atom = residue.getAtom("NE2").getCoords()
+            hd2atom = residue.getAtom("HD2").getCoords()
+            he1atom = residue.getAtom("HE1").getCoords()
+            if "HE2" in residue.map:
+                he2atom = residue.getAtom("HE2").getCoords()
+            if "HD1" in residue.map:
+                hd1atom = residue.getAtom("HD1").getCoords()
+            self.makeFlip()
+            residue.createAtom("ND1FLIP",nd1atom,"ATOM")
+            residue.createAtom("CD2FLIP",cd2atom,"ATOM")
+            residue.createAtom("CE1FLIP",ce1atom,"ATOM")
+            residue.createAtom("NE2FLIP",ne2atom,"ATOM")
+            residue.createAtom("HD2FLIP",hd2atom,"ATOM")
+            residue.createAtom("HE1FLIP",he1atom,"ATOM")
+            if "HE2" in residue.map:
+                residue.createAtom("HE2FLIP",he2atom,"ATOM")
+                residue.getAtom("NE2FLIP").hdonor = 1
+                residue.getAtom("NE2FLIP").intrabonds = ["HE2FLIP", "CE1FLIP", "CD2FLIP"]
+                residue.getAtom("HE2FLIP").intrabonds = ["NE2FLIP"]
+            else:
+                residue.getAtom("NE2FLIP").hacceptor = 1
+                residue.getAtom("NE2FLIP").intrabonds = ["CE1FLIP", "CD2FLIP"]
+            if "HD1" in residue.map:
+                residue.createAtom("HD1FLIP",hd1atom,"ATOM")
+                residue.getAtom("ND1FLIP").hdonor = 1
+                residue.getAtom("ND1FLIP").intrabonds = ["HD1FLIP", "CE1FLIP", "CG"]
+                residue.getAtom("HD1FLIP").intrabonds = ["ND1FLIP"]
+            else:
+                residue.getAtom("ND1FLIP").hacceptor = 1
+                residue.getAtom("ND1FLIP").intrabonds = ["CE1FLIP", "CG"]
+
+            # Set intrabonds
+            residue.getAtom("CD2FLIP").intrabonds = ["CG","HD2FLIP", "NE2FLIP"]
+            residue.getAtom("CE1FLIP").intrabonds = ["HE1FLIP","ND1FLIP","NE2FLIP"]
+            residue.getAtom("HD2FLIP").intrabonds = ["CD2FLIP"]
+            residue.getAtom("HE1FLIP").intrabonds = ["CE1FLIP"]
+
+            if residue.name == "HSN": # Set to acceptor and donor
+                residue.getAtom("ND1FLIP").hacceptor = 1
+                residue.getAtom("ND1FLIP").hdonor = 1
+                residue.getAtom("NE2FLIP").hdonor = 1
+                residue.getAtom("NE2FLIP").hacceptor = 1
+
+        elif residue.name == "GLN":
+            oatom = residue.getAtom("OE1").getCoords()
+            natom = residue.getAtom("NE2").getCoords()
+            hatom1 = residue.getAtom("HE21").getCoords()
+            hatom2 = residue.getAtom("HE22").getCoords()
+            self.makeFlip()
+            residue.createAtom("OE1FLIP", oatom, "ATOM")
+            residue.createAtom("NE2FLIP", natom, "ATOM")
+            residue.createAtom("HE21FLIP", hatom1, "ATOM")
+            residue.createAtom("HE22FLIP", hatom2, "ATOM")
+            residue.getAtom("OE1FLIP").hacceptor = 1
+            natom = residue.getAtom("NE2FLIP")
+            natom.hdonor = 1
+            natom.intrabonds = ["HE21FLIP", "HE22FLIP"]
+            residue.getAtom("HE21FLIP").intrabonds = ["NE2FLIP"]
+            residue.getAtom("HE22FLIP").intrabonds = ["NE2FLIP"]
+        elif residue.name == "ASN":
+            oatom = residue.getAtom("OD1").getCoords()
+            natom = residue.getAtom("ND2").getCoords()
+            hatom1 = residue.getAtom("HD21").getCoords()
+            hatom2 = residue.getAtom("HD22").getCoords()
+            self.makeFlip()
+            residue.createAtom("OD1FLIP", oatom, "ATOM")
+            residue.createAtom("ND2FLIP", natom, "ATOM")
+            residue.createAtom("HD21FLIP", hatom1, "ATOM")
+            residue.createAtom("HD22FLIP", hatom2, "ATOM")
+            residue.getAtom("OD1FLIP").hacceptor = 1
+            natom = residue.getAtom("ND2FLIP")
+            natom.hdonor = 1
+            natom.intrabonds = ["HD21FLIP", "HD22FLIP"]
+            residue.getAtom("HD21FLIP").intrabonds = ["ND2FLIP"]
+            residue.getAtom("HD22FLIP").intrabonds = ["ND2FLIP"]
+
+        elif hdef.type == 2:  # Remove the hydrogen atom - it will be readded
+            if residue.name == "SER":
+                residue.removeAtom("HG")
+                bonds = residue.getAtom("OG").intrabonds
+                bonds.pop(bonds.index("HG"))
+            elif residue.name == "THR":
+                residue.removeAtom("HG1")
+                bonds = residue.getAtom("OG1").intrabonds
+                bonds.pop(bonds.index("HG1"))
+            elif residue.name == "TYR":
+                residue.removeAtom("HH")
+                bonds = residue.getAtom("OH").intrabonds
+                bonds.pop(bonds.index("HH"))
+
+    def __str__(self):
+        text = "%s %i %s (%i)" % (self.residue.name, self.residue.resSeq, \
+                                  self.residue.chainID, self.hdef.type)
+        return text
+          
+    def makeFlip(self):
+        residue = self.residue
+        name = residue.get("name")
+        defresidue = self.routines.aadef.getResidue(name)
+        chinum = self.hdef.chiangle - 1
+        oldangle = residue.get("chiangles")[chinum]
+        angle = 180.0 + oldangle
+        self.routines.setChiangle(residue, chinum, angle, defresidue)
+
+    def fixFlip(self, boundatom, donorflag=None):
+        """
+            Donorflag is used for HSN to determine whether the boundatom
+            is a donor or acceptor
+        """
+        if self.fixed: return
+        residue = self.residue
+        self.fixed = 1
+        atomlist = []
+        intrabondlist = []
+        flag = 0
+        if boundatom == None or boundatom.name.endswith("FLIP"): flag = 1
+
+        # Handle the special case for HSN!
+                    
+        if residue.name == "HSN":
+            if donorflag == None:
+                txt = "Donor flag must be set for HSN!"
+                raise ValueError, txt
+
+            if flag: flip = "FLIP"
+            else: flip = ""
+            residue.renameResidue("HIS")
+            if boundatom == None: # Set to HSD
+                residue.removeAtom("HE2%s" % flip)
+                ne2atom = residue.getAtom("NE2%s" % flip)
+                ne2atom.intrabonds.pop(ne2atom.intrabonds.index("HE2%s" % flip))
+                ne2atom.hdonor = 0
+                residue.getAtom("ND1%s" % flip).hacceptor = 0   
+            elif (boundatom.name.startswith("ND1") and donorflag) or \
+                 (boundatom.name.startswith("NE2") and not donorflag): # Set to HSD
+                residue.removeAtom("HE2%s" % flip)
+                ne2atom = residue.getAtom("NE2%s" % flip)
+                ne2atom.intrabonds.pop(ne2atom.intrabonds.index("HE2%s" % flip))
+                ne2atom.hdonor = 0
+                residue.getAtom("ND1%s" % flip).hacceptor = 0
+            elif (boundatom.name.startswith("NE2") and donorflag) or \
+                 (boundatom.name.startswith("ND1") and not donorflag): # Set to HSE
+                residue.removeAtom("HD1%s" % flip)
+                nd1atom = residue.getAtom("ND1%s" % flip)
+                nd1atom.intrabonds.pop(nd1atom.intrabonds.index("HD1%s" % flip))
+                nd1atom.hdonor = 0
+                residue.getAtom("NE2%s" % flip).hacceptor = 0
+            else:
+                text = "Invalid bound atom %s for HSN!" % boundatom.name
+                raise ValueError, text
+
+        
+        for atom in residue.atoms: atomlist.append(atom)
+        for atom in atomlist:
+            atomname = atom.name
+            if atomname.endswith("FLIP") and flag: # Delete the other list
+                residue.removeAtom(atomname[:-4])
+                intrabondlist.append(atomname[:-4])
+            elif atomname.endswith("FLIP"):  # Delete the flip
+                residue.removeAtom(atomname)
+                intrabondlist.append(atomname)
+            else: continue
+
+        # Since the atoms are gone, remove them from the intrabond list
+
+        for atom in atomlist:
+            if atom not in residue.atoms: continue
+            for intrabond in atom.intrabonds:
+                if intrabond in intrabondlist:
+                    atom.intrabonds.pop(atom.intrabonds.index(intrabond))
+
+     
+    def setNearatoms(self, allatoms, ambmap):
         """
             Set the nearby atoms to this residue.  The only donors/acceptors
-            that will be changing positions are the flips, with maximum change
-            of 2.5 A.
+            that will be changing positions are the flips.
 
             Parameters
                 allatoms:  A list of all donors/acceptors (list)
+                ambmap:  A mapping of all residues with ambiguities
         """
+        outlist = []
         nearatoms = []
         resname = self.residue.get("name")
-        for atom in self.residue.get("atoms"):
-            atomname = atom.get("name")
-            if atomname == "O": continue
-            if atomname == "N" and not self.residue.get("isNterm"): continue
-            if atom.get("hdonor"):
-                for nearatom in allatoms:
-                    nearres = nearatom.get("residue")
-                    nearname = nearres.get("name")
-                    if nearres == self.residue: continue
-                    if not nearatom.get("hacceptor"): continue
-                    dist = distance(atom.getCoords(), nearatom.getCoords())
-                    compdist = HYDROGEN_DIST
-                    if resname in ["HIS","ASN","GLN"]: compdist += 2.5
-                    if nearname in ["HIS","ASN","GLN"] and nearatom.name not in ["N","O"]: compdist += 2.5
-                    if dist < compdist and nearatom not in nearatoms:
-                        nearatoms.append(nearatom)
-            if atom.get("hacceptor"):
-                for nearatom in allatoms:
-                    nearres = nearatom.get("residue")
-                    nearname = nearres.get("name")
-                    if nearres == self.residue: continue
-                    if not nearatom.get("hdonor"): continue
-                    dist = distance(atom.getCoords(), nearatom.getCoords())
-                    compdist = HYDROGEN_DIST
-                    if resname in ["HIS","ASN","GLN"]: compdist += 2.5
-                    if nearname in ["HIS","ASN","GLN"] and nearatom.name not in ["N","O"] : compdist += 2.5
-                    if dist < compdist and nearatom not in nearatoms:
-                        nearatoms.append(nearatom)
-                    
+        confs = []
+        if self.hdef.type == 11:
+            for atom in self.residue.atoms:
+                atomname = atom.name
+                if atomname.endswith("FLIP") and not atomname[0] == "H": confs.append(atomname)
+        for conf in self.hdef.conformations:
+            atomname = conf.boundatom
+            if atomname not in confs: confs.append(atomname)
+        map = []
+        for atomname in confs:
+            atom = self.residue.getAtom(atomname)
+            for nearatom in allatoms:
+                nearres = nearatom.get("residue")
+                nearname = nearres.get("name")
+                if nearres == self.residue: continue
+                if atom.hdonor and not atom.hacceptor and not nearatom.hacceptor: continue
+                elif atom.hacceptor and not atom.hdonor and not nearatom.hdonor: continue
+                elif not (atom.hdonor or atom.hacceptor): continue
+                dist = distance(atom.getCoords(), nearatom.getCoords())
+                item = (atom, nearatom, dist)
+                if dist < 4.3 and item not in map:
+                    myhbond = hbond(atom, nearatom, dist)
+                    nearatoms.append(myhbond)
+                    map.append(item)
+                    if nearatom.residue in ambmap and (nearatom.residue.name == "WAT" or nearatom.name not in ["O","N"]):
+                        outlist.append(ambmap[nearatom.residue])
+                                                                                                              
         self.nearatoms = nearatoms
-
+        return outlist
         
 class hydrogenRoutines:
     """
@@ -107,8 +293,6 @@ class hydrogenRoutines:
         self.protein = routines.protein
         self.hydrodefs = []
         self.groups = []
-        self.watermap = {}
-        self.accmap = {}
    
     def debug(self, text):
         """
@@ -229,70 +413,13 @@ class hydrogenRoutines:
             residue.getAtom(boundname).hacceptor = 0
             residue.getAtom(boundname).hdonor = 1
 
-    def optimizeSingle(self,amb):
-        """
-            Use brute force optimization for a single ambiguity - try all
-            energy configurations and pick the best.
-
-            Parameters
-                amb:  The ambiguity object (tuple)
-        """
-
-        residue = getattr(amb,"residue")
-        hdef = getattr(amb,"hdef")
-        type = hdef.type
-        self.debug("Brute Force Optimization for residue %s %i - type %i" %\
-                   (residue.get("name"), residue.get("resSeq"), type))
-        
-        best = 0
-        energy = None
-        bestenergy = 1000.0
-        
-        # Brute force for fixed states
-        
-        if type in [1,4,3,10,13, 14]:
-            if type == 4:
-                raise ValueError, "We shouldn't have a brute force HIS without the FLIP!"
-            states = self.getstates(amb)
-            for i in range(len(states)): 
-                self.switchstate(states, amb, i)
-                energy = self.getHbondEnergy(amb)
-                if energy < bestenergy:
-                    bestenergy = energy
-                    best = i        
-            self.switchstate(states, amb, best)
-            
-        # Brute force for chi angle
-             
-        elif type in [2]:
-            name = residue.get("name")
-            defresidue = self.routines.aadef.getResidue(name)
-            chinum = hdef.chiangle - 1
-            for angle in range(-180, 180, 5):
-                self.routines.setChiangle(residue, chinum, angle, defresidue)
-                energy = self.getHbondEnergy(amb)    
-                if energy < bestenergy:
-                    bestenergy = energy
-                    best = angle
-            self.routines.setChiangle(residue, chinum, best, defresidue)
-            #print best
-
-        # Brute force for flips
-
-        elif type in [11]:
-            bestenergy = self.getHbondEnergy(amb)
-            name = residue.get("name")
-            defresidue = self.routines.aadef.getResidue(name)
-            chinum = hdef.chiangle - 1
-            oldangle = residue.get("chiangles")[chinum]
-            angle = 180.0 + oldangle
-            self.routines.setChiangle(residue, chinum, angle, defresidue)
-            energy = self.getHbondEnergy(amb)
-            if energy >= bestenergy: # switch back!
-                self.routines.setChiangle(residue, chinum, oldangle, defresidue)
-        else:
-            raise ValueError, "Invalid Hydrogen type %i in %s %i!" % \
-                  (type, residue.get("name"), residue.get("resSeq"))
+ 
+    def printNetwork(self, network):
+        text = ""
+        for amb in network:
+            text += "%s, " % amb
+        text = text[:-2]
+        return text
 
     def optimizeHydrogens(self, pkaflag):
         """
@@ -309,263 +436,826 @@ class hydrogenRoutines:
         starttime = time()
         allatoms = self.findAmbiguities(0, pkaflag)
         self.printAmbiguities()
-        networks = self.findNetworks(HYDROGEN_DIST)
+
+        ambmap = {}
+
+        # Make the network map
+        for amb in self.groups:   
+            residue = getattr(amb, "residue")
+            ambmap[residue] = amb
+
+        nearmap = {}
+        for amb in self.groups:
+            nearlist = amb.setNearatoms(allatoms, ambmap)
+            nearmap[amb] = nearlist
+
+        done = []
+        networks = []
+        for amb in self.groups:
+            if amb in nearmap and amb not in done:
+                list = analyzeMap(nearmap,amb,[])
+                for item in list:
+                    done.append(item)
+                networks.append(list)
+            elif amb not in nearmap and amb not in done:
+                networks.append([i])
+                
+        for network in networks:
+            self.debug(self.printNetwork(network))
+
+        # Start the optimization        
         for cluster in networks:
-            #clusteratoms, compatoms = self.initHbondEnergy(cluster, allatoms)
-            if len(cluster) == 1:
-                amb = self.groups[cluster[0]]
+            self.debug("*** STARTING NETWORK %s ***\n" % self.printNetwork(cluster))
+            # STEP 1 - Set up the clustermap
+            clustermap = {}
+            for amb in cluster:
                 residue = getattr(amb, "residue")
-                amb.setNearatoms(allatoms)
-                self.optimizeSingle(amb)
-            else:     
-                # Use Monte Carlo algorithm to optimize
+                clustermap[residue] = amb
                 
-                steps = 0
-                if len(cluster) == 2: steps = 10
-                elif len(cluster) == 3: steps = 15
-                elif len(cluster) >= 4 and len(cluster) < 10: steps = pow(2,len(cluster))
-                if steps > 200 or len(cluster) >= 10: steps = 200
-            
-                # Initialize
+            # STEP 2 - Order the distance of the hbonds
+            # Do potential bonds to backbone first
 
-                statemap = {}
-                curmap = {}
-                bestmap = {}
-                energy = 0.0
-                
-                for id in range(len(cluster)):
-                    amb = self.groups[cluster[id]] 
-                    residue = getattr(amb,"residue")
-                    hdef = getattr(amb,"hdef")
-                    type = hdef.type
-                    if type in [1,4,3,10,13,14]:
-                        states = self.getstates(amb)
-                        statemap[id] = states
-                        self.switchstate(states, amb, 0)
-                        curmap[id] = 0
-                        bestmap[id] = 0                       
-                    elif type in [2,11]:
-                        chinum = hdef.chiangle - 1
-                        oldangle = residue.get("chiangles")[chinum]
-                        curmap[id] = oldangle
-                        bestmap[id] = oldangle
-
-                    if getattr(amb,"nearatoms") == []:
-                        amb.setNearatoms(allatoms)
-                        energy += self.getHbondEnergy(amb)
-                  
-                maxenergy = energy + 1000
-                bestenergy = energy
-                newenergy = energy
-
-                self.debug("Initial Best energy: %.2f" % bestenergy)
-                self.debug("Initial Cur energy: %.2f" % energy)
-                self.debug("Initial Max energy: %.2f" % maxenergy)
-                self.debug("Initial Current map: %s" % curmap)
-
-                # Now go through the steps
-
-                for step in range(steps):
-                    #self.debug("\n************************")
-                    #self.debug("Current map: %s" %  curmap)
-                    #self.debug("Current energy: %.2f" % energy)
-                    #self.debug("Maximum energy: %.2f" % maxenergy)
-                    #self.debug("Trying step %i out of %i" % (step, steps))
-                    id = randint(0, len(cluster) - 1)
-                    amb = self.groups[cluster[id]]
-                    residue = getattr(amb,"residue")
-                    hdef = getattr(amb,"hdef")
-                    type = hdef.type
-                    states = []
-
-                    #oldenergy = self.getHbondEnergy(clusteratoms, compatoms, residue)
-                    oldenergy = self.getHbondEnergy(amb)
-                    
-                    newstate = None
-                    if type in [1,4,3,10,13]:
-                        states = statemap[id]
-                        newstate = randint(0, len(states) - 1)
-                        while newstate == curmap[id] and type != 3: #Don't waste a step switching to same state
-                            newstate = randint(0, len(states) - 1)
-                        self.switchstate(states, amb, newstate)
-                    elif type in [2]:                      
-                        name = residue.get("name")
-                        defresidue = self.routines.aadef.getResidue(name)
-                        chinum = hdef.chiangle - 1
-                        newstate = randint(0,71)*5.0 - 180 
-                        self.routines.setChiangle(residue, chinum, newstate, defresidue)
-                    elif type in [11]:
-                        name = residue.get("name")
-                        defresidue = self.routines.aadef.getResidue(name)
-                        chinum = hdef.chiangle - 1
-                        oldangle = residue.get("chiangles")[chinum]
-                        newstate = 180.0 + oldangle
-                        self.routines.setChiangle(residue, chinum, newstate, defresidue)
+            seen = []
+            backbonemap = {}
+            for amb in cluster:
+                residue = getattr(amb,"residue")
+                nearatoms = getattr(amb,"nearatoms")
+                for hbond in nearatoms:
+                    if not hbond.atom2.residue in clustermap or (hbond.atom2.residue in clustermap and hbond.atom2.residue.name != "WAT" and hbond.atom2.name in ["O","N"]): # Only non-dual ambs first
+                        backbonemap[hbond] = hbond.dist
+                        seen.append(hbond)
+                          
+            backbonelist = sortdict(backbonemap)
+            backbonelist.reverse()
               
-                    #self.debug("Trying to change amb %i to new state %.2f" % (cluster[id], newstate))
-
-                    # Evaluate the change
-
-                    newenergy = energy - oldenergy + self.getHbondEnergy(amb)
-                    ediff = newenergy - energy
-
-                    rejected = 0
-                    if ediff > 0.0 and ediff < 50.0:
-                        exp = math.exp(-1 * ediff)
-                        if random() >= exp or newenergy > maxenergy:
-                            rejected = 1
-                    elif ediff >= 50.0:
-                        rejected = 1
-
-                    if rejected == 1: # Switch Back
-                        #self.debug("Rejected!")
-                        if type in [1,4,3,10,13]:
-                            self.switchstate(states, amb, curmap[id])
-                        elif type in [2,11]:
-                            self.routines.setChiangle(residue, chinum, curmap[id], defresidue)
-                    else:
-                        #self.debug("Accepted!")
-                        energy = newenergy
-                        curmap[id] = newstate
-                        if energy < bestenergy:
-                            bestenergy = energy
-                            for cid in range(len(cluster)):
-                                bestmap[cid] = curmap[cid]
-                                
-                    # Cool the system
-           
-                    if step > steps/2 and energy < (bestenergy + 5.0):
-                        maxenergy = bestenergy + 5
-
-                # Now switch to best energy
-                self.debug("Final state map: %s" % curmap)
-                for id in range(len(cluster)):
-                    if bestmap[id] == curmap[id]: continue
-                    amb = self.groups[cluster[id]]
-                    residue = getattr(amb,"residue")
-                    hdef = getattr(amb,"hdef")
-                    type = hdef.type
-                    if type in [1,4,3,10,13]:
-                        newstate = bestmap[id]
-                        states = statemap[id]
-                        self.switchstate(states, amb, newstate)
-                    elif type in [2,11]:
-                        name = residue.get("name")
-                        defresidue = self.routines.aadef.getResidue(name)
-                        chinum = hdef.chiangle - 1
-                        self.routines.setChiangle(residue, chinum, bestmap[id], defresidue)
-                    
-                #finalenergy = self.getHbondEnergy(clusteratoms, compatoms)        
-                self.debug("Final Best energy: %.2f" % bestenergy)
-                #self.debug("Final Actual energy: %.2f" % finalenergy)
-                self.debug("Best state map: %s" % bestmap)
-                self.debug("*******************\n")
-
-        self.debug("Total time %.2f" % (time() - starttime))
-        self.liststates()
-
-    def liststates(self):
-        """
-            List the final results of all conformation/protonation
-            ambiguities to stdout.
-        """
-        
-        for i in range(len(self.groups)):
-            state = ""
-            amb = self.groups[i]
-            residue = getattr(amb,"residue")
-            hdef = getattr(amb,"hdef")
-            resname = residue.get("name")
-            if residue.get("isNterm"):
-                H2 = residue.getAtom("H2")
-                H3 = residue.getAtom("H3")
-                if H2 != None and H3 != None:
-                    state = "Positively charged N-terminus"
-                elif H2 != None or H3 != None:
-                    state = "Neutral N-terminus"
-                else:
-                    state = "N TERMINUS ERROR!"
-
-            elif residue.get("isCterm") and hdef.name == "CTR":
-                HO = residue.getAtom("HO")
-                if HO != None:
-                    state = "Neutral C-Terminus"
-                else:
-                    state = "Negative C-Terminus"
-
-            elif (resname == "HIS" and hdef.name != "HISFLIP") or \
-                  resname in ["HSP","HSE","HSD","HID","HIE","HIP"]:
-                HD1 = residue.getAtom("HD1")
-                HE2 = residue.getAtom("HE2")
-                if HD1 != None and HE2 != None:
-                    state = "Positive HIS"
-                elif HD1 != None:
-                    state = "HIS HD1"
-                elif HE2 != None:
-                    state = "HIS HE2"
-                else:
-                    state = "Negative HIS"
-
-            elif resname == "ASP":
-                HD1 = residue.getAtom("HD1")
-                HD2 = residue.getAtom("HD2")
-                if HD1 != None or HD2 != None:
-                    state = "Neutral ASP"
-                else:
-                    state = "Negative ASP"
-
-            elif resname == "ASH":
-                HD1 = residue.getAtom("HD1")
-                HD2 = residue.getAtom("HD2")
-                if HD1 != None: state = "Neutral ASP (HD1)"
-                elif HD2 != None: state = "Neutral ASP (HD2)"
-                else: raise ValueError, "ASH should always be neutral!"
-
-            elif resname == "GLU":
-                HE1 = residue.getAtom("HE1")
-                HE2 = residue.getAtom("HE2")
-                if HE1 != None or HE2 != None:
-                    state = "Neutral GLU"
-                else:
-                    state = "Negative GLU"
-
-            elif resname == "GLH":
-                HE1 = residue.getAtom("HE1")
-                HE2 = residue.getAtom("HE2")
-                if HE1 != None: state = "Neutral GLU (HE1)"
-                elif HE2 != None: state = "Neutral GLU (HE2)"
-                else: raise ValueError, "GLH should always be neutral!"
-
-            if state != "":
-                self.routines.write("Ambiguity #: %i, chain: %s, residue: %i %s - %s\n" \
-                                    % (i, residue.chainID, residue.resSeq, residue.name, state),1)
-
-    def getHbondEnergy(self, amb):
-        """
-        """
-        energy = 0.0
-        residue = getattr(amb,"residue")
-        nearatoms = getattr(amb,"nearatoms")
-        energy = energy + self.getPenalty(residue)
-        for atom in residue.get("atoms"):
-            if atom.get("name") == "N" and not residue.get("isNterm"): continue
-            if atom.get("name") == "O" and not residue.get("name") == "WAT": continue
-            if atom.get("hdonor"):
-                for nearatom in nearatoms:
-                    if not nearatom.get("hacceptor"): continue
-                    dist = distance(atom.getCoords(), nearatom.getCoords())
-                    if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:                
-                        pair = self.getPairEnergy(atom, nearatom)
-                        energy = energy + pair             
-            if atom.get("hacceptor"):
-                for nearatom in nearatoms:
-                    if not nearatom.get("hdonor"): continue
-                    dist = distance(atom.getCoords(), nearatom.getCoords()) 
-                    if distance(atom.getCoords(), nearatom.getCoords()) < HYDROGEN_DIST:             
-                        pair = self.getPairEnergy(nearatom, atom)
-                        energy = energy + pair
-        return energy
+            for item in backbonelist:
+                hbond = item[0]
+                atom1 = hbond.atom1
+                atom2 = hbond.atom2
+                dist = item[1]
                 
+                if atom1 == None:
+                    self.debug("already fixed")
+                    continue
+
+                residue = atom1.residue
+                amb = clustermap[residue]
+                type = amb.hdef.type
+                
+                if amb.fixed: continue
+                
+                self.debug("Working on %s %i %s %s %s %i %s %s %.2f" % (atom1.residue.name, atom1.residue.resSeq, atom1.residue.chainID, atom1.name, atom2.residue.name, atom2.residue.resSeq, atom2.residue.chainID, atom2.name, dist))
+                if atom2.hdonor and atom2.hacceptor: # We have to try both!
+                    self.debug("IN OPTION 0")
+
+                    # First try atom2 as donor:
+                    result = self.tryAcceptor(atom1, atom2, amb)
+                    if result: continue
+                    
+                    # Next try atom2 as acceptor
+                    self.tryDonor(atom1, atom2, amb)
+
+                elif atom2.hacceptor: # Treat Atom 1 as donor
+                    self.debug("IN OPTION 1!")
+                    self.tryDonor(atom1, atom2, amb)
+                elif atom2.hdonor:  # Treat Atom 1 as acceptor
+                    self.debug("IN OPTION 2!")
+                    self.tryAcceptor(atom1, atom2, amb)
+                else: 
+                    self.debug("Resolved in flipping")
+                    
+
+            # STEP 3: All rotateable to other rotateable bonds
+            self.debug("\nNOW MOVING ON TO ALL ROTATE to ROTATE bonds")
+            distmap = {}
+            for amb in cluster:
+                if amb.fixed: continue
+                residue = getattr(amb,"residue")
+                nearatoms = getattr(amb,"nearatoms")
+                for hbond in nearatoms:
+                    if hbond.atom2.residue in clustermap and (clustermap[hbond.atom2.residue].hdef.type != 12 or amb.hdef.type != 12) \
+                           and hbond not in seen:
+                        distmap[hbond] = hbond.dist
+                            
+            distlist = sortdict(distmap)
+            distlist.reverse()
+          
+            for item in distlist:
+                hbond = item[0]
+                atom1 = hbond.atom1
+                atom2 = hbond.atom2
+                dist = item[1]
+                residue = atom1.residue
+                amb = clustermap[residue]
+                type = amb.hdef.type
+                amb2 = clustermap[atom2.residue]
+                type2 = amb2.hdef.type
+                
+                self.debug("Working on %s %i %s %s %s %i %s %s %.2f" % (atom1.residue.name, atom1.residue.resSeq, atom1.residue.chainID, atom1.name, atom2.residue.name, atom2.residue.resSeq, atom2.residue.chainID, atom2.name, dist))
+
+                if amb.fixed: continue
+
+                if atom2 not in atom2.residue.atoms:
+                    self.debug("Was already fixed!")
+                    continue
+                
+                # We would rather do WAT-X than X-WAT and X-11 than 11-X
+                if type2 == 12 or (type in [11,14] and type2 not in [11,14]):
+                    self.debug("Ignoring this one - will get the other")
+                    continue
+
+                if atom2.hdonor and atom2.hacceptor: # We have to try both!
+                    self.debug("IN OPTION 0")
+                    if atom1.hdonor: # Try atom1 as donor first
+                        setflag = self.tryDonor(atom1, atom2, amb)
+                        if setflag:
+                            accflag = self.tryAcceptor(atom2, atom1,  amb2)
+                            if not accflag:
+                                self.unAdd(amb, atom1)
+                            else:
+                                continue
+                                
+                    setflag = self.tryAcceptor(atom1, atom2, amb)
+                    if setflag:
+                        accflag = self.tryDonor(atom2, atom1, amb2)
+                        if not accflag:
+                            self.unAdd(amb, atom1)                       
+               
+                elif atom2.hacceptor: # Treat Atom 1 as donor
+                    self.debug("IN OPTION 1")
+                    setflag = self.tryDonor(atom1, atom2, amb)
+                    if setflag:
+                        accflag = self.tryAcceptor(atom2, atom1, amb2)
+                        if not accflag:
+                            self.unAdd(amb, atom1)
+                                     
+                elif atom2.hdonor:  # Treat Atom 1 as acceptor
+                    self.debug("IN OPTION 2")
+                    setflag = self.tryAcceptor(atom1, atom2, amb)
+                    if setflag:
+                        accflag = self.tryDonor(atom2, atom1, amb2)
+                        if not accflag:
+                            self.unAdd(amb, atom1)
+                         
+                else:
+                    self.debug("Resolved in flipping")
+                   
+               
+            # STEP 4: All Remaining water to water bonds
+            self.debug("\nNOW MOVING ON TO ALL WAT to WAT bonds")
+            watermap = {}
+            bondlist = []
+            for amb in cluster:
+                if amb.fixed: continue
+                residue = getattr(amb,"residue")
+                nearatoms = getattr(amb,"nearatoms")
+                if nearatoms == [] and amb.hdef.type == 12:
+                    watermap[residue.getAtom("O")] = []
+                for hbond in nearatoms:
+                    if amb.hdef.type == 12:
+                        if hbond.atom1 not in watermap: watermap[hbond.atom1] = []
+                    if hbond.atom2.residue in clustermap and (clustermap[hbond.atom2.residue].hdef.type == 12 and amb.hdef.type == 12):
+                        atom1 = hbond.atom1
+                        atom2 = hbond.atom2
+                        self.debug("%s %i %s %s %i %s %.3f" % (atom1.residue.name, atom1.residue.resSeq, atom1.name, atom2.residue.name, atom2.residue.resSeq, atom2.name, hbond.dist))
+                        watermap[atom1].append(hbond)
+                      
+
+            while watermap != {}:
+                maxnum = -1
+                maxatom = None
+                
+                # Pick the guy with the most intrabonds placed
+                for atom in watermap:
+                    if len(atom.intrabonds) > maxnum:
+                        maxnum = len(atom.intrabonds)
+                        maxatom = atom
+
+                # Make the list of nearby waters, put the best one first
+                
+                if "H2" in maxatom.intrabonds: # We're already done!
+                    del watermap[maxatom]
+                    continue
+                    
+                nearwaters = []
+                bestdist = 999.9
+                for i in range(len(watermap[maxatom])):
+                    hbond = watermap[maxatom][i]  
+                    atom1 = hbond.atom1
+                    atom2 = hbond.atom2
+                    dist = hbond.dist
+                    
+                    if dist < bestdist:
+                        bestdist = dist
+                        nearwaters = [atom2] + nearwaters
+                    else:
+                        nearwaters.append(atom2)
+
+                # Finish this water
+                self.debug("Working on %s %i %s" % (maxatom.residue.name, maxatom.residue.resSeq, maxatom.name))                
+                    
+                self.fixWater(maxatom, nearwaters) # Try adding hydrogen to atom1, LP to atom2
+                del watermap[maxatom]
+
+            # STEP 5:  Fix all remaining flips/ alcoholics
+                
+            for residue in clustermap:
+                amb = clustermap[residue]
+                if amb.hdef.type == 2:
+                    self.fixAlcoholic(amb)
+                if amb.hdef.type in [11,14] and not amb.fixed:
+                    self.setFlip(amb)
+                        
+            # STEP 6:  Remove all LPs from waters/alcoholics, rename all FLIPS back to standard
+
+            for residue in clustermap:
+                amb = clustermap[residue]
+                if amb.hdef.type == 12 or amb.hdef.type == 2: # Remove LPS
+                    atomlist = []
+                    for atom in residue.atoms: atomlist.append(atom)
+                    for atom in atomlist:
+                        if atom.name.startswith("LP"): residue.removeAtom(atom.name)
+                elif amb.hdef.type in [11,14]: # Flip names back
+                    for atom in residue.atoms:
+                        atomname = atom.name
+                        if atomname.endswith("FLIP"): residue.renameAtom(atomname, atomname[:-4])
+
+            self.debug("***** NETWORK COMPLETE *****\n")
+
+      
+     
+    def unAdd(self, amb, atom):
+        """
+            Revert to previous state
+        """
+        residue = amb.residue
+        type = amb.hdef.type
+        if type == 11:
+            amb.fixed = 0
+            self.debug("Unfixed residue %i!" % residue.resSeq)
+        else:
+            rmname = atom.intrabonds.pop(-1)
+            residue.removeAtom(rmname)
+            self.debug("Removed %s!" % rmname)
+            
+    def setFlip(self, amb):
+        """
+            Just set to whatever is best
+        """
+        hbonds = amb.nearatoms
+        bestenergy = 0
+        bestatom = None
+        donorflag = 0
+        for hbond in hbonds:
+            atom = hbond.atom1
+            nearatom = hbond.atom2
+            if nearatom not in nearatom.residue.atoms: continue # Was deleted
+            energy = self.getPairEnergy(atom, nearatom)
+            if energy < bestenergy:
+                bestatom = atom
+                bestenergy = energy
+                donorflag = 1   
+            energy = self.getPairEnergy(nearatom, atom)
+            if energy < bestenergy:
+                bestatom = atom
+                bestenergy = energy  
+        amb.fixFlip(bestatom, donorflag)
+
+    def printAtoms(self, clustermap):
+        seen = []
+        for residue in clustermap:
+            if residue not in seen:
+                seen.append(residue)
+                for atom in residue.atoms:
+                    print atom
+            for hbond in clustermap[residue].nearatoms:
+                if hbond.atom2.residue not in seen:
+                    seen.append(hbond.atom2.residue)
+                    for atom in hbond.atom2.residue.atoms:
+                        print atom
+         
+    def tryDonor(self, atom1, atom2, amb):
+        """
+            Try setting atom1 as a donor, atom2 as an acceptor
+
+            Returns
+                result : 1 if an hbond is made
+        """
+        result = 0
+        type = amb.hdef.type
+        if not atom1.hdonor or not atom2.hacceptor: return result
+        if type == 12:
+            if self.optWater(atom1, atom2, 1): result = 1
+        elif type == 2:
+            if self.addAlcoholic(atom1, atom2, 1): result = 1
+        elif type in [11,14]:
+            hlist = self.isHbond(atom1, atom2)
+            if hlist != []:
+                result = 1
+                amb.fixFlip(atom1, 1)
+        else:
+            print "Unable to process type %i!" % type
+            sys.exit()
+        return result
+                        
+    def tryAcceptor(self, atom1, atom2, amb):
+        """
+            Try setting atom1 as an acceptor, atom2 as a donor
+
+            amb is atom1's amb
+
+            NOTE: For now we can get away with assuming that atom2's
+                  hydrogens are already present (in rotate-to-backbone this
+                  is always the case, and since we flip all rotate-to-waters
+                  to water-to-rotate this will also work.
+
+            Returns
+                result : 1 if an hbond is made
+        """
+        result = 0
+        if not atom1.hacceptor or not atom2.hdonor: return result
+        type = amb.hdef.type
+    
+        if type == 2:#Try adding the lone pair
+            for hyd in atom2.intrabonds:
+                if hyd.startswith("H"):
+                    if self.addAlcoholic(atom1, atom2.residue.getAtom(hyd), 0):
+                        result = 1
+                        return result
+       
+        hlist = self.isHbond(atom2, atom1)
+        if hlist != []:
+            if type in [11,14]:
+                result = 1
+                # Fix flip and remove extra atoms
+                amb.fixFlip(atom1, 0)
+            elif type == 12: #Try adding the lone pair
+                for hyd in atom2.intrabonds:
+                    if hyd.startswith("H"): 
+                        if self.optWater(atom1, atom2.residue.getAtom(hyd), 0):
+                            result = 1
+                            break
+            elif type != 2:
+                print "Unable to process type %i!" % type
+                sys.exit()
+        return result
+
+
+    def makeAtomWithOneBond(self, oxygen, add, nearatoms, watflag):
+        """
+            Make an atom by rotating about the one existing bonded atom
+            to the oxygen.
+        """
+        residue = oxygen.residue
+        bonds = oxygen.intrabonds
+        refcoords = []
+        defcoords = []
+
+        defatomcoords = [0.9428,0,0]
+        refcoords.append(oxygen.getCoords())
+        refcoords.append(residue.getAtom(bonds[0]).getCoords())
+        defcoords.append([0,0,.3333]) # Oxygen
+        if watflag:
+            defcoords.append([0,0,1.3333])
+            atomtype = "HETATM"
+        else:
+            defcoords.append([0,0,1.7093]) # Not quite tetrahedral
+            atomtype = "ATOM"
+
+        newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
+        residue.createAtom(add,newcoords,atomtype) 
+        oxygen.intrabonds.append(add)
+        addatom = residue.getAtom(add)
+        addatom.intrabonds.append("O")
+          
+        # Check to make sure this makes an H bond
+
+        bestcoords = []
+        besten = 999.9
+        fixed = residue.getAtom(bonds[0])
+        for angle in range(-180,180,10):
+            self.rotateResidue(residue, fixed, oxygen, angle)
+            energy = 0
+            for nearatom in nearatoms:
+                if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
+                if add.startswith("H"): # Use the energy function
+                    energy += self.getPairEnergy(oxygen, nearatom) + self.getPairEnergy(nearatom, oxygen)
+                else: # Adding LP, so put at minimum distance
+                    energy += distance(addatom.getCoords(), nearatom.getCoords())
+            if energy < besten:
+                bestcoords = addatom.getCoords()
+                besten = energy
+
+        # Switch to bestcoords
+        addatom.x = bestcoords[0]
+        addatom.y = bestcoords[1]
+        addatom.z = bestcoords[2]
+
+    def getPositionsWithTwoBonds(self, oxygen):
+        """
+            Return the two positions that are possible when using the two
+            existing bonded atoms
+        """
+        # There are only two possible cases remaining - we can find them
+        #   by rotating one of the existing bonds about the other
+        residue = oxygen.residue
+        bonds = oxygen.intrabonds
+        
+        fixed = residue.getAtom(bonds[0])
+        rotate = residue.getAtom(bonds[1])
+        origcoords = rotate.getCoords()
+        
+        # Rotate by 120 degrees twice
+        self.rotateResidue(residue, fixed, oxygen, 120)
+        loc1 = rotate.getCoords()
+        self.rotateResidue(residue, fixed, oxygen, 120)
+        loc2 = rotate.getCoords()
+
+        # Set rotate back to original
+        rotate.x = origcoords[0]
+        rotate.y = origcoords[1]
+        rotate.z = origcoords[2]
+
+        return loc1, loc2
+
+    def fixPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatoms, watflag):
+        """
+            Fix the positions using locations 1 and 2
+        """
+        # Try placing the atom to be added at each of the spaces
+        if watflag == 0:
+            atomtxt = "ATOM"
+        else:
+            atomtxt = "HETATM"
+            
+        residue = oxygen.residue
+        residue.createAtom(add, loc1,atomtxt)
+        oxygen.intrabonds.append(add)
+
+        energy1 = 0
+        for nearatom in nearatoms:
+            if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
+            energy1 += self.getPairEnergy(oxygen, nearatom) + self.getPairEnergy(nearatom, oxygen)
+      
+        # Try the other location
+        residue.removeAtom(add)
+        residue.createAtom(add, loc2, atomtxt)
+
+        energy2 = 0
+        for nearatom in nearatoms:
+            if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
+            energy2 += self.getPairEnergy(oxygen, nearatom) + self.getPairEnergy(nearatom, oxygen)
+           
+        # If the other one was better use that
+        if energy1 < energy2:
+            residue.removeAtom(add)
+            residue.createAtom(add, loc1,atomtxt)
+
+    def optPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatom, watflag):
+        
+        # Try placing the atom to be added at each of the spaces
+        if watflag == 0:
+            atomtxt = "ATOM"
+        else:
+            atomtxt = "HETATM"
+            
+        residue = oxygen.residue
+        residue.createAtom(add, loc1,atomtxt)
+        oxygen.intrabonds.append(add)
+        if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
+        else: hlist = self.isHbond(oxygen, nearatom)
+        
+        if hlist != []: 
+            self.debug("ADDED %s!" % add)
+            return 1
+        else: # Try the other location
+            residue.removeAtom(add)
+            residue.createAtom(add, loc2, atomtxt)
+            if nearatom.name.startswith("H"): hlist2 = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
+            else: hlist2 = self.isHbond(oxygen, nearatom)
+            if hlist2 != []:
+                self.debug("ADDED %s!" % add)
+                return 1
+            else: # No hbond here
+                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                residue.removeAtom(add)
+                return 0
+
+    def makeAtomWithThreeBonds(self, oxygen, add):
+        bonds = oxygen.intrabonds
+        residue = oxygen.residue
+        fixed = residue.getAtom(bonds[0])
+        rotate1 = residue.getAtom(bonds[1])
+        rotate2 = residue.getAtom(bonds[2])
+        origcoords1 = rotate1.getCoords()
+        origcoords2 = rotate2.getCoords()
+        
+        # Rotate by 120 degrees twice
+        self.rotateResidue(residue, fixed, oxygen, 120)
+        loc1 = rotate1.getCoords()
+        self.rotateResidue(residue, fixed, oxygen, 120)
+        loc2 = rotate1.getCoords()
+        
+        # Set rotates back to original
+        rotate1.x = origcoords1[0]
+        rotate1.y = origcoords1[1]
+        rotate1.z = origcoords1[2]
+        rotate2.x = origcoords2[0]
+        rotate2.y = origcoords2[1]
+        rotate2.z = origcoords2[2]
+        
+        # Check to see which position is already placed
+        newloc = loc1
+        if distance(origcoords2, loc2) > 0.5: newloc = loc2
+        
+        residue.createAtom(add, newloc,"ATOM") 
+        oxygen.intrabonds.append(add)
+        residue.getAtom(add).intrabonds.append("O")
+        
+    def fixAlcoholic(self, amb):
+        """
+            If H is not present, add it at the best energy location]
+        """
+        residue = amb.residue
+        if residue.name == "SER":
+            oxygen = residue.getAtom("OG")
+            add = "HG"
+        elif residue.name == "THR":
+            oxygen = residue.getAtom("OG1")
+            add = "HG1"           
+        elif residue.name == "TYR":
+            oxygen = residue.getAtom("OH")
+            add = "HH"
+        if add in residue.map: return
+
+        hbonds = amb.nearatoms
+        nearatoms = []
+        for hbond in hbonds:
+            nearatoms.append(hbond.atom2)
+           
+        bonds = oxygen.intrabonds
+        if len(bonds) == 1: # No H or LP attached
+            self.makeAtomWithOneBond(oxygen, add, nearatoms, 0)
+     
+        elif len(bonds) == 2:  # One LP present, add H
+            loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
+            self.fixPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatoms, 0)
+
+        elif len(bonds) == 3:  # Both LPs present, add H to remaining spot
+            self.makeAtomWithThreeBonds(oxygen, add)
+
+    def addAlcoholic(self, oxygen, nearatom, flag):
+        """
+            oxygen is the residue's oxygen
+            nearatom is either an acceptor or a hydrogen that is
+               to be donated
+            if flag is 1 treat oxygen as donor
+            else as acceptor
+        """
+        bonds = oxygen.intrabonds
+        oxcoords = oxygen.getCoords()
+        residue = oxygen.residue
+        refcoords = []
+        defcoords = []
+        if residue.name == "SER": add = "HG"
+        elif residue.name == "THR": add = "HG1"           
+        elif residue.name == "TYR": add = "HH"
+
+        if flag == 0 and ("LP2" in bonds or "LP1" in bonds): add = "LP2"
+        elif flag == 0: add = "LP1"
+
+        if add in bonds:
+            self.debug("%s was already placed!" % add)
+            return 0
+        
+        if len(bonds) == 1: # No H or LP attached
+            self.makeAtomWithOneBond(oxygen, add, [nearatom], 0)
+   
+            # If this still isn't a bond, give up
+            if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
+            else: hlist = self.isHbond(oxygen, nearatom)
+            
+            if hlist == []:
+                self.debug("Couldn't fix!")
+                residue.removeAtom(add)
+                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                return 0
+            else:
+                self.debug("ADDED %s!" % add)
+                return 1
+            
+        elif len(bonds) == 2:  # LP present, add H
+
+            loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
+            return self.optPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatom, 0)
+    
+        elif len(bonds) == 3:  # Both LPs present, add H to remaining spot
+            self.makeAtomWithThreeBonds(oxygen, add)
+           
+            hlist = self.isHbond(oxygen, nearatom)
+            if hlist != []:
+                self.debug("ADDED %s!" % add)
+                return 1
+            else:
+                residue.removeAtom(add)
+                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                return 0
+                
+    def optWater(self, oxygen, nearatom, flag):
+        """
+            oxygen is the water's oxygen
+            nearatom is either an acceptor or a hydrogen that is
+               to be donated
+            if flag is 1 treat oxygen as donor
+            else as acceptor
+
+            The 4 coords for water are:
+               [0.9428,0,0]
+               [-0.4714, 0.8165, 0.000]
+               [-0.4714,-0.8165, 0.000]
+               [0.000, 0.000, 1.333]
+               with oxygen at [0,0, 0.3333]
+        """
+        bonds = oxygen.intrabonds   
+        residue = oxygen.residue
+     
+        if flag == 1 and ("H2" in bonds or "H1" in bonds): add = "H2"
+        elif flag == 1: add = "H1"
+        elif flag == 0 and ("LP2" in bonds or "LP1" in bonds): add = "LP2"
+        elif flag == 0: add = "LP1"
+
+        if add in bonds:
+            self.debug("%s was already placed!" % add)
+            return 0
+
+        if len(bonds) == 0: # Use the near atom
+            refcoords = []
+            defcoords = []
+            oxcoords = oxygen.getCoords()
+            nearcoords = nearatom.getCoords()
+            dist = distance(oxcoords, nearcoords)
+            defcoords.append([0,0,0.3333+dist])
+            defcoords.append([0,0,0.3333]) # Oxygen
+            refcoords.append(nearcoords)
+            refcoords.append(oxcoords)
+            defatomcoords = [0,0,1.3333] # Location to be placed
+            
+            newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
+            residue.createAtom(add,newcoords,"HETATM") 
+            oxygen.intrabonds.append(add)
+            residue.getAtom(add).intrabonds.append("O")
+            
+            if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
+            else: hlist = self.isHbond(oxygen, nearatom)
+            
+            if hlist == []:
+                self.debug("Couldn't fix!")
+                residue.removeAtom(add)
+                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                return 0
+            else:
+                self.debug("ADDED %s!" % add)
+                return 1
+            
+        elif len(bonds) == 1:  # Use the other bond
+            self.makeAtomWithOneBond(oxygen, add, [nearatom], 1)
+            
+            # If this still isn't a bond, give up
+            if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
+            else: hlist = self.isHbond(oxygen, nearatom)
+            
+            if hlist == []:
+                self.debug("Couldn't fix!")
+                residue.removeAtom(add)
+                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                return 0
+            else:
+                self.debug("ADDED %s!" % add)
+                return 1
+
+        elif len(bonds) == 2:  # We have LP1 and H1 already
+
+            loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
+            return self.optPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatom, 0)
+
+    def fixWater(self, oxygen, nearatoms):
+        """
+            oxygen is the water's oxygen
+            nearatom is either an acceptor or a hydrogen that is
+               to be donated
+            if flag is 1 treat oxygen as donor
+            else as acceptor
+
+          The 4 coords for water are:
+               [0.9428,0,0]
+               [-0.4714, 0.8165, 0.000]
+               [-0.4714,-0.8165, 0.000]
+               [0.000, 0.000, 1.333]
+               with oxygen at [0,0, 0.3333]
+        """
+        bonds = oxygen.intrabonds
+        residue = oxygen.residue
+      
+        if "H1" in bonds: add = "H2"
+        else: add = "H1"
+       
+        if len(bonds) == 0: # Use the nearest atom
+
+            refcoords = []
+            defcoords = []
+            oxcoords = oxygen.getCoords()
+            defcoords.append([0,0,.3333]) # Oxygen
+            refcoords.append(oxcoords)
+            defatomcoords = [0,0,1.3333] # Location to be placed
+            
+            # Unless that nearest atom is a water donating an H to this atom!
+            if nearatoms != []:
+                hlist = self.isHbond(nearatoms[0], oxygen)
+                nearcoords = nearatoms[0].getCoords()
+                if hlist != []:
+                    # Point away from this bond!
+                    add = "LP1"
+            else: # It doesn't matter where it points
+                nearcoords = [1.0,1.0,1.0]
+            dist = distance(oxcoords, nearcoords)
+            defcoords.append([0,0,.3333+dist]) 
+            refcoords.append(nearcoords)
+
+            newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
+            residue.createAtom(add,newcoords,"HETATM") 
+            oxygen.intrabonds.append(add)
+            residue.getAtom(add).intrabonds.append("O")
+
+            # Now add H2
+            self.fixWater(oxygen, nearatoms)
+
+        elif len(bonds) == 1:  # Use the other bond
+            self.makeAtomWithOneBond(oxygen, add, nearatoms, 1)
+            if add == "H1": self.fixWater(oxygen, nearatoms)
+
+        elif len(bonds) == 2:  # We have LP1 and H1 already
+
+            loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
+            self.fixPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatoms, 0)
+
+
+    def rotateResidue(self, residue, fixed, oxygen, newangle):
+        movenames = []
+        movecoords = []
+        
+        initcoords = subtract(oxygen.getCoords(), fixed.getCoords())
+
+        # Determine which atoms to rotate
+        for atomname in oxygen.intrabonds:
+            if atomname != fixed.name: movenames.append(atomname)
+
+        for name in movenames:
+            atom = residue.getAtom(name)
+            movecoords.append(subtract(atom.getCoords(), fixed.getCoords()))
+
+        newcoords = qchichange(initcoords, movecoords, newangle)
+        for i in range(len(movenames)):
+            name = movenames[i]
+            atom = residue.getAtom(name)
+            self.routines.removeCell(atom)
+            x = (newcoords[i][0] + fixed.get("x"))
+            y = (newcoords[i][1] + fixed.get("y"))
+            z = (newcoords[i][2] + fixed.get("z"))
+            atom.set("x", x)
+            atom.set("y", y)
+            atom.set("z", z)
+            self.routines.addCell(atom)
+        
+    def isHbond(self, donor, acc):
+        hbonds = []
+        donorhs = []
+        acchs = []
+        for bond in donor.get("intrabonds"):
+            if bond[0] == "H": donorhs.append(bond)
+        for bond in acc.get("intrabonds"):
+            if bond[0] == "H": acchs.append(bond)
+        for donorh in donorhs:
+            donorhatom = donor.get("residue").getAtom(donorh)
+            dist = distance(donorhatom.getCoords(), acc.getCoords())
+            if dist > 3.3: continue
+            if len(acchs) != 0:
+                for acch in acchs:
+                    acchatom = acc.get("residue").getAtom(acch)
+                    hdist = distance(donorhatom.getCoords(), acchatom.getCoords())
+                    if hdist < 1.5 and acc.residue.name != "HSN": continue
+                    angle = self.getHbondangle(acc, donor, donorhatom)
+                    if angle > 20.0: continue
+                    angle2 = self.getHbondangle(donorhatom, acchatom, acc)
+                    if angle2 > 110.0: continue
+                    hbonds.append(donorhatom)
+                    self.debug("Found HBOND! %.4f %.4f" % (dist, angle))
+            else:
+                angle = self.getHbondangle(acc, donor, donorhatom)
+                #print dist, angle
+                if angle <= 21.0:
+                    hbonds.append(donorhatom)
+                    self.debug("Found HBOND! %.4f %.4f" % (dist, angle))
+        return hbonds               
 
     def getPairEnergy(self, donor, acceptor):
         """
@@ -620,7 +1310,7 @@ class hydrogenRoutines:
                         continue
                     
                     hdist = distance(donorhatom.getCoords(), acceptorhatom.getCoords())
-                    if hdist < 1.5: # Are the Hs too close?
+                    if hdist < 1.5 and acceptor.residue.name != "HSN": # Are the Hs too close?
                         energy += -1 * max_hbond_energy
                         continue
                     
@@ -722,589 +1412,7 @@ class hydrogenRoutines:
 
         return penalty
                 
-                
-    def initHbondEnergy(self, cluster, allatoms):
-        """
-            Create a list of hydrogen donors/acceptors within this cluster
-            and another list of donors/acceptors throughout the
-            entire protein.
 
-            Parameters
-                cluster:      A list of group ids that are networked (list)
-            Returns
-                clusteratoms: A list of hydrogen donor/acceptor atoms in
-                              the cluster (list)
-        """
-        clusteratoms = []
-        compatoms = []
-        for id in cluster:
-            residue = self.groups[id][0]
-            for atom in residue.get("atoms"):
-                if (atom.get("hacceptor") or atom.get("hdonor")) \
-                       and atom not in clusteratoms:
-                    clusteratoms.append(atom)
-                    for atom2 in allatoms:
-                        dist = distance(atom.getCoords(), atom2.getCoords())
-                        if dist < HYDROGEN_DIST and atom2 not in compatoms:
-                            compatoms.append(atom2)
-        return clusteratoms, compatoms
-            
-    def findNetworks(self,limit):
-        """
-            Find hydrogen networks that should be optimized together.
-
-            Parameters
-                limit:    The limit to see how close two boundatoms are
-
-            Returns
-                networks: A list of group ID networks (list)
-        """
-        map = {}
-        networks = []
-        done = []
-        groups = self.groups
-        for i in range(len(groups)):
-            amb1 = groups[i]
-            residue1 = getattr(amb1, "residue")
-            hdef1 = getattr(amb1,"hdef")
-            for conf1 in hdef1.conformations:
-                boundatom1 = residue1.getAtom(conf1.boundatom)
-                for j in range(i+1, len(groups)):
-                    amb2 = groups[j]
-                    residue2 = getattr(amb2, "residue")
-                    hdef2 = getattr(amb2,"hdef")
-                    if hdef1.type in [2,11] and hdef2.type in [2,11]: limit = 4.3
-                    for conf2 in hdef2.conformations:
-                        boundatom2 = residue2.getAtom(conf2.boundatom)
-                        if distance(boundatom1.getCoords(), boundatom2.getCoords()) < limit:
-                            if i not in map:
-                                map[i] = [j]
-                            elif j not in map[i]:
-                                map[i].append(j)
-                            break
-
-        for i in range(len(groups)):
-            if i in map and i not in done:
-                list = analyzeMap(map,i,[])
-                for item in list:
-                    done.append(item)
-                networks.append(list)
-            elif i not in map and i not in done:
-                networks.append([i])
-                
-        self.debug(networks)
-        sum = 0
-        max = 0
-        for item in networks:
-            num = len(item)
-            if num > max: max = num
-            sum += num
-        #print "average degree: %.2f, max %i" % (float(sum)/len(networks), max)
-        return networks
-
-    def randomizeWaters(self):
-        """
-            Randomize the waters found in a protein. Mimics the
-            optimizeWaters function, but instead of going through
-            all possible 5 degree increments, simply choose a random
-            angle.
-        """
-        allatoms = self.findAmbiguities(1,0)
-        closeatoms = {}
-        overallenergy = 0.0
-        
-        # Step 1: Get list of water residues
-
-        waters = []
-        for group in self.groups:
-            residue = getattr(group,"residue")
-            waters.append(residue)
-
-        # Step 2: Shuffle waters
-
-        shuffle(waters)
-        
-        # Step 3: Satisfy all protein donors
-    
-        for residue in waters:
-            self.watermap[residue] = None
-            closeatoms[residue] = []
-            bestdon = None       
-            bestdondist = 999.99
-            bestnh = None
-            oxygen = residue.getAtom("O")
-            for atom in allatoms:
-                closedist = distance(oxygen.getCoords(), atom.getCoords())
-                if oxygen != atom and closedist < WATER_DIST: closeatoms[residue].append(atom) 
-                if atom.get("residue").name == "WAT": continue  
-                if atom.get("hdonor"):
-                    for bond in atom.get("intrabonds"):
-                        if bond[0] != "H": continue
-                        bondatom = atom.get("residue").getAtom(bond)
-                        dist = distance(oxygen.getCoords(), bondatom.getCoords())
-                        angle = self.getHbondangle(atom, oxygen, bondatom)
-                        if dist < bestdondist and angle <= 20.0 : 
-                            bestdon = bondatom
-                            bestdondist = dist
-                elif atom.get("name")[0:2] == "NH":
-                    arg = atom.get("residue")
-                    if atom.get("name") == "NH1": other = "NH2"
-                    else: other = "NH1"
-                    if arg.getAtom(other).get("hdonor") != 1:
-                        for bond in atom.get("intrabonds"):
-                            if bond[0] != "H": continue
-                            bondatom = arg.getAtom(bond)
-                            dist = distance(oxygen.getCoords(), bondatom.getCoords())
-                            angle = self.getHbondangle(atom, oxygen, bondatom)
-                            if dist < bestdondist and angle <= 20.0:
-                                bestdon = bondatom
-                                bestdondist = dist
-                                bestnh = atom
-
-            if bestnh != None:
-                if bestdon.get("name") in bestnh.get("intrabonds"):
-                    bestnh.set("hdonor",1)
-                    bestnh.set("hacceptor",0)
-          
-            if bestdondist < 3.3:
-                #print "Optimizing WAT %i" % residue.resSeq
-                #print "\tBest Donor: ", bestdon.residue.name, bestdon.residue.resSeq, bestdon.name, bestdondist
-                R = bestdondist
-                refcoords, defcoords = [], []
-          
-                defcoords.append([0,0,.3333])   # Oxygen
-                defcoords.append([0,0,.3333+R]) # Donor
-                refcoords.append(oxygen.getCoords())
-                refcoords.append(bestdon.getCoords())
-
-                defatomcoords = [.9428,0,0] # Location 1
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H1",newcoords,"HETATM")
-
-                defatomcoords = [-.4714,.8165,0] # Location 2
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H2",newcoords,"HETATM")
-
-                oxygen.intrabonds = ["H1","H2"]
-                self.watermap[residue] = bestdon
-
-                # Now randomize
-
-                randangle = randint(0,71)*5.0 - 180
-                self.setWaterHydrogens(residue, randangle)
-
-            else: closeatoms[residue] = []
-
-        # Step 4: Place and orient hydrogens
-
-        for residue in waters:
-            #print "Optimizing WAT %i" % residue.resSeq
-            oxygen = residue.getAtom("O")
-            if self.watermap[residue] != None: continue
-            bestdon = None
-            bestacc = None        
-            bestdondist = 999.99
-            bestaccdist = 999.99
-            for atom in allatoms:
-                if atom == oxygen: continue
-                closedist = distance(oxygen.getCoords(), atom.getCoords())
-                if closedist < WATER_DIST: closeatoms[residue].append(atom)
-                if atom.get("hacceptor"):
-                    dist = closedist
-                    if dist < bestaccdist:
-                        bestacc = atom
-                        bestaccdist = dist
-                if atom.get("hdonor"):
-                    for bond in atom.get("intrabonds"):
-                        if bond[0] != "H": continue
-                        bondatom = atom.get("residue").getAtom(bond)
-                        dist = distance(oxygen.getCoords(), bondatom.getCoords())      
-                        if dist < bestdondist:
-                            bestdon = bondatom
-                            bestdondist = dist
-
-            #print "\tBest Donor: ", bestdon.residue.name, bestdon.residue.resSeq, bestdon.name, bestdondist
-            #print "\tBest Acc: ", bestacc.residue.name, bestacc.residue.resSeq, bestacc.name, bestaccdist
-    
-            if bestdondist < bestaccdist: # Donor is closest
-                R = bestdondist
-                refcoords, defcoords = [], []
-                
-                defcoords.append([0,0,.3333])   # Oxygen
-                defcoords.append([0,0,.3333+R]) # Donor
-                refcoords.append(oxygen.getCoords())
-                refcoords.append(bestdon.getCoords())
-                
-                defatomcoords = [.9428,0,0] # Location 1
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H1",newcoords,"HETATM")
-                
-                defatomcoords = [-.4714,.8165,0] # Location 2
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H2",newcoords,"HETATM")
-                
-                oxygen.intrabonds = ["H1","H2"]
-                self.watermap[residue] = bestdon
-
-            else: # Acceptor is closest
-                b = 1.0  # Oxygen (Donor) - H1 dist
-                r = 1.5  # Acceptor - H1 dist
-                if bestaccdist >= (b + r):
-                    # Then H1 is perfectly placed on the vector
-                    vec = subtract(bestacc.getCoords(), oxygen.getCoords())
-                    x = oxygen.get("x") + b/bestaccdist * vec[0]
-                    y = oxygen.get("y") + b/bestaccdist * vec[1]
-                    z = oxygen.get("z") + b/bestaccdist * vec[2]
-                    newcoords = [x,y,z]
-                    residue.createAtom("H1",newcoords,"HETATM")
-                    
-                else:
-                    # Minimize the H-O-A angle 
-                    defcoords, refcoords = [], []
-                    R = distance(oxygen.getCoords(), bestacc.getCoords())
-                    psi = acos((b*b + R*R - r*r)/(2*b*R))
-                    
-                    defcoords.append([0,0,0])
-                    refcoords.append(oxygen.getCoords())
-                    defcoords.append([R,0,0])
-                    refcoords.append(bestacc.getCoords())
-                    
-                    y = random()
-                    while y > sin(psi):
-                        y = y/2
-                    z = sqrt(sin(psi)*sin(psi) - y*y)
-                        
-                    defatomcoords = [cos(psi), y, z]
-                    newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                    residue.createAtom("H1",newcoords,"HETATM")
-
-                defcoords, refcoords = [], []
-                defcoords.append([0,0,.3333])   # Oxygen
-                defcoords.append([.9428,0,0])   # H1
-                refcoords.append(oxygen.getCoords())
-                refcoords.append(newcoords)
-                defatomcoords = [-.4714,.8165,0] # Location 2
-                h2coords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H2",h2coords,"HETATM")
-                oxygen.intrabonds = ["H1","H2"]
-                self.watermap[residue] = residue.getAtom("H1")
-
-            # Now randomize
-                    
-            randangle = randint(0,71)*5.0 - 180
-            self.setWaterHydrogens(residue, randangle)
-            
-    def setWaterHydrogens(self, residue, newangle):
-        """
-            Optimize a Water molecule
-
-            Parameters
-                residue:  The water residue
-                newangle: The new chi angle (float)
-        """
-        movenames = []
-        movecoords = []
-
-        hydrogen = self.watermap[residue]
-        oxygen = residue.getAtom("O")
-        
-        initcoords = subtract(oxygen.getCoords(), hydrogen.getCoords())
-
-        # Determine which atoms to rotate
-
-        if hydrogen not in residue.get("atoms"):
-            movenames = ["H1","H2"]
-        elif hydrogen.get("name") == "H1":
-            movenames = ["H2"]
-        else:
-            raise ValueError, "Got improperly mapped water hydrogen!"
-            
-        for name in movenames:
-            atom = residue.getAtom(name)
-            movecoords.append(subtract(atom.getCoords(), hydrogen.getCoords()))
-
-        newcoords = qchichange(initcoords, movecoords, newangle)
-    
-        for i in range(len(movenames)):
-            name = movenames[i]
-            atom = residue.getAtom(name)
-            self.routines.removeCell(atom)
-            x = (newcoords[i][0] + hydrogen.get("x"))
-            y = (newcoords[i][1] + hydrogen.get("y"))
-            z = (newcoords[i][2] + hydrogen.get("z"))
-            atom.set("x", x)
-            atom.set("y", y)
-            atom.set("z", z)
-            self.routines.addCell(atom)
-            
-    def optimizeWaters(self):
-        """
-            Optimize the waters found in a protein
-        """
-        allatoms = self.findAmbiguities(1,0)
-        closeatoms = {}
-        overallenergy = 0.0
-
-        # Step 1: Get list of water residues
-
-        waters = []
-        for group in self.groups:
-            residue = getattr(group,"residue")
-            waters.append(residue)
-
-        # Step 2: Shuffle waters
-
-        shuffle(waters)
-        
-        # Step 3: Satisfy all protein donors
-    
-        for residue in waters:
-            self.watermap[residue] = None
-            closeatoms[residue] = []
-            bestdon = None       
-            bestdondist = 999.99
-            bestnh = None
-            oxygen = residue.getAtom("O")
-            for atom in allatoms:
-                closedist = distance(oxygen.getCoords(), atom.getCoords())
-                if oxygen != atom and closedist < WATER_DIST: closeatoms[residue].append(atom) 
-                if atom.get("residue").name == "WAT": continue  
-                if atom.get("hdonor"):
-                    for bond in atom.get("intrabonds"):
-                        if bond[0] != "H": continue
-                        bondatom = atom.get("residue").getAtom(bond)
-                        dist = distance(oxygen.getCoords(), bondatom.getCoords())
-                        angle = self.getHbondangle(atom, oxygen, bondatom)
-                        if dist < bestdondist and angle <= 20.0 : 
-                            bestdon = bondatom
-                            bestdondist = dist
-                elif atom.get("name")[0:2] == "NH":
-                    arg = atom.get("residue")
-                    if atom.get("name") == "NH1": other = "NH2"
-                    else: other = "NH1"
-                    if arg.getAtom(other).get("hdonor") != 1:
-                        for bond in atom.get("intrabonds"):
-                            if bond[0] != "H": continue
-                            bondatom = arg.getAtom(bond)
-                            dist = distance(oxygen.getCoords(), bondatom.getCoords())
-                            angle = self.getHbondangle(atom, oxygen, bondatom)
-                            if dist < bestdondist and angle <= 20.0:
-                                bestdon = bondatom
-                                bestdondist = dist
-                                bestnh = atom
-
-            if bestnh != None:
-                if bestdon.get("name") in bestnh.get("intrabonds"):
-                    bestnh.set("hdonor",1)
-                    bestnh.set("hacceptor",0)
-          
-            if bestdondist < 3.3:
-                #print "Optimizing WAT %i" % residue.resSeq
-                #print "\tBest Donor: ", bestdon.residue.name, bestdon.residue.resSeq, bestdon.name, bestdondist
-                R = bestdondist
-                refcoords, defcoords = [], []
-          
-                defcoords.append([0,0,.3333])   # Oxygen
-                defcoords.append([0,0,.3333+R]) # Donor
-                refcoords.append(oxygen.getCoords())
-                refcoords.append(bestdon.getCoords())
-
-                defatomcoords = [.9428,0,0] # Location 1 on tetrahedral
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H1",newcoords,"HETATM")
-
-                defatomcoords = [-.4714,.8165,0] # Location 2 on tetrahedral
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H2",newcoords,"HETATM")
-
-                oxygen.intrabonds = ["H1","H2"]
-                self.watermap[residue] = bestdon
-
-                # Now optimize
-
-                amb = hydrogenAmbiguity(residue,None)
-                setattr(amb,"nearatoms",closeatoms[residue])
-                #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
-                energy = self.getHbondEnergy(amb)
-                bestangle = None
-                bestenergy = energy
-                
-                for angle in range(-180,180,5):
-                    self.setWaterHydrogens(residue, angle)
-                    #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
-                    energy = self.getHbondEnergy(amb)
-                    if energy < bestenergy:
-                        bestenergy = energy
-                        bestangle = angle
-             
-                if bestangle == None:
-                    bestangle = randint(0,71)*5.0 - 180
-                self.setWaterHydrogens(residue, bestangle)
-                overallenergy += bestenergy
-
-            else: closeatoms[residue] = []
-
-        # Step 4: Place and orient hydrogens
-
-        for residue in waters:
-            #print "Optimizing WAT %i" % residue.resSeq
-            oxygen = residue.getAtom("O")
-            if self.watermap[residue] != None: continue
-            bestdon = None
-            bestacc = None        
-            bestdondist = 999.99
-            bestaccdist = 999.99
-            for atom in allatoms:
-                if atom == oxygen: continue
-                closedist = distance(oxygen.getCoords(), atom.getCoords())
-                if closedist < WATER_DIST: closeatoms[residue].append(atom)
-                if atom.get("hacceptor"):
-                    dist = closedist
-                    if dist < bestaccdist:
-                        bestacc = atom
-                        bestaccdist = dist
-                if atom.get("hdonor"):
-                    for bond in atom.get("intrabonds"):
-                        if bond[0] != "H": continue
-                        bondatom = atom.get("residue").getAtom(bond)
-                        dist = distance(oxygen.getCoords(), bondatom.getCoords())      
-                        if dist < bestdondist:
-                            bestdon = bondatom
-                            bestdondist = dist
-
-            #print "\tBest Donor: ", bestdon.residue.name, bestdon.residue.resSeq, bestdon.name, bestdondist
-            #print "\tBest Acc: ", bestacc.residue.name, bestacc.residue.resSeq, bestacc.name, bestaccdist
-    
-            if bestdondist < bestaccdist: # Donor is closest
-                R = bestdondist
-                refcoords, defcoords = [], []
-                
-                defcoords.append([0,0,.3333])   # Oxygen
-                defcoords.append([0,0,.3333+R]) # Donor
-                refcoords.append(oxygen.getCoords())
-                refcoords.append(bestdon.getCoords())
-                
-                defatomcoords = [.9428,0,0] # Location 1 on tetrahedral
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H1",newcoords,"HETATM")
-                
-                defatomcoords = [-.4714,.8165,0] # Location 2 on tetrahedral
-                newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H2",newcoords,"HETATM")
-                
-                oxygen.intrabonds = ["H1","H2"]
-                self.watermap[residue] = bestdon
-
-            else: # Acceptor is closest
-                b = 1.0  # Oxygen (Donor) - H1 dist
-                r = 1.5  # Acceptor - H1 dist
-                if bestaccdist >= (b + r):
-                    # Then H1 is perfectly placed on the vector
-                    vec = subtract(bestacc.getCoords(), oxygen.getCoords())
-                    x = oxygen.get("x") + b/bestaccdist * vec[0]
-                    y = oxygen.get("y") + b/bestaccdist * vec[1]
-                    z = oxygen.get("z") + b/bestaccdist * vec[2]
-                    newcoords = [x,y,z]
-                    residue.createAtom("H1",newcoords,"HETATM")
-                    
-                else:
-                    # Minimize the H-O-A angle 
-                    defcoords, refcoords = [], []
-                    R = distance(oxygen.getCoords(), bestacc.getCoords())
-                    psi = acos((b*b + R*R - r*r)/(2*b*R))
-                    
-                    defcoords.append([0,0,0])
-                    refcoords.append(oxygen.getCoords())
-                    defcoords.append([R,0,0])
-                    refcoords.append(bestacc.getCoords())
-                    
-                    y = random()
-                    while y > sin(psi):
-                        y = y/2
-                    z = sqrt(sin(psi)*sin(psi) - y*y)
-                        
-                    defatomcoords = [cos(psi), y, z]
-                    newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                    residue.createAtom("H1",newcoords,"HETATM")
-
-                defcoords, refcoords = [], []
-                defcoords.append([0,0,.3333])   # Oxygen
-                defcoords.append([.9428,0,0])   # H1
-                refcoords.append(oxygen.getCoords())
-                refcoords.append(newcoords)
-                defatomcoords = [-.4714,.8165,0] # Location 2
-                h2coords = findCoordinates(2, refcoords, defcoords, defatomcoords)
-                residue.createAtom("H2",h2coords,"HETATM")
-                oxygen.intrabonds = ["H1","H2"]
-                self.watermap[residue] = residue.getAtom("H1")
-
-            # Now optimize
-
-            amb = hydrogenAmbiguity(residue,None)
-            setattr(amb,"nearatoms",closeatoms[residue])
-
-            energy = self.getHbondEnergy(amb)
-            #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
-            bestangle = None
-            bestenergy = energy
-
-            for angle in range(-180,180,5):
-                self.setWaterHydrogens(residue, angle)
-
-                energy = self.getHbondEnergy(amb)
-                #energy = self.getHbondEnergy([oxygen], closeatoms[residue])
-    
-                if energy < bestenergy:
-                    bestenergy = energy
-                    bestangle = angle
-             
-            if bestangle == None:
-                bestangle = randint(0,71)*5.0 - 180
-            self.setWaterHydrogens(residue, bestangle)
-            overallenergy += bestenergy
-       
-        #print "Overall energy: %.2f" % overallenergy
-             
-    def findViableAngles(self, residue, nearatoms):
-        """
-            Find the viable angles that a water molecule can be rotated to.
-            If there are no donor/acceptor atoms within 
-
-            Parameters
-                residue:   The water residue to examine
-                nearatoms: A list of nearby donor/acceptors
-            Returns
-                angle:   A list of viable angles 
-        """
-        angles = []
-        bestmap = {} # Store best values by tuple (nearatom, hydrogen)
-        
-        hydrogen = self.watermap[residue]
-        if hydrogen not in residue.get("atoms"):
-            moveatoms = [residue.getAtom("H1"),residue.getAtom("H2")]
-        elif hydrogen.get("name") == "H1":
-            moveatoms = [residue.getAtom("H2")]
-
-        for atom in nearatoms:
-            for moveableatom in moveatoms:
-                bestmap[(atom, moveableatom)] = (999.99, None)
-    
-        for angle in range(-180,180,5):
-            self.optimizeWaterHydrogens(residue, angle)                
-            for atom in nearatoms:
-                for moveableatom in moveatoms:
-                    dist = distance(moveableatom.getCoords(), atom.getCoords())
-                    bestdist = bestmap[(atom, moveableatom)][0]
-                    if dist < bestdist:
-                        bestmap[(atom, moveableatom)] = (dist, angle)
-
-        for atom in nearatoms:
-            for moveableatom in moveatoms:
-                angle = bestmap[(atom,moveableatom)][1]
-                if angle not in angles: angles.append(angle)
-                
-        return angles
-    
     def findAmbiguities(self, water, pkaflag):
         """
             Find the amibiguities within a protein according to the
@@ -1344,14 +1452,11 @@ class hydrogenRoutines:
                        (groupname == "CTN" and cter == 2):
 
                         if group.method != 0:
-                            if not water and type == 1:
-                                amb = hydrogenAmbiguity(residue, group)
-                                self.groups.append(amb)
-                            if water and type == 3:
-                                amb = hydrogenAmbiguity(residue, group)
-                                self.groups.append(amb)
-               
+                            amb = hydrogenAmbiguity(residue, group, self.routines)
+                            self.groups.append(amb)
         for atom in self.protein.getAtoms():
+            if atom.residue.type not in [1,3]: continue
+            if atom.name == "O" and atom.residue.name == "WAT": atom.hdonor = 1
             if atom.get("hacceptor") or atom.get("hdonor"): allatoms.append(atom)
             
         return allatoms

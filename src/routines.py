@@ -1046,6 +1046,7 @@ class Routines:
                 atom2name = atom2.name
                 coords2 = atom2.getCoords()
                 residue2 = atom2.get("residue")
+                if residue2.get("type") not in [1,3]: continue
                 if optflag:
                     if ((atom2name.startswith("HG") and residue2.name in ["SER","THR"]) or \
                     (atom2name == "HH" and residue2.name == "TYR") or \

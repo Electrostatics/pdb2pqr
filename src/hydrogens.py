@@ -2,8 +2,8 @@
     Hydrogen optimization routines for PDB2PQR
 
     This module contains the hydrogen optimization routines and classes for
-    PDB2PQR.  It is (optionally) used to check protonation states and
-    improve hydrogen networks within a protein.
+    PDB2PQR. It uses a deterministic algorithm to perform flips, rotate
+    alcoholic hydrogens, and optimize waters.
 
     Based on C code from Jens Erik Nielsen
     UCSD/HHMI
@@ -28,14 +28,33 @@ from random import *
 from time import *
 
 def sortdict(dict):
-	items = [(v, k) for k, v in dict.items()]
-	items.sort()
-	items.reverse()             
-	items = [(k, v) for v, k in items]
-	return items
+    """
+        Sort a dictionary by its values
+
+        Parameters
+            dict:  The dictionary to sort (dict)
+        Returns
+            items:  A list of the items in tuples (list)
+    """
+    items = [(v, k) for k, v in dict.items()]
+    items.sort()
+    items.reverse()             
+    items = [(k, v) for v, k in items]
+    return items
 
 class hbond:
+    """
+        A small class containing the hbond structure
+    """
     def __init__(self, atom1, atom2, dist):
+        """
+            Initialize the class
+
+            Parameters
+                atom1:  The first atom in the potential bond (Atom)
+                atom2:  The second atom in the potential bond (Atom)
+                dist:  The distance between the two atoms (float)
+        """
         self.atom1 = atom1
         self.atom2 = atom2
         self.dist = dist
@@ -46,11 +65,14 @@ class hydrogenAmbiguity:
     """
     def __init__(self, residue, hdef, routines):
         """
-            Initialize the class
+            Initialize the class - if the residue has a rotateable hydrogen,
+            remove it.  If it can be flipped, pre-flip the residue by creating
+            all additional atoms.
 
             Parameters
                 residue:  The residue in question (residue)
                 hdef:     The hydrogen definition matching the residue
+                routines: Pointer to the general routines object
         """
         self.residue = residue
         self.hdef = hdef
@@ -153,11 +175,17 @@ class hydrogenAmbiguity:
                 bonds.pop(bonds.index("HH"))
 
     def __str__(self):
+        """
+            Print the ambiguity for debugging purposes
+        """
         text = "%s %i %s (%i)" % (self.residue.name, self.residue.resSeq, \
                                   self.residue.chainID, self.hdef.type)
         return text
           
     def makeFlip(self):
+        """
+            Flip the residue (rotate around the chiangle by 180)
+        """
         residue = self.residue
         name = residue.get("name")
         defresidue = self.routines.aadef.getResidue(name)
@@ -168,8 +196,14 @@ class hydrogenAmbiguity:
 
     def fixFlip(self, boundatom, donorflag=None):
         """
-            Donorflag is used for HSN to determine whether the boundatom
-            is a donor or acceptor
+            Fix the flippable residue.  The residue will no loner be
+            rotated.  This deletes the worst-state atoms, but does not
+            rename them.
+
+            Parameters:
+                boundatom:  The atom that made the best bond (Atom)
+                donorflag:  Optional flag used for HSN to determine whether
+                            the boundatom is donor/acceptor (int)
         """
         if self.fixed: return
         residue = self.residue
@@ -415,6 +449,9 @@ class hydrogenRoutines:
 
  
     def printNetwork(self, network):
+        """
+            Print the network of ambiguities
+        """
         text = ""
         for amb in network:
             text += "%s, " % amb
@@ -686,7 +723,13 @@ class hydrogenRoutines:
      
     def unAdd(self, amb, atom):
         """
-            Revert to previous state
+            Remove a recently added atom; Necessary for case
+            where we are dealing with two ambiguities and the first is
+            able to place a bond.
+
+            Parameters
+                amb:  The ambiguity in question
+                atom: The atom that is bonded to the removed atom
         """
         residue = amb.residue
         type = amb.hdef.type
@@ -700,7 +743,8 @@ class hydrogenRoutines:
             
     def setFlip(self, amb):
         """
-            Just set to whatever is best
+            Since the flip cannot make any bonds, set to the best position
+            as defined by the energy function
         """
         hbonds = amb.nearatoms
         bestenergy = 0
@@ -722,6 +766,10 @@ class hydrogenRoutines:
         amb.fixFlip(bestatom, donorflag)
 
     def printAtoms(self, clustermap):
+        """
+            For debugging, print all residues examined in this
+            cluster to stdout
+        """
         seen = []
         for residue in clustermap:
             if residue not in seen:
@@ -737,6 +785,11 @@ class hydrogenRoutines:
     def tryDonor(self, atom1, atom2, amb):
         """
             Try setting atom1 as a donor, atom2 as an acceptor
+
+            Parameters
+                atom1:  The donor atom
+                atom2:  The acceptor atom
+                amb:    The ambiguity for the donor atom
 
             Returns
                 result : 1 if an hbond is made
@@ -762,13 +815,16 @@ class hydrogenRoutines:
         """
             Try setting atom1 as an acceptor, atom2 as a donor
 
-            amb is atom1's amb
-
             NOTE: For now we can get away with assuming that atom2's
                   hydrogens are already present (in rotate-to-backbone this
                   is always the case, and since we flip all rotate-to-waters
                   to water-to-rotate this will also work.
 
+            Parameters
+                atom1:  The acceptor atom
+                atom2:  The donor atom
+                amb:    The ambiguity for the acceptor atom
+    
             Returns
                 result : 1 if an hbond is made
         """
@@ -805,6 +861,12 @@ class hydrogenRoutines:
         """
             Make an atom by rotating about the one existing bonded atom
             to the oxygen.
+
+            Parameters
+               oxygen:    The oxygen atom in question
+               add:       The name of the atom to add
+               nearatoms: A list of nearby atoms to evaluate
+               watflag:   A flag; 1 if oxygen is water, 0 otherwise
         """
         residue = oxygen.residue
         bonds = oxygen.intrabonds
@@ -856,6 +918,12 @@ class hydrogenRoutines:
         """
             Return the two positions that are possible when using the two
             existing bonded atoms
+
+            Parameters
+                oxygen:  The oxygen for the residue in question
+            Returns:
+                loc1:  Possible location 1 for the new atom
+                loc2:  Possible location 2 for the new atom
         """
         # There are only two possible cases remaining - we can find them
         #   by rotating one of the existing bonds about the other
@@ -882,7 +950,15 @@ class hydrogenRoutines:
 
     def fixPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatoms, watflag):
         """
-            Fix the positions using locations 1 and 2
+            Fix the new atom position using either loc1 or loc2
+
+            Paramters
+                oxygen:  The oxygen for the residue in question
+                add:     The name of the atom to add
+                loc1:  Possible location 1 for the new atom
+                loc2:  Possible location 2 for the new atom
+                nearatoms:  A list of nearby atoms
+                watflag: A flag; 1 if oxygen is water, 0 otherwise
         """
         # Try placing the atom to be added at each of the spaces
         if watflag == 0:
@@ -917,7 +993,19 @@ class hydrogenRoutines:
             residue.getAtom(add).intrabonds.append("O")
 
     def optPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatom, watflag):
-        
+        """
+            Try adding an atom to either position loc1 or loc2
+
+            Paramters
+                oxygen:  The oxygen for the residue in question
+                add:     The name of the atom to add
+                loc1:  Possible location 1 for the new atom
+                loc2:  Possible location 2 for the new atom
+                nearatoms:  A list of nearby atoms
+                watflag: A flag; 1 if oxygen is water, 0 otherwise
+
+            Returns 1 if atom is added, 0 otherwise
+        """
         # Try placing the atom to be added at each of the spaces
         if watflag == 0:
             atomtxt = "ATOM"
@@ -949,6 +1037,14 @@ class hydrogenRoutines:
                 return 0
 
     def makeAtomWithThreeBonds(self, oxygen, add):
+        """
+            Since the atom already has three bonds, place in
+            the lone remaining available spot.
+
+            Parameters
+                oxygen:  The oxygen to be added to
+                add:     The name of the atom to be added
+        """
         bonds = oxygen.intrabonds
         residue = oxygen.residue
         fixed = residue.getAtom(bonds[0])
@@ -981,7 +1077,7 @@ class hydrogenRoutines:
         
     def fixAlcoholic(self, amb):
         """
-            If H is not present, add it at the best energy location]
+            If H is not present, add it at the best energy location
         """
         residue = amb.residue
         if residue.name == "SER":
@@ -1207,6 +1303,16 @@ class hydrogenRoutines:
 
 
     def rotateResidue(self, residue, fixed, oxygen, newangle):
+        """
+            Rotate a residue about a bond to a certain angle
+
+            Parameters
+                residue:  The residue to be rotated
+                fixed:    The name of the atom that is fixed
+                oxygen:   The name of the oxygen; all other atoms
+                          will be rotated about the fixed-oxygen bond
+                newangle: The increment to change the angle
+        """
         movenames = []
         movecoords = []
         
@@ -1234,6 +1340,10 @@ class hydrogenRoutines:
             self.routines.addCell(atom)
         
     def isHbond(self, donor, acc):
+        """
+            Determine whether this donor acceptor pair is a
+            hydrogen bond
+        """
         hbonds = []
         donorhs = []
         acchs = []

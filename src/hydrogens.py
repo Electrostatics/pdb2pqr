@@ -893,6 +893,7 @@ class hydrogenRoutines:
         residue = oxygen.residue
         residue.createAtom(add, loc1,atomtxt)
         oxygen.intrabonds.append(add)
+        residue.getAtom(add).intrabonds.append("O")
 
         energy1 = 0
         for nearatom in nearatoms:
@@ -902,7 +903,8 @@ class hydrogenRoutines:
         # Try the other location
         residue.removeAtom(add)
         residue.createAtom(add, loc2, atomtxt)
-
+        residue.getAtom(add).intrabonds.append("O")
+        
         energy2 = 0
         for nearatom in nearatoms:
             if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
@@ -912,6 +914,7 @@ class hydrogenRoutines:
         if energy1 < energy2:
             residue.removeAtom(add)
             residue.createAtom(add, loc1,atomtxt)
+            residue.getAtom(add).intrabonds.append("O")
 
     def optPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatom, watflag):
         
@@ -924,6 +927,7 @@ class hydrogenRoutines:
         residue = oxygen.residue
         residue.createAtom(add, loc1,atomtxt)
         oxygen.intrabonds.append(add)
+        residue.getAtom(add).intrabonds.append("O")
         if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
         else: hlist = self.isHbond(oxygen, nearatom)
         
@@ -933,6 +937,7 @@ class hydrogenRoutines:
         else: # Try the other location
             residue.removeAtom(add)
             residue.createAtom(add, loc2, atomtxt)
+            residue.getAtom(add).intrabonds.append("O")
             if nearatom.name.startswith("H"): hlist2 = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
             else: hlist2 = self.isHbond(oxygen, nearatom)
             if hlist2 != []:

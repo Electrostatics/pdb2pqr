@@ -80,7 +80,7 @@ class hydrogenAmbiguity:
         self.routines = routines
         self.fixed = 0 
 
-        if residue.name in ["HIS","HSN","HSE","HSD","HSP","HIE","HID","HIP"]:
+        if residue.name in ["HIS","HS2N","HSE","HSD","HSP","HIE","HID","HIP"]:
             nd1atom = residue.getAtom("ND1").getCoords()
             cd2atom = residue.getAtom("CD2").getCoords()
             ce1atom = residue.getAtom("CE1").getCoords()
@@ -121,7 +121,7 @@ class hydrogenAmbiguity:
             residue.getAtom("HD2FLIP").intrabonds = ["CD2FLIP"]
             residue.getAtom("HE1FLIP").intrabonds = ["CE1FLIP"]
 
-            if residue.name == "HSN": # Set to acceptor and donor
+            if residue.name == "HS2N": # Set to acceptor and donor
                 residue.getAtom("ND1FLIP").hacceptor = 1
                 residue.getAtom("ND1FLIP").hdonor = 1
                 residue.getAtom("NE2FLIP").hdonor = 1
@@ -202,7 +202,7 @@ class hydrogenAmbiguity:
 
             Parameters:
                 boundatom:  The atom that made the best bond (Atom)
-                donorflag:  Optional flag used for HSN to determine whether
+                donorflag:  Optional flag used for HS2N to determine whether
                             the boundatom is donor/acceptor (int)
         """
         if self.fixed: return
@@ -212,12 +212,13 @@ class hydrogenAmbiguity:
         intrabondlist = []
         flag = 0
         if boundatom == None or boundatom.name.endswith("FLIP"): flag = 1
-
-        # Handle the special case for HSN!
-                    
-        if residue.name == "HSN":
+        for atom in residue.atoms: atomlist.append(atom)
+        
+        # Handle the special case for HS2N!
+       
+        if residue.name == "HS2N":
             if donorflag == None:
-                txt = "Donor flag must be set for HSN!"
+                txt = "Donor flag must be set for HS2N!"
                 raise ValueError, txt
 
             if flag: flip = "FLIP"
@@ -244,11 +245,9 @@ class hydrogenAmbiguity:
                 nd1atom.hdonor = 0
                 residue.getAtom("NE2%s" % flip).hacceptor = 0
             else:
-                text = "Invalid bound atom %s for HSN!" % boundatom.name
+                text = "Invalid bound atom %s for HS2N!" % boundatom.name
                 raise ValueError, text
 
-        
-        for atom in residue.atoms: atomlist.append(atom)
         for atom in atomlist:
             atomname = atom.name
             if atomname.endswith("FLIP") and flag: # Delete the other list
@@ -1359,7 +1358,7 @@ class hydrogenRoutines:
                 for acch in acchs:
                     acchatom = acc.get("residue").getAtom(acch)
                     hdist = distance(donorhatom.getCoords(), acchatom.getCoords())
-                    if hdist < 1.5 and acc.residue.name != "HSN": continue
+                    if hdist < 1.5 and acc.residue.name != "HS2N": continue
                     angle = self.getHbondangle(acc, donor, donorhatom)
                     if angle > 20.0: continue
                     angle2 = self.getHbondangle(donorhatom, acchatom, acc)
@@ -1427,7 +1426,7 @@ class hydrogenRoutines:
                         continue
                     
                     hdist = distance(donorhatom.getCoords(), acceptorhatom.getCoords())
-                    if hdist < 1.5 and acceptor.residue.name != "HSN": # Are the Hs too close?
+                    if hdist < 1.5 and acceptor.residue.name != "HS2N": # Are the Hs too close?
                         energy += -1 * max_hbond_energy
                         continue
                     
@@ -1558,6 +1557,10 @@ class hydrogenRoutines:
                     groupname = group.name
                     htype = group.type
                     if htype in [1,3,4] and pkaflag: continue
+
+                    # FOR NOW REMOVE the other ones as well
+                    if htype not in [2,11,14] and not pkaflag: continue
+                    
                     if resname == groupname or \
                        (groupname == "APR") or \
                        (groupname == "APP" and resname != "PRO") or \

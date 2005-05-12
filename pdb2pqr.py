@@ -189,8 +189,19 @@ def runPDB2PQR(pdblist, ff, options):
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein(optflag)  
 
-    if pka:
+    # Histidine protonation states depend on pka and optimization
+    # HS2N is a holder for neutral HIS that will be optimized (i.e to-neutral)
+    # HSN is holder for neutral HIS that will NOT be optimized
+    
+    if pka and optflag:
         myRoutines.runPROPKA(ph, ff)
+    elif pka and not optflag:
+        myRoutines.runPROPKA(ph, ff)
+        myRoutines.renameHistidines("HS2N","HSN") # Set to HSD
+    elif not pka and optflag:
+        myRoutines.renameHistidines("HIS","HS2N") # Let optimization determine HSD/HSE
+    elif not pka and not optflag:
+        myRoutines.renameHistidines("HIS","HSN") # Set to HSD
 
     myRoutines.addHydrogens()
 
@@ -198,10 +209,13 @@ def runPDB2PQR(pdblist, ff, options):
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein(optflag)  
 
-    if "opt" in options:
+    if optflag:
         myRoutines.optimizeHydrogens(pka)
 
-    myRoutines.convertPlacenames()
+    # Put any remaining HSNs back to HIS for parameterization
+
+    myRoutines.renameHistidines("HSN","HIS")
+    myRoutines.renameHistidines("HS2N","HIS")
         
     myForcefield = Forcefield(ff)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)

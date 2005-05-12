@@ -1030,7 +1030,7 @@ class Routines:
                     (atomname.startswith("HD2") and residue1.name == "ASN") or \
                     (atomname.startswith("HE2") and residue1.name == "GLN") or \
                     (atomname in ["HD1","HD2","HE1","HE2"] and residue1.name in \
-                     ["HIS","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
+                     ["HIS","HS2N","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
                     continue
 
             # NOTE: For now, disable NA debumping
@@ -1054,7 +1054,7 @@ class Routines:
                     (atom2name.startswith("HD2") and residue2.name == "ASN") or \
                     (atom2name.startswith("HE2") and residue2.name == "GLN") or \
                     (atom2name in ["HD1","HD2","HE1","HE2"] and residue2.name in \
-                     ["HIS","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
+                     ["HIS","HS2N","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
                         continue
 
                 # Also, if one of the atoms is a donated Hydrogen and the other is
@@ -1394,16 +1394,14 @@ class Routines:
                               (donor.resName, donor.name, donor.residue.resSeq, acc.resName, \
                                acc.name, acc.residue.resSeq, dist, angle)
 
-    def convertPlacenames(self):
+    def renameHistidines(self, oldname, newname):
         """
-            Convert any name placeholders back to the appropriate name.
-            For now this includes the following:  HSN (HIS). 
+            Convert any histidine name placeholders back to the appropriate name.
         """
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
                 resname = residue.name
-                if resname == "HSN":
-                    residue.renameResidue("HIS")
+                if resname == oldname: residue.renameResidue(newname)
                     
     def optimizeHydrogens(self, pkaflag):
         """
@@ -1570,7 +1568,7 @@ class Routines:
                         residue.renameResidue("GLH")
                     elif resname == "HIS" and ph >= value:
                         if "HE2" in residue.map: residue.removeAtom("HE2")
-                        residue.renameResidue("HSN")                
+                        residue.renameResidue("HS2N")                
                     elif resname == "LYS" and ph >= value:
                         if ff == "charmm":
                             warn = (key, "neutral")

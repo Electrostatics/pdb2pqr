@@ -833,8 +833,9 @@ class hydrogenRoutines:
         bestcoords = []
         besten = 999.9
         fixed = residue.getAtom(bonds[0])
-        for angle in range(-180,180,10):
-            self.rotateResidue(residue, fixed, oxygen, angle)
+
+        for i in range(36):
+            self.rotateResidue(residue, fixed, oxygen, 10.0)          
             energy = 0
             for nearatom in nearatoms:
                 if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
@@ -866,11 +867,12 @@ class hydrogenRoutines:
         origcoords = rotate.getCoords()
         
         # Rotate by 120 degrees twice
+      
         self.rotateResidue(residue, fixed, oxygen, 120)
-        loc1 = rotate.getCoords()
+        loc1 = rotate.getCoords()  
         self.rotateResidue(residue, fixed, oxygen, 120)
         loc2 = rotate.getCoords()
-
+    
         # Set rotate back to original
         rotate.x = origcoords[0]
         rotate.y = origcoords[1]

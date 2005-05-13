@@ -12,7 +12,7 @@
 
 """
 
-__date__ = "22 October 2003"
+__date__ = "13 May 2005"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
 CELL_SIZE = 2
@@ -639,10 +639,11 @@ class Routines:
                             defatomcoords = HYDRO_COORDS
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom(defname, newcoords, "ATOM")
-                            residue.addDebumpAtom(residue.getAtom(defname))     
+                            residue.addDebumpAtom(residue.getAtom(defname))
                         elif residue.get("SSbonded") and defname == "HG":
                             pass
                         else:
+                            if residue.get("isNterm"): continue
                             newcoords = self.rebuildMethyl(defname, residue, defresidue)
                             if newcoords != None:
                                 residue.createAtom(defname, newcoords,"ATOM")
@@ -660,18 +661,35 @@ class Routines:
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom(defname, newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom(defname))
-                                    
+                        
                     # Add N-Terminal Hydrogens if Necessary
                     nterm = residue.get("isNterm")
                     cterm = residue.get("isCterm")
                     if nterm > 0:
+
+                        if name != "PRO": hname = "H"
+                        else: hname = "HA"
+
+                        # First add the H at tetrahedral geometry
+                        # See hydrogens.py for locations
+                        if hname not in residue.map:
+                            refcoords = []
+                            defcoords = []
+                            refcoords.append(residue.getAtom("N").getCoords())
+                            refcoords.append(residue.getAtom("CA").getCoords())
+                            defcoords.append([0,0,.3333])
+                            defcoords.append([0,0,1.7963])
+                            defatomcoords = [0.9428,0,0]
+                            newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
+                            residue.createAtom(hname, newcoords, "ATOM")
+                            residue.addDebumpAtom(residue.getAtom(hname))
+
+                        # Now add H2
+
                         refcoords = []
-                        refcoords.append(residue.getAtom("C").getCoords())
+                        refcoords.append(residue.getAtom("CA").getCoords())
+                        refcoords.append(residue.getAtom(hname).getCoords())
                         refcoords.append(residue.getAtom("N").getCoords())
-                        if name != "PRO": 
-                            refcoords.append(residue.getAtom("H").getCoords())
-                        else: # Use HA
-                            refcoords.append(residue.getAtom("HA").getCoords())
                         defcoords = NTERM_COORDS
 
                         if nterm >= 2 and "H2" not in residue.get("map"):

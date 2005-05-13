@@ -640,10 +640,9 @@ class Routines:
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom(defname, newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom(defname))
-                        elif residue.get("SSbonded") and defname == "HG":
-                            pass
+                        elif defname == "H" and residue.get("isNterm"): continue
+                        elif residue.get("SSbonded") and defname == "HG": continue
                         else:
-                            if residue.get("isNterm"): continue
                             newcoords = self.rebuildMethyl(defname, residue, defresidue)
                             if newcoords != None:
                                 residue.createAtom(defname, newcoords,"ATOM")

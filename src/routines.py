@@ -1047,7 +1047,10 @@ class Routines:
                     (atomname.startswith("HD2") and residue1.name == "ASN") or \
                     (atomname.startswith("HE2") and residue1.name == "GLN") or \
                     (atomname in ["HD1","HD2","HE1","HE2"] and residue1.name in \
-                     ["HIS","HS2N","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
+                     ["HIS","HS2N","HSN","HSD","HSE","HSP","HIE","HID","HIP"]) or \
+                    (atomname == "HD1" and residue1.name == "ASH") or \
+                    (atomname == "HE2" and residue1.name == "GLH") or \
+                    (atomname == "HO" and residue1.isCterm)):
                     continue
 
             # NOTE: For now, disable NA debumping
@@ -1071,7 +1074,10 @@ class Routines:
                     (atom2name.startswith("HD2") and residue2.name == "ASN") or \
                     (atom2name.startswith("HE2") and residue2.name == "GLN") or \
                     (atom2name in ["HD1","HD2","HE1","HE2"] and residue2.name in \
-                     ["HIS","HS2N","HSN","HSD","HSE","HSP","HIE","HID","HIP"])):
+                     ["HIS","HS2N","HSN","HSD","HSE","HSP","HIE","HID","HIP"]) or \
+                    (atom2name == "HD1" and residue2.name == "ASH") or \
+                    (atom2name == "HE2" and residue2.name == "GLH") or \
+                    (atom2name == "HO" and residue2.isCterm)):
                         continue
 
                 # Also, if one of the atoms is a donated Hydrogen and the other is
@@ -1574,7 +1580,14 @@ class Routines:
                         warn = (key, "neutral")
                         warnings.append(warn)
                     elif resname == "ASP" and ph < value:
-                        residue.renameResidue("ASH")
+                        if residue.isCterm and ff == "amber":
+                            warn = (key, "Protonated at C-Terminal")
+                            warnings.append(warn)
+                        elif residue.isNterm and ff == "amber":
+                            warn = (key, "Protonated at N-Terminal")
+                            warnins.append(warn)
+                        else:
+                            residue.renameResidue("ASH")
                     elif resname == "CYS" and ph >= value:
                         if ff == "charmm":
                             warn = (key, "negative")
@@ -1582,7 +1595,14 @@ class Routines:
                         else:
                             residue.renameResidue("CYM")
                     elif resname == "GLU" and ph < value:
-                        residue.renameResidue("GLH")
+                        if residue.isCterm and ff == "amber":
+                            warn = (key, "Protonated at C-Terminal")
+                            warnings.append(warn)
+                        elif residue.isNterm and ff == "amber":
+                            warn = (key, "Protonated at N-Terminal")
+                            warnins.append(warn)
+                        else:
+                            residue.renameResidue("GLH")
                     elif resname == "HIS" and ph >= value:
                         if "HE2" in residue.map: residue.removeAtom("HE2")
                         residue.renameResidue("HS2N")                

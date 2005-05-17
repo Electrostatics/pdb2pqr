@@ -174,6 +174,10 @@ class hydrogenAmbiguity:
                 residue.removeAtom("HH")
                 bonds = residue.getAtom("OH").intrabonds
                 bonds.pop(bonds.index("HH"))
+            elif residue.name == "CYS":
+                residue.removeAtom("HG")
+                bonds = residue.getAtom("SG").intrabonds
+                bonds.pop(bonds.index("HG"))
 
         elif hdef.type == 13:  # Remove the current hydrogen atom and pre-add
             if residue.name == "GLH":
@@ -1025,38 +1029,43 @@ class hydrogenRoutines:
         return result
 
 
-    def makeAtomWithOneBond(self, oxygen, add, nearatoms, watflag):
+    def makeAtomWithOneBond(self, donor, add, nearatoms, watflag):
         """
             Make an atom by rotating about the one existing bonded atom
-            to the oxygen.
+            to the donor.
 
             Parameters
-               oxygen:    The oxygen atom in question
+               donor:    The donor in question
                add:       The name of the atom to add
                nearatoms: A list of nearby atoms to evaluate
-               watflag:   A flag; 1 if oxygen is water, 0 otherwise
+               watflag:   A flag; 1 if donor is water, 0 otherwise
         """
-        residue = oxygen.residue
-        bonds = oxygen.intrabonds
+        donorname = donor.name
+        residue = donor.residue
+        bonds = donor.intrabonds
         refcoords = []
         defcoords = []
 
         defatomcoords = [0.9428,0,0]
-        refcoords.append(oxygen.getCoords())
+        refcoords.append(donor.getCoords())
         refcoords.append(residue.getAtom(bonds[0]).getCoords())
-        defcoords.append([0,0,.3333]) # Oxygen
+        defcoords.append([0,0,.3333]) # Donor
         if watflag:
             defcoords.append([0,0,1.3333])
             atomtype = "HETATM"
         else:
-            defcoords.append([0,0,1.7093]) # Not quite tetrahedral
             atomtype = "ATOM"
+            if residue.name == "CYS":
+                defcoords.append([0,0,2.1283]) # Not quite tetrahedral
+            else:
+                defcoords.append([0,0,1.7093]) 
+         
 
         newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
         residue.createAtom(add,newcoords,atomtype) 
-        oxygen.intrabonds.append(add)
+        donor.intrabonds.append(add)
         addatom = residue.getAtom(add)
-        addatom.intrabonds.append("O")
+        addatom.intrabonds.append(donorname)
           
         # Check to make sure this makes an H bond
 
@@ -1065,12 +1074,12 @@ class hydrogenRoutines:
         fixed = residue.getAtom(bonds[0])
 
         for i in range(36):
-            self.rotateResidue(residue, fixed, oxygen, 10.0)          
+            self.rotateResidue(residue, fixed, donor, 10.0)          
             energy = 0
             for nearatom in nearatoms:
                 if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
                 if add.startswith("H"): # Use the energy function
-                    energy += self.getPairEnergy(oxygen, nearatom) + self.getPairEnergy(nearatom, oxygen)
+                    energy += self.getPairEnergy(donor, nearatom) + self.getPairEnergy(nearatom, donor)
                 else: # Adding LP, so put at minimum distance
                     energy += distance(addatom.getCoords(), nearatom.getCoords())
             if energy < besten:
@@ -1082,21 +1091,21 @@ class hydrogenRoutines:
         addatom.y = bestcoords[1]
         addatom.z = bestcoords[2]
 
-    def getPositionsWithTwoBonds(self, oxygen):
+    def getPositionsWithTwoBonds(self, donor):
         """
             Return the two positions that are possible when using the two
             existing bonded atoms
 
             Parameters
-                oxygen:  The oxygen for the residue in question
+                donor:  The donor for the residue in question
             Returns:
                 loc1:  Possible location 1 for the new atom
                 loc2:  Possible location 2 for the new atom
         """
         # There are only two possible cases remaining - we can find them
         #   by rotating one of the existing bonds about the other
-        residue = oxygen.residue
-        bonds = oxygen.intrabonds
+        residue = donor.residue
+        bonds = donor.intrabonds
         
         fixed = residue.getAtom(bonds[0])
         rotate = residue.getAtom(bonds[1])
@@ -1104,9 +1113,9 @@ class hydrogenRoutines:
         
         # Rotate by 120 degrees twice
       
-        self.rotateResidue(residue, fixed, oxygen, 120)
+        self.rotateResidue(residue, fixed, donor, 120)
         loc1 = rotate.getCoords()  
-        self.rotateResidue(residue, fixed, oxygen, 120)
+        self.rotateResidue(residue, fixed, donor, 120)
         loc2 = rotate.getCoords()
     
         # Set rotate back to original
@@ -1116,61 +1125,62 @@ class hydrogenRoutines:
 
         return loc1, loc2
 
-    def fixPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatoms, watflag):
+    def fixPositionsWithTwoBonds(self, donor, add, loc1, loc2, nearatoms, watflag):
         """
             Fix the new atom position using either loc1 or loc2
 
             Paramters
-                oxygen:  The oxygen for the residue in question
+                donor:  The donor for the residue in question
                 add:     The name of the atom to add
                 loc1:  Possible location 1 for the new atom
                 loc2:  Possible location 2 for the new atom
                 nearatoms:  A list of nearby atoms
-                watflag: A flag; 1 if oxygen is water, 0 otherwise
+                watflag: A flag; 1 if donor is water, 0 otherwise
         """
         # Try placing the atom to be added at each of the spaces
         if watflag == 0:
             atomtxt = "ATOM"
         else:
             atomtxt = "HETATM"
-            
-        residue = oxygen.residue
+
+        donorname = donor.name
+        residue = donor.residue
         residue.createAtom(add, loc1,atomtxt)
-        oxygen.intrabonds.append(add)
-        residue.getAtom(add).intrabonds.append("O")
+        donor.intrabonds.append(add)
+        residue.getAtom(add).intrabonds.append(donorname)
 
         energy1 = 0
         for nearatom in nearatoms:
             if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
-            energy1 += self.getPairEnergy(oxygen, nearatom) + self.getPairEnergy(nearatom, oxygen)
+            energy1 += self.getPairEnergy(donor, nearatom) + self.getPairEnergy(nearatom, donor)
       
         # Try the other location
         residue.removeAtom(add)
         residue.createAtom(add, loc2, atomtxt)
-        residue.getAtom(add).intrabonds.append("O")
+        residue.getAtom(add).intrabonds.append(donorname)
         
         energy2 = 0
         for nearatom in nearatoms:
             if nearatom not in nearatom.residue.atoms: continue # Could happen due to flips
-            energy2 += self.getPairEnergy(oxygen, nearatom) + self.getPairEnergy(nearatom, oxygen)
+            energy2 += self.getPairEnergy(donor, nearatom) + self.getPairEnergy(nearatom, donor)
            
         # If the other one was better use that
         if energy1 < energy2:
             residue.removeAtom(add)
             residue.createAtom(add, loc1,atomtxt)
-            residue.getAtom(add).intrabonds.append("O")
+            residue.getAtom(add).intrabonds.append(donorname)
 
-    def optPositionsWithTwoBonds(self, oxygen, add, loc1, loc2, nearatom, watflag):
+    def optPositionsWithTwoBonds(self, donor, add, loc1, loc2, nearatom, watflag):
         """
             Try adding an atom to either position loc1 or loc2
 
             Paramters
-                oxygen:  The oxygen for the residue in question
+                donor:  The donor for the residue in question
                 add:     The name of the atom to add
                 loc1:  Possible location 1 for the new atom
                 loc2:  Possible location 2 for the new atom
                 nearatoms:  A list of nearby atoms
-                watflag: A flag; 1 if oxygen is water, 0 otherwise
+                watflag: A flag; 1 if donor is water, 0 otherwise
 
             Returns 1 if atom is added, 0 otherwise
         """
@@ -1179,13 +1189,14 @@ class hydrogenRoutines:
             atomtxt = "ATOM"
         else:
             atomtxt = "HETATM"
-            
-        residue = oxygen.residue
+
+        donorname = donor.name
+        residue = donor.residue
         residue.createAtom(add, loc1,atomtxt)
-        oxygen.intrabonds.append(add)
-        residue.getAtom(add).intrabonds.append("O")
-        if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
-        else: hlist = self.isHbond(oxygen, nearatom)
+        donor.intrabonds.append(add)
+        residue.getAtom(add).intrabonds.append(donorname)
+        if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), donor)
+        else: hlist = self.isHbond(donor, nearatom)
         
         if hlist != []: 
             self.debug("ADDED %s!" % add)
@@ -1193,28 +1204,29 @@ class hydrogenRoutines:
         else: # Try the other location
             residue.removeAtom(add)
             residue.createAtom(add, loc2, atomtxt)
-            residue.getAtom(add).intrabonds.append("O")
-            if nearatom.name.startswith("H"): hlist2 = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
-            else: hlist2 = self.isHbond(oxygen, nearatom)
+            residue.getAtom(add).intrabonds.append(donorname)
+            if nearatom.name.startswith("H"): hlist2 = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), donor)
+            else: hlist2 = self.isHbond(donor, nearatom)
             if hlist2 != []:
                 self.debug("ADDED %s!" % add)
                 return 1
             else: # No hbond here
-                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                donor.intrabonds.pop(donor.intrabonds.index(add))
                 residue.removeAtom(add)
                 return 0
 
-    def makeAtomWithThreeBonds(self, oxygen, add):
+    def makeAtomWithThreeBonds(self, donor, add):
         """
             Since the atom already has three bonds, place in
             the lone remaining available spot.
 
             Parameters
-                oxygen:  The oxygen to be added to
+                donor:  The donor to be added to
                 add:     The name of the atom to be added
         """
-        bonds = oxygen.intrabonds
-        residue = oxygen.residue
+        donorname = donor.name
+        bonds = donor.intrabonds
+        residue = donor.residue
         fixed = residue.getAtom(bonds[0])
         rotate1 = residue.getAtom(bonds[1])
         rotate2 = residue.getAtom(bonds[2])
@@ -1222,9 +1234,9 @@ class hydrogenRoutines:
         origcoords2 = rotate2.getCoords()
         
         # Rotate by 120 degrees twice
-        self.rotateResidue(residue, fixed, oxygen, 120)
+        self.rotateResidue(residue, fixed, donor, 120)
         loc1 = rotate1.getCoords()
-        self.rotateResidue(residue, fixed, oxygen, 120)
+        self.rotateResidue(residue, fixed, donor, 120)
         loc2 = rotate1.getCoords()
         
         # Set rotates back to original
@@ -1240,8 +1252,8 @@ class hydrogenRoutines:
         if distance(origcoords2, loc2) > 0.5: newloc = loc2
         
         residue.createAtom(add, newloc,"ATOM") 
-        oxygen.intrabonds.append(add)
-        residue.getAtom(add).intrabonds.append("O")
+        donor.intrabonds.append(add)
+        residue.getAtom(add).intrabonds.append(donorname)
         
     def fixAlcoholic(self, amb):
         """
@@ -1249,14 +1261,17 @@ class hydrogenRoutines:
         """
         residue = amb.residue
         if residue.name == "SER":
-            oxygen = residue.getAtom("OG")
+            donor = residue.getAtom("OG")
             add = "HG"
         elif residue.name == "THR":
-            oxygen = residue.getAtom("OG1")
+            donor = residue.getAtom("OG1")
             add = "HG1"           
         elif residue.name == "TYR":
-            oxygen = residue.getAtom("OH")
+            donor = residue.getAtom("OH")
             add = "HH"
+        elif residue.name == "CYS":
+            donor = residue.getAtom("SG")
+            add = "HG"
         if add in residue.map: return
 
         hbonds = amb.nearatoms
@@ -1264,33 +1279,34 @@ class hydrogenRoutines:
         for hbond in hbonds:
             nearatoms.append(hbond.atom2)
            
-        bonds = oxygen.intrabonds
+        bonds = donor.intrabonds
         if len(bonds) == 1: # No H or LP attached
-            self.makeAtomWithOneBond(oxygen, add, nearatoms, 0)
+            self.makeAtomWithOneBond(donor, add, nearatoms, 0)
      
         elif len(bonds) == 2:  # One LP present, add H
-            loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
-            self.fixPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatoms, 0)
+            loc1, loc2 = self.getPositionsWithTwoBonds(donor)
+            self.fixPositionsWithTwoBonds(donor, add, loc1, loc2, nearatoms, 0)
 
         elif len(bonds) == 3:  # Both LPs present, add H to remaining spot
-            self.makeAtomWithThreeBonds(oxygen, add)
+            self.makeAtomWithThreeBonds(donor, add)
 
-    def addAlcoholic(self, oxygen, nearatom, flag):
+    def addAlcoholic(self, donor, nearatom, flag):
         """
-            oxygen is the residue's oxygen
+            donor is the residue's donor
             nearatom is either an acceptor or a hydrogen that is
                to be donated
-            if flag is 1 treat oxygen as donor
+            if flag is 1 treat donor as donor
             else as acceptor
         """
-        bonds = oxygen.intrabonds
-        oxcoords = oxygen.getCoords()
-        residue = oxygen.residue
+        bonds = donor.intrabonds
+        oxcoords = donor.getCoords()
+        residue = donor.residue
         refcoords = []
         defcoords = []
         if residue.name == "SER": add = "HG"
         elif residue.name == "THR": add = "HG1"           
         elif residue.name == "TYR": add = "HH"
+        elif residue.name == "CYS": add = "HG"
 
         if flag == 0 and ("LP2" in bonds or "LP1" in bonds): add = "LP2"
         elif flag == 0: add = "LP1"
@@ -1300,16 +1316,16 @@ class hydrogenRoutines:
             return 0
         
         if len(bonds) == 1: # No H or LP attached
-            self.makeAtomWithOneBond(oxygen, add, [nearatom], 0)
+            self.makeAtomWithOneBond(donor, add, [nearatom], 0)
    
             # If this still isn't a bond, give up
-            if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), oxygen)
-            else: hlist = self.isHbond(oxygen, nearatom)
+            if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), donor)
+            else: hlist = self.isHbond(donor, nearatom)
             
             if hlist == []:
                 self.debug("Couldn't fix!")
                 residue.removeAtom(add)
-                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                donor.intrabonds.pop(donor.intrabonds.index(add))
                 return 0
             else:
                 self.debug("ADDED %s!" % add)
@@ -1317,19 +1333,19 @@ class hydrogenRoutines:
             
         elif len(bonds) == 2:  # LP present, add H
 
-            loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
-            return self.optPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatom, 0)
+            loc1, loc2 = self.getPositionsWithTwoBonds(donor)
+            return self.optPositionsWithTwoBonds(donor, add, loc1, loc2, nearatom, 0)
     
         elif len(bonds) == 3:  # Both LPs present, add H to remaining spot
-            self.makeAtomWithThreeBonds(oxygen, add)
+            self.makeAtomWithThreeBonds(donor, add)
            
-            hlist = self.isHbond(oxygen, nearatom)
+            hlist = self.isHbond(donor, nearatom)
             if hlist != []:
                 self.debug("ADDED %s!" % add)
                 return 1
             else:
                 residue.removeAtom(add)
-                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                donor.intrabonds.pop(donor.intrabonds.index(add))
                 return 0
                 
     def optWater(self, oxygen, nearatom, flag):
@@ -1741,7 +1757,8 @@ class hydrogenRoutines:
                        (groupname == "PNTR" and nter and resname == "PRO") or \
                        (groupname == "CTR" and cter) or \
                        (groupname == "CTN" and cter == 2):
-
+                        if resname == "CYS" and "HG" not in residue.map: continue
+                        
                         if group.method != 0:
                             amb = hydrogenAmbiguity(residue, group, self.routines)
                             self.groups.append(amb)

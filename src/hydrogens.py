@@ -445,7 +445,7 @@ class hydrogenRoutines:
             Parameters
                 routines: The parent routines object (Routines)             
         """
-        self.hdebug = 1
+        self.hdebug = 0
         self.routines = routines
         self.protein = routines.protein
         self.hydrodefs = []

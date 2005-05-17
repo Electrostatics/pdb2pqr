@@ -1042,7 +1042,7 @@ class Routines:
             residue1 = atom1.get("residue")
             if residue1.get("isNterm") or residue1.get("isCterm"): continue
             if optflag:
-                if ((atomname.startswith("HG") and residue1.name in ["SER","THR"]) or \
+                if ((atomname.startswith("HG") and residue1.name in ["SER","THR","CYS"]) or \
                     (atomname == "HH" and residue1.name == "TYR") or \
                     (atomname.startswith("HD2") and residue1.name == "ASN") or \
                     (atomname.startswith("HE2") and residue1.name == "GLN") or \
@@ -1069,7 +1069,7 @@ class Routines:
                 residue2 = atom2.get("residue")
                 if residue2.get("type") not in [1,3]: continue
                 if optflag:
-                    if ((atom2name.startswith("HG") and residue2.name in ["SER","THR"]) or \
+                    if ((atom2name.startswith("HG") and residue2.name in ["SER","THR","CYS"]) or \
                     (atom2name == "HH" and residue2.name == "TYR") or \
                     (atom2name.startswith("HD2") and residue2.name == "ASN") or \
                     (atom2name.startswith("HE2") and residue2.name == "GLN") or \

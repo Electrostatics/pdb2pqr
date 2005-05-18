@@ -1,0 +1,171 @@
+<HTML>
+<HEAD>
+<TITLE>PDB2PQR User Guide</TITLE>
+
+</HEAD>
+<BODY>
+<h2>PDB2PQR User Guide</h2><P>
+<B>Table of Contents</B><P>
+<a href="#introduction">Introduction</a><BR>
+<a href="#availability">Availability</a><BR>
+<a href="#installation">Source Installation</a><BR>
+<a href="#using">Using PDB2PQR</a><BR>
+<a href="#algorithm">Algorithm Descriptions</a><BR>
+<a href="#faq">Frequently Asked Questions</a><BR>
+<a href="#bug">Bug Reports and Suggestions</a><BR>
+<HR>
+<a name="introduction"></a>
+<h3>Introduction</h3><P>
+PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations.  This includes adding a limited number of missing heavy atoms to biomolecular structures, optimizing the protein for favorable hydrogen bonding, determining side-chain pKas, and assigning charge and radius parameters from a variety of force fields, ultimately yielding a final PQR file.<P>
+
+PDB2PQR uses <a href="http://propka.chem.uiowa.edu/">PropKa</a> to determine protein pKa values.  PropKa is developed by the <a href="http://www.uiowa.edu/~quantum/">Jensen Research Group</a> at the University of Iowa.  More information about PropKa can be found at  <a href="http://propka.chem.uiowa.edu/">http://propka.chem.uiowa.edu</a>.<P>
+
+<B>Financial support.</B> The development of PDB2PQR has been supported financially by:
+<ul>
+<li><a href="http://www.nih.gov/">National Institutes of Health</a> (grant GM069702-01)
+<li><a href="http://www.npaci.edu/">National Partnership for Advanced Computational Infrastructure</a> Alpha Project program
+<li><a href="http://nbcr.sdsc.edu/">National Biomedical Computation Resource</a>
+</ul>
+
+<B>Citing PDB2PQR.</B> Please acknowledge your use of PDB2PQR by citing:<P>
+<blockquote><a href="http://nar.oupjournals.org/cgi/content/abstract/32/suppl_2/W665">Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations. Nucleic Acids Research 32 W665-W667 (2004).</a></blockquote>
+
+<B>Citing PropKa.</B>  Please acknowledge your use of PropKa by citing:<P>
+<blockquote>Hui Li, Andrew D. Robertson, and Jan H. Jensen "Very Fast Empirical Prediction and Interpretation of Protein pKa Values" J. Mol. Biol., submitted.</blockquote>
+  
+<B>Contributing Authors.</B>  PDB2PQR was initially written in C++ by Jens Erik Nielsen before being ported to Python by Todd Dolinsky.  Subsequent development was continued by both authors along with other contributions from Nathan Baker.<P>
+<HR>
+
+<a name="availability"></a>
+<h3>Availability</h3><P>
+PDB2PQR is available as both a web service and as command-line software for download.  The PDB2PQR web server can be found at <a href="http://agave.wustl.edu/pdb2pqr/server.html">http://agave.wustl.edu/pdb2pqr/server.html</a> with mirrors at NBCR at the San Diego Supercomputer Center and at University College Dublin, Ireland.  PDB2PQR may also be downloaded from <a href="http://agave.wustl.edu/pdb2pqr/download.html">http://agave.wustl.edu/pdb2pqr/download.html</a>.<P>
+<hr>
+
+<a name="installation"></a>
+<h3>Source Installation</h3><P>
+As the bulk of the PDB2PQR code is written in Python, the PDB2PQR code itself is architecture/compiler independent.  Any version of Python greater than 2.0 should work.  The PropKa code, however, is written in Fortran - and thus to use it with PDB2PQR a two step installation is necessary:<P>
+<blockquote><code>
+$ ./configure <BR>
+$ make <BR>
+</code></blockquote>
+This should compile the PropKa wrappers necessary to interface with the PDB2PQR.  If the compilation fails please check the <a href="#faq">FAQ</a> section of this user guide, or if all else fails, send a <a href="#bug">bug report</a>.<P>
+<HR>
+
+<a name="using"></a>
+<h3>Using PDB2PQR</h3><P>
+
+<I>Starting PDB2PQR and Available Options</I><P>
+Starting PDB2PQR from the web server is rather straightforward - simply click the desired options, specify or upload a PDB file, and submit the job.  The command line version of PDB2PQR is similar:<P>
+<blockquote><code>
+$ python pdb2pqr.py [options] --ff={forcefield} {path} [output-path]
+</code></blockquote>
+
+The required arguments are as follows:
+<ul>
+<li> <code>path</code> - The path to the PDB file or and ID to obtain from the PDB archive
+<li> <code>forcefield</code> - The forcefield to use - currently amber, charmm, or parse.
+</ul>
+
+Available command-line arguments are:
+<ul>
+<li> <code>--nodebump</code> - Do not perform the <a href="#algorithm">debumping</a> operation.
+<li> <code>--noopt</code> - Do not perform the <a href="#algorithm">hydrogen bonding network optimization</a>.
+<li> <code>--hbond</code> - Print a list of hydrogen bonds to stdout.
+<li> <code>--assign-only</code> - Only assign charges and radii, but do not perform optimizations - effectively turns on both <code> --nodebump</code> and <code>--noopt</code>. 
+<li> <code>--with-ph</code> - Use PropKa to calculate pKas and apply them to the molecule given the pH value.
+<li> <code>--verbose (-v)</code> - Print additional information to stdout.
+<li> <code>--help (-h)</code> - Display the usage information.
+</ul>
+
+Additionally, PDB2PQR server users converting files for use with <a href="http://agave.wustl.edu/apbs">APBS</a> can choose to create a template APBS input file for the input protein. <P>
+
+<hr>
+<a name="algorithm"></a>
+<h3>Algorithm Descriptions</h3><P>
+<I>Debumping Algorithm</I><P>
+The debumping algorithm ensures that any new heavy or hydrogen atoms are not rebuilt within the Van der Waals radii of existing atoms.  If this does occur, the sidechain of the residue in question will be rotated about an available &Chi; angle until the steric conflict is resolved.<P>
+
+The number of residues that need to be debumped depends on the nature of the system and if hydrogen optimization will be performed. If hydrogens are the only atoms missing any potential conflicts are usually due to hydrogen bonds, and if optimization is enabled these conflicts are usually resolved during that step.  In the case where a large number of heavy sidechain atoms are missing there could be additional debumping necessary - as the sidechain is rebuilt the initial  &Chi; angle may not be the optimal one, and thus a steric conflict may occur.<P>
+
+<I>Hydrogen Bonding Network Optimization</I><P>
+The hydrogen bonding network optimization seeks, as the name suggests, to optimize the hydrogen bonding network of the protein.  Currently this entails manipulating the following residues:
+<ul>
+<li> Flipping the side chains of HIS (including user defined HIS states), ASP, and GLU residues;
+<li> Rotating the sidechain hydrogen on SER, THR, TYR, and CYS (if available);
+<li> Determining the best placement for the sidechain hydrogen on neutral HIS, protonated GLU, and protonated ASP;
+<li> Optimizing all water hydrogens.
+</ul>
+
+<hr>
+<a name="faq"></a>
+<h3>Frequently Asked Questions</h3><P>
+
+<I> What is a PQR file?</I>
+<blockquote> A PQR file is a PDB file with the temperature and occupancy columns replaced by columns containing the per-atom charge (Q) and radius (R).  PQR files are used in several computational biology packages, including <a href="http://agave.wustl.edu/apbs">APBS</a>.</blockquote>
+
+<I> What forcefields are available?</I>
+<blockquote> PDB2PQR currently supports AMBER 94, CHARMM 27, and PARSE forcefields.</blockquote>
+
+<I> How is PDB2PQR licensed?</I>
+<blockquote> PDB2PQR is covered under the <a href="http://www.gnu.org/licenses/gpl.txt"> GNU Public License</a>, which basically means you can copy it, change it, use subsets of it, redistribute it, etc.; however, you need to give credit to the original source and the original portion of the code must remain under the GPL.<P>
+
+PropKa is released under its own license, which can be found at propka/LICENSE.</blockquote>
+
+<I> Does the input PDB file need to be in a specific format?</I>
+<blockquote> Ideally all input PDB files would be in standard <a href="http://www.rcsb.org/pdb/info.html#File_Formats_and_Standards">PDB Format</a>.  Since this format assigns information to specific columns, if this information is not present (as in, for example, whitespace delimited files) PDB2PQR may give extraneous results.</blockquote>
+
+<I> Why are the chain IDs not included in the output file?</I>
+<blockquote> This is done specifically for APBS, as APBS is unable to handle chain IDs in a PQR file.</blockquote>
+
+<I> What types of residues can PDB2PQR recognize?</I>
+<blockquote> PDB2PQR recognizes all of the standard amino acids, nucleic acids, and waters (both WAT and HOH) - for a complete list see the data files found in dat/AA.DAT and dat/NA.dat.</blockquote>
+
+<I> I already know the protonation state of a residue.  If I set this will PDB2PQR change it? </I>
+<blockquote>The short answer is yes.  If you know that your histidine residue should be neutral but specify it as HIS it will be fully protonated by PDB2PQR (and PropKa may return similar results).  We have therefore added a fix to get around this for certain residues - to use, manually rename the residue name in the PDB file as follows:<P>
+<center>
+<table cellpadding=3 cellspacing=3 border=1>
+<tr><th>Known Protonation State</th><th>New Residue Name</th></tr>
+<tr><td>Neutral ASP</td><td>ASH</td></tr>
+<tr><td>Negative CYS</td><td>CYM</td></tr>
+<tr><td>Neutral GLU</td><td>GLH</td></tr>
+<tr><td rowspan=2>Neutral HIS</td><td>HIE/HID/HSD/HSE if location of hydrogen is known</td></tr>
+<tr><td>HSN if location of hydrogen is unknown</td></tr>
+<tr><td>Neutral LYS</td><td>LYN</td></tr>
+<tr><td>Negative TYR</td><td>TYM</td></tr>
+</table>
+</center>
+</blockquote>
+
+<I> What causes the following warning - WARNING: PDB2PQR was unable to assign charges to the following atoms</I>
+<blockquote> This message usually occurs when atoms belonging to ligands or other residues are not found in the forcefield data file.  As a conversion utility PDB2PQR is unable to assign charges and radii when they are not available in the forcefield - thus this warning message will occur for most ligands.  Occasionally this message will occur in error for a standard amino acid residue where an atom or residue may be misnamed.</blockquote>
+
+<I> What causes the following warning - WARNING: Propka determined the following residues to be in a protonation state not supported by the forcefield!</I>
+<blockquote> Some of the protonation states derived from the PropKa results are not supported in the requested forcefield and thus PDB2PQR is unable to get charges and radii for that state.  PDB2PQR currently supports the following states as derived from PropKa:<P>
+<center>
+<table cellpadding=3 cellspacing=3 border=1>
+<tr><th>Protonation State</th><th>AMBER Support</th><th>CHARMM Support</th><th>PARSE Support</th></tr>
+<tr><td>Neutral N-Terminus</td><td>No</td><td>No</td><td>Yes</td></tr>
+<tr><td>Neutral C-Terminus</td><td>No</td><td>No</td><td>Yes</td></tr>
+<tr><td>Neutral ARG</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>Neutral ASP</td><td>Yes*</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Negative CYS</td><td>Yes*</td><td>No</td><td>Yes</td></tr>
+<tr><td>Neutral GLU</td><td>Yes*</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Neutral HIS</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Neutral LYS</td><td>Yes*</td><td>No</td><td>Yes</td></tr>
+<tr><td>Negative TYR</td><td>No</td><td>No</td><td>Yes</td></tr>
+</table><BR>
+* - only if residue is not a terminal residue; if the residue is terminal it will not be set to this state
+</center>
+</blockquote>
+<hr>
+
+<a name="bug"></a>
+<h3>Bug Reports and Suggestions</h3>
+Please send all bug reports and suggestions to <a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a>.
+<P>
+
+<hr><P>
+<center><I>Last Updated May 18th 2005</I></center><P>
+
+</BODY>
+</HTML>

@@ -209,8 +209,7 @@ def runPDB2PQR(pdblist, ff, options):
         myRoutines.calculateChiangles()
         myRoutines.debumpProtein(optflag)  
 
-    if optflag:
-        myRoutines.optimizeHydrogens(pka)
+    myRoutines.optimizeHydrogens(optflag)
 
     # Put any remaining HSNs back to HIS for parameterization
 

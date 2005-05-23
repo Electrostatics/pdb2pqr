@@ -581,20 +581,17 @@ class hydrogenRoutines:
         text = text[:-2]
         return text
 
-    def optimizeHydrogens(self, pkaflag):
+    def optimizeHydrogens(self, allflag):
         """
             Optimize hydrogens according to HYDROGENS.DAT.  This
             function serves as the main driver for the optimizing
             script.
 
             Parameters:
-                pkaflag: 1 if pka calculations have already been done.  This
-                         will ignore all protonation ambiguities (but not
-                         necessarily the placement of hydrogens).  Otherwise
-                         set to 0.
+               allflag:  Flag to pass to findAmbiguities.
         """
         starttime = time()
-        allatoms = self.findAmbiguities(0, pkaflag)
+        allatoms = self.findAmbiguities(allflag)
         self.printAmbiguities()
 
         ambmap = {}
@@ -1716,7 +1713,7 @@ class hydrogenRoutines:
         return penalty
                 
 
-    def findAmbiguities(self, water, pkaflag):
+    def findAmbiguities(self, allflag):
         """
             Find the amibiguities within a protein according to the
             DAT file, and set all boundatoms to their hydrogen donor/
@@ -1726,9 +1723,7 @@ class hydrogenRoutines:
             Returns
                 allatoms:  A list of all donors and acceptors in the
                            protein (list)
-                water:     If 1, only put waters in groups, but fill allatoms
-                           appropriately
-                pkaflag:   If 1, ignore all protonation ambiguities.
+                allflag:   Optimize all ambs if 1, otherwise WATERS ONLY.
         """
         self.routines.setDonorsAndAcceptors()
         allatoms = []
@@ -1743,10 +1738,11 @@ class hydrogenRoutines:
                 for group in hydrodefs:
                     groupname = group.name
                     htype = group.type
-                    if htype in [1,3,4] and pkaflag: continue
 
-                    # FOR NOW REMOVE the other ones as well
-                    if htype not in [2,11,14,13] and not pkaflag: continue
+                    # For now remove all protonation ambs
+                    if htype in [1,3,4]: continue
+
+                    if not allflag and htype != 12: continue
                     
                     if resname == groupname or \
                        (groupname == "APR") or \
@@ -1762,6 +1758,7 @@ class hydrogenRoutines:
                         if group.method != 0:
                             amb = hydrogenAmbiguity(residue, group, self.routines)
                             self.groups.append(amb)
+                            
         for atom in self.protein.getAtoms():
             if atom.residue.type not in [1,3]: continue
             if atom.name == "O" and atom.residue.name == "WAT": atom.hdonor = 1

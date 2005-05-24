@@ -7,9 +7,10 @@
 ## ###########################################################################
 
 AUTOMAKE_OPTIONS = no-dependencies
-SUFFIXES         = .c .C .o .so
-INCLUDES         = $(PY_CFLAGS)
+SUFFIXES         = .c .C .o .so .f
+AM_CFLAGS        = $(PY_CFLAGS) $(PY_FLAGS)
 CCLD             = $(CC)
+AM_FFLAGS        = $(PY_FLAGS)
 CLEANFILES       = propkalibc.so
 
 noinst_PROGRAMS       = propkalibc.so

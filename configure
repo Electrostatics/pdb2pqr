@@ -273,7 +273,7 @@ PACKAGE_STRING='PDB2PQR 1.0.0'
 PACKAGE_BUGREPORT='todd@ccb.wustl.edu'
 
 ac_default_prefix=${HOME}
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE PDB2PQR_VERSION py_path CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE F77 FFLAGS ac_ct_F77 CPP PY_SHARED PY_LDFLAGS PY_CFLAGS fortune_path LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE PDB2PQR_VERSION py_path CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE F77 FFLAGS ac_ct_F77 CPP PY_SHARED PY_LDFLAGS PY_CFLAGS PY_FLAGS fortune_path LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -3320,6 +3320,7 @@ fi
 
 PY_LDFLAGS=""
 PY_SHARED=""
+PY_FLAGS=""
 case $host_os in
    linux*)
       PY_SHARED="-shared";;
@@ -3329,6 +3330,13 @@ case $host_os in
    sun|solaris**)
       PY_SHARED="-G"
       PY_LDFLAGS="-lF77 -lm -lM77 -lsunmath";;
+   darwin*)
+      PY_LDFLAGS="-Wl,-framework -Wl,Python -bundle";;
+esac
+
+case $host_cpu in
+   x86_64*)
+      PY_FLAGS="-fPIC";;
 esac
 
 PY_SHARED=$PY_SHARED
@@ -3336,6 +3344,8 @@ PY_SHARED=$PY_SHARED
 PY_LDFLAGS=$PY_LDFLAGS
 
 PY_CFLAGS=$PY_CFLAGS
+
+PY_FLAGS=$PY_FLAGS
 
 
 # Extract the first word of "fortune", so it can be a program name with args.
@@ -4108,6 +4118,7 @@ s,@CPP@,$CPP,;t t
 s,@PY_SHARED@,$PY_SHARED,;t t
 s,@PY_LDFLAGS@,$PY_LDFLAGS,;t t
 s,@PY_CFLAGS@,$PY_CFLAGS,;t t
+s,@PY_FLAGS@,$PY_FLAGS,;t t
 s,@fortune_path@,$fortune_path,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t

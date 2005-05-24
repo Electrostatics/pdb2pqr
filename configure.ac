@@ -123,6 +123,7 @@ dnl # Platform specific linking flags
 
 PY_LDFLAGS=""
 PY_SHARED=""
+PY_FLAGS=""
 case $host_os in
    linux*) 
       PY_SHARED="-shared";;
@@ -132,11 +133,19 @@ case $host_os in
    sun|solaris**) 
       PY_SHARED="-G"
       PY_LDFLAGS="-lF77 -lm -lM77 -lsunmath";;
+   darwin*)
+      PY_LDFLAGS="-Wl,-framework -Wl,Python -bundle";;
+esac
+
+case $host_cpu in
+   x86_64*)
+      PY_FLAGS="-fPIC";;
 esac
 
 AC_SUBST(PY_SHARED,[$PY_SHARED])
 AC_SUBST(PY_LDFLAGS,[$PY_LDFLAGS])
 AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
+AC_SUBST(PY_FLAGS, [$PY_FLAGS])
 AC_FORTUNES
 AC_MSG_RESULT([------------- end processing PDB2PQR configure options -----------])
 dnl ##########################################################################

@@ -40,6 +40,7 @@ NAS = ["A","A5","A3","C","C5","C3","G","G5","G3","T","T5","T3","U",\
        
 
 import random
+import math
 from pdb import *
 from utilities import *
 from quatfit import *
@@ -588,14 +589,14 @@ class Routines:
 
         for hyd in hyds:
             hatom = residue.getAtom(hyd)
-            lhs = cos(rads) * bonddist * bonddist
+            lhs = math.cos(rads) * bonddist * bonddist
             rhs = bondatom.x*bondatom.x + bondatom.y*bondatom.y + bondatom.z*bondatom.z
             rhs = rhs - bondatom.x*hatom.x - bondatom.y*hatom.y - bondatom.z*hatom.z
             rhs = rhs - lhs
             rows.append([bondatom.x-hatom.x, bondatom.y-hatom.y, bondatom.z-hatom.z])
             b.append(rhs)
             
-        lhs = cos(rads) * bonddist * restdist
+        lhs = math.cos(rads) * bonddist * restdist
         rhs = bondatom.x*bondatom.x + bondatom.y*bondatom.y + bondatom.z*bondatom.z
         rhs = rhs - bondatom.x*restatom.x - bondatom.y*restatom.y - bondatom.z*restatom.z
         rhs = rhs - lhs

@@ -14,7 +14,7 @@ SMALL = 1.0e-7
 DIHEDRAL = 57.2958
 
 import string
-from math import *
+import math
 
 class Matrix:
     """
@@ -234,7 +234,7 @@ def distance(coords1, coords2):
     p = coords2[0] - coords1[0]
     q = coords2[1] - coords1[1]
     r = coords2[2] - coords1[2]
-    dist = sqrt(p*p + q*q + r*r)
+    dist = math.sqrt(p*p + q*q + r*r)
 
     return dist
 
@@ -310,7 +310,7 @@ def normalize(coords):
             list: normalized coordinates (list)
     """
     list = []
-    dist = sqrt(pow(coords[0],2) + pow(coords[1],2) + pow(coords[2],2))
+    dist = math.sqrt(pow(coords[0],2) + pow(coords[1],2) + pow(coords[2],2))
     if dist > SMALL:
         a = coords[0]/dist
         b = coords[1]/dist
@@ -351,7 +351,7 @@ def getDihedral(coords1, coords2, coords3, coords4):
     elif abs(scal - 1.0) < SMALL:
         value = 0.0
     else:
-        value = DIHEDRAL * acos(scal)
+        value = DIHEDRAL * math.acos(scal)
 
     chiral = dot(cross(Anorm, Bnorm),list32)
     if chiral < 0:

@@ -134,7 +134,7 @@ C          RESULT must be large enough to handle the resulting
 C              pKa info seen at the end of this code.
 C
       INTEGER STRLEN, LINELEN, I, J
-      CHARACTER PDB*(*), LINE*(70), RESULT*(20), OUTNAME*(50)
+      CHARACTER PDB*(*), LINE*(70), RESULT*(20), OUTNAME*(100)
 C
 C      ************************
 C      STEP 1. PARSE PDB STRING

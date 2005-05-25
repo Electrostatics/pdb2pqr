@@ -75,13 +75,14 @@ This should compile the PropKa wrappers necessary to interface with the PDB2PQR.
 <I>Starting PDB2PQR and Available Options</I><P>
 Starting PDB2PQR from the web server is rather straightforward - simply click the desired options, specify or upload a PDB file, and submit the job.  The command line version of PDB2PQR is similar:<P>
 <blockquote><code>
-$ python pdb2pqr.py [options] --ff={forcefield} {path} [output-path]
+$ python pdb2pqr.py [options] --ff={forcefield} {path} {output-path}
 </code></blockquote>
 
 The required arguments are as follows:
 <ul>
-<li> <code>path</code> - The path to the PDB file or and ID to obtain from the PDB archive
 <li> <code>forcefield</code> - The forcefield to use - currently amber, charmm, or parse.
+<li> <code>path</code> - The path to the PDB file or an ID to obtain from the PDB archive
+<li> <code>output-path</code> - The desired output name of the PQR file to be generated 
 </ul>
 
 Available command-line arguments are:
@@ -91,11 +92,10 @@ Available command-line arguments are:
 <li> <code>--hbond</code> - Print a list of hydrogen bonds to stdout.
 <li> <code>--assign-only</code> - Only assign charges and radii, but do not perform optimizations - effectively turns on both <code> --nodebump</code> and <code>--noopt</code>. 
 <li> <code>--with-ph</code> - Use PropKa to calculate pKas and apply them to the molecule given the pH value.
+<li> <code>--apbs-input</code> - Create a template <a href="http://agave.wustl.edu/apbs">APBS</a> input file based on the generated PQR file.
 <li> <code>--verbose (-v)</code> - Print additional information to stdout.
 <li> <code>--help (-h)</code> - Display the usage information.
 </ul>
-
-Additionally, PDB2PQR server users converting files for use with <a href="http://agave.wustl.edu/apbs">APBS</a> can choose to create a template APBS input file for the input protein. <P>
 
 <hr>
 <a name="algorithm"></a>

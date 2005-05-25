@@ -13,7 +13,7 @@
     Washington University in St. Louis
 """
 
-__date__ = "11 May 2005"
+__date__ = "25 May 2005"
 __author__ = "Todd Dolinsky, Nathan Baker"
 
 import string
@@ -52,12 +52,14 @@ def usage(rc):
     str = str + "optimizations before yielding a new PDB-style file as\n"
     str = str + "output\n"
     str = str + "\n"
-    str = str + "Usage: pdb2pqr.py [options] --ff=<forcefield> <path> [output-path]\n"
+    str = str + "Usage: pdb2pqr.py [options] --ff=<forcefield> <path> <output-path>\n"
     str = str + "    Required Arguments:\n"
-    str = str + "        <path>        :  The path to the PDB file or an ID\n"
-    str = str + "                         to obtain from the PDB archive\n"
     str = str + "        <forcefield>  :  The forcefield to use - currently\n"
     str = str + "                         amber, charmm, and parse are supported.\n"
+    str = str + "        <path>        :  The path to the PDB file or an ID\n"
+    str = str + "                         to obtain from the PDB archive\n"
+    str = str + "        <output-path> :  The desired output name of the PQR file\n"
+    str = str + "                         to be generated\n"
     str = str + "    Optional Arguments:\n"
     str = str + "        --nodebump    :  Do not perform the debumping operation\n"
     str = str + "        --noopt       :  Do not perform hydrogen optimization\n"
@@ -67,10 +69,10 @@ def usage(rc):
     str = str + "                         nodebump and noopt flags\n"
     str = str + "        --with-ph=<ph>:  Use propka to calculate pKas and apply them\n"
     str = str + "                         to the molecule given the pH value.\n"
+    str = str + "        --apbs-input  :  Create a template APBS input file based on\n"
+    str = str + "                         the generated PQR file.\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
-    str = str + "    If no output-path is specified, the PQR file is\n"
-    str = str + "    printed to stdout\n"
     str = str + "\n"
     sys.stderr.write(str)
     sys.exit(rc)
@@ -138,8 +140,9 @@ def runPDB2PQR(pdblist, ff, options):
                      verbose: When 1, script will print information to stdout
                               When 0, no detailed information will be printed (int)
                      debump:  When 1, debump heavy atoms (int)
-                     opt:    When 1, run hydrogen optimization (int)
+                     opt:     When 1, run hydrogen optimization (int)
                      ph:      The desired ph of the system (float)
+                     input:   When 1, make an APBS input file
         Returns
             header:  The PQR file header (string)
             lines:   The PQR file atoms (list)
@@ -226,7 +229,7 @@ def runPDB2PQR(pdblist, ff, options):
 
     if "hbond" in options:
         myRoutines.printHbond()
-    
+
     if verbose:
         print "Total time taken: %.2f seconds\n" % (time.time() - start)
     return header, lines
@@ -236,14 +239,14 @@ def mainCommand():
         Main driver for running program from the command line.
     """
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","nodebump","noopt","hbond", "assign-only","with-ph="]
+    longOptlist = ["help","verbose","ff=","nodebump","noopt","hbond", "assign-only","with-ph=","apbs-input"]
 
     try: opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
     except getopt.GetoptError, details:
         sys.stderr.write("GetoptError:  %s\n" % details)
         usage(2)
 
-    if len(args) < 1 or len(args) > 2:
+    if len(args) != 2:
         sys.stderr.write("Incorrect number (%d) of arguments!\n" % len(args))
         usage(2)
 
@@ -260,6 +263,7 @@ def mainCommand():
         elif o == "--nodebump":  del options["debump"]
         elif o == "--noopt":    del options["opt"]
         elif o == "--hbond":     options["hbond"] = 1
+        elif o == "--apbs-input": options["input"] = 1
         elif o == "--with-ph":
             try:
                 ph = float(a)
@@ -306,18 +310,24 @@ def mainCommand():
 
     header, lines = runPDB2PQR(pdblist, ff, options)
 
-    if len(args) == 2:
-        outpath = args[1]
-        outfile = open(outpath,"w")
-        outfile.write(header)
-        for line in lines:
-            outfile.write(line)
-        outfile.close()
-    else:
-        print header
-        for line in lines:
-            print line
+    # Print the PQR file
+    outpath = args[1]
+    outfile = open(outpath,"w")
+    outfile.write(header)
+    for line in lines:
+        outfile.write(line)
+    outfile.close()
 
+    if "input" in options:
+        from src import inputgen
+        from src import psize
+        method = "mg-auto"
+        size = psize.Psize()
+        size.parseInput(outpath)
+        async = 0 # No async files here!
+        igen = inputgen.inputGen(outpath, size, method, async)
+        igen.printInput()
+   
 def mainCGI():
     """
         Main driver for running PDB2PQR from a web page

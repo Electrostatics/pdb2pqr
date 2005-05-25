@@ -54,7 +54,7 @@
 # FADD = 20                   # Amount to add to mol dims to get fine
                               # grid dims
 # SPACE = 0.50                # Desired fine mesh resolution
-# GMEMFAC = 160               # Number of bytes per grid point required 
+# GMEMFAC = 200               # Number of bytes per grid point required 
                               # for sequential MG calculation 
 # GMEMCEIL = 400              # Max MB allowed for sequential MG
                               # calculation.  Adjust this to force the
@@ -76,7 +76,7 @@ from math import log
 
 class Psize:
     def __init__(self):
-        self.constants = {"CFAC":1.7, "FADD":20, "SPACE":0.50, "GMEMFAC":160, "GMEMCEIL":400, "OFAC":0.1, "REDFAC":0.25, "TFAC_ALPHA":9e-5, "TFAC_XEON":3e-4, "TFAC_SPARC": 5e-4}
+        self.constants = {"CFAC":1.7, "FADD":20, "SPACE":0.50, "GMEMFAC":200, "GMEMCEIL":400, "OFAC":0.1, "REDFAC":0.25, "TFAC_ALPHA":9e-5, "TFAC_XEON":3e-4, "TFAC_SPARC": 5e-4}
         self.minlen = [360.0, 360.0, 360.0]
         self.maxlen = [0.0, 0.0, 0.0]
         self.q = 0.0
@@ -91,45 +91,28 @@ class Psize:
         self.nsmall = [0,0,0]
         self.nfocus = 0
 
-    def parseLine(self, line):
-        """
-            Parse a line from a PQR file
-
-            Parameters:
-                line:  The line to parse (string)
-        """
-        if string.find(line,"ATOM") == 0:
-            subline = string.replace(line[30:], "-", " -")
-            words = string.split(subline)
-            if len(words) < 4:  return
-            self.gotatom = self.gotatom + 1
-            self.q = self.q + float(words[3])
-            if self.minlen[0] > float(words[0]): self.minlen[0] = float(words[0])
-            if self.minlen[1] > float(words[1]): self.minlen[1] = float(words[1])
-            if self.minlen[2] > float(words[2]): self.minlen[2] = float(words[2])
-            if self.maxlen[0] < float(words[0]): self.maxlen[0] = float(words[0])
-            if self.maxlen[1] < float(words[1]): self.maxlen[1] = float(words[1])
-            if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
-        elif string.find(line, "HETATM") == 0:
-            self.gothet = self.gothet + 1
-
-    def parseText(self, text):
-        """
-            Parse an input structure file in PDB or PQR format as a string
-
-            Parameters
-                text:  The string to parse (string)
-        """
-        lines = string.split(text,"\n")
-        for line in lines:
-            self.parseLine(line)
-        
-
     def parseInput(self, filename):
         """ Parse input structure file in PDB or PQR format """
         file = open(filename, "r")
         for line in file.readlines():
-            self.parseLine(line)
+            if string.find(line,"ATOM") == 0:
+                subline = string.replace(line[30:], "-", " -")
+                words = string.split(subline)
+                if len(words) < 4:    
+                    #sys.stderr.write("Can't parse following line:\n")
+                    #sys.stderr.write("%s\n" % line)
+                    #sys.exit(2)
+                    continue
+                self.gotatom = self.gotatom + 1
+                self.q = self.q + float(words[3])
+                if self.minlen[0] > float(words[0]): self.minlen[0] = float(words[0])
+                if self.minlen[1] > float(words[1]): self.minlen[1] = float(words[1])
+                if self.minlen[2] > float(words[2]): self.minlen[2] = float(words[2])
+                if self.maxlen[0] < float(words[0]): self.maxlen[0] = float(words[0])
+                if self.maxlen[1] < float(words[1]): self.maxlen[1] = float(words[1])
+                if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
+            elif string.find(line, "HETATM") == 0:
+                self.gothet = self.gothet + 1
 
     def setConstant(self, name, value):
         """ Set a constant to a value; returns 0 if constant not found """
@@ -195,7 +178,7 @@ class Psize:
         for i in range(3):
             nsmall.append(n[i])
         while 1:
-            nsmem = 160.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
+            nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             if nsmem < self.constants["GMEMCEIL"]: break
             else:
                 i = nsmall.index(max(nsmall))
@@ -230,7 +213,7 @@ class Psize:
         if nfocus > 0: nfocus = nfocus + 1
         self.nfocus = nfocus
 
-    def runPsize(self):
+    def setAll(self):
         """ Set up all of the things calculated individually above """
         maxlen = self.getMax()
         minlen = self.getMin()
@@ -269,6 +252,11 @@ class Psize:
     def getSmallest(self): return self.nsmall
     def getProcGrid(self): return self.np
     def getFocus(self): return self.nfocus
+
+    def runPsize(self, filename):
+        """ Parse input PQR file and set parameters """
+        self.parseInput(filename)
+        self.setAll()
     
     def printResults(self):
         """ Return a string with the formatted results """
@@ -291,8 +279,8 @@ class Psize:
 
             # Compute memory requirements
 
-            nsmem = 160.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
-            gmem = 160.0 * n[0] * n[1] * n[2] / 1024 / 1024
+            nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
+            gmem = 200.0 * n[0] * n[1] * n[2] / 1024 / 1024
             
             # Calculate VERY ROUGH wall clock times
 
@@ -341,7 +329,7 @@ clen[1], clen[2])
 
             str = str + "\n"
             str = str + "################# ESTIMATED REQUIREMENTS ####################\n"
-            str = str + "Memory per processor                   = %.3f MB\n" % (160.0*ntot/1024/1024)
+            str = str + "Memory per processor                   = %.3f MB\n" % (200.0*ntot/1024/1024)
             str = str + "Grid storage requirements (ASCII)      = %.3f MB\n" % (8.0*12*np[0]*np[1]*np[2]*ntot/1024/1024)
             str = str + "Grid storage requirements (XDR)        = %.3f MB\n" % (8.0*ntot*np[0]*np[1]*np[2]/1024/1024)
             str = str + "Time to solve on 667 MHz EV67 Alpha    = %.3f sec\n" % tsolve_alpha
@@ -438,8 +426,7 @@ def main():
         if o == "--TFAC_SPARC":    
             psize.setConstant("TFAC_SPARC",  float(a))
 
-    psize.parseInput(filename)
-    psize.runPsize()
+    psize.runPsize(filename)
     sys.stdout.write("Default constants used (./psize.py --help for more information):\n")
     sys.stdout.write("%s\n" % psize.constants)
     sys.stdout.write(psize.printResults())

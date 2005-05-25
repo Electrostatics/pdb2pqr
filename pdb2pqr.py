@@ -167,7 +167,6 @@ def runPDB2PQR(pdblist, ff, options):
     if "ph" in options:
         pka = 1
         ph = options["ph"]
-
         period = string.find(outname,".")
         if period > 0:
             pkaname = outname[0:period] + ".propka"
@@ -417,8 +416,8 @@ def mainCGI():
         file.close()
                 
         if input:
-            import inputgen
-            import psize
+            from src import inputgen
+            from src import psize
             method = "mg-auto"
             size = psize.Psize()
             size.parseInput(pqrpath)

@@ -42,7 +42,7 @@ LOADPATH    = "/proc/loadavg"
 """ The path to the pdb2pqr log - set to "" or None if not to be
     included.  The web server (i.e. Apache) MUST be able to write to
     this directory. """
-LOGPATH     = "/home/todd/public_html/pdb2pqr/log/pdb2pqr.log"
+LOGPATH     = ""
 
 def setID(time):
     """
@@ -277,6 +277,9 @@ def createResults(header, input, name, time):
     file.write("<a href=\"%s%s%s.pqr\">%s.pqr</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
     if input:
         file.write("<a href=\"%s%s%s.in\">%s.in</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
+    pkaname = "%s%s%s.propka" % (LOCALPATH, TMPDIR, name)
+    if os.path.isfile(pkaname):
+        file.write("<a href=\"%s%s%s.propka\">%s.propka</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
 
     file.write("<P>The header for your PQR file, including any warnings generated, is:<P>\n")
     file.write("<blockquote><code>\n")

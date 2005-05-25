@@ -68,7 +68,9 @@ def usage(rc):
     str = str + "                         optimizations - effectively turns on the\n"
     str = str + "                         nodebump and noopt flags\n"
     str = str + "        --with-ph=<ph>:  Use propka to calculate pKas and apply them\n"
-    str = str + "                         to the molecule given the pH value.\n"
+    str = str + "                         to the molecule given the pH value. Actual\n"
+    str = str + "                         PropKa results will be output to \n"
+    str = str + "                         <output-path>.propka.\n"
     str = str + "        --apbs-input  :  Create a template APBS input file based on\n"
     str = str + "                         the generated PQR file.\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
@@ -142,23 +144,37 @@ def runPDB2PQR(pdblist, ff, options):
                      debump:  When 1, debump heavy atoms (int)
                      opt:     When 1, run hydrogen optimization (int)
                      ph:      The desired ph of the system (float)
-                     input:   When 1, make an APBS input file
+                     outname: The name of the desired output file
         Returns
             header:  The PQR file header (string)
             lines:   The PQR file atoms (list)
     """
     ph = None
+    pkaname = ""
     lines = []
     if "verbose" in options: verbose = 1
     else: verbose = 0
 
+    if "opt" in options: optflag = 1
+    else: optflag = 0
+
+    if "outname" not in options or options["outname"] == None:
+        text = "Error: Output name not set!"
+        raise ValueError, text
+    else:
+        outname = options["outname"]
+
     if "ph" in options:
         pka = 1
         ph = options["ph"]
-    else: pka = 0
 
-    if "opt" in options: optflag = 1
-    else: optflag = 0
+        period = string.find(outname,".")
+        if period > 0:
+            pkaname = outname[0:period] + ".propka"
+        else:
+            pkaname = outname + ".propka"
+        if os.path.isfile(pkaname): os.remove(pkaname)
+    else: pka = 0
     
     start = time.time()
 
@@ -171,12 +187,10 @@ def runPDB2PQR(pdblist, ff, options):
         print "\tNumber of residues in protein: %s" % myProtein.numResidues()
         print "\tNumber of atoms in protein   : %s" % myProtein.numAtoms()
 
-
     myDefinition = Definition()
     if verbose:
         print "Parsed Amino Acid definition file."
-
-
+        
     myRoutines = Routines(myProtein, verbose, myDefinition)              
     
     myRoutines.updateResidueTypes()
@@ -197,9 +211,9 @@ def runPDB2PQR(pdblist, ff, options):
     # HSN is holder for neutral HIS that will NOT be optimized
     
     if pka and optflag:
-        myRoutines.runPROPKA(ph, ff)
+        myRoutines.runPROPKA(ph, ff, pkaname)
     elif pka and not optflag:
-        myRoutines.runPROPKA(ph, ff)
+        myRoutines.runPROPKA(ph, ff, pkaname)
         myRoutines.renameHistidines("HS2N","HSN") # Set to HSD
     elif not pka and optflag:
         myRoutines.renameHistidines("HIS","HS2N") # Let optimization determine HSD/HSE
@@ -308,10 +322,12 @@ def mainCommand():
         print "Warning: %s is a non-standard PDB file.\n" % path
         print errlist
 
+    outpath = args[1]
+    options["outname"] = outpath
+
     header, lines = runPDB2PQR(pdblist, ff, options)
 
     # Print the PQR file
-    outpath = args[1]
     outfile = open(outpath,"w")
     outfile.write(header)
     for line in lines:
@@ -392,6 +408,7 @@ def mainCGI():
         name = setID(starttime)
  
         pqrpath = startServer(name)
+        options["outname"] = pqrpath
         header, lines = runPDB2PQR(pdblist, ff, options)
         file = open(pqrpath, "w")
         file.write(header)

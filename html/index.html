@@ -20,22 +20,6 @@ document.thisform.PDB.disabled=false;
 }
 }
 
-function setprotopt(){
-
-if(document.thisform.WATOPT.checked==true)
-{
-document.thisform.HOPT.checked=true;
-}
-}
-
-function setwatopt(){
-
-if(document.thisform.HOPT.checked==false)
-{
-document.thisform.WATOPT.checked=false;
-}
-}
-
 function setph(val){
 if(document.thisform.PROPKA.checked==true)
 {
@@ -64,7 +48,7 @@ This server enables a user to convert <a href="http://www.rcsb.org/pdb/">PDB</a>
 
 pKa calculations are performed by <a href="http://propka.chem.uiowa.edu/">PROPKA</a>.<P>
 
-For more information,  visit the <a href="help.html">help page</a>.<P>
+For more information,  visit the <a href="../doc/userguide.html">PDB2PQR User Guide</a>.<P>
 
 <FORM action="http://ocotillo.wustl.edu/~todd/cgi-bin/pdb2pqr/pdb2pqr.py" METHOD="POST" ENCTYPE="multipart/form-data" name="thisform">
 
@@ -82,10 +66,8 @@ Pick a forcefield to use -
 
 Available options: 
 <blockquote>
-<input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new heavy atoms are not rebuilt too close to existing atoms<BR>
-<input type="CHECKBOX" name="HDEBUMP" CHECKED> Ensure that new hydrogen atoms are not rebuilt too close to existing atoms<BR>
-<input type="CHECKBOX" name="HOPT" CHECKED onClick="setwatopt()"> Optimize the protein hydrogen network - <font size=2 color="red">Can significantly increase computational time</font><BR>
-<input type="CHECKBOX" name="WATOPT" CHECKED onClick="setprotopt()"> Optimize the water hydrogen network - <font size=2 color="red">The protein hydrogen network must be optimized as well</font><BR>
+<input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<BR>
+<input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
 <input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)"> Use <a href="http://propka.chem.uiowa.edu">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6 value="7.00" DISABLED><BR>
 <input type="CHECKBOX" name="INPUT"> Create an <a href="http://agave.wustl.edu/apbs/">APBS</a> input file<P>
 </blockquote>
@@ -109,6 +91,6 @@ PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project pr
 Please send all bug reports and suggestions to <a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a><P>
 
 
-<font size="-1"><CENTER><I>Last Updated April 20th, 2005</I></CENTER></font>
+<font size="-1"><CENTER><I>Last Updated May 25th, 2005</I></CENTER></font>
 </BODY>
 </HTML>

@@ -1480,7 +1480,7 @@ class Routines:
         myrandRoutines.randomizeWaters()
         self.write("Done randomizing hydrogens.\n")
 
-    def runPROPKA(self, ph, ff):
+    def runPROPKA(self, ph, ff, outname):
         """
             Run PROPKA on the current protein, setting protonation states to
             the correct values
@@ -1488,6 +1488,7 @@ class Routines:
             Parameters
                ph:  The desired pH of the system
                ff:  The forcefield name to be used
+               outname: The name of the PQR outfile
         """
         self.write("Running propka and applying at pH %.2f... " % ph)
         linelen = 70 # This should go elsewhere
@@ -1519,7 +1520,7 @@ class Routines:
             sys.exit()
 
         numatoms = int(txtlen) / linelen
-        pkaresults = runPKA(txt, txtlen, numatoms)
+        pkaresults = runPKA(txt, txtlen, numatoms, outname)
         pkaresults = string.strip(pkaresults)
         pkas = string.split(pkaresults, "|end")
         pkas = pkas[:-1] # The last entry is null

@@ -33,8 +33,8 @@
  * and things like that.
  *
  * $Log$
- * Revision 1.1  2005/04/18 15:33:12  pdb2pqr
- * TJD: Started to make new release structure.
+ * Revision 1.2  2005/05/25 15:46:11  pdb2pqr
+ * TJD: When using PropKa original PropKa output is now written out to <name>.propka
  *
  ************************************************************************/
 
@@ -555,18 +555,19 @@ char *SWIG_GetPtr(char *_c, void **ptr, char *_t)
 #define SWIG_init    initpropkalibc
 
 #define SWIG_name    "propkalibc"
-extern char *runPKA(char *,int ,int );
+extern char *runPKA(char *,int ,int ,char *);
 static PyObject *_wrap_runPKA(PyObject *self, PyObject *args) {
     PyObject * _resultobj;
     char * _result;
     char * _arg0;
     int  _arg1;
     int  _arg2;
+    char * _arg3;
 
     self = self;
-    if(!PyArg_ParseTuple(args,"sii:runPKA",&_arg0,&_arg1,&_arg2)) 
+    if(!PyArg_ParseTuple(args,"siis:runPKA",&_arg0,&_arg1,&_arg2,&_arg3)) 
         return NULL;
-    _result = (char *)runPKA(_arg0,_arg1,_arg2);
+    _result = (char *)runPKA(_arg0,_arg1,_arg2,_arg3);
     _resultobj = Py_BuildValue("s", _result);
     return _resultobj;
 }

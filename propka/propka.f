@@ -19,7 +19,7 @@ C      HUI LI, ANDREW D. ROBERTSON AND JAN H. JENSEN
 C
 C***********************************************************
 C
-       SUBROUTINE PROPKA(NATOM, STRLEN, PDB)
+       SUBROUTINE PROPKA(NATOM, STRLEN, PDB, OUTNAME)
 C      *******   ******
 C
        CHARACTER HEAD*6,NAMATM*5,NAMRES*3,SPACE4*4,
@@ -134,7 +134,7 @@ C          RESULT must be large enough to handle the resulting
 C              pKa info seen at the end of this code.
 C
       INTEGER STRLEN, LINELEN, I, J
-      CHARACTER PDB*(*), LINE*(70), RESULT*(20)
+      CHARACTER PDB*(*), LINE*(70), RESULT*(20), OUTNAME*(50)
 C
 C      ************************
 C      STEP 1. PARSE PDB STRING
@@ -152,6 +152,9 @@ C
        NHIS=0
        NCYS=0
        NTRP=0
+
+       OPEN (11, FILE=OUTNAME, STATUS='NEW', FORM='FORMATTED',
+     $       ACCESS='SEQUENTIAL')
 
        LINELEN=70
        DO I = 1, NATOM
@@ -3470,6 +3473,258 @@ C
           PKAHIS(IHIS)=PKAHIS(IHIS)-6.00*NHBHIS(IHIS)
        END DO
 C
+C
+       WRITE(11,*)' '
+       WRITE(11,'(95(1H-))')
+       WRITE(11,'(2(1H-),30X,A,30X,2(1H-))')
+     $          'PROPKA: A PROTEIN PKA PREDICTOR'
+       WRITE(11,'(2(1H-),28X,A,28X,2(1H-))')
+     $          'VERSION 1.0,  04/25/2004, IOWA CITY'
+       WRITE(11,'(2(1H-),41X,A,41X,2(1H-))')
+     $          'BY HUI LI'
+       WRITE(11,'(2(1H-),25X,41X,25X,2(1H-))')
+       WRITE(11,'(2(1H-),22X,A,22X,2(1H-))')
+     $          'PROPKA PREDICTS PROTEIN PKA VALUES ACCORDING TO'
+       WRITE(11,'(2(1H-),30X,A,30X,2(1H-))')
+     $          'THE EMPIRICAL RULES PROPOSED BY'
+       WRITE(11,'(2(1H-),23X,A,23X,2(1H-))')
+     $          'HUI LI, ANDREW D. ROBERTSON AND JAN H. JENSEN'
+       WRITE(11,'(95(1H-))')
+       WRITE(11,*)' '
+       WRITE(11,'(7(1H-),3X,5(1H-),3X,6(1H-),3X,9(1H-),
+     $        11(1H-),3(3X,13(1H-)))')
+       WRITE(11,'(15X,12X,A,3(3X,A13))')
+     $   'DESOLVATION  EFFECTS',
+     $   '    SIDECHAIN',
+     $   '     BACKBONE',
+     $   '    COULOMBIC'
+       WRITE(11,'(A15,6(3X,A))')
+     $   'RESIDUE     pKa ',
+     $   'LOCATE',
+     $   '  MASSIVE',
+     $   '   LOCAL',
+     $   'HYDROGEN BOND',
+     $   'HYDROGEN BOND',
+     $   '  INTERACTION'
+       WRITE(11,'(7(1H-),3X,5(1H-),3X,6(1H-),3X,9(1H-),
+     $        3X,8(1H-),3(3X,13(1H-)))')
+       WRITE(11,*)' '
+C
+C
+       DO ICAR=1,NCAR
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR),
+     $   TYPCAR(ICAR),TOLMAS(1,ICAR),NMASS(1,ICAR),
+     $   TOLLOC(1,ICAR),NLOCAL(1,ICAR),
+     $   VALSDC(1,ICAR,1),NAMSDC(1,ICAR,1),NUMSDC(1,ICAR,1),
+     $   VALBKB(1,ICAR,1),NAMBKB(1,ICAR,1),NUMBKB(1,ICAR,1),
+     $   VALCOL(1,ICAR,1),NAMCOL(1,ICAR,1),NUMCOL(1,ICAR,1)
+         DO J=2,30
+           IF(J.LE.NSDCAR(ICAR) .OR.
+     $        J.LE.NBKCAR(ICAR) .OR.
+     $        J.LE.NCLCAR(ICAR)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       NAMCAR(ICAR), LCARRS(ICAR),
+     $       VALSDC(1,ICAR,J),NAMSDC(1,ICAR,J),NUMSDC(1,ICAR,J),
+     $       VALBKB(1,ICAR,J),NAMBKB(1,ICAR,J),NUMBKB(1,ICAR,J),
+     $       VALCOL(1,ICAR,J),NAMCOL(1,ICAR,J),NUMCOL(1,ICAR,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       END DO
+C
+C
+       DO IHIS=1,NHIS
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   'HIS', LHISRS(IHIS), PKAHIS(IHIS),
+     $   TYPHIS(IHIS),TOLMAS(2,IHIS),NMASS(2,IHIS),
+     $   TOLLOC(2,IHIS),NLOCAL(2,IHIS),
+     $   VALSDC(2,IHIS,1),NAMSDC(2,IHIS,1),NUMSDC(2,IHIS,1),
+     $   VALBKB(2,IHIS,1),NAMBKB(2,IHIS,1),NUMBKB(2,IHIS,1),
+     $   VALCOL(2,IHIS,1),NAMCOL(2,IHIS,1),NUMCOL(2,IHIS,1)
+         DO J=2,30
+           IF(J.LE.NSDHIS(IHIS) .OR.
+     $        J.LE.NBKHIS(IHIS) .OR.
+     $        J.LE.NCLHIS(IHIS)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       'HIS', LHISRS(IHIS),
+     $       VALSDC(2,IHIS,J),NAMSDC(2,IHIS,J),NUMSDC(2,IHIS,J),
+     $       VALBKB(2,IHIS,J),NAMBKB(2,IHIS,J),NUMBKB(2,IHIS,J),
+     $       VALCOL(2,IHIS,J),NAMCOL(2,IHIS,J),NUMCOL(2,IHIS,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       END DO
+C
+C
+       DO ICYS=1,NCYS
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   'CYS', LCYSRS(ICYS), PKACYS(ICYS),
+     $   TYPCYS(ICYS),TOLMAS(3,ICYS),NMASS(3,ICYS),
+     $   TOLLOC(3,ICYS),NLOCAL(3,ICYS),
+     $   VALSDC(3,ICYS,1),NAMSDC(3,ICYS,1),NUMSDC(3,ICYS,1),
+     $   VALBKB(3,ICYS,1),NAMBKB(3,ICYS,1),NUMBKB(3,ICYS,1),
+     $   VALCOL(3,ICYS,1),NAMCOL(3,ICYS,1),NUMCOL(3,ICYS,1)
+         DO J=2,30
+           IF(J.LE.NSDCYS(ICYS) .OR.
+     $        J.LE.NBKCYS(ICYS) .OR.
+     $        J.LE.NCLCYS(ICYS)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       'CYS', LCYSRS(ICYS),
+     $       VALSDC(3,ICYS,J),NAMSDC(3,ICYS,J),NUMSDC(3,ICYS,J),
+     $       VALBKB(3,ICYS,J),NAMBKB(3,ICYS,J),NUMBKB(3,ICYS,J),
+     $       VALCOL(3,ICYS,J),NAMCOL(3,ICYS,J),NUMCOL(3,ICYS,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       END DO
+C
+C
+       DO ITYR=1,NTYR
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   'TYR', LTYRRS(ITYR), PKATYR(ITYR),
+     $   TYPTYR(ITYR),TOLMAS(4,ITYR),NMASS(4,ITYR),
+     $   TOLLOC(4,ITYR),NLOCAL(4,ITYR),
+     $   VALSDC(4,ITYR,1),NAMSDC(4,ITYR,1),NUMSDC(4,ITYR,1),
+     $   VALBKB(4,ITYR,1),NAMBKB(4,ITYR,1),NUMBKB(4,ITYR,1),
+     $   VALCOL(4,ITYR,1),NAMCOL(4,ITYR,1),NUMCOL(4,ITYR,1)
+         DO J=2,30
+           IF(J.LE.NSDTYR(ITYR) .OR.
+     $        J.LE.NBKTYR(ITYR) .OR.
+     $        J.LE.NCLTYR(ITYR)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       'TYR', LTYRRS(ITYR),
+     $       VALSDC(4,ITYR,J),NAMSDC(4,ITYR,J),NUMSDC(4,ITYR,J),
+     $       VALBKB(4,ITYR,J),NAMBKB(4,ITYR,J),NUMBKB(4,ITYR,J),
+     $       VALCOL(4,ITYR,J),NAMCOL(4,ITYR,J),NUMCOL(4,ITYR,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       END DO
+C
+C
+       DO ILYS=1,NLYS
+       IF(ILYS.EQ.1)THEN
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   'N+ ', LLYSRS(ILYS), PKALYS(ILYS),
+     $   TYPLYS(ILYS),TOLMAS(5,ILYS),NMASS(5,ILYS),
+     $   TOLLOC(5,ILYS),NLOCAL(5,ILYS),
+     $   VALSDC(5,ILYS,1),NAMSDC(5,ILYS,1),NUMSDC(5,ILYS,1),
+     $   VALBKB(5,ILYS,1),NAMBKB(5,ILYS,1),NUMBKB(5,ILYS,1),
+     $   VALCOL(5,ILYS,1),NAMCOL(5,ILYS,1),NUMCOL(5,ILYS,1)
+         DO J=2,30
+           IF(J.LE.NSDLYS(ILYS) .OR.
+     $        J.LE.NBKLYS(ILYS) .OR.
+     $        J.LE.NCLLYS(ILYS)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       'N+ ', LLYSRS(ILYS),
+     $       VALSDC(5,ILYS,J),NAMSDC(5,ILYS,J),NUMSDC(5,ILYS,J),
+     $       VALBKB(5,ILYS,J),NAMBKB(5,ILYS,J),NUMBKB(5,ILYS,J),
+     $       VALCOL(5,ILYS,J),NAMCOL(5,ILYS,J),NUMCOL(5,ILYS,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       ELSE
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   'LYS', LLYSRS(ILYS), PKALYS(ILYS),
+     $   TYPLYS(ILYS),TOLMAS(5,ILYS),NMASS(5,ILYS),
+     $   TOLLOC(5,ILYS),NLOCAL(5,ILYS),
+     $   VALSDC(5,ILYS,1),NAMSDC(5,ILYS,1),NUMSDC(5,ILYS,1),
+     $   VALBKB(5,ILYS,1),NAMBKB(5,ILYS,1),NUMBKB(5,ILYS,1),
+     $   VALCOL(5,ILYS,1),NAMCOL(5,ILYS,1),NUMCOL(5,ILYS,1)
+         DO J=2,30
+           IF(J.LE.NSDLYS(ILYS) .OR.
+     $        J.LE.NBKLYS(ILYS) .OR.
+     $        J.LE.NCLLYS(ILYS)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       'LYS', LLYSRS(ILYS),
+     $       VALSDC(5,ILYS,J),NAMSDC(5,ILYS,J),NUMSDC(5,ILYS,J),
+     $       VALBKB(5,ILYS,J),NAMBKB(5,ILYS,J),NUMBKB(5,ILYS,J),
+     $       VALCOL(5,ILYS,J),NAMCOL(5,ILYS,J),NUMCOL(5,ILYS,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       END IF
+       END DO
+C
+C
+       DO IARG=1,NARG
+         WRITE(11,'(A3,I4,F8.2,3X,A6,2X,F5.2,I5,2X,F5.2,I4,
+     $           3(3X,F5.2,1X,A3,I4))')
+     $   'ARG', LARGRS(IARG), PKAARG(IARG),
+     $   TYPARG(IARG),TOLMAS(6,IARG),NMASS(6,IARG),
+     $   TOLLOC(6,IARG),NLOCAL(6,IARG),
+     $   VALSDC(6,IARG,1),NAMSDC(6,IARG,1),NUMSDC(6,IARG,1),
+     $   VALBKB(6,IARG,1),NAMBKB(6,IARG,1),NUMBKB(6,IARG,1),
+     $   VALCOL(6,IARG,1),NAMCOL(6,IARG,1),NUMCOL(6,IARG,1)
+         DO J=2,30
+           IF(J.LE.NSDARG(IARG) .OR.
+     $        J.LE.NBKARG(IARG) .OR.
+     $        J.LE.NCLARG(IARG)    )THEN
+             WRITE(11,'(A3,I4,40X,3(3X,F5.2,1X,A3,I4))')
+     $       'ARG', LARGRS(IARG),
+     $       VALSDC(6,IARG,J),NAMSDC(6,IARG,J),NUMSDC(6,IARG,J),
+     $       VALBKB(6,IARG,J),NAMBKB(6,IARG,J),NUMBKB(6,IARG,J),
+     $       VALCOL(6,IARG,J),NAMCOL(6,IARG,J),NUMCOL(6,IARG,J)
+           END IF
+         END DO
+         WRITE(11,*)' '
+       END DO
+C
+C
+       WRITE(11,'(95(1H-))')
+       WRITE(11,'(A)')'SUMMARY OF THIS PREDICTION'
+       DO ICAR=1,NCAR
+         IF(NAMCAR(ICAR).EQ.'ASP')THEN
+           WRITE(11,'(3X,A3,A1,A1,I4,F8.2)')
+     $     NAMCAR(ICAR),SPACE1,LCARCH(ICAR),LCARRS(ICAR),PKACAR(ICAR)
+         END IF
+       END DO
+       DO ICAR=1,NCAR
+         IF(NAMCAR(ICAR).EQ.'GLU')THEN
+           WRITE(11,'(3X,A3,I4,F8.2)')
+     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR)
+         END IF
+       END DO
+       DO ICAR=1,NCAR
+         IF(NAMCAR(ICAR).EQ.'C- ')THEN
+           WRITE(11,'(3X,A3,I4,F8.2)')
+     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR)
+         END IF
+       END DO
+       DO IHIS=1,NHIS
+         WRITE(11,'(3X,A3,I4,F8.2)')
+     $   'HIS', LHISRS(IHIS), PKAHIS(IHIS)
+       END DO
+       DO ICYS=1,NCYS
+         WRITE(11,'(3X,A3,I4,F8.2)')
+     $   'CYS', LCYSRS(ICYS), PKACYS(ICYS)
+       END DO
+       DO ITYR=1,NTYR
+         WRITE(11,'(3X,A3,I4,F8.2)')
+     $   'TYR', LTYRRS(ITYR), PKATYR(ITYR)
+       END DO
+       WRITE(11,'(3X,A3,I4,F8.2)')
+     $   'N+ ', LLYSRS(1), PKALYS(1)
+       DO ILYS=2,NLYS
+         WRITE(11,'(3X,A3,I4,F8.2)')
+     $   'LYS', LLYSRS(ILYS), PKALYS(ILYS)
+       END DO
+       DO IARG=1,NARG
+         WRITE(11,'(3X,A3,I4,F8.2)')
+     $   'ARG', LARGRS(IARG), PKAARG(IARG)
+       END DO
+       WRITE(11,'(95(1H-))')
+C
+       CLOSE(11)
+C
+C      RETURN SOME OF THE RESULTS IN THE ARRAY
 C
        I = 1
        DO ICAR=1,NCAR

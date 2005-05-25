@@ -12,20 +12,18 @@
     Washington University in St. Louis
 """
 
-__date__ = "11 May 2005"
+__date__ = "25 May 2005"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
 HYDROGENFILE = "dat/HYDROGENS.DAT"
 
 import os
 import string
+import math
 
 from definitions import *
 from utilities import *
-from math import *
 from quatfit import *
-from random import *
-from time import *
 
 def sortdict(dict):
     """
@@ -590,7 +588,6 @@ class hydrogenRoutines:
             Parameters:
                allflag:  Flag to pass to findAmbiguities.
         """
-        starttime = time()
         allatoms = self.findAmbiguities(allflag)
         self.printAmbiguities()
 
@@ -1666,8 +1663,8 @@ class hydrogenRoutines:
         dotted = dot(norm1, norm2)
         if dotted > 1.0: # If normalized, this is due to rounding error
             dotted = 1.0
-        rad = abs(acos(dotted))
-        angle = rad*180.0/pi
+        rad = abs(math.acos(dotted))
+        angle = rad*180.0/math.pi
         if angle > 180.0:
             angle = 360.0 - angle
         return angle

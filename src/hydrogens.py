@@ -1477,7 +1477,7 @@ class hydrogenRoutines:
         elif len(bonds) == 2:  # We have LP1 and H1 already
 
             loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
-            self.fixPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatoms, 0)
+            self.fixPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatoms, 1)
 
 
     def rotateResidue(self, residue, fixed, oxygen, newangle):
@@ -1718,8 +1718,6 @@ class hydrogenRoutines:
             tuples in self.groups.
 
             Returns
-                allatoms:  A list of all donors and acceptors in the
-                           protein (list)
                 allflag:   Optimize all ambs if 1, otherwise WATERS ONLY.
         """
         self.routines.setDonorsAndAcceptors()
@@ -1732,6 +1730,11 @@ class hydrogenRoutines:
                 cter = residue.get("isCterm")
                 type = residue.get("type")
                 if type == 2: continue
+
+                # If the water hydrogens were already present do not optimize
+                if not allflag and residue.name == "WAT":
+                    if residue.getAtom("H1") != None and residue.getAtom("H2") != None: continue
+                    
                 for group in hydrodefs:
                     groupname = group.name
                     htype = group.type
@@ -1740,7 +1743,7 @@ class hydrogenRoutines:
                     if htype in [1,3,4]: continue
 
                     if not allflag and htype != 12: continue
-                    
+       
                     if resname == groupname or \
                        (groupname == "APR") or \
                        (groupname == "APP" and resname != "PRO") or \
@@ -1750,6 +1753,7 @@ class hydrogenRoutines:
                        (groupname == "PNTR" and nter and resname == "PRO") or \
                        (groupname == "CTR" and cter) or \
                        (groupname == "CTN" and cter == 2):
+                        
                         if resname == "CYS" and "HG" not in residue.map: continue
                         
                         if group.method != 0:

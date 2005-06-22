@@ -160,7 +160,7 @@ class Routines:
                     if i<partner:
                         self.write("CYS %4d - CYS %4d\n" % \
                                    (res1.get("resSeq"), res2.get("resSeq")), 1)
-                    if res1.get("name") in ["CYS", "CYM"]:
+                    if res1.get("name") in ["CYS", "CYM", "CYX"]:
                         res1.set("SSbonded", 1)
                         res1.set("SSbondpartner", SGatoms[partner])
                     else:
@@ -626,7 +626,10 @@ class Routines:
                         if not defatom.isHydrogen(): continue
                         defname = defatom.get("name")
                         atom = residue.getAtom(defname)
-                        if atom != None: continue 
+                        if atom != None: continue
+                        if atom == None and name == "HSN":
+                            if defname == "HD1" and residue.getAtom("HE2"): continue
+                            if defname == "HE2" and residue.getAtom("HD1"): continue
                         prevC = prevres.getAtom("C")
 
                         # For most backbone Hs, use the previous C atom and this residue's
@@ -1427,7 +1430,7 @@ class Routines:
                 resname = residue.name
                 if resname == oldname: residue.renameResidue(newname)
                     
-    def optimizeHydrogens(self, pkaflag):
+    def optimizeHydrogens(self, optflag):
         """
             Wrapper function for hydrogen optimizing routines.  The routines
             were too extensive to properly fit within this file.
@@ -1438,48 +1441,7 @@ class Routines:
         self.calculateChiangles()
         myhydRoutines = hydrogenRoutines(self)
         myhydRoutines.readHydrogenDefinition()
-        myhydRoutines.optimizeHydrogens(pkaflag)
-
-    def optimizeWaters(self):
-        """
-            Wrapper function for water optimizing routines.
-        """
-        run = 0
-        for atom in self.protein.getAtoms():
-            res = atom.get("residue")
-            if res.get("type") == 3:
-                if res.getAtom("H1") == None or \
-                   res.getAtom("H2") == None:
-                    run = 1
-                    break
-        if run == 0: return
-        from hydrogens import hydrogenRoutines
-        self.write("Optimizing water hydrogens.\n")
-        mywatRoutines = hydrogenRoutines(self)
-        mywatRoutines.readHydrogenDefinition()
-        mywatRoutines.optimizeWaters()
-        self.write("Done optimizing hydrogens.\n")
-
-    def randomizeWaters(self):
-        """
-            Instead of optimizing, find each WAT O and place H1 and H2
-            while giving it a random orientation
-        """
-        run = 0
-        for atom in self.protein.getAtoms():
-            res = atom.get("residue")
-            if res.get("type") == 3:
-                if res.getAtom("H1") == None or \
-                   res.getAtom("H2") == None:
-                    run = 1
-                    break
-        if run == 0: return
-        from hydrogens import hydrogenRoutines
-        self.write("Randomizing water hydrogens.\n")
-        myrandRoutines = hydrogenRoutines(self)
-        myrandRoutines.readHydrogenDefinition()
-        myrandRoutines.randomizeWaters()
-        self.write("Done randomizing hydrogens.\n")
+        myhydRoutines.optimizeHydrogens(optflag)
 
     def runPROPKA(self, ph, ff, outname):
         """

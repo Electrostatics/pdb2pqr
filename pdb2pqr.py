@@ -208,7 +208,7 @@ def runPDB2PQR(pdblist, ff, options):
     # Histidine protonation states depend on pka and optimization
     # HS2N is a holder for neutral HIS that will be optimized (i.e to-neutral)
     # HSN is holder for neutral HIS that will NOT be optimized
-    
+   
     if pka and optflag:
         myRoutines.runPROPKA(ph, ff, pkaname)
     elif pka and not optflag:

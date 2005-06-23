@@ -36,8 +36,6 @@ class Protein:
         """
 
         self.chainmap, self.chains = self.createProtein(pdblist)
-        #for chain in self.chains:
-            #chain.renumberResidues()
 
     def createProtein(self, pdblist):
         """
@@ -57,9 +55,20 @@ class Protein:
         previousAtom = None
         residue = []
         numModels = 0
+        numChains = 1
+        count = 0
+
+        for record in pdblist: # Find number of chains
+            if isinstance(record, TER):
+                numChains += 1
 
         for record in pdblist:
             if isinstance(record, ATOM) or isinstance(record, HETATM):
+
+                if record.chainID == "" and numChains > 1 and record.resName not in ["WAT","HOH"]:
+                    # Assign a chain ID
+                    record.chainID = string.ascii_uppercase[count]
+                
                 chainID = record.chainID
                 resSeq = record.resSeq
                 resName = record.resName
@@ -94,6 +103,9 @@ class Protein:
                     dict[previousAtom.chainID].addResidue(myResidue)
                     break
 
+            elif isinstance(record, TER):
+                count += 1
+
         if residue != [] and numModels <= 1:
             myResidue = Residue(residue, previousAtom)
             dict[previousAtom.chainID].addResidue(myResidue)
@@ -108,7 +120,7 @@ class Protein:
 
         for key in keys:
             list.append(dict[key])
-        
+            
         return chainmap, list
 
     def printAtoms(self, atomlist):

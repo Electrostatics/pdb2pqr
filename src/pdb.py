@@ -157,12 +157,18 @@ class TER:
         """
         record = string.strip(line[0:6])
         if record == "TER":
-            self.serial = int(string.strip(line[6:11]))
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            try: self.iCode = string.strip(line[26])
-            except IndexError: self.iCode = None
+            try: # Not really needed
+                self.serial = int(string.strip(line[6:11]))
+                self.resName = string.strip(line[17:20])
+                self.chainID = string.strip(line[21])
+                self.resSeq = int(string.strip(line[22:26]))
+                self.iCode = string.strip(line[26])
+            except (IndexError, ValueError):
+                self.serial = None
+                self.resName = None
+                self.chainID = None
+                self.resSeq = None
+                self.iCode = None
         else:  raise ValueError, record
 
 class SIGUIJ:

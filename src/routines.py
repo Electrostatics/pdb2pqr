@@ -12,7 +12,7 @@
 
 """
 
-__date__ = "13 May 2005"
+__date__ = "27 June 2005"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
 CELL_SIZE = 2
@@ -610,6 +610,7 @@ class Routines:
         """
             Add hydrogens to the residue by using the definition.
         """
+        count = 0
         self.write("Adding hydrogens to the protein...")
         for chain in self.protein.getChains():
             prevres = None
@@ -644,6 +645,7 @@ class Routines:
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom(defname, newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom(defname))
+                            count += 1
                         elif defname == "H" and residue.get("isNterm"): continue
                         elif residue.get("SSbonded") and defname == "HG": continue
                         else:
@@ -651,6 +653,7 @@ class Routines:
                             if newcoords != None:
                                 residue.createAtom(defname, newcoords,"ATOM")
                                 residue.addDebumpAtom(residue.getAtom(defname))
+                                count += 1
                                 continue
                             bonds = defresidue.makeBondList(residue,defname)
                             if len(bonds) < REFATOM_SIZE:
@@ -664,6 +667,7 @@ class Routines:
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom(defname, newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom(defname))
+                            count += 1
                         
                     # Add N-Terminal Hydrogens if Necessary
                     nterm = residue.get("isNterm")
@@ -686,6 +690,7 @@ class Routines:
                             newcoords = findCoordinates(2, refcoords, defcoords, defatomcoords)
                             residue.createAtom(hname, newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom(hname))
+                            count += 1
 
                         # Now add H2
 
@@ -700,12 +705,14 @@ class Routines:
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom("H2", newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom("H2"))
+                            count += 1
                         
                         if nterm == 3 and "H3" not in residue.get("map"):
                             defatomcoords = NTERM3_COORDS
                             newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                             residue.createAtom("H3", newcoords, "ATOM")
                             residue.addDebumpAtom(residue.getAtom("H3"))
+                            count += 1
                             
                     elif cterm == 2: # Neutral C-terminus
                         refcoords = []
@@ -720,6 +727,7 @@ class Routines:
                         newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                         residue.createAtom("HO", newcoords, "ATOM")
                         residue.addDebumpAtom(residue.getAtom("HO"))
+                        count += 1
          
                 elif type == 4:
                     name = residue.get("naname")
@@ -743,9 +751,10 @@ class Routines:
                         newcoords = findCoordinates(REFATOM_SIZE, refcoords, defcoords, defatomcoords)
                         residue.createAtom(defname, newcoords, "ATOM")
                         residue.addDebumpAtom(residue.getAtom(defname))
+                        count += 1
                         
                 prevres = residue
-        self.write("Done.\n")
+        self.write(" Added %i hydrogen atoms.\n" % count)
 
     def repairAA(self, residues, resnum):
         """

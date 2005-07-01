@@ -141,6 +141,9 @@ PropKa is released under its own license, which can be found at propka/LICENSE.<
 <I> What types of residues can PDB2PQR recognize?</I>
 <blockquote> PDB2PQR recognizes all of the standard amino acids, nucleic acids, and waters (both WAT and HOH) - for a complete list see the data files found in dat/AA.DAT and dat/NA.dat.</blockquote>
 
+<I> I know the charge and radius of an atom not included in the selected forcefield.  How can I make PDB2PQR include these parameters? </I>
+<blockquote> The best way to do this is to add another line for each atom to the DAT file for the selected forcefield - these files can be found in the <code>dat</code> directory. Be sure to use the same atom/residue name as appears in your PDB file.</blockquote>
+
 <I> I already know the protonation state of a residue.  How can I make PDB2PQR aware of it? </I>
 <blockquote>PDB2PQR has the ability to recognize certain protonation states and keep them fixed during optimization. To use this feature manually rename the residue name in the PDB file as follows:<P>
 <center>

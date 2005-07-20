@@ -1,6 +1,5 @@
-void propka_(int* numatoms, int* strlen, char* pdb, char* outname);
+void runpropka_(int* numatoms, char* pdb, char* outname);
 
-char* runPKA(char* pdb, int strlen, int numatoms, char* outname){
-  propka_(&numatoms, &strlen, pdb , outname);
-  return pdb;
+void runPKA(int numatoms, char* pdb, char* outname){
+  runpropka_(&numatoms, pdb , outname);
 }

@@ -1,2 +1,2 @@
 %module propkalib
-extern char* runPKA(char * pdb, int strlen, int linelen, char * outname);
+extern void runPKA(int numatoms, char * pdb, char * outname);

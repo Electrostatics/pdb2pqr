@@ -1492,21 +1492,24 @@ class Routines:
             sys.exit()
 
         numatoms = int(txtlen) / linelen
-        pkaresults = runPKA(txt, txtlen, numatoms, outname)
-        pkaresults = string.strip(pkaresults)
-        pkas = string.split(pkaresults, "|end")
-        pkas = pkas[:-1] # The last entry is null
-        pkadic = {}
+        runPKA(numatoms, txt, outname)
 
-        # Make a dictionary of pkas
-        
-        for pka in pkas:
-            words = string.split(pka)
-            key = ""
-            for i in range(len(words) - 1):
-                key = "%s %s" % (key,words[i])
-            key = string.strip(key)
-            pkadic[key] = float(words[-1])
+        # Parse the results
+        pkadic = {}
+        pkafile = open(outname)
+        summary = 0
+        while 1:
+            line = pkafile.readline()
+            if line == "": break
+            if line.startswith("SUMMARY"): summary = 1
+            elif line.startswith("-"): summary = 0
+            elif summary:
+                words = string.split(string.strip(line))
+                key = ""
+                for i in range(len(words) - 1):
+                    key = "%s %s" % (key,words[i])
+                key = string.strip(key)
+                pkadic[key] = float(words[-1])
             
         if len(pkadic) == 0: return
 

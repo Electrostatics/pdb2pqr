@@ -33,8 +33,8 @@
  * and things like that.
  *
  * $Log$
- * Revision 1.2  2005/05/25 15:46:11  pdb2pqr
- * TJD: When using PropKa original PropKa output is now written out to <name>.propka
+ * Revision 1.3  2005/07/20 14:56:40  pdb2pqr
+ * TJD: Changes to PROPKA to PDB2PQR interface cleaner.  Updated license files to GPL.
  *
  ************************************************************************/
 
@@ -555,20 +555,19 @@ char *SWIG_GetPtr(char *_c, void **ptr, char *_t)
 #define SWIG_init    initpropkalibc
 
 #define SWIG_name    "propkalibc"
-extern char *runPKA(char *,int ,int ,char *);
+extern void runPKA(int ,char *,char *);
 static PyObject *_wrap_runPKA(PyObject *self, PyObject *args) {
     PyObject * _resultobj;
-    char * _result;
-    char * _arg0;
-    int  _arg1;
-    int  _arg2;
-    char * _arg3;
+    int  _arg0;
+    char * _arg1;
+    char * _arg2;
 
     self = self;
-    if(!PyArg_ParseTuple(args,"siis:runPKA",&_arg0,&_arg1,&_arg2,&_arg3)) 
+    if(!PyArg_ParseTuple(args,"iss:runPKA",&_arg0,&_arg1,&_arg2)) 
         return NULL;
-    _result = (char *)runPKA(_arg0,_arg1,_arg2,_arg3);
-    _resultobj = Py_BuildValue("s", _result);
+    runPKA(_arg0,_arg1,_arg2);
+    Py_INCREF(Py_None);
+    _resultobj = Py_None;
     return _resultobj;
 }
 

@@ -1,30 +1,24 @@
+For the GPL please see the COPYING file in the main PDB2PQR directory.
+---------------------------------------------------------------------
 PROPKA USER LICENSE AGREEMENT
 
+PropKa: a program for protein pKa predictions 
+Copyright (C) 2005 Jan H. Jensen and Hui Li
+ 
+This program is free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+ 
+This program is distributed in the hope that it will be useful,  but 
+WITHOUT ANY WARRANTY; without even the implied warranty of 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the  GNU 
+General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License 
+along with this program; if not, write to the Free Software 
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 
+USA
+ 
+For questions or comments contact Jan-Jensen@uiowa.edu
 
-With regard to the protein pKa prediction code PROPKA I agree to the following 
-conditions: 
-
-I will not supply a copy of the code to anyone outside my institution or 
-corporation for any reason whatsoever.  Instead, I will refer any requests for 
-copies of the program to the Quantum Chemistry Group at the University of Iowa 
-(QCGUI).  This in no way limits my making of copies of the code for backup 
-purposes, or for running on more than one computer system at my institution or 
-home. 
-
-I understand that copyright or ownership rights to PROPKA are retained by the 
-QCGUI and contributors to the PROPKA package.  I will not incorporate any part 
-of PROPKA into any other program system, either for sale or for non-profit 
-distribution, without written permission from the QCGUI,
-
-I understand that no large program such as PROPKA can be considered to be bug 
-free, and accordingly QCGUI supplies the PROPKA software on an "as is" basis, 
-with no additional responsibility or liability, 
-
-If results obtained with PROPKA are published in the scientific literature, I 
-will reference the program as "Hui Li, Andrew. D. Robertson, and Jan H. Jensen,
-Fast Prediction and Rationalization of Protein pKa Values, manuscript in 
-preparation"
-
-This license is considered a "Research Group" license. Thus anyone directly 
-associated with your research group is covered by the license and may share 
-your copy of PROPKA on all of your group's computer resources. 

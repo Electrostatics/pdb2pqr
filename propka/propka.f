@@ -4,11 +4,10 @@ C      VERSION 1.0
 C      BY HUI LI
 C
 C      04/25/2004, IOWA CITY
-C
 C***********************************************************
 C
 C      MODIFIED FOR USE WITH PDB2PQR BY TODD DOLINSKY
-C      04/17/2005
+C      07/19/2005
 C
 C***********************************************************
 C
@@ -19,7 +18,66 @@ C      HUI LI, ANDREW D. ROBERTSON AND JAN H. JENSEN
 C
 C***********************************************************
 C
-       SUBROUTINE PROPKA(NATOM, STRLEN, PDB, OUTNAME)
+C PropKa 1.00: a program for protein pKa predictions
+C Portion Copyright (C) 2005 Jan H. Jensen and Hui Li
+C
+C This program is free software; you can redistribute it and/or
+C modify it under the terms of the GNU General Public License as
+C published by the Free Software Foundation; either version 2 of
+C the License, or  (at your option) any later version.
+C
+C This program is distributed in the hope that it will be useful,
+C but WITHOUT ANY WARRANTY; without even the implied warranty of
+C MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+C GNU General Public License for more details.
+C
+C You should have received a copy of the GNU General Public License
+C along with this program; if not, write to the Free Software
+C Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+C MA 02111-1307 USA
+C
+C For questions or comments contact Jan-Jensen@uiowa.edu
+C
+      PROGRAM  PROPKA
+C     ****************
+C     INITIALIZE THE PDB FILE
+C
+       CHARACTER HEAD*6, SPACE7*7, HYDRGN*1, SPAC56*56,
+     $           PDB*(700000), LINE*70
+       DIMENSION HEAD(100000)
+  
+       NATOM=0
+       OPEN (12, FILE='PROPKATMP1', STATUS='OLD', FORM='FORMATTED',
+     $       ACCESS='SEQUENTIAL')
+       OPEN (13, FILE='PROPKATMP2', STATUS='NEW', FORM='FORMATTED',
+     $       ACCESS='SEQUENTIAL')
+       DO J=1,100000
+         READ (12, '(A6,A7,A1,A)', END=100)
+     $        HEAD(1), SPACE7,HYDRGN,SPAC56
+         IF ((HEAD(1).EQ.'ATOM  ' .OR. HEAD(1).EQ.'HETATM') .AND.
+     $       HYDRGN.NE.'H') THEN
+           NATOM=NATOM+1
+           WRITE (PDB(((NATOM-1)*70)+1:(NATOM*70)+1), '(A6,A7,A1,A)')
+     $        HEAD(1), SPACE7,HYDRGN,SPAC56
+           WRITE(13, '(A6,A7,A1,A)')
+     $        HEAD(1), SPACE7,HYDRGN,SPAC56
+         END IF
+       END DO
+ 100   CONTINUE
+       CLOSE (12)
+C
+       IF(NATOM.LT.2)THEN
+         WRITE(6,*)'PLEASE CHECK YOUR INPUT PDB FILE!'
+         STOP
+       END IF 
+C
+C      - READ INFORMATION -
+C
+       CALL RUNPROPKA(NATOM, PDB, 'PROPKATMP3')
+       
+       END
+
+       SUBROUTINE RUNPROPKA(NATOM, PDB, OUTNAME)
 C      *******   ******
 C
        CHARACTER HEAD*6,NAMATM*5,NAMRES*3,SPACE4*4,
@@ -126,19 +184,16 @@ C                6: ARG
      $           TOLSDC(10,1000),TOLBKB(10,1000),TOLCOL(10,1000),
      $           TOLMAS(10,1000),TOLLOC(10,1000)
 C
-C PDB2PQR-RELATED VARIABLES
+C SUBROUTINE-RELATED VARIABLES
 C
-C   NOTE:  LINE must be set to the length of the PQR file line
-C              This should be 70.
-C          RESULT must be large enough to handle the resulting
-C              pKa info seen at the end of this code.
 C
-      INTEGER STRLEN, LINELEN, I, J
-      CHARACTER PDB*(*), LINE*(70), RESULT*(20), OUTNAME*(100)
+      INTEGER LINELEN, I, J
+      CHARACTER PDB*(*), OUTNAME*(100), LINE*(70)
 C
-C      ************************
-C      STEP 1. PARSE PDB STRING
-C      ************************
+C
+C      **********************
+C      STEP 1. READ PDB FILES
+C      **********************
 C
        NPRTON=1
        NCAR=0
@@ -154,12 +209,12 @@ C
        NTRP=0
 
        OPEN (11, FILE=OUTNAME, STATUS='NEW', FORM='FORMATTED',
-     $       ACCESS='SEQUENTIAL')
+     $       ACCESS='SEQUENTIAL') 
 
        LINELEN=70
        DO I = 1, NATOM
-         LINE=PDB(((I-1)*LINELEN)+1:(I*LINELEN)+1)
-         READ(LINE,'(A6,I5,A5,A1,A3,A1,A1,I4,A4,F8.3,F8.3,F8.3)') 
+          LINE=PDB(((I-1)*LINELEN)+1:(I*LINELEN)+1)
+          READ(LINE,'(A6,I5,A5,A1,A3,A1,A1,I4,A4,F8.3,F8.3,F8.3)') 
      $              HEAD(I), NUMATM, NAMATM(I), AORB,
      $              NAMRES(I), SPACE1, CHAIN(I), 
      $              NUMRES(I), SPACE4, X(I), Y(I), Z(I)
@@ -179,9 +234,9 @@ C
          IF(NAMATM(I).EQ.'  OXT')THEN
            NCAR=NCAR+1
            LCARRS(NCAR)=NUMRES(I)
+           LCARCH(NCAR)=CHAIN(I)
            NAMCAR(NCAR)='C- '
            LCARO1(NCAR)=I
-           LCARCH(NCAR)=CHAIN(I)
            DO K=1,50
              IF(NAMATM(I-K).EQ.'  O  ')THEN
                LCARO2(NCAR)=I-K
@@ -3474,6 +3529,7 @@ C
        END DO
 C
 C
+C
        WRITE(11,*)' '
        WRITE(11,'(95(1H-))')
        WRITE(11,'(2(1H-),30X,A,30X,2(1H-))')
@@ -3682,113 +3738,47 @@ C
        WRITE(11,'(A)')'SUMMARY OF THIS PREDICTION'
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'ASP')THEN
-           WRITE(11,'(3X,A3,A1,A1,I4,F8.2)')
-     $     NAMCAR(ICAR),SPACE1,LCARCH(ICAR),LCARRS(ICAR),PKACAR(ICAR)
+           WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $     NAMCAR(ICAR),LCARRS(ICAR),SPACE1,LCARCH(ICAR),PKACAR(ICAR)
          END IF
        END DO
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'GLU')THEN
-           WRITE(11,'(3X,A3,I4,F8.2)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR)
+           WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $     NAMCAR(ICAR), LCARRS(ICAR),SPACE1,LCARCH(ICAR),PKACAR(ICAR)
          END IF
        END DO
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'C- ')THEN
-           WRITE(11,'(3X,A3,I4,F8.2)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), PKACAR(ICAR)
+           WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $     NAMCAR(ICAR), LCARRS(ICAR),SPACE1,LCARCH(ICAR),PKACAR(ICAR)
          END IF
        END DO
        DO IHIS=1,NHIS
-         WRITE(11,'(3X,A3,I4,F8.2)')
-     $   'HIS', LHISRS(IHIS), PKAHIS(IHIS)
+         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $   'HIS', LHISRS(IHIS), SPACE1, LHISCH(IHIS), PKAHIS(IHIS)
        END DO
        DO ICYS=1,NCYS
-         WRITE(11,'(3X,A3,I4,F8.2)')
-     $   'CYS', LCYSRS(ICYS), PKACYS(ICYS)
+         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $   'CYS', LCYSRS(ICYS), SPACE1, LCYSCH(ICYS), PKACYS(ICYS)
        END DO
        DO ITYR=1,NTYR
-         WRITE(11,'(3X,A3,I4,F8.2)')
-     $   'TYR', LTYRRS(ITYR), PKATYR(ITYR)
+         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $   'TYR', LTYRRS(ITYR), SPACE1, LTYRCH(ITYR), PKATYR(ITYR)
        END DO
-       WRITE(11,'(3X,A3,I4,F8.2)')
-     $   'N+ ', LLYSRS(1), PKALYS(1)
+       WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $   'N+ ', LLYSRS(1), SPACE1, LLYSCH(1), PKALYS(1)
        DO ILYS=2,NLYS
-         WRITE(11,'(3X,A3,I4,F8.2)')
-     $   'LYS', LLYSRS(ILYS), PKALYS(ILYS)
+         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $   'LYS', LLYSRS(ILYS), SPACE1, LLYSCH(ILYS), PKALYS(ILYS)
        END DO
        DO IARG=1,NARG
-         WRITE(11,'(3X,A3,I4,F8.2)')
-     $   'ARG', LARGRS(IARG), PKAARG(IARG)
+         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+     $   'ARG', LARGRS(IARG), SPACE1, LARGCH(IARG), PKAARG(IARG)
        END DO
        WRITE(11,'(95(1H-))')
 C
        CLOSE(11)
-C
-C      RETURN SOME OF THE RESULTS IN THE ARRAY
-C
-       I = 1
-       DO ICAR=1,NCAR
-         IF(NAMCAR(ICAR).EQ.'ASP')THEN
-           WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), SPACE1, 
-     $     LCARCH(ICAR), PKACAR(ICAR), "|end"
-           I = I + 1
-         END IF
-       END DO
-       DO ICAR=1,NCAR
-         IF(NAMCAR(ICAR).EQ.'GLU')THEN
-           WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), SPACE1,
-     $     LCARCH(ICAR), PKACAR(ICAR), "|end"
-           I = I + 1
-         END IF
-       END DO
-       DO ICAR=1,NCAR
-         IF(NAMCAR(ICAR).EQ.'C- ')THEN
-           WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $     NAMCAR(ICAR), LCARRS(ICAR), SPACE1,
-     $     LCARCH(ICAR), PKACAR(ICAR), "|end"
-           I = I + 1
-         END IF
-       END DO
-       DO IHIS=1,NHIS
-         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'HIS', LHISRS(IHIS), SPACE1, LHISCH(IHIS), PKAHIS(IHIS),
-     $   "|end"
-         I = I + 1
-       END DO
-       DO ICYS=1,NCYS
-         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'CYS', LCYSRS(ICYS), SPACE1, LCYSCH(ICYS), PKACYS(ICYS), 
-     $   "|end"
-         I = I + 1
-       END DO
-       DO ITYR=1,NTYR
-         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'TYR', LTYRRS(ITYR), SPACE1, LTYRCH(ITYR), PKATYR(ITYR), 
-     $    "|end"
-         I = I + 1
-       END DO
-       WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'N+ ', LLYSRS(1), SPACE1, LLYSCH(1), PKALYS(1), "|end"
-       I = I + 1
-       DO ILYS=2,NLYS
-         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'LYS', LLYSRS(ILYS), SPACE1, LLYSCH(ILYS),PKALYS(ILYS), 
-     $    "|end"
-         I = I + 1
-       END DO
-       DO IARG=1,NARG
-         WRITE(PDB(((I-1)*20)+1:(I*20)+1),'(A3,I4,A1,A1,F7.2,A4)')
-     $   'ARG', LARGRS(IARG), SPACE1, LARGCH(IARG), PKAARG(IARG), 
-     $    "|end"
-         I = I + 1
-       END DO
-C
-C CLEAR OUT THE REST OF THE ARRAY
-       DO J = ((I-1)*20)+1, STRLEN-1
-         PDB(J:J) = " "
-       END DO
 C
 C
        END

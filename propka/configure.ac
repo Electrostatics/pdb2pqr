@@ -10,7 +10,8 @@ dnl ##########################################################################
 dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
-AC_INIT([PDB2PQR], [1.0.0], [todd@ccb.wustl.edu])
+AC_INIT([PropKa], [1.0.0], [Jan-Jensen@uiowa.edu])
+AC_MSG_RESULT([------------- Begin Processing PropKa Configure Options -----------])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_PREFIX_DEFAULT(${HOME})
@@ -45,9 +46,9 @@ dnl #
 dnl #   Never try to set the interface numbers so that they correspond to the
 dnl #   release number of your package. This is an abuse that only fosters
 dnl #   misunderstanding of the purpose of library versions.
-AM_INIT_AUTOMAKE(PDB2PQR, 1.0.0)
-PDB2PQR_VERSION="1:0:0"
-AC_SUBST(PDB2PQR_VERSION)
+AM_INIT_AUTOMAKE(PropKa, 1.0.0)
+PROPKA_VERSION="1:0:0"
+AC_SUBST(PROPKA_VERSION)
 ACLOCAL=":";
 AUTOCONF=":";
 AUTOMAKE=":";
@@ -59,46 +60,99 @@ AC_SUBST(AUTOHEADER)
 dnl ##########################################################################
 dnl 2. checks for programs
 dnl ##########################################################################
-
 AC_PATH_PROG(py_path, python)
 if test -z "${py_path}"; then
    AC_MSG_ERROR([Unable to find python!])
 fi
-
-AC_FORTUNES
-
-dnl ##########################################################################
-dnl 3. Check for available subdirectories
-dnl ##########################################################################
-
-PDB2PQR_SUBDIRS="propka"
-AC_MSG_CHECKING([for --disable-propka])
-AC_ARG_ENABLE(propka, 
-     [AC_HELP_STRING([--disable-propka],[Disable propka compilation])],
-     [ with_propka="no" ],
-     [ with_propka="" ]
-)
-if test -z "${with_propka}"; then
-     AC_MSG_RESULT([no])
-     AC_MSG_RESULT([])
-     cd propka
-     ./configure 
-     cd ..
-else
-     AC_MSG_RESULT([yes])
-     PDB2PQR_SUBDIRS=""
+AC_LANG_C
+AC_PROG_CC
+AC_PROG_F77
+AC_LANG_FORTRAN77
+dnl AC_F77_LIBRARY_LDFLAGS 
+dnl # -----------------------
+dnl # HANDLE OSF WEIRDNESS:
+dnl #   This includes the inability to link FORTRAN and C code compiled with
+dnl #   debugger flags and a g77 that breaks on some FORTRAN code with the
+dnl #   -O2 flag set.
+dnl # -----------------------
+short_os=`echo ${host_os} | sed 's/osf.*/osf/g'`;
+if test -z "`echo ${short_os} | sed 's/osf//g'`"; then
+  AC_MSG_RESULT([Disabling debugger compiler flags to avert OSF weirdness])
+  if test -z ${FFLAGS-''}; then
+      FFLAGS="";
+  else
+     FFLAGS=`echo ${FFLAGS} | sed 's/-g//g'`;
+     if test -z "`echo ${F77-f77} | sed 's/g77//g'`"; then
+         FFLAGS=`echo ${FFLAGS} | sed 's/-O2/-O/g'`;
+     fi
+  fi
+  if test -z ${CFLAGS-''}; then
+      CFLAGS="";
+  else
+     CFLAGS=`echo ${CFLAGS} | sed 's/-g//g'`;
+  fi
+  if test -z ${CPPFLAGS-''}; then
+      CPPFLAGS="";
+  else
+     CPPFLAGS=`echo ${CPPFLAGS} | sed 's/-g//g'`;
+  fi
+  if test -z ${CXXFLAGS-''}; then
+      CXXFLAGS="";
+  else
+     CXXFLAGS=`echo ${CXXFLAGS} | sed 's/-g//g'`;
+  fi
 fi
-AC_SUBST(PDB2PQR_SUBDIRS,[$PDB2PQR_SUBDIRS])
 
+FFLAGS="${FLIBS} ${FFLAGS}"
+
+AC_LANG_C
+AC_PROG_CPP
+
+AC_MSG_CHECKING([for python include directory])
+changequote(<<, >>)dnl
+PY_VERSION=`$py_path -c 'import sys; print sys.version[:3]'`   
+changequote([, ])dnl
+PY_PREFIX=`$py_path -c 'import sys; print sys.prefix'`
+if test -f $PY_PREFIX/include/python$PY_VERSION/Python.h; then    
+   PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
+   AC_MSG_RESULT([$PY_CFLAGS])
+else
+   AC_MSG_ERROR([Unable to find Python.h!])
+fi
+
+dnl # Platform specific linking flags
+
+PY_LDFLAGS=""
+PY_SHARED=""
+PY_FLAGS=""
+case $host_os in
+   linux*) 
+      PY_SHARED="-shared";;
+   irix*) 
+      PY_SHARED="-shared"
+      PY_LDFLAGS="-lftn -lm";;
+   sun|solaris**) 
+      PY_SHARED="-G"
+      PY_LDFLAGS="-lF77 -lm -lM77 -lsunmath";;
+   darwin*)
+      PY_LDFLAGS="-Wl,-framework -Wl,Python -bundle";;
+esac
+
+case $host_cpu in
+   x86_64*)
+      PY_FLAGS="-fPIC";;
+esac
+
+AC_SUBST(PY_SHARED,[$PY_SHARED])
+AC_SUBST(PY_LDFLAGS,[$PY_LDFLAGS])
+AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
+AC_SUBST(PY_FLAGS, [$PY_FLAGS])
+AC_MSG_RESULT([------------- End Processing PropKa Configure Options -----------])
+AC_MSG_RESULT([])
 dnl ##########################################################################
 dnl 11. generate the makefiles
 dnl ##########################################################################
 
-AC_MSG_RESULT([------------- End Processing PDB2PQR Configure Options -----------])
-AC_MSG_RESULT([])
-if test -n "${PDB2PQR_SUBDIRS}"; then
-   AC_OUTPUT([
-        Makefile
-   ])
-   AC_MSG_RESULT([Please type "make" to complete the installation.])
-fi
+AC_OUTPUT([
+    Makefile
+])

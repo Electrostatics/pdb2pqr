@@ -298,6 +298,11 @@ class Forcefield:
         elif resname == "TYM": resname = "TY-"
         elif resname == "CYM": resname = "CY-"
         elif resname == "LYN": resname = "LY0"
+        elif resname == "NME":
+            resname = "N-M"
+            if atomname == "CH3": atomname = "CA"
+            elif atomname == "H": atomname = "H1"
+            elif atomname.startswith("HH"): atomname = "HA" + atomname[-1]
         
         # Hydrogen Substitutions
 

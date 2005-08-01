@@ -1,0 +1,96 @@
+<html>
+<head> 
+<title>PDB2PQR Server</title>
+<link rel="stylesheet" href="http://agave.wustl.edu/css/baker.css"
+type="text/css">
+<SCRIPT LANGUAGE="JavaScript"><!--
+function check(val) {
+
+if(val == "ID")
+{
+document.thisform.PDBID.disabled=false;
+document.thisform.PDB.disabled=true;
+}
+
+else
+{
+document.thisform.PDBID.value="";
+document.thisform.PDBID.disabled=true;
+document.thisform.PDB.disabled=false;
+}
+}
+
+function setph(val){
+if(document.thisform.PROPKA.checked==true)
+{
+document.thisform.PH.disabled=false;
+}
+else
+{
+document.thisform.PH.disabled=true;
+}
+}
+//-->
+</SCRIPT>
+</head>
+
+<BODY>
+<h2>PDB2PQR Server</h2>
+<P>
+Mirrors:<br>
+<ul>
+<li><a href="http://nbcr.net/pdb2pqr/">NBCR at the San Diego Supercomputer Center (UCSD)</a><BR>
+<li><a href="http://enzyme.ucd.ie/Services/pdb2pqr/">University College Dublin, Ireland</a>
+</ul>
+<hr>
+<BR>
+This server enables a user to convert <a href="http://www.rcsb.org/pdb/">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
+
+pKa calculations are performed by <a href="http://propka.chem.uiowa.edu/">PROPKA</a>.<P>
+
+For more information,  visit the <a href="../doc/userguide.html">PDB2PQR User Guide</a>.<P>
+
+<FORM action="http://ocotillo.wustl.edu/~todd/cgi-bin/pdb2pqr/pdb2pqr.py" METHOD="POST" ENCTYPE="multipart/form-data" name="thisform">
+
+Please enter either:
+<blockquote>
+<input type="RADIO" name="TEXTCONTROL" value="ID" onClick="check(this.value)" CHECKED>a PDB ID</input>: <input type="text" name="PDBID" size=4 maxlength=6 value=""> <BR>
+<input type="RADIO" name="TEXTCONTROL" value="UPLOAD" onClick="check(this.value)">upload a PDB file</input>: <input type="file" name="PDB" size="25" maxlength=100 value="" DISABLED>
+</blockquote>
+<P>
+
+Pick a forcefield to use - 
+<input type="RADIO" name="FF" value="amber" CHECKED>AMBER</input>, 
+<input type="RADIO" name="FF" value="charmm">CHARMM</input> or
+<input type="RADIO" name="FF" value="parse">PARSE</input><P>
+
+Available options: 
+<blockquote>
+<input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<BR>
+<input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
+<input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)"> Use <a href="http://propka.chem.uiowa.edu">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6 value="7.00" DISABLED><BR>
+<input type="CHECKBOX" name="INPUT"> Create an <a href="http://agave.wustl.edu/apbs/">APBS</a> input file<P>
+</blockquote>
+
+<input type="submit" value="Submit"><P>
+</form> 
+<HR>
+The PDB2PQR web service was written by:
+<blockquote>
+<a href="http://enzyme.ucd.ie//group_members/jens/">Jens Erik Nielsen</a><BR>
+<a href="http://agave.wustl.edu">Todd Dolinsky</a><BR>
+<a href="http://agave.wustl.edu">Nathan Baker</a><P>
+</blockquote>
+
+If you find the PDB2PQR service useful, then please cite:
+<blockquote>Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations. <I>Nucleic Acids Research</I> <B>32</B> W665-W667 (2004). [<a href="http://nar.oupjournals.org/cgi/content/abstract/32/suppl_2/W665">Link</a>]
+</blockquote>
+
+PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project program, and the <a href="http://nbcr.net">National Biomedical Computation Resource</a>.<P>
+
+Please send all bug reports and suggestions to <a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a><P>
+
+
+<font size="-1"><CENTER><I>Last Updated May 25th, 2005</I></CENTER></font>
+</BODY>
+</HTML>

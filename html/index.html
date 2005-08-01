@@ -1,96 +1,101 @@
 <html>
 <head> 
-<title>PDB2PQR Server</title>
+<title>PDB2PQR</title>
 <link rel="stylesheet" href="http://agave.wustl.edu/css/baker.css"
 type="text/css">
-<SCRIPT LANGUAGE="JavaScript"><!--
-function check(val) {
 
-if(val == "ID")
-{
-document.thisform.PDBID.disabled=false;
-document.thisform.PDB.disabled=true;
-}
-
-else
-{
-document.thisform.PDBID.value="";
-document.thisform.PDBID.disabled=true;
-document.thisform.PDB.disabled=false;
-}
-}
-
-function setph(val){
-if(document.thisform.PROPKA.checked==true)
-{
-document.thisform.PH.disabled=false;
-}
-else
-{
-document.thisform.PH.disabled=true;
-}
-}
-//-->
-</SCRIPT>
 </head>
-
 <BODY>
-<h2>PDB2PQR Server</h2>
-<P>
-Mirrors:<br>
+<center>
+<h1>PDB2PQR</h1>
+<h3>An automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations.</h3>
+</center>
+<HR>
+
+PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations, providing a platform-independent utility for converting protein files in <a href="http://www.rcsb.org/pdb/">PDB format</a> to PQR format.  These tasks include:
 <ul>
-<li><a href="http://nbcr.net/pdb2pqr/">NBCR at the San Diego Supercomputer Center (UCSD)</a><BR>
-<li><a href="http://enzyme.ucd.ie/Services/pdb2pqr/">University College Dublin, Ireland</a>
+<li> Adding a limited number of missing heavy atoms to biomolecular structures
+<li> Determining side-chain pKas 
+<li> Placing missing hydrogens
+<li> Optimizing the protein for favorable hydrogen bonding
+<li> Assigning charge and radius parameters from a variety of force fields 
+</ul>
+
+PDB2PQR was ported to Python by Todd Dolinsky while working with <a href="http://agave.wustl.edu">Nathan Baker</a> at Washington University in St. Louis.  The PDB2PQR code is based on C++ design and algorithms by Jens Erik Nielsen.  PDB2PQR was originally designed to facilitate structure preparation for <a href="http://agave.wustl.edu/apbs">APBS</a>.<P>
+
+PDB2PQR uses <a href="http://propka.chem.uiowa.edu/">PropKa</a> to determine protein pKa values.  PropKa is developed by the <a href="http://www.uiowa.edu/~quantum/">Jensen Research Group</a> at the University of Iowa.  More information about PropKa can be found at  <a href="http://propka.chem.uiowa.edu/">http://propka.chem.uiowa.edu</a>.<P>
+
+Please visit the following links for more information about PDB2PQR:
+<ul>
+<li><a href="http://sourceforge.net/projects/pdb2pqr">SourceForge Project Page</a>
+<li>PDB2PQR Web Server Mirrors<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://agave.wustl.edu/pdb2pqr/server.html">Washington University in St. Louis</a><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://nbcr.net/pdb2pqr">NBCR at the San Diego Supercomputer Center (UCSD)</a><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://enzyme.ucd.ie/Services/pdb2pqr">University College Dublin, Ireland</a><BR> 
+</blockquote>
+<li><a href="http://sourceforge.net/docman/display_doc.php?docid=29396&group_id=144228">Documentation</a>
+<li><a href="#availability">Availability</a>
+<li><a href="#mailing">Mailing lists</a>
+<li><a href="#citing">Further Reading/Citing PDB2PQR</a>
+<li><a href="#support">Supporting organizations</a>
+<li><a href="http://sourceforge.net/docman/display_doc.php?docid=29412&group_id=144228">License</a>
 </ul>
 <hr>
+
+<center>
+<a name="availability"></a>
+<h3>Availability</h3><P>
+</center>
+PDB2PQR is available as both a web service and as command-line software for download.  The PDB2PQR web server can be found at three mirrors:<BR>
+<UL>
+<li><a href="http://agave.wustl.edu/pdb2pqr/server.html">Washington University in St. Louis</a><BR>
+<li><a href="http://nbcr.net/pdb2pqr">NBCR at the San Diego Supercomputer Center (UCSD)</a><BR>
+<li><a href="http://enzyme.ucd.ie/Services/pdb2pqr">University College Dublin, Ireland.</a></ul><P>  
+<a href="http://sourceforge.net"><img align="middle" src="http://sourceforge.net/sflogo.php?group_id=144228&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>&nbsp;&nbsp;&nbsp;The command line PDB2PQR tool is freely available for download from the <a href="http://sourceforge.net/projects/pdb2pqr/">SourceForge Project Page</a>. 
 <BR>
-This server enables a user to convert <a href="http://www.rcsb.org/pdb/">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
+<hr>
 
-pKa calculations are performed by <a href="http://propka.chem.uiowa.edu/">PROPKA</a>.<P>
-
-For more information,  visit the <a href="../doc/userguide.html">PDB2PQR User Guide</a>.<P>
-
-<FORM action="http://ocotillo.wustl.edu/~todd/cgi-bin/pdb2pqr/pdb2pqr.py" METHOD="POST" ENCTYPE="multipart/form-data" name="thisform">
-
-Please enter either:
-<blockquote>
-<input type="RADIO" name="TEXTCONTROL" value="ID" onClick="check(this.value)" CHECKED>a PDB ID</input>: <input type="text" name="PDBID" size=4 maxlength=6 value=""> <BR>
-<input type="RADIO" name="TEXTCONTROL" value="UPLOAD" onClick="check(this.value)">upload a PDB file</input>: <input type="file" name="PDB" size="25" maxlength=100 value="" DISABLED>
-</blockquote>
-<P>
-
-Pick a forcefield to use - 
-<input type="RADIO" name="FF" value="amber" CHECKED>AMBER</input>, 
-<input type="RADIO" name="FF" value="charmm">CHARMM</input> or
-<input type="RADIO" name="FF" value="parse">PARSE</input><P>
-
-Available options: 
-<blockquote>
-<input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<BR>
-<input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
-<input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)"> Use <a href="http://propka.chem.uiowa.edu">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6 value="7.00" DISABLED><BR>
-<input type="CHECKBOX" name="INPUT"> Create an <a href="http://agave.wustl.edu/apbs/">APBS</a> input file<P>
-</blockquote>
-
-<input type="submit" value="Submit"><P>
-</form> 
+<center>
+<a name="mailing"></a>
+<h3>Mailing Lists</h3><P>
+</center>
+There are two mailing lists associated with the PDB2PQR software:<BR>
+<ul>
+<li>pdb2pqr-announce: A low-traffic list for announcements regarding bugs and new versions of the software<BR>
+<a href="http://cholla.wustl.edu/mailman/listinfo/pdb2pqr-announce">List web page</a><BR>
+<a href="http://cholla.wustl.edu/pipermail/pdb2pqr-announce">List archives</a><P>
+<li>pdb2pqr-users: A list for discussion of PDB2PQR, troubleshooting, and reporting potential bugs<BR>
+<a href="http://cholla.wustl.edu/mailman/listinfo/pdb2pqr-users">List web page</a><BR>
+<a href="http://cholla.wustl.edu/pipermail/pdb2pqr-users">List archives</a><P>
+</ul>
 <HR>
-The PDB2PQR web service was written by:
+
+<center>
+<a name="citing"></a>
+<h3>Further Reading/Citing PDB2PQR</h3><P>
+</center>
+
+Please acknowledge your use of PDB2PQR by citing:<P>
 <blockquote>
-<a href="http://enzyme.ucd.ie//group_members/jens/">Jens Erik Nielsen</a><BR>
-<a href="http://agave.wustl.edu">Todd Dolinsky</a><BR>
-<a href="http://agave.wustl.edu">Nathan Baker</a><P>
-</blockquote>
+<a href="http://nar.oupjournals.org/cgi/content/abstract/32/suppl_2/W665">Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations. Nucleic Acids Research 32 W665-W667 (2004).</a></blockquote>
 
-If you find the PDB2PQR service useful, then please cite:
-<blockquote>Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations. <I>Nucleic Acids Research</I> <B>32</B> W665-W667 (2004). [<a href="http://nar.oupjournals.org/cgi/content/abstract/32/suppl_2/W665">Link</a>]
-</blockquote>
+ Please acknowledge your use of PropKa by citing:<P>
+<blockquote>Hui Li, Andrew D. Robertson, and Jan H. Jensen "Very Fast Empirical Prediction and Interpretation of Protein pKa Values" J. Mol. Biol., submitted.</blockquote>
+<HR>
 
-PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project program, and the <a href="http://nbcr.net">National Biomedical Computation Resource</a>.<P>
+<center>
+<a name="support"></a>
+<h3>Supporting Organizations</h3><P>
+</center>
+The development of PDB2PQR has been supported financially by:
+<ul>
+<li><a href="http://www.nih.gov/">National Institutes of Health</a> (grant GM069702-01)
+<li><a href="http://www.npaci.edu/">National Partnership for Advanced Computational Infrastructure</a> Alpha Project program
+<li><a href="http://nbcr.sdsc.edu/">National Biomedical Computation Resource</a>
+</ul>
+<hr>
 
-Please send all bug reports and suggestions to <a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a><P>
-
-
-<font size="-1"><CENTER><I>Last Updated May 25th, 2005</I></CENTER></font>
+<br>
+<font size="-1"><CENTER><I>Last Updated July 26, 2005</I></CENTER></font>
 </BODY>
 </HTML>

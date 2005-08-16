@@ -1,4 +1,8 @@
-// Comments go here
+// Nucleic Acid Definition File
+//
+// PDB2PQR
+//
+// Modeled after AA.DAT
 * 
 RA 4
     P    2.314489  1.776673 -0.478436

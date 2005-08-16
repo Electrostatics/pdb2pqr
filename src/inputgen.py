@@ -273,6 +273,7 @@ class inputGen:
             file = open(outname, "w")
             file.write(self.getText())
             file.close()
+        return outname
 
 def splitInput(filename):
     """

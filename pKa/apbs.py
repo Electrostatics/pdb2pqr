@@ -13,7 +13,19 @@ __author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
 import sys
 import time
-from apbslib import *
+try:
+    from apbslib import *
+except:
+    #
+    # We need apbslib.so and apbslib.py
+    #
+    print
+    print 'Missing libraries for interfacing with APBS'
+    print
+    print 'You need to file apbslib.so and apbslib.py and symlink into the pKa source code directory'
+    print 'The files can be found in the tools/python dir of your apbs installation'
+    print
+    sys.exit(0)
 
 Python_kb = 1.3806581e-23
 Python_Na = 6.0221367e+23
@@ -65,6 +77,8 @@ def runAPBS(protein, inputpath):
                         locations - one list for each APBS
                         calculation
     """
+    print protein
+    print inputpath
 
     # Initialize the MALOC library
     startVio()

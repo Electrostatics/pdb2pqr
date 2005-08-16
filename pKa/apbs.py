@@ -8,7 +8,7 @@
 
 """
 
-__date__  = "23 September 2004"
+__date__  = "16 August 2005"
 __author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
 import sys
@@ -94,14 +94,15 @@ def runAPBS(protein, inputpath):
     pmg = new_pmglist(NOSH_MAXMOL)
     pmgp = new_pmgplist(NOSH_MAXMOL)
     realCenter = double_array(3)
-    totEnergy = double_array(NOSH_MAXCALC)
-    qfEnergy = double_array(NOSH_MAXCALC)
-    qmEnergy = double_array(NOSH_MAXCALC)
-    dielEnergy = double_array(NOSH_MAXCALC)
-    npEnergy = double_array(NOSH_MAXCALC)
-    nenergy = int_array(NOSH_MAXCALC)
-    nforce = int_array(NOSH_MAXCALC)
-    atomforce = new_atomforcelist(NOSH_MAXCALC)
+    totEnergy = []
+    x = []
+    y = []
+    z = []
+    chg = []
+    rad = []
+    #nforce = int_array(NOSH_MAXCALC)
+    #atomforce = new_atomforcelist(NOSH_MAXCALC)
+    #nfor = ptrcreate("int",0)
     
     # Start the main timer
     main_timer_start = time.clock()
@@ -122,25 +123,24 @@ def runAPBS(protein, inputpath):
     alist = new_valist(NOSH_MAXMOL)
     atoms = protein.getAtoms()
     protsize = len(atoms)
-    x = double_array(protsize)
-    y = double_array(protsize)
-    z = double_array(protsize)
-    chg = double_array(protsize)
-    rad = double_array(protsize)
-
-    for i in range(protsize):
+    for i in range(len(atoms)):
         atom = atoms[i]
-        set_entry(x,i,atom.get("x"))
-        set_entry(y,i,atom.get("y"))
-        set_entry(z,i,atom.get("z"))
-        set_entry(chg,i,atom.get("ffcharge"))
-        set_entry(rad,i,atom.get("radius"))
+        x.append(atom.get("x"))
+        y.append(atom.get("y"))
+        z.append(atom.get("z"))
+        chg.append(atom.get("ffcharge"))
+        rad.append(atom.get("radius"))
   
     myAlist = make_Valist(alist,0)
     Valist_load(myAlist, protsize, x,y,z,chg,rad) 
 
+    # Initialize the energy holders
+
+    for i in range(nosh.ncalc): totEnergy.append(0.0)
     potList = []
-    potentials = double_array(protsize)
+    
+    # Initialize the force holders
+    forceList = []
   
     # Load the dieletric maps
 
@@ -200,7 +200,6 @@ def runAPBS(protein, inputpath):
 	
         printMGPARM(mgparm, realCenter)
         printPBEPARM(pbeparm)
-        Python_kbT = Python_kb*Python_Na*(pbeparm.temp)/1000.0
 	
         # Solve the problem : Routine solveMG
 	
@@ -216,40 +215,14 @@ def runAPBS(protein, inputpath):
             sys.stderr.write("Error setting partition info!\n")
             raise APBSError, "Error setting partition info!"
 	
-        # Write out energies : Routine energyMG, npenergyMG
-        # Create pointers to variables that store energies,
-        # place in appropriate array, and delete pointers
-        # See SWIG documentation for pointer function info
-	
-        totEng = ptrcreate("double",0.0)
-        qfEng = ptrcreate("double",0.0)
-        qmEng = ptrcreate("double",0.0)
-        dielEng = ptrcreate("double",0.0)
-        npEng = ptrcreate("double",0.0)
-        neng = ptrcreate("int",0.0)
-
-        energyMG(nosh, icalc, thispmg, nenergy,  totEng, qfEng, qmEng, dielEng)
-        #npenergyMG(nosh, icalc, thispmg, nenergy, npEng)
-	
-        ptrset(totEnergy,ptrvalue(totEng),icalc)
-        ptrset(qfEnergy,ptrvalue(qfEng),icalc)
-        ptrset(qmEnergy,ptrvalue(qmEng),icalc)
-        ptrset(dielEnergy,ptrvalue(dielEng),icalc)
-        ptrset(npEnergy,ptrvalue(npEng),icalc)
-        ptrset(nenergy,ptrvalue(neng),icalc)
-        ptrfree(totEng)
-        ptrfree(qfEng)
-        ptrfree(qmEng)
-        ptrfree(dielEng)
-        ptrfree(npEng)
-        ptrfree(neng)
+        ret, totEnergy[icalc] = energyMG(nosh, icalc, thispmg, 0,
+                                         totEnergy[icalc], 0.0, 0.0, 0.0)
 	
         # Set partition information
 
-        nfor = ptrcreate("int",0.0)
-        forceMG(mem, nosh, pbeparm, mgparm, thispmg, nfor, atomforce, alist)
-        ptrset(nforce,ptrvalue(nfor), icalc)
-        ptrfree(nfor)
+        #aforce = get_AtomForce(atomforce, icalc)
+        #forceMG(mem, nosh, pbeparm, mgparm, thispmg, nfor, aforce, alist)
+        #ptrset(nforce,ptrvalue(nfor), icalc)
 	
         # Write out data from MG calculations : Routine writedataMG	
         writedataMG(rank, nosh, pbeparm, thispmg)
@@ -276,19 +249,12 @@ def runAPBS(protein, inputpath):
             sys.stdout.write("Undefined PRINT keyword!\n")
             break
 
-    # Put the potentials into Python readable arrays
-
-    mypotlist = []
-    for i in range(len(potList)):
-        mypotlist.append([])
-        for j in range(protsize):
-            mypotlist[i].append(get_entry(potList[i], j))
-	
     sys.stdout.write("----------------------------------------\n")
     sys.stdout.write("CLEANING UP AND SHUTTING DOWN...\n")
 
     # Clean up APBS structures
-    killForce(mem, nosh, nforce, atomforce)
+    
+    #killForce(mem, nosh, nforce, atomforce)
     killEnergy()
     killMG(nosh, pbe, pmgp, pmg)
     killChargeMaps(nosh, chargeMap)
@@ -296,10 +262,28 @@ def runAPBS(protein, inputpath):
     killDielMaps(nosh, dielXMap, dielYMap, dielZMap)
     killMolecules(nosh, alist)
     del nosh
+
+    # Clean up Python structures
+
+    #ptrfree(nfor)
+    delete_double_array(realCenter)
+    #delete_int_array(nforce)
+    #delete_atomforcelist(atomforce)
+    delete_valist(alist)
+    delete_gridlist(dielXMap)
+    delete_gridlist(dielYMap)
+    delete_gridlist(dielZMap)
+    delete_gridlist(kappaMap)
+    delete_gridlist(chargeMap)
+    delete_pmglist(pmg)
+    delete_pmgplist(pmgp)
+    delete_pbelist(pbe)
+    
     
     # Clean up MALOC structures
     del com
     del mem
+    
     sys.stdout.write("\n")
     sys.stdout.write("Thanks for using APBS!\n\n")
 
@@ -308,4 +292,5 @@ def runAPBS(protein, inputpath):
     sys.stdout.write("Total execution time:  %1.6e sec\n" % (main_timer_stop - main_timer_start))
 
     #Return potentials
-    return mypotlist
+
+    return potList

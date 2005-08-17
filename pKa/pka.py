@@ -6,7 +6,6 @@
 #
 # University College Dublin & Washington University St. Louis
 #
-#ljhlkgjfgld
 __date__="16 August 2005"
 __author__="Jens Erik Nielsen, Todd Dolinsky"
 

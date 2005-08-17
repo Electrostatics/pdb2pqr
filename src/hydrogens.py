@@ -622,7 +622,6 @@ class hydrogenRoutines:
         """
         allatoms = self.findAmbiguities(allflag)
         self.printAmbiguities()
-
         ambmap = {}
 
         # Make the network map
@@ -630,10 +629,22 @@ class hydrogenRoutines:
             residue = getattr(amb, "residue")
             ambmap[residue] = amb
 
+        self.routines.write("Optimization Progress:\n")
+        self.routines.write("  Finding potential bonding partners:\n")
+        self.routines.write("0% |                    | 100%\n", 1)
+        self.routines.write("    ", 1)
+        progress = 0.0
+        increment = 1.0/len(self.groups)
+
         nearmap = {}
         for amb in self.groups:
             nearlist = amb.setNearatoms(allatoms, ambmap)
             nearmap[amb] = nearlist
+            progress += increment
+            while progress > 0.0499:
+                self.routines.write("*")
+                progress -= 0.05
+        self.routines.write("\n")    
 
         done = []
         networks = []
@@ -649,7 +660,14 @@ class hydrogenRoutines:
         for network in networks:
             self.debug(self.printNetwork(network))
 
-        # Start the optimization        
+        # Start the optimization
+        self.routines.write("  Optimizing hydrogen bonds:\n")
+        self.routines.write("0% |                    | 100%\n", 1)
+        self.routines.write("    ", 1)
+        
+        progress = 0.0
+        increment = 1.0/len(networks)
+        
         for cluster in networks:
             self.debug("*** STARTING NETWORK %s ***\n" % self.printNetwork(cluster))
             # STEP 1 - Set up the clustermap
@@ -876,7 +894,15 @@ class hydrogenRoutines:
 
             self.debug("***** NETWORK COMPLETE *****\n")
 
-      
+            # STEP 7:  Determine progress
+
+            progress += increment
+            while progress >= 0.0499:
+                self.routines.write("*")
+                progress -= 0.05
+
+        self.routines.write("\n")
+            
      
     def unAdd(self, amb, atom):
         """

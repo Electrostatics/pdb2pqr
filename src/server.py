@@ -43,7 +43,7 @@
     ----------------------------
 """
 
-__date__   = "May 3rd, 2004"
+__date__   = "August 18, 2005"
 __author__ = "Todd Dolinsky"
 
 import string
@@ -54,7 +54,7 @@ import constants
 
 # GLOBAL SERVER VARIABLES
 
-""" The absolute path to index.html """
+""" The absolute path to root HTML directory """
 LOCALPATH   = "/home/todd/public_html/pdb2pqr/"
 
 """ The relative path to results directory from script directory.
@@ -64,8 +64,11 @@ TMPDIR      = "tmp/"
 """ The maximum size of temp directory (in MB) before it is cleaned """
 LIMIT       = 500.0
 
-""" The web site location """
+""" The path to the web site *directory* """
 WEBSITE     = "http://ocotillo.wustl.edu/~todd/pdb2pqr/"
+
+""" The name of the main server page """
+WEBNAME     = "server.html"
 
 """ The stylesheet to use """
 STYLESHEET  = "http://agave.wustl.edu/css/baker.css"
@@ -323,7 +326,7 @@ def createResults(header, input, name, time):
     file.write("<blockquote><code>\n")
     file.write("%s<P>\n" % newheader)
     file.write("</code></blockquote>\n")
-    file.write("If you would like to run PDB2PQR again, please click <a href=\"%s\">\n" % WEBSITE)
+    file.write("If you would like to run PDB2PQR again, please click <a href=\"%s%s\">\n" % (WEBSITE, WEBNAME))
     file.write("here</a>.<P>\n")
     file.write("<P>Thank you for using the PDB2PQR server!<P>\n")
     file.write("<font size=\"-1\"><P>Total time on server: %.2f seconds</font><P>\n" % time)
@@ -354,7 +357,7 @@ def createError(name, details):
     file.write("An error occurred when attempting to run PDB2PQR:<P>\n")
     file.write("%s<P>\n" % details)
     file.write("If you believe this error is due to a bug, please contact the server administrator.<BR>\n")
-    file.write("If you would like to try running PDB2QR again, please click <a href=\"%s\">\n" % WEBSITE)
+    file.write("If you would like to try running PDB2QR again, please click <a href=\"%s%s\">\n" % (WEBSITE, WEBNAME))
     file.write("here</a>.<P>\n")
     file.write("<font size=\"-1\"><CENTER><I>Last Updated %s</I></CENTER></font>\n" % __date__) 
     file.write("</body>\n")

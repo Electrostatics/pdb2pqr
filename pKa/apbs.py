@@ -217,8 +217,8 @@ def runAPBS_sub(protein, inputpath):
 	
         # Print problem parameters 
 	
-        printMGPARM(mgparm, realCenter)
-        printPBEPARM(pbeparm)
+        #printMGPARM(mgparm, realCenter)
+        #printPBEPARM(pbeparm)
 	
         # Solve the problem : Routine solveMG
 	

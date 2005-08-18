@@ -93,7 +93,7 @@ class pKaRoutines:
         self.calculateIntrinsicpKa()
 
         """ Calculate Pairwise Interactions """
-        #self.calculatePairwiseInteractions()
+        self.calculatePairwiseInteractions()
 
         """ Calculate Full pKa Value """
         self.calculatepKaValue()
@@ -189,9 +189,10 @@ class pKaRoutines:
                     energy=0.0
                     count=0
                     for atom in protein.getAtoms():
-                        if atom in atomlist:
-                            energy=energy+(potentials[3][count] - potentials[1][count])*atom.get("ffcharge")
-                            #print 'Getting potential',residue.get('name'),atom.name,atom.get('ffcharge')
+                        for atom2 in atomlist:
+                            if atom == atom2:
+                                energy=energy+(potentials[3][count] - potentials[1][count])*atom.get("ffcharge")
+                                #print 'Getting potential',residue.get('name'),atom.name,atom.get('ffcharge')
                         count=count+1
                     energies[pKa][titration][state]=energy
                 
@@ -413,7 +414,7 @@ class pKaRoutines:
                 #        
                 fixedstates = self.hydrogenRoutines.getstates(ambiguity)
                 for state in possiblestates:
-                    print "Calculating self energy for state %i" % state
+                    print "Calculating desolvation energy for residue %s state %i in solvent" %(residue.name,state)
                     #
                     # Switch to the state
                     # Assign, radii, charges
@@ -425,7 +426,9 @@ class pKaRoutines:
                     # Run APBS first time for the state in solvent
                     #
                     solutionEnergy=self.get_elec_energy(self.getAPBSPotentials(),atomlist)
-                    print "SOLUTION ENERGY FROM APBS: ", solutionEnergy
+                    print "Calculating self energy for state %i in solvent" % state
+                    #print 'Atoms for measuring potential',atomnames
+                    #print "SOLUTION ENERGY FROM APBS: ", solutionEnergy
                     #
                     # Now we set all radii (= in protein)
                     #
@@ -434,15 +437,17 @@ class pKaRoutines:
                     # Run APBS again, - this time for the state in the protein
                     #
                     print
-                    print 'Calculating self energy for %s in the protein' %(residue.name)
+                    print 'Calculating self energy for residue %s state %d in the protein' %(residue.name,state)
                     proteinEnergy = self.get_elec_energy(self.getAPBSPotentials(),atomlist)
-                    print "PROTEIN ENERGY FROM APBS: ", proteinEnergy
+                    #print "PROTEIN ENERGY FROM APBS: ", proteinEnergy
                     #
                     # Calculate the difference in self energy for this state
                     #
                     desolvation = proteinEnergy - solutionEnergy
                     print 'Desolvation for %s %d in state %d is %5.3f'  \
                           %(residue.name,residue.resSeq,state,desolvation)
+                    print
+                    print '======================================='
                     pKa.desolvation[state] = desolvation
         return
 
@@ -460,11 +465,23 @@ class pKaRoutines:
         #
         energy=0.0
         count=0
+        print
+        print
+        #print 'atomlist',atomlist
+        for atom in atomlist:
+            print atom.name,atom.resSeq
+        print
+        print '------------'
         for atom in protein.getAtoms():
+            #print atom.name,atom.resSeq
             if atom in atomlist:
                 energy=energy+(potentials[3][count] - potentials[1][count])*atom.get("ffcharge")
-                #print atom.name,atom.get('ffcharge')
+                print atom.name,atom.get('ffcharge'),(potentials[3][count] - potentials[1][count]),(potentials[3][count] - potentials[1][count])*atom.get("ffcharge")
             count=count+1
+        print '---------------'
+        print 'Total energy',energy
+        print
+        print
         return energy
 
     #
@@ -1005,6 +1022,7 @@ def startpKa():
         print "Beginning PDB2PQR...\n"
 
     myProtein = Protein(pdblist)
+
     if verbose:
         print "Created protein object -"
         print "\tNumber of residues in protein: %s" % myProtein.numResidues()

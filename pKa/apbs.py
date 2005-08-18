@@ -66,6 +66,25 @@ def getUnitConversion():
     return factor
 
 def runAPBS(protein, inputpath):
+    import sys
+    fd=open('apbs_junk','w')
+    oldstdout=sys.stdout
+    oldstderr=sys.stderr
+    sys.stdout=fd
+    sys.stderr=fd
+    try:
+        output=runAPBS_sub(protein,inputpath)
+    except:
+        sys.stderr=oldstderr
+        sys.stdout=oldstdout
+        fd.close()
+        return None
+    sys.stderr=oldstderr
+    sys.stdout=oldstdout
+    fd.close()
+    return output
+
+def runAPBS_sub(protein, inputpath):
     """
         Run APBS, using the protein instead of a pqr file
 

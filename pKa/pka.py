@@ -10,14 +10,18 @@ __date__="16 August 2005"
 __author__="Jens Erik Nielsen, Todd Dolinsky"
 
 import getopt
-import sys
-sys.path.append('../')
+import sys, os
+#
+# find the path to the script, and to pdb2pqr
+#
+scriptpath=os.path.split(sys.argv[0])[0]
+pdb2pqr_path=os.path.split(scriptpath)[0]
+sys.path.append(pdb2pqr_path)
+
 import string
 import math
 import string
-import sys
 import getopt
-import os
 import time
 from src import pdb
 from src import utilities
@@ -44,7 +48,7 @@ from src.hydrogens import *
 #from hydrogens import *
 from apbs import *
 
-TITRATIONFILE = "TITRATION.DAT"
+TITRATIONFILE = os.path.join(scriptpath,"TITRATION.DAT")
 
 class pKaRoutines:
     """
@@ -89,7 +93,7 @@ class pKaRoutines:
         self.calculateIntrinsicpKa()
 
         """ Calculate Pairwise Interactions """
-        self.calculatePairwiseInteractions()
+        #self.calculatePairwiseInteractions()
 
         """ Calculate Full pKa Value """
         self.calculatepKaValue()
@@ -211,6 +215,8 @@ class pKaRoutines:
         linear=[]
         intpkas=[]
         acidbase=[]
+        print
+        print
         print 'Residue\tIntrinsic pKa'
         for pKa in self.pKas:
             pKaGroup = pKa.pKaGroup
@@ -280,6 +286,8 @@ class pKaRoutines:
             for titration in pKa.pKaGroup.pKaTitrations:
                 for state in titration.allstates:
                     print '%3d\t%5.3f\t\t%5.3f\t\t%5.3f' %(state,titration.modelpKa,pKa.desolvation[state],pKa.background[state])
+        print
+        print
         #
         # We calculate an intrinsic pKa for every possible <startstate> -> <endstate> transition
         #

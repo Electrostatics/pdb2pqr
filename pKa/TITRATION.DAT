@@ -26,12 +26,12 @@
 // [Model pKa: <model pKa value for above transition>]
 // END                                           # Record ends
 // END OF FILE                                   # File ends
-* ASP
-Residue: ASP
-Grouptype: Acid
-Transition: 1 -> 0
-Model_pKa: 4.0
-END 
+//* ASP
+//Residue: ASP
+//Grouptype: Acid
+//Transition: 1 -> 0
+//Model_pKa: 4.0
+//END 
 
 * GLU
 Residue: GLU

@@ -90,10 +90,19 @@ class Psize:
         self.nsmall = [0,0,0]
         self.nfocus = 0
 
+    def parseString(self, structure):
+        """ Parse the input structure as a string in PDB or PQR format """
+        lines = string.split(structure, "\n")
+        self.parseLines(lines)
+
     def parseInput(self, filename):
         """ Parse input structure file in PDB or PQR format """
         file = open(filename, "r")
-        for line in file.readlines():
+        self.parseLines(file.readlines())
+
+    def parseLines(self, lines):
+        """ Parse the lines """
+        for line in lines:
             if string.find(line,"ATOM") == 0:
                 subline = string.replace(line[30:], "-", " -")
                 words = string.split(subline)
@@ -112,7 +121,7 @@ class Psize:
                 if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
             elif string.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
-
+    
     def setConstant(self, name, value):
         """ Set a constant to a value; returns 0 if constant not found """
         try:

@@ -240,8 +240,8 @@ class Routines:
                         atom3 = residue.getAtom(defdihedrals[i+2])
                         atom4 = residue.getAtom(defdihedrals[i+3])
                         
-                        if atom1 == None or atom2 == None \
-                               or atom3 == None or atom4 == None:
+                        if atom1 is None or atom2 is None \
+                               or atom3 is None or atom4 is None:
                             residue.addChiangle(LARGE_TORSION_ANGLE)
                         else:
                             residue.addChiangle(getDihedral(atom1.getCoords(),\
@@ -330,7 +330,7 @@ class Routines:
                     name = residue.get("naname")
                     defresidue = self.nadef.getResidue(name)
                 else: continue
-                if defresidue == None:
+                if defresidue is None:
                     error = "Could not find definition for %s " % name
                     error += "even though it is type %i!" % type
                     raise ValueError, error
@@ -395,7 +395,7 @@ class Routines:
                         atom = residue.getAtom(atomname)
                         if atom != None:
                             residue.renameAtom(atomname, "O")
-                    if residue.getAtom("O") == None:
+                    if residue.getAtom("O") is None:
                         error = "\tCannot Repair Water when " \
                                 "Oxygen is missing!: See %s %i\n" % \
                                 (resname, resnum)
@@ -478,7 +478,7 @@ class Routines:
                         if not defatom.isHydrogen():
                             defname = defatom.get("name")
                             atom = residue.getAtom(defname)
-                            if atom == None:
+                            if atom is None:
                                 self.write("Missing %s in %s %i\n" % \
                                            (defname, name, resSeq), 1)
                                 misscount += 1
@@ -486,7 +486,7 @@ class Routines:
 
                     if residue.get("isCterm"):
                         atom = residue.getAtom("OXT")
-                        if atom == None:
+                        if atom is None:
                             residue.addMissing("OXT")
                             misscount += 1
                             self.write("Missing OXT in %s %i\n" % (name, resSeq),1)
@@ -504,7 +504,7 @@ class Routines:
                             pass
                         elif atom.isHydrogen() and residue.get("isNterm"):
                             pass
-                        elif defatom == None:
+                        elif defatom is None:
                             self.write("Extra atom %s in %s %i! - " % \
                                        (atomname, name, resSeq), 1)
                             residue.removeAtom(atomname)
@@ -513,7 +513,7 @@ class Routines:
                 elif type == 4:
                     name = residue.get("naname")
                     defresidue = self.nadef.getResidue(name)
-                    if defresidue == None:
+                    if defresidue is None:
                         error = "Could not find definition for %s " % name
                         error += "even though it is a nucleic acid!"
                         raise ValueError, error
@@ -524,7 +524,7 @@ class Routines:
                         if not defatom.isHydrogen():
                             defname = defatom.get("name")
                             atom = residue.getAtom(defname)
-                            if atom == None:
+                            if atom is None:
                                 resname = residue.get("name")
                                 self.write("Missing %s in %s %i\n" % \
                                            (defname, resname, resSeq), 1)
@@ -540,7 +540,7 @@ class Routines:
                     for atom in atomlist:
                         atomname = atom.get("name")
                         defatom = defresidue.getAtom(atomname)
-                        if defatom == None:
+                        if defatom is None:
                             self.write("Extra atom %s in %s %i! - " % \
                                        (atomname, name, resSeq), 1)
                             residue.removeAtom(atomname)
@@ -603,7 +603,7 @@ class Routines:
         for bond in bonds:
             if bond.startswith("H") and bond in residue.get("map"):
                 hyds.append(bond)
-            elif restname == None:
+            elif restname is None:
                 restname = bond
             elif bond.startswith("H"): pass
             else: return None
@@ -660,7 +660,7 @@ class Routines:
                         defname = defatom.get("name")
                         atom = residue.getAtom(defname)
                         if atom != None: continue
-                        if atom == None and name == "HSN":
+                        if atom is None and name == "HSN":
                             if defname == "HD1" and residue.getAtom("HE2"): continue
                             if defname == "HE2" and residue.getAtom("HD1"): continue
                         prevC = prevres.getAtom("C")
@@ -1385,7 +1385,7 @@ class Routines:
         for atom in residue.get("atoms"):
             atomname = atom.get("name")
             defatom = defresidue.getAtom(atomname)
-            if defatom == None:
+            if defatom is None:
                 if residue.get("isCterm") or residue.get("isNterm"):
                     continue
                 elif residue.get("name") == "ASH" and atomname == "HD1":

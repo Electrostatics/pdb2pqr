@@ -354,7 +354,7 @@ class Residue:
             atomname = atom.get("name")
             defatom = defresidue.getAtom(atomname)
             atom.set("intrabonds",[])
-            if defatom == None:
+            if defatom is None:
                 if self.isCterm and atomname in ["HO","OXT"]:
                     continue
                 elif self.isNterm and atomname in ["H2","H3"]:
@@ -591,6 +591,17 @@ class Atom(ATOM):
         out = "%s%s %s %s" % (type, orig[6:-20], charge, radius)
         out = "%s %s" % (out[:21], out[22:]) # Eliminate the chain ID
         return out
+
+    def __eq__(self,otheratom):
+        #
+        # Check if this atom is the same as another atom
+        #
+        if isinstance(otheratom,Atom):
+            if self.name==otheratom.name and \
+               self.resSeq==otheratom.resSeq and \
+               self.chainID==otheratom.chainID:
+                return 1
+        return None
 
     def get(self, name):
         """

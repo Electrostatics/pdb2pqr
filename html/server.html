@@ -37,18 +37,13 @@ document.thisform.PH.disabled=true;
 <BODY>
 <h2>PDB2PQR Server</h2>
 <P>
-Mirrors:<br>
-<ul>
-<li><a href="http://nbcr.net/pdb2pqr/">NBCR at the San Diego Supercomputer Center (UCSD)</a><BR>
-<li><a href="http://enzyme.ucd.ie/Services/pdb2pqr/">University College Dublin, Ireland</a>
-</ul>
-<hr>
-<BR>
+<I>Currently using PDB2PQR Version 1.0.0</I>
+<P>
 This server enables a user to convert <a href="http://www.rcsb.org/pdb/">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
 
 pKa calculations are performed by <a href="http://propka.chem.uiowa.edu/">PROPKA</a>.<P>
 
-For more information,  visit the <a href="../doc/userguide.html">PDB2PQR User Guide</a>.<P>
+To distribute server load, the PDB2PQR server currently is limited to a maximum size of 5000 atoms per protein.  If you are interested in using PDB2PQR for larger proteins, you are encouraged to visit the <a href="http://pdb2pqr.sourceforge.net">PDB2PQR SourceForge Page</a>, where you can download a command line version of PDB2PQR, browse through existing bug and feature requests, sign up for mailing lists, and view the <a href="http://sourceforge.net/docman/display_doc.php?docid=29396&group_id=144228">PDB2PQR User Guide</a>.<P>
 
 <FORM action="http://ocotillo.wustl.edu/~todd/cgi-bin/pdb2pqr/pdb2pqr.py" METHOD="POST" ENCTYPE="multipart/form-data" name="thisform">
 
@@ -88,9 +83,10 @@ If you find the PDB2PQR service useful, then please cite:
 
 PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project program, and the <a href="http://nbcr.net">National Biomedical Computation Resource</a>.<P>
 
-Please send all bug reports and suggestions to <a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a><P>
+Before sending a bug report you may want to check the <a href="http://sourceforge.net/mailarchive/forum.php?forum=pdb2pqr-users">pdb2pqr-users mailing list archives</a> or the existing <a href="http://sourceforge.net/tracker/?group_id=144228&atid=758143">PDB2PQR SourceForge Bug List</a> to make sure your question has not already been addressed. Otherwise please post all bug reports, support requests, or feature requests to the appropriate <a href="http://sourceforge.net/tracker/?group_id=144228">PDB2PQR SourceForge Tracker</a>.<P>
+For additional support you may contact the <a href="http://lists.sourceforge.net/lists/listinfo/pdb2pqr-users">pdb2pqr-users mailing list</a>.<P>
 
 
-<font size="-1"><CENTER><I>Last Updated May 25th, 2005</I></CENTER></font>
+<font size="-1"><CENTER><I>Last Updated August 19th, 2005</I></CENTER></font>
 </BODY>
 </HTML>

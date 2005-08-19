@@ -385,18 +385,17 @@ def mainCGI():
         print "Content-type: text/html\n"
         print text
         sys.exit(2)
-    elif len(pdblist) > 8000 and ("watopt" in options or "hopt" in options):
+    elif len(pdblist) > 10000 and "opt" in options):
         text = "<HTML><HEAD>"
         text += "<TITLE>PDB2PQR Error</title>"
         text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
         text += "</HEAD><BODY><H2>PDB2PQR Error</H2><P>"
         text += "Due to server limits, we are currently unable to optimize "
-        text += "proteins of greater than 8000 atoms on the server.  If you "
+        text += "proteins of greater than 10000 atoms on the server.  If you "
         text += "want to forgo optimization please try the server again.<P>"
         text += "Otherwise you may use the standalone version of PDB2PQR that "
-        text += "has been packaged with APBS 0.3.2 and above. For more "
-        text += "information on APBS please visit the "
-        text += "<a href=\"http://agave.wustl.edu/apbs\">APBS Home Page</a>."
+        text += "is available from the <a href=\"http://pdb2pqr.sourceforge.net\">"
+        text += "PDB2PQR SourceForge project page</a>."
         text += "</BODY></HTML>"
         print "Content-type: text/html\n"
         print text

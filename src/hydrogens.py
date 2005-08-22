@@ -321,20 +321,20 @@ class hydrogenAmbiguity:
         atomlist = []
         intrabondlist = []
         flag = 0
-        if boundatom is None or boundatom.name.endswith("FLIP"): flag = 1
+        if boundatom == None or boundatom.name.endswith("FLIP"): flag = 1
         for atom in residue.atoms: atomlist.append(atom)
         
         # Handle the special case for HS2N!
        
         if residue.name == "HS2N":
-            if donorflag is None:
+            if donorflag == None:
                 txt = "Donor flag must be set for HS2N!"
                 raise ValueError, txt
 
             if flag: flip = "FLIP"
             else: flip = ""
             residue.renameResidue("HIS")
-            if boundatom is None: # Set to HSD
+            if boundatom == None: # Set to HSD
                 residue.removeAtom("HE2%s" % flip)
                 ne2atom = residue.getAtom("NE2%s" % flip)
                 ne2atom.intrabonds.pop(ne2atom.intrabonds.index("HE2%s" % flip))
@@ -405,7 +405,7 @@ class hydrogenAmbiguity:
             h1 = "HO1"
             h2 = "HO2"
 
-        if hydatom is None: # Choose h1-1
+        if hydatom == None: # Choose h1-1
             hydatom = residue.getAtom("%s1" % h1)
 
         # Remove all other hydrogens
@@ -599,9 +599,6 @@ class hydrogenRoutines:
             residue.getAtom(boundname).addIntraBond(hname)    
             residue.getAtom(boundname).hacceptor = 0
             residue.getAtom(boundname).hdonor = 1
-            #print '\n\n\n\nBuilt this atom',hname, 'with coords',newcoords
-            #print '\n\n'
-            return
 
  
     def printNetwork(self, network):
@@ -702,7 +699,7 @@ class hydrogenRoutines:
                 atom2 = hbond.atom2
                 dist = item[1]
                 
-                if atom1 is None:
+                if atom1 == None:
                     self.debug("already fixed")
                     continue
 
@@ -949,7 +946,7 @@ class hydrogenRoutines:
 
         # Now figure out which H it was - closest dist
 
-        if bestatom is None:
+        if bestatom == None:
             amb.fixProt(None)
             return
 
@@ -1657,7 +1654,7 @@ class hydrogenRoutines:
                 for acceptorh in acceptorhs:
                     donorhatom = donor.get("residue").getAtom(donorh)
                     acceptorhatom = acceptor.get("residue").getAtom(acceptorh)
-                    if donorhatom is None or acceptorhatom is None:
+                    if donorhatom == None or acceptorhatom == None:
                         text = "Couldn't find bonded hydrogen even though "
                         text = text + "it is present in intrabonds!"
                         raise ValueError, text
@@ -1688,7 +1685,7 @@ class hydrogenRoutines:
         elif acceptorhs == []:
             for donorh in donorhs:
                 donorhatom = donor.get("residue").getAtom(donorh)
-                if donorhatom is None:
+                if donorhatom == None:
                     text = "Couldn't find bonded hydrogen even though "
                     text = text + "it is present in intrabonds!"
                     raise ValueError, text
@@ -1750,14 +1747,14 @@ class hydrogenRoutines:
 
         if residue.get("isNterm"):
             charge = 1
-            if residue.getAtom("H2") is None: charge = charge - 1
-            if residue.getAtom("H3") is None: charge = charge - 1
+            if residue.getAtom("H2") == None: charge = charge - 1
+            if residue.getAtom("H3") == None: charge = charge - 1
             penalty = penalty + (1- charge)*nterm
 
         if resname == "HIS":
             hd1 = residue.getAtom("HD1")
             he2 = residue.getAtom("HE2")
-            if hd1 is None and he2 is None: 
+            if hd1 == None and he2 == None: 
                 penalty = penalty + hisminus
             elif hd1 != None and he2 != None:
                 penalty = penalty + hispos

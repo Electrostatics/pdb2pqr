@@ -109,7 +109,7 @@ class Protein:
                 resName = record.resName
                 iCode = record.iCode
 
-                if previousAtom is None:
+                if previousAtom == None:
                     previousAtom = record
                 
                 if chainID not in dict:

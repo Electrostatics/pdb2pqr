@@ -117,7 +117,7 @@ class Forcefield:
                 atom = ForcefieldAtom(atomname, charge, radius)
 
                 myResidue = self.getResidue(resname)
-                if myResidue is None:
+                if myResidue == None:
                     myResidue = ForcefieldResidue(resname)
                     self.residues[resname] = myResidue
                 myResidue.addAtom(atom)
@@ -166,7 +166,7 @@ class Forcefield:
             resname, atomname = self.getParseParams(residue, name)
 
         defresidue = self.getResidue(resname)
-        if defresidue is None:
+        if defresidue == None:
             return charge, radius
 
         atom = defresidue.getAtom(atomname)
@@ -391,7 +391,7 @@ class Forcefield:
             elif atomname == "H2'1": atomname = "H2'"
             elif atomname in ["H2'2","HO'2"]: atomname = "H2''"
             
-            if residue.getAtom("O2'") is None:
+            if residue.getAtom("O2'") == None:
                 if atomname in ["C2'","H2'","H2''"]: resname = "DEO1"
 
             if residue.getAtom("H5T") != None:

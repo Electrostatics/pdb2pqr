@@ -131,30 +131,30 @@ SUFFIXES = .c .C .o .so .f
 AM_CFLAGS = $(PY_CFLAGS) $(PY_FLAGS)
 CCLD = $(CC)
 AM_FFLAGS = $(PY_FLAGS)
-CLEANFILES = propkalibc.so propka
+CLEANFILES = _propkalib.so propka
 
-noinst_PROGRAMS = propkalibc.so propka
-propkalibc_so_SOURCES = propkalib.c propka.f propkac.c
-propkalibc_so_LINK = $(F77)
-propkalibc_so_LDFLAGS = -o $@ $(PY_SHARED)
-propkalibc_so_LDADD = $(PY_LDFLAGS)
+noinst_PROGRAMS = _propkalib.so propka
+_propkalib_so_SOURCES = propkalib.c propka.f propkac.c
+_propkalib_so_LINK = $(F77)
+_propkalib_so_LDFLAGS = -o $@ $(PY_SHARED)
+_propkalib_so_LDADD = $(PY_LDFLAGS)
 propka_SOURCES = propka.f
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_CLEAN_FILES =
-noinst_PROGRAMS = propkalibc.so$(EXEEXT) propka$(EXEEXT)
+noinst_PROGRAMS = _propkalib.so$(EXEEXT) propka$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 
+am__propkalib_so_OBJECTS = propkalib.$(OBJEXT) propka.$(OBJEXT) \
+	propkac.$(OBJEXT)
+_propkalib_so_OBJECTS = $(am__propkalib_so_OBJECTS)
+_propkalib_so_DEPENDENCIES =
 am_propka_OBJECTS = propka.$(OBJEXT)
 propka_OBJECTS = $(am_propka_OBJECTS)
 propka_LDADD = $(LDADD)
 propka_DEPENDENCIES =
 propka_LDFLAGS =
-am_propkalibc_so_OBJECTS = propkalib.$(OBJEXT) propka.$(OBJEXT) \
-	propkac.$(OBJEXT)
-propkalibc_so_OBJECTS = $(am_propkalibc_so_OBJECTS)
-propkalibc_so_DEPENDENCIES =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir)
 depcomp =
@@ -165,13 +165,13 @@ LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 F77COMPILE = $(F77) $(AM_FFLAGS) $(FFLAGS)
 F77LD = $(F77)
 F77LINK = $(F77LD) $(AM_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(propka_SOURCES) $(propkalibc_so_SOURCES)
+DIST_SOURCES = $(_propkalib_so_SOURCES) $(propka_SOURCES)
 DIST_COMMON = README AUTHORS COPYING ChangeLog INSTALL Makefile.am \
 	Makefile.in NEWS acinclude.m4 aclocal.m4 config/compile \
 	config/config.guess config/config.sub config/install-sh \
 	config/ltconfig config/ltmain.sh config/missing \
 	config/mkinstalldirs configure configure.ac
-SOURCES = $(propka_SOURCES) $(propkalibc_so_SOURCES)
+SOURCES = $(_propkalib_so_SOURCES) $(propka_SOURCES)
 
 all: all-am
 
@@ -196,12 +196,12 @@ $(ACLOCAL_M4):  configure.ac acinclude.m4
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+_propkalib.so$(EXEEXT): $(_propkalib_so_OBJECTS) $(_propkalib_so_DEPENDENCIES) 
+	@rm -f _propkalib.so$(EXEEXT)
+	$(_propkalib_so_LINK) $(_propkalib_so_LDFLAGS) $(_propkalib_so_OBJECTS) $(_propkalib_so_LDADD) $(LIBS)
 propka$(EXEEXT): $(propka_OBJECTS) $(propka_DEPENDENCIES) 
 	@rm -f propka$(EXEEXT)
 	$(F77LINK) $(propka_LDFLAGS) $(propka_OBJECTS) $(propka_LDADD) $(LIBS)
-propkalibc.so$(EXEEXT): $(propkalibc_so_OBJECTS) $(propkalibc_so_DEPENDENCIES) 
-	@rm -f propkalibc.so$(EXEEXT)
-	$(propkalibc_so_LINK) $(propkalibc_so_LDFLAGS) $(propkalibc_so_OBJECTS) $(propkalibc_so_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core

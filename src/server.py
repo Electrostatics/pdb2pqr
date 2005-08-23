@@ -102,11 +102,9 @@ def setID(time):
 
 def logRun(form, nettime, size):
     """
-        Log the CGI run for data analysis.  Currently only log runs where
-        the pdbid is specfied.  Options are denoted as either a 1 or a 0.
-        Log file format is as follows:
+        Log the CGI run for data analysis.  Log file format is as follows:
 
-        DATE    PDB_ID    SIZE    DEBUMP_HEAVY DEBUMP_H OPT_PROT OPT_WAT    TIME
+        DATE    PDB_ID    SIZE    DEBUMP OPT PROPKA   TIME
 
         Parameters
             form:    The CGI form with all set options (cgi)
@@ -116,17 +114,22 @@ def logRun(form, nettime, size):
     if LOGPATH == "" or LOGPATH == None: return
     date = time.asctime(time.localtime())
     debump  = 0
-    hdebump = 0
-    hopt    = 0
-    watopt  = 0
+    opt  = 0
+    propka = 0
     file = open(LOGPATH,"a")
     if not form.has_key("PDBID"): return
     if form.has_key("DEBUMP"):  debump = 1
-    if form.has_key("HOPT"):    hopt = 1
-    if form.has_key("HDEBUMP"): hdebump = 1
-    if form.has_key("WATOPT"):  watopt = 1 
-    file.write("%s\t%s\t%s\t%s %s %s %s \t%.2f\n" % \
-               (date, form["PDBID"].value, size, debump, hdebump, hopt, watopt, nettime))
+    if form.has_key("OPT"):    opt = 1
+    if form.has_key("PROPKA"): propka = 1
+    file.write("%s\t%s\t%s\t" % (date, form["PDBID"].value, size))
+    if debump:  file.write("debump ")
+    else: file.write("       ")
+    if opt: file.write("opt ")
+    else: file.write("    ")
+    if propka: file.write("propka")
+    else: file.write("      ")
+
+    file.write("\t%.2f\n" % nettime)
     file.close()
 
 def cleanTmpdir():

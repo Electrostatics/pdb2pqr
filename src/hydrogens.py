@@ -44,8 +44,8 @@
     ----------------------------
 """
 
-__date__ = "25 May 2005"
-__author__ = "Jens Erik Nielsen, Todd Dolinsky"
+__date__ = "24 August 2005"
+__author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
 HYDROGENFILE = "dat/HYDROGENS.DAT"
 
@@ -306,7 +306,7 @@ class hydrogenAmbiguity:
 
     def fixFlip(self, boundatom, donorflag=None):
         """
-            Fix the flippable residue.  The residue will no loner be
+            Fix the flippable residue.  The residue will no longer be
             rotated.  This deletes the worst-state atoms, but does not
             rename them.
 
@@ -378,13 +378,16 @@ class hydrogenAmbiguity:
 
     def fixProt(self, hydatom):
         """
-            Fix a type 13 residue by keeping the hydatom given.
-            All others can be deleted
+            Fix a type 13 residue (protonated ASP/GLU or Cterm)
+            by keeping the specific hydrogen given as an argument.
+            All other preplaced hydrogens can be deleted
+
+            Parameters
+                hydatom:  The hydrogen atom to keep (Atom)
         """
         if self.fixed: return
         self.fixed = 1
         residue = self.residue
-
        
         if residue.name == "GLH":
             bond1 = "OE1"
@@ -405,7 +408,7 @@ class hydrogenAmbiguity:
             h1 = "HO1"
             h2 = "HO2"
 
-        if hydatom == None: # Choose h1-1
+        if hydatom == None: # Choose h1-1 as default
             hydatom = residue.getAtom("%s1" % h1)
 
         # Remove all other hydrogens
@@ -423,21 +426,27 @@ class hydrogenAmbiguity:
   
     def setNearatoms(self, allatoms, ambmap):
         """
-            Set the nearby atoms to this residue.  The only donors/acceptors
-            that will be changing positions are the flips.
+            Set all potential hbonds that the current residue can make.
+            This takes into account that all flippable heavy atoms have
+            already been duplicated.  It also makes use of the energy function,
+            namely that in order to be a hydrogen bond the H-A distance must
+            be less than 3.3 (thereby 4.3 for the D-A distance).
 
             Parameters
                 allatoms:  A list of all donors/acceptors (list)
-                ambmap:  A mapping of all residues with ambiguities
+                ambmap:  A mapping of all residue to the ambiguity object
+            Returns
+                outlist:  A list of ambiguity objects that could form
+                          hydrogen bonds with the current residue (list)
         """
         outlist = []
         nearatoms = []
         resname = self.residue.get("name")
         confs = []
-        if self.hdef.type == 11:
+        if self.hdef.type in [11,14]:
             for atom in self.residue.atoms:
                 atomname = atom.name
-                if atomname.endswith("FLIP") and not atomname[0] == "H": confs.append(atomname)
+                if atomname.endswith("FLIP") and (atom.hacceptor or atom.hdonor): confs.append(atomname)
         for conf in self.hdef.conformations:
             atomname = conf.boundatom
             if atomname not in confs: confs.append(atomname)
@@ -453,6 +462,7 @@ class hydrogenAmbiguity:
                 elif not (atom.hdonor or atom.hacceptor): continue
                 dist = distance(atom.getCoords(), nearatom.getCoords())
                 item = (atom, nearatom, dist)
+              
                 if dist < 4.3 and item not in map:
                     myhbond = hbond(atom, nearatom, dist)
                     nearatoms.append(myhbond)
@@ -553,6 +563,7 @@ class hydrogenRoutines:
                 amb   : The amibiguity to switch (tuple)
                 id    : The state id to switch to (int)
         """
+
         if id > len(states):
             raise ValueError, "Invalid State ID!"
         
@@ -567,9 +578,9 @@ class hydrogenRoutines:
                 residue.removeAtom(hname)
             residue.getAtom(boundname).hacceptor = 1
             residue.getAtom(boundname).hdonor = 0
-
         # Update the IntraBonds
         name = residue.get("name")
+     
         defresidue = self.routines.aadef.getResidue(name)
         residue.updateIntraBonds(defresidue)
                               
@@ -579,7 +590,8 @@ class hydrogenRoutines:
             refcoords = []
             defcoords = []
             defatomcoords = []
-            if conf == (): continue # Nothing to add
+            if conf == ():
+                continue # Nothing to add
             hname = conf.hname
             for atom in conf.atoms:
                 atomname = atom.get("name")
@@ -599,11 +611,18 @@ class hydrogenRoutines:
             residue.getAtom(boundname).addIntraBond(hname)    
             residue.getAtom(boundname).hacceptor = 0
             residue.getAtom(boundname).hdonor = 1
+        return
 
  
     def printNetwork(self, network):
         """
             Print the network of ambiguities
+
+            Parameters
+                network:  The network of ambiguities (list)
+            Returns
+                text:  A string based representation of the
+                       network (string)
         """
         text = ""
         for amb in network:
@@ -629,6 +648,8 @@ class hydrogenRoutines:
             residue = getattr(amb, "residue")
             ambmap[residue] = amb
 
+
+        # Generate the progress meter
         if len(self.groups) > 0:
             self.routines.write("Optimization Progress:\n")
             self.routines.write("  Finding potential bonding partners:\n")
@@ -637,6 +658,7 @@ class hydrogenRoutines:
             progress = 0.0
             increment = 1.0/len(self.groups)
 
+        # Find the nearby partners, update the meter
         nearmap = {}
         for amb in self.groups:
             nearlist = amb.setNearatoms(allatoms, ambmap)
@@ -647,6 +669,7 @@ class hydrogenRoutines:
                 progress -= 0.05
         if len(self.groups) > 0: self.routines.write("\n")    
 
+        # Make networks out of nearby residues
         done = []
         networks = []
         for amb in self.groups:
@@ -671,15 +694,20 @@ class hydrogenRoutines:
         
         for cluster in networks:
             self.debug("*** STARTING NETWORK %s ***\n" % self.printNetwork(cluster))
-            # STEP 1 - Set up the clustermap
+
+            # STEP 1 - Set up the clustermap - the clustermap is a listing
+            #          of all residues in the network
             clustermap = {}
             for amb in cluster:
                 residue = getattr(amb, "residue")
                 clustermap[residue] = amb
                 
-            # STEP 2 - Order the distance of the hbonds
-            # Do potential bonds to backbone first
+            # STEP 2 - This is the first step in optimization - if possibe,
+            #          optimize all bonds between rotateable/moveable
+            #          atoms and non-moving atoms.
 
+            # For each residue generate a list of potential bonds sorted
+            # by closest distance
             seen = []
             backbonemap = {}
             for amb in cluster:
@@ -692,13 +720,14 @@ class hydrogenRoutines:
                           
             backbonelist = sortdict(backbonemap)
             backbonelist.reverse()
-              
+
+            # Now try to form hydrogen bonds based on this list
             for item in backbonelist:
                 hbond = item[0]
                 atom1 = hbond.atom1
                 atom2 = hbond.atom2
                 dist = item[1]
-                
+
                 if atom1 == None:
                     self.debug("already fixed")
                     continue
@@ -713,13 +742,13 @@ class hydrogenRoutines:
                 if atom2.hdonor and atom2.hacceptor: # We have to try both!
                     self.debug("IN OPTION 0")
 
-                    # First try atom2 as donor:
+                    # First try atom1 as acceptor, atom2 as donor:
                     result = self.tryAcceptor(atom1, atom2, amb)
                     if result: continue
                     
-                    # Next try atom2 as acceptor
+                    # Next try atom1 as donor, atom2 as acceptor
                     self.tryDonor(atom1, atom2, amb)
-
+                    
                 elif atom2.hacceptor: # Treat Atom 1 as donor
                     self.debug("IN OPTION 1!")
                     self.tryDonor(atom1, atom2, amb)
@@ -729,8 +758,9 @@ class hydrogenRoutines:
                 else: 
                     self.debug("Resolved in flipping")
                     
-
-            # STEP 3: All rotateable to other rotateable bonds
+            # STEP 3:  At this step we optimize all potential bonds between
+            #          any two rotateable/moveable atoms as long as BOTH
+            #          are not water.
             self.debug("\nNOW MOVING ON TO ALL ROTATE to ROTATE bonds")
             distmap = {}
             for amb in cluster:
@@ -763,7 +793,9 @@ class hydrogenRoutines:
                 if atom2 not in atom2.residue.atoms:
                     self.debug("Was already fixed!")
                     continue
-                
+
+                # If both atoms are donors/acceptors we don't want to doubly
+                # process them - doing one side is less costly than the other.
                 # We would rather do WAT-X than X-WAT and X-11 than 11-X
                 # We would also rather do X-13 than 13-X
                 if type2 == 12 or (type in [11,14] and type2 not in [11,14]):
@@ -811,6 +843,7 @@ class hydrogenRoutines:
                    
                
             # STEP 4: All Remaining water to water bonds
+            
             self.debug("\nNOW MOVING ON TO ALL WAT to WAT bonds")
             watermap = {}
             bondlist = []
@@ -834,18 +867,20 @@ class hydrogenRoutines:
                 maxnum = -1
                 maxatom = None
                 
-                # Pick the guy with the most intrabonds placed
+                # Pick the guy with the most bonds already present
                 for atom in watermap:
                     if len(atom.intrabonds) > maxnum:
                         maxnum = len(atom.intrabonds)
                         maxatom = atom
 
-                # Make the list of nearby waters, put the best one first
+                # If H2 is present we're already finished
                 
                 if "H2" in maxatom.intrabonds: # We're already done!
                     del watermap[maxatom]
                     continue
-                    
+
+                # Make the list of nearby waters, put the best one first
+                
                 nearwaters = []
                 bestdist = 999.9
                 for i in range(len(watermap[maxatom])):
@@ -866,7 +901,7 @@ class hydrogenRoutines:
                 self.fixWater(maxatom, nearwaters) # Try adding hydrogen to atom1, LP to atom2
                 del watermap[maxatom]
 
-            # STEP 5:  Fix all remaining flips/ alcoholics
+            # STEP 5:  Fix all remaining flips/ alcoholics that were not optimized
                 
             for residue in clustermap:
                 amb = clustermap[residue]
@@ -895,7 +930,7 @@ class hydrogenRoutines:
 
             self.debug("***** NETWORK COMPLETE *****\n")
 
-            # STEP 7:  Determine progress
+            # STEP 7:  Update progress meter
 
             progress += increment
             while progress >= 0.0499:
@@ -909,7 +944,8 @@ class hydrogenRoutines:
         """
             Remove a recently added atom; Necessary for case
             where we are dealing with two ambiguities and the first is
-            able to place a bond.
+            able to place a bond correctly but cannot match up
+            a LP atom.
 
             Parameters
                 amb:  The ambiguity in question
@@ -928,7 +964,12 @@ class hydrogenRoutines:
     def setProt(self, amb):
         """
             Since the protontated residue cannot make any bonds, set
-            to the best position as defined by the energy function
+            to the best position as defined by the energy function.
+            This works for protonated ASP/GLU where there are 4
+            possible positions.
+
+            Parameters
+                amb:  The ambiguity object in question
         """
         hbonds = amb.nearatoms
         bestenergy = 0
@@ -944,11 +985,13 @@ class hydrogenRoutines:
                 bestnearatom = nearatom
                 bestenergy = energy
 
-        # Now figure out which H it was - closest dist
+        # If there are no best atoms, just pick the default 
 
         if bestatom == None:
             amb.fixProt(None)
             return
+
+        # Otherwise figure out which H was best by looking at closest dist
 
         besth = None
         bestdist = 99.9
@@ -964,6 +1007,9 @@ class hydrogenRoutines:
         """
             Since the flip cannot make any bonds, set to the best position
             as defined by the energy function
+
+            Parameters
+                amb:  The ambiguity in question
         """
         hbonds = amb.nearatoms
         bestenergy = 0
@@ -1085,7 +1131,7 @@ class hydrogenRoutines:
     def makeAtomWithOneBond(self, donor, add, nearatoms, watflag):
         """
             Make an atom by rotating about the one existing bonded atom
-            to the donor.
+            to the donor.  Used for tetrahedral structure.
 
             Parameters
                donor:    The donor in question
@@ -1147,7 +1193,7 @@ class hydrogenRoutines:
     def getPositionsWithTwoBonds(self, donor):
         """
             Return the two positions that are possible when using the two
-            existing bonded atoms
+            existing bonded atoms in a tetrahedral structure.
 
             Parameters
                 donor:  The donor for the residue in question
@@ -1232,7 +1278,7 @@ class hydrogenRoutines:
                 add:     The name of the atom to add
                 loc1:  Possible location 1 for the new atom
                 loc2:  Possible location 2 for the new atom
-                nearatoms:  A list of nearby atoms
+                nearatom:  The nearest atom
                 watflag: A flag; 1 if donor is water, 0 otherwise
 
             Returns 1 if atom is added, 0 otherwise
@@ -1245,30 +1291,46 @@ class hydrogenRoutines:
 
         donorname = donor.name
         residue = donor.residue
-        residue.createAtom(add, loc1,atomtxt)
-        donor.intrabonds.append(add)
-        residue.getAtom(add).intrabonds.append(donorname)
-        if nearatom.name.startswith("H"): hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), donor)
-        else: hlist = self.isHbond(donor, nearatom)
-        
-        if hlist != []: 
-            self.debug("ADDED %s!" % add)
-            return 1
-        else: # Try the other location
-            residue.removeAtom(add)
-            residue.createAtom(add, loc2, atomtxt)
+
+        if nearatom.name.startswith("H"):  # Atom in question is acceptor
+            hlist = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), donor)
+            if hlist == []: return 0 # No hbonds
+
+            # Since we're adding a Lone Pair, we need to check both locations
+
+            dist1 = distance(loc1, nearatom.getCoords())
+            dist2 = distance(loc2, nearatom.getCoords())
+            if dist1 < dist2:
+                residue.createAtom(add, loc1,atomtxt)
+            else:
+                residue.createAtom(add, loc2, atomtxt)
+            donor.intrabonds.append(add)
             residue.getAtom(add).intrabonds.append(donorname)
-            if nearatom.name.startswith("H"): hlist2 = self.isHbond(nearatom.residue.getAtom(nearatom.intrabonds[0]), donor)
-            else: hlist2 = self.isHbond(donor, nearatom)
-            if hlist2 != []:
+            return 1
+            
+        else:  # Atom in question is donor
+            residue.createAtom(add, loc1,atomtxt)
+            donor.intrabonds.append(add)
+            residue.getAtom(add).intrabonds.append(donorname)
+    
+            hlist = self.isHbond(donor, nearatom)    
+            if hlist != []:
                 self.debug("ADDED %s!" % add)
                 return 1
-            else: # No hbond here
-                donor.intrabonds.pop(donor.intrabonds.index(add))
+            else: # Try the other location
                 residue.removeAtom(add)
-                return 0
+                residue.createAtom(add, loc2, atomtxt)
+                residue.getAtom(add).intrabonds.append(donorname)
+                hlist2 = self.isHbond(donor, nearatom)
+                if hlist2 != []:
+                    self.debug("ADDED %s!" % add)
+                    return 1
+                else: # No hbond here
+                    donor.intrabonds.pop(donor.intrabonds.index(add))
+                    residue.removeAtom(add)
+                    return 0
 
-    def makeAtomWithThreeBonds(self, donor, add):
+    def makeAtomWithThreeBonds(self, donor, add, watflag):
         """
             Since the atom already has three bonds, place in
             the lone remaining available spot.
@@ -1276,7 +1338,10 @@ class hydrogenRoutines:
             Parameters
                 donor:  The donor to be added to
                 add:     The name of the atom to be added
+                watflag: A flag; 1 if donor is water, 0 otherwise
         """
+        if watflag == 0: atomtxt = "ATOM"
+        else: atomtxt = "HETATM"
         donorname = donor.name
         bonds = donor.intrabonds
         residue = donor.residue
@@ -1304,7 +1369,7 @@ class hydrogenRoutines:
         newloc = loc1
         if distance(origcoords2, loc2) > 0.5: newloc = loc2
         
-        residue.createAtom(add, newloc,"ATOM") 
+        residue.createAtom(add, newloc,atomtxt) 
         donor.intrabonds.append(add)
         residue.getAtom(add).intrabonds.append(donorname)
         
@@ -1341,15 +1406,18 @@ class hydrogenRoutines:
             self.fixPositionsWithTwoBonds(donor, add, loc1, loc2, nearatoms, 0)
 
         elif len(bonds) == 3:  # Both LPs present, add H to remaining spot
-            self.makeAtomWithThreeBonds(donor, add)
+            self.makeAtomWithThreeBonds(donor, add, 0)
 
     def addAlcoholic(self, donor, nearatom, flag):
         """
-            donor is the residue's donor
-            nearatom is either an acceptor or a hydrogen that is
-               to be donated
-            if flag is 1 treat donor as donor
-            else as acceptor
+            Add a single atom to an alcolholic group
+
+            Parameters
+                donor:  The residue's donor (Atom)
+                nearatom: either an acceptor or a hydrogen that is
+                          to be donated
+                flag      if 1 treat donor as donor
+                          else as acceptor
         """
         bonds = donor.intrabonds
         oxcoords = donor.getCoords()
@@ -1390,7 +1458,7 @@ class hydrogenRoutines:
             return self.optPositionsWithTwoBonds(donor, add, loc1, loc2, nearatom, 0)
     
         elif len(bonds) == 3:  # Both LPs present, add H to remaining spot
-            self.makeAtomWithThreeBonds(donor, add)
+            self.makeAtomWithThreeBonds(donor, add, 0)
            
             hlist = self.isHbond(donor, nearatom)
             if hlist != []:
@@ -1473,10 +1541,23 @@ class hydrogenRoutines:
                 self.debug("ADDED %s!" % add)
                 return 1
 
-        elif len(bonds) == 2:  # We have LP1 and H1 already
+        elif len(bonds) == 2:  # We have LP1 and H1 OR LP1 and LP2 already
 
             loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
             return self.optPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatom, 0)
+
+        elif len(bonds) == 3:  # We need to either add H2 or LP2
+
+            self.makeAtomWithThreeBonds(oxygen, add, 1)
+            hlist = self.isHbond(oxygen, nearatom)
+            if hlist != []:
+                self.debug("ADDED %s!" % add)
+                return 1
+            else:
+                residue.removeAtom(add)
+                oxygen.intrabonds.pop(oxygen.intrabonds.index(add))
+                return 0
+            
 
     def fixWater(self, oxygen, nearatoms):
         """
@@ -1533,11 +1614,15 @@ class hydrogenRoutines:
             self.makeAtomWithOneBond(oxygen, add, nearatoms, 1)
             if add == "H1": self.fixWater(oxygen, nearatoms)
 
-        elif len(bonds) == 2:  # We have LP1 and H1 already
+        elif len(bonds) == 2:  # We have either LP1 and H1 or LP1 and LP2 already
 
             loc1, loc2 = self.getPositionsWithTwoBonds(oxygen)
             self.fixPositionsWithTwoBonds(oxygen, add, loc1, loc2, nearatoms, 1)
-
+            if add == "H1": self.fixWater(oxygen, nearatoms)
+            
+        elif len(bonds) == 3:  # We have LP1, LP2, and H1!
+            self.makeAtomWithThreeBonds(oxygen, add, 1)
+            
 
     def rotateResidue(self, residue, fixed, oxygen, newangle):
         """
@@ -1700,6 +1785,9 @@ class hydrogenRoutines:
                     angleterm = (maxangle - angle1)/maxangle
                     energy += max_hbond_energy/pow(dist,2)*angleterm
                   
+            return energy
+
+        else: # Shouldn't happen
             return energy
 
     def getHbondangle(self, atom1, atom2, atom3):
@@ -1948,9 +2036,11 @@ class hydrogenRoutines:
         info = []
 
         for line in lines:
-            if line.startswith("//"): pass
+            if line.startswith("//"):
+                pass
             elif line.startswith("*") or line.startswith("!"):
-                if info == []: continue
+                if info == []:
+                    continue
                 mydef = self.parseHydrogen(info)
                 self.hydrodefs.append(mydef)
                 info = []

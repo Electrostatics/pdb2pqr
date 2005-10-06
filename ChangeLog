@@ -1,4 +1,12 @@
 #############################################################################
+BETA PUBLIC RELEASE VERSION 1.0.1       10-7-05
+#############################################################################
+  - NEW FEATURES
+    * Added citation information to PQR output.
+  - BUG FIXES 
+    * Fixed a bug during hydrogen optimization that left out H2 from water
+      if the oxygen in question had already made 3 hydrogen bonds.
+#############################################################################
 BETA PUBLIC RELEASE VERSION 1.0.0       8-23-05
 #############################################################################
 This is the initial version of the PDB2PQR conversion utility.  There are 

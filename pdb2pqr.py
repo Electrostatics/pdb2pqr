@@ -348,6 +348,7 @@ def mainCommand():
         method = "mg-auto"
         size = psize.Psize()
         size.parseInput(outpath)
+        size.runPsize(outpath)
         async = 0 # No async files here!
         input = inputgen.Input(outpath, size, method, async)
         input.printInputFiles()
@@ -429,6 +430,7 @@ def mainCGI():
             method = "mg-auto"
             size = psize.Psize()
             size.parseInput(pqrpath)
+            size.runPsize(pqrpath)
             async = 0 # No async files here!
             myinput = inputgen.Input(outpath, size, method, async)
             myinput.printInputFiles()

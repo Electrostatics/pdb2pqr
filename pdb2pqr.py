@@ -432,7 +432,7 @@ def mainCGI():
             size.parseInput(pqrpath)
             size.runPsize(pqrpath)
             async = 0 # No async files here!
-            myinput = inputgen.Input(outpath, size, method, async)
+            myinput = inputgen.Input(pqrpath, size, method, async)
             myinput.printInputFiles()
                     
         endtime = time.time() - starttime

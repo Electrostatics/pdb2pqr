@@ -22,7 +22,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -45,6 +45,7 @@
 """
 
 import string, sys
+import copy  ### PC
 
 class END:
     """ END class
@@ -363,7 +364,7 @@ class HETATM:
         molecules and atoms presented in HET groups.
     """
    
-    def __init__(self, line): 
+    def __init__(self,line,sybylType="A.aaa",lBonds=[],lBondedAtoms=[]): ### PC
         """
             Initialize by parsing line
 
@@ -400,6 +401,13 @@ class HETATM:
             self.x = float(string.strip(line[30:38]))
             self.y = float(string.strip(line[38:46]))
             self.z = float(string.strip(line[46:54]))
+            ### PC
+#            self.lAtoms = lAtoms
+            self.sybylType = sybylType
+            self.lBondedAtoms = lBondedAtoms
+            self.lBonds = lBonds
+            self.radius = 1.0
+            ###
             try:
                 self.occupancy = float(string.strip(line[54:60]))
                 self.tempFactor = float(string.strip(line[60:66]))
@@ -479,6 +487,118 @@ class HETATM:
         tstr = self.charge
         str = str + string.ljust(tstr, 2)[:2]
         return str
+
+### PC
+# to do:  - parse SUBSTRUCTURE
+#         - avoid/detect blanks in @<TRIPOS>BOND
+#         - what happens, if no SUBSTRUCTURE present?
+#         - different order of SUBSTRUCTURE/MOLECULE
+#         - readlines instead of read -> blanks are avoided (you get a list)
+#         - (maybe) flag for parsing each RTI
+
+class MOL2BOND:
+    """
+    Bonding of MOL2 files
+    """
+    def __init__(self, frm, to, type, id=0):
+        self.to   = to     # bond to this atom
+        self.frm  = frm    # bond from atom
+        self.type = type   # 1=single, 2=double, ar=aromatic 
+        self.id   = id     # bond_id
+
+class MOL2MOLECULE:
+    """
+    Tripos MOL2 molecule
+    For further information look at (web page exists: 25 August 2005):
+    http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
+    """
+    def __init__(self):
+        self.lAtoms         = []       # all atoms of class <ATOM>
+        self.lBonds         = []       # all bonds of class <BOND>
+        self.lPDBAtoms      = []       # PDB-like list of all atoms
+
+    def read(self,filename):
+        """
+        Routines for reading MOL2 file
+        """
+        self.filename = filename
+        data = open(self.filename).read()
+        # ATOM section
+        start = data.find("@<TRIPOS>ATOM")
+        stop = data.find("@<TRIPOS>BOND")
+        atoms = data[start+14:stop-2].split("\n")
+        # BOND section
+        start = data.find("@<TRIPOS>BOND")
+        stop = data.find("@<TRIPOS>SUBSTRUCTURE")
+        bonds = data[start+14:stop-1].split("\n")
+        self.parseAtoms(atoms)
+        self.parseBonds(bonds)
+        self.createlBondedAtoms()
+#        self.createPDBlineFromMOL2(atoms)
+        #
+
+    def parseAtoms(self,AtomList):
+        """
+        for parsing @<TRIPOS>ATOM
+        """
+        for AtomLine in AtomList:
+            SeparatedAtomLine = AtomLine.split()
+            fakeRecord = "HETATM"
+            fakeChain = " L"
+            mol2pdb = '%s%5i%5s%4s%2s%4i    %8.3f%8.3f%8.3f' %\
+                   (fakeRecord,int(SeparatedAtomLine[0]),
+                    SeparatedAtomLine[1],SeparatedAtomLine[7],
+                    fakeChain,int(SeparatedAtomLine[6]),
+                    float(SeparatedAtomLine[2]),float(SeparatedAtomLine[3]),
+                    float(SeparatedAtomLine[4]))
+            thisAtom = HETATM(mol2pdb, SeparatedAtomLine[5],[],[])
+            self.lPDBAtoms.append(mol2pdb)
+            self.lAtoms.append(thisAtom)
+        
+    def parseBonds(self,BondList):
+        """
+        for parsing @<TRIPOS>BOND
+        """
+        for BondLine in BondList:
+            SeparatedBondLine = BondLine.split()
+            thisBond = MOL2BOND(
+                int(SeparatedBondLine[1]), # bond frm
+                int(SeparatedBondLine[2]), # bond to
+                SeparatedBondLine[3],      # bond type
+                int(SeparatedBondLine[0])  # bond id
+                )
+            self.lBonds.append(thisBond)
+
+    def createlBondedAtoms(self):
+        """
+        Creates for each atom a list of the bonded Atoms
+        
+        This becomes one attribute of MOL2ATOM!
+        """
+        for bond in self.lBonds:
+            self.lAtoms[bond.frm-1].lBondedAtoms.append(
+                self.lAtoms[bond.to-1])
+
+            self.lAtoms[bond.to-1].lBondedAtoms.append(
+                self.lAtoms[bond.frm-1])
+
+            atbond = copy.deepcopy(bond)
+            atbond.other_atom=self.lAtoms[bond.to-1]
+            self.lAtoms[bond.frm-1].lBonds.append(atbond)
+
+            atbond = copy.deepcopy(bond)
+            atbond.other_atom=self.lAtoms[bond.frm-1]
+            self.lAtoms[bond.to-1].lBonds.append(atbond)
+        return
+
+    
+    def createPDBlineFromMOL2(self):
+        FakeType = "HETATM"
+        return ('%s%5i%5s%4s%2s%5s   %8.3f%8.3f%8.3f\n' %
+                (FakeType,            self.serial,   self.name,
+                 self.resName, ' L',          self.resSeq, 
+                 self.x,self.y, self.z)) 
+### PC        
         
 class ATOM:
     """ ATOM class

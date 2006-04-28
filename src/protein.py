@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -44,11 +44,13 @@
 
 """
 
-__date__ = "14 November 2003"
+__date__ = "28 February 2006"
 __author__ = "Todd Dolinsky"
 
 from pdb import *
 from structures import *
+from aa import *
+from na import *
 
 class Protein:
     """
@@ -61,32 +63,20 @@ class Protein:
         of Atom objects, completing the hierarchy.
     """
 
-    def __init__(self, pdblist):
+    def __init__(self, pdblist, definition):
         """
             Initialize using parsed PDB file
 
             Parameters
                 pdblist: List of Classes of PDB lines as created
-                         by pdb.py->readPDB
         """
-
-        self.chainmap, self.chains = self.createProtein(pdblist)
-
-    def createProtein(self, pdblist):
-        """
-            Fill the Protein with chains, residues, and atoms
-
-            Parameters
-                pdblist: List of Classes of PDB lines as created
-                         by pdb.py->readPDB (list)
-            Returns
-                dict:    Mapping of chain ID to chain object
-                list:    List of chain objects sorted by chain ID (dict)
-        """
+        self.chainmap = {}
+        self.chains = []
+        self.residues = []
+        self.referencemap = definition.map
+        self.patchmap = definition.patches
 
         dict = {}
-        list = []
-        
         previousAtom = None
         residue = []
         numModels = 0
@@ -103,7 +93,7 @@ class Protein:
                 if record.chainID == "" and numChains > 1 and record.resName not in ["WAT","HOH"]:
                     # Assign a chain ID
                     record.chainID = string.ascii_uppercase[count]
-                
+
                 chainID = record.chainID
                 resSeq = record.resSeq
                 resName = record.resName
@@ -118,7 +108,7 @@ class Protein:
                         
                 if resSeq != previousAtom.resSeq or \
                        iCode != previousAtom.iCode:
-                    myResidue = Residue(residue, previousAtom)
+                    myResidue = self.createResidue(residue, previousAtom.resName)
                     dict[previousAtom.chainID].addResidue(myResidue)
                     residue = []
 
@@ -126,7 +116,7 @@ class Protein:
                 previousAtom = record
 
             elif isinstance(record, END):
-                myResidue = Residue(residue, previousAtom)
+                myResidue = self.createResidue(residue, previousAtom.resName)
                 dict[previousAtom.chainID].addResidue(myResidue)
                 residue = []
 
@@ -134,7 +124,7 @@ class Protein:
                 numModels += 1
                 if residue == []: continue
                 if numModels > 1:
-                    myResidue = Residue(residue, previousAtom)
+                    myResidue = self.createResidue(residue, previousAtom.resName)    
                     dict[previousAtom.chainID].addResidue(myResidue)
                     break
 
@@ -142,10 +132,15 @@ class Protein:
                 count += 1
 
         if residue != [] and numModels <= 1:
-            myResidue = Residue(residue, previousAtom)
+            myResidue = self.createResidue(residue, previousAtom.resName)
             dict[previousAtom.chainID].addResidue(myResidue)
 
-        chainmap = dict.copy()
+        # Keep a map for accessing chains via chainID
+
+        self.chainmap = dict.copy()
+
+        # Make a list for sequential ordering of chains
+        
         if dict.has_key(""):
             dict["ZZ"] = dict[""]
             del dict[""]
@@ -154,21 +149,52 @@ class Protein:
         keys.sort()
 
         for key in keys:
-            list.append(dict[key])
-            
-        return chainmap, list
+            self.chains.append(dict[key])
 
-    def printAtoms(self, atomlist):
+        for chain in self.chains:
+            for residue in chain.getResidues():
+                self.residues.append(residue)
+
+    def createResidue(self, residue, resname):
+        """
+            Create a residue object.  If the resname is a known residue
+            type, try to make that specific object, otherwise just make
+            a standard residue object.
+
+            Parameters
+                residue:  A list of atoms (list)
+                resname:  The name of the residue (string)
+
+            Returns:
+                residue:  The residue object (Residue)
+        """
+        try:
+            refobj = self.referencemap[resname]
+            if refobj.name != resname: #Patched!
+                obj = "%s(residue, refobj)" % refobj.name
+                residue = eval(obj)
+                residue.reference = refobj
+            else:
+                obj = "%s(residue, refobj)" % resname
+                residue = eval(obj)
+        except KeyError, NameError:
+            residue = Residue(residue)
+        return residue
+
+    def printAtoms(self, atomlist, chainflag=0):
         """
             Get the text for the entire protein
             Parameters
-                atomlist: The list of atoms to include (list)
+                atomlist:  The list of atoms to include (list)
+                chainflag: Flag whether to print chainid or not -
+                              Defaults to 0 (int)
             Returns
-                text:     The list of (stringed) atoms (list)
+                text:      The list of (stringed) atoms (list)
         """
         self.reSerialize()
         text = []
         for atom in atomlist:
+            if not chainflag: atom.chainID = ""
             text.append("%s\n" % str(atom))
         return text
 
@@ -180,6 +206,12 @@ class Protein:
         for atom in self.getAtoms():
             atom.set("serial", count)
             count += 1
+
+    def getResidues(self):
+        """
+            Return the list of residues in the entire protein
+        """
+        return self.residues
     
     def numResidues(self):
         """
@@ -189,21 +221,14 @@ class Protein:
             Returns
                 count:  Number of residues in the protein (int)
         """
-        count = 0
-        for chain in self.chains:
-            count += chain.numResidues()
-        return count
+        return len(self.getResidues())
 
     def numAtoms(self):
         """
             Get the number of atoms for the entire protein(including
             multiple chains)
-
-            Returns
-                count:  Number of atoms in the protein (int)
         """
-        count = len(self.getAtoms())
-        return count
+        return len(self.getAtoms())
 
     def getAtoms(self):
         """
@@ -238,8 +263,8 @@ class Protein:
             for residue in chain.get("residues"):
                 rescharge = residue.getCharge()
                 charge = charge + rescharge
-                if residue.get("is3term") or residue.get("is5term"):
-                    continue
+                if isinstance(residue, Nucleic):               
+                    if residue.is3term or residue.is5term: continue
                 if float("%i" % rescharge) != rescharge:
                     misslist.append(residue)
         return misslist, charge

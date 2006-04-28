@@ -24,7 +24,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -113,12 +113,13 @@ class Psize:
                     continue
                 self.gotatom = self.gotatom + 1
                 self.q = self.q + float(words[3])
-                if self.minlen[0] > float(words[0]): self.minlen[0] = float(words[0])
-                if self.minlen[1] > float(words[1]): self.minlen[1] = float(words[1])
-                if self.minlen[2] > float(words[2]): self.minlen[2] = float(words[2])
-                if self.maxlen[0] < float(words[0]): self.maxlen[0] = float(words[0])
-                if self.maxlen[1] < float(words[1]): self.maxlen[1] = float(words[1])
-                if self.maxlen[2] < float(words[2]): self.maxlen[2] = float(words[2])
+                rad = float(words[4])
+                center = []
+                for word in words[0:3]:
+                    center.append(float(word))
+                for i in range(3):
+                    self.minlen[i] = min(center[i]-rad, self.minlen[i])
+                    self.maxlen[i] = max(center[i]+rad, self.maxlen[i])
             elif string.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
     

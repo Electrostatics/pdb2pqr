@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -42,17 +42,114 @@
 
 """
     
-__date__ = "8 September 2004"
+__date__ = "28 February 2006"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky"
 
-AAFILE = "dat/AA.DAT"
-NAFILE = "dat/NA.DAT"
+AAPATH = "dat/AA.xml"
+NAPATH = "dat/NA.xml"
+PATCHPATH = "dat/PATCHES.xml"
 
 import os
+import copy
+import re
+from xml import sax
 from pdb import *
 from utilities import *
 from structures import *
 from routines import *
+
+class DefinitionHandler(sax.ContentHandler):
+   
+    def __init__(self):
+        self.curelement = ""
+        self.curatom = None
+        self.curholder = None
+        self.curobj = None
+        self.map = {}
+        self.patches = []
+        return
+
+    def startElement(self, name, attributes):
+        if name == "residue":
+            obj = DefinitionResidue()
+            self.curholder = obj
+            self.curobj = obj
+        elif name == "patch":
+            obj = Patch()
+            self.curholder = obj
+            self.curobj = obj
+        elif name == "atom":
+            obj = DefinitionAtom()
+            self.curatom = obj
+            self.curobj = obj
+        else:
+            self.curelement = name
+        return
+
+    def endElement(self, name):
+        if name == "residue": # Complete Residue object
+            residue = self.curholder
+            if not isinstance(residue, DefinitionResidue):
+                raise ValueError, "Internal error parsing XML!"
+            resname = residue.name
+            if resname == "":
+                raise ValueError, "Residue name not set in XML!"
+            else:
+                self.map[resname] = residue
+                self.curholder = None
+                self.curobj = None
+
+        elif name == "patch": # Complete patch object
+            patch = self.curholder
+            if not isinstance(patch, Patch):
+                raise ValueError, "Internal error parsing XML!"
+            patchname = patch.name
+            if patchname == "":
+                raise ValueError, "Residue name not set in XML!"
+            else:
+                self.patches.append(patch)
+                self.curholder = None
+                self.curobj = None
+        
+        
+        elif name == "atom": # Complete atom object
+            atom = self.curatom
+            if not isinstance(atom, DefinitionAtom):
+                raise ValueError, "Internal error parsing XML!"
+            atomname = atom.name
+            if atomname == "":
+                raise ValueError, "Atom name not set in XML!"
+            else:
+                self.curholder.map[atomname] = atom
+                self.curatom = None
+                self.curobj = self.curholder
+
+        else: # Just free the current element namespace
+            self.curelement = ""
+
+        return self.map
+
+    def characters(self, text):
+        if text.isspace(): return
+
+        # If this is a float, make it so
+        try:
+            value = float(str(text))
+        except ValueError:
+            value = str(text)
+
+        # Special cases - lists and dictionaries
+        if self.curelement == "bond":
+            self.curobj.bonds.append(value)
+        elif self.curelement == "dihedral":
+            self.curobj.dihedrals.append(value)
+        elif self.curelement == "altname":
+            self.curholder.altnames[value] = self.curatom.name
+        elif self.curelement == "remove":
+            self.curobj.remove.append(value)
+        else:
+            setattr(self.curobj, self.curelement, value)
+        return
 
 class Definition:
     """
@@ -65,230 +162,139 @@ class Definition:
         """
             Create a new Definition Object
         """
-        self.AAdef = self.readDefinition(AAFILE)
-        self.NAdef = self.readDefinition(NAFILE)
+        self.map = {}
+        self.patches = {}
 
-    def getAA(self):
-        """
-            Get the Amino Acid definition
+        handler = DefinitionHandler()
+        sax.make_parser()
 
-            Returns
-                The Amino Acid definition in self.chains[0]
-        """
-        return self.AAdef
+        for path in [AAPATH, NAPATH]:
+            defpath = getDatFile(path)
+            if defpath == "":
+                raise ValueError, "%s not found!" % path
 
-    def getNA(self):
-        """
-            Get the Nucleic Acid definition
-
-            Returns
-                 The Nucleic Acid definition - a list of Nucleic Acid
-                 residues
-        """
-        return self.NAdef
-    
-    def parseRotamer(self, reslines):
-        """
-            Parse ROTAMER.DAT, obtaining information about each atom and its
-            position.
-
-            Parameters
-                reslines:  A list of lines containing each of the atoms of the
-                           residue (list)
-            Returns
-                myResidue: The parsed residue (DefinitionResidue)
-        """
-        name = reslines[0][17:20]
-        restype = 1
-        myResidue = DefinitionResidue(name, restype)
-        for i in range(len(reslines)):
-            entries = string.split(reslines[i])
-            atomname = entries[2]
-            x = float(entries[5])
-            y = float(entries[6])
-            z = float(entries[7])
-
-            atom = DefinitionAtom(i, atomname, name, x, y, z)
-            myResidue.addAtom(atom)
-
-        return myResidue
-
-    def parseDefinition(self, reslines, name, restype):
-        """
-            Parse the definition file, obtaining information about each atom,
-            its position, and its bonding information.
-
-            Parameters
-                reslines:  A list of lines containing each of the atoms of the
-                           residue (list)
-                name:      The name of the Residue (string)
-                restype:   The type of the residue (int)
-            Returns
-                myResidue: The parsed residue (DefinitionResidue)
-        """
-        myResidue = DefinitionResidue(name, restype)
-        refatom = -1 
-    
-        for i in range(0,len(reslines)-2):
-            entries = string.split(reslines[i])
-            atomname = entries[0]
-            x = float(entries[1])
-            y = float(entries[2])
-            z = float(entries[3])
-            
-            atom = DefinitionAtom(i, atomname, name, x, y, z)
-            myResidue.addAtom(atom)
-        
-            if atomname == "CA" and restype == 1: refatom = i
-          
-        line = reslines[-2]
-        bonds = string.split(line)
-        bondmap = {}
-        for i in range(0,len(bonds),2):
-            bondA = int(bonds[i])-1
-            bondB = int(bonds[i+1])-1
-            atomA = myResidue.get("atoms")[bondA]
-            atomB = myResidue.get("atoms")[bondB]
-            
-            atomA.addIntraBond(atomB.get("name"))
-            atomB.addIntraBond(atomA.get("name"))
-            try:
-                bondmap[bondA].append(bondB)
-            except KeyError:
-                bondmap[bondA] = [bondB]
-            try:
-                bondmap[bondB].append(bondA)
-            except KeyError:
-                bondmap[bondB] = [bondA]
-                    
-        line = reslines[-1]
-        dihedrals = string.split(line)
-        if int(dihedrals[0]) > 0:
-            for i in range(1,len(dihedrals)):
-                dihedralA = int(dihedrals[i]) - 1
-                myResidue.addDihedral(myResidue.get("atoms")[dihedralA].get("name"))
-  
-        if len(myResidue.get("dihedralatoms")) != int(dihedrals[0]) * 4:
-            raise ValueError, "Corrupt entry for torsion angles when parsing %s" % name
-
-        if restype == 1:
-            for i in range(myResidue.numAtoms()):
-                atom = myResidue.get("atoms")[i]
-                if atom.isBackbone():
-                    atom.set("refdistance",-1)
-                else:
-                    atom.set("refdistance", len(shortestPath(bondmap, i, refatom)) - 1)
-        return myResidue
-    
-    def readDefinition(self, defpath):
-        """
-            Read a definition file
-
-            Parameters
-                deffile: The path to the definition file (string)
-
-            Returns
-                def:  The definition chain (AADefinition)
-        """
-        if not os.path.isfile(defpath):
-            for path in sys.path:
-                testpath = "%s/%s" % (path, defpath)
-                if os.path.isfile(testpath):
-                    defpath = testpath
-                    break
-                    
-        if not os.path.isfile(defpath):
-            raise ValueError, "%s not found!" % defpath
-        
-        file = open(defpath)
-        lines = file.readlines()
-        file.close()
-        reslines = []
-        thisdef = DefinitionChain(defpath)
-
-        for line in lines:
-            if line.startswith("//"): pass
-            elif line.startswith("*"):
-                if len(reslines) > 0:
-                    ids = string.split(reslines[0])
-                    name = ids[0]
-                    restype = int(ids[1])
-                    reslines = reslines[1:]  
-                    residue = self.parseDefinition(reslines, name, restype)
-                    thisdef.addResidue(residue)
-                    reslines = []
-            else:
-                reslines.append(string.strip(line))
-
-        thisdef.renumberResidues()
-        return thisdef        
-
-    def readRotamerDefinition(self):
-        """
-            Read the Rotamer definitions
-        """
-        if os.path.isfile(ROTAMERFILE):
-            file = open(ROTAMERFILE)
-            lines =  file.readlines()
+            file = open(defpath)
+            sax.parseString(file.read(), handler)
             file.close()
-            reslines = []
-            rotamerdef = Chain("ROTAMER")
-            
-            for line in lines:
-                if line.startswith("*"): pass
-                elif line.startswith("TER"):
-                    if len(reslines) > 0:
-                        residue = self.parseRotamer(reslines)
-                        rotamerdef.addResidue(residue)
-                        reslines = []
-                else:
-                    reslines.append(string.strip(line))
 
-            rotamerdef.renumberResidues()
-            self.chains.append(rotamerdef)
-        else:
-            raise ValueError, "%s not found!" % ROTAMERFILE
+            self.map.update(handler.map)
+    
+        # Now handle patches
 
-class DefinitionChain(Chain):
-    """
-        DefinitionChain class
+        defpath = getDatFile(PATCHPATH)
+        if defpath == "":
+            raise ValueError, "%s not fonud!" % PATCHPATH
+     
+        handler.map = {}
+        file = open(defpath)
+        sax.parseString(file.read(), handler)
+        file.close()
 
-        The DefinitionChain class extends the chain class to provide
-        lookups for atom information.
-    """
-    def __init__(self, ID):
-        """
-           Initialize like the Chain constructor, but add necessary
-           features
-
-           Parameters
-               ID: The ID of the chain
-        """
-        Chain.__init__(self, ID)
-        self.residuemap = {}
+        # Apply specific patches to the reference object, allowing users
+        #  to specify protonation states in the PDB file
         
-    def addResidue(self, residue):
+        for patch in handler.patches:
+            if patch.newname != "":
+
+                # Find all residues matching applyto
+
+                resnames = self.map.keys()
+                for name in resnames:
+                    regexp = re.compile(patch.applyto).match(name)
+                    if not regexp: continue
+                    newname = patch.newname.replace("*", name)
+                    self.addPatch(patch, name, newname)
+                  
+
+            # Either way, make sure the main patch name is available
+            
+            self.addPatch(patch, patch.applyto, patch.name)
+
+    def addPatch(self, patch, refname, newname):
         """
-            Add a residue to the chain
+            Add a patch to a definition residue.
 
             Parameters
-                residue: The residue to be added (Residue)
-        """
-        self.residues.append(residue)
-        self.residuemap[residue.get("name")] = residue
-
-    def getResidue(self, name):
-        """
-            Retrieve a residue from the mapping
-
-            Parameters
-                name: The name of the residue to retrieve (string)
+                patch:  The patch object to add (Patch)
+                refname:  The name of the object to add the patch to (string)
+                newname:  The name of the new (patched) object (string)
         """
         try:
-            return self.residuemap[name]
-        except KeyError:
-            return None
+            aadef = self.map[refname] # The reference
+            patchResidue = copy.deepcopy(aadef)
 
+            # Add atoms from patch
+
+            for atomname in patch.map:
+                patchResidue.map[atomname] = patch.map[atomname]
+                for bond in patch.map[atomname].bonds:
+                    if bond not in patchResidue.map: continue
+                    if atomname not in patchResidue.map[bond].bonds:
+                        patchResidue.map[bond].bonds.append(atomname)
+
+            # Rename atoms as directed
+            
+            for key in patch.altnames:
+                patchResidue.altnames[key] = patch.altnames[key]
+
+            # Remove atoms as directed
+                    
+            for remove in patch.remove:
+                if not patchResidue.hasAtom(remove): continue
+                removebonds = patchResidue.map[remove].bonds
+                del patchResidue.map[remove]
+                for bond in removebonds:
+                    if remove in patchResidue.map[bond].bonds:
+                        patchResidue.map[bond].bonds.remove(remove)
+
+            # Add the new dihedrals
+
+            for dihedral in patch.dihedrals:
+                patchResidue.dihedrals.append(dihedral)
+
+            # Point at the new reference
+
+            self.map[newname] = patchResidue
+
+            # Store the patch
+
+            self.patches[newname] = patch
+                   
+        except KeyError: # Just store the patch
+            self.patches[newname] = patch
+
+class Patch:
+    """
+        Patch the definitionResidue class
+    """
+    def __init__(self):
+        """
+            Initialize the Patch object.
+        """
+        self.name = ""
+        self.applyto = ""
+        self.map = {}
+        self.remove = []
+        self.altnames = {}
+        self.dihedrals = []
+        self.newname = ""
+        
+    def __str__(self):
+        """
+            A basic string representation for debugging
+        """
+        text = "%s\n" % self.name
+        text += "Apply to: %s\n" % self.applyto
+        text += "Atoms to add: \n"
+        for atom in self.map:
+            text += "\t%s\n" % str(self.map[atom])
+        text += "Atoms to remove: \n"
+        for remove in self.remove:
+            text += "\t%s\n" % remove
+        text += "Alternate naming map: \n"
+        text += "\t%s\n" % self.altnames
+        return text
+        
 class DefinitionResidue(Residue):
     """
         DefinitionResidue class
@@ -296,25 +302,32 @@ class DefinitionResidue(Residue):
         The DefinitionResidue class extends the Residue class to allow for a
         trimmed down initializing function.
     """
-    def __init__(self, name, type):
+    def __init__(self):
         """
             Initialize the class using a few parameters
 
             Parameters:
                 name: The abbreviated amino acid name of the DefinitionResidue
-                type: The typecode associated with the residue
-                      Available typecodes are:
-                          1: Protein residue
-                          2: Drug/small-molecule
-                          3: Water
-                number: ID number for residue
         """
-        self.atoms = []
-        self.dihedralatoms = []
-        self.resSeq = 0
-        self.type = type
-        self.name = name
+        self.name = ""
+        self.dihedrals = []
         self.map = {}
+        self.altnames = {}
+        
+    def __str__(self):
+        """
+            A basic string representation for debugging
+        """
+        text = "%s\n" % self.name
+        text += "Atoms: \n"
+        for atom in self.map:
+            text += "\t%s\n" % str(self.map[atom])
+        text += "Dihedrals: \n"
+        for dihedral in self.dihedrals:
+            text += "\t%s\n" % dihedral
+        text += "Alternate naming map: \n"
+        text += "\t%s\n" % self.altnames
+        return text
 
     def addDihedral(self, atom):
         """
@@ -324,95 +337,65 @@ class DefinitionResidue(Residue):
                 atom: The atom to be added
         """
         self.dihedralatoms.append(atom)
-        
-    def makeBondList(self, residue, atomname):
-        """
-            For the given atomname, make a list of bonded atoms.
-            First get all atoms present in the residue that are
-            directly bonded to the atom - if this number is
-            less than REFATOM_SIZE, take those atoms that are present and
-            bonded to initial bond list and use them.
 
+    def getNearestBonds(self, atomname):
+        """
             Parameters
-                residue:  The residue to check for present atoms (Residue)
-                atomname: The atom name to sedd the list of bonds (string)
+                number:   The number of bonds to get
             Returns
-                bonds:    A list of atomnames that are within two bonds of
+                bonds:    A list of atomnames that are within three bonds of
                           the atom and present in residue (list)
         """
         bonds = []
-        if atomname == "OXT":
-            if "C" in residue.get("map"):
-                bonds.append("C")
-            else:
-                return bonds
-        else:
-            defatom = self.getAtom(atomname)
-            defbonds = defatom.get("intrabonds")
-            for bondname in defbonds:
-                if bondname in residue.get("map"):
-                    bonds.append(bondname)
-        if len(bonds) < REFATOM_SIZE:
-            for bond in bonds:
-                newatom = self.getAtom(bond)
-                newbonds = newatom.get("intrabonds")
-                for newname in newbonds:
-                    if newname in residue.get("map") and newname not in bonds:
-                        bonds.append(newname)
-                        if len(bonds) == REFATOM_SIZE:
-                            return bonds
-            return bonds
-        else:
-            return bonds
+        lev2bonds = []
+        atom = self.map[atomname]
         
-class DefinitionAtom(Atom):
+        # Get directly bonded (length = 1) atoms
+        
+        for bondedatom in atom.bonds:
+            if bondedatom not in bonds:
+                bonds.append(bondedatom)
 
-    """
-        Class DefinitionAtom
-
-        The DefinitionAtom class inherits off the Atom class.  It provides
-        a trimmed down version of the initializating function from the Atom
-        class for the definition files.
-    """
+        # Get bonded atoms 2 bond lengths away
     
-    def __init__(self, serial, name, resName, x, y, z):
+        for bondedatom in atom.bonds:
+            for bond2 in self.map[bondedatom].bonds:
+                if bond2 not in bonds and bond2 != atomname:
+                    bonds.append(bond2)
+                    lev2bonds.append(bond2)
+
+        # Get bonded atoms 3 bond lengths away
+
+        for lev2atom in lev2bonds:
+            for bond3 in self.map[lev2atom].bonds:
+                if bond3 not in bonds:
+                    bonds.append(bond3)
+         
+        return bonds
+
+class DefinitionAtom(Atom):
+    """
+        A trimmed down version of the Atom class
+    """
+    def __init__(self):
         """
-            Initialize using a few basic parameters - set all other fields
-            to null, which is necessary for debugging output by using the
-            string function in the parent class.
-
-            Parameters
-                serial:  Atom serial number (int)
-                name:    Atom name. (string)
-                resName: Residue name. (string)
-                resSeq:  Residue sequence number. (int)
-                x:       Orthogonal coordinates for X in Angstroms. (float)
-                y:       Orthogonal coordinates for Y in Angstroms. (float)
-                z:       Orthogonal coordinates for Z in Angstroms. (float)
+            Initialize the class
         """
-        self.type = "ATOM"
-        self.serial = serial
-        self.name = name
-        self.altLoc = ""
-        self.resName = resName
-        self.chainID = ""
-        self.resSeq = 1
-        self.iCode = ""
-        self.x = x
-        self.y = y
-        self.z = z
-        self.occupancy = 0.0
-        self.tempFactor = 0.0
-        self.segID = ""
-        self.element = ""
-        self.charge = ""
-        self.ffcharge = 0.0
-        self.radius = 0.0
-
-        self.intrabonds = []
-        self.residue = None
-        self.refdistance = None
-
+        self.name = ""
+        self.x = 0.0
+        self.y = 0.0
+        self.z = 0.0
+        self.bonds = []
+     
+    def __str__(self):
+        """
+            A basic string representation for debugging
+        """
+        text = "%s: %.3f %.3f %.3f" % (self.name, self.x, self.y, self.z)
+        for bond in self.bonds:
+            text += " %s" % bond
+        return text
+    
     def isBackbone(self):
         """
             Return true if atom name is in backbone, otherwise false
@@ -420,11 +403,5 @@ class DefinitionAtom(Atom):
             Returns
                 state: 1 if true, 0 if false
         """
-        state = 0
-        if self.name in BACKBONE:
-            state = 1
-        return state
-
-
-
-
+        if self.name in BACKBONE: return 0
+        else: return 1

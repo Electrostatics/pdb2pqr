@@ -10,7 +10,7 @@ dnl ##########################################################################
 dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
-AC_INIT([PDB2PQR], [1.0.1], [todd@ccb.wustl.edu])
+AC_INIT([PDB2PQR], [1.1.0], [todd@ccb.wustl.edu])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_PREFIX_DEFAULT(${HOME})
@@ -45,8 +45,8 @@ dnl #
 dnl #   Never try to set the interface numbers so that they correspond to the
 dnl #   release number of your package. This is an abuse that only fosters
 dnl #   misunderstanding of the purpose of library versions.
-AM_INIT_AUTOMAKE(PDB2PQR, 1.0.0)
-PDB2PQR_VERSION="1:0:0"
+AM_INIT_AUTOMAKE(PDB2PQR, 1.1.0)
+PDB2PQR_VERSION="1:1:0"
 AC_SUBST(PDB2PQR_VERSION)
 ACLOCAL=":";
 AUTOCONF=":";
@@ -64,8 +64,6 @@ AC_PATH_PROG(py_path, python)
 if test -z "${py_path}"; then
    AC_MSG_ERROR([Unable to find python!])
 fi
-
-AC_FORTUNES
 
 dnl ##########################################################################
 dnl 3. Check for available subdirectories

@@ -27,6 +27,7 @@
     </atom>
     <atom>
       <name>O5'</name>
+      <altname>O5*</altname>
       <x>2.994369</x>
       <y>2.142475</y>
       <z>0.922974</z>
@@ -35,6 +36,7 @@
     </atom>
     <atom>
       <name>C5'</name>
+      <altname>C5*</altname>
       <x>2.156035</x>
       <y>2.551837</y>
       <z>2.019887</z>
@@ -45,7 +47,11 @@
     </atom>
     <atom>
       <name>H5'</name>
+      <altname>H5*</altname>
       <altname>H5'1</altname>
+      <altname>H5*1</altname>
+      <altname>1H5'</altname>
+      <altname>1H5*</altname>
       <x>1.452687</x>
       <y>1.753841</y>
       <z>2.257803</z>
@@ -53,7 +59,11 @@
     </atom>
     <atom>
       <name>H5''</name>
+      <altname>H5**</altname>
       <altname>H5'2</altname>
+      <altname>H5*2</altname>
+      <altname>2H5'</altname>
+      <altname>2H5*</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -61,6 +71,7 @@
     </atom>
     <atom>
       <name>C4'</name>
+      <altname>C4*</altname>
       <x>3.008252</x>
       <y>2.847921</y>
       <z>3.243186</z>
@@ -71,6 +82,7 @@
     </atom>
     <atom>
       <name>H4'</name>
+      <altname>H4*</altname>
       <x>2.447118</x>
       <y>3.477373</y>
       <z>3.933851</z>
@@ -78,6 +90,7 @@
     </atom>
     <atom>
       <name>O4'</name>
+      <altname>O4*</altname>
       <x>3.228121</x>
       <y>1.605168</y>
       <z>3.977231</z>
@@ -86,6 +99,7 @@
     </atom>
     <atom>
       <name>C1'</name>
+      <altname>C1*</altname>
       <x>4.558614</x>
       <y>1.150950</y>
       <z>3.777548</z>
@@ -96,6 +110,7 @@
     </atom>
     <atom>
       <name>H1'</name>
+      <altname>H1*</altname>
       <x>5.072002</x>
       <y>1.095281</y>
       <z>4.737461</z>
@@ -163,6 +178,7 @@
     </atom>
     <atom>
       <name>H61</name>
+      <altname>1H6</altname>
       <x>5.160722</x>
       <y>-5.738815</y>
       <z>3.850595</z>
@@ -170,6 +186,7 @@
     </atom>
     <atom>
       <name>H62</name>
+      <altname>2H6</altname>
       <x>4.776859</x>
       <y>-4.914033</y>
       <z>2.356379</z>
@@ -218,6 +235,7 @@
     </atom>
     <atom>
       <name>C3'</name>
+      <altname>C3*</altname>
       <x>4.415606</x>
       <y>3.377827</y>
       <z>2.961306</z>
@@ -228,6 +246,7 @@
     </atom>
     <atom>
       <name>H3'</name>
+      <altname>H3*</altname>
       <x>4.412072</x>
       <y>3.941489</y>
       <z>2.028369</z>
@@ -235,6 +254,7 @@
     </atom>
     <atom>
       <name>C2'</name>
+      <altname>C2*</altname>
       <x>5.230443</x>
       <y>2.095696</y>
       <z>2.779425</z>
@@ -245,7 +265,9 @@
     </atom>
     <atom>
       <name>H2'</name>
+      <altname>H2*</altname>
       <altname>H2'1</altname>
+      <altname>H2*1</altname>
       <x>5.668211</x>
       <y>2.081313</y>
       <z>1.781301</z>
@@ -253,6 +275,7 @@
     </atom>
     <atom>
       <name>O2'</name>
+      <altname>O2*</altname>
       <x>6.272982</x>
       <y>2.049941</y>
       <z>3.757136</z>
@@ -261,8 +284,15 @@
     </atom>
     <atom>
       <name>H2''</name>
+      <altname>H2**</altname>
       <altname>HO'2</altname>
+      <altname>HO*2</altname>
       <altname>H2'2</altname>
+      <altname>H2*2</altname>
+      <altname>2HO'</altname>
+      <altname>2HO*</altname>
+      <altname>2H2'</altname>
+      <altname>2H2*</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -270,6 +300,7 @@
     </atom>
     <atom>
       <name>O3'</name>
+      <altname>O3*</altname>
       <x>5.029898</x>
       <y>4.128649</y>
       <z>3.998279</z>
@@ -305,6 +336,7 @@
     </atom>
     <atom>
       <name>O5'</name>
+      <altname>O5*</altname>
       <x>2.994369</x>
       <y>2.142475</y>
       <z>0.922974</z>
@@ -313,6 +345,7 @@
     </atom>
     <atom>
       <name>C5'</name>
+      <altname>C5*</altname>
       <x>2.156035</x>
       <y>2.551837</y>
       <z>2.019887</z>
@@ -323,7 +356,11 @@
     </atom>
     <atom>
       <name>H5'</name>
+      <altname>H5*</altname>
       <altname>H5'1</altname>
+      <altname>H5*1</altname>
+      <altname>1H5'</altname>
+      <altname>1H5*</altname>
       <x>1.452687</x>
       <y>1.753841</y>
       <z>2.257803</z>
@@ -331,7 +368,11 @@
     </atom>
     <atom>
       <name>H5''</name>
+      <altname>H5**</altname>
       <altname>H5'2</altname>
+      <altname>H5*2</altname>
+      <altname>2H5'</altname>
+      <altname>2H5*</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -339,6 +380,7 @@
     </atom>
     <atom>
       <name>C4'</name>
+      <altname>C4*</altname>
       <x>3.008252</x>
       <y>2.847921</y>
       <z>3.243186</z>
@@ -349,6 +391,7 @@
     </atom>
     <atom>
       <name>H4'</name>
+      <altname>H4*</altname>
       <x>2.447118</x>
       <y>3.477373</y>
       <z>3.933851</z>
@@ -356,6 +399,7 @@
     </atom>
     <atom>
       <name>O4'</name>
+      <altname>O4*</altname>
       <x>3.228121</x>
       <y>1.605168</y>
       <z>3.977231</z>
@@ -364,6 +408,7 @@
     </atom>
     <atom>
       <name>C1'</name>
+      <altname>C1*</altname>
       <x>4.558614</x>
       <y>1.150950</y>
       <z>3.777548</z>
@@ -374,6 +419,7 @@
     </atom>
     <atom>
       <name>H1'</name>
+      <altname>H1*</altname>
       <x>5.072002</x>
       <y>1.095281</y>
       <z>4.737461</z>
@@ -440,6 +486,7 @@
     </atom>
     <atom>
       <name>H41</name>
+      <altname>1H4</altname>
       <x>4.532463</x>
       <y>-4.836389</y>
       <z>3.019078</z>
@@ -447,6 +494,7 @@
     </atom>
     <atom>
       <name>H42</name>
+      <altname>2H4</altname>
       <x>4.201767</x>
       <y>-4.434444</y>
       <z>1.330491</z>
@@ -478,6 +526,7 @@
     </atom>
     <atom>
       <name>C3'</name>
+      <altname>C3*</altname>
       <x>4.415606</x>
       <y>3.377827</y>
       <z>2.961306</z>
@@ -488,6 +537,7 @@
     </atom>
     <atom>
       <name>H3'</name>
+      <altname>H3*</altname>
       <x>4.412072</x>
       <y>3.941489</y>
       <z>2.028369</z>
@@ -495,6 +545,7 @@
     </atom>
     <atom>
       <name>C2'</name>
+      <altname>C2*</altname>
       <x>5.230443</x>
       <y>2.095696</y>
       <z>2.779425</z>
@@ -505,7 +556,11 @@
     </atom>
     <atom>
       <name>H2'</name>
+      <altname>H2*</altname>
       <altname>H2'1</altname>
+      <altname>H2*1</altname>
+      <altname>1H2'</altname>
+      <altname>1H2*</altname>
       <x>5.668211</x>
       <y>2.081313</y>
       <z>1.781301</z>
@@ -513,6 +568,7 @@
     </atom>
     <atom>
       <name>O2'</name>
+      <altname>O2*</altname>
       <x>6.272982</x>
       <y>2.049941</y>
       <z>3.757136</z>
@@ -521,8 +577,15 @@
     </atom>
     <atom>
       <name>H2''</name>
+      <altname>H2**</altname>
       <altname>H2'2</altname>
+      <altname>H2*2</altname>
       <altname>HO'2</altname>
+      <altname>HO*2</altname>
+      <altname>2H2'</altname>
+      <altname>2H2*</altname>
+      <altname>2HO'</altname>
+      <altname>2HO*</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -530,6 +593,7 @@
     </atom>
     <atom>
       <name>O3'</name>
+      <altname>O3*</altname>
       <x>5.029898</x>
       <y>4.128649</y>
       <z>3.998279</z>
@@ -565,6 +629,7 @@
     </atom>
     <atom>
       <name>O5'</name>
+      <altname>O5*</altname>
       <x>2.994369</x>
       <y>2.142475</y>
       <z>0.922974</z>
@@ -573,6 +638,7 @@
     </atom>
     <atom>
       <name>C5'</name>
+      <altname>C5*</altname>
       <x>2.156035</x>
       <y>2.551837</y>
       <z>2.019887</z>
@@ -583,7 +649,11 @@
     </atom>
     <atom>
       <name>H5'</name>
+      <altname>H5*</altname>
       <altname>H5'1</altname>
+      <altname>H5*1</altname>
+      <altname>1H5'</altname>
+      <altname>1H5*</altname>
       <x>1.452687</x>
       <y>1.753841</y>
       <z>2.257803</z>
@@ -591,7 +661,11 @@
     </atom>
     <atom>
       <name>H5''</name>
+      <altname>H5**</altname>
       <altname>H5'2</altname>
+      <altname>H5*2</altname>
+      <altname>2H5'</altname>
+      <altname>2H5*</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -599,6 +673,7 @@
     </atom>
     <atom>
       <name>C4'</name>
+      <altname>C4*</altname>
       <x>3.008252</x>
       <y>2.847921</y>
       <z>3.243186</z>
@@ -609,6 +684,7 @@
     </atom>
     <atom>
       <name>H4'</name>
+      <altname>H4*</altname>
       <x>2.447118</x>
       <y>3.477373</y>
       <z>3.933851</z>
@@ -616,6 +692,7 @@
     </atom>
     <atom>
       <name>O4'</name>
+      <altname>O4*</altname>
       <x>3.228121</x>
       <y>1.605168</y>
       <z>3.977231</z>
@@ -624,6 +701,7 @@
     </atom>
     <atom>
       <name>C1'</name>
+      <altname>C1*</altname>
       <x>4.558614</x>
       <y>1.150950</y>
       <z>3.777548</z>
@@ -634,6 +712,7 @@
     </atom>
     <atom>
       <name>H1'</name>
+      <altname>H1*</altname>
       <x>5.072002</x>
       <y>1.095281</y>
       <z>4.737461</z>
@@ -733,6 +812,7 @@
     </atom>
     <atom>
       <name>H21</name>
+      <altname>1H2</altname>
       <x>5.396738</x>
       <y>-3.573950</y>
       <z>7.789643</z>
@@ -740,6 +820,7 @@
     </atom>
     <atom>
       <name>H22</name>
+      <altname>2H2</altname>
       <x>5.381214</x>
       <y>-1.857324</y>
       <z>7.835527</z>
@@ -764,6 +845,7 @@
     </atom>
     <atom>
       <name>C3'</name>
+      <altname>C3*</altname>
       <x>4.415606</x>
       <y>3.377827</y>
       <z>2.961306</z>
@@ -774,6 +856,7 @@
     </atom>
     <atom>
       <name>H3'</name>
+      <altname>H3*</altname>
       <x>4.412072</x>
       <y>3.941489</y>
       <z>2.028369</z>
@@ -781,6 +864,7 @@
     </atom>
     <atom>
       <name>C2'</name>
+      <altname>C2*</altname>
       <x>5.230443</x>
       <y>2.095696</y>
       <z>2.779425</z>
@@ -791,7 +875,11 @@
     </atom>
     <atom>
       <name>H2'</name>
+      <altname>H2*</altname>
       <altname>H2'1</altname>
+      <altname>H2*1</altname>
+      <altname>1H2'</altname>
+      <altname>1H2*</altname>
       <x>5.668211</x>
       <y>2.081313</y>
       <z>1.781301</z>
@@ -799,6 +887,7 @@
     </atom>
     <atom>
       <name>O2'</name>
+      <altname>O2*</altname>
       <x>6.272982</x>
       <y>2.049941</y>
       <z>3.757136</z>
@@ -807,8 +896,15 @@
     </atom>
     <atom>
       <name>H2''</name>
+      <altname>H2**</altname>
       <altname>H2'2</altname>
+      <altname>H2*2</altname>
       <altname>HO'2</altname>
+      <altname>HO*2</altname>
+      <altname>2H2'</altname>
+      <altname>2H2*</altname>
+      <altname>2HO'</altname>
+      <altname>2HO*</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -816,6 +912,7 @@
     </atom>
     <atom>
       <name>O3'</name>
+      <altname>O3*</altname>
       <x>5.029898</x>
       <y>4.128649</y>
       <z>3.998279</z>
@@ -851,6 +948,7 @@
     </atom>
     <atom>
       <name>O5'</name>
+      <altname>O5*</altname>
       <x>2.994369</x>
       <y>2.142475</y>
       <z>0.922974</z>
@@ -859,6 +957,7 @@
     </atom>
     <atom>
       <name>C5'</name>
+      <altname>C5*</altname>
       <x>2.156035</x>
       <y>2.551837</y>
       <z>2.019887</z>
@@ -869,7 +968,11 @@
     </atom>
     <atom>
       <name>H5'</name>
+      <altname>H5*</altname>
       <altname>H5'1</altname>
+      <altname>H5*1</altname>
+      <altname>1H5'</altname>
+      <altname>1H5*</altname>
       <x>1.452687</x>
       <y>1.753841</y>
       <z>2.257803</z>
@@ -877,7 +980,11 @@
     </atom>
     <atom>
       <name>H5''</name>
+      <altname>H5**</altname>
       <altname>H5'2</altname>
+      <altname>H5*2</altname>
+      <altname>2H5'</altname>
+      <altname>2H5*</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -885,6 +992,7 @@
     </atom>
     <atom>
       <name>C4'</name>
+      <altname>C4*</altname>
       <x>3.008252</x>
       <y>2.847921</y>
       <z>3.243186</z>
@@ -895,6 +1003,7 @@
     </atom>
     <atom>
       <name>H4'</name>
+      <altname>H4*</altname>
       <x>2.447118</x>
       <y>3.477373</y>
       <z>3.933851</z>
@@ -902,6 +1011,7 @@
     </atom>
     <atom>
       <name>O4'</name>
+      <altname>O4*</altname>
       <x>3.228121</x>
       <y>1.605168</y>
       <z>3.977231</z>
@@ -910,6 +1020,7 @@
     </atom>
     <atom>
       <name>C1'</name>
+      <altname>C1*</altname>
       <x>4.558614</x>
       <y>1.150950</y>
       <z>3.777548</z>
@@ -920,6 +1031,7 @@
     </atom>
     <atom>
       <name>H1'</name>
+      <altname>H1*</altname>
       <x>5.072002</x>
       <y>1.095281</y>
       <z>4.737461</z>
@@ -981,6 +1093,8 @@
     <atom>
       <name>H72</name>
       <altname>H52</altname>
+      <altname>2H7</altname>
+      <altname>2H5</altname>
       <x>4.201276</x>
       <y>-3.452127</y>
       <z>0.127085</z>
@@ -989,6 +1103,8 @@
     <atom>
       <name>H73</name>
       <altname>H53</altname>
+      <altname>3H5</altname>
+      <altname>3H7</altname>
       <x>3.120150</x>
       <y>-2.055730</y>
       <z>-0.092873</z>
@@ -1044,6 +1160,7 @@
     </atom>
     <atom>
       <name>C3'</name>
+      <altname>C3*</altname>
       <x>4.415606</x>
       <y>3.377827</y>
       <z>2.961306</z>
@@ -1054,6 +1171,7 @@
     </atom>
     <atom>
       <name>H3'</name>
+      <altname>H3*</altname>
       <x>4.412072</x>
       <y>3.941489</y>
       <z>2.028369</z>
@@ -1061,6 +1179,7 @@
     </atom>
     <atom>
       <name>C2'</name>
+      <altname>C2*</altname>
       <x>5.230443</x>
       <y>2.095696</y>
       <z>2.779425</z>
@@ -1071,7 +1190,11 @@
     </atom>
     <atom>
       <name>H2'</name>
+      <altname>H2*</altname>
       <altname>H2'1</altname>
+      <altname>H2*1</altname>
+      <altname>1H2'</altname>
+      <altname>1H2*</altname>
       <x>5.668211</x>
       <y>2.081313</y>
       <z>1.781301</z>
@@ -1079,7 +1202,11 @@
     </atom>
     <atom>
       <name>H2''</name>
+      <altname>H2**</altname>
       <altname>H2'2</altname>
+      <altname>H2*2</altname>
+      <altname>2H2'</altname>
+      <altname>2H2*</altname>
       <x>6.025106</x>
       <y>2.060820</y>
       <z>3.524673</z>
@@ -1087,6 +1214,7 @@
     </atom>
     <atom>
       <name>O3'</name>
+      <altname>O3*</altname>
       <x>5.029898</x>
       <y>4.128649</y>
       <z>3.998279</z>
@@ -1121,6 +1249,7 @@
     </atom>
     <atom>
       <name>O5'</name>
+      <altname>O5*</altname>
       <x>2.994369</x>
       <y>2.142475</y>
       <z>0.922974</z>
@@ -1129,6 +1258,7 @@
     </atom>
     <atom>
       <name>C5'</name>
+      <altname>C5*</altname>
       <x>2.156035</x>
       <y>2.551837</y>
       <z>2.019887</z>
@@ -1139,7 +1269,11 @@
     </atom>
     <atom>
       <name>H5'</name>
+      <altname>H5*</altname>
       <altname>H5'1</altname>
+      <altname>H5*1</altname>
+      <altname>1H5'</altname>
+      <altname>1H5*</altname> 
       <x>1.452687</x>
       <y>1.753841</y>
       <z>2.257803</z>
@@ -1147,7 +1281,11 @@
     </atom>
     <atom>
       <name>H5''</name>
+      <altname>H5**</altname>
       <altname>H5'2</altname>
+      <altname>H5*2</altname>
+      <altname>2H5'</altname>
+      <altname>2H5*</altname> 
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -1155,6 +1293,7 @@
     </atom>
     <atom>
       <name>C4'</name>
+      <altname>C4*</altname>
       <x>3.008252</x>
       <y>2.847921</y>
       <z>3.243186</z>
@@ -1165,6 +1304,7 @@
     </atom>
     <atom>
       <name>H4'</name>
+      <altname>H4*</altname>
       <x>2.447118</x>
       <y>3.477373</y>
       <z>3.933851</z>
@@ -1172,6 +1312,7 @@
     </atom>
     <atom>
       <name>O4'</name>
+      <altname>O4*</altname>
       <x>3.228121</x>
       <y>1.605168</y>
       <z>3.977231</z>
@@ -1180,6 +1321,7 @@
     </atom>
     <atom>
       <name>C1'</name>
+      <altname>C1*</altname>
       <x>4.558614</x>
       <y>1.150950</y>
       <z>3.777548</z>
@@ -1190,6 +1332,7 @@
     </atom>
     <atom>
       <name>H1'</name>
+      <altname>H1*</altname>
       <x>5.072002</x>
       <y>1.095281</y>
       <z>4.737461</z>
@@ -1286,6 +1429,7 @@
     </atom>
     <atom>
       <name>C3'</name>
+      <altname>C3*</altname>
       <x>4.415606</x>
       <y>3.377827</y>
       <z>2.961306</z>
@@ -1296,6 +1440,7 @@
     </atom>
     <atom>
       <name>H3'</name>
+      <altname>H3*</altname>
       <x>4.412072</x>
       <y>3.941489</y>
       <z>2.028369</z>
@@ -1303,6 +1448,7 @@
     </atom>
     <atom>
       <name>C2'</name>
+      <altname>C2*</altname>
       <x>5.230443</x>
       <y>2.095696</y>
       <z>2.779425</z>
@@ -1313,7 +1459,11 @@
     </atom>
     <atom>
       <name>H2'</name>
+      <altname>H2*</altname>
       <altname>H2'1</altname>
+      <altname>H2*1</altname>
+      <altname>1H2'</altname>
+      <altname>1H2*</altname>
       <x>5.668211</x>
       <y>2.081313</y>
       <z>1.781301</z>
@@ -1321,6 +1471,7 @@
     </atom>
     <atom>
       <name>O2'</name>
+      <altname>O2*</altname>
       <x>6.272982</x>
       <y>2.049941</y>
       <z>3.757136</z>
@@ -1329,8 +1480,15 @@
     </atom>
     <atom>
       <name>H2''</name>
+      <altname>H2**</altname>
       <altname>HO'2</altname>
+      <altname>HO*2</altname>
       <altname>H2'2</altname> 
+      <altname>H2*2</altname>
+      <altname>2HO'</altname>
+      <altname>2HO*</altname>
+      <altname>2H2'</altname>
+      <altname>2H2*</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -1338,6 +1496,7 @@
     </atom>
     <atom>
       <name>O3'</name>
+      <altname>O3*</altname>
       <x>5.029898</x>
       <y>4.128649</y>
       <z>3.998279</z>

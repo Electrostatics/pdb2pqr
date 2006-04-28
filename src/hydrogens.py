@@ -1142,7 +1142,8 @@ class Alcoholic(Optimize):
                 newatom.z = loc1[2]
                 self.routines.cells.addCell(atom)
          
-        elif len(donor.bonds) == 3:
+        elif len(atom.bonds) == 3:
+          
             loc = self.getPositionWithThreeBonds(atom)
             residue.createAtom(addname, loc)
             self.routines.cells.addCell(residue.getAtom(addname))

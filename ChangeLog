@@ -1,4 +1,11 @@
 #############################################################################
+BETA PUBLIC RELEASE VERSION 1.1.1       XX-XX-XX
+#############################################################################
+  - BUG FIXES 
+    * Fixed a bug which prevented PDB2PQR from recognizing atoms from nucleic 
+      acids with "*" in their atom names. (thanks to Jaichen Wang)
+    * Fixed bug pdb2pqr/src/hydrogens.py:1145 
+#############################################################################
 BETA PUBLIC RELEASE VERSION 1.1.0       4-12-06
 #############################################################################
   - NEW FEATURES

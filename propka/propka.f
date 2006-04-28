@@ -3738,42 +3738,42 @@ C
        WRITE(11,'(A)')'SUMMARY OF THIS PREDICTION'
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'ASP')THEN
-           WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+           WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $     NAMCAR(ICAR),LCARRS(ICAR),SPACE1,LCARCH(ICAR),PKACAR(ICAR)
          END IF
        END DO
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'GLU')THEN
-           WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+           WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $     NAMCAR(ICAR), LCARRS(ICAR),SPACE1,LCARCH(ICAR),PKACAR(ICAR)
          END IF
        END DO
        DO ICAR=1,NCAR
          IF(NAMCAR(ICAR).EQ.'C- ')THEN
-           WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+           WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $     NAMCAR(ICAR), LCARRS(ICAR),SPACE1,LCARCH(ICAR),PKACAR(ICAR)
          END IF
        END DO
        DO IHIS=1,NHIS
-         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+         WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $   'HIS', LHISRS(IHIS), SPACE1, LHISCH(IHIS), PKAHIS(IHIS)
        END DO
        DO ICYS=1,NCYS
-         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+         WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $   'CYS', LCYSRS(ICYS), SPACE1, LCYSCH(ICYS), PKACYS(ICYS)
        END DO
        DO ITYR=1,NTYR
-         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+         WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $   'TYR', LTYRRS(ITYR), SPACE1, LTYRCH(ITYR), PKATYR(ITYR)
        END DO
-       WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+       WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $   'N+ ', LLYSRS(1), SPACE1, LLYSCH(1), PKALYS(1)
        DO ILYS=2,NLYS
-         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+         WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $   'LYS', LLYSRS(ILYS), SPACE1, LLYSCH(ILYS), PKALYS(ILYS)
        END DO
        DO IARG=1,NARG
-         WRITE(11,'(3X,A3,I4,A1,A1,F8.2)')
+         WRITE(11,'(3X,A3,I5,A1,A1,F8.2)')
      $   'ARG', LARGRS(IARG), SPACE1, LARGCH(IARG), PKAARG(IARG)
        END DO
        WRITE(11,'(95(1H-))')

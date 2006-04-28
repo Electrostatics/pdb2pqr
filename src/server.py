@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -43,19 +43,18 @@
     ----------------------------
 """
 
-__date__   = "August 18, 2005"
+__date__   = "12 April 2006"
 __author__ = "Todd Dolinsky"
 
 import string
 import os
 import sys
 import time
-import constants
 
 # GLOBAL SERVER VARIABLES
 
 """ The absolute path to root HTML directory """
-LOCALPATH   = "/home/todd/public_html/pdb2pqr/"
+LOCALPATH   = "/export/home/www/html/test/"
 
 """ The relative path to results directory from script directory.
     The web server (i.e. Apache) MUST be able to write to this directory. """
@@ -65,7 +64,7 @@ TMPDIR      = "tmp/"
 LIMIT       = 500.0
 
 """ The path to the web site *directory* """
-WEBSITE     = "http://ocotillo.wustl.edu/~todd/pdb2pqr/"
+WEBSITE     = "http://agave.wustl.edu/test/"
 
 """ The name of the main server page """
 WEBNAME     = "server.html"
@@ -74,7 +73,7 @@ WEBNAME     = "server.html"
 STYLESHEET  = "http://agave.wustl.edu/css/baker.css"
 
 """ The refresh time (in seconds) for the progress page """
-REFRESHTIME = 20
+REFRESHTIME = 10
 
 """ The absolute path to the loadavg file - set to "" or None if
     not to be included """
@@ -83,7 +82,7 @@ LOADPATH    = "/proc/loadavg"
 """ The path to the pdb2pqr log - set to "" or None if not to be
     included.  The web server (i.e. Apache) MUST be able to write to
     this directory. """
-LOGPATH     = ""
+LOGPATH     = "%s/%s/usage.txt" % (LOCALPATH, TMPDIR)
 
 def setID(time):
     """
@@ -100,16 +99,18 @@ def setID(time):
     id = "%s%s" % (strID[:period], strID[(period+1):(period+2)])
     return id
 
-def logRun(form, nettime, size):
+def logRun(options, nettime, size, ff, ip):
     """
         Log the CGI run for data analysis.  Log file format is as follows:
 
-        DATE    PDB_ID    SIZE    DEBUMP OPT PROPKA   TIME
+        DATE  FF  SIZE  OPTIONS   TIME
 
         Parameters
-            form:    The CGI form with all set options (cgi)
+            options: The options used for this run (dict)
             nettime: The total time taken for the run (float)
-            size:    The initial number of non-HETATM atoms in the PDB file (int)
+            size:    The final number of non-HETATM atoms in the PDB file (int)
+            ff:      The name of the ff used
+            ip:      The ip address of the user
     """
     if LOGPATH == "" or LOGPATH == None: return
     date = time.asctime(time.localtime())
@@ -117,19 +118,23 @@ def logRun(form, nettime, size):
     opt  = 0
     propka = 0
     file = open(LOGPATH,"a")
-    if not form.has_key("PDBID"): return
-    if form.has_key("DEBUMP"):  debump = 1
-    if form.has_key("OPT"):    opt = 1
-    if form.has_key("PROPKA"): propka = 1
-    file.write("%s\t%s\t%s\t" % (date, form["PDBID"].value, size))
-    if debump:  file.write("debump ")
-    else: file.write("       ")
-    if opt: file.write("opt ")
-    else: file.write("    ")
-    if propka: file.write("propka")
-    else: file.write("      ")
 
-    file.write("\t%.2f\n" % nettime)
+    if "ffout" in options: ffout = options["ffout"]
+    else: ffout="internal"
+
+    text = "%s\t%s\t%s\t%s\t" % (date, ip, ff, ffout)
+
+    opts = ""
+    if "debump" in options:  opts += "debump,"
+    if "opt" in options:  opts += "optimize,"
+    if "ph" in options: opts += "propka,"
+    if "apbs" in options: opts += "apbs,"
+    if "chain" in options: opts += "chain,"
+    
+    if opts == "": opts = "none,"
+
+    text += "%s\t%s\t%.2f\n" % (opts[:-1], size, nettime)
+    file.write(text)
     file.close()
 
 def cleanTmpdir():
@@ -198,7 +203,6 @@ def printProgress(name, refreshname, reftime, starttime):
             reftime:     The length of time to set the refresh wait to (int)
             starttime:   The time as returned by time.time() that the run started (float)
     """
-    fortunePath = constants.getFortunePath()
     elapsedtime = time.time() - starttime + REFRESHTIME/2.0 # Add in time offset
     filename = "%s%s%s-tmp.html" % (LOCALPATH, TMPDIR, name)
     file = open(filename,"w")
@@ -226,11 +230,6 @@ def printProgress(name, refreshname, reftime, starttime):
 
     file.write("<font size=2>Server time:</font> <code>%s</code><BR>\n" % (time.asctime(time.localtime())))
     file.write("</blockquote>\n")
-    if fortunePath != "":
-        file.write("Words of Wisdom:<P>\n")
-        file.write("<blockquote><code>")
-        file.write(getQuote(fortunePath))
-        file.write("</code></blockquote>")
     file.write("</BODY></HTML>")
     file.close()
 

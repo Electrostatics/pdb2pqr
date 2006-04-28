@@ -33,7 +33,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -56,7 +56,7 @@
 
 """
 
-__date__ = "30 September 2003"
+__date__ = "28 February 2006"
 __author__ = "David Heisterberg, Jan Labanowski, Jens Erik Nielsen, Todd Dolinsky"
 
 import math

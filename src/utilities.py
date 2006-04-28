@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -43,113 +43,30 @@
     ----------------------------
 """
 
-__date__ = "23 September 2003"
+__date__ = "28 February 2006"
 __author__ = "Todd Dolinsky"
 SMALL = 1.0e-7
 DIHEDRAL = 57.2958
 
 import string
 import math
+import os
+import sys
 
-class Matrix:
+def sortDictByValue(dict):
     """
-        Matrix class
+        Sort a dictionary by its values
 
-        A class for handling matrices
+        Parameters
+            dict:  The dictionary to sort (dict)
+        Returns
+            items: The dictionary sorted by value (list)
     """
-    def __init__(self, lists):
-        """
-            Create a new matrix object.
-
-            Parameters
-                lists:  A list of lists containing the matrix (list)
-        """
-        self.info = lists
-        self.rows = len(lists)
-        self.cols = 0
-        for row in lists:
-            if self.cols == 0: self.cols = len(row)
-            if len(row) != self.cols:
-                raise ValueError, "Irregularly sized matrix!"
-
-    def __str__(self):
-        """
-            Print the contents of the matrix
-
-            Returns
-                out:  The printed matrix (string)
-        """
-        out = ""
-        for row in self.info:
-            for item in row:
-                out = "%s %s" % (out, string.rjust(str(item),6))
-            out = "%s\n" % out
-        return out
-
-    def LU(self, b):
-        """
-            Solve the matrix Ax = b by LU decomposition:
-            Given Ax = b and LU = A,
-                Ax = (LU)x = L(Ux) = b
-                Solve Ly = b, and then Ux = y. 
-            Parameters:
-                b = 1 x N matrix, where N is the number of variables
-                    (Matrix)
-            Returns:
-                x = The solved N-element list (list)
-        """
-        m = self.rows
-        n = self.cols
-        x = []
-        y = []
-        
-        for i in range(n):
-            x.append(0.0)
-
-        # Intialize L to identity, U as a copy of this matrix
-        
-        ident = []
-        for i in range(m):
-            list = []
-            for j in range(n):
-                if i == j: list.append(1.0)
-                else: list.append(0.0)
-            ident.append(list)
-        L = Matrix(ident)
-        U = Matrix(self.info)
-
-        # Perform LU decomp
-
-        for i in range(m):
-            for j in range(i+1,m):
-                if U.info[i][i] == 0.0:
-                    raise ValueError, "LU decomposition needs non-zero diags!"
-                val = float(U.info[j][i])/U.info[i][i]
-                L.info[j][i] = val
-                for k in range(n):
-                    U.info[j][k] -= U.info[i][k] * val
-
-        # Solve Ly = b, where y = Ux
-        
-        for i in range(m):
-            mult = 1/L.info[i][i]
-            sum = b[i]
-            for j in range(0,i):
-                sum -= L.info[i][j] * y[j]
-            y.append((mult*sum))
-
-        # Solve Ux = y
-        
-        for i in range(m):
-            rev = (m-1) - i
-            mult = 1/U.info[rev][rev]
-            sum = y[rev]
-            for j in range(0,i):
-                j = (m-1) - j
-                sum -= U.info[rev][j] * x[j]
-            x[rev] = (mult*sum)
-            
-        return x
+    items = [(v, k) for k, v in dict.items()]
+    items.sort()
+    items.reverse()             
+    items = [ k for v, k in items]
+    return items
 
 def shortestPath(graph, start, end, path=[]):
     """
@@ -186,48 +103,138 @@ def shortestPath(graph, start, end, path=[]):
                     shortest = newpath
     return shortest
 
-def analyzeMap(map, value, list=[]):
+def analyzeConnectivity(map, key):
     """
-        Analyze a map of interactions to determine the overall
-        connectivity.
+        Analyze the connectivity of a given map using the key value.
 
         Parameters
-            map   : A dictionary of lists which contain the connections
-                    to the key (dictionary)
-            value : The key value to analyze (variable)
-
+            map:  The map to analyze (dict)
+            key:  The key value (variable)
         Returns
-            list  : A connectivity list of the map (list)
-
-        Example
-            Given map {1: [2], 4: [5], 7: [5,9], 9: [14]} list will return
-               For 1:  [1,2]
-               For 4,5,7,9,14: [4,5,7,9,14]
-               For all other X: [X]
+            list: A list of connected values to the key (list)
     """
+    list = []
+    keys = [key]
+    while len(keys) > 0:
+        key = keys[0]
+        if key not in list:
+            list.append(key)
+
+        if key in map:
+            for value in map[key]:
+                if value not in list:
+                    keys.append(value)
     
-    if value in list:
-        return []
-    else:
-        list.append(value)
+        keys.pop(keys.index(key))
         
-    if value in map:
-        for entry in map[value]:
-            newlist = analyzeMap(map, entry, list)
-            for newitem in newlist:
-                if newitem not in list:
-                    list.append(newitem)
-                    
-    for key in map:
-        for entry in map[key]:
-            if entry == value and key not in list:
-                newlist = analyzeMap(map, key, list)
-                for newitem in newlist:
-                    if newitem not in list:
-                        list.append(newitem)
     return list
 
-def getFile(path):
+def getAngle(coords1, coords2, coords3):
+        """
+            Get the angle between three coordinates
+
+            Parameters
+                coords1:  The first coordinate set (atom)
+                coords2:  The second (vertex) coordinate set (atom)
+                coords3:  The third coordinate set (atom)
+            Returns
+                angle:  The angle between the atoms (float)
+        """
+        angle = 0.0
+        c1 = subtract(coords3, coords2)
+        c2 = subtract(coords1, coords2)
+        norm1 = normalize(c1)
+        norm2 = normalize(c2)
+        dotted = dot(norm1, norm2)
+        if dotted > 1.0: # If normalized, this is due to rounding error
+            dotted = 1.0
+        rad = abs(math.acos(dotted))
+        angle = rad*180.0/math.pi
+        if angle > 180.0:
+            angle = 360.0 - angle
+        return angle
+
+def getFFfile(name):
+    """
+        Grab the forcefield file.  May or may not residue in the dat/
+        directory.
+    """
+    path = ""
+    dirs = sys.path + ["dat"]
+    if name in ["amber", "charmm", "parse"]: name = name.upper()
+
+    names = ["dat/%s.DAT" % name]
+    
+    names.append("%s.DAT" % name)
+    names.append("%s.dat" % name)
+    names.append("dat/%s" % name)
+    names.append(name)
+
+    for guess in names:
+        if os.path.isfile(guess):
+            return guess
+
+        for p in dirs:
+            testpath = "%s/%s" % (p, guess)
+            if os.path.isfile(testpath):
+                return testpath
+
+    # If we get here return empty string
+    
+    return ""
+
+def getNamesFile(name):
+    """
+        Grab the *.names file that contains the XML mapping.
+
+        Parameters
+            name:  The name of the forcefield (string)
+        Returns
+            path:  The path to the file (string)
+    """
+    path = ""
+    dirs = sys.path + ["dat"]
+    if name in ["amber", "charmm", "parse"]: name = name.upper()
+
+    names = ["dat/%s.names" % name]
+    names.append("%s.names" % name)
+  
+    for guess in names:
+        if os.path.isfile(guess):
+            return guess
+
+        for p in dirs:
+            testpath = "%s/%s" % (p, guess)
+            if os.path.isfile(testpath):
+                return testpath
+
+    # If we get here return empty string
+    
+    return ""
+    
+def getDatFile(name):
+    """
+        Grab a data file. If the file cannot be found in the
+        given directory, try the current system path.
+
+        Parameters
+            name:  The name of the file to get (string)
+        Returns
+            path:  The path to the file (string)
+    """
+    path = ""
+
+    if os.path.isfile(name):
+        path = name
+
+    for p in sys.path:
+        testpath = "%s/%s" % (p, name)
+        if os.path.isfile(testpath):
+            path = testpath
+
+    return path
+
+def getPDBFile(path):
     """
         Obtain a PDB file.  First check the path given on the command
         line - if that file is not available, obtain the file from the
@@ -355,7 +362,12 @@ def normalize(coords):
         list = coords
     return list
 
-
+def factorial(n):
+    """
+        Returns the factorial of the given number n
+    """
+    if n <= 1 : return 1
+    return n*factorial(n-1)
 
 def getDihedral(coords1, coords2, coords3, coords4):
     """
@@ -393,78 +405,3 @@ def getDihedral(coords1, coords2, coords3, coords4):
         value = value * -1.0
     return value
     
-def placeOxygen(CA, C, N):
-    """
-        Place an oxygen according to the planar atoms CA, C, and N using
-        a trans-peptide geometry.  Allows for a more accurate method of
-        adding oxygen atoms.
-
-        Parameters
-            CA:        The coordinates of the CA atom (list)
-            C:         The coordinates of the C atom (list)
-            N:         The coordinates of the peptide bonded N atom from the
-                       next residue (list)
-        Returns
-            location:  The location of the residue (list)
-    """
-
-    # Step 1: Find the vector normal to the C-CA-N plane in order to get
-    #         the equation for any point in the plane
-
-    vec1 = subtract(CA,C)
-    vec2 = subtract(N,C)
-    planeeq = cross(vec1, vec2)
-    sum = planeeq[0]*C[0] + planeeq[1]*C[1] + planeeq[2]*C[2]
-
-    # Step 2: Get two more equations using the known C-O distance (1.24 A)
-    #         and CA-C-O and N-C-O bond angles (120.5 and 123.5 degrees,
-    #         respectively) using the identity
-    #
-    #         A . B = |A||B| cos(angle)
-    
-    num1 = math.sqrt(pow(vec1[0],2) + pow(vec1[1],2) + pow(vec1[2],2)) 
-    num2 = math.sqrt(pow(vec2[0],2) + pow(vec2[1],2) + pow(vec2[2],2))
-    
-    # For vector 1
-    
-    val1 = 0
-    angle = 120.5*math.pi/180.0
-    val1 = num1*1.24*math.cos(angle)
-    for j in range(3):
-        val1 += C[j]*vec1[j]
-        
-    # For vector 2
-
-    val2 = 0
-    angle = 123.5*math.pi/180.0
-    val2 = num2*1.24*math.cos(angle)
-    for j in range(3):
-        val2 += C[j]*vec2[j]
-        
-    # Step 3: We now use Gaussian Elimination to solve the following matrix
-    #
-    #         [ planeq[0] planeeq[1] planeeq[2] ]  =  [sum]
-    #         [  vec1[0]    vec1[1]  vec1[2]    ]  =  [val1]
-    #         [  vec2[0]    vec2[1]  vec2[2]    ]  =  [val2]
-    
-
-    fac1 = -1 * planeeq[0]/vec1[0]
-    new1 = [0, fac1*vec1[1]+planeeq[1], fac1*vec1[2]+planeeq[2]]
-    val1 = fac1*val1+sum
-    
-    fac2 = -1 * planeeq[0]/vec2[0]
-    new2 = [0, fac2*vec2[1]+planeeq[1], fac2*vec2[2]+planeeq[2]]
-    val2 = fac2*val2+sum
-    
-    fac3 = -1 * new1[1]/new2[1]
-    newest = [0,0,fac3*new2[2]+new1[2]]
-    val2 = fac3*val2+val1
-
-    # Step 4: Backfill in to find the results
-    
-    z = val2/newest[2]
-    y = (val1 - z*new1[2])/new1[1]
-    x = (sum - z*planeeq[2] - y*planeeq[1])/planeeq[0]
-
-    location = [x,y,z]
-    return location

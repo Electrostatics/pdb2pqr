@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -44,13 +44,15 @@
 
 """
 
-__date__ = "22 October 2003"
+__date__ = "28 February 2006"
 __author__ = "Todd Dolinsky"
 
 BACKBONE = ["N","CA","C","O","O2","HA","HN","H","tN"]
 
 import string
 from pdb import *
+from utilities import *
+from quatfit import *
 
 class Chain:
     """
@@ -132,6 +134,12 @@ class Chain:
         """
         count = len(self.getAtoms())       
         return count
+
+    def getResidues(self):
+        """
+            Return a list of Residue objects in this chain
+        """
+        return self.residues
     
     def getAtoms(self):
         """
@@ -156,33 +164,27 @@ class Residue:
         residue and other helper functions.
     """
 
-    def __init__(self, atoms, sampleAtom):
+    def __init__(self, atoms):
         """
             Initialize the class
 
             Parameters
                 atoms:      A list of Atom objects to be stored in this class
                             (list)
-                sampleAtom: The final listed atom of the residue (Atom)
         """
+
+        sampleAtom = atoms[-1]
+        
         self.atoms = []
         self.name = sampleAtom.resName
         self.chainID = sampleAtom.chainID
         self.resSeq = sampleAtom.resSeq
         self.iCode = sampleAtom.iCode
-        self.SSbonded = 0
-        self.SSbondpartner = None
-        self.type = 0
+       
         self.map = {}
-        self.chiangles = []
-        self.isNterm = 0
-        self.isCterm = 0
-        self.is3term = 0
-        self.is5term = 0
-        self.missing = []
-        self.debumpAtoms = []
+
         self.naname = None
-        
+
         atomclass = ""
         for a in atoms:
             if isinstance(a,ATOM):
@@ -201,6 +203,13 @@ class Residue:
             self.name = "WAT"
             for atom in self.atoms:
                 atom.set("resName","WAT")
+
+    def __str__(self):
+        """
+            Basic string representation for debugging
+        """
+        text = "%s %s %i" % (self.name, self.chainID, self.resSeq)
+        return text
 
     def get(self, name):
         """
@@ -263,112 +272,6 @@ class Residue:
                 message = "Unable to set object \"%s\" in class Residue" % name
                 raise ValueError, message
 
-    def checkAtomNames(self):
-        """
-            Check to see if there are any misnamed hydrogens within the
-            residue.  Converts hydrogens of type 1HH1 and 2H* to HH11 and
-            H*2 to easily compare with the Amino Acid definition file. Also
-            converts H*1 and H*2 to H*2 and H*3 when necessary. Rename the
-            atom and update the residue.
-        """
-        resname = self.name
-        names = {}
-        newnames = {}
-        atomlist = []
-
-        # Make a copy of the atomlist
-
-        for atom in self.atoms:
-            atomlist.append(atom)
-
-        # First make a list of names with int as last digit
-        
-        for atom in atomlist:
-            atomname = atom.get("name")
-            newname = atomname
-            if atomname[0].isdigit() and len(atomname) > 1:
-                if atomname[1] == "H":
-                    newname = atomname[1:] + atomname[0]
-            names[newname] = atomname
-
-        # Now renumber the hydrogens as needed
-            
-        for n in names:
-            newname = n
-            if n == "HG11" and "HG13" not in names: newname = "HG12"
-            elif n == "HG12" and "HG13" not in names: newname = "HG13"
-            elif n == "HA1" and "HA2" in names: newname = "HA2"
-            elif n == "HA2" and "HA1" in names: newname = "HA3"
-            elif n == "HB1" and "HB3" not in names: newname = "HB2"
-            elif n == "HB2" and "HB3" not in names: newname = "HB3"
-            elif n == "HG1" and resname not in ["THR","SER","CYS"] and "HG3" not in names: newname = "HG2"
-            elif n == "HG2" and "HG3" not in names: newname = "HG3"
-            elif n == "HD1" and resname in ["ARG","LYS","PRO"]: newname = "HD2"
-            elif n == "HD2" and resname in ["ARG","LYS","PRO"] and "HD1" in names: newname = "HD3"
-            elif n == "HE1" and resname == "LYS": newname = "HE2"
-            elif n == "HE2" and resname == "LYS" and "HE1" in names: newname = "HE3"
-            elif n == "H1" and self.get("isNterm") and "H" not in names: newname = "H"
-            elif n == "H1" and resname == "ACE": newname = "HH31"
-            elif n == "H2" and resname == "ACE": newname = "HH32"
-            elif n == "H3" and resname == "ACE": newname = "HH33"
-            elif n == "HN": newname = "H"
-            elif n == "HD1" and resname == "ILE": newname = "HD11"
-            elif n == "HD2" and resname == "ILE": newname = "HD12"
-            elif n == "HD3" and resname == "ILE": newname = "HD13"
-            elif n == "HG1" and resname in ["SER","CYS"]: newname = "HG"
-            
-            newnames[names[n]] = newname
-
-        # Now update the residue, being careful not to overwrite existing atoms
-
-        old = {}
-        for atom in atomlist:
-            atomname = atom.get("name")
-            newname = newnames[atomname]
-            if atomname != newname:
-                if atomname in old:
-                    atom = old[atomname]
-                    atom.set("name",newname)
-                    self.map[newname] = atom
-                    del old[atomname]
-                elif newname in self.map:
-                    oldatom = self.map[newname]
-                    old[newname] = oldatom
-                    self.renameAtom(atomname, newname)
-                else:
-                    self.renameAtom(atomname, newname)
-
-        # There should be nothing left in old
-
-        if len(old) != 0:
-            raise ValueError, "Error Occurred when renaming hydrogens: %s" % old
-
-    def updateIntraBonds(self, defresidue):
-        """
-            Update the IntraBonds for each atom in the residue
-
-            Parameters
-                defresidue:  The definition residue (DefinitionResidue)
-        """
-        for atom in self.atoms:
-            atomname = atom.get("name")
-            defatom = defresidue.getAtom(atomname)
-            atom.set("intrabonds",[])
-            if defatom == None:
-                if self.isCterm and atomname in ["HO","OXT"]:
-                    continue
-                elif self.isNterm and atomname in ["H2","H3"]:
-                    continue
-                elif self.name == "GLH" and atomname == "HE1": continue
-                elif self.name == "ASH" and atomname == "HD1": continue
-                elif self.name == "HSN" and atomname == "HE2": continue
-                else:
-                    print str(atom)
-                    raise ValueError, "Atom %s not found in updateIntraBonds!" % atomname
-            for bondatomname in defatom.get("intrabonds"):
-                if self.getAtom(bondatomname):
-                    atom.addIntraBond(bondatomname)
-    
     def numAtoms(self):
         """
             Get the number of atoms for the residue
@@ -393,7 +296,15 @@ class Residue:
         for atom in self.atoms:
             atom.set("resSeq",value)
             atom.set("iCode","")
-            
+
+    def setChainID(self, value):
+        """
+           Set the chainID field to a certain value
+        """
+        self.chainID = value
+        for atom in self.atoms:
+            atom.set("chainID", value)
+        
     def addAtom(self, atom):
         """
             Add the atom object to the residue.
@@ -411,19 +322,24 @@ class Residue:
             Parameters
                 atomname: The name of the atom to be removed (string)
         """
+
+        # Delete the atom from the map
+        
         atom = self.map[atomname]
+        bonds = atom.bonds
         del self.map[atomname]
-        for i in range(self.numAtoms()):
-            a = self.atoms[i]
-            if atom == a:
-                del self.atoms[i]
-                break
-        for i in range(len(self.debumpAtoms)):
-            a = self.debumpAtoms[i]
-            if atom == a:
-                del self.debumpAtoms[i]
-                break
-                
+
+        # Delete the atom from the list
+
+        self.atoms.remove(atom)
+
+        # Delete all instances of the atom as a bond
+        
+        for bondatom in bonds:
+            if atom in bondatom.bonds:
+                bondatom.bonds.remove(atom)
+
+        del atom
 
     def renameAtom(self, oldname, newname):
         """
@@ -459,15 +375,6 @@ class Residue:
         newatom.set("tempFactor",0.00)
         self.addAtom(newatom) 
 
-    def addChiangle(self, value):
-        """
-            Add the value to the list of chiangles
-
-            Parameters
-                value: The value to be added (float)
-        """
-        self.chiangles.append(value)
-
     def addMissing(self, value):
         """
             Add the value to the list of missing atoms
@@ -489,6 +396,13 @@ class Residue:
         except KeyError:
             return None
 
+    def getAtoms(self):
+        return self.atoms
+
+    def hasAtom(self, name):
+        if name in self.map: return 1
+        else: return 0
+
     def getCharge(self):
         """
             Get the total charge of the residue.  In order to get rid
@@ -500,19 +414,12 @@ class Residue:
         """
         charge = 0.0
         for atom in self.atoms:
-            charge = charge + atom.get("ffcharge")
+            atomcharge = atom.get("ffcharge")
+            if atomcharge != None:
+                charge = charge + atomcharge
 
         charge = float("%.4f" % charge)
         return charge
-    
-    def addDebumpAtom(self, atom):
-        """
-            Add an atom to the check for debumping
-
-            Parameters
-                atom:  The atom to add to the list
-        """
-        self.debumpAtoms.append(atom)
 
     def renameResidue(self, name):
         """
@@ -523,8 +430,71 @@ class Residue:
         """
         self.name = name
         for atom in self.atoms:
-            atom.resName = name     
+            atom.resName = name
+
+    def rotateTetrahedral(self, atom1, atom2, angle):
+        """
+            Rotate about the atom1-atom2 bond by a given angle
+            All atoms connected to atom2 will rotate.
+
+            Parameters:
+                atom1:  The first atom of the bond to rotate about (atom)
+                atom2:  The second atom of the bond to rotate about (atom)
+                angle:  The number of degrees to rotate (float)
+        """
+        moveatoms = []
+        movecoords = []
         
+        initcoords = subtract(atom2.getCoords(), atom1.getCoords())
+
+        # Determine which atoms to rotate
+        
+        for atom in atom2.bonds:
+            if atom == atom1: continue
+            moveatoms.append(atom)
+            movecoords.append(subtract(atom.getCoords(), atom1.getCoords()))
+
+        newcoords = qchichange(initcoords, movecoords, angle)
+        for i in range(len(moveatoms)):
+            atom = moveatoms[i]
+            x = (newcoords[i][0] + atom1.get("x"))
+            y = (newcoords[i][1] + atom1.get("y"))
+            z = (newcoords[i][2] + atom1.get("z"))
+            atom.set("x", x)
+            atom.set("y", y)
+            atom.set("z", z)
+           
+
+    def setDonorsAndAcceptors(self):
+        """
+            Set the donors and acceptors within the residue
+        """
+        if not hasattr(self, "reference"): return
+        for atom in self.getAtoms():
+            atomname = atom.get("name")
+            resname = self.name
+
+            atom.set("hdonor", 0)
+            atom.set("hacceptor", 0)
+         
+            if atomname.startswith("N"):
+                bonded = 0
+                for bondedatom in atom.bonds:
+                    if bondedatom.isHydrogen():
+                        atom.set("hdonor",1)
+                        bonded = 1
+                        break
+                if not bonded and self.reference.name == "HIS":
+                    atom.set("hacceptor",1)
+                    
+            elif atomname.startswith("O") or \
+                 (atomname.startswith("S") and self.reference.name == "CYS"):
+                atom.set("hacceptor",1)
+                for bondedatom in atom.bonds:
+                    if bondedatom.isHydrogen():
+                        atom.set("hdonor",1)
+                        break     
+             
 class Atom(ATOM):
     """
         Class Atom
@@ -547,10 +517,10 @@ class Atom(ATOM):
         if type == "ATOM" or type == "HETATM":
             self.type = type
         else:
-            raise ValueError, "Invalid atom type %s!"
+            raise ValueError, "Invalid atom type %s (Atom Class IN structures.py)!"
         self.serial = atom.serial
         self.name = atom.name
-        self.altLoc = atom.altLoc
+        self.altLoc = ""
         self.resName = atom.resName
         self.chainID = atom.chainID
         self.resSeq = atom.resSeq
@@ -563,16 +533,19 @@ class Atom(ATOM):
         self.segID = atom.segID
         self.element = atom.element
         self.charge = atom.charge
-        
-        self.intrabonds = []
-        self.extrabonds = []
+
+        self.bonds = []
+        self.reference = None
         self.residue = residue
-        self.radius = 0.0
-        self.ffcharge = 0.0
+        self.radius = None
+        self.ffcharge = None
         self.hdonor = 0
         self.hacceptor = 0
         self.cell = None
-        
+        self.added = 0
+        self.optimizeable = 0
+        self.refdistance = 0
+          
     def __str__(self):
         """
             Returns a string of the new atom type.  Uses the ATOM string
@@ -580,18 +553,46 @@ class Atom(ATOM):
             HETATM as necessary.
 
             Returns
-                out: String with ATOM/HETATM field set appropriately
+                str: String with ATOM/HETATM field set appropriately
         """
-        orig = ATOM.__str__(self)
-        type = string.ljust(self.type, 6)[:6]
-        ffcharge = "%.4f" % self.ffcharge
-        ffradius = "%.4f" % self.radius
-        charge = string.rjust(ffcharge, 7)[:7]
-        radius = string.ljust(ffradius, 6)[:6]
-        out = "%s%s %s %s" % (type, orig[6:-20], charge, radius)
-        out = "%s %s" % (out[:21], out[22:]) # Eliminate the chain ID
-        return out
+        str = ""
+        tstr = self.type
+        str = str + string.ljust(tstr, 6)[:6]
+        tstr = "%d" % self.serial
+        str = str + string.rjust(tstr, 5)[:5]
+        str = str + " "
+        tstr = self.name
+        if len(tstr) == 4:
+            str = str + string.ljust(tstr, 4)[:4]
+        else:
+            str = str + " " + string.ljust(tstr, 3)[:3]
 
+        tstr = self.resName
+        if len(tstr) == 4:
+            str = str + string.ljust(tstr, 4)[:4]
+        else:
+            str = str + " " + string.ljust(tstr, 3)[:3]
+            
+        str = str + " "
+        tstr = self.chainID
+        str = str + string.ljust(tstr, 1)[:1]
+        tstr = "%d" % self.resSeq
+        str = str + string.rjust(tstr, 4)[:4]
+        str = str + "    "
+        tstr = "%8.3f" % self.x
+        str = str + string.ljust(tstr, 8)[:8]
+        tstr = "%8.3f" % self.y
+        str = str + string.ljust(tstr, 8)[:8]
+        tstr = "%8.3f" % self.z
+        str = str + string.ljust(tstr, 8)[:8]
+        if self.ffcharge != None: ffcharge = "%.4f" % self.ffcharge
+        else: ffcharge = "0.0000"
+        str = str + string.rjust(ffcharge, 8)[:8]
+        if self.radius != None: ffradius = "%.4f" % self.radius
+        else: ffradius = "0.0000"
+        str = str + string.rjust(ffradius, 7)[:7]
+        return str
+    
     def get(self, name):
         """
             Get a member of the Atom class
@@ -680,34 +681,24 @@ class Atom(ATOM):
         """
         return [self.x, self.y, self.z]
 
-    def addIntraBond(self, bondedatom):
+    def addBond(self, bondedatom):
         """
-            Add a bond to the list of intrabonds
+            Add a bond to the list of bonds
 
             Parameters:
                 bondedatom: The atom to bond to (Atom)
         """
-        self.intrabonds.append(bondedatom)
-
-    def addExtraBond(self, bondedatom):
-        """
-            Add a bond to the list of extrabonds
-
-            Parameters:
-                bondedatom: The atom to bond to (Atom)
-        """
-        self.extrabonds.append(bondedatom)
+        self.bonds.append(bondedatom)
 
     def isHydrogen(self):
         """
             Is this atom a Hydrogen atom?
 
-            returns
+            Returns
                 value: 1 if Atom is a Hydrogen, 0 otherwise
         """
         value = 0
-        if self.name[0] == "H":
-            value = 1
+        if self.name[0] == "H": value = 1
         return value
 
     def isBackbone(self):
@@ -721,3 +712,18 @@ class Atom(ATOM):
         if self.name in BACKBONE:
             state = 1
         return state
+
+    def hasReference(self):
+        """
+            Determine if the atom object has a reference object or not.
+            All known atoms should have reference objects.
+
+            Returns
+                1 if atom has a reference object, 0 otherwise.
+        """
+
+        if self.reference != None: return 1
+        else: return 0
+
+    
+        

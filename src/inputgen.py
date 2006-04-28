@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2005.  Washington University in St. Louis.  
+    Copyright (c) 2003-2006.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.
@@ -109,6 +109,7 @@ class Elec:
         self.sdie = 78.54
         self.srfm = "smol"
         self.chgm = "spl2"
+        self.sdens = 10.0
         self.srad = 1.4
         self.swin = 0.3
         self.temp = 298.15
@@ -153,6 +154,7 @@ class Elec:
         text += "    sdie %.4f\n" % self.sdie                
         text += "    srfm %s\n" % self.srfm                   
         text += "    chgm %s\n" % self.chgm
+        text += "    sdens %.2f\n" % self.sdens
         text += "    srad %.2f\n" % self.srad          
         text += "    swin %.2f\n" % self.swin         
         text += "    temp %.2f\n" % self.temp     

@@ -7,7 +7,7 @@ from utilities import *
 from quatfit import *
 from routines import *
 
-__date__ = "28 February 2006"
+__date__ = "3 May 2006"
 __author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
 HDEBUG = 0

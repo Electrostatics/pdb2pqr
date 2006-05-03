@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.1.1       XX-XX-XX
+BETA PUBLIC RELEASE VERSION 1.1.1       5-3-06
 #############################################################################
   - BUG FIXES 
     * Fixed a bug which prevented PDB2PQR from recognizing atoms from nucleic 

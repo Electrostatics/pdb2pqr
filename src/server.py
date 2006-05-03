@@ -43,7 +43,7 @@
     ----------------------------
 """
 
-__date__   = "12 April 2006"
+__date__   = "3 May 2006"
 __author__ = "Todd Dolinsky"
 
 import string
@@ -54,7 +54,7 @@ import time
 # GLOBAL SERVER VARIABLES
 
 """ The absolute path to root HTML directory """
-LOCALPATH   = "/export/home/www/html/test/"
+LOCALPATH   = "/export/home/www/html/pdb2pqr/"
 
 """ The relative path to results directory from script directory.
     The web server (i.e. Apache) MUST be able to write to this directory. """
@@ -64,7 +64,7 @@ TMPDIR      = "tmp/"
 LIMIT       = 500.0
 
 """ The path to the web site *directory* """
-WEBSITE     = "http://agave.wustl.edu/test/"
+WEBSITE     = "http://agave.wustl.edu/pdb2pqr/"
 
 """ The name of the main server page """
 WEBNAME     = "server.html"

@@ -12,9 +12,9 @@
     Washington University in St. Louis
 """
 
-__date__ = "28 February 2006"
+__date__ = "3 May 2006"
 __author__ = "Todd Dolinsky, Nathan Baker"
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 import string
 import sys

@@ -7,7 +7,7 @@ from utilities import *
 from quatfit import *
 from routines import *
 
-__date__ = "3 May 2006"
+__date__ = "16 May 2006"
 __author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
 HDEBUG = 0
@@ -891,9 +891,10 @@ class Flip(Optimize):
         
         for atom in atomlist:
             atomname = atom.name
-            if atomname.endswith("FLIP") and flag: # Delete the other list       
-                self.routines.cells.removeCell(atom)
-                residue.removeAtom(atomname[:-4])  
+            if atomname.endswith("FLIP") and flag: # Delete the other list
+                if residue.hasAtom(atomname[:-4]):
+                    self.routines.cells.removeCell(residue.getAtom(atomname[:-4]))
+                    residue.removeAtom(atomname[:-4])  
             elif atomname.endswith("FLIP"):  # Delete the flip
                 self.routines.cells.removeCell(atom)
                 residue.removeAtom(atomname)

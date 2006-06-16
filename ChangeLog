@@ -4,6 +4,9 @@ BETA PUBLIC RELEASE VERSION 1.1.2       XX-XX-06
   - BUG FIXES 
     * Fixed a bug in the hydrogen bonding routines where PDB2PQR attempted to 
       delete an atom that had already been deleted. (thanks to Rachel Burdge)
+    * Fixed a bug in chain detection routines where PDB2PQR was unable to
+      detect multiple chains inside a single unnamed chain (thanks to 
+      Rachel Burdge)
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.1.1       5-3-06
 #############################################################################

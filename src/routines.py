@@ -405,7 +405,7 @@ class Routines:
 
         for chain in self.protein.getChains():
             self.assignTermini(chain)
-    
+
         # Now determine if there are any hidden chains
 
         letters = string.ascii_uppercase + string.ascii_lowercase
@@ -415,18 +415,24 @@ class Routines:
 
             chain = self.protein.chains[c]
             reslist = []
+	    origlist = []	
+
+	    # origlist holds the original residue list for the chain
+	
+	    for residue in chain.getResidues():
+	        origlist.append(residue)
             
-            for residue in chain.getResidues():
-                reslist.append(residue)
+            for residue in origlist:
+	        reslist.append(residue)
                 oldid = residue.chainID
                 
                 # Look for ending termini
-                
+   
                 if ((residue.hasAtom("OXT") and not residue.isCterm) or \
                     (residue.hasAtom("H3T") and not residue.is3term) or \
-                    (len(residue.name) == 3 and residue.name.endswith("3") and \
-                     not residue.is3term)):
-           
+                    (len(residue.name) == 3 and residue.name.endswith("3") \
+                     and not residue.is3term)):
+
                     # Get an available chain ID
                     
                     numchains = len(self.protein.getChains())
@@ -435,21 +441,26 @@ class Routines:
                     while chainid in self.protein.chainmap:
                         id += 1
                         chainid = letters[id]
-              
+
                     # Make a new chain with these residues
 
                     newchain = Chain(chainid)
+		  
                     self.protein.chainmap[chainid] = newchain
-                    self.protein.chains.insert(c, newchain)
-                    
+                    self.protein.chains.insert(c, newchain)		  
+
                     for res in reslist:
                         newchain.addResidue(res)
-                        chain.residues.remove(res)
+		        chain.residues.remove(res)
                         res.setChainID(chainid)
-
+		
+		
                     self.assignTermini(chain)
                     self.assignTermini(newchain)
                     
+		    reslist = []
+		    c += 1
+		   
             c += 1
 
         # Update the final chain's chainID if it is ""

@@ -427,11 +427,18 @@ class Routines:
                 oldid = residue.chainID
                 
                 # Look for ending termini
-   
-                if ((residue.hasAtom("OXT") and not residue.isCterm) or \
-                    (residue.hasAtom("H3T") and not residue.is3term) or \
-                    (len(residue.name) == 3 and residue.name.endswith("3") \
-                     and not residue.is3term)):
+   		
+		fixflag = 0
+                if isinstance(residue, Amino):
+		    if (residue.hasAtom("OXT") and not residue.isCterm):
+			fixflag = 1
+
+		elif isinstance(residue, Nucleic):
+		    if ((residue.hasAtom("H3T") or residue.name.endswith("3"))\
+		      and not residue.is3term):
+			fixflag = 1
+
+		if fixflag:
 
                     # Get an available chain ID
                     

@@ -10,6 +10,8 @@ BETA PUBLIC RELEASE VERSION 1.1.2       XX-XX-06
     * Fixed a second bug in chain detection routines where HETATM residues
       with names ending in "3" were improperly chosen for termini (thanks to
       Reut Abramovich)
+    * Fixed a bug where chains were improperly detected when only containing
+      one HETATM residue (thanks to Reut Abramovich)
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.1.1       5-3-06
 #############################################################################

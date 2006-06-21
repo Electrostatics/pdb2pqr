@@ -357,7 +357,11 @@ class Routines:
             Assign the termini for the given chain by looking at
             the start and end residues.
         """
-            
+
+	if len(chain.residues) == 0: 
+	    text = "Error: chain \"%s\" has 0 residues!" % chain.chainID
+	    raise ValueError, text
+
         # Set the N-Terminus/ 5' Terminus
 
         res0 = chain.residues[0]
@@ -414,6 +418,7 @@ class Routines:
         while c < len(self.protein.getChains()):
 
             chain = self.protein.chains[c]
+
             reslist = []
 	    origlist = []	
 
@@ -470,9 +475,20 @@ class Routines:
 		   
             c += 1
 
-        # Update the final chain's chainID if it is ""
+        # Update the final chain's chainID if it is "" unless it's all water
 
         if "" in self.protein.chainmap:
+
+	    notwat = 0
+	    for res in chain.residues:
+		if not isinstance(res, WAT): 
+		    notwat = 1
+	            break
+
+	    if notwat == 0: 
+		self.write("Done.\n")
+		return		
+
             chain = self.protein.chainmap[""]
             chainid = letters[0]
             id = 0

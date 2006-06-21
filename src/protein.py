@@ -107,7 +107,8 @@ class Protein:
                     dict[chainID] = myChain
                         
                 if resSeq != previousAtom.resSeq or \
-                       iCode != previousAtom.iCode:
+                      iCode != previousAtom.iCode or \
+                      chainID != previousAtom.chainID:
                     myResidue = self.createResidue(residue, previousAtom.resName)
                     dict[previousAtom.chainID].addResidue(myResidue)
                     residue = []

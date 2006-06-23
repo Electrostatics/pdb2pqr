@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.1.2       XX-XX-06
+BETA PUBLIC RELEASE VERSION 1.1.2       6-23-06
 #############################################################################
   - BUG FIXES 
     * Fixed a bug in the hydrogen bonding routines where PDB2PQR attempted to 

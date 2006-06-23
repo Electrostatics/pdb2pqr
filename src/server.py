@@ -43,7 +43,7 @@
     ----------------------------
 """
 
-__date__   = "3 May 2006"
+__date__   = "23 June 2006"
 __author__ = "Todd Dolinsky"
 
 import string

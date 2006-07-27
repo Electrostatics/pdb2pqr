@@ -23,6 +23,13 @@
      </atom>
   </residue>
   <residue>
+     <name>LYN</name> 
+     <atom>   
+        <name>HZ1</name>
+        <useatomname>HZ3</useatomname>
+     </atom>
+  </residue>
+  <residue>
      <name>N...$</name>
      <atom>
        <name>H</name>

@@ -1182,6 +1182,11 @@ class Water(Optimize):
         self.hbonds = []
 
         oxatom = residue.getAtom("O")
+	if oxatom == None:
+		raise ValueError, "Unable to find oxygen atom in %s!" % \
+			residue
+
+
         oxatom.hdonor = 1
         oxatom.hacceptor = 1
       

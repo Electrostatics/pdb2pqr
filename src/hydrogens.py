@@ -1518,7 +1518,7 @@ class Carboxylic(Optimize):
             # Rebuild on bondatom1
 
             coords = [bondatom2.getCoords(), bondatom1.getCoords(), pivotatom.getCoords()]
-            refcoords = [bondatom1.reference.getCoords(), bondatom2.reference.getCoords(), \
+            refcoords = [bondatom2.reference.getCoords(), bondatom1.reference.getCoords(), \
                          pivotatom.reference.getCoords()]
             refatomcoords = residue.reference.map[hname2].getCoords()
             newcoords = findCoordinates(3, coords, refcoords, refatomcoords)

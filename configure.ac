@@ -69,7 +69,7 @@ dnl ##########################################################################
 dnl 3. Check for available subdirectories
 dnl ##########################################################################
 
-PDB2PQR_SUBDIRS="propka"
+PDB2PQR_SUBDIRS=""
 AC_MSG_CHECKING([for --disable-propka])
 AC_ARG_ENABLE(propka, 
      [AC_HELP_STRING([--disable-propka],[Disable propka compilation])],
@@ -77,6 +77,7 @@ AC_ARG_ENABLE(propka,
      [ with_propka="" ]
 )
 if test -z "${with_propka}"; then
+     PDB2PQR_SUBDIRS="propka"
      AC_MSG_RESULT([no])
      AC_MSG_RESULT([])
      cd propka

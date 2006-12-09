@@ -3,7 +3,7 @@
 ##
 ## Purpose: Automatically generate Makefile.in for autoconf using automake.
 ##
-## Notes:   This is the driver for the pdb2pka directory.
+## Notes:   This is the driver for the substruct directory of pdb2pka.
 ##
 ## Author:  Todd Dolinsky
 ## ###########################################################################
@@ -11,14 +11,13 @@ AUTOMAKE_OPTIONS = no-dependencies
 SUFFIXES         = .H .h .C .cc .c .f .o .cpp .so
 AM_CXXFLAGS        = $(PY_CFLAGS) $(PY_FLAGS)
 CCLD             = $(CXX)
-CLEANFILES       = _pMC_mult.so 
-SUBDIRS          = substruct
+CLEANFILES       = Algorithms.so 
 
-noinst_PROGRAMS         = _pMC_mult.so
-_pMC_mult_so_SOURCES     = pMC_mult.cpp pMC_mult_wrap.cpp  
-_pMC_mult_so_LINK        = $(CXX)
-_pMC_mult_so_LDFLAGS     = -o $@ $(PY_SHARED)
-_pMC_mult_so_LDADD       = $(PY_LDFLAGS)
+noinst_PROGRAMS          = Algorithms.so
+Algorithms_so_SOURCES     = Algorithms.cpp  
+Algorithms_so_LINK        = $(CXX)
+Algorithms_so_LDFLAGS     = -o $@ $(PY_SHARED)
+Algorithms_so_LDADD       = $(PY_LDFLAGS)
 
 distclean-local: clean-local
 clean-local: clean-ac

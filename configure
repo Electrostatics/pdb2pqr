@@ -274,7 +274,7 @@ PACKAGE_STRING='PDB2PQR 1.1.2'
 PACKAGE_BUGREPORT='todd@ccb.wustl.edu'
 
 ac_default_prefix=${HOME}
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar PDB2PQR_VERSION CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE py_path PY_SHARED PY_LDFLAGS PY_CFLAGS PY_FLAGS PDB2PQR_SUBDIRS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar PDB2PQR_VERSION CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE py_path PY_SHARED PY_LDFLAGS PY_HEADER PY_FLAGS PY_CFLAGS PDB2PQR_SUBDIRS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -2589,9 +2589,9 @@ echo $ECHO_N "checking for python include directory... $ECHO_C" >&6
 PY_VERSION=`$py_path -c 'import sys; print sys.version[:3]'`
 PY_PREFIX=`$py_path -c 'import sys; print sys.prefix'`
 if test -f $PY_PREFIX/include/python$PY_VERSION/Python.h; then
-   PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
-   echo "$as_me:$LINENO: result: $PY_CFLAGS" >&5
-echo "${ECHO_T}$PY_CFLAGS" >&6
+   PY_HEADER="-I$PY_PREFIX/include/python$PY_VERSION"
+   echo "$as_me:$LINENO: result: $PY_HEADER" >&5
+echo "${ECHO_T}$PY_HEADER" >&6
 else
    { { echo "$as_me:$LINENO: error: Unable to find Python.h!" >&5
 echo "$as_me: error: Unable to find Python.h!" >&2;}
@@ -2624,7 +2624,7 @@ PY_SHARED=$PY_SHARED
 
 PY_LDFLAGS=$PY_LDFLAGS
 
-PY_CFLAGS=$PY_CFLAGS
+PY_HEADER=$PY_HEADER
 
 PY_FLAGS=$PY_FLAGS
 
@@ -2678,10 +2678,28 @@ if test "$with_pdb2pka" = "enable" ; then
      PDB2PQR_SUBDIRS="$PDB2PQR_SUBDIRS pdb2pka"
      echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
+
+     # Test for Numeric install
+     echo "$as_me:$LINENO: checking for Numeric include files" >&5
+echo $ECHO_N "checking for Numeric include files... $ECHO_C" >&6
+     if test -f $PY_PREFIX/include/python$PY_VERSION/Numeric/arrayobject.h; then
+        PY_NUMERIC="-I$PY_PREFIX/include/python$PY_VERSION/Numeric"
+        echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
+echo "${ECHO_T}$PY_NUMERIC" >&6
+        PY_CFLAGS="$PY_HEADER $PY_NUMERIC"
+     else
+        { { echo "$as_me:$LINENO: error: Unable to find Numeric installed!" >&5
+echo "$as_me: error: Unable to find Numeric installed!" >&2;}
+   { (exit 1); exit 1; }; }
+     fi
+
 else
+     PY_CFLAGS="$PY_HEADER"
      echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
+
+PY_CFLAGS=$PY_CFLAGS
 
 PDB2PQR_SUBDIRS=$PDB2PQR_SUBDIRS
 
@@ -2692,7 +2710,7 @@ echo "${ECHO_T}------------- End Processing PDB2PQR Configure Options ----------
 echo "$as_me:$LINENO: result: " >&5
 echo "${ECHO_T}" >&6
 if test -n "${PDB2PQR_SUBDIRS}"; then
-                       ac_config_files="$ac_config_files Makefile pdb2pka/Makefile"
+                                 ac_config_files="$ac_config_files Makefile pdb2pka/Makefile pdb2pka/substruct/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -3270,6 +3288,7 @@ do
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "pdb2pka/Makefile" ) CONFIG_FILES="$CONFIG_FILES pdb2pka/Makefile" ;;
+  "pdb2pka/substruct/Makefile" ) CONFIG_FILES="$CONFIG_FILES pdb2pka/substruct/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
@@ -3409,8 +3428,9 @@ s,@am__fastdepCXX_FALSE@,$am__fastdepCXX_FALSE,;t t
 s,@py_path@,$py_path,;t t
 s,@PY_SHARED@,$PY_SHARED,;t t
 s,@PY_LDFLAGS@,$PY_LDFLAGS,;t t
-s,@PY_CFLAGS@,$PY_CFLAGS,;t t
+s,@PY_HEADER@,$PY_HEADER,;t t
 s,@PY_FLAGS@,$PY_FLAGS,;t t
+s,@PY_CFLAGS@,$PY_CFLAGS,;t t
 s,@PDB2PQR_SUBDIRS@,$PDB2PQR_SUBDIRS,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t

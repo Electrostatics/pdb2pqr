@@ -49,27 +49,27 @@ Transition: 1,2,3,4 -> 0
 Model_pKa: 4.4
 END
 
-// * ARG
-// Residue: ARG
-// Grouptype: Base
-// //Transition: 1,2,3,4 -> 0
-// Transition: 1 -> 0 
-// Model_pKa: 12.0
-// END
+* ARG
+Residue: ARG
+Grouptype: Base
+Transition: 1,2,3,4 -> 0
+Transition: 1 -> 0 
+Model_pKa: 12.0
+END
 
-// * LYS
-// Residue: LYS
-// Grouptype: Base
-// Transition: 1 -> 0
-// Model_pKa: 9.0
-// END 
+* LYS
+Residue: LYS
+Grouptype: Base
+Transition: 1 -> 0
+Model_pKa: 9.0
+END 
 
-// * HIS
-// Residue: HIS
-// Grouptype: Base
-// Transition: 1,2->1+2
-// Model_pKa: 6.3
-// END 
+//* HIS
+//Residue: HIS
+//Grouptype: Base
+//Transition: 1,2->1+2
+//Model_pKa: 6.3
+//END 
 
 END OF FILE
 

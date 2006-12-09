@@ -10,6 +10,9 @@ except:
     
 from sets import Set
 from ligandclean.trial_templates import *
+from ligandclean.lookuptable import *
+from substruct import Algorithms
+from types import *
 
 def length(vector):
     # This function returns the length of vector
@@ -128,6 +131,8 @@ class get_ligand_topology:
             for atom in atoms:
                 self.atoms[atom]['torsions']=self.get_torsions(atom)
             self.lines=self.create_deflines()
+        #
+        # we have the sybylType in self.atoms!!!
         return
 
 
@@ -301,8 +306,9 @@ class get_ligand_topology:
         #
         # Filter the torsions
         #
-        # 
-        print 'Jens has to write the stuff for filtering torsions..\n'
+        #
+        # commented out by Paul 010206
+#        print 'Jens has to write the stuff for filtering torsions..\n'
         return possible_torsions
                         
     #
@@ -387,7 +393,7 @@ class get_ligand_topology:
         #
         # Reformat the lists of lists of lists of ... that we get from the ring detection
         #
-        from types import *
+
         if type(item) is ListType:
             real_list=[]
             for sub_item in item:
@@ -415,10 +421,8 @@ class get_ligand_topology:
             self.atoms[current_atom]['in_ring'] = 1
         return
 
-    #
-    # ------
-    #
-        
+                 
+
     def find_titratable_groups(self):
         #
         # Look for simple substructures that would be titratable groups in the ligand
@@ -453,7 +457,6 @@ class get_ligand_topology:
                 else:
                     last = sorted_ring_list[i]
         print "# overall rings (including potentially fused rings) :", len(sorted_ring_list)
-        stop ## PC 03.01.06
         #
         #
         # assigning ring attribute for every ring atom
@@ -482,207 +485,187 @@ class get_ligand_topology:
                       at['ring_list'].append(rring)
         print  "# non-fused rings                                   :", non_fused_counter
 
- 
-        
+        ## LET'S START THE MATCHING...
+        def match(t,l):
+            class Node:
+                def __init__(self, idx1, idx2):
+                    self.at_idx1 = idx1
+                    self.at_idx2 = idx2
+            nodes = []
+            for ligand_atoms in l:
+                self.atoms[ligand_atoms]['alreadyvisited'] = False
+            for ligand_atoms in l:
+                for template_atoms in t:
+                    if templates[current_template][template_atoms]['sybylType'] == self.atoms[ligand_atoms]['sybylType']:
+                        matched_type = Node(ligand_atoms,template_atoms)
+                        nodes.append(matched_type)
+                        #print "matching ", self.atoms[ligand_atoms]['sybylType'], self.atoms[ligand_atoms]['atomname']
+                    else:
+                        pass
+            if len(nodes) != 0:
+                AtomNameListList = []
+                for i in nodes:
+                    for j in nodes:
+                        AtomNameList = []
+                        # the O.co2 atoms of the ligand can only match ONCE on EACH template O.co2 template atom
+                        if i.at_idx1 == j.at_idx1 and (i.at_idx2 == j.at_idx2) and (self.atoms[i.at_idx1]['sybylType'] != "O.co2"):
+                            AtomNameList.append(i.at_idx1)
+                            AtomNameList.append(i.at_idx2)
+                            AtomNameListList.append(AtomNameList)
+                        elif i.at_idx1 == j.at_idx1 and (i.at_idx2 == j.at_idx2) \
+                                 and (self.atoms[i.at_idx1]['sybylType'] == "O.co2")\
+                                 and (self.atoms[i.at_idx1]['alreadyvisited'] != True)\
+                                 and (templates[current_template][i.at_idx2]['alreadyvisited'] != True):
+                            AtomNameList.append(i.at_idx1)
+                            AtomNameList.append(i.at_idx2)
+                            self.atoms[i.at_idx1]['alreadyvisited'] = True
+                            templates[current_template][i.at_idx2]['alreadyvisited'] = True
+                            AtomNameListList.append(AtomNameList)
+                AGL = Numeric.zeros((len(AtomNameListList),len(AtomNameListList)))
+                daseinecounter = 0
+                dasanderecounter = 0
+                # what again are these counters counting?
+                for daseine in AtomNameListList:
+                    dasanderecounter = 0
+                    for dasandere in AtomNameListList:
+                        if (daseine[0] == dasandere[0]) and (daseine[1] == dasandere[1]):
+                            AGL[daseinecounter][dasanderecounter] = 1
+                            # bonded
+                        elif dasandere[0] in self.atoms[daseine[0]]['bonds'] and\
+                           dasandere[1] in templates[current_template][daseine[1]]['neighbours']:
+                            AGL[daseinecounter][dasanderecounter] = 1
+                        # non-bonded atoms in template must also be non-bonded in the ligand
+                        elif dasandere[0] not in self.atoms[daseine[0]]['bonds'] and\
+                           dasandere[1] not in templates[current_template][daseine[1]]['neighbours']:
+                            AGL[daseinecounter][dasanderecounter] = 1
+                        dasanderecounter += 1
+                    daseinecounter += 1
+                allcliques = Algorithms.find_cliques(AGL)
+                return allcliques,AtomNameListList,current_template
+            else:
+                return [],[],None
 
-
-    def matched_atom_types(atom2match,t):
-        match_list=[]
-            #
-        # match ligand atom type with atom type from template
-        for at in t.keys():
-            if t[at]['sybylType'] == self.atoms[atom2match]['sybylType']:
-                match_list.append(at)
-            if len(match_list) != 0:
-                return match_list,t[at]['sybyl_neighbours']
-        if len(match_list) == 0:
-            return None,None
-
-        def match(t,l,already_visited=[],type_matches=[]):
-            for counter in range(len(atoms)):
-                at_lig = atoms[counter]
-                already_visited.append(at_lig)
-                # 1st matching: based on atom types
-                matched_atom_in_template, nbs_in_template = matched_atom_types(at_lig,t)
-                if matched_atom_in_template != None:
-                    for entries in  matched_atom_in_template:
-                        ligand_list = []
-                        # Create sybyl_neighbors on-the-fly for ligand
-                        for sybyl_bonded_at in self.atoms[at_lig]['lBondedAtoms']:
-                            ligand_list.append(sybyl_bonded_at.sybylType)
-                            ligand_set = Set(ligand_list)
-                            template_set = Set(nbs_in_template)
-                            # Now match simultaneously atom_type and neighbouring atom_types for ligand AND template
-                            if len(ligand_set.difference(template_set)) == 0 and len(ligand_list) == len(nbs_in_template):
-                                for entry in matched_atom_in_template:
-                                    print "%3d"%(counter),"  Ligand %4s %5s %28s " \
-                                          %(at_lig,self.atoms[at_lig]['sybylType'],ligand_list),\
-                                          "template %s %s %s %s" \
-                                          %(matched_atom_in_template,t[entry]['sybylType'],nbs_in_template,t[entry]['neighbours'])
-                                    for neighboured_template_atoms in t[entry]['neighbours']:
-                                        print neighboured_template_atoms,t[neighboured_template_atoms]['sybylType'],t[neighboured_template_atoms]['sybyl_neighbours']
-                                    for neighboured_ligand_atoms in self.atoms[at_lig]['lBondedAtoms']:
-                                        print neighboured_ligand_atoms.name, neighboured_ligand_atoms.sybylType,neighboured_ligand_atoms.lBondedAtoms
-                                    stop
-                counter += 1
-
-        def matched_atom_types2(atom2match,t,stored_nbs_of_atom2match=[],already_visited=[],matching_template={}):
-            #
-            # match ligand atom type with atom type from template
-            if atom2match == "F14":
-                print "YYY_atom2match_YYY", atom2match
-#            print "alrvis",len(already_visited),already_visited
-            if matching_template == {}:
-                matching_template['MatchedFragments'] = {}
-            if len(stored_nbs_of_atom2match) != 0 and stored_nbs_of_atom2match[-1] == atom2match:
-                print "bis zum erbrechen schreien!!!!", self.atoms[atom2match]['bonds']
-                for e in  self.atoms[atom2match]['bonds']:
-                    atom2match = e
-            for at in t.keys():
-                # TODO:matching ALL atom types in template => gives a match_list
-                if t[at]['sybylType'] == self.atoms[atom2match]['sybylType'] \
-                   and atom2match not in already_visited:
-                    already_visited.append(self.atoms[atom2match]['atomname'])
-                    Lig_nbs_SybylList = []
-                    Lig_nbs_AtomnameList = []
-                    # Create sybyl_neighbors on-the-fly for ligand
-                    for att in self.atoms[atom2match]['lBondedAtoms']:
-                        Lig_nbs_SybylList.append(att.sybylType)
-                        Lig_nbs_AtomnameList.append(att.name)
-                    ligand_set = Set(Lig_nbs_SybylList)
-                    template_set = Set(t[at]['sybyl_neighbours'])
-                    diff = ligand_set.difference(template_set)
-                    if len(diff) == 0:
-                        stored_nbs_of_atom2match = Lig_nbs_AtomnameList
-                        matching_template['MatchedFragments'][atom2match] = {}
-                        matching_template['MatchedFragments'][atom2match]['sybyl_neighbours'] = Lig_nbs_SybylList
-                        # go through all bonded atoms
-                        if len(stored_nbs_of_atom2match) != 0:
-                            for bb in stored_nbs_of_atom2match:
-                                if bb not in already_visited:
-                                    already_visited.append(bb)
-                                    matching_template['MatchedFragments'][bb] = {}
-                                    bb_list = []
-                                    for bat in self.atoms[bb]['lBondedAtoms']:
-                                        bb_list.append(bat.sybylType)
-                                    matching_template['MatchedFragments'][bb]['sybyl_neighbours'] = bb_list
-                                    #
-                                    # here we call the routine by itself
-                                    matched_atom_types2(bb,t,stored_nbs_of_atom2match)
-                    else: # NO MATCH
-                        for nbat in self.atoms[atom2match]['bonds']:
-                            if nbat in already_visited:
-                                start_id = 1
-                            for id in range(len(self.atoms[atom2match]['bonds'])-1):
-                                next_nbat_id  = id+1
-                                next_nbat_at = self.atoms[atom2match]['bonds'][next_nbat_id]
-                                if next_nbat_at not in already_visited:
-                                    #not 100% sure, if if append the correct atom
-#                                    already_visited.append(next_nbat_at)
-                                    already_visited.append(self.atoms[atom2match]['bonds'][next_nbat_id])
-                                    matched_atom_types2(self.atoms[atom2match]['bonds'][next_nbat_id],t)
-                                else:
-                                    pass
-
-                        else:
-                            matched_atom_types2(nbat,t)
-                else:
-                    print "sybylType s don't match", atom2match
-            # 2nd loop to go over to the neighboured atoms
-            for at in t.keys():
-                if atom2match in already_visited:
-                    for nbat in self.atoms[atom2match]['bonds']:
-                        if nbat in already_visited:
-                            #
-                            # TODO: Do not go beyond the last list member
-                            start_id = 1
-                            for id in range(len(self.atoms[atom2match]['bonds'])-1):
-                                next_nbat_id  = id+1
-                                next_nbat_at = self.atoms[atom2match]['bonds'][next_nbat_id]
-                                if next_nbat_at not in already_visited:
-                                    already_visited.append(next_nbat_at)
-                                    matched_atom_types2(self.atoms[atom2match]['bonds'][next_nbat_id],t)
-                                else:
-                                    pass
-
-                        else:
-                            matched_atom_types2(nbat,t)
-            print "\t\t\tlen alrvis %3d" % (len(already_visited))
-
-        def createsybyllistonthefly(lig_atom):
-            # look in matched_atom_types2 - line 656
-            sybyllist = []
-            for att in self.atoms[lig_atom]['lBondedAtoms']:
-                sybyllist.append(att.sybylType)
-            return sybyllist
-
-        def gothroughallnbsofmatchlistatom(stored_nbs_of_atom2match,t,already_visited,hit_list):
-            putative_next_a2m_list = []
-            for ent_lig in stored_nbs_of_atom2match:
-                matchlist = []
-                if ent_lig not in already_visited:
-                    already_visited.append(ent_lig)
-                    # look for matching neighbours
-                    for at in t.keys():
-                        if t[at]['sybylType'] == self.atoms[ent_lig]['sybylType'] and ent_lig not in matchlist:
-                            matchlist.append(at)
-                    for matches in matchlist:
-                        if len(Set(t[matches]['sybyl_neighbours']).difference(Set(createsybyllistonthefly(ent_lig)))) == 0:
-                            if ent_lig not in hit_list:
-                                hit_list.append(ent_lig)
-                            for putative_next_atom2match in self.atoms[ent_lig]['bonds']:
-                                if putative_next_atom2match not in putative_next_a2m_list:
-                                    putative_next_a2m_list.append(putative_next_atom2match)
-                        else:
-                             print "sybyl neighbours don't match"
-                else:
-                    # what's here?
-                    pass
-            # delete the stored nbs
-            stored_nbs_of_atom2match = []
-            # next atom2match???
-            return already_visited,stored_nbs_of_atom2match,putative_next_a2m_list,hit_list
-
-        def matchatomtypeintemplateandgetliglist(atom2match,t,stored_nbs_of_atom2match=[],been_here_flag=False,\
-                                                 already_visited=[],hit_list=[]):
-            print atom2match,"hit_list",hit_list,been_here_flag
-            putative_next_a2m_list = []
-            # we don't want to miss the nbs of a matched atom (see [1])
-            if atom2match in stored_nbs_of_atom2match:
-                already_visited,stored_nbs_of_atom2match,putative_next_a2m_list,hit_list = \
-                 gothroughallnbsofmatchlistatom(stored_nbs_of_atom2match,t,already_visited,hit_list)
-            # does this really work? - to which position of the routine do we go now?
-            if been_here_flag == True:
-                print "it's true...", putative_next_a2m_list
-                for next_at in putative_next_a2m_list:
-                    print "TRUE (been_here_flag)", putative_next_a2m_list
-                    matchatomtypeintemplateandgetliglist(next_at,t,been_here_flag=True)
-            matchlist = []
-            for at in t.keys():
-                if t[at]['sybylType'] == self.atoms[atom2match]['sybylType'] and atom2match not in already_visited:
-                    already_visited.append(atom2match)
-                    print "we found a match for %4s " %(atom2match)
-                    matchlist.append(at)
-            # look for sybylnbs of all stored entries in matchlist
-            for entries in matchlist:
-                # TODO: Set deletes redundancies in 'sybyl_neighbours': AVOID THIS!
-                if len(Set(t[entries]['sybyl_neighbours']).difference(Set(createsybyllistonthefly(atom2match)))) == 0:
-                    hit_list.append(atom2match)
-                    stored_nbs_of_atom2match = self.atoms[atom2match]['bonds']
-                    print "nbs %s of hit %s" %(stored_nbs_of_atom2match,atom2match)
-                    for nbs in stored_nbs_of_atom2match:
-                        # call itself!
-                        #
-                        matchatomtypeintemplateandgetliglist(nbs,t,stored_nbs_of_atom2match)
-                    # when passing stored_nbs_of_atom2match - always control atom2match with list entries! [1]
-                    # (we have to do this at the beginning of our routine)
-                    # ELSE case:
-
-        def match2(t,l,start_atom,already_visited=[],type_matches=[]):
-            matchatomtypeintemplateandgetliglist(start_atom,t)
-#            matched_atom_types2(start_atom,t)
-
+        # Looping over the entries of the template entries
+        AllCliqueList = []
+        dictCounter = 0
+        dict_of_matched_lig_fragments = {}
+        matched_lig_template = []
         for current_template in templates.keys():
-            match2(templates[current_template],atoms,start_atom=atoms[4])  # start_atom should be 0
-#            match(templates[current_template],atoms)
+            #print "MATCHING", current_template
+            #print "######## ########"
+            output = match(templates[current_template],atoms)
+            for ee in output[0]:
+                templateDoubleCounter = 0
+                templateList = []
+                ligList = []
+                goodList = []
+                for cliq_ee in ee:
+                    templateList.append(output[1][cliq_ee][1])
+                    ligList.append(output[1][cliq_ee][0])
+                temp_templateList = list(Set(templateList))
+                matchedLigAtoms =[]
+                temptemp = []
+                if len(temp_templateList) == len(ligList) and (len(ee) == len(templates[current_template].keys())):
+                    for xxee in ee:
+                        # output[1][xxee] => maching pair of ligand and template atoms
+                        # temporary depostion
+                        temptemp.append(output[1][xxee])
+                        matchedLigAtoms.append(output[1][xxee][0])
+                    AllCliqueList.append(matchedLigAtoms)
+                    dict_of_matched_lig_fragments[dictCounter] = {}
+                    dict_of_matched_lig_fragments[dictCounter]['matchedligatoms'] = matchedLigAtoms
+                    dict_of_matched_lig_fragments[dictCounter]['templatename'] = current_template
+                    dict_of_matched_lig_fragments[dictCounter]['type'] = templates_attributes[output[2]]['type']
+                    dict_of_matched_lig_fragments[dictCounter]['modelpka'] = templates_attributes[output[2]]['modelpka']
+                    #print "ligList",ligList
+                    #print "dict",templates_attributes[output[2]]['titratableatoms']
+                    #
+                    # detection of titratable atoms by comparison with template_dict
+                    deposit_list = []
+                    # that's for the hydrogen injection
+                    # in the template library, STANDARD are being used
+                    deposit_template_list = []
+                    dict={}
+                    for looping_template in templates_attributes[output[2]]['titratableatoms']:
+                        for looping_lig in output[1]:
+                            #print looping_lig
+                            if looping_lig[1] == looping_template and (looping_lig in temptemp) :
+                                deposit_list.append(looping_lig[0])
+                                deposit_template_list.append(looping_lig[1])
+                                dict[looping_lig[1]]=looping_lig[0]
+                                #print "tt", looping_lig[1],"  ll  ", looping_lig[0],looping_lig
+                    dict_of_matched_lig_fragments[dictCounter]['titratableatoms']=deposit_list
+                    dict_of_matched_lig_fragments[dictCounter]['matching_atoms']=dict
+                    dictCounter += 1
+        print
+        print
         
+        if len(AllCliqueList) == 0:
+            print
+            print
+            print "NOTHING CLIQUED."
+            print
+            print
+        #
+        # AVOID REDUNDANCIES FROM HERE ON
+        counter = 0
+        NonRedundantCliques = []
+        # looping over all entries of maximum_cliques
+        if len(AllCliqueList) > 1:
+            for xxxx in AllCliqueList:
+                if counter < len(AllCliqueList):
+                    internalCounter = counter
+                    # comparison of an individual clique with all other cliques
+                    for comparing in range(internalCounter,len(AllCliqueList)):
+                        # do not compare a clique with itself
+                        if xxxx != AllCliqueList[internalCounter]:
+                            if len(Set(xxxx).intersection(Set(AllCliqueList[internalCounter]))) > 0:
+                                if len(xxxx) >= len(AllCliqueList[internalCounter]) and xxxx not in NonRedundantCliques:  # >= INSTEAD of >
+                                                                                                                          # piperidine case!
+                                    # avoid that subset is added to this list
+                                    if len(NonRedundantCliques) != 0:
+                                        # loop over all entries
+                                        for possiblyredundantentries in NonRedundantCliques:
+                                            if Set(possiblyredundantentries).issubset(Set(xxxx)):
+                                                print NonRedundantCliques
+                                                NonRedundantCliques.remove(possiblyredundantentries)
+                                                NonRedundantCliques.append(xxxx)
+                                                print NonRedundantCliques
+                                            elif Set(xxxx).issubset(Set(possiblyredundantentries)):
+                                                #print "found subset which is not added to the list"
+                                                pass
+                                    else:
+                                        NonRedundantCliques.append(xxxx)
+                            # the other way around
+                                elif len(AllCliqueList[internalCounter]) >=  len(xxxx) and AllCliqueList[internalCounter] not in NonRedundantCliques:
+                                    if len(NonRedundantCliques) != 0:
+                                        for possiblyredundantentries in NonRedundantCliques:
+                                            if Set(possiblyredundantentries).issubset(Set(AllCliqueList[internalCounter])):
+                                                NonRedundantCliques.remove(possiblyredundantentries)
+                                                NonRedundantCliques.append(AllCliqueList[internalCounter])
+                                            elif Set(AllCliqueList[internalCounter]).issubset(Set(possiblyredundantentries)):
+                                                #print "found subset which is not added to the list"
+                                                pass
+                                    else:
+                                        NonRedundantCliques.append(AllCliqueList[internalCounter])
+                        #
+                        # how to adoid, that the actual matching (pair of ligand and template atoms) is not lost?
+                        internalCounter += 1
+                counter += 1
+        # if we only find one titratable group
+        elif len(AllCliqueList) == 1:
+            NonRedundantCliques = AllCliqueList
+        # redundancies should be removed now...
+        #
+        
+        for allCl in dict_of_matched_lig_fragments:
+            if dict_of_matched_lig_fragments[allCl]['matchedligatoms'] == NonRedundantCliques[0]:
+                print "WE MATCHED", dict_of_matched_lig_fragments[allCl]['templatename']
+                print "matchedligatoms            : ", dict_of_matched_lig_fragments[allCl]['matchedligatoms']
+                print "type                       : ", dict_of_matched_lig_fragments[allCl]['type']
+                print "modelpka                   : ", dict_of_matched_lig_fragments[allCl]['modelpka']
+                print "titratableatoms            : ", dict_of_matched_lig_fragments[allCl]['titratableatoms']
+                print "matching atoms             : ", dict_of_matched_lig_fragments[allCl]['matching_atoms']
+        # re-run matching to get mutiple titratable sites?
+        print dict_of_matched_lig_fragments[allCl]
+        return dict_of_matched_lig_fragments[allCl]

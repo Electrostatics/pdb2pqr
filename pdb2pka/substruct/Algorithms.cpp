@@ -48,7 +48,6 @@ using namespace std;
 #define MODULE_NAME               Algorithms     
 #define MODULE_INIT               initAlgorithms 
 #define MODULE_STR                "Algorithms"   
-#define VERSION                   "0.1.0"
 #define LASTCHANGE                "01.04.2004"
 #define MAX_CLIQ_NUM              10000
 

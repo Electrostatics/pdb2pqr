@@ -73,8 +73,8 @@ PY_VERSION=`$py_path -c 'import sys; print sys.version[:3]'`
 changequote([, ])dnl
 PY_PREFIX=`$py_path -c 'import sys; print sys.prefix'`
 if test -f $PY_PREFIX/include/python$PY_VERSION/Python.h; then    
-   PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
-   AC_MSG_RESULT([$PY_CFLAGS])
+   PY_HEADER="-I$PY_PREFIX/include/python$PY_VERSION"
+   AC_MSG_RESULT([$PY_HEADER])
 else
    AC_MSG_ERROR([Unable to find Python.h!])
 fi
@@ -104,7 +104,7 @@ esac
 
 AC_SUBST(PY_SHARED,[$PY_SHARED])
 AC_SUBST(PY_LDFLAGS,[$PY_LDFLAGS])
-AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
+AC_SUBST(PY_HEADER,[$PY_HEADER])
 AC_SUBST(PY_FLAGS, [$PY_FLAGS])
 
 dnl ##########################################################################
@@ -146,10 +146,23 @@ AC_ARG_ENABLE(pdb2pka,
 if test "$with_pdb2pka" = "enable" ; then
      PDB2PQR_SUBDIRS="$PDB2PQR_SUBDIRS pdb2pka"
      AC_MSG_RESULT([yes])
+
+     # Test for Numeric install
+     AC_MSG_CHECKING([for Numeric include files])
+     if test -f $PY_PREFIX/include/python$PY_VERSION/Numeric/arrayobject.h; then
+        PY_NUMERIC="-I$PY_PREFIX/include/python$PY_VERSION/Numeric"   
+        AC_MSG_RESULT([$PY_NUMERIC])
+        PY_CFLAGS="$PY_HEADER $PY_NUMERIC"
+     else
+        AC_MSG_ERROR([Unable to find Numeric installed!])
+     fi
+
 else
+     PY_CFLAGS="$PY_HEADER"
      AC_MSG_RESULT([no])
 fi
 
+AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
 AC_SUBST(PDB2PQR_SUBDIRS,[$PDB2PQR_SUBDIRS])
 
 dnl ##########################################################################
@@ -162,6 +175,7 @@ if test -n "${PDB2PQR_SUBDIRS}"; then
    AC_OUTPUT([
         Makefile
         pdb2pka/Makefile
+        pdb2pka/substruct/Makefile
    ])
    AC_MSG_RESULT([Please type "make" to complete the installation.])
 fi

@@ -10,7 +10,7 @@
 ## ###########################################################################
 AUTOMAKE_OPTIONS = no-dependencies
 SUFFIXES = .H .h .C .cc .c .f .o
-SUBDIRS = $(PDB2PQR_SUBDIRS)
+SUBDIRS = @PDB2PQR_SUBDIRS@
 distclean-local: clean-local
 clean-local: clean-ac
 clean-ac:

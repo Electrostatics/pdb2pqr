@@ -46,7 +46,7 @@ dnl #   Never try to set the interface numbers so that they correspond to the
 dnl #   release number of your package. This is an abuse that only fosters
 dnl #   misunderstanding of the purpose of library versions.
 AM_INIT_AUTOMAKE(PDB2PQR, 1.1.2)
-PDB2PQR_VERSION="1:1:1"
+PDB2PQR_VERSION="1:1:2"
 AC_SUBST(PDB2PQR_VERSION)
 ACLOCAL=":";
 AUTOCONF=":";
@@ -56,6 +56,8 @@ AC_SUBST(ACLOCAL)
 AC_SUBST(AUTOCONF)
 AC_SUBST(AUTOMAKE)
 AC_SUBST(AUTOHEADER)
+AC_PROG_CXX
+
 dnl ##########################################################################
 dnl 2. checks for programs
 dnl ##########################################################################
@@ -65,28 +67,89 @@ if test -z "${py_path}"; then
    AC_MSG_ERROR([Unable to find python!])
 fi
 
+AC_MSG_CHECKING([for python include directory])
+changequote(<<, >>)dnl
+PY_VERSION=`$py_path -c 'import sys; print sys.version[:3]'`   
+changequote([, ])dnl
+PY_PREFIX=`$py_path -c 'import sys; print sys.prefix'`
+if test -f $PY_PREFIX/include/python$PY_VERSION/Python.h; then    
+   PY_CFLAGS="-I$PY_PREFIX/include/python$PY_VERSION"
+   AC_MSG_RESULT([$PY_CFLAGS])
+else
+   AC_MSG_ERROR([Unable to find Python.h!])
+fi
+
+dnl # Platform specific linking flags
+
+PY_LDFLAGS=""
+PY_SHARED=""
+PY_FLAGS=""
+case $host_os in
+   linux*) 
+      PY_SHARED="-shared";;
+   irix*) 
+      PY_SHARED="-shared"
+      PY_LDFLAGS="-lftn -lm";;
+   sun|solaris**) 
+      PY_SHARED="-G"
+      PY_LDFLAGS="-lF77 -lm -lM77 -lsunmath";;
+   darwin*)
+      PY_LDFLAGS="-Wl,-framework -Wl,Python -bundle";;
+esac
+
+case $host_cpu in
+   x86_64*)
+      PY_FLAGS="-fPIC";;
+esac
+
+AC_SUBST(PY_SHARED,[$PY_SHARED])
+AC_SUBST(PY_LDFLAGS,[$PY_LDFLAGS])
+AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
+AC_SUBST(PY_FLAGS, [$PY_FLAGS])
+
 dnl ##########################################################################
 dnl 3. Check for available subdirectories
 dnl ##########################################################################
 
 PDB2PQR_SUBDIRS=""
+
+# A.  propka
+
 AC_MSG_CHECKING([for --disable-propka])
 AC_ARG_ENABLE(propka, 
      [AC_HELP_STRING([--disable-propka],[Disable propka compilation])],
-     [ with_propka="no" ],
-     [ with_propka="" ]
+     [ with_propka="disable" ],
+     [ with_propka="enable" ]
 )
-if test -z "${with_propka}"; then
+if test "${with_propka}" = "enable"; then
      PDB2PQR_SUBDIRS="propka"
      AC_MSG_RESULT([no])
      AC_MSG_RESULT([])
      cd propka
      ./configure 
      cd ..
+     AC_MSG_RESULT([])
 else
      AC_MSG_RESULT([yes])
      PDB2PQR_SUBDIRS=""
 fi
+
+# B. pdb2pka
+
+AC_MSG_CHECKING([for --enable-pdb2pka])
+AC_ARG_ENABLE(pdb2pka,
+     [AC_HELP_STRING([--enable-pdb2pka], [Enable pdb2pka compilation])],
+     [ with_pdb2pka="enable" ],
+     [ with_pdb2pka="disable" ]
+)
+
+if test "$with_pdb2pka" = "enable" ; then
+     PDB2PQR_SUBDIRS="$PDB2PQR_SUBDIRS pdb2pka"
+     AC_MSG_RESULT([yes])
+else
+     AC_MSG_RESULT([no])
+fi
+
 AC_SUBST(PDB2PQR_SUBDIRS,[$PDB2PQR_SUBDIRS])
 
 dnl ##########################################################################
@@ -98,6 +161,7 @@ AC_MSG_RESULT([])
 if test -n "${PDB2PQR_SUBDIRS}"; then
    AC_OUTPUT([
         Makefile
+        pdb2pka/Makefile
    ])
    AC_MSG_RESULT([Please type "make" to complete the installation.])
 fi

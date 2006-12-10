@@ -274,7 +274,7 @@ PACKAGE_STRING='PDB2PQR 1.1.2'
 PACKAGE_BUGREPORT='todd@ccb.wustl.edu'
 
 ac_default_prefix=${HOME}
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar PDB2PQR_VERSION CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE py_path PY_SHARED PY_LDFLAGS PY_HEADER PY_FLAGS PY_CFLAGS PDB2PQR_SUBDIRS LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar PDB2PQR_VERSION CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE py_path PY_SHARED PY_LDFLAGS PY_HEADER PY_FLAGS APBS_PYDIR PY_CFLAGS PDB2PQR_SUBDIRS LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -817,6 +817,11 @@ Optional Features:
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-propka        Disable propka compilation
   --enable-pdb2pka        Enable pdb2pka compilation
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-apbsdir=PATH     full path to top-level APBS directory
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -2650,9 +2655,13 @@ if test "${with_propka}" = "enable"; then
 echo "${ECHO_T}no" >&6
      echo "$as_me:$LINENO: result: " >&5
 echo "${ECHO_T}" >&6
+     echo "$as_me:$LINENO: result: ------------- Begin Processing PropKa Configure Options -----------" >&5
+echo "${ECHO_T}------------- Begin Processing PropKa Configure Options -----------" >&6
      cd propka
      ./configure
      cd ..
+     echo "$as_me:$LINENO: result: ------------- End Processing PropKa Configure Options -----------" >&5
+echo "${ECHO_T}------------- End Processing PropKa Configure Options -----------" >&6
      echo "$as_me:$LINENO: result: " >&5
 echo "${ECHO_T}" >&6
 else
@@ -2679,6 +2688,11 @@ if test "$with_pdb2pka" = "enable" ; then
      echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 
+     echo "$as_me:$LINENO: result: " >&5
+echo "${ECHO_T}" >&6
+     echo "$as_me:$LINENO: result: ------------- Begin Processing pdb2pka Configure Options -----------" >&5
+echo "${ECHO_T}------------- Begin Processing pdb2pka Configure Options -----------" >&6
+
      # Test for Numeric install
      echo "$as_me:$LINENO: checking for Numeric include files" >&5
 echo $ECHO_N "checking for Numeric include files... $ECHO_C" >&6
@@ -2692,6 +2706,73 @@ echo "${ECHO_T}$PY_NUMERIC" >&6
 echo "$as_me: error: Unable to find Numeric installed!" >&2;}
    { (exit 1); exit 1; }; }
      fi
+
+     # Test for APBS Python wrappers
+     echo "$as_me:$LINENO: checking if --with-apbsdir was used" >&5
+echo $ECHO_N "checking if --with-apbsdir was used... $ECHO_C" >&6
+
+# Check whether --with-apbsdir or --without-apbsdir was given.
+if test "${with_apbsdir+set}" = set; then
+  withval="$with_apbsdir"
+  apbsdir="$with_apbsdir/tools/python"; echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+else
+  apbsdir=""; echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi;
+
+     if test "$apbsdir" = ""; then
+        echo "$as_me:$LINENO: checking for APBSDIR environment variable" >&5
+echo $ECHO_N "checking for APBSDIR environment variable... $ECHO_C" >&6
+        if test "$APBSDIR" != ""; then
+            apbsdir="$APBSDIR/tools/python"
+            echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+        else
+            echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+            apbsdir="./pdb2pka"
+        fi
+     fi
+
+     echo "$as_me:$LINENO: checking for compiled APBS Python wrappers" >&5
+echo $ECHO_N "checking for compiled APBS Python wrappers... $ECHO_C" >&6
+     apbserror=0
+     if test -f "$apbsdir/apbslib.py"; then
+         if test -f "$apbsdir/_apbslib.so"; then
+             echo "$as_me:$LINENO: result: $apbsdir" >&5
+echo "${ECHO_T}$apbsdir" >&6
+         else
+             echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+             apbserror=1
+         fi
+     else
+         echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+         apbserror=1
+     fi
+
+     if test "$apbserror" -eq 1; then
+         echo ""
+         echo "Unable to find apbslib.py and _apbslib.so in $apbsdir!"
+         echo "Compiled APBS Python wrappers are needed to use the pdb2pka functions"
+         echo "Please recompile APBS with the '--enable-python' flag."
+         echo ""
+         { { echo "$as_me:$LINENO: error: \"APBS Python wrappers not found!\"" >&5
+echo "$as_me: error: \"APBS Python wrappers not found!\"" >&2;}
+   { (exit 1); exit 1; }; }
+     fi
+
+
+     APBS_PYDIR=$apbsdir
+
+     echo "$as_me:$LINENO: result: ------------- End Processing pdb2ka Configure Options -----------" >&5
+echo "${ECHO_T}------------- End Processing pdb2ka Configure Options -----------" >&6
+     echo "$as_me:$LINENO: result: " >&5
+echo "${ECHO_T}" >&6
+
 
 else
      PY_CFLAGS="$PY_HEADER"
@@ -3430,6 +3511,7 @@ s,@PY_SHARED@,$PY_SHARED,;t t
 s,@PY_LDFLAGS@,$PY_LDFLAGS,;t t
 s,@PY_HEADER@,$PY_HEADER,;t t
 s,@PY_FLAGS@,$PY_FLAGS,;t t
+s,@APBS_PYDIR@,$APBS_PYDIR,;t t
 s,@PY_CFLAGS@,$PY_CFLAGS,;t t
 s,@PDB2PQR_SUBDIRS@,$PDB2PQR_SUBDIRS,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t

@@ -76,6 +76,7 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
+APBS_PYDIR = @APBS_PYDIR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -112,6 +113,7 @@ PDB2PQR_SUBDIRS = @PDB2PQR_SUBDIRS@
 PDB2PQR_VERSION = @PDB2PQR_VERSION@
 PY_CFLAGS = @PY_CFLAGS@
 PY_FLAGS = @PY_FLAGS@
+PY_HEADER = @PY_HEADER@
 PY_LDFLAGS = @PY_LDFLAGS@
 PY_SHARED = @PY_SHARED@
 SET_MAKE = @SET_MAKE@
@@ -164,7 +166,7 @@ AUTOMAKE_OPTIONS = no-dependencies
 SUFFIXES = .H .h .C .cc .c .f .o .cpp .so
 AM_CXXFLAGS = $(PY_CFLAGS) $(PY_FLAGS)
 CCLD = $(CXX)
-CLEANFILES = _pMC_mult.so 
+CLEANFILES = _pMC_mult.so *.pyc apbslib.py _apbslib.so
 SUBDIRS = substruct
 _pMC_mult_so_SOURCES = pMC_mult.cpp pMC_mult_wrap.cpp  
 _pMC_mult_so_LINK = $(CXX)
@@ -491,6 +493,10 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-info-am
 
+
+all:
+	ln -s -f $(APBS_PYDIR)/apbslib.py .
+	ln -s -f $(APBS_PYDIR)/_apbslib.so .
 
 distclean-local: clean-local
 clean-local: clean-ac

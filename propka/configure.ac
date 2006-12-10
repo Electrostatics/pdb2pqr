@@ -11,7 +11,6 @@ dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
 AC_INIT([PropKa], [1.0.0], [Jan-Jensen@uiowa.edu])
-AC_MSG_RESULT([------------- Begin Processing PropKa Configure Options -----------])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_PREFIX_DEFAULT(${HOME})
@@ -147,8 +146,7 @@ AC_SUBST(PY_SHARED,[$PY_SHARED])
 AC_SUBST(PY_LDFLAGS,[$PY_LDFLAGS])
 AC_SUBST(PY_CFLAGS,[$PY_CFLAGS])
 AC_SUBST(PY_FLAGS, [$PY_FLAGS])
-AC_MSG_RESULT([------------- End Processing PropKa Configure Options -----------])
-AC_MSG_RESULT([])
+
 dnl ##########################################################################
 dnl 11. generate the makefiles
 dnl ##########################################################################

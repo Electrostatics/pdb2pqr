@@ -125,9 +125,11 @@ if test "${with_propka}" = "enable"; then
      PDB2PQR_SUBDIRS="propka"
      AC_MSG_RESULT([no])
      AC_MSG_RESULT([])
+     AC_MSG_RESULT([------------- Begin Processing PropKa Configure Options -----------])
      cd propka
      ./configure 
      cd ..
+     AC_MSG_RESULT([------------- End Processing PropKa Configure Options -----------])
      AC_MSG_RESULT([])
 else
      AC_MSG_RESULT([yes])
@@ -147,6 +149,9 @@ if test "$with_pdb2pka" = "enable" ; then
      PDB2PQR_SUBDIRS="$PDB2PQR_SUBDIRS pdb2pka"
      AC_MSG_RESULT([yes])
 
+     AC_MSG_RESULT([])
+     AC_MSG_RESULT([------------- Begin Processing pdb2pka Configure Options -----------])
+
      # Test for Numeric install
      AC_MSG_CHECKING([for Numeric include files])
      if test -f $PY_PREFIX/include/python$PY_VERSION/Numeric/arrayobject.h; then
@@ -156,6 +161,54 @@ if test "$with_pdb2pka" = "enable" ; then
      else
         AC_MSG_ERROR([Unable to find Numeric installed!])
      fi
+
+     # Test for APBS Python wrappers
+     AC_MSG_CHECKING([if --with-apbsdir was used])
+     AC_ARG_WITH(apbsdir,
+        [AC_HELP_STRING([--with-apbsdir=PATH], [full path to top-level APBS directory])],
+        [apbsdir="$with_apbsdir/tools/python"; AC_MSG_RESULT([yes])],
+        [apbsdir=""; AC_MSG_RESULT([no])]
+     )
+
+     if test "$apbsdir" = ""; then
+        AC_MSG_CHECKING([for APBSDIR environment variable])
+        if test "$APBSDIR" != ""; then
+            apbsdir="$APBSDIR/tools/python"
+            AC_MSG_RESULT([yes])
+        else
+            AC_MSG_RESULT([no])
+            apbsdir="./pdb2pka"
+        fi
+     fi
+  
+     AC_MSG_CHECKING([for compiled APBS Python wrappers])
+     apbserror=0
+     if test -f "$apbsdir/apbslib.py"; then
+         if test -f "$apbsdir/_apbslib.so"; then
+             AC_MSG_RESULT([$apbsdir])
+         else
+             AC_MSG_RESULT([no])
+             apbserror=1
+         fi
+     else
+         AC_MSG_RESULT([no])
+         apbserror=1
+     fi
+
+     if test "$apbserror" -eq 1; then
+         echo ""
+         echo "Unable to find apbslib.py and _apbslib.so in $apbsdir!"
+         echo "Compiled APBS Python wrappers are needed to use the pdb2pka functions"
+         echo "Please recompile APBS with the '--enable-python' flag."
+         echo ""
+         AC_MSG_ERROR(["APBS Python wrappers not found!"])
+     fi
+
+
+     AC_SUBST(APBS_PYDIR,[$apbsdir])
+     AC_MSG_RESULT([------------- End Processing pdb2ka Configure Options -----------])
+     AC_MSG_RESULT([])
+
 
 else
      PY_CFLAGS="$PY_HEADER"

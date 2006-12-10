@@ -1,6 +1,8 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.1.3       XX-XX-XX
+BETA PUBLIC RELEASE VERSION 1.2.0       XX-XX-XX
 #############################################################################
+  - NEW FEATURES
+    * Added autoconf support for pdb2pka directory.
   - BUG FIXES 
     * Fixed charge assignment error when dealing with LYN in AMBER.
     * Fixed crash when a chain has a single amino acid residue.  The code

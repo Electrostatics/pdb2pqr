@@ -1,5 +1,5 @@
 from src.forcefield import *
-from ligandclean.peoe_PDB2PQR import PEOE as calc_charges
+from peoe_PDB2PQR import PEOE as calc_charges
 from src.pdb import *
 
 class ligforcefield(Forcefield):

@@ -183,7 +183,7 @@ class Definition:
 
         defpath = getDatFile(PATCHPATH)
         if defpath == "":
-            raise ValueError, "%s not fonud!" % PATCHPATH
+            raise ValueError, "%s not found!" % PATCHPATH
      
         handler.map = {}
         file = open(defpath)

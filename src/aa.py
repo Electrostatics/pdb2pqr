@@ -705,3 +705,84 @@ class WAT(Residue):
                     if atom not in bondatom.bonds: bondatom.bonds.append(atom)
         except KeyError:
             atom.reference = None
+
+class LIG(Residue):
+    """
+        Generic ligand class
+
+        This class gives data about the generic ligand object, and inherits
+        off the base residue class.
+    """
+
+    def __init__(self, atoms, ref):
+        """
+            Initialize the class
+
+            Parameters
+                atoms:      A list of Atom objects to be stored in this class
+                            (list)
+        """
+        
+        sampleAtom = atoms[-1]
+        
+        self.atoms = []
+        self.name = sampleAtom.resName
+        self.chainID = sampleAtom.chainID
+        self.resSeq = sampleAtom.resSeq
+        self.iCode = sampleAtom.iCode
+
+        self.fixed = 0
+        self.ffname = "WAT"
+        self.map = {}
+        self.reference = ref
+        
+        # Create each atom
+
+        for a in atoms:
+            if a.name in ref.altnames: # Rename atoms
+                a.name = ref.altnames[a.name]
+           
+            atom = Atom(a, "HETATM", self)
+            atomname = atom.get("name")
+            if atomname not in self.map:
+                self.addAtom(atom)
+            else: # Don't add duplicate atom with altLoc field           
+                oldatom = self.getAtom(atomname)
+                oldatom.set("altLoc","")
+
+    def createAtom(self, atomname, newcoords):
+        """
+            Create a water atom.  Note the HETATM field.
+
+            Parameters
+                atomname: The name of the atom (string)
+                newcoords:  The new coordinates of the atom (list)
+        """
+        oldatom = self.atoms[0]
+        newatom = Atom(oldatom, "HETATM", self)
+        newatom.set("x",newcoords[0])
+        newatom.set("y",newcoords[1])
+        newatom.set("z",newcoords[2])
+        newatom.set("name", atomname)
+        newatom.set("occupancy",1.00)
+        newatom.set("tempFactor",0.00)
+        newatom.added = 1
+        self.addAtom(newatom) 
+
+    def addAtom(self, atom):
+        """
+            Override the existing addAtom - include the link to the
+            reference object
+        """
+        self.atoms.append(atom)
+        atomname = atom.get("name")
+        self.map[atomname] = atom
+        try:
+            atom.reference = self.reference.map[atomname]
+            for bond in atom.reference.bonds:
+                if self.hasAtom(bond):
+                    bondatom = self.map[bond]
+                    if bondatom not in atom.bonds: atom.bonds.append(bondatom)
+                    if atom not in bondatom.bonds: bondatom.bonds.append(atom)
+        except KeyError:
+            atom.reference = None

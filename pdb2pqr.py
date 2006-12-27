@@ -79,6 +79,9 @@ def usage(rc):
     str = str + "                         <output-path>.propka.\n"
     str = str + "        --apbs-input  :  Create a template APBS input file based on\n"
     str = str + "                         the generated PQR file.\n"
+    str = str + "        --ligand=<path>: Calculate the parameters for the ligand in\n"
+    str = str + "                         mol2 format at the given path. Pdb2pka must\n"
+    str = str + "                         be compiled\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
 
@@ -213,7 +216,107 @@ def runPDB2PQR(pdblist, ff, options):
     if verbose:
         print "Parsed Amino Acid definition file."   
 
-    myProtein = Protein(pdblist, myDefinition)
+    # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
+
+    if "ligand" in options:
+        
+        from pdb2pka.ligandclean import ligff
+        from pdb2pka import NEWligand_topology
+
+        Lig = ligff.ligand_charge_handler()
+        Lig.read(options["ligand"])
+
+        # Create the ligand definition from the mol2 data
+
+        MOL2FLAG = True
+        X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,True)
+
+        # Add it to the 'official' definition
+       
+        ligresidue = DefinitionResidue()    
+        ligresidue.name = "LIG"
+        i = 1
+        atommap = {}
+        for line in X.lines[:-2]:
+            obj = DefinitionAtom()
+            entries = string.split(line)
+            if len(entries) != 4:
+                raise ValueError, "Invalid line for MOL2 definition!"
+            name = entries[0] 
+            obj.name = name  
+            obj.x = float(entries[1])
+            obj.y = float(entries[2])
+            obj.z = float(entries[3])
+            atommap[i] = name
+            ligresidue.map[name] = obj
+            i += 1        
+
+        # The second to last line has a list of bonded partners
+
+        line = X.lines[-2]        
+        bonds = string.split(line)
+
+        for i in range(0,len(bonds),2):
+            bondA = int(bonds[i])   
+            bondB = int(bonds[i+1])
+            atomA = ligresidue.getAtom(atommap[bondA])
+            atomB = ligresidue.getAtom(atommap[bondB])
+
+            atomA.bonds.append(atommap[bondB])
+            atomB.bonds.append(atommap[bondA])
+
+        # The last line is not yet supported - dihedrals
+
+        print ligresidue
+
+        myDefinition.map["LIG"] = ligresidue
+ 
+        # Look for titratable groups in the ligand
+
+        ligand_titratable_groups=X.find_titratable_groups()
+
+        if verbose:
+            print "ligand_titratable_groups", ligand_titratable_groups        
+
+        # Append the ligand data to the end of the PDB data
+
+        newpdblist=[]
+        
+        # First the protein
+        
+        for line in pdblist:
+            if isinstance(line, END) or isinstance(line,MASTER): continue
+            newpdblist.append(line)
+        
+        # Now the ligand
+
+        for e in Lig.lAtoms: newpdblist.append(e)
+
+        myProtein = Protein(newpdblist, myDefinition)
+
+        for rrres in  myProtein.chainmap['L'].residues:
+            for aaat in rrres.atoms:
+                for ligatoms in Lig.lAtoms:
+                    if ligatoms.name == aaat.name:
+                        aaat.sybylType = ligatoms.sybylType
+                        
+                        # setting the formal charges
+
+                        if ligatoms.sybylType == "O.co2":
+                            aaat.formalcharge = -0.5
+                        else: aaat.formalcharge = 0.0
+                        xxxlll = []
+                        for xxx in ligatoms.lBondedAtoms:
+                            xxxlll.append(xxx.name)
+                     
+                        aaat.intrabonds = xxxlll
+    
+                        # charge initialisation must happen somewhere else
+                        aaat.charge = 0.0
+
+    else:
+        myProtein = Protein(pdblist, myDefinition)
+
     if verbose:
         print "Created protein object -"
         print "\tNumber of residues in protein: %s" % myProtein.numResidues()
@@ -275,6 +378,21 @@ def runPDB2PQR(pdblist, ff, options):
 
     myForcefield = Forcefield(ff, myDefinition, userff)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
+    
+    if "ligand" in options:
+
+        # If this is independent, we can assign charges and radii here
+ 
+        for residue in myProtein.getResidues():
+            if isinstance(residue, LIG):
+                Lig.make_up2date(residue)
+                for atom in residue.getAtoms():
+                    atom.ffcharge = Lig.ligand_props[atom.name]["charge"]
+                    atom.radius = Lig.ligand_props[atom.name]["radius"]
+                    if atom in misslist:
+                        misslist.pop(misslist.index(atom))
+                        hitlist.append(atom)
+
     reslist, charge = myProtein.getCharge()
 
     # If we want a different naming scheme, use that
@@ -341,7 +459,7 @@ def mainCommand():
         Main driver for running program from the command line.
     """
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only"]
+    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand="]
 
     extensions = getAvailableExtensions(1)
     longOptlist += extensions.keys()
@@ -401,6 +519,8 @@ def mainCommand():
                 options["ffout"] = a
             else:
                 raise ValueError, "Invalid forcefield naming scheme %s!" % a
+        elif o == "--ligand":
+            options["ligand"] = a
         elif undashed in extensions.keys():
             options["extensions"][undashed] = extensions[undashed]
             

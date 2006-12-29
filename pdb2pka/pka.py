@@ -4,7 +4,7 @@
 #
 # Jens Erik Nielsen & Todd Dolinsky
 #
-# University College Dublin & Washington University St. Louis 2004-2006
+# University College Dublin & Washington University St. Louis 2004-2007
 #
 __date__="16 August 2005"
 __author__="Jens Erik Nielsen, Todd Dolinsky"

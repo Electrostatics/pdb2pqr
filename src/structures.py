@@ -21,7 +21,7 @@
     Additional contributing authors listed in documentation and supporting
     package licenses.
 
-    Copyright (c) 2003-2006.  Washington University in St. Louis.  
+    Copyright (c) 2003-2007.  Washington University in St. Louis.  
     All Rights Reserved.
 
     This file is part of PDB2PQR.

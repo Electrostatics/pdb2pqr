@@ -427,7 +427,10 @@ def mainCommand():
             else:
                 raise ValueError, "Invalid forcefield naming scheme %s!" % a
         elif o == "--ligand":
-            options["ligand"] = a
+            if os.path.isfile(a):
+                options["ligand"] = open(a)
+            else:
+                raise ValueError, "Unable to find ligand file %s!\n" % a
         elif undashed in extensions.keys():
             options["extensions"][undashed] = extensions[undashed]
             
@@ -524,7 +527,9 @@ def mainCGI():
             options["ffout"] = form["FFOUT"].value
     if form.has_key("CHAIN"):
         options["chain"] = 1
-      
+    if form.has_key("LIGAND"):
+        options["ligand"] = StringIO(form["LIGAND"].value)    
+  
     pdblist, errlist = readPDB(file)    
     if len(pdblist) == 0 and len(errlist) == 0:
         text = "Unable to find PDB file - Please make sure this is "

@@ -5,14 +5,14 @@ from src.definitions import *
 from pdb2pka import NEWligand_topology
 import string
 
-def initialize(definition, ligtext, pdblist, verbose=0):
+def initialize(definition, ligdesc, pdblist, verbose=0):
     """
         Initialize a ligand calculation by adding ligand atoms to the definition.
         This code adapted from pdb2pka/pka.py to work with existing PDB2PQR code.
 
         Parameters
             definition:  The definition object for PDB2PQR
-            ligtext:    The text of the desired ligand file (string)
+            ligdesc:    A file desciptor the desired ligand file (string)
             pdblist:    A list of objects from the PDB module in the original protein (list)
             verbose:    When 1, script will print information to stdout
 
@@ -23,7 +23,7 @@ def initialize(definition, ligtext, pdblist, verbose=0):
     """
     
     Lig = ligand_charge_handler()
-    Lig.read(ligtext)
+    Lig.read(ligdesc)
     
     # Create the ligand definition from the mol2 data
 

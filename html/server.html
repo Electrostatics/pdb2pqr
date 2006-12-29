@@ -53,6 +53,17 @@ document.thisform.CHAIN.disabled=false;
 }
 }
 
+function setligand(){
+if(document.thisform.LIGANDCHECK.checked==true)
+{
+document.thisform.LIGAND.disabled=false;
+}
+else
+{
+document.thisform.LIGAND.disabled=true;
+}
+}
+
 //-->
 </SCRIPT>
 </head>
@@ -119,6 +130,7 @@ Available options:
 <input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<BR>
 <input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
 <input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)"> Use <a href="http://propka.chem.uiowa.edu">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6 value="7.00" DISABLED><BR>
+<input type="CHECKBOX" name="LIGANDCHECK" onClick="setligand()"> Assign charges to the ligand specified in a MOL2 file</input>: <input type="file" name="LIGAND" size="25" maxlength=100 value="" DISABLED><BR>
 <input type="CHECKBOX" name="INPUT" onClick="setchain()"> Create an <a href="http://apbs.sourceforge.net">APBS</a> input file<BR>
 <input type="CHECKBOX" name="CHAIN"> Add/keep chain IDs in the PQR file
 </blockquote>

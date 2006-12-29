@@ -517,12 +517,15 @@ class MOL2MOLECULE:
         self.lBonds         = []       # all bonds of class <BOND>
         self.lPDBAtoms      = []       # PDB-like list of all atoms
 
-    def read(self,filename):
+    def read(self,file):
         """
         Routines for reading MOL2 file
         """
-        self.filename = filename
-        data = open(self.filename).read()
+        #self.filename = filename
+        #data = open(self.filename).read()
+       
+        data = file.read()
+ 
         # ATOM section
         start = data.find("@<TRIPOS>ATOM")
         stop = data.find("@<TRIPOS>BOND")

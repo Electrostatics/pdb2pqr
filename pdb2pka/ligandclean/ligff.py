@@ -1,6 +1,118 @@
 from src.forcefield import *
 from peoe_PDB2PQR import PEOE as calc_charges
 from src.pdb import *
+from src.definitions import *
+from pdb2pka import NEWligand_topology
+import string
+
+def initialize(definition, ligtext, pdblist, verbose=0):
+    """
+        Initialize a ligand calculation by adding ligand atoms to the definition.
+        This code adapted from pdb2pka/pka.py to work with existing PDB2PQR code.
+
+        Parameters
+            definition:  The definition object for PDB2PQR
+            ligtext:    The text of the desired ligand file (string)
+            pdblist:    A list of objects from the PDB module in the original protein (list)
+            verbose:    When 1, script will print information to stdout
+
+        Returns
+            protein:   The protein created by the original atoms and the ligand
+            definition: The updated definition for this protein
+            Lig:       The ligand_charge_handler object
+    """
+    
+    Lig = ligand_charge_handler()
+    Lig.read(ligtext)
+    
+    # Create the ligand definition from the mol2 data
+
+    MOL2FLAG = True
+    X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,True)
+
+    # Add it to the 'official' definition
+
+    ligresidue = DefinitionResidue()
+    ligresidue.name = "LIG"
+    i = 1
+    atommap = {}
+    for line in X.lines[:-2]:
+        obj = DefinitionAtom()
+        entries = string.split(line)
+        if len(entries) != 4:
+            raise ValueError, "Invalid line for MOL2 definition!"
+        name = entries[0]
+        obj.name = name
+        obj.x = float(entries[1])
+        obj.y = float(entries[2])
+        obj.z = float(entries[3])
+        atommap[i] = name
+        ligresidue.map[name] = obj
+        i += 1
+
+    # The second to last line has a list of bonded partners
+
+    line = X.lines[-2]
+    bonds = string.split(line)
+
+    for i in range(0,len(bonds),2):
+        bondA = int(bonds[i])
+        bondB = int(bonds[i+1])
+        atomA = ligresidue.getAtom(atommap[bondA])
+        atomB = ligresidue.getAtom(atommap[bondB])
+
+        atomA.bonds.append(atommap[bondB])
+        atomB.bonds.append(atommap[bondA])
+
+    # The last line is not yet supported - dihedrals
+    
+    definition.map["LIG"] = ligresidue
+
+    # Look for titratable groups in the ligand
+
+    ligand_titratable_groups=X.find_titratable_groups()
+
+    if verbose:
+        print "ligand_titratable_groups", ligand_titratable_groups
+    
+    # Append the ligand data to the end of the PDB data
+
+    newpdblist=[]
+       
+    # First the protein
+       
+    for line in pdblist:
+        if isinstance(line, END) or isinstance(line,MASTER): continue
+        newpdblist.append(line)
+       
+    # Now the ligand
+
+    for e in Lig.lAtoms: newpdblist.append(e)
+
+    protein = Protein(newpdblist, definition)
+
+    for rrres in  protein.chainmap['L'].residues:
+        for aaat in rrres.atoms:
+            for ligatoms in Lig.lAtoms:
+                if ligatoms.name == aaat.name:
+                    aaat.sybylType = ligatoms.sybylType
+        
+                    # setting the formal charges
+
+                    if ligatoms.sybylType == "O.co2":
+                        aaat.formalcharge = -0.5
+                    else: aaat.formalcharge = 0.0
+                    xxxlll = []
+                    for xxx in ligatoms.lBondedAtoms:
+                        xxxlll.append(xxx.name)
+        
+                    aaat.intrabonds = xxxlll
+   
+                    # charge initialisation must happen somewhere else
+                    aaat.charge = 0.0
+
+    return protein, definition, Lig
+
 
 class ligforcefield(Forcefield):
     """

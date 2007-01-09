@@ -4,14 +4,122 @@
 #
 # Jens Erik Nielsen & Todd Dolinsky
 #
-# University College Dublin & Washington University St. Louis 2004-2007
+# University College Dublin & Washington University St. Louis 2004-2006
 #
 __date__="16 August 2005"
 __author__="Jens Erik Nielsen, Todd Dolinsky"
 
+debug=None
 import getopt
 import sys, os
 from pKa_base import *
+
+if debug:
+    from Tkinter import *
+
+    class charge_mon(Frame):
+
+        def __init__(self):
+            Frame.__init__(self)
+            self.master.title('Charge monitor')
+            height=800
+            width=1200
+            self.cv=Canvas(self.master,bd=5,bg='white',
+                           width=width,
+                           height=height,
+                           scrollregion=(0,0,width,height))
+            self.cv.grid(row=0,column=0)
+            self.calc=0
+            self.seqstart=200
+            self.text=''
+            return
+
+        def init_protein(self,pkaroutines):
+
+            self.cv.create_text(0,self.calc,text='Setup',anchor='nw')
+            x_count=self.seqstart
+            self.res_pos={}
+            for chain in pkaroutines.protein.chains:
+                print chain.chainID
+                for residue in chain.residues:
+                    print residue.name, residue.resSeq
+                    if residue.name=='ASP' or residue.name=='GLU':
+                        fill='red'
+                    elif residue.name=='LYS' or residue.name=='ARG':
+                        fill='blue'
+                    else:
+                        fill='black'
+                    self.cv.create_text(x_count,self.calc,text='%3d' %residue.resSeq,anchor='nw',fill=fill)
+                    self.res_pos[residue.resSeq]=x_count
+                    x_count=x_count+24
+            self.calc=self.calc+15
+            self.master.update()
+            return
+
+        def set_calc(self,text):
+            self.text=text
+            return
+
+        def display_charges(self,charge_list):
+            #
+            # Print the calc
+            #
+            self.cv.create_text(0,self.calc,text=self.text,anchor='nw')
+            charges={}
+            for resnum,atomname,charge in charge_list:
+                if not charges.has_key(resnum):
+                    charges[resnum]=[]
+                charges[resnum].append(charge)
+            #
+            # Sum all charges
+            #
+            for res in charges.keys():
+                non_zero=None
+                sum=0.0
+                for crg in charges[res]:
+                    sum=sum+crg
+                    if crg!=0.0:
+                        non_zero=1
+                if non_zero:
+                    charges[res]=sum
+                else:
+                    charges[res]=None
+            #
+            #
+            #
+            later=[]
+            for resid in charges.keys():
+                x_count=self.res_pos[resid]
+                if charges[resid] is None:
+                    fill='white'
+                elif abs(charges[resid])<0.001:
+                    fill='grey'
+                elif abs(charges[resid]-1.0)<0.001:
+                    fill='blue'
+                elif abs(charges[resid]+1.0)<0.001:
+                    fill='red'
+                else:
+                    fill='yellow'
+
+                self.cv.create_rectangle(x_count,self.calc,x_count+24,self.calc+10,fill=fill)
+                if fill=='yellow':
+                    later.append([x_count,'%4.2f' %charges[resid]])
+            #
+            # Print all the wrong charges
+            #
+            for x_count,text in later:
+                self.cv.create_text(x_count,self.calc,text=text,anchor='nw',fill='black')
+            #
+            # Update and increment row
+            #
+            self.master.update()
+            self.calc=self.calc+15
+            return
+        
+if debug:
+    CM=charge_mon()
+else:
+    CM=None
 #
 # find the path to the script, and to pdb2pqr
 #
@@ -58,6 +166,7 @@ from apbs import *
 # ---
 # Function for comparing two atoms
 #
+
 def is_sameatom(atom1,atom2):
     #
     # Compare atom1 and atom2
@@ -74,7 +183,6 @@ def is_sameatom(atom1,atom2):
 #
 # ----
 #
-            
 
 TITRATIONFILE = os.path.join(scriptpath,"TITRATION.DAT")
 
@@ -106,7 +214,6 @@ class pKaRoutines:
         # Not sure this is the best place for the interaction energies...
         #
         self.matrix={}
-
         return
     
     #
@@ -178,7 +285,7 @@ class pKaRoutines:
         #    Main driver for running pKa calculations
         #
         self.pKas = self.findTitratableGroups()
-
+        
         self.calculateIntrinsicpKa()
 
         """ Calculate Pairwise Interactions """
@@ -199,11 +306,11 @@ class pKaRoutines:
             residue = pKa.residue
             pKaGroup = pKa.pKaGroup
             ambiguity = pKa.amb
-            atomnames = self.getAtomsForPotential(pKa)
+
             #
             # TODD: What does this one do?
             #
-            fixedstates = self.hydrogenRoutines.getstates(ambiguity)
+            #fixedstates = self.hydrogenRoutines.getstates(ambiguity)
             #
             # Loop over each titration
             #
@@ -214,6 +321,10 @@ class pKaRoutines:
                 if not self.matrix[pKa].has_key(titration):
                     self.matrix[pKa][titration]={}
                 #
+                # Get the atomnames
+                #
+                atomnames = self.getAtomsForPotential(pKa,titration)
+                #
                 # Get all states
                 #
                 possiblestates = titration.allstates
@@ -221,7 +332,7 @@ class pKaRoutines:
                     #
                     # Here we switch the center group to a particular state
                     #
-                    self.hydrogenRoutines.switchstate(fixedstates, ambiguity, state) 
+                    self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
                     self.setCharges(residue, atomnames)
@@ -246,6 +357,8 @@ class pKaRoutines:
         #
         # Run APBS and get the interaction with all other states
         #
+        if debug:
+            CM.set_calc('IE %s %s' %(pKa_center.residue.resSeq,state))
         potentials=self.getAPBSPotentials(pKa_center,titration,state)
         #
         # construct this side
@@ -258,10 +371,6 @@ class pKaRoutines:
             residue = pKa.residue
             pKaGroup = pKa.pKaGroup
             ambiguity = pKa.amb
-            #
-            # TODD: What does this one do?
-            #
-            fixedstates = self.hydrogenRoutines.getstates(ambiguity)
             #
             # Loop over each titration
             #
@@ -279,8 +388,8 @@ class pKaRoutines:
                     #
                     # Switch to the particular state
                     #
-                    atomnames = self.getAtomsForPotential(pKa)
-                    self.hydrogenRoutines.switchstate(fixedstates, ambiguity, state) 
+                    atomnames = self.getAtomsForPotential(pKa,titration)
+                    self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
                     self.setCharges(residue, atomnames)
@@ -359,7 +468,7 @@ class pKaRoutines:
                     #
                     crg=self.is_charged(pKa,titration,state)
                     is_charged_state.append(crg)
-                    print 'State: %d, is_charged  is %d' %(state,crg)
+                    print 'State: %s, is_charged  is %d' %(state,crg)
                     #if crg!=0:
                     intpkas.append(pKa.intrinsic_pKa[state])
                     #else:
@@ -425,16 +534,17 @@ class pKaRoutines:
         # Check if this state is a charged state
         #
         ambiguity = pKa.amb
-        states = self.hydrogenRoutines.getstates(ambiguity)
-        self.hydrogenRoutines.switchstate(states, ambiguity, state)
+        #states = self.hydrogenRoutines.getstates(ambiguity)
+        self.hydrogenRoutines.switchstate('pKa', ambiguity, state)
         residue = pKa.residue
         pKaGroup = pKa.pKaGroup
         sum=0.0
         for atom in residue.atoms:
             atomname = atom.get("name")
+            if atomname.find('FLIP')!=-1:
+                continue
             charge, radius = self.forcefield.getParams(residue, atomname)
             sum=sum+charge
-            #initialmap[atomname] = charge
         print 'Total charge for %s is %.2f' %(residue.name,sum)
         if abs(sum)>0.05:
             return 1
@@ -459,7 +569,7 @@ class pKaRoutines:
             print 'State\tModel pKa\tDesolvation\tBackground'
             for titration in pKa.pKaGroup.DefTitrations:
                 for state in titration.allstates:
-                    print '%3d\t%5.3f\t\t%5.3f\t\t%5.3f' %(state,titration.modelpKa,pKa.desolvation[state],pKa.background[state])
+                    print '%10s\t%5.3f\t\t%5.3f\t\t%5.3f' %(state,titration.modelpKa,pKa.desolvation[state],pKa.background[state])
         print
         print
         #
@@ -482,7 +592,7 @@ class pKaRoutines:
                     if crg==0.0:
                         ref_state=state
                 if ref_state:
-                    print 'State %d is the reference state' %ref_state
+                    print 'State %s is the reference state' %ref_state
                 else:
                     print 'No uncharged state for group',pKa
                     stop
@@ -494,13 +604,13 @@ class pKaRoutines:
                         dpKa_desolv=(pKa.desolvation[state]-pKa.desolvation[ref_state])/ln10
                         dpKa_backgr=(pKa.background[state]-pKa.background[ref_state])/ln10
                         intpKa=titration.modelpKa+dpKa_desolv+dpKa_backgr
-                        print 'Energy difference for %d -> %d [reference state] is %5.2f pKa units' %(state,ref_state,intpKa)
+                        print 'Energy difference for %s -> %s [reference state] is %5.2f pKa units' %(state,ref_state,intpKa)
                         pKa.intrinsic_pKa[state]=intpKa
                     else:
                         dpKa_desolv=(pKa.desolvation[state]-pKa.desolvation[ref_state])/ln10
                         dpKa_backgr=(pKa.background[state]-pKa.background[ref_state])/ln10
                         dpKa=dpKa_desolv+dpKa_backgr
-                        print 'Energy difference for %d -> %d [reference state] is %5.2f kT' %(state,ref_state,dpKa)
+                        print 'Energy difference for %s -> %s [reference state] is %5.2f kT' %(state,ref_state,dpKa)
                         pKa.intrinsic_pKa[state]=dpKa
             #
             # Loop over all titrations (the diffrence between titrations and transitions needs to become clearer)
@@ -544,7 +654,7 @@ class pKaRoutines:
                 #
                 possiblestates = titration.startstates + titration.endstates
                 print 'Possible states',possiblestates
-                fixedstates = self.hydrogenRoutines.getstates(ambiguity)
+                #fixedstates = self.hydrogenRoutines.getstates(ambiguity)
                 #
                 # Loop over all states and calculate the Backgound Interaction energy for each
                 #
@@ -553,33 +663,39 @@ class pKaRoutines:
                     # Get the atoms where we will measure the potential
                     #
                     firststate = possiblestates[0]
-                    atomnames = self.getAtomsForPotential(pKa)
+                    atomnames = self.getAtomsForPotential(pKa,titration)
                     print 'Atoms for measuring potential',atomnames
                     atomlist=[]
                     for atomname in atomnames:
                         atomlist.append(residue.getAtom(atomname))
                     #
+                    # Switch the states of all other titratable groups to a neutral state
                     #
+                    for other_pKa in self.pKas:
+                        if pKa==other_pKa:
+                            continue
+                        for other_titration in other_pKa.pKaGroup.DefTitrations:
+                            self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,self.neutral_ref_state[other_pKa])
                     #
-                    print "Calculating Backgound for state %i" % state
-                    self.hydrogenRoutines.switchstate(fixedstates, ambiguity, state) 
+                    # Switch the state for the group in question
+                    #
+                    print "Calculating Backgound for state %s" % state
+                    self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
                     #
                     # Set charges on all other residues
                     #
-                    # - TODO: Make sure all other groups are in their neutral state
-                    # - TODO: Here we also need to explore the number of neutral states
-                    # - TODO: that all other groups can be in - if we want to do things 100%
-                    # - TODO: correctly.
-                    # 
                     for chain in self.protein.getChains():
                         for otherresidue in chain.get("residues"):
                             if residue == otherresidue:
                                 continue
                             otherlist = []
                             for atom in otherresidue.atoms:
-                                otherlist.append(atom.get("name"))
+                                if not atom:
+                                    continue
+                                if atom.get('name').find('FLIP')==-1:
+                                    otherlist.append(atom.get("name"))
                             self.setCharges(otherresidue, otherlist)
                    
                     #
@@ -591,6 +707,8 @@ class pKaRoutines:
                     #
                     # Run APBS
                     #
+                    if debug:
+                        CM.set_calc('background %s %s' %(pKa.residue.resSeq,state))
                     potentials=self.getAPBSPotentials(pKa,titration,state)
                     #
                     # Assign charges to our residue
@@ -625,7 +743,7 @@ class pKaRoutines:
                 #
                 # Get atoms for potential
                 #
-                atomnames = self.getAtomsForPotential(pKa)
+                atomnames = self.getAtomsForPotential(pKa,titration)
                 print "atomnames", atomnames ### PC
                 print 'Atoms for measuring potential',atomnames
                 atomlist=[]
@@ -634,9 +752,9 @@ class pKaRoutines:
                 #
                 # Calculate the self energy for each state
                 #        
-                fixedstates = self.hydrogenRoutines.getstates(ambiguity)
+                #fixedstates = self.hydrogenRoutines.getstates(ambiguity)
                 for state in possiblestates:
-                    print "Calculating desolvation energy for residue %s state %i in solvent" %(residue.name,state)
+                    print "Calculating desolvation energy for residue %s state %s in solvent" %(residue.name,state)
                     #
                     # Center the map on our set of atoms
                     #
@@ -646,16 +764,18 @@ class pKaRoutines:
                     #
                     # Switch to the state
                     # Assign, radii, charges
-                    self.hydrogenRoutines.switchstate(fixedstates, ambiguity, state) 
+                    self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
                     self.zeroAllRadiiCharges()
-                    print 'Setting charges for residue',residue,atomnames
+                    print 'Setting charges for residue',residue.resSeq,residue.name,atomnames
                     self.setCharges(residue, atomnames)
                     self.setRadii(residue, atomnames)
                     #
                     # Run APBS first time for the state in solvent
                     #
+                    if debug:
+                        CM.set_calc('Desolv solv %s %s' %(pKa.residue.resSeq,state))
                     solutionEnergy=self.get_elec_energy(self.getAPBSPotentials(pKa,titration,state),atomlist)
-                    print "Calculating self energy for state %i in solvent" % state
+                    print "Calculating self energy for state %s in solvent" % state
                     #
                     # Now we set all radii (= in protein)
                     #
@@ -664,13 +784,15 @@ class pKaRoutines:
                     # Run APBS again, - this time for the state in the protein
                     #
                     print
-                    print 'Calculating self energy for residue %s state %d in the protein' %(residue.name,state)
+                    print 'Calculating self energy for residue %s state %s in the protein' %(residue.name,state)
+                    if debug:
+                        CM.set_calc('Desolv prot %s %s' %(pKa.residue.resSeq,state))
                     proteinEnergy = self.get_elec_energy(self.getAPBSPotentials(pKa,titration,state),atomlist)
                     #
                     # Calculate the difference in self energy for this state
                     #
                     desolvation = proteinEnergy - solutionEnergy
-                    print 'Desolvation for %s %d in state %d is %5.3f'  \
+                    print 'Desolvation for %s %d in state %s is %5.3f'  \
                           %(residue.name,residue.resSeq,state,desolvation)
                     print
                     print '======================================='
@@ -687,12 +809,13 @@ class pKaRoutines:
         #
         minmax={'x':[999.9,-999.9],'y':[999.9,-999.9],'z':[999.9,-999.9]}
         for atom in atomlist:
-            for axis in ['x','y','z']:
-                coord=getattr(atom,axis)
-                if coord<minmax[axis][0]:
-                    minmax[axis][0]=coord
-                if coord>minmax[axis][1]:
-                    minmax[axis][1]=coord
+            if atom:
+                for axis in ['x','y','z']:
+                    coord=getattr(atom,axis)
+                    if coord<minmax[axis][0]:
+                        minmax[axis][0]=coord
+                    if coord>minmax[axis][1]:
+                        minmax[axis][1]=coord
         #
         # Calc the geometric center and extent
         #
@@ -717,18 +840,15 @@ class pKaRoutines:
         # 
         energy=0.0
         count=0
-        print
-        print
-        #print 'atomlist',atomlist
-        for atom in atomlist:
-            print atom.name,atom.resSeq
-        print
-        print '------------'
         totphi=0.0
         totcrg=0.0
         found=0
         for atom in protein.getAtoms():
+            if not atom:
+                continue
             for atom_2 in atomlist:
+                if not atom_2:
+                    continue
                 if is_sameatom(atom,atom_2):
                     totcrg=totcrg+abs(atom.get("ffcharge"))
                     totphi=totphi+abs(potentials[-1][count])
@@ -780,13 +900,14 @@ class pKaRoutines:
                 loaded=1
             except:
                 fd.close()
+        loaded=None
         #
         # Run calc again if needed
         #
         if not loaded:
             print 'Running APBS calculation'
             apbs_inputfile=self.apbs_setup.printInput()
-            potentials = runAPBS(self.protein, apbs_inputfile)
+            potentials = runAPBS(self.protein, apbs_inputfile, CM)
             fd=open(result_file,'wb')
             cPickle.dump(potentials,fd)
             fd.close()
@@ -830,20 +951,18 @@ class pKaRoutines:
                 residue:  The residue to set (residue)
                 atomlist: A list of atomnames (list)
         """
-        print 'Setting charges'
         for atom in residue.get("atoms"):
             atomname = atom.get("name")
-            if atomname not in atomlist: continue
+            if atomname not in atomlist:
+                continue
             charge, radius = self.forcefield.getParams(residue, atomname)
             if charge != None:
                 atom.set("ffcharge", charge)
-                print atom.name,charge
             else:
                 text = "Could not find charge for atom %s" % atomname
                 text += " in residue %s %i" % (residue.name, residue.resSeq)
                 text += " while attempting to set charge!"
                 raise ValueError, text
-        print 'done'
         return
     #
     # ----------------------------
@@ -857,6 +976,8 @@ class pKaRoutines:
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
                     atomname = atom.get("name")
+                    if atomname.find('FLIP')!=-1:
+                        continue
                     if atomname == "HD1": ###PC
                         charge = 0.44
                         radiues = 1.05
@@ -889,7 +1010,7 @@ class pKaRoutines:
     # --------------------------------
     #
                 
-    def getAtomsForPotential(self, pKa):
+    def getAtomsForPotential(self, pKa,titration, get_neutral_state=None):
         #
         #    Find the atoms that are needed for measuring the potential,
         #    only selecting atoms where the charge changes.
@@ -897,49 +1018,118 @@ class pKaRoutines:
         #        pKa:  The pKa object (pKa)
         #    Returns:
         #        atomnames:  A list of atomnames to measure (list)
-        
-        #
-        # TODO: This routine needs to become independent of the state
-        # TODO: and we need to pass it a titration instance, not a pKa instance
-        # TODO: I've hacked a temporary solution below...
-        #
+        neutral_state=None
         atomnames = []
         initialmap = {}
         residue = pKa.residue
         pKaGroup = pKa.pKaGroup
         ambiguity = pKa.amb
-        states = self.hydrogenRoutines.getstates(ambiguity)
+        #states = self.hydrogenRoutines.getstates(ambiguity)
         #
         # Change to the start state
         #
-        start_state=0
-        self.hydrogenRoutines.switchstate(states, ambiguity, start_state)
+        start_state=titration.startstates[0]
+        self.hydrogenRoutines.switchstate('pKa', ambiguity, start_state)
+        sum=0.0
         for atom in residue.atoms:
             atomname = atom.get("name")
+            if atomname.find('FLIP')!=-1:
+                continue
             charge, radius = self.forcefield.getParams(residue, atomname) 
             initialmap[atomname] = charge
+            sum=sum+charge
+        if abs(sum)<0.001:
+            neutral_state=start_state
         #
-        # Change to another state
+        # Check if charges change in all other states
         #
-        end_state=1
-        self.hydrogenRoutines.switchstate(states, ambiguity, end_state)
+        for state in titration.endstates+titration.startstates[1:]:
+            self.hydrogenRoutines.switchstate('pKa', ambiguity, state)
+            sum=0.0
+            for atom in residue.atoms:
+                atomname = atom.get("name")
+                if atomname.find('FLIP')!=-1:
+                    continue
+                charge, radius = self.forcefield.getParams(residue, atomname)
+                sum=sum+charge
+                try:
+                    initcharge = initialmap[atomname]
+                    if charge != initcharge:
+                        if not atomname in atomnames:
+                            atomnames.append(atomname)
+                except KeyError:
+                    if not atomname in atomnames:
+                        atomnames.append(atomname)
+            #
+            # Is this the first neutral state?
+            #
+            if abs(sum)<0.0001:
+                if not neutral_state:
+                    neutral_state=state
         #
-        # Don't change anything here for the ligand. It will all work as sooon as we
-        # get the parameter files right
+        # Did we just want a neutral state identification?
         #
-        #for atom in residue.atoms:
-        #    atomname = atom.get("name")
-        #    atomnames.append(atomname) 
-        ###
-        for atom in residue.atoms:
-            atomname = atom.get("name")
-            charge, radius = self.forcefield.getParams(residue, atomname)
-            try:
-                initcharge = initialmap[atomname]
-                if charge != initcharge:
-                    atomnames.append(atomname)
-            except KeyError:     
-                atomnames.append(atomname)
+        if get_neutral_state:
+            if not neutral_state:
+                raise "no neutral state for",residue.resSeq
+            return neutral_state
+        #
+        # Make sure that the charges add up to integers by adding extra atoms
+        #
+        sum=0.01
+        while sum>0.001:
+            sum=0.0
+            added=None
+            #
+            # Loop over all states to find atoms to add
+            #
+            for state in titration.endstates+titration.startstates:
+                self.hydrogenRoutines.switchstate('pKa', ambiguity, state)
+                #
+                # Sum this state
+                #
+                this_sum=0.0
+                for atom in residue.atoms:
+                    atomname = atom.get("name")
+                    if atomname.find('FLIP')!=-1:
+                        continue
+                    if not atomname in atomnames:
+                        continue
+                    charge, radius = self.forcefield.getParams(residue, atomname)
+                    this_sum=this_sum+charge
+                #
+                # Is this an integer charge?
+                #
+                diff=abs(1000.0*this_sum)-abs(1000.0*int(this_sum))
+                sum=sum+diff
+                if diff>0.001:
+                    #
+                    # Find all atoms one bond away
+                    #
+                    for atom in residue.atoms:
+                        atomname=atom.get('name')
+                        if atomname.find('FLIP')!=-1:
+                            continue
+                        if not atomname in atomnames:
+                            continue
+                        #
+                        # Add all atoms that are not already added
+                        #
+                        for bound_atom in atom.intrabonds:
+                            if not bound_atom in atomnames:
+                                atomnames.append(bound_atom)
+                                added=1
+                #
+                # Next state
+                #
+                pass
+            #
+            # Did we add anything?
+            #
+            if added is None and sum>0.001:
+                print sum
+                print atomnames
+                raise 'Could not find integer charge state'
         return atomnames
 
     #
@@ -975,6 +1165,7 @@ class pKaRoutines:
                         thispKa = pKa(residue, self.pKagroups[group], amb)
                         pKalist.append(thispKa)
                         print "\t%s %s" % (resname, residue.resSeq)
+ 
         #
         # Print the residues that we have selected
         #
@@ -985,8 +1176,17 @@ class pKaRoutines:
             print pKa_v.residue.name,pKa_v.residue.resSeq
         print
         print
-
-
+        #
+        # Find a neutral state for each group
+        #
+        self.neutral_ref_state={}
+        for this_pka in pKalist:
+            residue = this_pka.residue
+            pKaGroup = this_pka.pKaGroup
+            ambiguity = this_pka.amb
+            for titration in pKaGroup.DefTitrations:
+                neutral_state = self.getAtomsForPotential(this_pka,titration,get_neutral_state=1)
+                self.neutral_ref_state[this_pka]=neutral_state
         return pKalist
 
     #
@@ -1052,9 +1252,9 @@ class pKaRoutines:
                     
                     split=string.split(line[11:],'->')
                     for number in string.split(split[0], ','):
-                        startstates.append(int(number))                        
+                        startstates.append(string.strip(number))                        
                     for number in string.split(split[1], ','):
-                        endstates.append(int(number))
+                        endstates.append(string.strip(number))
 
                     line = file.readline()
                     #
@@ -1181,7 +1381,7 @@ def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1):
         sys.exit(2)
 
     if len(errlist) != 0 and verbose:
-        print "Warning: %s is a non-standard PDB file.\n" % path
+        print "Warning: %s is a non-standard PDB file.\n" %pdbfilename
         print errlist
 
     if verbose:
@@ -1378,7 +1578,7 @@ def test_interface():
 if __name__ == "__main__":
     #test_interface()
     #stop
-    state=2
+    state=1
     if state==0:
         import pMC_mult
         groups=1
@@ -1461,13 +1661,25 @@ if __name__ == "__main__":
         #
         # Do a real pKa calculation
         #
+        #try:
         protein, routines, forcefield,apbs_setup, ligand_titratable_groups = startpKa()
         print "chains of current protein ", protein.chainmap#     print "currently used forefield  ", forcefield
         mypkaRoutines = pKaRoutines(protein, routines, forcefield,apbs_setup)
+        #
+        # Debugging
+        #
+        if debug:
+            CM.init_protein(mypkaRoutines)
+        #
+        # Deal with ligands
+        #
         if ligand_titratable_groups:
             print "lig (before mypKaRoutines) ", ligand_titratable_groups['titratableatoms']
             mypkaRoutines.insert_new_titratable_group(ligand_titratable_groups)
         mypkaRoutines.runpKa()
+        #finally:
+        #    
+        #    CM.mainloop()
     elif state==2:
         #
         # Just assign charges

@@ -472,6 +472,7 @@ class Optimize:
         # Remove if geometry does not work
                             
         if bestangle > (ANGLE_CUTOFF * 2.0):
+            self.debug("Removing due to geometry %.2f > %.2f" % (bestangle, ANGLE_CUTOFF*2.0))
             residue.removeAtom(newatom.name)
             return 0
 
@@ -1182,10 +1183,8 @@ class Water(Optimize):
         self.hbonds = []
 
         oxatom = residue.getAtom("O")
-	if oxatom == None:
-		raise ValueError, "Unable to find oxygen atom in %s!" % \
-			residue
-
+        if oxatom == None:
+            raise ValueError, "Unable to find oxygen atom in %s!" % residue
 
         oxatom.hdonor = 1
         oxatom.hacceptor = 1
@@ -1265,18 +1264,22 @@ class Water(Optimize):
                 # Point the LP to the best H
                 
                 self.makeAtomWithNoBonds(acc, donorh, newname)
+                self.debug("Added %s to %s" % (newname, acc.residue))
                 return 1
                 
             else: return 0
                 
         elif len(acc.bonds) == 1: # No H or LP attached
+            self.debug("Trying to add %s to %s with one bond" % (newname, acc.residue))
             self.makeWaterWithOneBond(acc, newname)
             newatom = acc.residue.getAtom(newname)
             return self.trySingleAlcoholicLP(acc, donor, newatom)
         elif len(acc.bonds) == 2:
+            self.debug("Trying to add %s to %s with two bonds" % (newname, acc.residue))
             loc1, loc2 = self.getPositionsWithTwoBonds(acc)
             return self.tryPositionsWithTwoBondsLP(acc, donor, newname, loc1, loc2)
         elif len(acc.bonds) == 3:
+            self.debug("Trying to add %s to %s with three bonds" % (newname, acc.residue))
             loc = self.getPositionWithThreeBonds(acc)
             return self.tryPositionsWithThreeBondsLP(acc, donor, newname, loc)  
 
@@ -1331,13 +1334,19 @@ class Water(Optimize):
 
         # Conditions for return
 
-        if residue.fixed:  return
-        if residue.hasAtom("H2"): return
+        if residue.fixed:  
+            self.debug("Residue %s already fixed" % residue)
+            return
+        if residue.hasAtom("H2"): 
+            self.debug("Residue %s already has H2" % residue)
+            return
 
         atom = residue.getAtom("O")
         if not residue.hasAtom("H1"): addname = "H1"
         else:  addname = "H2"
-        
+       
+        self.debug("Finalizing %s by adding %s (%i current O bonds)" % (residue, addname, len(atom.bonds)))
+ 
         if len(atom.bonds) == 0:
 
             newcoords = []
@@ -1378,9 +1387,9 @@ class Water(Optimize):
                 residue.rotateTetrahedral(pivot, atom, 20.0)
                 nearatom = self.routines.getClosestAtom(newatom)
 
-                # If there is no closest conflict, return
+                # If there is no closest conflict, continue
 
-                if nearatom == None: return
+                if nearatom == None: continue
     
                 dist = distance(nearatom.getCoords(), newatom.getCoords())
                 
@@ -1408,28 +1417,28 @@ class Water(Optimize):
             # Debump residue if necessary by trying the other location
             
             nearatom = self.routines.getClosestAtom(newatom)    
-            if nearatom == None: return     
-            dist1 = distance(newatom.getCoords(), nearatom.getCoords())
+            if nearatom != None:    
+                dist1 = distance(newatom.getCoords(), nearatom.getCoords())
 
-            # Place at other location
+                # Place at other location
 
-            self.routines.cells.removeCell(atom)
-            newatom.x = loc2[0]
-            newatom.y = loc2[1]
-            newatom.z = loc2[2]
-            self.routines.cells.addCell(atom)
-
-            nearatom = self.routines.getClosestAtom(newatom)
-            if nearatom == None: return
-
-            # If this is worse, switch back
-            
-            if distance(newatom.getCoords(), nearatom.getCoords()) < dist1:
                 self.routines.cells.removeCell(atom)
-                newatom.x = loc1[0]
-                newatom.y = loc1[1]
-                newatom.z = loc1[2]
+                newatom.x = loc2[0]
+                newatom.y = loc2[1]
+                newatom.z = loc2[2]
                 self.routines.cells.addCell(atom)
+
+                nearatom = self.routines.getClosestAtom(newatom)
+                if nearatom != None:
+
+                    # If this is worse, switch back
+            
+                    if distance(newatom.getCoords(), nearatom.getCoords()) < dist1:
+                        self.routines.cells.removeCell(atom)
+                        newatom.x = loc1[0]
+                        newatom.y = loc1[1]
+                        newatom.z = loc1[2]
+                        self.routines.cells.addCell(atom)
        
             if addname == "H1":
                 self.finalize()    

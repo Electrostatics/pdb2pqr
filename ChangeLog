@@ -9,6 +9,8 @@ BETA PUBLIC RELEASE VERSION 1.2.0       XX-XX-XX
     * Fixed charge assignment error when dealing with LYN in AMBER.
     * Fixed crash when a chain has a single amino acid residue.  The code
       now reports the offending chain and residue before exiting.
+    * Fixed hydrogen optimization bug where waters with no nearby atoms at
+      certain orientations caused missing hydrogens.
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.1.2       6-23-06
 #############################################################################

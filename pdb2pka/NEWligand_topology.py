@@ -370,7 +370,7 @@ class get_ligand_topology:
     # ---------
     #
     def ring_detection(self,start_atom,already_visited=[],level=0):
-        if start_atom in already_visited:
+        if start_atom in already_visited and len(already_visited) >= 2:
             if start_atom==already_visited[-2]:
                 return []
             if already_visited[0]!=start_atom:
@@ -657,7 +657,8 @@ class get_ligand_topology:
             NonRedundantCliques = AllCliqueList
         # redundancies should be removed now...
         #
-        
+       
+         
         for allCl in dict_of_matched_lig_fragments:
             if dict_of_matched_lig_fragments[allCl]['matchedligatoms'] == NonRedundantCliques[0]:
                 print "WE MATCHED", dict_of_matched_lig_fragments[allCl]['templatename']
@@ -667,5 +668,10 @@ class get_ligand_topology:
                 print "titratableatoms            : ", dict_of_matched_lig_fragments[allCl]['titratableatoms']
                 print "matching atoms             : ", dict_of_matched_lig_fragments[allCl]['matching_atoms']
         # re-run matching to get mutiple titratable sites?
-        print dict_of_matched_lig_fragments[allCl]
-        return dict_of_matched_lig_fragments[allCl]
+        
+        # TJD: This is to resolve the bug fix when allCl is None
+        if dict_of_matched_lig_fragments != {}:
+            print dict_of_matched_lig_fragments[allCl]
+            return dict_of_matched_lig_fragments[allCl]
+        else:
+            return {}

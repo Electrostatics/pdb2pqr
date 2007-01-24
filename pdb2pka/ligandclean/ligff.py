@@ -87,7 +87,10 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
        
     # Now the ligand
 
-    for e in Lig.lAtoms: newpdblist.append(e)
+    for e in Lig.lAtoms: 
+        e.resName = "LIG"
+        newpdblist.append(e)
+        
 
     protein = Protein(newpdblist, definition)
 

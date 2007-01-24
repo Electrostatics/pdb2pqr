@@ -10,7 +10,7 @@ dnl ##########################################################################
 dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
-AC_INIT([PDB2PQR], [1.1.2], [todd@ccb.wustl.edu])
+AC_INIT([PDB2PQR], [1.2.0], [todd@ccb.wustl.edu])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_PREFIX_DEFAULT(${HOME})
@@ -45,8 +45,8 @@ dnl #
 dnl #   Never try to set the interface numbers so that they correspond to the
 dnl #   release number of your package. This is an abuse that only fosters
 dnl #   misunderstanding of the purpose of library versions.
-AM_INIT_AUTOMAKE(PDB2PQR, 1.1.2)
-PDB2PQR_VERSION="1:1:2"
+AM_INIT_AUTOMAKE(PDB2PQR, 1.2.0)
+PDB2PQR_VERSION="1:2:0"
 AC_SUBST(PDB2PQR_VERSION)
 ACLOCAL=":";
 AUTOCONF=":";
@@ -163,49 +163,49 @@ if test "$with_pdb2pka" = "enable" ; then
      fi
 
      # Test for APBS Python wrappers
-     AC_MSG_CHECKING([if --with-apbsdir was used])
-     AC_ARG_WITH(apbsdir,
-        [AC_HELP_STRING([--with-apbsdir=PATH], [full path to top-level APBS directory])],
-        [apbsdir="$with_apbsdir/tools/python"; AC_MSG_RESULT([yes])],
-        [apbsdir=""; AC_MSG_RESULT([no])]
-     )
+     #AC_MSG_CHECKING([if --with-apbsdir was used])
+     #AC_ARG_WITH(apbsdir,
+     #   [AC_HELP_STRING([--with-apbsdir=PATH], [full path to top-level APBS directory])],
+     #   [apbsdir="$with_apbsdir/tools/python"; AC_MSG_RESULT([yes])],
+     #   [apbsdir=""; AC_MSG_RESULT([no])]
+     #)
 
-     if test "$apbsdir" = ""; then
-        AC_MSG_CHECKING([for APBSDIR environment variable])
-        if test "$APBSDIR" != ""; then
-            apbsdir="$APBSDIR/tools/python"
-            AC_MSG_RESULT([yes])
-        else
-            AC_MSG_RESULT([no])
-            apbsdir="./pdb2pka"
-        fi
-     fi
+     #if test "$apbsdir" = ""; then
+     #   AC_MSG_CHECKING([for APBSDIR environment variable])
+     #   if test "$APBSDIR" != ""; then
+     #       apbsdir="$APBSDIR/tools/python"
+     #       AC_MSG_RESULT([yes])
+     #   else
+     #       AC_MSG_RESULT([no])
+     #       apbsdir="./pdb2pka"
+     #   fi
+     #fi
   
-     AC_MSG_CHECKING([for compiled APBS Python wrappers])
-     apbserror=0
-     if test -f "$apbsdir/apbslib.py"; then
-         if test -f "$apbsdir/_apbslib.so"; then
-             AC_MSG_RESULT([$apbsdir])
-         else
-             AC_MSG_RESULT([no])
-             apbserror=1
-         fi
-     else
-         AC_MSG_RESULT([no])
-         apbserror=1
-     fi
+     #AC_MSG_CHECKING([for compiled APBS Python wrappers])
+     #apbserror=0
+     #if test -f "$apbsdir/apbslib.py"; then
+     #    if test -f "$apbsdir/_apbslib.so"; then
+     #        AC_MSG_RESULT([$apbsdir])
+     #    else
+     #        AC_MSG_RESULT([no])
+     #        apbserror=1
+     #    fi
+     #else
+     #    AC_MSG_RESULT([no])
+     #    apbserror=1
+     #fi
 
-     if test "$apbserror" -eq 1; then
-         echo ""
-         echo "Unable to find apbslib.py and _apbslib.so in $apbsdir!"
-         echo "Compiled APBS Python wrappers are needed to use the pdb2pka functions"
-         echo "Please recompile APBS with the '--enable-python' flag."
-         echo ""
-         AC_MSG_ERROR(["APBS Python wrappers not found!"])
-     fi
+     #if test "$apbserror" -eq 1; then
+     #    echo ""
+     #    echo "Unable to find apbslib.py and _apbslib.so in $apbsdir!"
+     #    echo "Compiled APBS Python wrappers are needed to use the pdb2pka functions"
+     #    echo "Please recompile APBS with the '--enable-python' flag."
+     #    echo ""
+     #    AC_MSG_ERROR(["APBS Python wrappers not found!"])
+     #fi
 
 
-     AC_SUBST(APBS_PYDIR,[$apbsdir])
+     #AC_SUBST(APBS_PYDIR,[$apbsdir])
      AC_MSG_RESULT([------------- End Processing pdb2ka Configure Options -----------])
      AC_MSG_RESULT([])
 

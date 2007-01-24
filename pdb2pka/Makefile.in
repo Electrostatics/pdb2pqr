@@ -76,7 +76,6 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-APBS_PYDIR = @APBS_PYDIR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -494,9 +493,9 @@ uninstall-info: uninstall-info-recursive
 	uninstall uninstall-am uninstall-info-am
 
 
-all:
-	ln -s -f $(APBS_PYDIR)/apbslib.py .
-	ln -s -f $(APBS_PYDIR)/_apbslib.so .
+#all:
+#	ln -s -f $(APBS_PYDIR)/apbslib.py .
+#	ln -s -f $(APBS_PYDIR)/_apbslib.so .
 
 distclean-local: clean-local
 clean-local: clean-ac

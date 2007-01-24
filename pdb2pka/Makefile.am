@@ -20,9 +20,9 @@ _pMC_mult_so_LINK        = $(CXX)
 _pMC_mult_so_LDFLAGS     = -o $@ $(PY_SHARED)
 _pMC_mult_so_LDADD       = $(PY_LDFLAGS)
 
-all:
-	ln -s -f $(APBS_PYDIR)/apbslib.py .
-	ln -s -f $(APBS_PYDIR)/_apbslib.so .
+#all:
+#	ln -s -f $(APBS_PYDIR)/apbslib.py .
+#	ln -s -f $(APBS_PYDIR)/_apbslib.so .
 
 distclean-local: clean-local
 clean-local: clean-ac

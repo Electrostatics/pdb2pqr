@@ -43,7 +43,7 @@
     ----------------------------
 """
 
-__date__   = "23 June 2006"
+__date__   = "28 January 2007"
 __author__ = "Todd Dolinsky"
 
 import string
@@ -288,7 +288,7 @@ def getLoads():
     
     return loads
 
-def createResults(header, input, name, time):
+def createResults(header, input, name, time, missedligands=[]):
     """
         Create the results web page for CGI-based runs
 
@@ -298,6 +298,8 @@ def createResults(header, input, name, time):
             tmpdir:  The resulting file directory (string)
             name:    The result file root name, based on local time (string)
             time:    The time taken to run the script (float)
+            missedligands: A list of ligand names whose parameters could
+                     not be assigned. Optional. (list)
     """
     newheader = string.replace(header, "\n", "<BR>")
     newheader = string.replace(newheader," ","&nbsp;")
@@ -328,6 +330,17 @@ def createResults(header, input, name, time):
     file.write("<blockquote><code>\n")
     file.write("%s<P>\n" % newheader)
     file.write("</code></blockquote>\n")
+    if missedligands != []:
+        file.write("The forcefield that you have selected does not have ")
+        file.write("parameters for the following ligands in your PDB file.  Please visit ")
+        file.write("<a href=\"http://davapc1.bioch.dundee.ac.uk/programs/prodrg/\">PRODRG</a> ")
+        file.write("to convert these ligands into MOL2 format.  This ligand can the be ")
+        file.write("parameterized in your PDB2PQR calculation using the PEOE_PB methodology via ")
+        file.write("the 'Assign charges to the ligand specified in a MOL2 file' checkbox:<P>\n")
+        file.write("<blockquote><code>\n")
+        for item in missedligands:
+            file.write("%s<BR>\n" % item)
+        file.write("<P></code></blockquote>\n")
     file.write("If you would like to run PDB2PQR again, please click <a href=\"%s%s\">\n" % (WEBSITE, WEBNAME))
     file.write("here</a>.<P>\n")
     file.write("<P>Thank you for using the PDB2PQR server!<P>\n")

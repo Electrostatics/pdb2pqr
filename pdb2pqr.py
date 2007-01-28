@@ -168,6 +168,8 @@ def runPDB2PQR(pdblist, ff, options):
         Returns
             header:  The PQR file header (string)
             lines:   The PQR file atoms (list)
+            missedligandresidues:  A list of ligand residue names whose charges could
+                     not be assigned (ligand)
     """
     ph = None
     pkaname = ""
@@ -314,6 +316,13 @@ def runPDB2PQR(pdblist, ff, options):
     header = printHeader(misslist, reslist, charge, ff, myRoutines.getWarnings(), options)
     lines = myProtein.printAtoms(hitlist, chainflag)
 
+    # Determine if any of the atoms in misslist were ligands
+    missedligandresidues = []
+    for atom in misslist:
+        if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+        if atom.resName not in missedligandresidues:
+            missedligandresidues.append(atom.resName)
+
     # Process the extensions
  
     for ext in extmap:
@@ -324,7 +333,7 @@ def runPDB2PQR(pdblist, ff, options):
     if verbose:
         print "Total time taken: %.2f seconds\n" % (time.time() - start)
 
-    return header, lines
+    return header, lines, missedligandresidues
 
 def getAvailableExtensions(displayflag=0):
     """
@@ -463,7 +472,7 @@ def mainCommand():
     outpath = args[1]
     options["outname"] = outpath
 
-    header, lines = runPDB2PQR(pdblist, ff, options)
+    header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
 
     # Print the PQR file
     outfile = open(outpath,"w")
@@ -559,7 +568,7 @@ def mainCGI():
  
         pqrpath = startServer(name)
         options["outname"] = pqrpath
-        header, lines = runPDB2PQR(pdblist, ff, options)
+        header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
         file = open(pqrpath, "w")
         file.write(header)
         for line in lines:
@@ -578,7 +587,7 @@ def mainCGI():
             myinput.printInputFiles()
                     
         endtime = time.time() - starttime
-        createResults(header, input, name, endtime)
+        createResults(header, input, name, endtime, missedligands)
         logRun(options, endtime, len(lines), ff, os.environ["REMOTE_ADDR"])
 
     except StandardError, details:

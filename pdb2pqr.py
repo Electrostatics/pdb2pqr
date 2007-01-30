@@ -287,20 +287,39 @@ def runPDB2PQR(pdblist, ff, options):
 
     myForcefield = Forcefield(ff, myDefinition, userff)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
-    
+   
     if "ligand" in options:
 
         # If this is independent, we can assign charges and radii here
  
         for residue in myProtein.getResidues():
             if isinstance(residue, LIG):
+                templist = []
                 Lig.make_up2date(residue)
                 for atom in residue.getAtoms():
                     atom.ffcharge = Lig.ligand_props[atom.name]["charge"]
                     atom.radius = Lig.ligand_props[atom.name]["radius"]
                     if atom in misslist:
                         misslist.pop(misslist.index(atom))
-                        hitlist.append(atom)
+                        templist.append(atom)
+
+                charge = residue.getCharge()
+                if abs(charge - int(charge)) > 0.001:
+                    # Ligand parameterization failed
+                    myRoutines.warnings.append("WARNING: PDB2PQR could not successfully parameterize\n")
+                    myRoutines.warnings.append("         the desired ligand; it has been left out of\n")
+                    myRoutines.warnings.append("         the PQR file.\n")
+                    myRoutines.warnings.append("\n")
+                    
+                    # remove the ligand
+                    myProtein.residues.remove(residue) 
+                    for chain in myProtein.chains:
+                        if residue in chain.residues: chain.residues.remove(residue)
+                else:
+                    # Mark these atoms as hits
+                    hitlist = hitlist + templist
+    
+    # Grab the protein charge
 
     reslist, charge = myProtein.getCharge()
 

@@ -456,7 +456,7 @@ class get_ligand_topology:
                     del sorted_ring_list[i]
                 else:
                     last = sorted_ring_list[i]
-        print "# overall rings (including potentially fused rings) :", len(sorted_ring_list)
+        #print "# overall rings (including potentially fused rings) :", len(sorted_ring_list)
         #
         #
         # assigning ring attribute for every ring atom
@@ -483,7 +483,7 @@ class get_ligand_topology:
                       at['ring_list'] = [rring]
                 elif rring not in at['ring_list']:
                       at['ring_list'].append(rring)
-        print  "# non-fused rings                                   :", non_fused_counter
+        #print  "# non-fused rings                                   :", non_fused_counter
 
         ## LET'S START THE MATCHING...
         def match(t,l):
@@ -600,12 +600,12 @@ class get_ligand_topology:
         print
         print
         
-        if len(AllCliqueList) == 0:
-            print
-            print
-            print "NOTHING CLIQUED."
-            print
-            print
+        #if len(AllCliqueList) == 0:
+        #    print
+        #    print
+        #    print "NOTHING CLIQUED."
+        #    print
+        #    print
         #
         # AVOID REDUNDANCIES FROM HERE ON
         counter = 0

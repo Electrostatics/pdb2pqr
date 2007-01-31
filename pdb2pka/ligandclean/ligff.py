@@ -93,26 +93,29 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
         
 
     protein = Protein(newpdblist, definition)
-
+    
     for rrres in  protein.chainmap['L'].residues:
         for aaat in rrres.atoms:
             for ligatoms in Lig.lAtoms:
                 if ligatoms.name == aaat.name:
                     aaat.sybylType = ligatoms.sybylType
-        
+    
                     # setting the formal charges
 
                     if ligatoms.sybylType == "O.co2":
                         aaat.formalcharge = -0.5
                     else: aaat.formalcharge = 0.0
                     xxxlll = []
-                    for xxx in ligatoms.lBondedAtoms:
-                        xxxlll.append(xxx.name)
+                    #for xxx in ligatoms.lBondedAtoms:
+                    for bond in ligresidue.getAtom(aaat.name).bonds:
+                        xxxlll.append(bond)
         
                     aaat.intrabonds = xxxlll
    
                     # charge initialisation must happen somewhere else
                     aaat.charge = 0.0
+
+                    #print aaat.name, aaat.charge, aaat.formalcharge, aaat.intrabonds
 
     return protein, definition, Lig
 

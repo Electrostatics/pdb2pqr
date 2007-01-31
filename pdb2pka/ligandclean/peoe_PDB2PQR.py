@@ -112,8 +112,8 @@ def PEOE( atoms, damp=0.778, k=1.56):
                             dchi  = (calcchi(yyy, yyy.charge) - i.chi)
                             if dchi > 0.0: i.dq += (dchi / calcchi(i, +1) * (damp**b))
                             else:          i.dq += (dchi / calcchi(yyy, +1) * (damp**b))
-                    for i in atoms.atoms: # lAtoms
-                        i.charge += i.dq+(0.166666667*i.formal_charge)  
+            for i in atoms.atoms: # lAtoms
+                i.charge += i.dq+(0.166666667*i.formal_charge)  
         for i in atoms.atoms:  # lAtoms
             i.charge = i.charge * k
             i.charge = i.charge

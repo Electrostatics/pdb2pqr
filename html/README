@@ -1,0 +1,4 @@
+server.html -- The main server page.
+master-index.html -- The source code for the http://pdb2pqr.sf.net/ page.
+index.php -- Automagic redirect to http://pdb2pqr.sf.net/ for PHP-enabled web
+servers.

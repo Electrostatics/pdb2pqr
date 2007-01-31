@@ -287,7 +287,8 @@ def runPDB2PQR(pdblist, ff, options):
 
     myForcefield = Forcefield(ff, myDefinition, userff)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
-   
+  
+    ligsuccess = 0
     if "ligand" in options:
 
         # If this is independent, we can assign charges and radii here
@@ -316,9 +317,17 @@ def runPDB2PQR(pdblist, ff, options):
                     for chain in myProtein.chains:
                         if residue in chain.residues: chain.residues.remove(residue)
                 else:
+                    ligsuccess = 1
                     # Mark these atoms as hits
                     hitlist = hitlist + templist
     
+    # Temporary fix; if ligand was successful, pull all ligands from misslist
+    if ligsuccess:
+        templist = misslist[:]
+        for atom in templist:
+            if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+            misslist.remove(atom)
+
     # Grab the protein charge
 
     reslist, charge = myProtein.getCharge()

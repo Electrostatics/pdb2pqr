@@ -2689,6 +2689,7 @@ echo "${ECHO_T}" >&6
 echo "${ECHO_T}------------- Begin Processing pdb2pka Configure Options -----------" >&6
 
      # Test for Numeric install
+     PY_NUMERIC=""
      echo "$as_me:$LINENO: checking for Numeric include files" >&5
 echo $ECHO_N "checking for Numeric include files... $ECHO_C" >&6
      if test -f $PY_PREFIX/include/python$PY_VERSION/Numeric/arrayobject.h; then
@@ -2696,10 +2697,22 @@ echo $ECHO_N "checking for Numeric include files... $ECHO_C" >&6
         echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
 echo "${ECHO_T}$PY_NUMERIC" >&6
         PY_CFLAGS="$PY_HEADER $PY_NUMERIC"
-     else
-        { { echo "$as_me:$LINENO: error: Unable to find Numeric installed!" >&5
-echo "$as_me: error: Unable to find Numeric installed!" >&2;}
+     fi
+
+     # If failed, test for numpy
+     if test "$PY_NUMERIC" = "" ; then
+         echo "$as_me:$LINENO: checking for numpy includes files" >&5
+echo $ECHO_N "checking for numpy includes files... $ECHO_C" >&6
+         if test -f $PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
+             PY_NUMERIC="-I$PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+             echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
+echo "${ECHO_T}$PY_NUMERIC" >&6
+             PY_CFLAGS="$PY_HEADER $PY_NUMERIC"
+         else
+             { { echo "$as_me:$LINENO: error: Unable to find Numeric or numpy installed!" >&5
+echo "$as_me: error: Unable to find Numeric or numpy installed!" >&2;}
    { (exit 1); exit 1; }; }
+         fi
      fi
 
      # Test for APBS Python wrappers

@@ -153,13 +153,24 @@ if test "$with_pdb2pka" = "enable" ; then
      AC_MSG_RESULT([------------- Begin Processing pdb2pka Configure Options -----------])
 
      # Test for Numeric install
+     PY_NUMERIC=""
      AC_MSG_CHECKING([for Numeric include files])
      if test -f $PY_PREFIX/include/python$PY_VERSION/Numeric/arrayobject.h; then
         PY_NUMERIC="-I$PY_PREFIX/include/python$PY_VERSION/Numeric"   
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_HEADER $PY_NUMERIC"
-     else
-        AC_MSG_ERROR([Unable to find Numeric installed!])
+     fi
+
+     # If failed, test for numpy
+     if test "$PY_NUMERIC" = "" ; then
+         AC_MSG_CHECKING([for numpy includes files])  
+         if test -f $PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
+             PY_NUMERIC="-I$PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+             AC_MSG_RESULT([$PY_NUMERIC])
+             PY_CFLAGS="$PY_HEADER $PY_NUMERIC"
+         else
+             AC_MSG_ERROR([Unable to find Numeric or numpy installed!])
+         fi
      fi
 
      # Test for APBS Python wrappers

@@ -1596,7 +1596,7 @@ class Carboxylic(Optimize):
         self.routines.setDihedralAngle(residue, anglenum, newangle)
 
         newcoords = [hatom2.getCoords(), newatom.getCoords()]
-    
+   
         # Flip back to return original atom
 
         newangle = 180.0 + residue.dihedrals[anglenum]
@@ -1737,7 +1737,7 @@ class Carboxylic(Optimize):
         # Do some error checking
         
         if not acc.hacceptor: return 0
-  
+ 
         if self.isHbond(donor, acc):
             self.fix(donor, acc)
             return 1
@@ -1748,6 +1748,8 @@ class Carboxylic(Optimize):
             Fix the carboxylic residue.
         """
 
+        self.debug("Fixing residue %s due to %s" % (donor.residue, donor.name))
+
         residue = donor.residue
         
         # Grab the H(D) that caused the bond
@@ -1757,13 +1759,22 @@ class Carboxylic(Optimize):
                self.getHbondangle(acc, donor, donorhatom) <= ANGLE_CUTOFF: break
 
         # Remove all the other available bonded hydrogens
-        hydrogens = []
-        for atom in self.atomlist:
-            for bond in atom.bonds:
-                if bond.isHydrogen() and bond != donorhatom:
-                    self.routines.cells.removeCell(bond)
-                    self.hlist.remove(bond)
-                    residue.removeAtom(bond.name)
+        
+        hydrogens = self.hlist[:]
+        for atom in hydrogens:
+            if atom != donorhatom:
+                self.routines.cells.removeCell(atom)
+                self.hlist.remove(atom)
+                residue.removeAtom(atom.name)
+
+        #for atom in self.atomlist:
+        #    print "testing atom", atom
+        #    for bond in atom.bonds:
+        #        print "testing bond", bond
+        #        if bond.isHydrogen() and bond != donorhatom:
+        #            self.routines.cells.removeCell(bond)
+        #            self.hlist.remove(bond)
+        #            residue.removeAtom(bond.name)
 
         # Rename the atoms
 
@@ -2130,7 +2141,7 @@ class hydrogenRoutines:
                 atom = hbond.atom1
                 atom2 = hbond.atom2
                 obj = self.resmap[atom.residue]
-                
+
                 if atom.residue.fixed: continue
                 if atom.hdonor: obj.tryDonor(atom, atom2)
                 if atom.hacceptor: obj.tryAcceptor(atom, atom2)

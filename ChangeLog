@@ -6,6 +6,8 @@ BETA PUBLIC RELEASE VERSION 1.2.0       XX-XX-XX
     * Added new support for passing in a single ligand residue in MOL2 format
       via the --ligand command.  Also available from the web server (with link
       to PRODRG for unsupported ligands).
+    * Numerous additions to examples directory (see examples/index.html) and 
+      update to User Guide.
   - BUG FIXES 
     * Fixed charge assignment error when dealing with LYN in AMBER.
     * Fixed crash when a chain has a single amino acid residue.  The code

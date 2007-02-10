@@ -238,10 +238,55 @@
 		and how the ligand is bound to the active site.
 		</p>
 
+		<h3>L-Arabinose binding protein (<a
+				href="http://www.pdb.org/pdb/explore/explore.do?structureId=1ABF">1ABF</a>)</h3>
+
+		<p>Our next example uses PDB structure <a 
+			href="http://www.pdb.org/pdb/explore/explore.do?structureId=1ABF">1ABF</a>
+		of L-arabinose binding protein in complex with a sugar ligand
+		at 1.90 &Aring; resolution.  To parameterize both this protein
+		and its ligand:
+		</p>
+		<ol>
+			<li> From the PDB2PQR server web page, enter
+			<code>1ABF</code> into the PDB ID field. </li>
+			<li> Choose whichever forcefield and naming schemes you
+			prefer. </li>
+			<li> Under options, be sure the "Ensure that new atoms
+			are not rebuilt too close to existing atoms",
+			"Optimize the hydrogen bonding network", and "Assign
+			charges to the ligand specified in a MOL2 file" options
+			are
+			selected.  The necessary MOL2 file can be downloaded <a
+				href="ligands/LIG_1ABF.mol2">here</a>.
+			You can select other options as well, if interested.
+			</li>
+			<li> Hit the "Submit" button. </li>
+		</ol>
+		<p> Once the calculations are complete, you should see a web
+		page with a link to the new PQR file with a  warning about
+		debumping P66, K295, and K306 (but no warnings about ligand
+		parameterization!).  You can download the resulting PQR file
+		and view it in your favorite molecular visualization package
+		(e.g., <a href=http://www.ks.uiuc.edu/Research/vmd/">VMD</a>,
+		<a href="http://pymol.sourceforge.net/">PyMOL</a>, or <a
+			href="http://www.scripps.edu/~sanner/python/pmv/index.html">PMV</a>).
+		For comparison, you might download the <a
+			href="http://www.pdb.org/pdb/explore.do?structureId=1ABF">the
+			original PDB file</a> and compare the PDB2PQR-generated
+		structure with the original to see where hydrogens were placed
+		and how the ligand is bound to the active site.
+		</p>
 		<hr/>
 
 		<center>
 			<a href="http://sourceforge.net"><img align="middle" src="http://sourceforge.net/sflogo.php?group_id=144228&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>&nbsp;&nbsp;&nbsp;<a href="http://sourceforge.net/projects/pdb2pqr">SourceForge Project Page</a>
+		</center>
+
+		<center>
+			<small>
+				$Id: $
+			</small>
 		</center>
 
 	</body>

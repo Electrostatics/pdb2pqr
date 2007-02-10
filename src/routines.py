@@ -1227,8 +1227,13 @@ class Routines:
             text = "Couldn't find propka - make sure it has been installed!"
             raise ValueError, text
 
+        # Reorder the atoms in each residue to start with N
+   
+        for residue in self.protein.getResidues():
+            residue.reorder() 
+        
         # Make a string with all non-hydrogen atoms
-    
+
         for atom in self.protein.getAtoms():
             if not atom.isHydrogen():
                 atomtxt = str(atom)
@@ -1249,8 +1254,9 @@ class Routines:
         # Run PropKa
 
         numatoms = int(txtlen) / linelen
-        runPKA(numatoms, txt, outname)
 
+        runPKA(numatoms, txt, outname)
+        
         # Parse the results
         
         pkafile = open(outname)

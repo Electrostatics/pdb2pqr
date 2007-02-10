@@ -494,7 +494,26 @@ class Residue:
                     if bondedatom.isHydrogen():
                         atom.set("hdonor",1)
                         break     
-             
+
+    def reorder(self):
+        """
+            Reorder the atoms to start with N, CA, C, O if they exist
+        """
+        templist = []
+        if self.hasAtom("N"): templist.append(self.getAtom("N"))
+        if self.hasAtom("CA"): templist.append(self.getAtom("CA"))
+        if self.hasAtom("C"): templist.append(self.getAtom("C"))
+        if self.hasAtom("O"): templist.append(self.getAtom("O"))
+
+        # Add remaining atoms
+        for atom in self.atoms:
+            if atom.name not in ["N", "CA", "C", "O"]:
+                templist.append(atom)
+
+        # Change the list pointer
+
+        self.atoms = templist[:]
+
 class Atom(ATOM):
     """
         Class Atom

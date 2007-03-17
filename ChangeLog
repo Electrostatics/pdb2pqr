@@ -4,6 +4,11 @@ BETA PUBLIC RELEASE VERSION 1.2.1       X-XX-XX
   - NEW FEATURES
     * Updated documentation to include instructions for pdb2pka support
     * Added ligand examples to examples/ directory
+    * Added native support for the TYL06 forcefield.  For more information
+      on this forcefield please see
+        Tan C, Yang L, Luo R.  How well does Poisson-Boltzmann implicit
+        solvent agree with explicit solvent? A quantitative analysis.
+        Journal of Physical Chemistry B.  110 (37), 18680-7, 2006.1
 
   - BUG FIXES
     * Fixed bug where a segmentation fault would occur in PropKa if the N

@@ -71,7 +71,7 @@ document.thisform.LIGAND.disabled=true;
 <BODY>
 <h2>PDB2PQR Server</h2>
 <P>
-<I>Currently using PDB2PQR Version 1.2.0</I>
+<I>Currently using PDB2PQR Version 1.2.1</I>
 <P>
 Return to <a href="http://pdb2pqr.sourceforge.net/">the PDB2PQR homepage</a>.<br> 	
 <hr> 	
@@ -95,7 +95,7 @@ If you use the PDB2PQR service in a publication, please cite:
 
 Note: to distribute server load, the PDB2PQR server currently is limited to a maximum size of 10000 atoms per protein.  If you are interested in using PDB2PQR for larger proteins, you are encouraged to download a command line version of PDB2PQR from the <a href="http://pdb2pqr.sourceforge.net">PDB2PQR home page</a>.<P>
 
-<FORM action="http://agave.wustl.edu/cgi-bin/pdb2pqr-1.2.0/pdb2pqr.py" METHOD="POST" ENCTYPE="multipart/form-data" name="thisform">
+<FORM action="http://agave.wustl.edu/cgi-bin/pdb2pqr-1.2.1/pdb2pqr.py" METHOD="POST" ENCTYPE="multipart/form-data" name="thisform">
 
 Please enter either:
 <blockquote>
@@ -109,6 +109,7 @@ Pick a forcefield to use:
 <input type="RADIO" name="FF" value="amber" onClick="setff(this.value)" CHECKED>AMBER</input><BR> 
 <input type="RADIO" name="FF" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
 <input type="RADIO" name="FF" value="parse" onClick="setff(this.value)">PARSE</input><BR>
+<input type="RADIO" name="FF" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
 <input type="RADIO" name="FF" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED>
 </blockquote>
 
@@ -117,7 +118,8 @@ Pick an output naming scheme to use (<a href="http://pdb2pqr.sourceforge.net/use
 <input type="RADIO" name="FFOUT" value="internal" CHECKED>Internal naming scheme</input> (<a href="http://pdb2pqr.sourceforge.net/programmerguide.html#canon">What's this?</a>)<BR>
 <input type="RADIO" name="FFOUT" value="amber">AMBER</input><BR>
 <input type="RADIO" name="FFOUT" value="charmm">CHARMM</input><BR>
-<input type="RADIO" name="FFOUT" value="parse">PARSE</input>
+<input type="RADIO" name="FFOUT" value="parse">PARSE</input><BR>
+<input type="RADIO" name="FFOUT" value="tyl06">TYl06</input>
 
 </blockquote>
 

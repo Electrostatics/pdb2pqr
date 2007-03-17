@@ -12,9 +12,9 @@
     Washington University in St. Louis
 """
 
-__date__ = "23 January 2007"
+__date__  "17 March 2007"
 __author__ = "Todd Dolinsky, Nathan Baker"
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 import string
 import sys
@@ -55,8 +55,8 @@ def usage(rc):
     str = str + "\n"
     str = str + "Usage: pdb2pqr.py [options] --ff=<forcefield> <path> <output-path>\n"
     str = str + "    Required Arguments:\n"
-    str = str + "        <forcefield>  :  The forcefield to use - currently\n"
-    str = str + "                         amber, charmm, and parse are supported.\n"
+    str = str + "        <forcefield>  :  The forcefield to use - currently amber\n"
+    str = str + "                         charmm, parse, and tyl06  are supported.\n"
     str = str + "        <path>        :  The path to the PDB file or an ID\n"
     str = str + "                         to obtain from the PDB archive\n"
     str = str + "        <output-path> :  The desired output name of the PQR file\n"
@@ -459,7 +459,7 @@ def mainCommand():
             
         elif o == "--chain": options["chain"] = 1
         elif o == "--ffout":
-            if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE"]:
+            if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE","tyl06","TYL06"]:
                 options["ffout"] = a
             else:
                 raise ValueError, "Invalid forcefield naming scheme %s!" % a

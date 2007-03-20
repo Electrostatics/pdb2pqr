@@ -240,6 +240,7 @@ class Forcefield:
         for line in lines:
             if not line.startswith("#"):
                 fields = string.split(line)
+                if fields == []: continue  
                 try:
                     resname = fields[0]
                     atomname = fields[1]

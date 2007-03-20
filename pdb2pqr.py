@@ -12,7 +12,7 @@
     Washington University in St. Louis
 """
 
-__date__  "17 March 2007"
+__date__  = "17 March 2007"
 __author__ = "Todd Dolinsky, Nathan Baker"
 __version__ = "1.2.1"
 

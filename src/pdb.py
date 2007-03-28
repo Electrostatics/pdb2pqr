@@ -529,10 +529,22 @@ class MOL2MOLECULE:
         # ATOM section
         start = data.find("@<TRIPOS>ATOM")
         stop = data.find("@<TRIPOS>BOND")
+        
+        # Do some error checking
+        if start == -1:
+            raise Exception, "Unable to find '@<TRIPOS>ATOM' in MOL2 file!"
+        elif stop == -1:
+            raise Exception, "Unable to find '@<TRIPOS>BOND' in MOL2 file!"
+
         atoms = data[start+14:stop-2].split("\n")
         # BOND section
         start = data.find("@<TRIPOS>BOND")
         stop = data.find("@<TRIPOS>SUBSTRUCTURE")
+        
+        # More error checking
+        if stop == -1:
+            raise Exception, "Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!"
+
         bonds = data[start+14:stop-1].split("\n")
         self.parseAtoms(atoms)
         self.parseBonds(bonds)
@@ -546,14 +558,23 @@ class MOL2MOLECULE:
         """
         for AtomLine in AtomList:
             SeparatedAtomLine = AtomLine.split()
+
+            # Error checking
+            if len(SeparatedAtomLine) < 8:
+                raise Exception, "Bad atom entry in MOL2 file: %s" % AtomLine
+
             fakeRecord = "HETATM"
             fakeChain = " L"
-            mol2pdb = '%s%5i%5s%4s%2s%4i    %8.3f%8.3f%8.3f' %\
+            try:
+                mol2pdb = '%s%5i%5s%4s%2s%4i    %8.3f%8.3f%8.3f' %\
                    (fakeRecord,int(SeparatedAtomLine[0]),
                     SeparatedAtomLine[1],SeparatedAtomLine[7],
                     fakeChain,int(SeparatedAtomLine[6]),
                     float(SeparatedAtomLine[2]),float(SeparatedAtomLine[3]),
                     float(SeparatedAtomLine[4]))
+            except ValueError:
+                raise Exception, "Bad atom entry in MOL2 file: %s" % AtomLine
+
             thisAtom = HETATM(mol2pdb, SeparatedAtomLine[5],[],[])
             self.lPDBAtoms.append(mol2pdb)
             self.lAtoms.append(thisAtom)
@@ -564,12 +585,17 @@ class MOL2MOLECULE:
         """
         for BondLine in BondList:
             SeparatedBondLine = BondLine.split()
-            thisBond = MOL2BOND(
-                int(SeparatedBondLine[1]), # bond frm
-                int(SeparatedBondLine[2]), # bond to
-                SeparatedBondLine[3],      # bond type
-                int(SeparatedBondLine[0])  # bond id
-                )
+            if len(SeparatedBondLine) < 4:
+                raise Exception, "Bad bond entry in MOL2 file: %s" % BondLine
+            try:
+                thisBond = MOL2BOND(
+                    int(SeparatedBondLine[1]), # bond frm
+                    int(SeparatedBondLine[2]), # bond to
+                    SeparatedBondLine[3],      # bond type
+                    int(SeparatedBondLine[0])  # bond id
+                    )
+            except ValueError:
+                raise Exception, "Bad bond entry in MOL2 file: %s" % BondLine
             self.lBonds.append(thisBond)
 
     def createlBondedAtoms(self):

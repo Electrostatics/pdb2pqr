@@ -15,6 +15,7 @@ BETA PUBLIC RELEASE VERSION 1.2.1       X-XX-XX
       atom was not the first atom listed in the residue
     * Fixed error message that occurred when a blank line was found in a
       parameter file.
+    * Better error handling in MOL2 file parsing.
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.0       1-31-07
 #############################################################################

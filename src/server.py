@@ -73,7 +73,7 @@ WEBNAME     = "server.html"
 STYLESHEET  = "http://agave.wustl.edu/css/baker.css"
 
 """ The refresh time (in seconds) for the progress page """
-REFRESHTIME = 10
+REFRESHTIME = 20
 
 """ The absolute path to the loadavg file - set to "" or None if
     not to be included """

@@ -80,20 +80,22 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     newpdblist=[]
        
     # First the protein
-       
+    nummodels = 0 
     for line in pdblist:
         if isinstance(line, END) or isinstance(line,MASTER): continue
-        newpdblist.append(line)
-       
+        elif isinstance(line, MODEL):
+            nummodels += 1
+            if nummodels > 1: break
+        else:
+            newpdblist.append(line)
+    
     # Now the ligand
 
     for e in Lig.lAtoms: 
         e.resName = "LIG"
         newpdblist.append(e)
-        
-
+     
     protein = Protein(newpdblist, definition)
-    
     for rrres in  protein.chainmap['L'].residues:
         for aaat in rrres.atoms:
             for ligatoms in Lig.lAtoms:

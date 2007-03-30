@@ -327,7 +327,7 @@ def createResults(header, input, name, time, missedligands=[]):
         file.write("<a href=\"%s%s%s.propka\">%s.propka</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
     typename = "%s%s%s-typemap.html" % (LOCALPATH, TMPDIR, name)
     if os.path.isfile(typename):
-        file.write("<a href=\"%s\">%s-typemap.html</a><BR>\n" % (typename, name)) 
+        file.write("<a href=\"%s%s%s-typemap.html\">%s-typemap.html</a><BR>\n" % (WEBSITE, TMPDIR, name, name)) 
     file.write("<P>The header for your PQR file, including any warnings generated, is:<P>\n")
     file.write("<blockquote><code>\n")
     file.write("%s<P>\n" % newheader)

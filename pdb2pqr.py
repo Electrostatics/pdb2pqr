@@ -175,6 +175,7 @@ def runPDB2PQR(pdblist, ff, options):
     pkaname = ""
     outname = ""
     outroot = ""
+    typemapname = ""
     lines = []
 
     # userff is CGI-based User Forcefield file object
@@ -206,6 +207,8 @@ def runPDB2PQR(pdblist, ff, options):
         pkaname = outroot + ".propka"
         if os.path.isfile(pkaname): os.remove(pkaname)
     else: pka = 0
+
+    typemapname = "%s-typemap.html" % outroot
 
     extmap = options["extensions"]
     
@@ -327,6 +330,9 @@ def runPDB2PQR(pdblist, ff, options):
         for atom in templist:
             if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
             misslist.remove(atom)
+
+    # Creat the Typemap
+    myProtein.createHTMLTypeMap(myDefinition, typemapname)
 
     # Grab the protein charge
 

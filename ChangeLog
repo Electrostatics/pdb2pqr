@@ -9,6 +9,8 @@ BETA PUBLIC RELEASE VERSION 1.2.1       X-XX-XX
         Tan C, Yang L, Luo R.  How well does Poisson-Boltzmann implicit
         solvent agree with explicit solvent? A quantitative analysis.
         Journal of Physical Chemistry B.  110 (37), 18680-7, 2006.1
+    * Added a new HTML output page which relays the different atom types
+      between the AMBER and CHARMM forcefields for a generated PQR file.
 
   - BUG FIXES
     * Fixed bug where a segmentation fault would occur in PropKa if the N

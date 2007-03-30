@@ -206,6 +206,65 @@ class Protein:
             text.append("%s\n" % str(atom))
         return text
 
+    def createHTMLTypeMap(self, definition, outfilename):
+        """
+            Create an HTML typemap file at the desired location. If a
+            type cannot be found for an atom a blank is listed.
+            
+            Parameters
+                definition: The definition objects.
+                outfilename:  The name of the file to write (string)
+        """
+        from forcefield import Forcefield
+        from server import STYLESHEET
+
+        # Cache the initial atom numbers
+        numcache = {}
+        for atom in self.getAtoms():
+            numcache[atom] = atom.serial
+        self.reSerialize()
+
+        amberff = Forcefield("amber", definition, None)
+        charmmff = Forcefield("charmm", definition, None)
+
+        file = open(outfilename, "w")
+        file.write("<HTML>\n")
+        file.write("<HEAD>\n")
+        file.write("<TITLE>PQR Typemap (beta)</TITLE>\n")
+        file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET)
+        file.write("</HEAD>\n")
+        file.write("<BODY>\n")
+        file.write("<H3>This is a developmental page including the atom type for the atoms in the PQR file.</H3><P>\n")
+        file.write("<TABLE CELLSPACING=2 CELLPADDING=2 BORDER=1>\n")
+        file.write("<tr><th>Atom Number</th><th>Atom Name</th><th>Residue Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>CHARMM Atom Type</th></tr>\n")
+       
+        for atom in self.getAtoms():
+            if isinstance(atom.residue, Amino) or \
+               isinstance(atom.residue, WAT) or \
+               isinstance(atom.residue, Nucleic):
+                resname = atom.residue.ffname
+            else:
+                resname = atom.residue.name
+
+            ambergroup = amberff.getGroup(resname, atom.name)
+            charmmgroup  = charmmff.getGroup(resname, atom.name)
+        
+            
+            file.write("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (atom.serial, atom.name, resname, atom.chainID, ambergroup, charmmgroup))
+        
+
+        file.write("</table>\n")
+        file.write("</BODY></HTML>\n")
+        file.close()
+
+        # Return the original numbers back
+        for atom in self.getAtoms():
+            atom.serial = numcache[atom]
+    
+        del numcache
+        del amberff
+        del charmmff
+
     def reSerialize(self):
         """
             Generate new serial numbers for atoms in the protein

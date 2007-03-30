@@ -252,8 +252,12 @@ class Forcefield:
                     else: txt += "!"
                     txt += " Please use a valid parameter file."
                     raise ValueError, txt
-                
-                atom = ForcefieldAtom(atomname, charge, radius, resname)
+            
+                try:
+                    group = fields[4]
+                    atom = ForcefieldAtom(atomname, charge, radius, resname, group)
+                except:
+                    atom = ForcefieldAtom(atomname, charge, radius, resname)
 
                 myResidue = self.getResidue(resname)
                 if myResidue == None:
@@ -325,6 +329,23 @@ class Forcefield:
                 aname = atom.name
                 rname = atom.resname
         return rname, aname
+
+    def getGroup(self, resname, atomname):
+        """
+            Get the group/type associated with the input
+            fields.  If not found, return a null string.
+            
+            Parameters:
+                resname:  The residue name (string)
+                atomname: The atom name (string)
+        """
+        group = ""
+        if resname in self.map:
+            resid = self.map[resname]
+            if resid.hasAtom(atomname):
+                atom = resid.atoms[atomname]
+                group = atom.group
+        return group
 
     def getParams(self, resname, atomname):
         """
@@ -420,7 +441,7 @@ class ForcefieldAtom:
         forcefield at the atom level
     """
     
-    def __init__(self, name, charge, radius, resname):
+    def __init__(self, name, charge, radius, resname, group=""):
         """
             Initialize the object
 
@@ -429,11 +450,13 @@ class ForcefieldAtom:
                 charge:  The charge on the atom (float)
                 radius:  The radius of the atom (float)
                 resname: The residue name (string)
+                group:   The group name (string)
         """
         self.name = name
         self.charge = charge
         self.radius = radius
         self.resname = resname
+        self.group = group
 
     def get(self, name):
         """

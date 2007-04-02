@@ -241,7 +241,8 @@ BondiiRadiiDict = {"C": 1.70,
                    "S": 1.85,
                    "H": 1.05,
                    "Br":2.50,
-                   "F": 1.20}
+                   "F": 1.20,
+                   "P": 1.90}
 
 class ligand_charge_handler(MOL2MOLECULE):
     """Make sure that we are up to date with respect to the charge calculation"""

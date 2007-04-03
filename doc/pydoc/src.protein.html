@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.protein</strong></big></big> (28 February 2006)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/Todd/pdb2pqr/trunk/pdb2pqr/src/protein.py">/home/Todd/pdb2pqr/trunk/pdb2pqr/src/protein.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/baker/coding/manifold/pdb2pqr/trunk/pdb2pqr/src/protein.py">/Users/baker/coding/manifold/pdb2pqr/trunk/pdb2pqr/src/protein.py</a></font></td></tr></table>
     <p><tt>Routines&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;protein&nbsp;object&nbsp;used&nbsp;in&nbsp;PDB2PQR&nbsp;and&nbsp;associated<br>
@@ -93,6 +93,13 @@ of&nbsp;Atom&nbsp;objects,&nbsp;completing&nbsp;the&nbsp;hierarchy.<br>&nbsp;</t
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pdblist:&nbsp;List&nbsp;of&nbsp;Classes&nbsp;of&nbsp;PDB&nbsp;lines&nbsp;as&nbsp;created</tt></dd></dl>
+
+<dl><dt><a name="Protein-createHTMLTypeMap"><strong>createHTMLTypeMap</strong></a>(self, definition, outfilename)</dt><dd><tt>Create&nbsp;an&nbsp;HTML&nbsp;typemap&nbsp;file&nbsp;at&nbsp;the&nbsp;desired&nbsp;location.&nbsp;If&nbsp;a<br>
+type&nbsp;cannot&nbsp;be&nbsp;found&nbsp;for&nbsp;an&nbsp;atom&nbsp;a&nbsp;blank&nbsp;is&nbsp;listed.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;definition:&nbsp;The&nbsp;definition&nbsp;objects.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;outfilename:&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;file&nbsp;to&nbsp;write&nbsp;(string)</tt></dd></dl>
 
 <dl><dt><a name="Protein-createResidue"><strong>createResidue</strong></a>(self, residue, resname)</dt><dd><tt>Create&nbsp;a&nbsp;residue&nbsp;object.&nbsp;&nbsp;If&nbsp;the&nbsp;resname&nbsp;is&nbsp;a&nbsp;known&nbsp;residue<br>
 type,&nbsp;try&nbsp;to&nbsp;make&nbsp;that&nbsp;specific&nbsp;object,&nbsp;otherwise&nbsp;just&nbsp;make<br>

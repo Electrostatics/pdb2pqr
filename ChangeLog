@@ -3,7 +3,7 @@ BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07
 #############################################################################
   - NEW FEATURES
     * Updated documentation to include instructions for pdb2pka support,
-      references, etc.
+      references, more pydoc documents.
     * Added ligand examples to examples/ directory
     * Added native support for the TYL06 forcefield.  For more information
       on this forcefield please see

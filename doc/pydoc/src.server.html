@@ -6,9 +6,9 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.server</strong></big></big> (23 June 2006)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.server</strong></big></big> (17 March 2007)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/Todd/pdb2pqr/trunk/pdb2pqr/src/server.py">/home/Todd/pdb2pqr/trunk/pdb2pqr/src/server.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/baker/coding/manifold/pdb2pqr/trunk/pdb2pqr/src/server.py">/Users/baker/coding/manifold/pdb2pqr/trunk/pdb2pqr/src/server.py</a></font></td></tr></table>
     <p><tt>CGI&nbsp;Server&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;various&nbsp;functions&nbsp;necessary&nbsp;to&nbsp;run&nbsp;PDB2PQR<br>
@@ -78,14 +78,16 @@ easier&nbsp;task.</tt></dd></dl>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;file&nbsp;root&nbsp;name,&nbsp;based&nbsp;on&nbsp;local&nbsp;time&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;details:&nbsp;The&nbsp;details&nbsp;of&nbsp;the&nbsp;error&nbsp;(string)</tt></dd></dl>
- <dl><dt><a name="-createResults"><strong>createResults</strong></a>(header, input, name, time)</dt><dd><tt>Create&nbsp;the&nbsp;results&nbsp;web&nbsp;page&nbsp;for&nbsp;CGI-based&nbsp;runs<br>
+ <dl><dt><a name="-createResults"><strong>createResults</strong></a>(header, input, name, time, missedligands<font color="#909090">=[]</font>)</dt><dd><tt>Create&nbsp;the&nbsp;results&nbsp;web&nbsp;page&nbsp;for&nbsp;CGI-based&nbsp;runs<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;header:&nbsp;The&nbsp;header&nbsp;of&nbsp;the&nbsp;PQR&nbsp;file&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;input:&nbsp;&nbsp;&nbsp;A&nbsp;flag&nbsp;whether&nbsp;an&nbsp;input&nbsp;file&nbsp;has&nbsp;been&nbsp;created&nbsp;(int)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;tmpdir:&nbsp;&nbsp;The&nbsp;resulting&nbsp;file&nbsp;directory&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;result&nbsp;file&nbsp;root&nbsp;name,&nbsp;based&nbsp;on&nbsp;local&nbsp;time&nbsp;(string)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;time:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;time&nbsp;taken&nbsp;to&nbsp;run&nbsp;the&nbsp;script&nbsp;(float)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;time:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;time&nbsp;taken&nbsp;to&nbsp;run&nbsp;the&nbsp;script&nbsp;(float)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;missedligands:&nbsp;A&nbsp;list&nbsp;of&nbsp;ligand&nbsp;names&nbsp;whose&nbsp;parameters&nbsp;could<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;be&nbsp;assigned.&nbsp;Optional.&nbsp;(list)</tt></dd></dl>
  <dl><dt><a name="-getLoads"><strong>getLoads</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;system&nbsp;load&nbsp;information&nbsp;for&nbsp;output&nbsp;and&nbsp;logging<br>
 &nbsp;<br>
 Returns<br>
@@ -147,13 +149,13 @@ Returns<br>
 <strong>LOADPATH</strong> = '/proc/loadavg'<br>
 <strong>LOCALPATH</strong> = '/export/home/www/html/pdb2pqr/'<br>
 <strong>LOGPATH</strong> = '/export/home/www/html/pdb2pqr//tmp//usage.txt'<br>
-<strong>REFRESHTIME</strong> = 10<br>
+<strong>REFRESHTIME</strong> = 20<br>
 <strong>STYLESHEET</strong> = 'http://agave.wustl.edu/css/baker.css'<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>WEBNAME</strong> = 'server.html'<br>
 <strong>WEBSITE</strong> = 'http://agave.wustl.edu/pdb2pqr/'<br>
 <strong>__author__</strong> = 'Todd Dolinsky'<br>
-<strong>__date__</strong> = '23 June 2006'</td></tr></table><p>
+<strong>__date__</strong> = '17 March 2007'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

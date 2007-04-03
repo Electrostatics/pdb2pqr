@@ -1,10 +1,12 @@
 PDB2PQR 
 
-  Todd Dolinsky (todd@ccb.wustl.edu)
-  Nathan A. Baker (baker@biochem.wustl.edu)
-  Jens Nielsen
-  Paul Czodrowski
-  Jan Jensen
+  Main Authors (alphabetical):
+
+    Nathan A. Baker (baker@biochem.wustl.edu)
+    Paul Czodrowski
+    Todd Dolinsky (todd@ccb.wustl.edu)
+    Jan H. Jensen
+    Jens E. Nielsen
 
   Additional contributing authors listed in the code documentation.
 

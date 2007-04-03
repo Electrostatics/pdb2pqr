@@ -1,8 +1,9 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.2.1       X-XX-XX
+BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07
 #############################################################################
   - NEW FEATURES
-    * Updated documentation to include instructions for pdb2pka support
+    * Updated documentation to include instructions for pdb2pka support,
+      references, etc.
     * Added ligand examples to examples/ directory
     * Added native support for the TYL06 forcefield.  For more information
       on this forcefield please see
@@ -10,7 +11,8 @@ BETA PUBLIC RELEASE VERSION 1.2.1       X-XX-XX
         solvent agree with explicit solvent? A quantitative analysis.
         Journal of Physical Chemistry B.  110 (37), 18680-7, 2006.1
     * Added a new HTML output page which relays the different atom types
-      between the AMBER and CHARMM forcefields for a generated PQR file.
+      between the AMBER and CHARMM forcefields for a generated PQR file
+     (thanks to the anonymous reviewers of the latest PDB2PQR paper).
 
   - BUG FIXES
     * Fixed bug where a segmentation fault would occur in PropKa if the N

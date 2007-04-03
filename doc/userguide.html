@@ -17,9 +17,11 @@
 			<li> <a href="#using">Using PDB2PQR</a> </li>
 			<li> <a href="#algorithm">Algorithm Descriptions</a>
 			</li>
+			<li> <a href="#limitations">Limitations</a> </li>
 			<li> <a href="#faq">Frequently Asked Questions</a>
 			</li>
 			<li> <a href="#bug">Bug Reports and Suggestions</a>
+			<li> <a href="#bib">References and Further Reading</a>
 			</li>
 		</ul>
 		<hr/>
@@ -27,9 +29,8 @@
 		<a name="introduction"></a>
 		<h3>Introduction</h3>
 
-		<p> Background information on PDB2PQR, including references,
-		financial support, and availability, can be found at the
-		PDB2PQR homepage (<a
+		<p> Background information on PDB2PQR, including citation information, financial
+		support, and availability, can be found at the PDB2PQR homepage (<a
 			href="http://pdb2pqr.sourceforge.net/">http://pdb2pqr.sourceforge.net/</a>).
 		</p>
 
@@ -137,7 +138,14 @@
 		<p> The required arguments are as follows:
 		<dl>
 			<dt><code>&lt;forcefield&gt;</code></dt>
-			<dd>The forcefield to use - currently amber, charmm, and parse are
+			<dd>The forcefield to use -- currently 
+			<code>AMBER</code> (AMBER99, <a href="#WCK00">Wang J,
+				et al, 2000</a>),
+			<code>CHARMM</code> (CHARMM27, <a href="#MacKerellEtal98">MacKerell AD Jr,
+				et al, 1998</a>),
+			<code>PARSE</code> (PARSE, <a href="#SitkoffEtal94">Sitkoff D, et al,
+				1994</a>), and
+			<code>TYL06</code> (<a href="#TYL06">Tan C, et al, 2006</a>) are
 			supported.</dd>
 			<dt><code>&lt;path&gt;</code></dt>
 			<dd>The path to the PDB file or an ID to obtain from the PDB
@@ -280,24 +288,41 @@
 		automatic assignment of default ligand protonation states from
 		a small-molecule pKa database.</p>
 
-		<p> The calculation of ligand charges in PDB2PQR is based on
-		the partial equalization of orbital electronegativities (PEOE)
-		procedure developed by Gasteiger and Marsili (Gasteiger, 1980).
-		In the PEOE procedure, orbital electronegativities <i>&chi;</i>
-		are linked to partial atomic charges <i>q</i> by a polynomial
-		expansion (<i>&chi;= a + b q + c q<sup>2</sup> + d
-			q<sup>3</sup></i>).  The coefficients <i>a</i>,
-		<i>b</i>, <i>c</i>, and <i>d</i> were optimized by Gasteiger
-		and Marsili using gas phase data on ionization potentials and
-		electron affinities.  We utilize a PEOE algorithm, which has
-		been optimized by Czodrowski et al. to obtain better agreement
-		between theoretical and experimental solvation energies for a
-		set of small molecules including the polar amino acids The
-		resulting PEOE_PB charges have been tested for small-molecule
-		complexes with trypsin, thrombin and HIV protease (Czodrowski,
-		submitted), and have been found to give results that are
-		in agreement with experimental values.  </p>
+		<p> The calculation of ligand charges in PDB2PQR is based on the partial
+		equalization of orbital electronegativities (PEOE) procedure developed by Gasteiger
+		and Marsili (<a href="#GaMa80">Gasteiger, 1980</a>).  In the PEOE procedure, orbital
+		electronegativities <i>&chi;</i> are linked to partial atomic charges <i>q</i> by a
+		polynomial expansion (<i>&chi;= a + b q + c q<sup>2</sup> + d q<sup>3</sup></i>).
+		The coefficients <i>a</i>, <i>b</i>, <i>c</i>, and <i>d</i> were optimized by
+		Gasteiger and Marsili using gas phase data on ionization potentials and electron
+		affinities.  We utilize a PEOE algorithm, which has been optimized by <a
+			href="#CzodEtal06">Czodrowski et al.</a> to obtain better agreement between
+		theoretical and experimental solvation energies for a set of small molecules
+		including the polar amino acids.</p>
 
+		<hr/>
+
+		<a name="limitations"></a>
+		<h3>Limitations</h3>
+		<p>The following is a list of known limitations with the current version of PDB2PQR.
+		Many of these limitations will be removed/fixed in future releases of the
+		software:</p>
+		<ul>
+			<li> Web server is limited to biomolecules with less than 10,000 atoms.  To
+			limit the load on our servers, we currently limit web server submissions to
+			proteins containing fewer than 10,000 atoms.  If you are interested in using
+			PDB2PQR for larger proteins, you are encouraged to download a command line
+			version of PDB2PQR from the <a
+				href="http://pdb2pqr.sourceforge.net/">PDB2PQR home page</a>.
+			</li>
+			<li> Ligands do not change PROPKA pK<sub>a</sub> predictions.  At this time,
+			PROPKA does not consider ligand effects (H-bonding, charges, etc.) when
+			calculating pK<sub>a</sub> values.  This support will be provided in future
+			versions of PDB2PQR. </li>
+			<li> Browser "back" button not supported.  Due to our use of CGI forms, we
+			do not recommend use of your browser "back" button when using PDB2PQR.
+			Links are provided on most pages for navigating the PDB2PQR site. </li>
+		</ul>
 		<hr/>
 
 		<a name="faq"></a>
@@ -548,11 +573,78 @@
 
 		<hr/>
 
+		<a name="bib"></a>
+		<h3>References and Further Reading</h3>
+
+		<ul>
+			<li> <a name="CzodEtal06">Czodrowski P, Dramburg I, Sotriffer CA, Klebe G.
+				Development, validation, and application of adapted PEOE charges to
+				estimate pKa values of functional groups in protein-ligand
+				complexes.  <i>Proteins</i> <b>65</b> (2) 424-37, 2006.</a> (<a
+				href="http://dx.doi.org/10.1002/prot.21110">http://dx.doi.org/10.1002/prot.21110</a>).
+			<p/>
+			Description of PEOE method used for ligand parameterization. </li>
+			<li> <a name="DolinskyEtal04">Dolinsky TJ, Nielsen JE, McCammon JA, Baker
+				NA.  PDB2PQR: an automated pipeline for the setup of
+				Poisson0Boltzmann electrostatics calculations.  <i>Nucleic Acids
+					Res</i> <b>32</b>, W665-7, 2004.</a> (<a
+				href="http://dx.doi.org/10.1093/nar/gkh381">http://dx.doi.org/10.1093/nar/gkh381</a>).
+			<p/>
+			Original PDB2PQR paper. </li>
+			<li> <a name="GaMa80"> Gasteiger J, Marsili M.  Iterative partial
+				equalization of orbital electronegativity -- rapid access to atomic
+				charges.  <i>Tetrahedron</i> <b>36</b> (22) 3219-28, 1980.</a> (<a
+				href="http://dx.doi.org/10.1016/0040-4020(80)80168-2">http://dx.doi.org/10.1016/0040-4020(80)80168-2</a>).
+			<p/>
+			Description of original charge assignment method. </li>
+			<li> <a name="LRJ05"> Li H, Robertson AD, Jensen JH.  Very fast empirical
+				prediction and rationalization of protein pKa values.
+				<i>Proteins</i> <b>61</b> (4) 704-21, 2005.</a> (<a
+				href="http://dx.doi.org/10.1002/prot.20660">http://dx.doi.org/10.1002/prot.20660</a>).
+			<p/>
+			Original PROPKA paper. </li>
+			<li> <a name="MacKerellEtal98"> MacKerell AD Jr, Bashford D, Bellott M,
+				Dunbrack RL Jr, Evanseck JD, Field MJ, Fischer S, Gao J, Guo H, Ha
+				S, Joseph-McCarthy D, Kuchnir L, Kuczera K, Lau FTK, Mattos C,
+				Michnick S, Ngo T, Nguyen DT, Prodhom B,  Reiher WE III, Roux B,
+				Schlenkrich M,  Smith JC, Stote R, Straub J, Watanabe M,
+				Wiorkiewicz-Kuczer a, Yin D, Karplus M.  All-Atom Empirical
+				Potential for Molecular Modeling and Dynamics Studies of Proteins.
+				<i>J Phys Chem B</i> <b>102</b> (18) 3586-616, 1998.</a>  (<a 
+				href="http://dx.doi.org/10.1021/jp973084f">http://dx.doi.org/10.1021/jp973084f</a>).
+			<p/>
+			Paper describing the "CHARMM" force field used by PDB2PQR. </li>
+			<li> <a name="SitkoffEtal94">Sitkoff D, Sharp KA, Honig B.  Accurate
+				Calculation of Hydration Free Energies Using Macroscopic Solvent
+				Models. <i>J Phys Chem</i> <b>98</b> (7) 1978-88, 1994.</a> (<a
+				href="http://pubs.acs.org/cgi-bin/archive.cgi/jpchax/1994/98/i07/pdf/j100058a043.pdf">http://pubs.acs.org/cgi-bin/archive.cgi/jpchax/1994/98/i07/pdf/j100058a043.pdf</a>).
+			<p/>
+			Paper described the "PARSE" force field used by PDB2PQR. </li>
+			<li> <a name="TYL06"> Tan C, Yang L, Luo R.  How Well Does
+				Poisson-Boltzmann Implicit Solvent Agree with Explicit Solvent? A
+				Quantitative Analysis.  <i>J Phys Chem B</i> <b>110</b> (37)
+				18680-7, 2006.</a> (<a
+				href="http://dx.doi.org/10.1021/jp063479b">http://dx.doi.org/10.1021/jp063479b</a>).
+			<p/>
+			Paper describing the "TYL06" force field used by PDB2PQR. </li>
+			<li> <a name="WCK00">Wang J, Cieplak P, Kollman PA.  How well does a
+				restrained electrostatic potential (RESP) model perform in
+				calculating conformational energies of organic and biological
+				molecules?  <i>J Comput Chem</i> <b>21</b> (12) 1049-74, 2000.</a>
+			(<a
+				href="http://www3.interscience.wiley.com/cgi-bin/abstract/72511509/ABSTRACT">http://www3.interscience.wiley.com/cgi-bin/abstract/72511509/ABSTRACT</a>).
+			<p/>
+			Paper describing the "AMBER" force field used by PDB2PQR. </li>
+		</ul>
+
+		<hr/>
+
 		<center>
 			<a href="http://sourceforge.net"><img align="middle" src="http://sourceforge.net/sflogo.php?group_id=144228&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>&nbsp;&nbsp;&nbsp;<a href="http://sourceforge.net/projects/pdb2pqr">SourceForge Project Page</a>
 		</center>
 
 		<hr/>
+
 
 		<center>
 			<small>

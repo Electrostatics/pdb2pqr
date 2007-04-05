@@ -13,7 +13,7 @@
 """
 
 __date__  = "17 March 2007"
-__author__ = "Todd Dolinsky, Nathan Baker"
+__author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen"
 __version__ = "1.2.1"
 
 import string

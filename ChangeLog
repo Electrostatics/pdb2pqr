@@ -3,6 +3,7 @@ BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
 #############################################################################
 - BUG FIXES
 	* Added HG1 as altname for CYS to avoid assignment problems 
+	* Bug fixes in propkalib.c (thanks to Julie Mitchell!)
 		
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07

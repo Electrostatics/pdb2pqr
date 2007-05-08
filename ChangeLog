@@ -1,6 +1,9 @@
 #############################################################################
 BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
 #############################################################################
+- NEW FEATURES
+	* Added two extensions for H-bond and contact analysis provided by
+	  Julie Mitchell
 - BUG FIXES
 	* Added HG1 as altname for CYS to avoid assignment problems 
 	* Bug fixes in propkalib.c (thanks to Julie Mitchell!)

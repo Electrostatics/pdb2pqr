@@ -5,9 +5,12 @@ BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
 	* Added two extensions for H-bond and contact analysis provided by
 	  Julie Mitchell
 	* Added tools/fixpqr.c for PQR formatting by Julie Mitchell
+	* Added --with-python option for specifying particular Python installation
 - BUG FIXES
 	* Added HG1 as altname for CYS to avoid assignment problems 
 	* Bug fixes in propkalib.c (thanks to Julie Mitchell!)
+	* Fixed several incorrect "char *" to "const char *" in pdb2pka which
+	  resulted in compilation problems
 		
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07

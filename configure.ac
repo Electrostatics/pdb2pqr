@@ -62,9 +62,17 @@ dnl ##########################################################################
 dnl 2. checks for programs
 dnl ##########################################################################
 
-AC_PATH_PROG(py_path, python)
+AC_MSG_CHECKING([for user-defined Python path (--with-python)])
+AC_ARG_WITH(python,
+   [AC_HELP_STRING([--with-python=PATH], [full path to your preferred Python executable])],
+   [py_path="$with_python"; AC_MSG_RESULT([yes])],
+   [py_path=""; AC_MSG_RESULT([no])]
+)
 if test -z "${py_path}"; then
-   AC_MSG_ERROR([Unable to find python!])
+   AC_PATH_PROG(py_path, python)
+   if test -z "${py_path}"; then
+      AC_MSG_ERROR([Unable to find python!])
+   fi
 fi
 
 AC_MSG_CHECKING([for python include directory])

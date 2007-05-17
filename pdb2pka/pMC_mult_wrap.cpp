@@ -2048,7 +2048,7 @@ SWIG_Python_ConvertFunctionPtr(PyObject *obj, void **ptr, swig_type_info *ty) {
     void *vptr = 0;
     
     /* here we get the method pointer for callbacks */
-    char *doc = (((PyCFunctionObject *)obj) -> m_ml -> ml_doc);
+    const char *doc = (((PyCFunctionObject *)obj) -> m_ml -> ml_doc);
     const char *desc = doc ? strstr(doc, "swig_ptr: ") : 0;
     if (desc) {
       desc = ty ? SWIG_UnpackVoidPtr(desc + 10, &vptr, ty->name) : 0;
@@ -10725,11 +10725,11 @@ extern "C" {
     swig_type_info **types_initial) {
     size_t i;
     for (i = 0; methods[i].ml_name; ++i) {
-      char *c = methods[i].ml_doc;
+      const char *c = methods[i].ml_doc;
       if (c && (c = strstr(c, "swig_ptr: "))) {
         int j;
         swig_const_info *ci = 0;
-        char *name = c + 10;
+        const char *name = c + 10;
         for (j = 0; const_table[j].type; ++j) {
           if (strncmp(const_table[j].name, name, 
               strlen(const_table[j].name)) == 0) {

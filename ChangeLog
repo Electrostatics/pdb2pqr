@@ -11,6 +11,8 @@ BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
 	* Bug fixes in propkalib.c (thanks to Julie Mitchell!)
 	* Fixed several incorrect "char *" to "const char *" in pdb2pka which
 	  resulted in compilation problems
+    * Fix to only include atoms from the first MODEL tag when ensuring that
+      the number of atoms is within the server limit.
 		
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07

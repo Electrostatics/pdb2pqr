@@ -574,19 +574,22 @@ def mainCGI():
         options["ligand"] = StringIO(form["LIGAND"].value)    
   
     pdblist, errlist = readPDB(file)    
+    dummydef = Definition()
+    dummyprot = Protein(pdblist, dummydef)
     if len(pdblist) == 0 and len(errlist) == 0:
         text = "Unable to find PDB file - Please make sure this is "
         text += "a valid PDB file ID!"
         print "Content-type: text/html\n"
         print text
         sys.exit(2)
-    elif len(pdblist) > 10000 and "opt" in options:
+    elif dummyprot.numAtoms() > 10000 and "opt" in options:
         text = "<HTML><HEAD>"
         text += "<TITLE>PDB2PQR Error</title>"
         text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
         text += "</HEAD><BODY><H2>PDB2PQR Error</H2><P>"
         text += "Due to server limits, we are currently unable to optimize "
-        text += "proteins of greater than 10000 atoms on the server.  If you "
+        text += "proteins of greater than 10000 atoms on the server (PDB2PQR "
+        text += "found %s atoms in the selected PDB file).  If you " % dummyprot.numAtoms()
         text += "want to forgo optimization please try the server again.<P>"
         text += "Otherwise you may use the standalone version of PDB2PQR that "
         text += "is available from the <a href=\"http://pdb2pqr.sourceforge.net\">"

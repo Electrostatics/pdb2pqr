@@ -78,7 +78,8 @@ def usage(rc):
     str = str + "                         PropKa results will be output to \n"
     str = str + "                         <output-path>.propka.\n"
     str = str + "        --apbs-input  :  Create a template APBS input file based on\n"
-    str = str + "                         the generated PQR file.\n"
+    str = str + "                         the generated PQR file.  Also creates a Python\n"
+    str = str + "                         pickle for using these parameters in other programs.\n"
     str = str + "        --ligand=<path>: Calculate the parameters for the ligand in\n"
     str = str + "                         mol2 format at the given path. Pdb2pka must\n"
     str = str + "                         be compiled\n"
@@ -525,6 +526,7 @@ def mainCommand():
         async = 0 # No async files here!
         input = inputgen.Input(outpath, size, method, async)
         input.printInputFiles()
+        input.dumpPickle()
    
 def mainCGI():
     """
@@ -622,6 +624,7 @@ def mainCGI():
             async = 0 # No async files here!
             myinput = inputgen.Input(pqrpath, size, method, async)
             myinput.printInputFiles()
+            myinput.dumpPickle()
                     
         endtime = time.time() - starttime
         createResults(header, input, name, endtime, missedligands)

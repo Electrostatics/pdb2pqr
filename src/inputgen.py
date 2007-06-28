@@ -62,6 +62,7 @@
 
 import string, sys
 import psize
+import pickle
 
 class Elec:
     """
@@ -259,6 +260,20 @@ class Input:
             file = open(outname, "w")
             file.write(str(self))
             file.close()
+
+    def dumpPickle(self):
+        """
+            Make a Python pickle associated with the APBS input parameters
+        """
+        period = string.find(self.pqrpath,".")
+        if period > 0:
+            outname = self.pqrpath[0:period] + "-input.p"
+        else:
+            outname = self.pqrpath + "-input.p"
+        pfile = open(outname, "w")
+        pickle.dump(self, pfile)
+        pfile.close()
+        
 
 def splitInput(filename):
     """

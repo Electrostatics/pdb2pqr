@@ -45,19 +45,19 @@
 
 # User - Definable Variables: Default values
 
-# CFAC = 1.7                  # Factor by which to expand mol dims to
+# cfac = 1.7                  # Factor by which to expand mol dims to
                               # get coarse grid dims
-# FADD = 20                   # Amount to add to mol dims to get fine
+# fadd = 20                   # Amount to add to mol dims to get fine
                               # grid dims
-# SPACE = 0.50                # Desired fine mesh resolution
-# GMEMFAC = 200               # Number of bytes per grid point required 
+# space = 0.50                # Desired fine mesh resolution
+# gmemfac = 200               # Number of bytes per grid point required 
                               # for sequential MG calculation 
-# GMEMCEIL = 400              # Max MB allowed for sequential MG
+# gmemceil = 400              # Max MB allowed for sequential MG
                               # calculation.  Adjust this to force the
                               # script to perform faster calculations (which
                               # require more parallelism).
-# OFAC = 0.1                  # Overlap factor between mesh partitions
-# REDFAC = 0.25               # The maximum factor by which a domain
+# ofrac = 0.1                  # Overlap factor between mesh partitions
+# redfac = 0.25               # The maximum factor by which a domain
                               # dimension can be reduced during focusing
 
 import string, sys
@@ -81,7 +81,7 @@ class Elec:
         self.dime = size.getFineGridPoints()
         gmem = 200.0 * self.dime[0] * self.dime[1] * self.dime[2] / 1024.0 / 1024.0
         if method == "": # method not named - use ceiling
-            if gmem > size.getConstant("GMEMCEIL"): method = "mg-para"
+            if gmem > size.getConstant("gmemceil"): method = "mg-para"
             else: method = "mg-auto"
 
         if method == "mg-para":
@@ -321,31 +321,31 @@ def usage():
     usage = usage + "  --help               : Display this text\n"
     usage = usage + "  --split              : Split an existing parallel input file to multiple\n"
     usage = usage + "                         async input files.\n"
-    usage = usage + "  --METHOD=<value>     : Force output file to write a specific APBS ELEC\n"
+    usage = usage + "  --method=<value>     : Force output file to write a specific APBS ELEC\n"
     usage = usage + "                         method.  Options are para (parallel), auto\n"
     usage = usage + "                         (automatic), manual (manual), or async (asynchronous).\n"
     usage = usage + "                         solve.  async will result in multiple input files.\n"
-    usage = usage + "  --CFAC=<value>       : Factor by which to expand molecular dimensions to\n"
+    usage = usage + "  --cfac=<value>       : Factor by which to expand molecular dimensions to\n"
     usage = usage + "                         get coarse grid dimensions.\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("CFAC")
-    usage = usage + "  --FADD=<value>       : Amount to add to molecular dimensions to get fine\n"
+    usage = usage + "                         [default = %g]\n" % size.getConstant("cfac")
+    usage = usage + "  --fadd=<value>       : Amount to add to molecular dimensions to get fine\n"
     usage = usage + "                         grid dimensions.\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("FADD")
-    usage = usage + "  --SPACE=<value>      : Desired fine mesh resolution\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("SPACE")
-    usage = usage + "  --GMEMFAC=<value>    : Number of bytes per grid point required\n"
+    usage = usage + "                         [default = %g]\n" % size.getConstant("fadd")
+    usage = usage + "  --space=<value>      : Desired fine mesh resolution\n"
+    usage = usage + "                         [default = %g]\n" % size.getConstant("space")
+    usage = usage + "  --gmemfac=<value>    : Number of bytes per grid point required\n"
     usage = usage + "                         for sequential MG calculation\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("GMEMFAC")
-    usage = usage + "  --GMEMCEIL=<value>   : Max MB allowed for sequential MG\n"
+    usage = usage + "                         [default = %g]\n" % size.getConstant("gmemfac")
+    usage = usage + "  --gmemceil=<value>   : Max MB allowed for sequential MG\n"
     usage = usage + "                         calculation.  Adjust this to force the\n"
     usage = usage + "                         script to perform faster calculations (which\n"
     usage = usage + "                         require more parallelism).\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("GMEMCEIL")
-    usage = usage + "  --OFAC=<value>       : Overlap factor between mesh partitions\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("OFAC")
-    usage = usage + "  --REDFAC=<value>     : The maximum factor by which a domain\n"
+    usage = usage + "                         [default = %g]\n" % size.getConstant("gmemceil")
+    usage = usage + "  --ofrac=<value>       : Overlap factor between mesh partitions\n"
+    usage = usage + "                         [default = %g]\n" % size.getConstant("ofrac")
+    usage = usage + "  --redfac=<value>     : The maximum factor by which a domain\n"
     usage = usage + "                         dimension can be reduced during focusing\n"
-    usage = usage + "                         [default = %g]\n" % size.getConstant("REDFAC")
+    usage = usage + "                         [default = %g]\n" % size.getConstant("redfac")
     sys.stderr.write(usage)
     sys.exit(2)
 
@@ -354,7 +354,7 @@ def main():
     import getopt
     filename = ""
     shortOptList = ""
-    longOptList = ["help","split","METHOD=","CFAC=","SPACE=","GMEMCEIL=","GMEMFAC=","OFAC=","REDFAC="]
+    longOptList = ["help","split","method=","cfac=","space=","gmemceil=","gmemfac=","ofrac=","redfac="]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
@@ -377,7 +377,7 @@ def main():
         if o == "--help":
             usage()
         if o == "--split": split = 1
-        if o == "--METHOD":
+        if o == "--method":
             if a == "para":
                 sys.stdout.write("Forcing a parallel calculation\n")
                 method = "mg-para"
@@ -394,18 +394,18 @@ def main():
             else:
                 sys.stdout.write("Incorrect method argument: %s\n" % a)
                 sys.stdout.write("Defaulting to memory dependent result\n")
-        if o == "--CFAC":
-            size.setConstant("CFAC", float(a))
-        if o == "--SPACE":
-            size.setConstant("SPACE", float(a))
-        if o == "--GMEMFAC":
-            size.setConstant("GMEMFAC", int(a))
-        if o == "--GMEMCEIL":
-            size.setConstant("GMEMCEIL",  int(a))
-        if o == "--OFAC":
-            size.setConstant("OFAC", float(a))
-        if o == "--REDFAC":
-            size.setConstant("REDFAC", float(a))
+        if o == "--cfac":
+            size.setConstant("cfac", float(a))
+        if o == "--space":
+            size.setConstant("space", float(a))
+        if o == "--gmemfac":
+            size.setConstant("gmemfac", int(a))
+        if o == "--gmemceil":
+            size.setConstant("gmemceil",  int(a))
+        if o == "--ofrac":
+            size.setConstant("ofrac", float(a))
+        if o == "--redfac":
+            size.setConstant("redfac", float(a))
 
     if split == 1:
         splitInput(filename)

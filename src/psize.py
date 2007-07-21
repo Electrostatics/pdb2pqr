@@ -46,36 +46,14 @@
     ----------------------------
 """
 
-# User - Definable Variables: Default values
-
-# CFAC = 1.7                  # Factor by which to expand mol dims to
-                              # get coarse grid dims
-# FADD = 20                   # Amount to add to mol dims to get fine
-                              # grid dims
-# SPACE = 0.50                # Desired fine mesh resolution
-# GMEMFAC = 200               # Number of bytes per grid point required 
-                              # for sequential MG calculation 
-# GMEMCEIL = 400              # Max MB allowed for sequential MG
-                              # calculation.  Adjust this to force the
-                              # script to perform faster calculations (which
-                              # require more parallelism).
-# OFAC = 0.1                  # Overlap factor between mesh partitions
-# REDFAC = 0.25               # The maximum factor by which a domain
-                              # dimension can be reduced during focusing
-# TFAC_ALPHA = 9e-5           # Number of sec/unkown for setup/solve on 667
-                              # MHz EV67 Alpha CPU -- VERY ROUGH ESTIMATE
-# TFAC_XEON  = 3e-4           # Number of sec/unkown for setup/solve on 500
-                              # MHz PIII Xeon CPU -- VERY ROUGH ESTIMATE
-# TFAC_SPARC  = 5e-4          # Number of sec/unkown for setup/solve on 400
-                              # MHz UltraSPARC II CPU -- VERY ROUGH ESTIMATE
-
-import string, sys
-from sys import stdout
+import string, sys, getopt
+from sys import stdout, stderr
 from math import log
 
 class Psize:
+    """Master class for parsing input files and suggesting settings"""
     def __init__(self):
-        self.constants = {"CFAC":1.7, "FADD":20, "SPACE":0.50, "GMEMFAC":200, "GMEMCEIL":400, "OFAC":0.1, "REDFAC":0.25, "TFAC_ALPHA":9e-5, "TFAC_XEON":3e-4, "TFAC_SPARC": 5e-4}
+        self.constants = {"cfac": 1.7, "fadd":20, "space": 0.50, "gmemfac": 200, "gmemceil": 400, "ofrac":0.1, "redfac": 0.25 }
         self.minlen = [360.0, 360.0, 360.0]
         self.maxlen = [0.0, 0.0, 0.0]
         self.q = 0.0
@@ -107,9 +85,6 @@ class Psize:
                 subline = string.replace(line[30:], "-", " -")
                 words = string.split(subline)
                 if len(words) < 4:    
-                    #sys.stderr.write("Can't parse following line:\n")
-                    #sys.stderr.write("%s\n" % line)
-                    #sys.exit(2)
                     continue
                 self.gotatom = self.gotatom + 1
                 self.q = self.q + float(words[3])
@@ -147,13 +122,13 @@ class Psize:
     def setCoarseGridDims(self, olen):
         """ Compute coarse mesh dimensions """
         for i in range(3):
-            self.clen[i] = self.constants["CFAC"] * olen[i]
+            self.clen[i] = self.constants["cfac"] * olen[i]
         return self.clen
 
     def setFineGridDims(self, olen, clen):
         """ Compute fine mesh dimensions """
         for i in range(3):
-            self.flen[i] = olen[i] + self.constants["FADD"]
+            self.flen[i] = olen[i] + self.constants["fadd"]
             if self.flen[i] > clen[i]:
                 #str = "WARNING: Fine length (%.2f) cannot be larger than coarse length (%.2f)\n" % (self.flen[i], clen[i])
                 #str = str + "         Setting fine grid length equal to coarse grid length\n"
@@ -172,7 +147,7 @@ class Psize:
         """ Compute mesh grid points, assuming 4 levels in MG hierarchy """
         tn = [0,0,0]
         for i in range(3):
-            tn[i] = int(flen[i]/self.constants["SPACE"] + 0.5)
+            tn[i] = int(flen[i]/self.constants["space"] + 0.5)
             self.n[i] = 32*(int((tn[i] - 1) / 32 + 0.5)) + 1
             if self.n[i] < 33:
                 self.n[i] = 33
@@ -188,7 +163,7 @@ class Psize:
             nsmall.append(n[i])
         while 1:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
-            if nsmem < self.constants["GMEMCEIL"]: break
+            if nsmem < self.constants["gmemceil"]: break
             else:
                 i = nsmall.index(max(nsmall))
                 nsmall[i] = 32 * ((nsmall[i] - 1)/32 - 1) + 1
@@ -203,7 +178,7 @@ class Psize:
         """ Calculate the number of processors required to span each 
         dimension """
 
-        zofac = 1 + 2 * self.constants["OFAC"]
+        zofac = 1 + 2 * self.constants["ofrac"]
         for i in range(3):
             self.np[i] = n[i]/float(nsmall[i])
             if self.np[i] > 1: self.np[i] = int(zofac*n[1]/nsmall[i] + 1.0)
@@ -215,7 +190,7 @@ class Psize:
 
         nfoc = [0,0,0]
         for i in range(3):
-            nfoc[i] = int(log((flen[i]/np[i])/clen[i])/log(self.constants["REDFAC"]) + 1.0)
+            nfoc[i] = int(log((flen[i]/np[i])/clen[i])/log(self.constants["redfac"]) + 1.0)
         nfocus = nfoc[0]
         if nfoc[1] > nfocus: nfocus = nfoc[1]
         if nfoc[2] > nfocus: nfocus = nfoc[2]
@@ -291,12 +266,6 @@ class Psize:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             gmem = 200.0 * n[0] * n[1] * n[2] / 1024 / 1024
             
-            # Calculate VERY ROUGH wall clock times
-
-            tsolve_alpha = nfocus*nsmall[0]*nsmall[1]*nsmall[2]*self.constants["TFAC_ALPHA"];
-            tsolve_xeon = nfocus*nsmall[0]*nsmall[1]*nsmall[2]*self.constants["TFAC_XEON"];
-            tsolve_sparc = nfocus*nsmall[0]*nsmall[1]*nsmall[2]*self.constants["TFAC_SPARC"];
-
             # Print the calculated entries
             str = str + "################# MOLECULE INFO ####################\n"
             str = str + "Number of ATOM entries = %i\n" % self.gotatom
@@ -314,14 +283,14 @@ clen[1], clen[2])
             str = str + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (flen[0], flen[1], flen[2])
             str = str + "Num. fine grid pts. = %i x %i x %i\n" % (n[0], n[1], n[2])
 
-            if gmem > self.constants["GMEMCEIL"]:
-                str = str + "Parallel solve required (%.3f MB > %.3f MB)\n" % (gmem, self.constants["GMEMCEIL"])
+            if gmem > self.constants["gmemceil"]:
+                str = str + "Parallel solve required (%.3f MB > %.3f MB)\n" % (gmem, self.constants["gmemceil"])
                 str = str + "Total processors required = %i\n" % (np[0]*np[1]*np[2])
                 str = str + "Proc. grid = %i x %i x %i\n" % (np[0], np[1], np[2])
                 str = str + "Grid pts. on each proc. = %i x %i x %i\n" % (nsmall[0], nsmall[1], nsmall[2])
-                xglob = np[0]*round(nsmall[0]/(1 + 2*self.constants["OFAC"]) - .001)
-                yglob = np[1]*round(nsmall[1]/(1 + 2*self.constants["OFAC"]) - .001)
-                zglob = np[2]*round(nsmall[2]/(1 + 2*self.constants["OFAC"]) - .001)
+                xglob = np[0]*round(nsmall[0]/(1 + 2*self.constants["ofrac"]) - .001)
+                yglob = np[1]*round(nsmall[1]/(1 + 2*self.constants["ofrac"]) - .001)
+                zglob = np[2]*round(nsmall[2]/(1 + 2*self.constants["ofrac"]) - .001)
                 if np[0] == 1: xglob = nsmall[0]
                 if np[1] == 1: yglob = nsmall[1]
                 if np[2] == 1: zglob = nsmall[2]
@@ -340,10 +309,6 @@ clen[1], clen[2])
             str = str + "################# ESTIMATED REQUIREMENTS ####################\n"
             str = str + "Memory per processor                   = %.3f MB\n" % (200.0*ntot/1024/1024)
             str = str + "Grid storage requirements (ASCII)      = %.3f MB\n" % (8.0*12*np[0]*np[1]*np[2]*ntot/1024/1024)
-            str = str + "Grid storage requirements (XDR)        = %.3f MB\n" % (8.0*ntot*np[0]*np[1]*np[2]/1024/1024)
-            str = str + "Time to solve on 667 MHz EV67 Alpha    = %.3f sec\n" % tsolve_alpha
-            str = str + "Time to solve on 500 MHz PIII Xeon     = %.3f sec\n" % tsolve_xeon
-            str = str + "Time to solve on 400 MHz UltraSparc II = %.3f sec\n" % tsolve_sparc
             str = str + "\n"
 
         else:
@@ -351,34 +316,35 @@ clen[1], clen[2])
 
         return str
 
-def usage():
+def usage(rc):
+    """ Print usage information and exit with error code rc """
     psize = Psize()
     usage = "\n"
     usage = usage + "Psize script\n"
     usage = usage + "Usage: psize.py [opts] <filename>\n"
     usage = usage + "Optional Arguments:\n"
     usage = usage + "  --help               : Display this text\n"
-    usage = usage + "  --CFAC=<value>       : Factor by which to expand mol dims to\n"
+    usage = usage + "  --cfac=<value>       : Factor by which to expand mol dims to\n"
     usage = usage + "                         get coarse grid dims\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("CFAC")
-    usage = usage + "  --FADD=<value>       : Amount to add to mol dims to get fine\n"
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("cfac")
+    usage = usage + "  --fadd=<value>       : Amount to add to mol dims to get fine\n"
     usage = usage + "                         grid dims\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("FADD")
-    usage = usage + "  --SPACE=<value>      : Desired fine mesh resolution\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("SPACE")
-    usage = usage + "  --GMEMFAC=<value>    : Number of bytes per grid point required\n"
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("fadd")
+    usage = usage + "  --space=<value>      : Desired fine mesh resolution\n"
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("space")
+    usage = usage + "  --gememfac=<value>    : Number of bytes per grid point required\n"
     usage = usage + "                         for sequential MG calculation\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("GMEMFAC")
-    usage = usage + "  --GMEMCEIL=<value>   : Max MB allowed for sequential MG\n"
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("gememfac")
+    usage = usage + "  --gmemceil=<value>   : Max MB allowed for sequential MG\n"
     usage = usage + "                         calculation.  Adjust this to force the\n"
     usage = usage + "                         script to perform faster calculations (which\n"
     usage = usage + "                         require more parallelism).\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("GMEMCEIL")
-    usage = usage + "  --OFAC=<value>       : Overlap factor between mesh partitions\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("OFAC")
-    usage = usage + "  --REDFAC=<value>     : The maximum factor by which a domain\n"
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("gmemceil")
+    usage = usage + "  --ofrac=<value>       : Overlap factor between mesh partitions\n"
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("ofrac")
+    usage = usage + "  --redfac=<value>     : The maximum factor by which a domain\n"
     usage = usage + "                         dimension can be reduced during focusing\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("REDFAC")
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("redfac")
     usage = usage + "  --TFAC_ALPHA=<value> : Number of sec/unknown for setup/solve on 667\n"
     usage = usage + "                         MHz EV67 Alpha CPU -- VERY ROUGH ESTIMATE\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_ALPHA")
@@ -390,55 +356,53 @@ def usage():
     usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_SPARC")
 
     
-    sys.stderr.write(usage)
-    sys.exit(2)
+    stderr.write(usage)
+    sys.exit(rc)
 
 def main():
-    import getopt
     filename = ""
-    shortOptList = ""
-    longOptList = ["help", "CFAC=", "FADD=", "SPACE=", "GMEMFAC=", "GMEMCEIL=", "OFAC=", "REDFAC=", "TFAC_ALPHA=", "TFAC_XEON=", "TFAC_ALPHA="]
+    shortOptList = "h"
+    longOptList = ["help", "cfac=", "fadd=", "space=", "gememfac=", "gmemceil=", "ofrac=", "redfac="]
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
     except getopt.GetoptError, details:
-        sys.stderr.write("Option error (%s)!\n" % details)
-        usage()
+        stderr.write("Option error (%s)!\n" % details)
+        usage(2)
     if len(args) != 1: 
-        sys.stderr.write("Invalid argument list!\n")
-        usage()
+        stderr.write("Invalid argument list!\n")
+        usage(2)
     else:
         filename = args[0]
 
     psize = Psize()    
 
     for o, a in opts:
-        if o == "--help":
-            usage()
-        if o == "--CFAC":
-            psize.setConstant("CFAC", float(a))
-        if o == "--FADD":
-            psize.setConstant("FADD", int(a))
-        if o == "--SPACE":
-            psize.setConstant("SPACE", float(a))
-        if o == "--GMEMFAC":
-            psize.setConstant("GMEMFAC", int(a))
-        if o == "--GMEMCEIL":
-            psize.setConstant("GMEMCEIL",  int(a))
-        if o == "--OFAC":
-            psize.setConstant("OFAC", float(a))
-        if o == "--REDFAC":
-            psize.setConstant("REDFAC", float(a))
-        if o == "--TFAC_ALPHA":
-            psize.setConstant("TFAC_ALPHA", float(a))
-        if o == "--TFAC_XEON":
-            psize.setConstant("TFAC_XEON",  float(a))
-        if o == "--TFAC_SPARC":    
-            psize.setConstant("TFAC_SPARC",  float(a))
+        if o.lower() == "--help" or o == "-h":
+            usage(0)
+        if o.lower() == "--cfac":
+            psize.setConstant("cfac", float(a))
+        if o.lower() == "--fadd":
+            psize.setConstant("fadd", int(a))
+        if o.lower() == "--space":
+            psize.setConstant("space", float(a))
+        if o.lower() == "--gememfac":
+            psize.setConstant("gememfac", int(a))
+        if o.lower() == "--gmemceil":
+            psize.setConstant("gmemceil",  int(a))
+        if o.lower() == "--ofrac":
+            psize.setConstant("ofrac", float(a))
+        if o.lower() == "--redfac":
+            psize.setConstant("redfac", float(a))
 
     psize.runPsize(filename)
-    sys.stdout.write("Default constants used (./psize.py --help for more information):\n")
-    sys.stdout.write("%s\n" % psize.constants)
-    sys.stdout.write(psize.printResults())
+    
+    stdout.write("# Constants used: \n");
+    for key in psize.constants.keys():
+        stdout.write("# \t%s: %s\n" % (key, psize.constants[key]))
+    stdout.write("# Run:\n")
+    stdout.write("#    `%s --help`\n" % sys.argv[0])
+    stdout.write("# for more information on these default values\n" )
+    stdout.write(psize.printResults())
 
     
 if __name__ == "__main__": main()

@@ -2,15 +2,16 @@
 BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
 #############################################################################
 - NEW FEATURES
-	* Added two extensions for H-bond and contact analysis provided by
-	  Julie Mitchell
-	* Added tools/fixpqr.c for PQR formatting by Julie Mitchell
-	* Added --with-python option for specifying particular Python installation
+    * Added two extensions for H-bond and contact analysis provided by
+      Julie Mitchell
+    * Added tools/fixpqr.c for PQR formatting by Julie Mitchell
+    * Added --with-python option for specifying particular Python installation
+    * Updated psize.py and inputgen.py to be up to date with APBS 0.5.1
 - BUG FIXES
-	* Added HG1 as altname for CYS to avoid assignment problems 
-	* Bug fixes in propkalib.c (thanks to Julie Mitchell!)
-	* Fixed several incorrect "char *" to "const char *" in pdb2pka which
-	  resulted in compilation problems
+    * Added HG1 as altname for CYS to avoid assignment problems 
+    * Bug fixes in propkalib.c (thanks to Julie Mitchell!)
+    * Fixed several incorrect "char *" to "const char *" in pdb2pka which
+      resulted in compilation problems
     * Fix to only include atoms from the first MODEL tag when ensuring that
       the number of atoms is within the server limit.
 		

@@ -159,7 +159,6 @@ class Elec:
         text += "    srad %.2f\n" % self.srad          
         text += "    swin %.2f\n" % self.swin         
         text += "    temp %.2f\n" % self.temp     
-        text += "    gamma %.3f\n" % self.gamma    
         text += "    calcenergy %s\n" % self.calcenergy
         text += "    calcforce %s\n" % self.calcforce
         for write in self.write:
@@ -208,7 +207,7 @@ class Input:
         i = string.rfind(pqrpath, "/") + 1
         self.pqrname = pqrpath[i:]
 
-        self.prints = ["print energy 2 - 1 end"]     
+        self.prints = ["print elec_energy 2 - 1 end"]     
 
     def __str__(self):
         """

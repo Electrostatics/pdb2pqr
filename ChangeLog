@@ -14,6 +14,9 @@ BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
       resulted in compilation problems
     * Fix to only include atoms from the first MODEL tag when ensuring that
       the number of atoms is within the server limit.
+    * Renamed extensions/hbond-whatif.py to extensions/hbondwhatif.py and 
+      internal hbo() function to hbondwhatif() so that function will be 
+      dynamically imported by PDB2PQR.
 		
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07

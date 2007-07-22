@@ -19,11 +19,11 @@ ANGLE_CUTOFF = 90.0       # A - D - H(D) angle
 DIST_CUTOFF = 3.30         # H(D) to A distance
 
 def usage():
-    str  = "        --hbo       :  Print a list of hydrogen bonds to\n"
+    str  = "        --hbondwhatif :  Print a list of hydrogen bonds to\n"
     str += "                         {output-path}.hbo\n"
     return str
 
-def hbo(routines, outroot):
+def hbondwhatif(routines, outroot):
     """
         Print a list of hydrogen bonds.
 

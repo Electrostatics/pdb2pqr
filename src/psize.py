@@ -345,15 +345,6 @@ def usage(rc):
     usage = usage + "  --redfac=<value>     : The maximum factor by which a domain\n"
     usage = usage + "                         dimension can be reduced during focusing\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("redfac")
-    usage = usage + "  --TFAC_ALPHA=<value> : Number of sec/unknown for setup/solve on 667\n"
-    usage = usage + "                         MHz EV67 Alpha CPU -- VERY ROUGH ESTIMATE\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_ALPHA")
-    usage = usage + "  --TFAC_XEON=<value>  : Number of sec/unknown for setup/solve on 500\n"
-    usage = usage + "                         MHz PIII Xeon CPU -- VERY ROUGH ESTIMATE\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_XEON")
-    usage = usage + "  --TFAC_SPARC=<value> : Number of sec/unknown for setup/solve on 400\n"
-    usage = usage + "                         MHz UltraSPARC II CPU -- VERY ROUGH ESTIMATE\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("TFAC_SPARC")
 
     
     stderr.write(usage)

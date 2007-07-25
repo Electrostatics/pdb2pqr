@@ -207,7 +207,7 @@ class Input:
         i = string.rfind(pqrpath, "/") + 1
         self.pqrname = pqrpath[i:]
 
-        self.prints = ["print elec_energy 2 - 1 end"]     
+        self.prints = ["print elecEnergy 2 - 1 end"]     
 
     def __str__(self):
         """

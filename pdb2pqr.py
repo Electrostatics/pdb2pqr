@@ -267,20 +267,23 @@ def runPDB2PQR(pdblist, ff, options):
 
         myRoutines.addHydrogens()
 
-        if optflag:
-            myhydRoutines = hydrogenRoutines(myRoutines)
-            myhydRoutines.setOptimizeableHydrogens()
+        myhydRoutines = hydrogenRoutines(myRoutines)
 
         if "debump" in options:
             myRoutines.debumpProtein()  
 
         if optflag:
+            myhydRoutines.setOptimizeableHydrogens()
             myhydRoutines.initializeFullOptimization()
             myhydRoutines.optimizeHydrogens()
         else:
             myhydRoutines = hydrogenRoutines(myRoutines)
             myhydRoutines.initializeWaterOptimization()
             myhydRoutines.optimizeHydrogens()
+
+        # Special for GLH/ASH, since both conformations were added
+        myhydRoutines.cleanup()
+
 
     else:  # Special case for HIS if using assign-only
         for residue in myProtein.getResidues():

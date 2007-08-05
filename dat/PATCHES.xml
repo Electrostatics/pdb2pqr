@@ -33,6 +33,14 @@
           <z>1.930</z>
           <bond>OD2</bond>
        </atom>
+       <atom>
+          <name>HD1</name>
+          <altname>1HD</altname>
+          <x>2.850</x>
+          <y>-2.463</y>
+          <z>0.072</z>
+          <bond>OD1</bond>
+       </atom>
        <dihedral>CB CG OD2 HD2</dihedral>
        <dihedral>CB CG OD1 HD1</dihedral>
     </add>
@@ -58,6 +66,14 @@
           <y>-4.036</y>
           <z>3.680</z>
           <bond>OE2</bond>
+       </atom>
+       <atom>
+          <name>HE1</name>
+          <altname>1HE</altname>
+          <x>0.036</x>
+          <y>-3.194</y>
+          <z>4.361</z>
+          <bond>OE1</bond>
        </atom>
        <dihedral>CG CD OE1 HE1</dihedral>
        <dihedral>CG CD OE2 HE2</dihedral>

@@ -17,7 +17,9 @@ BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
     * Renamed extensions/hbond-whatif.py to extensions/hbondwhatif.py and 
       internal hbo() function to hbondwhatif() so that function will be 
       dynamically imported by PDB2PQR.
-		
+    * Fixed bug when optimizing hydrogens for ASH and GLH where the 
+      optimized hydrogen could be improperly oriented.
+	
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07
 #############################################################################

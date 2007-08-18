@@ -235,7 +235,7 @@ class ligforcefield(Forcefield):
 # ---------
 #
 
-BondiiRadiiDict = {"C": 1.70,
+ParseRadiiDict = {"C": 1.70,
                    "N": 1.50,
                    "O": 1.40,
                    "S": 1.85,

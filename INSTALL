@@ -1,19 +1,30 @@
-Installation on most systems is rather straightforward - as the bulk of the PDB2PQR code is written in Python, the PDB2PQR code itself is architecture/compiler independent.  PDB2PQR has been tested using Python 
-versions 2.2 through 2.4 - problems may occur with older versions. The PropKa code, however, is written in Fortran - and thus to use it with PDB2PQR a two step installation is necessary, making use of available C and Fortran compilers:
+Installation on most systems is rather straightforward - as the bulk of the 
+PDB2PQR code is written in Python, the PDB2PQR code itself is 
+architecture/compiler independent. PDB2PQR has been tested using Python 
+versions 2.2 through 2.4 - problems may occur with older versions. 
+The PropKa code, however, is written in Fortran - and thus to use it with 
+PDB2PQR a two step installation is necessary, making use of available C and 
+Fortran compilers:
 
-	$ ./configure
-	$ make
+    $ ./configure (see ./configure -help for more options)
+      Configure parameters
+        --prefix          Set install directory. Default is current directory.
+        --with-url        Set URL for the website.  Default is http://fully_qualified_domain
+        --disable-propbka Disable propka
+        --disable-pdb2pka Disable pdb2pka
+        NUMPY             Location of Numpy. Default is $PY_DIR/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy
+        
+    $ make
+    $ make install
 
-This should compile the PropKa wrappers necessary to interface with PDB2PQR.  Those who wish to install a web server should also:
+This should compile the PropKa wrappers necessary to interface with PDB2PQR.
 
-1) copy pdb2pqr/html/index.html to pdb2pqr/index.html, and revise the
-form action url to local server name and directory. One may also need to
-create a symbolic link pdb2pqr.cgi for pdb2pqr.py depending on server
-execution permission.
+However, if you would like to enable pdb2pka, then you must have Numpy installed.
+http://numpy.scipy.org/
 
-2) modify src/server.py for local installation directory path.
+No additional steps are needed to install PDB2PQR without propka support - 
+just make sure that a version of Python is found in your system path.
 
-No additional steps are needed to install PDB2PQR without propka support - just make sure that a version of Python is found in your system path.
-
-Please see the main documentation at doc/userguide.html for a complete look at installation, compiler/architecture support, and a general FAQ.
+Please see the main documentation at doc/userguide.html for a complete
+look at installation, compiler/architecture support, and a general FAQ.
 

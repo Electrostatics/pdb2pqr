@@ -1,0 +1,137 @@
+@MEDIA SCREEN { table.APBS a:HOVER { background-color: #ff7777 } }
+
+/* Defaults */
+body {	
+    font-family: sans-serif;
+    background: white;
+    color:  black;
+    width:  auto;
+    margin-left:  10%;
+    margin-right:  10%;
+}
+
+/* Headers */
+h1, h2, h3 {
+    font-weight: normal;
+    margin-bottom: 4pt; 
+    margin-top: 4pt;
+}
+h4 {
+    font-weight:  bold;
+    margin-bottom: 4pt; 
+    margin-top: 4pt;
+};
+h1.title {
+    font-weight:  normal;
+    margin-bottom: 8pt; 
+    margin-top: 4pt;
+}
+
+/* Bars */
+hr {
+    width:  100%;
+    border:  thin black solid;
+    clear:  both;
+}
+
+/* Table */
+table {
+    width:  80%;
+    margin:  0 auto;
+}
+td, th {
+    padding:  5pt;
+}
+
+/* Definition lists */
+dt {
+    font-weight: bold;
+    color: black;
+}
+
+/* Images */
+img {
+    border:  0pt;
+}
+
+/* Navigational tool */
+p.back {
+    font-size: smaller;
+    padding:  0.5em;
+    border-bottom:  thin silver solid;
+    border-top:  thin silver solid;
+    border-left:  none;
+    border-right:  none;
+    width:  auto;
+}
+
+/* Links */
+A:link, A:visited, A:active, A:hover {
+    color: #5588bb;
+    text-decoration: none;
+}
+A:hover { 
+    text-decoration: underline;
+}
+
+/* Image, caption */
+div.figure { 
+    /* border: thin silver solid; */
+    clear:  left;
+    margin: 0.5em;
+    padding: 0.5em;
+    text-indent: 0;
+    font-size: smaller;
+    text-align: left;
+}
+div.figure img {
+    float:  left;
+    padding:  1em;
+}
+div.figure ul {
+    padding:  1em;
+}
+div.figure li {
+    list-style-type:  none;
+    margin:  0;
+    padding:  0;
+}
+
+/* Image, caption, border */
+div.figframe {
+    float:  right;
+    width:  400px;
+    border:  thin silver solid;
+    margin:  0.5em;
+    padding:  0.5em;
+}
+div.figframe p {
+    text-align:  center;
+    font-style:  italic;
+    font-size:  smaller;
+    text-indent:  0;
+    margin:  0.5em;
+}
+
+/* Site index div */
+div.siteindex {
+    width:  33%;
+    border-bottom:  thin black solid;
+    border-top:  thin black solid;
+    border-left:  none;
+    border-right:  none;
+}
+
+/* Affiliation block div */
+div.affil {
+    width:  33%;
+    border:  none;
+}
+div.affil ul {
+    padding:  1em;
+}
+div.affil li {
+    list-style-type:  none;
+    margin:  0;
+    padding:  0;
+}

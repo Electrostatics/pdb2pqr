@@ -351,8 +351,8 @@ class ligand_charge_handler(MOL2MOLECULE):
         for at in residue.atoms: # WAS: self.lAtoms:
             ele = at.sybylType.split('.')[0]
             charge = at.charge
-            if BondiiRadiiDict.has_key(ele):
-                radius = BondiiRadiiDict[ele]
+            if ParseRadiiDict.has_key(ele):
+                radius = ParseRadiiDict[ele]
             else:
                 raise 'radius not known for',ele
             #

@@ -1,24 +1,82 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION X.Y.Z       ??-??-07
+BETA PUBLIC RELEASE VERSION 1.2.2       9-21-07
 #############################################################################
-- NEW FEATURES
-    * Added two extensions for H-bond and contact analysis provided by
-      Julie Mitchell
-    * Added tools/fixpqr.c for PQR formatting by Julie Mitchell
-    * Added --with-python option for specifying particular Python installation
-    * Updated psize.py and inputgen.py to be up to date with APBS 0.5.1
-- BUG FIXES
-    * Added HG1 as altname for CYS to avoid assignment problems 
-    * Bug fixes in propkalib.c (thanks to Julie Mitchell!)
-    * Fixed several incorrect "char *" to "const char *" in pdb2pka which
-      resulted in compilation problems
-    * Fix to only include atoms from the first MODEL tag when ensuring that
-      the number of atoms is within the server limit.
-    * Renamed extensions/hbond-whatif.py to extensions/hbondwhatif.py and 
-      internal hbo() function to hbondwhatif() so that function will be 
-      dynamically imported by PDB2PQR.
-    * Fixed bug when optimizing hydrogens for ASH and GLH where the 
-      optimized hydrogen could be improperly oriented.
+ - NEW FEATURES / CHANGES
+  * Added "make test" and "make adv-test"
+  * Fixed problems with "make dist"
+  * Added integration with Opal for launching jobs as well as querying status
+  * In version 1.2.1, there were 3 variables that needed to be changed to set
+    up a server at a location different from agave.wustl.edu.  LOCALPATH,
+    WEBSITE, and the location of the CGI file.  In this version, LOCALPATH
+    has been used to SRCPATH to avoid confusion, since LOCALPATH could be
+    interpreted as the local path for source files or the localpath for the
+    server.
+  * configure now automatically detects SRCPATH, WEBSITE, and the location
+    of pdb2pqr.cgi.  In version 1.2.1, LOCALPATH(SRCPATH) and WEBSITE were
+    defined in src/server.py and the location of pdb2pqr.cgi was specified
+    in html/server.html (index.html).  Configure now uses variable 
+    substitution with new files src/server.py.in and html/server.html.in to
+    create src/server.py and html/server.html (index.html).
+  * SRCPATH is automatically set to the current working directory. WEBSITE
+    is automatically set to http://fully_qualified_domain_name/pdb2pqr.
+    Path to CGI is automcailly set to 
+    http://fully_qualified_domain_name/pdb2pqr/pdb2pqr.cgi.  
+  * Since configure now automatically sets the locations of files/directories
+    based on the machine and configure options, the default 
+    agave.wustl.edu locations are not used anymore.
+  * A copy of pdb2pqr.css is included.
+  * Configure prints out information about parameters such as python flags,
+    srcpath, localpath, website, etc.
+  * The user may use NUMPY to specify the location of NUMPY.
+  * configure now automatically creates tmp/ with r + w + x permissions.
+  * configure now automatically copies pdb2pqr.py to pdb2pqr.cgi.
+  * configure now automatically copies html/server.html to index.html after
+    variable substitution.  In src/server.py.in (src/server.py), WEBNAME is
+    changed to index.html.	
+  * Both PDB2PKA and PROPKA are enabled by default.  PDB2PKA is enabled by
+    default since ligand parameterization would fail without this option.
+  * ${HOME}/pdb2pqr is the default prefix for a regular user
+  * /var/www/html is the default prefix for root
+  * http://FQDN/pdb2pqr as default website. 	
+  * "make install" runs "make" first, and the copies the approprite files
+    to --prefix.	
+  * If root did not specify --prefix and /var/www/html/pdb2pqr already
+    exists, then a warning is issued, and the user may choose to quit or 
+    overwrite that directory.	 
+  * Similary, if a regular user did not specify --prefix and ${HOME}/pdb2pqr
+    already exists, then a warning is issued, and the user may choose to quit
+    or overwrite that directory.	
+  * If root does not specify --prefix to be a directory to be inside
+    /var/www/html (for example, --prefix=/share/apps/pdb2pqr), then a symbolic
+    link will be made to /var/www/html/pdb2pqr during "make install"
+  * For a regular user, "make install" tells the user the exact command the
+    system administrator will use to make the URL viewable.
+  * Configure option --with-url can be specified either as something like
+    http://sandstone.ucsd.edu/pdb2pqr-test or
+    sandstone.ucsd.edu/pdb2pqr-test.  It also doesn't matter if there's a '/'
+    at the end.
+  * If user is root, and the last part of URL and prefix are different, for
+    example, --with-url=athena.nbcr.net/test0
+    --prefix=/var/www/html/pdb2pqr-test, then a warning will be issued saying
+    the server will be viewable from the URL specified, but not the URL based
+    on pdb2pqr-test.  In other words, the server will be viewable from
+    athena.abcr.net/test0, but not athena.nbcr.net/pdb2pqr-test.  During "make
+    install", a symbolic link is created to enable users to view the server
+    from --with-url.
+  * When making a symbolic link for root, if then link destination already
+    exists as a directory or a symoblic link, then the user may choose to
+    continue with creating the link and overwrite the original directory or quit.
+  * The default value of 7.00 for the pH on the server form is removed due
+    to a problem with browser refershing.
+  * If the user changes py_path when running configure for PDB2PQR, then 
+    the change also applies to PROPKA.
+
+ - BUG FIXES
+
+ - KNOWN BUGS
+   * The install directory name cannot contain dots.
+   * For python 2.2, if PDB2PQR cannot find module sets, then sets needs to 
+     be copied from .../python2.2/site-packages/MYSQLdb/sets.py to .../lib/python2.2
 	
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.2.1       4-1-07

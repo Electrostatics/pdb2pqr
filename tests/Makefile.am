@@ -1,0 +1,1 @@
+SUBDIRS = test adv-test .

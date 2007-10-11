@@ -11,6 +11,7 @@
 		<h3> Table of Contents</h3>
 		<ul>
 			<li> <a href="#introduction">Introduction</a> </li>
+			<li> <a href="#availability">Availability</a> </li>
 			<li> <a href="#installation">Source Installation</a>
 			</li>
 			<li> <a href="#using">Using PDB2PQR</a> </li>
@@ -25,7 +26,6 @@
 		</ul>
 		<hr/>
 
-		
 		<a name="introduction"></a>
 		<h3>Introduction</h3>
 
@@ -33,19 +33,19 @@
 		support, and availability, can be found at the PDB2PQR homepage (<a
 			href="http://pdb2pqr.sourceforge.net/">http://pdb2pqr.sourceforge.net/</a>).
 		</p>
-		
-		<p>
-			PDB2PQR was written by a consortium of researchers, including (in alphabetical order):
-			<ul>
-				<li> <a href="http://cholla.wustl.edu/">Nathan Baker</a> (<a href="mailto:baker@ccb.wustl.edu">baker@ccb.wustl.edu</a>) </li>
-				<li> Paul Czodrowski (<a href="mailto:paul.czodrowski@musterco.com">paul.czodrowski@musterco.com</a>) </li>
-				<li> Todd Dolinsky (<a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a>) </li>
-				<li> <a href="http://www.chem.unl.edu/faculty/eachfaculty/li.shtml">Hui Li</a> (<a href="mailto:huili06@unlserve.unl.edu">huili06@unlserve.unl.edu</a>)
-				<li> <a href="http://propka.ki.ku.dk/~jhjensen/">Jan Jensen</a> (<a href="mailto:jhjensen@kemi.ku.dk">jhjensen@kemi.ku.dk</a>) </li>
-				<li> <a href="http://http://enzyme.ucd.ie/">Jens Nielsen</a> (<a href="mailto:Jens.Nielsen@ucd.ie">Jens.Nielsen@ucd.ie</a>) </li>
-			</ul>
-			A number of authors have also provided extensions to PDB2PQR, authorship for these extensions are given in the individual source files in the "extensions" directory.
-		</p>
+
+                <p>  
+		                         PDB2PQR was written by a consortium of researchers, including (in alphabetical order): 
+					                          <ul>  
+								                                   <li> <a href="http://cholla.wustl.edu/">Nathan Baker</a> (<a href="mailto:baker@ccb.wustl.edu">baker@ccb.wustl.edu</a>) </li> 
+								                                    <li> Paul Czodrowski (<a href="mailto:paul.czodrowski@musterco.com">paul.czodrowski@musterco.com</a>) </li> 
+								                                     <li> Todd Dolinsky (<a href="mailto:todd@ccb.wustl.edu">todd@ccb.wustl.edu</a>) </li> 
+    <li> <a href="http://www.chem.unl.edu/faculty/eachfaculty/li.shtml">Hui Li</a> (<a href="mailto:huili06@unlserve.unl.edu">huili06@unlserve.unl.edu</a>) 
+																								                                       <li> <a href="http://propka.ki.ku.dk/~jhjensen/">Jan Jensen</a> (<a href="mailto:jhjensen@kemi.ku.dk">jhjensen@kemi.ku.dk</a>) </li> 
+																												                                        <li> <a href="http://http://enzyme.ucd.ie/">Jens Nielsen</a> (<a href="mailto:Jens.Nielsen@ucd.ie">Jens.Nielsen@ucd.ie</a>) </li> 
+																																	                         </ul>  
+																																				                          A number of authors have also provided extensions to PDB2PQR, authorship for these extensions are given in the individual source files in the "extensions" directory. 
+																																							                   </p>
 
 		<hr/>
 
@@ -55,14 +55,15 @@
 		<p> As the bulk of the PDB2PQR code is written in <a
 			href="http://python.org">Python</a>, the PDB2PQR code
 		itself is architecture and compiler independent.  PDB2PQR has
-		been tested using Python versions 2.2 through 2.4 - problems
-		may occur with older versions.  Users who simply want to use
+		been tested using Python versions 2.2 through 2.5 and Numeric version 24.2 - problems
+		may occur with other versions.  Users who simply want to use
 		the PDB2PQR without <a
-			href="http://propka.ki.ku.dk/">PROPKA</a> or ligand parameterization support
+			href="http://propka.ki.ku.dk/">PROPKA</a> or ligand parameterization support and <a href="http://propka.ki.ku.dk/">PROPKA</a>
 		can type
 		<blockquote><code>
-				$ ./configure<br/>
+				$ ./configure --disable-propka --disable-pdb2pka<br/>
 				$ make <br/>
+				$ make install <br/>
 		</code></blockquote>
 		or skip the configure/make process altogether.</p>
 
@@ -70,12 +71,13 @@
 		<p>
 		The <a href="http://propka.ki.ku.dk/">PROPKA</a> code is
 		written in Fortran.  To use <a
-			href="http://propka.ki.ku.dk/">PROPKA</a> with PDB2PQR, a two step
+			href="http://propka.ki.ku.dk/">PROPKA</a> with PDB2PQR, a three step
 		installation is necessary, making use of available C and
 		Fortran compilers:
 		<blockquote><code>
 				$ ./configure<br/>
 				$ make <br/>
+				$ make install <br/>
 		</code></blockquote>
 		This should compile the <a
 			href="http://propka.ki.ku.dk/">PROPKA</a> wrappers necessary to interface
@@ -95,12 +97,13 @@
 		Note that PDB2PQR has only been extensively tested against
 		<a
 			href="http://numpy.scipy.org/#older_array">Numeric</a>.
-		To use PDB2PKA with PDB2PQR, a two step
+		Unlike earlier versions, PDB2PKA is enabled by default in this version. To use PDB2PKA with PDB2PQR, a three step
 		installation is necessary, making use of available C and
 		Fortran compilers:
 		<blockquote><code>
-				$ ./configure --enable-pdb2pka<br/>
+				$ ./configure<br/>
 				$ make <br/>
+				$ make install<br/>
 		</code></blockquote>
 		This should compile the PDB2PKA wrappers necessary to interface
 		with PDB2PQR.  Note that this will also compile <a
@@ -109,6 +112,7 @@
 		<blockquote><code>
 				$ ./configure --enable-pdb2pka --disable-propka<br/>
 				$ make <br/>
+				$ make install<br/>
 		</code></blockquote>
 		</p>  
 
@@ -126,6 +130,27 @@
 		we can ensure that you are informed of PBD2PQR updates, etc.
 		</p>
 
+		<P>To set up a server, simply run 
+                <blockquote><code>
+                                $ ./configure <br/>
+                                $ make <br/>
+                                $ make install <br/>
+                </code></blockquote>
+		<P>
+		By default, the server is installed in <code>/var/www/html/pdb2pqr</code> and the default URL is <code>http://fully_qualified_domain_name/pdb2pqr</code>.  If the user does not have root permission, then the server is installed in <code>${HOME}/pdb2pqr</code>.</P>
+		<P>Configure options include
+		<blockquote>
+		        <code>--prefix</code> Installation directory<br/>
+			<code>--with-url</code> URL for the server<br/>
+			<code>--disable-propka</code> Disable PROPKA</br/>
+			<code>--disable-pdb2pka</code> Disable PDB2PKA</br/>
+			<code>--with-python</code> Path to Python (ie <code>/usr/local/bin/python2.5</code>)<br/>
+			<code>--with-opal</code> URL to use for Opal service integration<br/>
+		</blockquote>
+		</P>
+		<B>It is highly recommended that <code>--prefix</code> and <code>--with-url</code> point to the same directory. Specifications <code>--prefix=/var/www/html/pdb2pqr-test --with-url=http://somedomain/pdb2pqr-test</code> is recommened.  On the other hand, specifications like <code>--prefix=/var/ww/html/mypdb2pqr --with-url=http://somedomain/pdb2pqr-test</code> is not recommened because <code>mypdb2pqr</code> and <code>pdb2pqr-test</code> are different names.  
+		</B>
+		<P>
 		<hr/>
 
 		<a name="using"></a>
@@ -343,8 +368,8 @@
 
 		<dl>
 			<dt>What is a PQR file?</dt>
-			<dd> A PQR file is a PDB file with the occupancy and
-			temperature columns replaced by columns containing the per-atom
+			<dd> A PQR file is a PDB file with the temperature and
+			occupancy columns replaced by columns containing the per-atom
 			charge (Q) and radius (R).  PQR files are used in several
 			computational biology packages, including <a
 				href="http://apbs.sourceforge.net">APBS</a>.</dd>
@@ -661,7 +686,7 @@
 
 		<center>
 			<small>
-				Last changed on: $Date: 2007-02-10 11:06:05 -0600 (Sat, 10 Feb 2007)$
+				Last changed on: $Date: 2007-09-06 11:06:05 -0600 (Thu, 06 Sep 2007)$
 			</small>
 		</center>
 

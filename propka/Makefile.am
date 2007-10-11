@@ -19,6 +19,9 @@ _propkalib_so_LINK      = $(F77)
 _propkalib_so_LDFLAGS   = -o $@ $(PY_SHARED)
 _propkalib_so_LDADD     = $(PY_LDFLAGS)
 propka_SOURCES          = propka.f
+
+EXTRA_DIST = *.py *.i
+
 distclean-local: clean-local
 clean-local: clean-ac
 clean-ac:

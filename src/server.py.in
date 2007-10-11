@@ -54,7 +54,7 @@ import time
 # GLOBAL SERVER VARIABLES
 
 """ The absolute path to root HTML directory """
-LOCALPATH   = "/export/home/www/html/pdb2pqr/"
+SRCPATH   = "@srcpath@/"
 
 """ The relative path to results directory from script directory.
     The web server (i.e. Apache) MUST be able to write to this directory. """
@@ -64,13 +64,13 @@ TMPDIR      = "tmp/"
 LIMIT       = 500.0
 
 """ The path to the web site *directory* """
-WEBSITE     = "http://agave.wustl.edu/pdb2pqr/"
+WEBSITE     = "@website@/"
 
 """ The name of the main server page """
-WEBNAME     = "server.html"
+WEBNAME     = "index.html"
 
 """ The stylesheet to use """
-STYLESHEET  = "http://agave.wustl.edu/css/baker.css"
+STYLESHEET  = "@website@/" + "pdb2pqr.css"
 
 """ The refresh time (in seconds) for the progress page """
 REFRESHTIME = 20
@@ -82,7 +82,7 @@ LOADPATH    = "/proc/loadavg"
 """ The path to the pdb2pqr log - set to "" or None if not to be
     included.  The web server (i.e. Apache) MUST be able to write to
     this directory. """
-LOGPATH     = "%s/%s/usage.txt" % (LOCALPATH, TMPDIR)
+LOGPATH     = "%s/%s/usage.txt" % (SRCPATH, TMPDIR)
 
 def setID(time):
     """
@@ -147,7 +147,7 @@ def cleanTmpdir():
     newdir = []
     size = 0.0
     count = 0
-    path = LOCALPATH + TMPDIR
+    path = SRCPATH + TMPDIR
 
     dir = os.listdir(path)
     for filename in dir:
@@ -204,7 +204,7 @@ def printProgress(name, refreshname, reftime, starttime):
             starttime:   The time as returned by time.time() that the run started (float)
     """
     elapsedtime = time.time() - starttime + REFRESHTIME/2.0 # Add in time offset
-    filename = "%s%s%s-tmp.html" % (LOCALPATH, TMPDIR, name)
+    filename = "%s%s%s-tmp.html" % (SRCPATH, TMPDIR, name)
     file = open(filename,"w")
     file.write("<HTML>\n")
     file.write("<HEAD>\n")
@@ -304,7 +304,7 @@ def createResults(header, input, name, time, missedligands=[]):
     newheader = string.replace(header, "\n", "<BR>")
     newheader = string.replace(newheader," ","&nbsp;")
 
-    filename = "%s%s%s.html" % (LOCALPATH, TMPDIR, name)
+    filename = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
     file = open(filename, "w")
     
     file.write("<html>\n")
@@ -322,10 +322,10 @@ def createResults(header, input, name, time, missedligands=[]):
     file.write("<a href=\"%s%s%s.pqr\">%s.pqr</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
     if input:
         file.write("<a href=\"%s%s%s.in\">%s.in</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
-    pkaname = "%s%s%s.propka" % (LOCALPATH, TMPDIR, name)
+    pkaname = "%s%s%s.propka" % (SRCPATH, TMPDIR, name)
     if os.path.isfile(pkaname):
         file.write("<a href=\"%s%s%s.propka\">%s.propka</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
-    typename = "%s%s%s-typemap.html" % (LOCALPATH, TMPDIR, name)
+    typename = "%s%s%s-typemap.html" % (SRCPATH, TMPDIR, name)
     if os.path.isfile(typename):
         file.write("<a href=\"%s%s%s-typemap.html\">%s-typemap.html</a><BR>\n" % (WEBSITE, TMPDIR, name, name)) 
     file.write("<P>The header for your PQR file, including any warnings generated, is:<P>\n")
@@ -359,7 +359,7 @@ def createError(name, details):
             name:    The result file root name, based on local time (string)
             details: The details of the error (string)
     """
-    filename = "%s%s%s.html" % (LOCALPATH, TMPDIR, name)
+    filename = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
     file = open(filename, "w")
 
     file.write("<html>\n")
@@ -392,7 +392,7 @@ def startServer(name):
             pqrpath: The complete path to the pqr file (string)
     """    
     cleanTmpdir()
-    path = LOCALPATH
+    path = SRCPATH
     tmpdir = TMPDIR
 
     starttime = time.time()
@@ -410,8 +410,8 @@ def startServer(name):
             os.chdir(home)
             os.close(1)
             os.close(2)
-            endname = "%s%s%s.html" % (LOCALPATH, TMPDIR, name)
-            tmpname = "%s%s%s-tmp.html" % (LOCALPATH, TMPDIR, name)
+            endname = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
+            tmpname = "%s%s%s-tmp.html" % (SRCPATH, TMPDIR, name)
             while 1:
                 if os.path.isfile(endname):
                     refreshname = "%s%s%s.html" % (WEBSITE, TMPDIR, name)

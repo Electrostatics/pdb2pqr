@@ -522,7 +522,10 @@ class get_ligand_topology:
                             templates[current_template][i.at_idx2]['alreadyvisited'] = True
                             AtomNameListList.append(AtomNameList)
 				# AGL must be a 2-D integer array, this fixes the bug with NumPy.     --Yong Huang
-                AGL = Numeric.zeros((len(AtomNameListList),len(AtomNameListList)), Numeric.int)
+                AGL = Numeric.zeros((len(AtomNameListList),len(AtomNameListList)))
+                if str(AGL[0,0]) != '0':
+                    AGL = Numeric.zeros((len(AtomNameListList),len(AtomNameListList)), Numeric.int)
+				
                 daseinecounter = 0
                 dasanderecounter = 0
                 # what again are these counters counting?

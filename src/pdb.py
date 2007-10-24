@@ -2421,6 +2421,11 @@ def readPDB(file):
                except StandardError, details:
                    sys.stderr.write("Error parsing line: %s\n" % details)
                    sys.stderr.write("<%s>\n" % string.strip(line))
+            elif record == "SITE" or record == "TURN":
+                pass
+            elif record == "SSBOND" or record == "LINK":
+                sys.stderr.write("Warning -- ignoring record: \n")
+                sys.stderr.write("<%s>\n" % string.strip(line))
             else:
                 sys.stderr.write("Error parsing line: %s\n" % details)
                 sys.stderr.write("<%s>\n" % string.strip(line))

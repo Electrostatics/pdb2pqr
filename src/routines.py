@@ -1259,7 +1259,7 @@ class Routines:
         
         # Parse the results
         
-        pkafile = open(outname)
+        pkafile = open(outname, 'rU')
         summary = 0
         while 1:
             line = pkafile.readline()

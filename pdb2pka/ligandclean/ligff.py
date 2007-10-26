@@ -158,7 +158,7 @@ class ligforcefield(Forcefield):
         if not os.path.isfile(defpath):
             raise ValueError, "Unable to find forcefield %s!" % defpath
 
-        file = open(defpath)
+        file = open(defpath, 'rU')
         lines = file.readlines()
         for line in lines:
             if not line.startswith("#"):

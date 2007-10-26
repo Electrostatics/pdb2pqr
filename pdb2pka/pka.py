@@ -1204,7 +1204,7 @@ class pKaRoutines:
         filename = TITRATIONFILE
         if not os.path.isfile(TITRATIONFILE):
             raise ValueError, "Could not find TITRATION.DAT!"
-        file = open(filename)
+        file = open(filename, 'rU')
         
         while 1:
             line=file.readline()

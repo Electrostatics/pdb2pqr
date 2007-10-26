@@ -75,7 +75,7 @@ class Psize:
 
     def parseInput(self, filename):
         """ Parse input structure file in PDB or PQR format """
-        file = open(filename, "r")
+        file = open(filename, 'rU')
         self.parseLines(file.readlines())
 
     def parseLines(self, lines):

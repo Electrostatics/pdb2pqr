@@ -525,6 +525,7 @@ class MOL2MOLECULE:
         #data = open(self.filename).read()
        
         data = file.read()
+        data = data.replace("\r", "")
  
         # ATOM section
         start = data.find("@<TRIPOS>ATOM")

@@ -68,7 +68,7 @@ class inputGen:
         #
         import string
         coords=[]
-        fd=open(self.pqrfile)
+        fd=open(self.pqrfile, 'rU')
         line=fd.readline()
         while line:
             split=string.split(line)

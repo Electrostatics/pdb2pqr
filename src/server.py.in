@@ -278,7 +278,7 @@ def getLoads():
     """
     if LOADPATH == "": return None
     try:
-        file = open(LOADPATH)
+        file = open(LOADPATH, 'rU')
     except IOError:
         return None
 

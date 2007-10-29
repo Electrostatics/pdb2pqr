@@ -21,23 +21,37 @@ C
 C PropKa 1.00: a program for protein pKa predictions
 C Portion Copyright (C) 2005 Jan H. Jensen and Hui Li
 C
-C This program is free software; you can redistribute it and/or
-C modify it under the terms of the GNU General Public License as
-C published by the Free Software Foundation; either version 2 of
-C the License, or  (at your option) any later version.
-C
-C This program is distributed in the hope that it will be useful,
-C but WITHOUT ANY WARRANTY; without even the implied warranty of
-C MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-C GNU General Public License for more details.
-C
-C You should have received a copy of the GNU General Public License
-C along with this program; if not, write to the Free Software
-C Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-C MA 02111-1307 USA
+C All rights reserved.
+C  
+C Redistribution and use in source and binary forms, with or without 
+C modification, are permitted provided that the following conditions 
+C are met:
+C 
+C * Redistributions of source code must retain the above copyright
+C   notice, this list of conditions and the following disclaimer.
+C * Redistributions in binary form must reproduce the above copyright
+C   notice, this list of conditions and the following disclaimer in the
+C   documentation and/or other materials provided with the distribution.
+C * Neither the name of the University of Copenhagen nor the names of its
+C   contributors may be used to endorse or promote products derived from 
+C   this software without specific prior written permission.
+C 
+C THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+C "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+C LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+C A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+C OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+C SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED 
+C TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+C PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+C LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+C NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+C SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 C
 C For questions or comments contact Jan-Jensen@uiowa.edu
 C
+
+
       PROGRAM  PROPKA
 C     ****************
 C     INITIALIZE THE PDB FILE

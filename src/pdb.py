@@ -525,7 +525,6 @@ class MOL2MOLECULE:
         #data = open(self.filename).read()
        
         data = file.read()
-        data = data.replace("\r", "")
  
         # ATOM section
         start = data.find("@<TRIPOS>ATOM")
@@ -2462,7 +2461,7 @@ def main():
         sys.stdout.write("Getting random PDB...\n")
         path = getRandom()
         sys.stdout.write("Parsing %s...\n" % path)
-        pdbdict, errlist = readPDB(open(path, "r"))
+        pdbdict, errlist = readPDB(open(path, "rU"))
         if len(errlist) > 0:  sys.stdout.write("\tSkipped records: %s\n" % errlist)
         sys.stdout.write("\tNo skipped records.\n")
 

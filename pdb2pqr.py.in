@@ -475,7 +475,7 @@ def mainCommand():
                 raise ValueError, "Invalid forcefield naming scheme %s!" % a
         elif o == "--ligand":
             if os.path.isfile(a):
-                options["ligand"] = open(a)
+                options["ligand"] = open(a, 'rU')
             else:
                 raise ValueError, "Unable to find ligand file %s!\n" % a
         elif undashed in extensions.keys():

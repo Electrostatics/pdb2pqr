@@ -255,7 +255,7 @@ def getPDBFile(path):
                   ".pdb?format=PDB&pdbId=" + path + "&compression=None"
         file = urllib.urlopen(URLpath)
     else:
-        file = open(path)
+        file = open(path, 'rU')
     return file
         
 def distance(coords1, coords2):

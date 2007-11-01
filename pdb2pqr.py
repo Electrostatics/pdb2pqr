@@ -172,6 +172,11 @@ def runPDB2PQR(pdblist, ff, options):
             missedligandresidues:  A list of ligand residue names whose charges could
                      not be assigned (ligand)
     """
+    # Append Numeric path to sys.path if the user specified a non-standard location during configuration
+    try:
+      sys.path.append(@NUMERIC_PATH@)
+    except TypeError:
+      pass
     ph = None
     pkaname = ""
     outname = ""
@@ -587,13 +592,13 @@ def mainCGI():
         print "Content-type: text/html\n"
         print text
         sys.exit(2)
-    elif dummyprot.numAtoms() > 10000 and "opt" in options:
+    elif dummyprot.numAtoms() > @MAXATOMS@ and "opt" in options:
         text = "<HTML><HEAD>"
         text += "<TITLE>PDB2PQR Error</title>"
         text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
         text += "</HEAD><BODY><H2>PDB2PQR Error</H2><P>"
         text += "Due to server limits, we are currently unable to optimize "
-        text += "proteins of greater than 10000 atoms on the server (PDB2PQR "
+        text += "proteins of greater than @MAXATOMS@ atoms on the server (PDB2PQR "
         text += "found %s atoms in the selected PDB file).  If you " % dummyprot.numAtoms()
         text += "want to forgo optimization please try the server again.<P>"
         text += "Otherwise you may use the standalone version of PDB2PQR that "
@@ -642,10 +647,6 @@ if __name__ == "__main__":
     """ Determine if called from command line or CGI """
     
     if not os.environ.has_key("REQUEST_METHOD"):
-        # Append Numeric/Numpy path to sys.path if the user specified a non-standard location during configuration
-        package_path = "/Users/yhuang/tmp/numpy/lib/python2.3/site-packages/"
-        if package_path != "":
-          sys.path.extend(package_path.split(":"))
         mainCommand()    
     else:
         mainCGI()

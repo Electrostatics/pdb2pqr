@@ -7,7 +7,6 @@ rm -rf config.cache autom4te.cache
 aclocal --verbose \
 && automake --verbose --gnu --add-missing --copy \
 && autoconf --verbose \
-&& autoheader --verbose \
 && libtoolize --automake --copy --force
 
 rm -rf config.cache autom4te.cache

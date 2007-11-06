@@ -674,7 +674,7 @@ if __name__ == "__main__":
     
     if not os.environ.has_key("REQUEST_METHOD"):
         # Append Numeric/Numpy path to sys.path if the user specified a non-standard location during configuration
-        package_path = ""
+        package_path = "/Users/yhuang/tmp/numpy/lib/python2.3/site-packages/"
         if package_path != "":
           sys.path.extend(package_path.split(":"))
         mainCommand()    

@@ -196,7 +196,7 @@ PDB2PQR_SUBDIRS=""
 
 # A.  propka
 
-AC_MSG_CHECKING([for--disable-propka])
+AC_MSG_CHECKING([for --disable-propka])
 AC_ARG_ENABLE(propka,
      [AC_HELP_STRING([--disable-propka], [Disable propka compilation])],
      [ with_propka="$enableval" ],
@@ -226,7 +226,7 @@ fi
 
 # B. pdb2pka
 
-AC_MSG_CHECKING([for --disable-pdb2pka])
+AC_MSG_CHECKING([for--disable-pdb2pka])
 AC_ARG_ENABLE(pdb2pka,
      [AC_HELP_STRING([--disable-pdb2pka], [Disable pdb2pka compilation])],
      [ with_pdb2pka="$enableval" ],
@@ -319,12 +319,7 @@ if test "$with_pdb2pka" = "enable" ; then
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_FLAGS="$PY_HEADER -I/opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
       else
-        AC_MSG_RESULT([no])
-	AC_MSG_RESULT([Unable to find Numeric or Numpy!])
-	AC_MSG_RESULT([Please either:])
-	AC_MSG_RESULT([  * Rerun ./configure with the --disable-pdb2pka option or])
-	AC_MSG_RESULT([  * Install Numeric or Numpy or specify the location with ./configure NUMPY=path_to_numpy or NUMERIC=path_to_numeric])
-        AC_MSG_ERROR([Unable to find Numeric or Numpy!])
+        AC_MSG_ERROR([Unable to find Numeric or Numpy!  Please install Numeric or Numpy or specify the location with ./configure NUMPY=path_to_numpy or NUMERIC=path_to_numeric or disable PDB2PKA during configuration with --disable-pdb2pka])
       fi
     fi
   fi

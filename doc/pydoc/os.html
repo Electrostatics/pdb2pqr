@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>os</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/sw/lib/python2.5/os.py">/sw/lib/python2.5/os.py</a><br><a href="http://www.python.org/doc/current/lib/module-os.html">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/os.py">/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/os.py</a><br><a href="http://www.python.org/doc/current/lib/module-os.html">Module Docs</a></font></td></tr></table>
     <p><tt>OS&nbsp;routines&nbsp;for&nbsp;Mac,&nbsp;NT,&nbsp;or&nbsp;Posix&nbsp;depending&nbsp;on&nbsp;what&nbsp;system&nbsp;we're&nbsp;on.<br>
 &nbsp;<br>
 This&nbsp;exports:<br>
@@ -86,7 +86,7 @@ Methods defined here:<br>
 
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0xf1ac0&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x1e89a0&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <hr>
 Methods inherited from <a href="exceptions.html#EnvironmentError">EnvironmentError</a>:<br>
@@ -115,6 +115,10 @@ Methods inherited from <a href="exceptions.html#BaseException">BaseException</a>
 <dl><dt><a name="OSError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
 
 <dl><dt><a name="OSError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="OSError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
 
 <dl><dt><a name="OSError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
 
@@ -230,7 +234,7 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x11a680&gt;<dd><tt>T.<a href="#stat_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x210000&gt;<dd><tt>T.<a href="#stat_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <dl><dt><strong>n_fields</strong> = 18</dl>
 
@@ -312,7 +316,7 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x11a740&gt;<dd><tt>T.<a href="#statvfs_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x2100c0&gt;<dd><tt>T.<a href="#statvfs_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <dl><dt><strong>n_fields</strong> = 10</dl>
 
@@ -359,7 +363,7 @@ value.</tt></dd></dl>
 &nbsp;<br>
 Abort&nbsp;the&nbsp;interpreter&nbsp;immediately.&nbsp;&nbsp;This&nbsp;'dumps&nbsp;core'&nbsp;or&nbsp;otherwise&nbsp;fails<br>
 in&nbsp;the&nbsp;hardest&nbsp;way&nbsp;possible&nbsp;on&nbsp;the&nbsp;hosting&nbsp;operating&nbsp;system.</tt></dd></dl>
- <dl><dt><a name="-access"><strong>access</strong></a>(...)</dt><dd><tt><a href="#-access">access</a>(path,&nbsp;mode)&nbsp;-&gt;&nbsp;1&nbsp;if&nbsp;granted,&nbsp;0&nbsp;otherwise<br>
+ <dl><dt><a name="-access"><strong>access</strong></a>(...)</dt><dd><tt><a href="#-access">access</a>(path,&nbsp;mode)&nbsp;-&gt;&nbsp;True&nbsp;if&nbsp;granted,&nbsp;False&nbsp;otherwise<br>
 &nbsp;<br>
 Use&nbsp;the&nbsp;real&nbsp;uid/gid&nbsp;to&nbsp;test&nbsp;for&nbsp;access&nbsp;to&nbsp;a&nbsp;path.&nbsp;&nbsp;Note&nbsp;that&nbsp;most<br>
 operations&nbsp;will&nbsp;use&nbsp;the&nbsp;effective&nbsp;uid/gid,&nbsp;therefore&nbsp;this&nbsp;routine&nbsp;can<br>
@@ -888,7 +892,7 @@ Write&nbsp;a&nbsp;string&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl
 <strong>O_EXCL</strong> = 2048<br>
 <strong>O_EXLOCK</strong> = 32<br>
 <strong>O_NDELAY</strong> = 4<br>
-<strong>O_NOCTTY</strong> = 0<br>
+<strong>O_NOCTTY</strong> = 131072<br>
 <strong>O_NOFOLLOW</strong> = 256<br>
 <strong>O_NONBLOCK</strong> = 4<br>
 <strong>O_RDONLY</strong> = 0<br>
@@ -913,11 +917,11 @@ Write&nbsp;a&nbsp;string&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl
 <strong>curdir</strong> = '.'<br>
 <strong>defpath</strong> = ':/bin:/usr/bin'<br>
 <strong>devnull</strong> = '/dev/null'<br>
-<strong>environ</strong> = {'MC_PREFIX': '/Users/baker/coding/manifold/dist...c', 'SGML_CATALOG_FILES': '/sw/etc/sgml/catalog'}<br>
+<strong>environ</strong> = {'MC_PREFIX': '/Users/baker/coding/manifold/dist...k/pdb2pqr/doc/pydoc', 'COMMAND_MODE': 'unix2003'}<br>
 <strong>linesep</strong> = '<font color="#c040c0">\n</font>'<br>
 <strong>name</strong> = 'posix'<br>
 <strong>pardir</strong> = '..'<br>
-<strong>pathconf_names</strong> = {'PC_CHOWN_RESTRICTED': 7, 'PC_LINK_MAX': 1, 'PC_MAX_CANON': 2, 'PC_MAX_INPUT': 3, 'PC_NAME_MAX': 4, 'PC_NO_TRUNC': 8, 'PC_PATH_MAX': 5, 'PC_PIPE_BUF': 6, 'PC_VDISABLE': 9}<br>
+<strong>pathconf_names</strong> = {'PC_ASYNC_IO': 17, 'PC_CHOWN_RESTRICTED': 7, 'PC_FILESIZEBITS': 18, 'PC_LINK_MAX': 1, 'PC_MAX_CANON': 2, 'PC_MAX_INPUT': 3, 'PC_NAME_MAX': 4, 'PC_NO_TRUNC': 8, 'PC_PATH_MAX': 5, 'PC_PIPE_BUF': 6, ...}<br>
 <strong>pathsep</strong> = ':'<br>
 <strong>sep</strong> = '/'<br>
 <strong>sysconf_names</strong> = {'SC_2_CHAR_TERM': 20, 'SC_2_C_BIND': 18, 'SC_2_C_DEV': 19, 'SC_2_FORT_DEV': 21, 'SC_2_FORT_RUN': 22, 'SC_2_LOCALEDEF': 23, 'SC_2_SW_DEV': 24, 'SC_2_UPE': 25, 'SC_2_VERSION': 17, 'SC_AIO_LISTIO_MAX': 42, ...}</td></tr></table>

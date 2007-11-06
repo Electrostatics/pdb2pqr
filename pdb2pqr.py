@@ -10,7 +10,7 @@
 
     Parsing utilities provided by Nathan A. Baker (baker@biochem.wustl.edu)
     Washington University in St. Louis
-	
+
 	Copyright (c) 2002-2007, Jens Erik Nielsen, University College Dublin; 
 	Nathan A. Baker, Washington University in St. Louis; Paul Czodrowski & 
 	Gerhard Klebe, University of Marburg
@@ -618,13 +618,13 @@ def mainCGI():
         print "Content-type: text/html\n"
         print text
         sys.exit(2)
-    elif dummyprot.numAtoms() > @MAXATOMS@ and "opt" in options:
+    elif dummyprot.numAtoms() > 10000 and "opt" in options:
         text = "<HTML><HEAD>"
         text += "<TITLE>PDB2PQR Error</title>"
         text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
         text += "</HEAD><BODY><H2>PDB2PQR Error</H2><P>"
         text += "Due to server limits, we are currently unable to optimize "
-        text += "proteins of greater than @MAXATOMS@ atoms on the server (PDB2PQR "
+        text += "proteins of greater than 10000 atoms on the server (PDB2PQR "
         text += "found %s atoms in the selected PDB file).  If you " % dummyprot.numAtoms()
         text += "want to forgo optimization please try the server again.<P>"
         text += "Otherwise you may use the standalone version of PDB2PQR that "
@@ -674,7 +674,7 @@ if __name__ == "__main__":
     
     if not os.environ.has_key("REQUEST_METHOD"):
         # Append Numeric/Numpy path to sys.path if the user specified a non-standard location during configuration
-        package_path = "@PACKAGE_PATH@"
+        package_path = ""
         if package_path != "":
           sys.path.extend(package_path.split(":"))
         mainCommand()    

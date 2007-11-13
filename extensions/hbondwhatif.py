@@ -12,7 +12,10 @@ __author__ = "Todd Dolinsky and Julie Mitchell"
 
 from src.utilities import *
 from src.routines import *
-import Numeric 
+try:
+    import Numeric
+except:
+    import numpy as Numeric
 from math import *
 
 ANGLE_CUTOFF = 90.0       # A - D - H(D) angle

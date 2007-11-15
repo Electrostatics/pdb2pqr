@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.2.2       9-21-07
+BETA PUBLIC RELEASE VERSION 1.2.2       11-14-07
 #############################################################################
  - NEW FEATURES / CHANGES
   * Added "make test" and "make adv-test"
@@ -70,8 +70,13 @@ BETA PUBLIC RELEASE VERSION 1.2.2       9-21-07
     to a problem with browser refershing.
   * If the user changes py_path when running configure for PDB2PQR, then 
     the change also applies to PROPKA.
+  * Updated warning messages for lines beginning with SITE, TURN, SSBOND and LINK.
+  * Switched license from GPL to BSD.
 
  - BUG FIXES
+  * Fixed the line feed bug. Now PDB2PQR handles different input files (.pdb and
+    .mol2) created or saved on different platforms.
+  * Fixed "hbondwhatif" warning at start up.
 
  - KNOWN BUGS
    * The install directory name cannot contain dots.

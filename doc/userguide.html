@@ -130,6 +130,8 @@
 		we can ensure that you are informed of PBD2PQR updates, etc.
 		</p>
 
+		<p><b>Note:</b>  these instructions are intended for systems administrators with the ability to change the behavior of their web server software and/or install software in privileged locations.</p>
+
 		<P>To set up a server, simply run 
                 <blockquote><code>
                                 $ ./configure <br/>
@@ -140,17 +142,24 @@
 		By default, the server is installed in <code>/var/www/html/pdb2pqr</code> and the default URL is <code>http://fully_qualified_domain_name/pdb2pqr</code>.  If the user does not have root permission, then the server is installed in <code>${HOME}/pdb2pqr</code>.</P>
 		<P>Configure options include
 		<blockquote>
-		        <code>--prefix</code> Installation directory<br/>
-			<code>--with-url</code> URL for the server<br/>
+			<code>--prefix</code> Installation directory (e.g., <code>/var/www/html/pdb2pqr</code>)<br/>
+			<code>--with-url</code> URL for the server (e.g., <code>http://somedomain/pdb2pqr</code>)<br/>
 			<code>--disable-propka</code> Disable PROPKA</br/>
 			<code>--disable-pdb2pka</code> Disable PDB2PKA</br/>
-			<code>--with-python</code> Path to Python (ie <code>/usr/local/bin/python2.5</code>)<br/>
-			<code>--with-opal</code> URL to use for Opal service integration<br/>
+			<code>--with-python</code> Path to Python (e.g., <code>/usr/local/bin/python2.5</code>)<br/>
+			<code>--with-opal</code> URL to use for <a href="#opal">Opal service integration</a><br/>
 		</blockquote>
 		</P>
-		<B>It is highly recommended that <code>--prefix</code> and <code>--with-url</code> point to the same directory. Specifications <code>--prefix=/var/www/html/pdb2pqr-test --with-url=http://somedomain/pdb2pqr-test</code> is recommened.  On the other hand, specifications like <code>--prefix=/var/ww/html/mypdb2pqr --with-url=http://somedomain/pdb2pqr-test</code> is not recommened because <code>mypdb2pqr</code> and <code>pdb2pqr-test</code> are different names.  
-		</B>
-		<P>
+
+		<h5>Troubleshooting</h5>
+		<ul>
+			<li> It is highly recommended that <code>--prefix</code> and <code>--with-url</code> point to the same directory. Specifications <code>--prefix=/var/www/html/pdb2pqr-test --with-url=http://somedomain/pdb2pqr-test</code> is recommened.  On the other hand, specifications like <code>--prefix=/var/www/html/mypdb2pqr --with-url=http://somedomain/pdb2pqr-test</code> is not recommened because <code>mypdb2pqr</code> and <code>pdb2pqr-test</code> are different names.  </li>
+			<li> If the server interface loads fine, but you cannot execute pdb2pqr by clicking the "Submit" button, make sure you have the permission to execute pdb2pqr.cgi file.  In particular, ensure that the access mode of pdb2pqr.cgi allows execution by the webserver (e.g., <code>chmod +x /var/www/html/pdb2pqr/pdb2pqr.cgi</code>).  Additionally, you may need to change the configuration of your webserver to enable CGI execution.  For the <a href="http://httpd.apache.org/">Apache</a> webserver, this involves editing <code>httpd.conf</code> to add ExecCGI to the option list for your server.  In some installations, this may be as simple as adding a line like <code>Options Indexes FollowSymLinks ExecCGI</code> in the &lt;Directory "/var/www/html"&gt; section of the Apache configuration file.  If you modify this file, you will need to restart the web server. </li>
+		</ul>
+
+		<h5> <a name="opal">Opal web services</a> </h5>
+		<p>The <a href="http://nbcr.net/">NBCR</a> development team has provided code that allows PDB2PQR to be run on remote clusters through the <a href="http://nbcr.net/services/">Opal web services toolkit</a>. This allows users to host a PDB2PQR server (e.g., for a class) without worrying about the load on their local computers.</p>
+
 		<hr/>
 
 		<a name="using"></a>

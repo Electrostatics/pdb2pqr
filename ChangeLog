@@ -5,16 +5,6 @@ BETA PUBLIC RELEASE VERSION 1.3.0       12-06-07
   * Added "make test" and "make adv-test"
   * Fixed problems with "make dist"
   * Added integration with Opal for launching jobs as well as querying status
-  * In version 1.2.1, there were 3 variables that needed to be changed to set
-    up a server at a location different from agave.wustl.edu.  LOCALPATH,
-    WEBSITE, and the location of the CGI file.  In this version, LOCALPATH
-    has been used to SRCPATH to avoid confusion, since LOCALPATH could be
-    interpreted as the local path for source files or the localpath for the
-    server.
-  * SRCPATH is automatically set to the current working directory. WEBSITE
-    is automatically set to http://fully_qualified_domain_name/pdb2pqr.
-    Path to CGI is automcailly set to 
-    http://fully_qualified_domain_name/pdb2pqr/pdb2pqr.cgi.  
   * The user may use NUMPY to specify the location of NUMPY.
   * Both PDB2PKA and PROPKA are enabled by default.  PDB2PKA is enabled by
     default since ligand parameterization would fail without this option.
@@ -32,6 +22,16 @@ BETA PUBLIC RELEASE VERSION 1.3.0       12-06-07
     in html/server.html (index.html).  Configure now uses variable 
     substitution with new files src/server.py.in and html/server.html.in to
     create src/server.py and html/server.html (index.html).
+  * SRCPATH is automatically set to the current working directory. WEBSITE
+    is automatically set to http://fully_qualified_domain_name/pdb2pqr.
+    Path to CGI is automcailly set to 
+    http://fully_qualified_domain_name/pdb2pqr/pdb2pqr.cgi.  
+  * In version 1.2.1, there were 3 variables that needed to be changed to set
+    up a server at a location different from agave.wustl.edu.  LOCALPATH,
+    WEBSITE, and the location of the CGI file.  In this version, LOCALPATH
+    has been used to SRCPATH to avoid confusion, since LOCALPATH could be
+    interpreted as the local path for source files or the localpath for the
+    server.
   * Since configure now automatically sets the locations of files/directories
     based on the machine and configure options, the default 
     agave.wustl.edu locations are not used anymore.

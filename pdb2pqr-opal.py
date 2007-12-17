@@ -6,7 +6,7 @@
 
 __date__  = "27 August 2007"
 __author__ = "Wes Goodman"
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 
 import string
 import sys

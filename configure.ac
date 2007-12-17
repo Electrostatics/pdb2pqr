@@ -10,7 +10,7 @@ dnl ##########################################################################
 dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
-AC_INIT([PDB2PQR], [1.2.2], [todd@ccb.wustl.edu])
+AC_INIT([PDB2PQR], [1.3.0], [todd@ccb.wustl.edu])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_SYSTEM
@@ -105,8 +105,8 @@ dnl #
 dnl #   Never try to set the interface numbers so that they correspond to the
 dnl #   release number of your package. This is an abuse that only fosters
 dnl #   misunderstanding of the purpose of library versions.
-AM_INIT_AUTOMAKE(PDB2PQR, 1.2.1)
-PDB2PQR_VERSION="1:2:1"
+AM_INIT_AUTOMAKE(PDB2PQR, 1.3.0)
+PDB2PQR_VERSION="1:3:0"
 AC_SUBST(PDB2PQR_VERSION)
 ACLOCAL=":";
 AUTOCONF=":";

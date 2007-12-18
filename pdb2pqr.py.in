@@ -229,7 +229,7 @@ def runPDB2PQR(pdblist, ff, options):
         raise ValueError, text
     else:
         outname = options["outname"]
-        period = string.find(outname,".")
+        period = string.rfind(outname,".")
         if period > 0: outroot = outname[0:period]
         else: outroot = outname
 

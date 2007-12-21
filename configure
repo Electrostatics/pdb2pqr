@@ -3722,7 +3722,8 @@ fi
 
 # Set the max number of atoms in a protein when not using Opal for job submission
 #  Also move pdb2pqr.py to pdb2pqr.cgi
-sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' -e 's%@PACKAGE_PATH@%'${PACKAGE_PATH}'%' pdb2pqr.py.in > pdb2pqr.py
+sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' -e 's%@PACKAGE_PATH@%'${PACKAGE_PATH}'%' -e 's%@WHICHPYTHON@%'${py_path}'%' pdb2pqr.py.in > pdb2pqr.py
+chmod 755 pdb2pqr.py
 cp pdb2pqr.py pdb2pqr.cgi
 
 #echo ${srcpath} > srcpathtemp1

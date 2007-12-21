@@ -194,17 +194,6 @@ def mainCGI():
           print "</HTML>"
           sys.exit(2)
         printheader("PDB2PQR Job Submission",resp._jobID)
-        print "<BODY>\n<P>"
-        status=resp._status
-        print "<h3>Status</h3>"
-        print "Your job was successfully submitted.<BR>"
-        print "Received Job ID: %s<br>" % resp._jobID
-        print "Message: %s<br>" % status._message
-        print "Output Base URL: <a href=%s>%s</a><br>" % (status._baseURL, status._baseURL)
-        print "<HR>"
-        print "Click <a href=querystatus.cgi?jobid=%s>here</a> to check your job status.<BR>" % resp._jobID
-        print "</P>\n</BODY>"
-        print "</HTML>"
         
     except StandardError, details:
         print details

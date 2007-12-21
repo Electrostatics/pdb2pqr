@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!@WHICHPYTHON@
 """
     Driver for PDB2PQR
 

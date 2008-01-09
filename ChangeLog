@@ -1,4 +1,13 @@
 #############################################################################
+BETA PUBLIC RELEASE VERSION 1.3.1       1-9-08
+#############################################################################
+ - NEW FEATURES
+  * Updated html/master-index.html, deleted html/index.php.
+  * Updated pydoc by running genpydoc.sh.
+
+ -BUG FIXES
+
+#############################################################################
 BETA PUBLIC RELEASE VERSION 1.3.0       1-8-08
 #############################################################################
  - NEW FEATURES / CHANGES

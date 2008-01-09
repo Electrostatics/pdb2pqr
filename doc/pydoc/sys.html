@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>sys</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br>(built-in)<br><a href="http://www.python.org/doc/current/lib/module-sys.html">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br>(built-in)</font></td></tr></table>
     <p><tt>This&nbsp;module&nbsp;provides&nbsp;access&nbsp;to&nbsp;some&nbsp;objects&nbsp;used&nbsp;or&nbsp;maintained&nbsp;by&nbsp;the<br>
 interpreter&nbsp;and&nbsp;to&nbsp;functions&nbsp;that&nbsp;interact&nbsp;strongly&nbsp;with&nbsp;the&nbsp;interpreter.<br>
 &nbsp;<br>
@@ -87,7 +87,7 @@ Functions:<br>
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt><a name="-__displayhook__"><strong>__displayhook__</strong></a> = displayhook(...)</dt><dd><tt><a href="#-displayhook">displayhook</a>(object)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
-Print&nbsp;an&nbsp;object&nbsp;to&nbsp;sys.stdout&nbsp;and&nbsp;also&nbsp;save&nbsp;it&nbsp;in&nbsp;__builtin__.</tt></dd></dl>
+Print&nbsp;an&nbsp;object&nbsp;to&nbsp;sys.stdout&nbsp;and&nbsp;also&nbsp;save&nbsp;it&nbsp;in&nbsp;__builtin__._</tt></dd></dl>
  <dl><dt><a name="-__excepthook__"><strong>__excepthook__</strong></a> = excepthook(...)</dt><dd><tt><a href="#-excepthook">excepthook</a>(exctype,&nbsp;value,&nbsp;traceback)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Handle&nbsp;an&nbsp;exception&nbsp;by&nbsp;displaying&nbsp;it&nbsp;with&nbsp;a&nbsp;traceback&nbsp;on&nbsp;sys.stderr.</tt></dd></dl>
@@ -118,7 +118,7 @@ a&nbsp;11-tuple&nbsp;where&nbsp;the&nbsp;entries&nbsp;in&nbsp;the&nbsp;tuple&nbs
 10.&nbsp;Number&nbsp;of&nbsp;stack&nbsp;pops&nbsp;performed&nbsp;by&nbsp;call_function()</tt></dd></dl>
  <dl><dt><a name="-displayhook"><strong>displayhook</strong></a>(...)</dt><dd><tt><a href="#-displayhook">displayhook</a>(object)&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
-Print&nbsp;an&nbsp;object&nbsp;to&nbsp;sys.stdout&nbsp;and&nbsp;also&nbsp;save&nbsp;it&nbsp;in&nbsp;__builtin__.</tt></dd></dl>
+Print&nbsp;an&nbsp;object&nbsp;to&nbsp;sys.stdout&nbsp;and&nbsp;also&nbsp;save&nbsp;it&nbsp;in&nbsp;__builtin__._</tt></dd></dl>
  <dl><dt><a name="-exc_clear"><strong>exc_clear</strong></a>(...)</dt><dd><tt><a href="#-exc_clear">exc_clear</a>()&nbsp;-&gt;&nbsp;None<br>
 &nbsp;<br>
 Clear&nbsp;global&nbsp;information&nbsp;on&nbsp;the&nbsp;current&nbsp;exception.&nbsp;&nbsp;Subsequent&nbsp;calls&nbsp;to<br>
@@ -194,32 +194,31 @@ function&nbsp;call.&nbsp;&nbsp;See&nbsp;the&nbsp;debugger&nbsp;chapter&nbsp;in&n
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__stderr__</strong> = &lt;open file '&lt;stderr&gt;', mode 'w' at 0x170b0&gt;<br>
-<strong>__stdin__</strong> = &lt;open file '&lt;stdin&gt;', mode 'r' at 0x17020&gt;<br>
-<strong>__stdout__</strong> = &lt;open file '&lt;stdout&gt;', mode 'w' at 0x17068&gt;<br>
-<strong>api_version</strong> = 1013<br>
+<td width="100%"><strong>__stderr__</strong> = &lt;open file '&lt;stderr&gt;', mode 'w' at 0x280a0&gt;<br>
+<strong>__stdin__</strong> = &lt;open file '&lt;stdin&gt;', mode 'r' at 0x28020&gt;<br>
+<strong>__stdout__</strong> = &lt;open file '&lt;stdout&gt;', mode 'w' at 0x28060&gt;<br>
+<strong>api_version</strong> = 1012<br>
 <strong>argv</strong> = ['/usr/bin/pydoc', '-w', 'sys']<br>
-<strong>builtin_module_names</strong> = ('__builtin__', '__main__', '_ast', '_codecs', '_sre', '_symtable', '_types', 'errno', 'exceptions', 'gc', 'imp', 'marshal', 'posix', 'pwd', 'signal', 'sys', 'thread', 'xxsubtype', 'zipimport')<br>
+<strong>builtin_module_names</strong> = ('__builtin__', '__main__', '_codecs', '_sre', '_symtable', 'errno', 'exceptions', 'gc', 'imp', 'marshal', 'posix', 'signal', 'sys', 'thread', 'xxsubtype', 'zipimport')<br>
 <strong>byteorder</strong> = 'little'<br>
-<strong>copyright</strong> = 'Copyright (c) 2001-2007 Python Software Foundati...ematisch Centrum, Amsterdam.<font color="#c040c0">\n</font>All Rights Reserved.'<br>
-<strong>exc_value</strong> = TypeError('arg is a built-in module',)<br>
-<strong>exec_prefix</strong> = '/System/Library/Frameworks/Python.framework/Versions/2.5'<br>
-<strong>executable</strong> = '/System/Library/Frameworks/Python.framework/Versions/2.5/Resources/Python.app/Contents/MacOS/Python'<br>
-<strong>hexversion</strong> = 33882608<br>
+<strong>copyright</strong> = 'Copyright (c) 2001-2005 Python Software Foundati...ematisch Centrum, Amsterdam.<font color="#c040c0">\n</font>All Rights Reserved.'<br>
+<strong>exc_value</strong> = &lt;exceptions.TypeError instance at 0x521328&gt;<br>
+<strong>exec_prefix</strong> = '/System/Library/Frameworks/Python.framework/Versions/2.3'<br>
+<strong>executable</strong> = '/usr/bin/python'<br>
+<strong>hexversion</strong> = 33752560<br>
 <strong>maxint</strong> = 2147483647<br>
 <strong>maxunicode</strong> = 65535<br>
 <strong>meta_path</strong> = []<br>
-<strong>modules</strong> = {'UserDict': &lt;module 'UserDict' from '/System/Library/Framewo...amework/Versions/2.5/lib/python2.5/UserDict.pyc'&gt;, '__builtin__': &lt;module '__builtin__' (built-in)&gt;, '__main__': &lt;module '__main__' from '/usr/bin/pydoc'&gt;, '_codecs': &lt;module '_codecs' (built-in)&gt;, '_sre': &lt;module '_sre' (built-in)&gt;, '_types': &lt;module '_types' (built-in)&gt;, 'codecs': &lt;module 'codecs' from '/System/Library/Framework...framework/Versions/2.5/lib/python2.5/codecs.pyc'&gt;, 'collections': &lt;module 'collections' from '/System/Library/Fram...ns/2.5/lib/python2.5/lib-dynload/collections.so'&gt;, 'copy_reg': &lt;module 'copy_reg' from '/System/Library/Framewo...amework/Versions/2.5/lib/python2.5/copy_reg.pyc'&gt;, 'dis': &lt;module 'dis' from '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/dis.pyc'&gt;, ...}<br>
-<strong>path</strong> = ['.', '/System/Library/Frameworks/Python.framework/Versions/2.5/bin', '/Users/baker/Desktop/pdb2pqr/trunk/pdb2pqr/doc/pydoc', '/Users/baker/Desktop/pdb2pqr/trunk/pdb2pqr', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python25.zip', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/plat-darwin', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/plat-mac', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/plat-mac/lib-scriptpackages', '/System/Library/Frameworks/Python.framework/Versions/2.5/Extras/lib/python', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-tk', '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload', '/Library/Python/2.5/site-packages', '/System/Library/Frameworks/Python.framework/Versions/2.5/Extras/lib/python/PyObjC']<br>
+<strong>modules</strong> = {'UserDict': &lt;module 'UserDict' from '/System/Library/Framewo...ramework/Versions/2.3/lib/python2.3/UserDict.py'&gt;, '__builtin__': &lt;module '__builtin__' (built-in)&gt;, '__main__': &lt;module '__main__' from '/usr/bin/pydoc'&gt;, '_codecs': &lt;module '_codecs' (built-in)&gt;, '_sre': &lt;module '_sre' (built-in)&gt;, 'codecs': &lt;module 'codecs' from '/System/Library/Framework....framework/Versions/2.3/lib/python2.3/codecs.py'&gt;, 'copy_reg': &lt;module 'copy_reg' from '/System/Library/Framewo...ramework/Versions/2.3/lib/python2.3/copy_reg.py'&gt;, 'dis': &lt;module 'dis' from '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/dis.py'&gt;, 'encodings': &lt;module 'encodings' from '/System/Library/Framew...ersions/2.3/lib/python2.3/encodings/__init__.py'&gt;, 'encodings.aliases': &lt;module 'encodings.aliases' from '/System/Librar...Versions/2.3/lib/python2.3/encodings/aliases.py'&gt;, ...}<br>
+<strong>path</strong> = ['.', '/Users/yhuang/pdb2pqr/trunk/pdb2pqr/doc/pydoc', '/Users/yhuang/pdb2pqr/trunk/pdb2pqr', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python23.zip', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/plat-darwin', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/plat-mac', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/plat-mac/lib-scriptpackages', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/lib-tk', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/lib-dynload', '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/site-packages', '/System/Library/Frameworks/Python.framework/Versions/2.3/Extras/lib/python']<br>
 <strong>path_hooks</strong> = [&lt;type 'zipimport.zipimporter'&gt;]<br>
-<strong>path_importer_cache</strong> = {'': None, '/Library/Python/2.5/site-packages': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/Extras/lib/python': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/Extras/lib/python/PyObjC': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/bin': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/encodings': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload': None, '/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-tk': None, ...}<br>
+<strong>path_importer_cache</strong> = {'': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/Extras/lib/python': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/encodings': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/lib-dynload': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/lib-tk': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/plat-darwin': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/plat-mac': None, '/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/plat-mac/lib-scriptpackages': None, ...}<br>
 <strong>platform</strong> = 'darwin'<br>
-<strong>prefix</strong> = '/System/Library/Frameworks/Python.framework/Versions/2.5'<br>
-<strong>stderr</strong> = &lt;open file '&lt;stderr&gt;', mode 'w' at 0x170b0&gt;<br>
-<strong>stdin</strong> = &lt;open file '&lt;stdin&gt;', mode 'r' at 0x17020&gt;<br>
-<strong>stdout</strong> = &lt;open file '&lt;stdout&gt;', mode 'w' at 0x17068&gt;<br>
-<strong>subversion</strong> = ('CPython', 'tags/r251', '54863')<br>
-<strong>version</strong> = '2.5.1 (r251:54863, Oct  5 2007, 21:08:09) <font color="#c040c0">\n</font>[GCC 4.0.1 (Apple Inc. build 5465)]'<br>
-<strong>version_info</strong> = (2, 5, 1, 'final', 0)<br>
+<strong>prefix</strong> = '/System/Library/Frameworks/Python.framework/Versions/2.3'<br>
+<strong>stderr</strong> = &lt;open file '&lt;stderr&gt;', mode 'w' at 0x280a0&gt;<br>
+<strong>stdin</strong> = &lt;open file '&lt;stdin&gt;', mode 'r' at 0x28020&gt;<br>
+<strong>stdout</strong> = &lt;open file '&lt;stdout&gt;', mode 'w' at 0x28060&gt;<br>
+<strong>version</strong> = '2.3.5 (#1, Aug 19 2006, 21:31:42) <font color="#c040c0">\n</font>[GCC 4.0.1 (Apple Computer, Inc. build 5363)]'<br>
+<strong>version_info</strong> = (2, 3, 5, 'final', 0)<br>
 <strong>warnoptions</strong> = []</td></tr></table>
 </body></html>

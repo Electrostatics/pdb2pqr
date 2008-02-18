@@ -791,7 +791,7 @@ class pKaRoutines:
                     #
                     # Calculate the difference in self energy for this state
                     #
-                    desolvation = proteinEnergy - solutionEnergy
+                    desolvation = (proteinEnergy - solutionEnergy)/2.0 # Reaction field energy
                     print 'Desolvation for %s %d in state %s is %5.3f'  \
                           %(residue.name,residue.resSeq,state,desolvation)
                     print

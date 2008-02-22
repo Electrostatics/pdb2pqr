@@ -232,17 +232,21 @@ class ligforcefield(Forcefield):
 
 
 #
-# ---------
+# Parse radii data for C, N, O, S, H, Br, F, P are from Sitkoff et al's paper (Sitkoff D, Sharp KA, Honig B.
+# Accurate Calculation of Hydration Free Energies Using Macroscopic Solvent Models. J Phys Chem 98 (7) 1978-88, 1994.
+# (http://pubs.acs.org/cgi-bin/archive.cgi/jpchax/1994/98/i07/pdf/j100058a043.pdf)) and AMBER mailing list 
+# (http://amber.ch.ic.ac.uk/archive/). The radius for Cholrine is Van der Waals radius.
 #
 
 ParseRadiiDict = {"C": 1.70,
                    "N": 1.50,
                    "O": 1.40,
                    "S": 1.85,
-                   "H": 1.05,
+                   "H": 1.00,
                    "Br":2.50,
                    "F": 1.20,
-                   "P": 1.90}
+                   "P": 1.90,
+                   "Cl": 1.75}
 
 class ligand_charge_handler(MOL2MOLECULE):
     """Make sure that we are up to date with respect to the charge calculation"""
@@ -354,7 +358,7 @@ class ligand_charge_handler(MOL2MOLECULE):
             if ParseRadiiDict.has_key(ele):
                 radius = ParseRadiiDict[ele]
             else:
-                raise 'radius not known for',ele
+                raise 'Please check ParseRadiiDict in ligff.py -- radius data not found for',ele
             #
             # Store the radii and charges
             #

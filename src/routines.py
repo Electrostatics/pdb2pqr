@@ -775,8 +775,8 @@ class Routines:
                     try: seenmap[atomname] += 1
                     except KeyError: seenmap[atomname] = 1
                     if seenmap[atomname] > nummissing:
-                        text = "Unable to rebuild atom %s in %s!" % \
-                               (atomname, residue)
+                        text = "Too few atoms present to reconstruct or cap residue %s in structure!" % \
+                               (residue)
                         raise ValueError, text
                     else: missing.append(atomname)
 

@@ -7,6 +7,7 @@ BETA PUBLIC RELEASE VERSION 1.3.1       2-22-08
   * Added a whitespace option by by putting a whitespace between atom name
     and residue name.
   * Added radius for Chlorine in ligff.py.
+  * Added PEOEPB forcefield, data provided by Paul Czodrowski.
 
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

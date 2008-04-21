@@ -116,7 +116,7 @@ class Elec:
         self.gamma = 0.105
         self.calcenergy = "total"
         self.calcforce = "no"
-        self.write = [] # Multiple write statements possible
+        self.write = [["pot", "dx", "pot"]] # Multiple write statements possible
     
     def __str__(self):
         """
@@ -201,6 +201,7 @@ class Input:
         elec1 = Elec(size, method, asyncflag)
         elec2 = Elec(size, method, asyncflag)
         setattr(elec2, "sdie", 2.0)
+        setattr(elec2, "write", [])
         self.elecs = [elec1, elec2]
      
         i = string.rfind(pqrpath, "/") + 1

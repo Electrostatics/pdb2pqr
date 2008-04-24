@@ -259,7 +259,7 @@ if test "$with_pdb2pka" = "enable" ; then
     NUMERIC_INC=`dirname ${NUMERIC_INC}`
     NUMERIC_LIB=`find ${NUMERIC} -iname "Numeric.pth" | tail -n1`
     if test "${NUMERIC_LIB}" = ""; then
-      AC_MSG_ERROR([Please check your NUMERIC path.  Numpy.pth cannot be found in ${NUMERIC}])
+      AC_MSG_ERROR([Please check your NUMERIC path.  Numeric.pth cannot be found in ${NUMERIC}])
     fi
     NUMERIC_NAME=`cat ${NUMERIC_LIB}`
     NUMERIC_LIB=`dirname ${NUMERIC_LIB}`
@@ -293,13 +293,12 @@ if test "$with_pdb2pka" = "enable" ; then
         AC_MSG_ERROR([Please check your NUMPY path.  arrayobject.h cannot be found in ${NUMPY}])
     fi
     NUMPY_INC=`dirname ${NUMPY_INC}`
-    NUMPY_LIB=`find ${NUMPY} -iname "Numpy.pth" | tail -n1`
+    NUMPY_LIB=`find ${NUMPY} -iname "site-packages" | tail -n1`
     if test "${NUMPY_LIB}" = ""; then
-        AC_MSG_ERROR([Please check your NUMPY path.  Numpy.pth cannot be found in ${NUMPY}])
+        AC_MSG_ERROR([Please check your NUMPY path.  site-packages cannot be found in ${NUMPY}])
     fi
-    NUMPY_NAME=`cat ${NUMPY_LIB}`
     NUMPY_LIB=`dirname ${NUMPY_LIB}`
-    NUMPY_LIB=${NUMPY_LIB}/${NUMPY_NAME}
+    NUMPY_LIB=${NUMPY_LIB}
     if test "${PACKAGE_PATH}" = ""; then
       PACKAGE_PATH=${NUMPY_LIB}
     else
@@ -313,6 +312,10 @@ if test "$with_pdb2pka" = "enable" ; then
       AC_MSG_CHECKING([for numpy includes files])  
       if test -f $PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
         PY_NUMERIC="-I$PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+        AC_MSG_RESULT([$PY_NUMERIC])
+        PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+      elif test -f $PY_PREFIX/Extras/lib/python/numpy/core/include/numpy/arrayobject.h; then
+        PY_NUMERIC="-I$PY_PREFIX/Extras/lib/python/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
       elif test -f /opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then

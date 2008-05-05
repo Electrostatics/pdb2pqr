@@ -8,7 +8,7 @@
     Author:  Yong Huang
 """
 
-__date__ = "10 January 2008"
+__date__ = "5 May 2008"
 __author__ = "Yong Huang"
 
 from src.utilities import * 
@@ -16,16 +16,16 @@ from src.routines import *
 
 def usage():
 
-    str =  "        --whitespace  :  Put an extra whitespace between \n"
-    str += "                         atom name and residue name to \n"
-    str += "                         {output-path}-whitespace.pqr \n"
+    str =  "        --whitespace  :  Put whitespaces between atom name\n"
+    str += "                         and residue name, x and y, y and\n"
+    str += "                         z to {output-path}-whitespace.pqr \n"
     return str
 
 def whitespace(routines, outroot):
     """
-        Put an extra whitespace between atom name and residue name, even if
-        this may break strict PDB formatting and cause problems for some
-        visualization programs.
+        Put extra whitespaces between atom name and residue name, x and 
+        y, y and z; even if this may break strict PDB formatting and 
+        cause problems for somevisualization programs.
 
         Parameters
             routines:  A link to the routines object
@@ -35,7 +35,7 @@ def whitespace(routines, outroot):
     outname = outroot + "-whitespace.pqr" 
     file = open(outname, "w")
 
-    routines.write("\nPutting a whitespace between atom name and residue name...\n")
+    routines.write("\nPutting whitespaces between atom name and residue name, x and y, y and z...\n")
     routines.write("----------------\n")
 
     protein = routines.protein
@@ -43,10 +43,10 @@ def whitespace(routines, outroot):
     for atom in protein.getAtoms():
         a = str(atom)
         if a[0:4] == 'ATOM':
-            b = a[0:16] + ' ' + a[16:]
+            b = a[0:16] + ' ' + a[16:38] + ' ' + a[38:46] + ' ' + a[46:]
             file.write("%s\n" % (b))
         elif a[0:6] == 'HETATM':
-            b = a[0:16] + ' ' + a[16:]
+            b = a[0:16] + ' ' + a[16:38] + ' ' + a[38:46] + ' ' + a[46:]
             file.write("%s\n" % (b))
         else:
             b = a

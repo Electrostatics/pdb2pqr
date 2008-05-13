@@ -152,13 +152,13 @@ class Protein:
             self.chains.append(dict[key])
 
         for chain in self.chains:
-            if chain.numResidues() == 1:
+            #if chain.numResidues() == 1:
                 # We cannot support Amino Acid chains with only one residue-
                 # It is unclear whether they are Nterm, Cterm, or both.
-                residue = chain.residues[0]
-                if isinstance(residue, Amino):
-                    raise ValueError, "Unable to support amino acid chains of only one residue (%s)" % residue
-                
+                #residue = chain.residues[0]
+                #if isinstance(residue, Amino):
+                    #raise ValueError, "Unable to support amino acid chains of only one residue (%s)" % residue
+
             for residue in chain.getResidues():
                 self.residues.append(residue)
 

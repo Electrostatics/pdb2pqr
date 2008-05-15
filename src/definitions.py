@@ -402,5 +402,5 @@ class DefinitionAtom(Atom):
             Returns
                 state: 1 if true, 0 if false
         """
-        if self.name in BACKBONE: return 0
-        else: return 1
+        if self.name in BACKBONE: return 1
+        else: return 0

@@ -127,6 +127,7 @@ def logRun(options, nettime, size, ff, ip):
     if "debump" in options:  opts += "debump,"
     if "opt" in options:  opts += "optimize,"
     if "ph" in options: opts += "propka,"
+    if "ligand" in options: opts += "ligand,"
     if "apbs" in options: opts += "apbs,"
     if "chain" in options: opts += "chain,"
     

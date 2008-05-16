@@ -1814,7 +1814,8 @@ class Carboxylic(Optimize):
                  hydatom:  The hydrogen atom that was added. (atom)
         """
         residue = self.residue
-        
+        optinstance = self.optinstance        
+
         # Take off the extension
 
         hname = hydatom.name[:-1]
@@ -1822,23 +1823,52 @@ class Carboxylic(Optimize):
         
         # PATCHES.xml expects *2 - if it's *1 that left, flip names
         
-        if hydatom.name.endswith("1"):
-            residue.renameAtom(hydatom.name,"%s2" %  hydatom.name[:-1])
-            bondname0 = self.atomlist[0].name
-            bondname1 = self.atomlist[1].name
-            tempname = "FLIP"
-            residue.renameAtom(self.atomlist[0].name, tempname)
-            residue.renameAtom(self.atomlist[1].name, bondname0)
-            residue.renameAtom(tempname, bondname1)
-        elif hydatom.name.endswith("OXT"):
-            residue.renameAtom(hydatom.name,"HO")
-            bondname0 = self.atomlist[0].name
-            bondname1 = self.atomlist[1].name
-            tempname = "FLIP"
-            residue.renameAtom(self.atomlist[0].name, tempname)
-            residue.renameAtom(self.atomlist[1].name, bondname0)
-            residue.renameAtom(tempname, bondname1)
-   
+        if len(self.atomlist) == 2:
+            if hydatom.name.endswith("1"):
+                residue.renameAtom(hydatom.name,"%s2" %  hydatom.name[:-1])
+                bondname0 = self.atomlist[0].name
+                bondname1 = self.atomlist[1].name
+                tempname = "FLIP"
+                residue.renameAtom(self.atomlist[0].name, tempname)
+                residue.renameAtom(self.atomlist[1].name, bondname0)
+                residue.renameAtom(tempname, bondname1)
+            elif hydatom.name.endswith("OXT"):
+                residue.renameAtom(hydatom.name,"HO")
+                bondname0 = self.atomlist[0].name
+                bondname1 = self.atomlist[1].name
+                tempname = "FLIP"
+                residue.renameAtom(self.atomlist[0].name, tempname)
+                residue.renameAtom(self.atomlist[1].name, bondname0)
+                residue.renameAtom(tempname, bondname1)
+
+        elif len(self.atomlist) == 1:
+
+			# Appending the other bondatom to self.atomlist 
+            hnames = [hname[:-1] + "1", hname[:-1] + "2"]
+            for hn in hnames:
+              bondatom = residue.getAtom(optinstance.map[hn].bond)
+              if bondatom.name != self.atomlist[0].name:
+                  self.atomlist.append(bondatom)
+              else:
+                  pass
+
+            if hydatom.name.endswith("1"):
+                residue.removeAtom("%s2" % hydatom.name[:-1])
+                residue.renameAtom(hydatom.name, "%s2" % hydatom.name[:-1])
+                bondname0 = self.atomlist[0].name
+                bondname1 = self.atomlist[1].name
+                tempname = "FLIP"
+                residue.renameAtom(self.atomlist[0].name, tempname)
+                residue.renameAtom(self.atomlist[1].name, bondname0)
+                residue.renameAtom(tempname, bondname1)
+            elif hydatom.name.endswith("OXT"):
+                residue.renameAtom(hydatom.name,"HO")
+                bondname0 = self.atomlist[0].name
+                bondname1 = self.atomlist[1].name
+                tempname = "FLIP"
+                residue.renameAtom(self.atomlist[0].name, tempname)
+                residue.renameAtom(self.atomlist[1].name, bondname0)
+                residue.renameAtom(tempname, bondname1)
    
     def complete(self):
         """

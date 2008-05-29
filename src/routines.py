@@ -44,7 +44,7 @@
 """
 
 __date__ = "28 February 2006"
-__author__ = "Jens Erik Nielsen, Todd Dolinsky"
+__author__ = "Jens Erik Nielsen, Todd Dolinsky, Yong Huang"
 
 CELL_SIZE = 2
 BUMP_DIST = 2.0
@@ -612,7 +612,28 @@ class Routines:
             refatomcoords = atomref.getCoords()
             newcoords = findCoordinates(2, coords, refcoords, refatomcoords)
             residue.createAtom(atomname, newcoords)
-        
+
+            # For LEU and ILE residues only: make sure the Hydrogens are in staggered conformation instead of eclipsed.
+
+            if isinstance(residue, LEU):
+                hcoords = newcoords
+                cbatom = residue.getAtom('CB')
+                ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(), bondatom.getCoords(), hcoords)
+                diffangle = 60 - ang
+                residue.rotateTetrahedral(nextatom, bondatom, diffangle)
+
+            elif isinstance(residue, ILE):
+                hcoords = newcoords
+                cg1atom = residue.getAtom('CG1')
+                cbatom = residue.getAtom('CB')
+                if bondatom.name == 'CD1':
+                    ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(), bondatom.getCoords(), hcoords)
+                elif bondatom.name == 'CG2':
+                    ang = getDihedral(cg1atom.getCoords(), nextatom.getCoords(), bondatom.getCoords(), hcoords)
+
+                diffangle = 60 - ang
+                residue.rotateTetrahedral(nextatom, bondatom, diffangle)
+
             return 1
             
         elif numbonds == 2:

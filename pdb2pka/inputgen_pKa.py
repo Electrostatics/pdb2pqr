@@ -1,4 +1,5 @@
 #!/bin/env python
+#!/usr/bin/python
 #
 # $Id$
 #

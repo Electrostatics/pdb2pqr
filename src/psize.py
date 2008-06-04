@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """ psize class
 
     Get dimensions and other information from a PQR file.

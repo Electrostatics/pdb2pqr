@@ -620,10 +620,12 @@ uninstall-am:
 
 distclean-local: clean-local
 clean-local: clean-ac
+	-rm -rf src/server.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh
+	rm -rf querystatus.cgi pdb2pqr-opal.cgi pdb2pqr.py
+	rm -rf tests/adv-test/test.cpp tests/test/test.cpp
+
 clean-ac:
 	-rm -rf autom4te.cache
-distclean2:
-	-rm -rf src/server.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh
 
 test:
 	tests/test/test.sh

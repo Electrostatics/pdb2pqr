@@ -1937,6 +1937,7 @@ fi
 
 echo ${prefix} > prefix_test
 isslash=`awk -F"/" '{print $NF}' prefix_test`
+prefix=`sed -e 's|//|/|g' prefix_test`
 rm -f prefix_test
 
 if ! test -z $isslash ; then

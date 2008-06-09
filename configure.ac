@@ -420,12 +420,12 @@ AC_ARG_WITH(max-atoms,
   [MAX_ATOMS=10000])
 
 AC_ARG_WITH(opal,
-	[  --with-opal=OPALURL			Set url for the Opal service.  Default is http://ws.nbcr.net:8080/axis-1.2.1/services/Pdb2pqrOpalService.],
+	[  --with-opal=OPALURL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/Pdb2pqrOpalService.],
 	[OPALURL=$withval],
 	[OPALURL=""])
 
 if test "$OPALURL" = "yes"; then
-  OPALURL="http://ws.nbcr.net:8080/axis-1.2.1/services/Pdb2pqrOpalService"
+  OPALURL="http://ws.nbcr.net/opal/services/Pdb2pqrOpalService"
 fi
 
 if test "$OPALURL" != ""; then 

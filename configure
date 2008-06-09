@@ -1284,7 +1284,7 @@ Optional Packages:
   --with-python=PYTHONPATH           Specify Python location.
   --with-url=URL           Set url for the website.  Default http://fully_qualified_domain/pdb2pqr.
   --with-max-atoms=MAX_ATOMS    Sets the maximum number of atoms in a protein for non-Opal job submission.  Default is 10000
-  --with-opal=OPALURL			Set url for the Opal service.  Default is http://ws.nbcr.net:8080/axis-1.2.1/services/Pdb2pqrOpalService.
+  --with-opal=OPALURL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/Pdb2pqrOpalService.
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -3588,7 +3588,7 @@ fi
 
 
 if test "$OPALURL" = "yes"; then
-  OPALURL="http://ws.nbcr.net:8080/axis-1.2.1/services/Pdb2pqrOpalService"
+  OPALURL="http://ws.nbcr.net/opal/services/Pdb2pqrOpalService"
 fi
 
 if test "$OPALURL" != ""; then

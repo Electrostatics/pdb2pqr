@@ -32,9 +32,9 @@ from src.hydrogens import *
 from StringIO import *
 
 import httplib
-from AppService_services import AppServiceLocator, getAppMetadataRequest, launchJobRequestWrapper, \
-    launchJobBlockingRequestWrapper, getOutputAsBase64ByNameRequestWrapper
-from AppService_services_types import ns1
+from AppService_client import AppServiceLocator, getAppMetadataRequest, launchJobRequest, \
+    launchJobBlockingRequest, getOutputAsBase64ByNameRequest
+from AppService_types import ns0
 from ZSI.TC import String
 import cgi
 import cgitb
@@ -146,11 +146,12 @@ def mainCGI():
             elif key=="ligand":
                 val=ligandfilename
                 key="ligand=%s" % val
-                ligandFile = ns1.InputFileType_Def()
-                ligandFile.Set_name(val)
-                ligandFileString = options["ligand"].read()
-                options["ligand"].close()
-                ligandFile.Set_contents(ligandFileString)
+                ligandFile = ns0.InputFileType_Def('inputFile')
+                ligandFile._name = val
+                ligandFileTemp = open(options["ligand"], "r")
+                ligandFileString = ligandFileTemp.read()
+                ligandFileTemp.close()
+                ligandFile._contents = ligandFileString
             elif key=="apbs":
                 key="apbs-input"
             elif key=="chain":
@@ -159,25 +160,25 @@ def mainCGI():
                 val=options[key]
                 key="ff=%s" % val
                 if fffile:
-                  ffFile = ns1.InputFileType_Def()
-                  ffFile.Set_name(val)
-                  ffFileString = fffile.read()
-                  fffile.close()
-                  ffFile.Set_contents(ffFileString)
+                  ffFile = ns0.InputFileType_Def('inputFile')
+                  ffFile._name = val
+                  ffFileTemp = open(fffile, "r")
+                  ffFileString = ffFileTemp.read()
+                  ffFileTemp.close()
+                  ffFile._contents = ffFileString
             myopts+="--"+str(key)+" "
         myopts+=str(filename)+" "
         myopts+="%s.pqr" % str(name)
         appLocator = AppServiceLocator()
-        appServicePort = appLocator.getAppServicePortType(serviceURL)
+        appServicePort = appLocator.getAppServicePort(serviceURL)
         # launch job
-        req = launchJobRequestWrapper()
+        req = launchJobRequest()
         req._argList = myopts
         inputFiles = []
-        pdbFile = ns1.InputFileType_Def()
-        pdbFile.Set_name(filename)
-        pdbFileString = infile.read()
+        pdbFile = ns0.InputFileType_Def('inputFile')
+        pdbFile._name = filename
+        pdbFile._contents = infile.read()
         infile.close()
-        pdbFile.Set_contents(pdbFileString)
         inputFiles.append(pdbFile)
         if ligandFile:
           inputFiles.append(ligandFile)

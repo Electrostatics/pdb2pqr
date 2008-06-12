@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.3.1       5-27-08
+BETA PUBLIC RELEASE VERSION 1.3.1       6-12:wq-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -17,7 +17,11 @@ BETA PUBLIC RELEASE VERSION 1.3.1       5-27-08
     usage.txt. 
   * Updated HE21, HE22 coordinates in GLN according to the results from 
     AMBER Leap program.
-
+  * Updated Makefile.am with Manuel Prinz's patch (removed distclean2 and 
+    appended its contents to distclean-local).
+  * Updated configure.ac, pdb2pqr-opal.py; added AppService_client.py and 
+    AppService_types.py with Samir Unni's changes.
+  
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 
     files generated on Windows or old Mac OS platforms).
@@ -28,6 +32,8 @@ BETA PUBLIC RELEASE VERSION 1.3.1       5-27-08
   * Fixed a bug for Carboxylic residues in hydrogens.py.
   * Fixed a bug in routines.py, which caused hydrogens added in LEU and ILE
     in eclipsed conformation rather than staggered. 
+  * Fixed a bug in configure.ac, now it is OK to configure with double slashes
+    in the prefix path, e.g.,  --prefix=/foo/bar//another/path .
 
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.3.0       1-8-08

@@ -10,6 +10,7 @@ except:
     
 from sets import Set
 from ligandclean.trial_templates import *
+from types import *
 
 def length(vector):
     # This function returns the length of vector
@@ -387,7 +388,6 @@ class get_ligand_topology:
         #
         # Reformat the lists of lists of lists of ... that we get from the ring detection
         #
-        from types import *
         if type(item) is ListType:
             real_list=[]
             for sub_item in item:

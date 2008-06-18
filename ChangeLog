@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.3.1       6-12:wq-08
+BETA PUBLIC RELEASE VERSION 1.3.1       6-18-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -23,6 +23,7 @@ BETA PUBLIC RELEASE VERSION 1.3.1       6-12:wq-08
     AppService_types.py with Samir Unni's changes.
   * Applied two patches from Manuel Prinz to pdb2pka/pMC_mult.h and 
     pdb2pka/ligand_topology.py. 
+  * Updated PARSE.DAT with the source of parameters. 
   
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

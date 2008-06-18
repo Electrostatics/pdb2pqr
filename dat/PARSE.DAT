@@ -1,5 +1,10 @@
-#   PARSE forcefield parameters for use with PDB2PQR
+# PARSE forcefield parameters for use with PDB2PQR
 #
+# Parameters from 
+# Sitkoff D, Sharp KA, Honig B. Accurate Calculation of Hydration Free Energies
+# Using Macroscopic Solvent Models. J Phys Chem 98 (7) 1978-88, 1994
+#
+# The radii of polar hydrogens are 1.0
 ALA	N	-0.400	1.5
 ALA	CA	-0.000	2.0
 ALA	HN	0.400	1.0

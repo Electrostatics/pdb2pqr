@@ -178,22 +178,62 @@
     <residue>
        <name>[RD]A[35]?$</name>
        <useresname>ADE</useresname>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
     </residue>
     <residue>
        <name>[RD]C[35]?$</name>
        <useresname>CYT</useresname>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
     </residue>
     <residue>
        <name>[RD]G[35]?$</name>
        <useresname>GUA</useresname>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
     </residue>
     <residue>
        <name>DT[35]?$</name>
        <useresname>THY</useresname>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
     </residue>
     <residue>
        <name>RU[35]?$</name>
        <useresname>URA</useresname>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
     </residue>
     <residue>
        <name>D[ACGT][35]?$</name>

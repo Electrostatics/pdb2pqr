@@ -515,12 +515,14 @@ class Routines:
         for residue in self.protein.getResidues():
             if not (isinstance(residue, Amino) or \
                     isinstance(residue, Nucleic)): continue
-                      
+            
             # Check for Missing Heavy Atoms
 
             for refatomname in residue.reference.map:
                 if refatomname.startswith("H"): continue
                 if refatomname in ["N+1","C-1"]: continue
+                if refatomname in ["O1P", "O2P"]:
+                    if residue.hasAtom("OP1") and residue.hasAtom("OP2"): continue
                 heavycount += 1
                 if not residue.hasAtom(refatomname):
                     self.write("Missing %s in %s\n" % \
@@ -536,6 +538,8 @@ class Routines:
 
             for atom in atomlist:
                 atomname = atom.get("name")                 
+                if atomname in ["OP1", "OP2"] and residue.reference.hasAtom("O1P") \
+                    and residue.reference.hasAtom("O2P"): continue
                 if not residue.reference.hasAtom(atomname):
                     self.write("Extra atom %s in %s! - " % \
                                (atomname, residue), 1)

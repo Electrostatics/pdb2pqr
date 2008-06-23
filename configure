@@ -3444,7 +3444,7 @@ echo "$as_me: error: Please check your NUMPY path.  site-packages cannot be foun
    { (exit 1); exit 1; }; }
     fi
     NUMPY_LIB=`dirname ${NUMPY_LIB}`
-    NUMPY_LIB=${NUMPY_LIB}
+    NUMPY_LIB=${NUMPY_LIB}/site-packages
     if test "${PACKAGE_PATH}" = ""; then
       PACKAGE_PATH=${NUMPY_LIB}
     else
@@ -3473,9 +3473,16 @@ echo "${ECHO_T}$PY_NUMERIC" >&6; }
 echo "${ECHO_T}$PY_NUMERIC" >&6; }
         PY_FLAGS="$PY_HEADER -I/opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
       else
-        { { echo "$as_me:$LINENO: error: Unable to find Numeric or Numpy!  Please install Numeric or Numpy or specify the location with ./configure NUMPY=path_to_numpy or NUMERIC=path_to_numeric or disable PDB2PKA during configuration with --disable-pdb2pka" >&5
-echo "$as_me: error: Unable to find Numeric or Numpy!  Please install Numeric or Numpy or specify the location with ./configure NUMPY=path_to_numpy or NUMERIC=path_to_numeric or disable PDB2PKA during configuration with --disable-pdb2pka" >&2;}
-   { (exit 1); exit 1; }; }
+        $py_path ./contrib/numpy-1.1.0/setup.py install --prefix=../numpy
+        pwd > cwdfile
+        cwd=`cat cwdfile`
+        PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+        { echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
+echo "${ECHO_T}$PY_NUMERIC" >&6; }
+        PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+        SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
+        PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
+        rm cwdfile
       fi
     fi
   fi

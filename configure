@@ -3458,6 +3458,8 @@ echo "${ECHO_T}no" >&6; }
     if test "$PY_NUMERIC" = "" ; then
       { echo "$as_me:$LINENO: checking for numpy includes files" >&5
 echo $ECHO_N "checking for numpy includes files... $ECHO_C" >&6; }
+      pwd > cwdfile
+      cwd=`cat cwdfile`
       if test -f $PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
         PY_NUMERIC="-I$PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         { echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
@@ -3468,22 +3470,35 @@ echo "${ECHO_T}$PY_NUMERIC" >&6; }
         { echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
 echo "${ECHO_T}$PY_NUMERIC" >&6; }
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+      elif test -f ${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
+        PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+        { echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
+echo "${ECHO_T}$PY_NUMERIC" >&6; }
+        PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+        SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
+        if test "${PACKAGE_PATH}" = ""; then
+          PACKAGE_PATH=${SITEPKGS}
+        else
+          PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
+        fi
       elif test -f /opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
         { echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
 echo "${ECHO_T}$PY_NUMERIC" >&6; }
         PY_FLAGS="$PY_HEADER -I/opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
       else
         $py_path ./contrib/numpy-1.1.0/setup.py install --prefix=../numpy
-        pwd > cwdfile
-        cwd=`cat cwdfile`
         PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         { echo "$as_me:$LINENO: result: $PY_NUMERIC" >&5
 echo "${ECHO_T}$PY_NUMERIC" >&6; }
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
         SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
-        PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
-        rm cwdfile
+        if test "${PACKAGE_PATH}" = ""; then
+          PACKAGE_PATH=${SITEPKGS}
+        else
+          PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
+        fi
       fi
+      rm cwdfile
     fi
   fi
 

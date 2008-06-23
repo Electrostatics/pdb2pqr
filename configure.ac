@@ -311,6 +311,8 @@ if test "$with_pdb2pka" = "enable" ; then
     AC_MSG_RESULT([no]) 
     if test "$PY_NUMERIC" = "" ; then
       AC_MSG_CHECKING([for numpy includes files])  
+      pwd > cwdfile
+      cwd=`cat cwdfile`
       if test -f $PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
         PY_NUMERIC="-I$PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
@@ -319,20 +321,32 @@ if test "$with_pdb2pka" = "enable" ; then
         PY_NUMERIC="-I$PY_PREFIX/Extras/lib/python/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+      elif test -f ${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
+        PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+        AC_MSG_RESULT([$PY_NUMERIC])
+        PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+        SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
+        if test "${PACKAGE_PATH}" = ""; then
+          PACKAGE_PATH=${SITEPKGS}
+        else
+          PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
+        fi
       elif test -f /opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_FLAGS="$PY_HEADER -I/opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
       else
         $py_path ./contrib/numpy-1.1.0/setup.py install --prefix=../numpy
-        pwd > cwdfile
-        cwd=`cat cwdfile`
         PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
         SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
-        PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
-        rm cwdfile
+        if test "${PACKAGE_PATH}" = ""; then
+          PACKAGE_PATH=${SITEPKGS}
+        else
+          PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
+        fi
       fi
+      rm cwdfile
     fi
   fi
 

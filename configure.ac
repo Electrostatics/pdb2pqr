@@ -299,7 +299,7 @@ if test "$with_pdb2pka" = "enable" ; then
         AC_MSG_ERROR([Please check your NUMPY path.  site-packages cannot be found in ${NUMPY}])
     fi
     NUMPY_LIB=`dirname ${NUMPY_LIB}`
-    NUMPY_LIB=${NUMPY_LIB}
+    NUMPY_LIB=${NUMPY_LIB}/site-packages
     if test "${PACKAGE_PATH}" = ""; then
       PACKAGE_PATH=${NUMPY_LIB}
     else
@@ -323,7 +323,15 @@ if test "$with_pdb2pka" = "enable" ; then
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_FLAGS="$PY_HEADER -I/opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
       else
-        AC_MSG_ERROR([Unable to find Numeric or Numpy!  Please install Numeric or Numpy or specify the location with ./configure NUMPY=path_to_numpy or NUMERIC=path_to_numeric or disable PDB2PKA during configuration with --disable-pdb2pka])
+        $py_path ./contrib/numpy-1.1.0/setup.py install --prefix=../numpy
+        pwd > cwdfile
+        cwd=`cat cwdfile`
+        PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+        AC_MSG_RESULT([$PY_NUMERIC])
+        PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
+        SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
+        PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
+        rm cwdfile
       fi
     fi
   fi

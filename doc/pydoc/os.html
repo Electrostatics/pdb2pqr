@@ -8,8 +8,8 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>os</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/os.py">/System/Library/Frameworks/Python.framework/Versions/2.3/lib/python2.3/os.py</a></font></td></tr></table>
-    <p><tt>OS&nbsp;routines&nbsp;for&nbsp;Mac,&nbsp;DOS,&nbsp;NT,&nbsp;or&nbsp;Posix&nbsp;depending&nbsp;on&nbsp;what&nbsp;system&nbsp;we're&nbsp;on.<br>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/os.py">/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/os.py</a><br><a href="http://www.python.org/doc/current/lib/module-os.html">Module Docs</a></font></td></tr></table>
+    <p><tt>OS&nbsp;routines&nbsp;for&nbsp;Mac,&nbsp;NT,&nbsp;or&nbsp;Posix&nbsp;depending&nbsp;on&nbsp;what&nbsp;system&nbsp;we're&nbsp;on.<br>
 &nbsp;<br>
 This&nbsp;exports:<br>
 &nbsp;&nbsp;-&nbsp;all&nbsp;functions&nbsp;from&nbsp;posix,&nbsp;nt,&nbsp;os2,&nbsp;mac,&nbsp;or&nbsp;ce,&nbsp;e.g.&nbsp;unlink,&nbsp;stat,&nbsp;etc.<br>
@@ -23,6 +23,7 @@ This&nbsp;exports:<br>
 &nbsp;&nbsp;-&nbsp;os.pathsep&nbsp;is&nbsp;the&nbsp;component&nbsp;separator&nbsp;used&nbsp;in&nbsp;$PATH&nbsp;etc<br>
 &nbsp;&nbsp;-&nbsp;os.linesep&nbsp;is&nbsp;the&nbsp;line&nbsp;separator&nbsp;in&nbsp;text&nbsp;files&nbsp;('\r'&nbsp;or&nbsp;'\n'&nbsp;or&nbsp;'\r\n')<br>
 &nbsp;&nbsp;-&nbsp;os.defpath&nbsp;is&nbsp;the&nbsp;default&nbsp;search&nbsp;path&nbsp;for&nbsp;executables<br>
+&nbsp;&nbsp;-&nbsp;os.devnull&nbsp;is&nbsp;the&nbsp;file&nbsp;path&nbsp;of&nbsp;the&nbsp;null&nbsp;device&nbsp;('/dev/null',&nbsp;etc.)<br>
 &nbsp;<br>
 Programs&nbsp;that&nbsp;import&nbsp;and&nbsp;use&nbsp;'os'&nbsp;stand&nbsp;a&nbsp;better&nbsp;chance&nbsp;of&nbsp;being<br>
 portable&nbsp;between&nbsp;different&nbsp;platforms.&nbsp;&nbsp;Of&nbsp;course,&nbsp;they&nbsp;must&nbsp;then<br>
@@ -40,6 +41,289 @@ and&nbsp;opendir),&nbsp;and&nbsp;leave&nbsp;all&nbsp;pathname&nbsp;manipulation&
 </td><td width="25%" valign=top><a href="copy_reg.html">copy_reg</a><br>
 </td><td width="25%" valign=top><a href="posixpath.html">posixpath</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="posix.html#stat_result">posix.stat_result</a>
+</font></dt><dt><font face="helvetica, arial"><a href="posix.html#statvfs_result">posix.statvfs_result</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="exceptions.html#EnvironmentError">exceptions.EnvironmentError</a>(<a href="exceptions.html#StandardError">exceptions.StandardError</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="exceptions.html#OSError">exceptions.OSError</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><strong>error</strong> = <a name="error">class OSError</a>(<a href="exceptions.html#EnvironmentError">EnvironmentError</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>OS&nbsp;system&nbsp;call&nbsp;failed.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="exceptions.html#OSError">OSError</a></dd>
+<dd><a href="exceptions.html#EnvironmentError">EnvironmentError</a></dd>
+<dd><a href="exceptions.html#StandardError">StandardError</a></dd>
+<dd><a href="exceptions.html#Exception">Exception</a></dd>
+<dd><a href="exceptions.html#BaseException">BaseException</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="OSError-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x1e89a0&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#EnvironmentError">EnvironmentError</a>:<br>
+<dl><dt><a name="OSError-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="OSError-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="exceptions.html#EnvironmentError">EnvironmentError</a>:<br>
+<dl><dt><strong>errno</strong></dt>
+<dd><tt>exception&nbsp;errno</tt></dd>
+</dl>
+<dl><dt><strong>filename</strong></dt>
+<dd><tt>exception&nbsp;filename</tt></dd>
+</dl>
+<dl><dt><strong>message</strong></dt>
+<dd><tt>exception&nbsp;message</tt></dd>
+</dl>
+<dl><dt><strong>strerror</strong></dt>
+<dd><tt>exception&nbsp;strerror</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="exceptions.html#BaseException">BaseException</a>:<br>
+<dl><dt><a name="OSError-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="OSError-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="OSError-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="OSError-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="OSError-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="OSError-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="OSError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="exceptions.html#BaseException">BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="stat_result">class <strong>stat_result</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#stat_result">stat_result</a>:&nbsp;Result&nbsp;from&nbsp;stat&nbsp;or&nbsp;lstat.<br>
+&nbsp;<br>
+This&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;may&nbsp;be&nbsp;accessed&nbsp;either&nbsp;as&nbsp;a&nbsp;tuple&nbsp;of<br>
+&nbsp;&nbsp;(mode,&nbsp;ino,&nbsp;dev,&nbsp;nlink,&nbsp;uid,&nbsp;gid,&nbsp;size,&nbsp;atime,&nbsp;mtime,&nbsp;ctime)<br>
+or&nbsp;via&nbsp;the&nbsp;attributes&nbsp;st_mode,&nbsp;st_ino,&nbsp;st_dev,&nbsp;st_nlink,&nbsp;st_uid,&nbsp;and&nbsp;so&nbsp;on.<br>
+&nbsp;<br>
+Posix/windows:&nbsp;If&nbsp;your&nbsp;platform&nbsp;supports&nbsp;st_blksize,&nbsp;st_blocks,&nbsp;st_rdev,<br>
+or&nbsp;st_flags,&nbsp;they&nbsp;are&nbsp;available&nbsp;as&nbsp;attributes&nbsp;only.<br>
+&nbsp;<br>
+See&nbsp;os.stat&nbsp;for&nbsp;more&nbsp;information.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="stat_result-__add__"><strong>__add__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__add__">__add__</a>(y)&nbsp;&lt;==&gt;&nbsp;x+y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__contains__">__contains__</a>(y)&nbsp;&lt;==&gt;&nbsp;y&nbsp;in&nbsp;x</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__hash__"><strong>__hash__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__hash__">__hash__</a>()&nbsp;&lt;==&gt;&nbsp;hash(x)</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__mul__"><strong>__mul__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__mul__">__mul__</a>(n)&nbsp;&lt;==&gt;&nbsp;x*n</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="stat_result-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="stat_result-__rmul__"><strong>__rmul__</strong></a>(...)</dt><dd><tt>x.<a href="#stat_result-__rmul__">__rmul__</a>(n)&nbsp;&lt;==&gt;&nbsp;n*x</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>st_atime</strong></dt>
+<dd><tt>time&nbsp;of&nbsp;last&nbsp;access</tt></dd>
+</dl>
+<dl><dt><strong>st_blksize</strong></dt>
+<dd><tt>blocksize&nbsp;for&nbsp;filesystem&nbsp;I/O</tt></dd>
+</dl>
+<dl><dt><strong>st_blocks</strong></dt>
+<dd><tt>number&nbsp;of&nbsp;blocks&nbsp;allocated</tt></dd>
+</dl>
+<dl><dt><strong>st_ctime</strong></dt>
+<dd><tt>time&nbsp;of&nbsp;last&nbsp;change</tt></dd>
+</dl>
+<dl><dt><strong>st_dev</strong></dt>
+<dd><tt>device</tt></dd>
+</dl>
+<dl><dt><strong>st_flags</strong></dt>
+<dd><tt>user&nbsp;defined&nbsp;flags&nbsp;for&nbsp;file</tt></dd>
+</dl>
+<dl><dt><strong>st_gen</strong></dt>
+<dd><tt>generation&nbsp;number</tt></dd>
+</dl>
+<dl><dt><strong>st_gid</strong></dt>
+<dd><tt>group&nbsp;ID&nbsp;of&nbsp;owner</tt></dd>
+</dl>
+<dl><dt><strong>st_ino</strong></dt>
+<dd><tt>inode</tt></dd>
+</dl>
+<dl><dt><strong>st_mode</strong></dt>
+<dd><tt>protection&nbsp;bits</tt></dd>
+</dl>
+<dl><dt><strong>st_mtime</strong></dt>
+<dd><tt>time&nbsp;of&nbsp;last&nbsp;modification</tt></dd>
+</dl>
+<dl><dt><strong>st_nlink</strong></dt>
+<dd><tt>number&nbsp;of&nbsp;hard&nbsp;links</tt></dd>
+</dl>
+<dl><dt><strong>st_rdev</strong></dt>
+<dd><tt>device&nbsp;type&nbsp;(if&nbsp;inode&nbsp;device)</tt></dd>
+</dl>
+<dl><dt><strong>st_size</strong></dt>
+<dd><tt>total&nbsp;size,&nbsp;in&nbsp;bytes</tt></dd>
+</dl>
+<dl><dt><strong>st_uid</strong></dt>
+<dd><tt>user&nbsp;ID&nbsp;of&nbsp;owner</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x210000&gt;<dd><tt>T.<a href="#stat_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<dl><dt><strong>n_fields</strong> = 18</dl>
+
+<dl><dt><strong>n_sequence_fields</strong> = 10</dl>
+
+<dl><dt><strong>n_unnamed_fields</strong> = 3</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="statvfs_result">class <strong>statvfs_result</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#statvfs_result">statvfs_result</a>:&nbsp;Result&nbsp;from&nbsp;statvfs&nbsp;or&nbsp;fstatvfs.<br>
+&nbsp;<br>
+This&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;may&nbsp;be&nbsp;accessed&nbsp;either&nbsp;as&nbsp;a&nbsp;tuple&nbsp;of<br>
+&nbsp;&nbsp;(bsize,&nbsp;frsize,&nbsp;blocks,&nbsp;bfree,&nbsp;bavail,&nbsp;files,&nbsp;ffree,&nbsp;favail,&nbsp;flag,&nbsp;namemax),<br>
+or&nbsp;via&nbsp;the&nbsp;attributes&nbsp;f_bsize,&nbsp;f_frsize,&nbsp;f_blocks,&nbsp;f_bfree,&nbsp;and&nbsp;so&nbsp;on.<br>
+&nbsp;<br>
+See&nbsp;os.statvfs&nbsp;for&nbsp;more&nbsp;information.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="statvfs_result-__add__"><strong>__add__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__add__">__add__</a>(y)&nbsp;&lt;==&gt;&nbsp;x+y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__contains__">__contains__</a>(y)&nbsp;&lt;==&gt;&nbsp;y&nbsp;in&nbsp;x</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__hash__"><strong>__hash__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__hash__">__hash__</a>()&nbsp;&lt;==&gt;&nbsp;hash(x)</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__mul__"><strong>__mul__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__mul__">__mul__</a>(n)&nbsp;&lt;==&gt;&nbsp;x*n</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="statvfs_result-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="statvfs_result-__rmul__"><strong>__rmul__</strong></a>(...)</dt><dd><tt>x.<a href="#statvfs_result-__rmul__">__rmul__</a>(n)&nbsp;&lt;==&gt;&nbsp;n*x</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>f_bavail</strong></dt>
+</dl>
+<dl><dt><strong>f_bfree</strong></dt>
+</dl>
+<dl><dt><strong>f_blocks</strong></dt>
+</dl>
+<dl><dt><strong>f_bsize</strong></dt>
+</dl>
+<dl><dt><strong>f_favail</strong></dt>
+</dl>
+<dl><dt><strong>f_ffree</strong></dt>
+</dl>
+<dl><dt><strong>f_files</strong></dt>
+</dl>
+<dl><dt><strong>f_flag</strong></dt>
+</dl>
+<dl><dt><strong>f_frsize</strong></dt>
+</dl>
+<dl><dt><strong>f_namemax</strong></dt>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x2100c0&gt;<dd><tt>T.<a href="#statvfs_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<dl><dt><strong>n_fields</strong> = 10</dl>
+
+<dl><dt><strong>n_sequence_fields</strong> = 10</dl>
+
+<dl><dt><strong>n_unnamed_fields</strong> = 0</dl>
+
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#eeaa77">
@@ -79,7 +363,7 @@ value.</tt></dd></dl>
 &nbsp;<br>
 Abort&nbsp;the&nbsp;interpreter&nbsp;immediately.&nbsp;&nbsp;This&nbsp;'dumps&nbsp;core'&nbsp;or&nbsp;otherwise&nbsp;fails<br>
 in&nbsp;the&nbsp;hardest&nbsp;way&nbsp;possible&nbsp;on&nbsp;the&nbsp;hosting&nbsp;operating&nbsp;system.</tt></dd></dl>
- <dl><dt><a name="-access"><strong>access</strong></a>(...)</dt><dd><tt><a href="#-access">access</a>(path,&nbsp;mode)&nbsp;-&gt;&nbsp;1&nbsp;if&nbsp;granted,&nbsp;0&nbsp;otherwise<br>
+ <dl><dt><a name="-access"><strong>access</strong></a>(...)</dt><dd><tt><a href="#-access">access</a>(path,&nbsp;mode)&nbsp;-&gt;&nbsp;True&nbsp;if&nbsp;granted,&nbsp;False&nbsp;otherwise<br>
 &nbsp;<br>
 Use&nbsp;the&nbsp;real&nbsp;uid/gid&nbsp;to&nbsp;test&nbsp;for&nbsp;access&nbsp;to&nbsp;a&nbsp;path.&nbsp;&nbsp;Note&nbsp;that&nbsp;most<br>
 operations&nbsp;will&nbsp;use&nbsp;the&nbsp;effective&nbsp;uid/gid,&nbsp;therefore&nbsp;this&nbsp;routine&nbsp;can<br>
@@ -110,7 +394,7 @@ Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;controlling&nbsp;terminal&nbsp;f
  <dl><dt><a name="-dup"><strong>dup</strong></a>(...)</dt><dd><tt><a href="#-dup">dup</a>(fd)&nbsp;-&gt;&nbsp;fd2<br>
 &nbsp;<br>
 Return&nbsp;a&nbsp;duplicate&nbsp;of&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl>
- <dl><dt><a name="-dup2"><strong>dup2</strong></a>(...)</dt><dd><tt><a href="#-dup2">dup2</a>(fd,&nbsp;fd2)<br>
+ <dl><dt><a name="-dup2"><strong>dup2</strong></a>(...)</dt><dd><tt><a href="#-dup2">dup2</a>(old_fd,&nbsp;new_fd)<br>
 &nbsp;<br>
 Duplicate&nbsp;file&nbsp;descriptor.</tt></dd></dl>
  <dl><dt><a name="-execl"><strong>execl</strong></a>(file, *args)</dt><dd><tt><a href="#-execl">execl</a>(file,&nbsp;*args)<br>
@@ -160,7 +444,7 @@ Change&nbsp;to&nbsp;the&nbsp;directory&nbsp;of&nbsp;the&nbsp;given&nbsp;file&nbs
 opened&nbsp;on&nbsp;a&nbsp;directory,&nbsp;not&nbsp;a&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-fdopen"><strong>fdopen</strong></a>(...)</dt><dd><tt><a href="#-fdopen">fdopen</a>(fd&nbsp;[,&nbsp;mode='r'&nbsp;[,&nbsp;bufsize]])&nbsp;-&gt;&nbsp;file_object<br>
 &nbsp;<br>
-Return&nbsp;an&nbsp;open&nbsp;file&nbsp;object&nbsp;connected&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl>
+Return&nbsp;an&nbsp;open&nbsp;file&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;connected&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl>
  <dl><dt><a name="-fork"><strong>fork</strong></a>(...)</dt><dd><tt><a href="#-fork">fork</a>()&nbsp;-&gt;&nbsp;pid<br>
 &nbsp;<br>
 Fork&nbsp;a&nbsp;child&nbsp;process.<br>
@@ -227,6 +511,9 @@ Return&nbsp;the&nbsp;current&nbsp;process&nbsp;id</tt></dd></dl>
  <dl><dt><a name="-getppid"><strong>getppid</strong></a>(...)</dt><dd><tt><a href="#-getppid">getppid</a>()&nbsp;-&gt;&nbsp;ppid<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;parent's&nbsp;process&nbsp;id.</tt></dd></dl>
+ <dl><dt><a name="-getsid"><strong>getsid</strong></a>(...)</dt><dd><tt><a href="#-getsid">getsid</a>(pid)&nbsp;-&gt;&nbsp;sid<br>
+&nbsp;<br>
+Call&nbsp;the&nbsp;system&nbsp;call&nbsp;<a href="#-getsid">getsid</a>().</tt></dd></dl>
  <dl><dt><a name="-getuid"><strong>getuid</strong></a>(...)</dt><dd><tt><a href="#-getuid">getuid</a>()&nbsp;-&gt;&nbsp;uid<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;current&nbsp;process's&nbsp;user&nbsp;id.</tt></dd></dl>
@@ -305,10 +592,25 @@ If&nbsp;there&nbsp;is&nbsp;no&nbsp;limit,&nbsp;return&nbsp;-1.</tt></dd></dl>
 Create&nbsp;a&nbsp;pipe.</tt></dd></dl>
  <dl><dt><a name="-popen"><strong>popen</strong></a>(...)</dt><dd><tt><a href="#-popen">popen</a>(command&nbsp;[,&nbsp;mode='r'&nbsp;[,&nbsp;bufsize]])&nbsp;-&gt;&nbsp;pipe<br>
 &nbsp;<br>
-Open&nbsp;a&nbsp;pipe&nbsp;to/from&nbsp;a&nbsp;command&nbsp;returning&nbsp;a&nbsp;file&nbsp;object.</tt></dd></dl>
- <dl><dt><a name="-popen2"><strong>popen2</strong></a>(cmd, mode<font color="#909090">='t'</font>, bufsize<font color="#909090">=-1</font>)</dt></dl>
- <dl><dt><a name="-popen3"><strong>popen3</strong></a>(cmd, mode<font color="#909090">='t'</font>, bufsize<font color="#909090">=-1</font>)</dt></dl>
- <dl><dt><a name="-popen4"><strong>popen4</strong></a>(cmd, mode<font color="#909090">='t'</font>, bufsize<font color="#909090">=-1</font>)</dt></dl>
+Open&nbsp;a&nbsp;pipe&nbsp;to/from&nbsp;a&nbsp;command&nbsp;returning&nbsp;a&nbsp;file&nbsp;<a href="__builtin__.html#object">object</a>.</tt></dd></dl>
+ <dl><dt><a name="-popen2"><strong>popen2</strong></a>(cmd, mode<font color="#909090">='t'</font>, bufsize<font color="#909090">=-1</font>)</dt><dd><tt>Execute&nbsp;the&nbsp;shell&nbsp;command&nbsp;'cmd'&nbsp;in&nbsp;a&nbsp;sub-process.&nbsp;&nbsp;On&nbsp;UNIX,&nbsp;'cmd'<br>
+may&nbsp;be&nbsp;a&nbsp;sequence,&nbsp;in&nbsp;which&nbsp;case&nbsp;arguments&nbsp;will&nbsp;be&nbsp;passed&nbsp;directly&nbsp;to<br>
+the&nbsp;program&nbsp;without&nbsp;shell&nbsp;intervention&nbsp;(as&nbsp;with&nbsp;os.<a href="#-spawnv">spawnv</a>()).&nbsp;&nbsp;If&nbsp;'cmd'<br>
+is&nbsp;a&nbsp;string&nbsp;it&nbsp;will&nbsp;be&nbsp;passed&nbsp;to&nbsp;the&nbsp;shell&nbsp;(as&nbsp;with&nbsp;os.<a href="#-system">system</a>()).&nbsp;If<br>
+'bufsize'&nbsp;is&nbsp;specified,&nbsp;it&nbsp;sets&nbsp;the&nbsp;buffer&nbsp;size&nbsp;for&nbsp;the&nbsp;I/O&nbsp;pipes.&nbsp;&nbsp;The<br>
+file&nbsp;objects&nbsp;(child_stdin,&nbsp;child_stdout)&nbsp;are&nbsp;returned.</tt></dd></dl>
+ <dl><dt><a name="-popen3"><strong>popen3</strong></a>(cmd, mode<font color="#909090">='t'</font>, bufsize<font color="#909090">=-1</font>)</dt><dd><tt>Execute&nbsp;the&nbsp;shell&nbsp;command&nbsp;'cmd'&nbsp;in&nbsp;a&nbsp;sub-process.&nbsp;&nbsp;On&nbsp;UNIX,&nbsp;'cmd'<br>
+may&nbsp;be&nbsp;a&nbsp;sequence,&nbsp;in&nbsp;which&nbsp;case&nbsp;arguments&nbsp;will&nbsp;be&nbsp;passed&nbsp;directly&nbsp;to<br>
+the&nbsp;program&nbsp;without&nbsp;shell&nbsp;intervention&nbsp;(as&nbsp;with&nbsp;os.<a href="#-spawnv">spawnv</a>()).&nbsp;&nbsp;If&nbsp;'cmd'<br>
+is&nbsp;a&nbsp;string&nbsp;it&nbsp;will&nbsp;be&nbsp;passed&nbsp;to&nbsp;the&nbsp;shell&nbsp;(as&nbsp;with&nbsp;os.<a href="#-system">system</a>()).&nbsp;If<br>
+'bufsize'&nbsp;is&nbsp;specified,&nbsp;it&nbsp;sets&nbsp;the&nbsp;buffer&nbsp;size&nbsp;for&nbsp;the&nbsp;I/O&nbsp;pipes.&nbsp;&nbsp;The<br>
+file&nbsp;objects&nbsp;(child_stdin,&nbsp;child_stdout,&nbsp;child_stderr)&nbsp;are&nbsp;returned.</tt></dd></dl>
+ <dl><dt><a name="-popen4"><strong>popen4</strong></a>(cmd, mode<font color="#909090">='t'</font>, bufsize<font color="#909090">=-1</font>)</dt><dd><tt>Execute&nbsp;the&nbsp;shell&nbsp;command&nbsp;'cmd'&nbsp;in&nbsp;a&nbsp;sub-process.&nbsp;&nbsp;On&nbsp;UNIX,&nbsp;'cmd'<br>
+may&nbsp;be&nbsp;a&nbsp;sequence,&nbsp;in&nbsp;which&nbsp;case&nbsp;arguments&nbsp;will&nbsp;be&nbsp;passed&nbsp;directly&nbsp;to<br>
+the&nbsp;program&nbsp;without&nbsp;shell&nbsp;intervention&nbsp;(as&nbsp;with&nbsp;os.<a href="#-spawnv">spawnv</a>()).&nbsp;&nbsp;If&nbsp;'cmd'<br>
+is&nbsp;a&nbsp;string&nbsp;it&nbsp;will&nbsp;be&nbsp;passed&nbsp;to&nbsp;the&nbsp;shell&nbsp;(as&nbsp;with&nbsp;os.<a href="#-system">system</a>()).&nbsp;If<br>
+'bufsize'&nbsp;is&nbsp;specified,&nbsp;it&nbsp;sets&nbsp;the&nbsp;buffer&nbsp;size&nbsp;for&nbsp;the&nbsp;I/O&nbsp;pipes.&nbsp;&nbsp;The<br>
+file&nbsp;objects&nbsp;(child_stdin,&nbsp;child_stdout_stderr)&nbsp;are&nbsp;returned.</tt></dd></dl>
  <dl><dt><a name="-putenv"><strong>putenv</strong></a>(...)</dt><dd><tt><a href="#-putenv">putenv</a>(key,&nbsp;value)<br>
 &nbsp;<br>
 Change&nbsp;or&nbsp;add&nbsp;an&nbsp;environment&nbsp;variable.</tt></dd></dl>
@@ -323,11 +625,11 @@ Return&nbsp;a&nbsp;string&nbsp;representing&nbsp;the&nbsp;path&nbsp;to&nbsp;whic
 Remove&nbsp;a&nbsp;file&nbsp;(same&nbsp;as&nbsp;<a href="#-unlink">unlink</a>(path)).</tt></dd></dl>
  <dl><dt><a name="-removedirs"><strong>removedirs</strong></a>(name)</dt><dd><tt><a href="#-removedirs">removedirs</a>(path)<br>
 &nbsp;<br>
-Super-rmdir;&nbsp;remove&nbsp;a&nbsp;leaf&nbsp;directory&nbsp;and&nbsp;empty&nbsp;all&nbsp;intermediate<br>
+Super-rmdir;&nbsp;remove&nbsp;a&nbsp;leaf&nbsp;directory&nbsp;and&nbsp;all&nbsp;empty&nbsp;intermediate<br>
 ones.&nbsp;&nbsp;Works&nbsp;like&nbsp;rmdir&nbsp;except&nbsp;that,&nbsp;if&nbsp;the&nbsp;leaf&nbsp;directory&nbsp;is<br>
 successfully&nbsp;removed,&nbsp;directories&nbsp;corresponding&nbsp;to&nbsp;rightmost&nbsp;path<br>
 segments&nbsp;will&nbsp;be&nbsp;pruned&nbsp;away&nbsp;until&nbsp;either&nbsp;the&nbsp;whole&nbsp;path&nbsp;is<br>
-consumed&nbsp;or&nbsp;an&nbsp;error&nbsp;occurs.&nbsp;&nbsp;Errors&nbsp;during&nbsp;this&nbsp;latter&nbsp;phase&nbsp;are<br>
+consumed&nbsp;or&nbsp;an&nbsp;<a href="#error">error</a>&nbsp;occurs.&nbsp;&nbsp;Errors&nbsp;during&nbsp;this&nbsp;latter&nbsp;phase&nbsp;are<br>
 ignored&nbsp;--&nbsp;they&nbsp;generally&nbsp;mean&nbsp;that&nbsp;a&nbsp;directory&nbsp;was&nbsp;not&nbsp;empty.</tt></dd></dl>
  <dl><dt><a name="-rename"><strong>rename</strong></a>(...)</dt><dd><tt><a href="#-rename">rename</a>(old,&nbsp;new)<br>
 &nbsp;<br>
@@ -445,7 +747,7 @@ If&nbsp;newval&nbsp;is&nbsp;omitted,&nbsp;return&nbsp;the&nbsp;current&nbsp;sett
 Perform&nbsp;a&nbsp;statvfs&nbsp;system&nbsp;call&nbsp;on&nbsp;the&nbsp;given&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-strerror"><strong>strerror</strong></a>(...)</dt><dd><tt><a href="#-strerror">strerror</a>(code)&nbsp;-&gt;&nbsp;string<br>
 &nbsp;<br>
-Translate&nbsp;an&nbsp;error&nbsp;code&nbsp;to&nbsp;a&nbsp;message&nbsp;string.</tt></dd></dl>
+Translate&nbsp;an&nbsp;<a href="#error">error</a>&nbsp;code&nbsp;to&nbsp;a&nbsp;message&nbsp;string.</tt></dd></dl>
  <dl><dt><a name="-symlink"><strong>symlink</strong></a>(...)</dt><dd><tt><a href="#-symlink">symlink</a>(src,&nbsp;dst)<br>
 &nbsp;<br>
 Create&nbsp;a&nbsp;symbolic&nbsp;link&nbsp;pointing&nbsp;to&nbsp;src&nbsp;named&nbsp;dst.</tt></dd></dl>
@@ -469,7 +771,7 @@ or&nbsp;None&nbsp;if&nbsp;not&nbsp;needed.</tt></dd></dl>
  <dl><dt><a name="-times"><strong>times</strong></a>(...)</dt><dd><tt><a href="#-times">times</a>()&nbsp;-&gt;&nbsp;(utime,&nbsp;stime,&nbsp;cutime,&nbsp;cstime,&nbsp;elapsed_time)<br>
 &nbsp;<br>
 Return&nbsp;a&nbsp;tuple&nbsp;of&nbsp;floating&nbsp;point&nbsp;numbers&nbsp;indicating&nbsp;process&nbsp;times.</tt></dd></dl>
- <dl><dt><a name="-tmpfile"><strong>tmpfile</strong></a>(...)</dt><dd><tt><a href="#-tmpfile">tmpfile</a>()&nbsp;-&gt;&nbsp;file&nbsp;object<br>
+ <dl><dt><a name="-tmpfile"><strong>tmpfile</strong></a>(...)</dt><dd><tt><a href="#-tmpfile">tmpfile</a>()&nbsp;-&gt;&nbsp;file&nbsp;<a href="__builtin__.html#object">object</a><br>
 &nbsp;<br>
 Create&nbsp;a&nbsp;temporary&nbsp;file&nbsp;with&nbsp;no&nbsp;directory&nbsp;entries.</tt></dd></dl>
  <dl><dt><a name="-tmpnam"><strong>tmpnam</strong></a>(...)</dt><dd><tt><a href="#-tmpnam">tmpnam</a>()&nbsp;-&gt;&nbsp;string<br>
@@ -490,7 +792,7 @@ Remove&nbsp;a&nbsp;file&nbsp;(same&nbsp;as&nbsp;<a href="#-remove">remove</a>(pa
  <dl><dt><a name="-unsetenv"><strong>unsetenv</strong></a>(...)</dt><dd><tt><a href="#-unsetenv">unsetenv</a>(key)<br>
 &nbsp;<br>
 Delete&nbsp;an&nbsp;environment&nbsp;variable.</tt></dd></dl>
- <dl><dt><a name="-utime"><strong>utime</strong></a>(...)</dt><dd><tt><a href="#-utime">utime</a>(path,&nbsp;(atime,&nbsp;utime))<br>
+ <dl><dt><a name="-utime"><strong>utime</strong></a>(...)</dt><dd><tt><a href="#-utime">utime</a>(path,&nbsp;(atime,&nbsp;mtime))<br>
 <a href="#-utime">utime</a>(path,&nbsp;None)<br>
 &nbsp;<br>
 Set&nbsp;the&nbsp;access&nbsp;and&nbsp;modified&nbsp;time&nbsp;of&nbsp;the&nbsp;file&nbsp;to&nbsp;the&nbsp;given&nbsp;values.&nbsp;&nbsp;If&nbsp;the<br>
@@ -498,6 +800,12 @@ second&nbsp;form&nbsp;is&nbsp;used,&nbsp;set&nbsp;the&nbsp;access&nbsp;and&nbsp;
  <dl><dt><a name="-wait"><strong>wait</strong></a>(...)</dt><dd><tt><a href="#-wait">wait</a>()&nbsp;-&gt;&nbsp;(pid,&nbsp;status)<br>
 &nbsp;<br>
 Wait&nbsp;for&nbsp;completion&nbsp;of&nbsp;a&nbsp;child&nbsp;process.</tt></dd></dl>
+ <dl><dt><a name="-wait3"><strong>wait3</strong></a>(...)</dt><dd><tt><a href="#-wait3">wait3</a>(options)&nbsp;-&gt;&nbsp;(pid,&nbsp;status,&nbsp;rusage)<br>
+&nbsp;<br>
+Wait&nbsp;for&nbsp;completion&nbsp;of&nbsp;a&nbsp;child&nbsp;process.</tt></dd></dl>
+ <dl><dt><a name="-wait4"><strong>wait4</strong></a>(...)</dt><dd><tt><a href="#-wait4">wait4</a>(pid,&nbsp;options)&nbsp;-&gt;&nbsp;(pid,&nbsp;status,&nbsp;rusage)<br>
+&nbsp;<br>
+Wait&nbsp;for&nbsp;completion&nbsp;of&nbsp;a&nbsp;given&nbsp;child&nbsp;process.</tt></dd></dl>
  <dl><dt><a name="-waitpid"><strong>waitpid</strong></a>(...)</dt><dd><tt><a href="#-waitpid">waitpid</a>(pid,&nbsp;options)&nbsp;-&gt;&nbsp;(pid,&nbsp;status)<br>
 &nbsp;<br>
 Wait&nbsp;for&nbsp;completion&nbsp;of&nbsp;a&nbsp;given&nbsp;child&nbsp;process.</tt></dd></dl>
@@ -531,10 +839,10 @@ generated.<br>
 &nbsp;<br>
 By&nbsp;default&nbsp;errors&nbsp;from&nbsp;the&nbsp;os.<a href="#-listdir">listdir</a>()&nbsp;call&nbsp;are&nbsp;ignored.&nbsp;&nbsp;If<br>
 optional&nbsp;arg&nbsp;'onerror'&nbsp;is&nbsp;specified,&nbsp;it&nbsp;should&nbsp;be&nbsp;a&nbsp;function;&nbsp;it<br>
-will&nbsp;be&nbsp;called&nbsp;with&nbsp;one&nbsp;argument,&nbsp;an&nbsp;os.error&nbsp;instance.&nbsp;&nbsp;It&nbsp;can<br>
-report&nbsp;the&nbsp;error&nbsp;to&nbsp;continue&nbsp;with&nbsp;the&nbsp;walk,&nbsp;or&nbsp;raise&nbsp;the&nbsp;exception<br>
+will&nbsp;be&nbsp;called&nbsp;with&nbsp;one&nbsp;argument,&nbsp;an&nbsp;os.<a href="#error">error</a>&nbsp;instance.&nbsp;&nbsp;It&nbsp;can<br>
+report&nbsp;the&nbsp;<a href="#error">error</a>&nbsp;to&nbsp;continue&nbsp;with&nbsp;the&nbsp;walk,&nbsp;or&nbsp;raise&nbsp;the&nbsp;exception<br>
 to&nbsp;abort&nbsp;the&nbsp;walk.&nbsp;&nbsp;Note&nbsp;that&nbsp;the&nbsp;filename&nbsp;is&nbsp;available&nbsp;as&nbsp;the<br>
-filename&nbsp;attribute&nbsp;of&nbsp;the&nbsp;exception&nbsp;object.<br>
+filename&nbsp;attribute&nbsp;of&nbsp;the&nbsp;exception&nbsp;<a href="__builtin__.html#object">object</a>.<br>
 &nbsp;<br>
 Caution:&nbsp;&nbsp;if&nbsp;you&nbsp;pass&nbsp;a&nbsp;relative&nbsp;pathname&nbsp;for&nbsp;top,&nbsp;don't&nbsp;change&nbsp;the<br>
 current&nbsp;working&nbsp;directory&nbsp;between&nbsp;resumptions&nbsp;of&nbsp;walk.&nbsp;&nbsp;walk&nbsp;never<br>
@@ -582,36 +890,38 @@ Write&nbsp;a&nbsp;string&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl
 <strong>O_CREAT</strong> = 512<br>
 <strong>O_DIRECTORY</strong> = 1048576<br>
 <strong>O_EXCL</strong> = 2048<br>
+<strong>O_EXLOCK</strong> = 32<br>
 <strong>O_NDELAY</strong> = 4<br>
-<strong>O_NOCTTY</strong> = 0<br>
+<strong>O_NOCTTY</strong> = 131072<br>
 <strong>O_NOFOLLOW</strong> = 256<br>
 <strong>O_NONBLOCK</strong> = 4<br>
 <strong>O_RDONLY</strong> = 0<br>
 <strong>O_RDWR</strong> = 2<br>
+<strong>O_SHLOCK</strong> = 16<br>
 <strong>O_SYNC</strong> = 128<br>
 <strong>O_TRUNC</strong> = 1024<br>
 <strong>O_WRONLY</strong> = 1<br>
-<strong>P_NOWAIT</strong> = 1<br>
-<strong>P_NOWAITO</strong> = 1<br>
-<strong>P_WAIT</strong> = 0<br>
 <strong>R_OK</strong> = 4<br>
+<strong>SEEK_CUR</strong> = 1<br>
+<strong>SEEK_END</strong> = 2<br>
+<strong>SEEK_SET</strong> = 0<br>
 <strong>TMP_MAX</strong> = 308915776<br>
 <strong>WCONTINUED</strong> = 16<br>
 <strong>WNOHANG</strong> = 1<br>
 <strong>WUNTRACED</strong> = 2<br>
 <strong>W_OK</strong> = 2<br>
 <strong>X_OK</strong> = 1<br>
-<strong>__all__</strong> = ['altsep', 'curdir', 'pardir', 'sep', 'pathsep', 'linesep', 'defpath', 'name', 'path', 'EX_CANTCREAT', 'EX_CONFIG', 'EX_DATAERR', 'EX_IOERR', 'EX_NOHOST', 'EX_NOINPUT', 'EX_NOPERM', 'EX_NOUSER', 'EX_OK', 'EX_OSERR', 'EX_OSFILE', ...]<br>
+<strong>__all__</strong> = ['altsep', 'curdir', 'pardir', 'sep', 'pathsep', 'linesep', 'defpath', 'name', 'path', 'devnull', 'SEEK_SET', 'SEEK_CUR', 'SEEK_END', 'EX_CANTCREAT', 'EX_CONFIG', 'EX_DATAERR', 'EX_IOERR', 'EX_NOHOST', 'EX_NOINPUT', 'EX_NOPERM', ...]<br>
 <strong>altsep</strong> = None<br>
 <strong>confstr_names</strong> = {'CS_PATH': 1, 'CS_XBS5_ILP32_OFF32_CFLAGS': 20, 'CS_XBS5_ILP32_OFF32_LDFLAGS': 21, 'CS_XBS5_ILP32_OFF32_LIBS': 22, 'CS_XBS5_ILP32_OFF32_LINTFLAGS': 23, 'CS_XBS5_ILP32_OFFBIG_CFLAGS': 24, 'CS_XBS5_ILP32_OFFBIG_LDFLAGS': 25, 'CS_XBS5_ILP32_OFFBIG_LIBS': 26, 'CS_XBS5_ILP32_OFFBIG_LINTFLAGS': 27, 'CS_XBS5_LP64_OFF64_CFLAGS': 28, ...}<br>
 <strong>curdir</strong> = '.'<br>
 <strong>defpath</strong> = ':/bin:/usr/bin'<br>
-<strong>environ</strong> = {'XDG_DATA_HOME': '/Users/yhuang/.local/share', ...c', 'SGML_CATALOG_FILES': '/sw/etc/sgml/catalog'}<br>
-<strong>extsep</strong> = '.'<br>
+<strong>devnull</strong> = '/dev/null'<br>
+<strong>environ</strong> = {'MC_PREFIX': '/Users/baker/coding/manifold/dist...sw/etc/sgml/catalog', 'COMMAND_MODE': 'unix2003'}<br>
 <strong>linesep</strong> = '<font color="#c040c0">\n</font>'<br>
 <strong>name</strong> = 'posix'<br>
 <strong>pardir</strong> = '..'<br>
-<strong>pathconf_names</strong> = {'PC_CHOWN_RESTRICTED': 7, 'PC_LINK_MAX': 1, 'PC_MAX_CANON': 2, 'PC_MAX_INPUT': 3, 'PC_NAME_MAX': 4, 'PC_NO_TRUNC': 8, 'PC_PATH_MAX': 5, 'PC_PIPE_BUF': 6, 'PC_VDISABLE': 9}<br>
+<strong>pathconf_names</strong> = {'PC_ASYNC_IO': 17, 'PC_CHOWN_RESTRICTED': 7, 'PC_FILESIZEBITS': 18, 'PC_LINK_MAX': 1, 'PC_MAX_CANON': 2, 'PC_MAX_INPUT': 3, 'PC_NAME_MAX': 4, 'PC_NO_TRUNC': 8, 'PC_PATH_MAX': 5, 'PC_PIPE_BUF': 6, ...}<br>
 <strong>pathsep</strong> = ':'<br>
 <strong>sep</strong> = '/'<br>
 <strong>sysconf_names</strong> = {'SC_2_CHAR_TERM': 20, 'SC_2_C_BIND': 18, 'SC_2_C_DEV': 19, 'SC_2_FORT_DEV': 21, 'SC_2_FORT_RUN': 22, 'SC_2_LOCALEDEF': 23, 'SC_2_SW_DEV': 24, 'SC_2_UPE': 25, 'SC_2_VERSION': 17, 'SC_AIO_LISTIO_MAX': 42, ...}</td></tr></table>

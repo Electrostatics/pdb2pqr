@@ -99,7 +99,7 @@
         <useresname>$group</useresname>
     </residue>
     <residue>
-        <name>C...$</name>
+        <name>C(?!PRO$)...$</name>   <!-- See CPRO -->
         <useresname>BK-</useresname>
         <atom>
             <name>O</name>
@@ -165,5 +165,9 @@
             <name>H2</name>
             <useatomname>HN2</useatomname>
         </atom>
+    </residue>
+    <residue>
+        <name>CPRO</name>
+        <useresname>PR-</useresname>
     </residue>
 </parse>

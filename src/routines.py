@@ -637,6 +637,8 @@ class Routines:
                     ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(), bondatom.getCoords(), hcoords)
                 elif bondatom.name == 'CG2':
                     ang = getDihedral(cg1atom.getCoords(), nextatom.getCoords(), bondatom.getCoords(), hcoords)
+                else:
+                    ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(), bondatom.getCoords(), hcoords)
 
                 diffangle = 60 - ang
                 residue.rotateTetrahedral(nextatom, bondatom, diffangle)

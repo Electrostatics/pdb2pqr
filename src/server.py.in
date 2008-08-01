@@ -49,11 +49,12 @@ import string
 import os
 import sys
 import time
+from aconf import *
 
 # GLOBAL SERVER VARIABLES
 
 """ The absolute path to root HTML directory """
-SRCPATH   = "@srcpath@/"
+SRCPATH   = SRCPATH
 
 """ The relative path to results directory from script directory.
     The web server (i.e. Apache) MUST be able to write to this directory. """
@@ -63,13 +64,13 @@ TMPDIR      = "tmp/"
 LIMIT       = 500.0
 
 """ The path to the web site *directory* """
-WEBSITE     = "@website@/"
+WEBSITE     = WEBSITE
 
 """ The name of the main server page """
 WEBNAME     = "index.html"
 
 """ The stylesheet to use """
-STYLESHEET  = "@website@/" + "pdb2pqr.css"
+STYLESHEET  = WEBSITE + "pdb2pqr.css"
 
 """ The refresh time (in seconds) for the progress page """
 REFRESHTIME = 20
@@ -81,7 +82,7 @@ LOADPATH    = "/proc/loadavg"
 """ The path to the pdb2pqr log - set to "" or None if not to be
     included.  The web server (i.e. Apache) MUST be able to write to
     this directory. """
-LOGPATH     = "%s/%s/usage.txt" % (SRCPATH, TMPDIR)
+LOGPATH     = "%s/%s/usage.txt" % (INSTALLDIR, TMPDIR)
 
 def setID(time):
     """
@@ -147,7 +148,7 @@ def cleanTmpdir():
     newdir = []
     size = 0.0
     count = 0
-    path = SRCPATH + TMPDIR
+    path = INSTALLDIR+ TMPDIR
 
     dir = os.listdir(path)
     for filename in dir:
@@ -176,117 +177,134 @@ def cleanTmpdir():
             except OSError: pass
             newcount += 1
 
-def getQuote(path):
-    """
-        Get a quote to display for the refresh page.
-        Uses fortune to generate a quote.
+#def getQuote(path):
+#    """
+#        Get a quote to display for the refresh page.
+#        Uses fortune to generate a quote.
+#
+#        Parameters:
+#            path:   The path to the fortune script (str)
+#        Returns:
+#            quote:   The quote to display (str)
+#    """
+#    fortune = os.popen(path)
+#    quote = fortune.read()
+#    quote = string.replace(quote, "\n", "<BR>")
+#    quote = string.replace(quote, "\t", "&nbsp;"*5)
+#    quote = "%s<P>" % quote
+#    return quote
 
-        Parameters:
-            path:   The path to the fortune script (str)
-        Returns:
-            quote:   The quote to display (str)
-    """
-    fortune = os.popen(path)
-    quote = fortune.read()
-    quote = string.replace(quote, "\n", "<BR>")
-    quote = string.replace(quote, "\t", "&nbsp;"*5)
-    quote = "%s<P>" % quote
-    return quote
+#def printProgress(name, refreshname, reftime, starttime):
+#    """
+#        Print the progress of the server
+#
+#        Parameters
+#            name:        The ID of the HTML page to write to (string)
+#            refreshname: The name of the HTML page to refresh to (string)
+#            reftime:     The length of time to set the refresh wait to (int)
+#            starttime:   The time as returned by time.time() that the run started (float)
+#    """
+#    elapsedtime = time.time() - starttime + REFRESHTIME/2.0 # Add in time offset
+#    filename = "%s%s%s-tmp.html" % (SRCPATH, TMPDIR, name)
+#    file = open(filename,"w")
+#    file.write("<HTML>\n")
+#    file.write("<HEAD>\n")
+#    file.write("<TITLE>PDB2PQR Progress</TITLE>\n")
+#    file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET)
+#    file.write("<meta http-equiv=\"Refresh\" content=\"%s; url=%s\">\n" % \
+#               (reftime, refreshname))
+#    file.write("</HEAD>\n")
+#    file.write("<BODY>\n")
+#    file.write("<H2>PDB2PQR Progress</H2><P>\n")
+#    file.write("The PDB2PQR server is generating your results - this page will automatically \n")
+#    file.write("refresh every %s seconds.<P>\n" % REFRESHTIME)
+#    file.write("Thank you for your patience!<P>\n")
+#    file.write("Server Progress:<P>\n")
+#    file.write("<blockquote>\n")
+#    file.write("<font size=2>Elapsed Time:</font> <code>%.2f seconds</code><BR>\n" % elapsedtime)
+#    file.write("</blockquote>\n")
+#    file.write("Server Information:<P>\n")
+#    file.write("<blockquote>\n")
+#    loads = getLoads()
+#    if loads != None:
+#        file.write("<font size=2>Server load:</font> <code>%s (1min)  %s (5min)  %s (15min)</code><BR>\n" % (loads[0], loads[1], loads[2]))
+#
+#    file.write("<font size=2>Server time:</font> <code>%s</code><BR>\n" % (time.asctime(time.localtime())))
+#    file.write("</blockquote>\n")
+#    file.write("</BODY></HTML>")
+#    file.close()
 
-def printProgress(name, refreshname, reftime, starttime):
-    """
-        Print the progress of the server
+#def printAcceptance(name):
+#    """
+#        Print the first message to stdout (web browser) - set the
+#        refresh to the <id>-tmp.html file.
+#
+#        Parameters
+#            name:    The ID of the HTML page to redirect to (string)
+#    """
+#    waittime = int(REFRESHTIME/2.0)
+#    print "Content-type: text/html\n"
+#    print "<HTML>"
+#    print "<HEAD>"
+#    print "<TITLE>PDB2PQR Progress</TITLE>"
+#    print "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
+#    print "<meta http-equiv=\"Refresh\" content=\"%s; url=%s%s%s-tmp.html\">" % \
+#          (waittime, WEBSITE, TMPDIR, name)
+#    print "</HEAD>"
+#    print "<BODY>"
+#    print "<H2>PDB2PQR Progress</H2><P>"
+#    print "The PDB2PQR server is generating your results - this page will automatically "
+#    print "refresh every %s seconds.<P>" % REFRESHTIME
+#    print "Thank you for your patience!<P>"
+#
+#    print "Server Information:<P>"
+#    print "<blockquote>"
+#    loads = getLoads()
+#    if loads != None:
+#        print "<font size=2>Server load:</font> <code>%s (1min)  %s (5min)  %s (15min)</code><BR>" % (loads[0], loads[1], loads[2])
+#
+#    print "<font size=2>Server time:</font> <code>%s</code><BR>" % (time.asctime(time.localtime()))
+#    print "</blockquote>"
+#    
+#    print "</BODY></HTML>"
 
-        Parameters
-            name:        The ID of the HTML page to write to (string)
-            refreshname: The name of the HTML page to refresh to (string)
-            reftime:     The length of time to set the refresh wait to (int)
-            starttime:   The time as returned by time.time() that the run started (float)
-    """
-    elapsedtime = time.time() - starttime + REFRESHTIME/2.0 # Add in time offset
-    filename = "%s%s%s-tmp.html" % (SRCPATH, TMPDIR, name)
-    file = open(filename,"w")
-    file.write("<HTML>\n")
-    file.write("<HEAD>\n")
-    file.write("<TITLE>PDB2PQR Progress</TITLE>\n")
-    file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET)
-    file.write("<meta http-equiv=\"Refresh\" content=\"%s; url=%s\">\n" % \
-               (reftime, refreshname))
-    file.write("</HEAD>\n")
-    file.write("<BODY>\n")
-    file.write("<H2>PDB2PQR Progress</H2><P>\n")
-    file.write("The PDB2PQR server is generating your results - this page will automatically \n")
-    file.write("refresh every %s seconds.<P>\n" % REFRESHTIME)
-    file.write("Thank you for your patience!<P>\n")
-    file.write("Server Progress:<P>\n")
-    file.write("<blockquote>\n")
-    file.write("<font size=2>Elapsed Time:</font> <code>%.2f seconds</code><BR>\n" % elapsedtime)
-    file.write("</blockquote>\n")
-    file.write("Server Information:<P>\n")
-    file.write("<blockquote>\n")
-    loads = getLoads()
-    if loads != None:
-        file.write("<font size=2>Server load:</font> <code>%s (1min)  %s (5min)  %s (15min)</code><BR>\n" % (loads[0], loads[1], loads[2]))
+#def printRedirector(name, have_opal):
+#    """
+#        Prints a page which redirects the user to querystatus.cgi
+#    """
+#
+#    print "Content-type: text/html \n"
+#    print "<html>"
+#    print "<head>"
+#    print "<meta http-equiv=\"Refresh\" content=\"0; url=%squerystatus.cgi?jobid=%s&haveopal=", % (WEBSITE, name)
+#    if have_opal:
+#        print "true",
+#    else:
+#        print "false",
+#    print "\">"
+#    print "</head>"
+#    print "</html>"
 
-    file.write("<font size=2>Server time:</font> <code>%s</code><BR>\n" % (time.asctime(time.localtime())))
-    file.write("</blockquote>\n")
-    file.write("</BODY></HTML>")
-    file.close()
-
-def printAcceptance(name):
-    """
-        Print the first message to stdout (web browser) - set the
-        refresh to the <id>-tmp.html file.
-
-        Parameters
-            name:    The ID of the HTML page to redirect to (string)
-    """
-    waittime = int(REFRESHTIME/2.0)
-    print "Content-type: text/html\n"
-    print "<HTML>"
-    print "<HEAD>"
-    print "<TITLE>PDB2PQR Progress</TITLE>"
-    print "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
-    print "<meta http-equiv=\"Refresh\" content=\"%s; url=%s%s%s-tmp.html\">" % \
-          (waittime, WEBSITE, TMPDIR, name)
-    print "</HEAD>"
-    print "<BODY>"
-    print "<H2>PDB2PQR Progress</H2><P>"
-    print "The PDB2PQR server is generating your results - this page will automatically "
-    print "refresh every %s seconds.<P>" % REFRESHTIME
-    print "Thank you for your patience!<P>"
-
-    print "Server Information:<P>"
-    print "<blockquote>"
-    loads = getLoads()
-    if loads != None:
-        print "<font size=2>Server load:</font> <code>%s (1min)  %s (5min)  %s (15min)</code><BR>" % (loads[0], loads[1], loads[2])
-
-    print "<font size=2>Server time:</font> <code>%s</code><BR>" % (time.asctime(time.localtime()))
-    print "</blockquote>"
-    
-    print "</BODY></HTML>"
-
-def getLoads():
-    """
-        Get the system load information for output and logging
-
-        Returns
-            loads:  A three entry list containing the 1, 5, and
-                    15 minute loads. If the load file is not found,
-                    return None.
-    """
-    if LOADPATH == "": return None
-    try:
-        file = open(LOADPATH, 'rU')
-    except IOError:
-        return None
-
-    line = file.readline()
-    words = string.split(line)
-    loads = words[:3]
-    
-    return loads
+#def getLoads():
+#    """
+#        Get the system load information for output and logging
+#
+#        Returns
+#            loads:  A three entry list containing the 1, 5, and
+#                    15 minute loads. If the load file is not found,
+#                    return None.
+#    """
+#    if LOADPATH == "": return None
+#    try:
+#        file = open(LOADPATH, 'rU')
+#    except IOError:
+#        return None
+#
+#    line = file.readline()
+#    words = string.split(line)
+#    loads = words[:3]
+#    
+#    return loads
 
 def createResults(header, input, name, time, missedligands=[]):
     """
@@ -304,7 +322,7 @@ def createResults(header, input, name, time, missedligands=[]):
     newheader = string.replace(header, "\n", "<BR>")
     newheader = string.replace(newheader," ","&nbsp;")
 
-    filename = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
+    filename = "%s%s%s.html" % (INSTALLDIR, TMPDIR, name)
     file = open(filename, "w")
     
     file.write("<html>\n")
@@ -322,10 +340,10 @@ def createResults(header, input, name, time, missedligands=[]):
     file.write("<a href=\"%s%s%s.pqr\">%s.pqr</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
     if input:
         file.write("<a href=\"%s%s%s.in\">%s.in</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
-    pkaname = "%s%s%s.propka" % (SRCPATH, TMPDIR, name)
+    pkaname = "%s%s%s.propka" % (INSTALLDIR, TMPDIR, name)
     if os.path.isfile(pkaname):
         file.write("<a href=\"%s%s%s.propka\">%s.propka</a><BR>\n" % (WEBSITE, TMPDIR, name, name))
-    typename = "%s%s%s-typemap.html" % (SRCPATH, TMPDIR, name)
+    typename = "%s%s%s-typemap.html" % (INSTALLDIR, TMPDIR, name)
     if os.path.isfile(typename):
         file.write("<a href=\"%s%s%s-typemap.html\">%s-typemap.html</a><BR>\n" % (WEBSITE, TMPDIR, name, name)) 
     file.write("<P>The header for your PQR file, including any warnings generated, is:<P>\n")
@@ -345,6 +363,7 @@ def createResults(header, input, name, time, missedligands=[]):
         file.write("<P></code></blockquote>\n")
     file.write("If you would like to run PDB2PQR again, please click <a href=\"%s%s\">\n" % (WEBSITE, WEBNAME))
     file.write("here</a>.<P>\n")
+    file.write("If you would like to run APBS with these results, please click <a href=\"%s../apbs/index.py?pdb2pqr-id=%s\">here</a>.<P>\n" % (WEBSITE[:-1], name))
     file.write("<P>Thank you for using the PDB2PQR server!<P>\n")
     file.write("<font size=\"-1\"><P>Total time on server: %.2f seconds</font><P>\n" % time)
     file.write("<font size=\"-1\"><CENTER><I>Last Updated %s</I></CENTER></font>\n" % __date__) 
@@ -359,7 +378,7 @@ def createError(name, details):
             name:    The result file root name, based on local time (string)
             details: The details of the error (string)
     """
-    filename = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
+    filename = "%s%s%s.html" % (INSTALLDIR, TMPDIR, name)
     file = open(filename, "w")
 
     file.write("<html>\n")
@@ -380,61 +399,71 @@ def createError(name, details):
     file.write("</body>\n")
     file.write("</html>\n")
     
-def startServer(name):
-    """
-        Start the PDB2PQR server.  This function is necessary so
-        that useful information can be displayed to the user - otherwise
-        nothing would be returned until the complete run finishes.
-
-        Parameters
-            name:    The ID name of the final file to create (string)
-        Returns
-            pqrpath: The complete path to the pqr file (string)
-    """    
-    cleanTmpdir()
-    path = SRCPATH
-    tmpdir = TMPDIR
-
-    starttime = time.time()
-    pid = os.fork()
-    if pid: #Parent - Create refreshed HTML pages and exit
-        pid2 = os.fork()
-        if pid2: # print to browser and exit
-            printAcceptance(name)
-            sys.exit()
-        else: # Thread in charge of refreshing pages
-            home = os.getcwd()
-            os.chdir("/")
-            os.setsid()
-            os.umask(0)
-            os.chdir(home)
-            os.close(1)
-            os.close(2)
-            endname = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
-            tmpname = "%s%s%s-tmp.html" % (SRCPATH, TMPDIR, name)
-            while 1:
-                if os.path.isfile(endname):
-                    refreshname = "%s%s%s.html" % (WEBSITE, TMPDIR, name)
-                    reftime = 5
-                    printProgress(name, refreshname, reftime, starttime)
-                    break
-                else:
-                    refreshname = "%s%s%s-tmp.html" % (WEBSITE, TMPDIR, name)
-                    reftime = REFRESHTIME
-                    printProgress(name, refreshname, reftime, starttime)
-                time.sleep(REFRESHTIME)
-
-            time.sleep(REFRESHTIME)
-            os.remove(tmpname)
-            sys.exit()
-        
-    else: # Child - run PDB2PQR
-        home = os.getcwd()
-        os.chdir("/")
-        os.setsid()
-        os.umask(0)
-        os.chdir(home)
-        os.close(1)
-        os.close(2)
-        pqrpath = "%s%s%s.pqr" % (path, tmpdir, name)
-        return pqrpath
+#def startServer(name):
+#    """
+#        Start the PDB2PQR server.  This function is necessary so
+#        that useful information can be displayed to the user - otherwise
+#        nothing would be returned until the complete run finishes.
+#
+#        Parameters
+#            name:    The ID name of the final file to create (string)
+#        Returns
+#            pqrpath: The complete path to the pqr file (string)
+#    """    
+#    cleanTmpdir()
+#    path = SRCPATH
+#    tmpdir = TMPDIR
+#
+#    starttime = time.time()
+#    pid = os.fork()
+#    if pid: #Parent - Create refreshed HTML pages and exit
+#        pid2 = os.fork()
+#        if pid2: # print to browser and exit
+#            #printAcceptance(name)
+#            printRedirector(name,False) # prints initial page, it should redirect to querystatus.cgi - just a blank page with immediate redirect, False is for signifying it's not opal, which is passed on by cgi
+#            sys.exit()
+#        else: # Thread in charge of refreshing pages
+#            home = os.getcwd()
+#            os.chdir("/")
+#            os.setsid()
+#            os.umask(0)
+#            os.chdir(home)
+#            os.close(1)
+#            os.close(2)
+#            #endname = "%s%s%s.html" % (SRCPATH, TMPDIR, name)
+#            filename = "%s%s%s" % (SRCPATH, TMPDIR, name)
+#            #tmpname = "%s%s%s-tmp.html" % (SRCPATH, TMPDIR, name)
+#            while 1:
+#                if os.path.isfile(endname): # when createResults makes endname, exit loop
+#                    #refreshname = "%s%s%s.html" % (WEBSITE, TMPDIR, name)
+#                    #reftime = 5 # reduces refresh time, since calculation is done
+#                    #printProgress(name, refreshname, reftime, starttime)
+#                    file = open(filename, 'w')
+#                    file.write('done')
+#                    file.close()
+#                    break
+#                else: # until then, keep writing to refresh page with new load and time
+#                    #refreshname = "%s%s%s-tmp.html" % (WEBSITE, TMPDIR, name)
+#                    #reftime = REFRESHTIME
+#                    #printProgress(name, refreshname, reftime, starttime)
+#                    file = open(filename, 'w')
+#                    file.write('done')
+#                    file.close()
+#                time.sleep(REFRESHTIME)
+#
+#            time.sleep(REFRESHTIME)
+#            #os.remove(tmpname)
+#            os.remove(filename)
+#            sys.exit()
+#        
+#    else: # Child - run PDB2PQR
+#        # don't know what this does, or if there's even anything going on here, like running pdb2pqr
+#        home = os.getcwd()
+#        os.chdir("/")
+#        os.setsid()
+#        os.umask(0)
+#        os.chdir(home)
+#        os.close(1)
+#        os.close(2)
+#        pqrpath = "%s%s%s.pqr" % (path, tmpdir, name)
+#        return pqrpath

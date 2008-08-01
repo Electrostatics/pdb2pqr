@@ -9,74 +9,367 @@ __author__ = "Wes Goodman"
 import sys
 import cgi
 import cgitb
+import os,shutil,glob, string
 from src.server import STYLESHEET
-from AppService_services import AppServiceLocator, getAppMetadataRequest, launchJobRequestWrapper, \
-    launchJobBlockingRequestWrapper, getOutputAsBase64ByNameRequestWrapper
-from AppService_services_types import ns1
-from ZSI.TC import String
-
-serviceURL="@OPALURL@"
-refresh=30
+from src.aconf import *
 
 cgitb.enable()
 form = cgi.FieldStorage()
 
 def printheader(pagetitle,refresh=None):
-  print "Content-type: text/html\n"
-  print "<HTML>"
-  print "<HEAD>"
-  if refresh:
-    print "\t<META HTTP-EQUIV=\"Refresh\" CONTENT=\"%s\">" % refresh
-  print "\t<TITLE>%s</TITLE>" % pagetitle
-  print "\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET
-  print "</HEAD>"
-  return
+    str = ""
+    str+= "<html>\n"
+    str+= "<HEAD>\n"
+    if refresh:
+        str+= "\t<META HTTP-EQUIV=\"Refresh\" CONTENT=\"%s\">\n" % refresh
+    str+= "\t<TITLE>%s</TITLE>\n" % pagetitle
+    str+= "\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET
+    str+= "</HEAD>\n"
+    return str
 
-if not form.has_key("jobid"):
-  printheader("PDB2PQR Job Status - Error")
-  text="<BODY>\n"
-  text+="\t<H2>Missing jobid field</H2>\n"
-  text+="\t<P>Your request url is missing the jobid field</P>\n"
-  text+="</BODY>\n</HTML>"
-  print text
-  sys.exit(2)
 
-# Construct SOAP request
-appLocator = AppServiceLocator()
-appServicePort = appLocator.getAppServicePortType(serviceURL)
-jobid=form["jobid"].value
-try:
-  status=appServicePort.queryStatus(str(jobid))
-except Exception, e:
-  printheader("PDB2PQR Job Status Page - Error", 0)
-  print "<BODY>\n<P>"
-  print "There was an error with your query request.  This page will not refresh."
-  print "</P>\n</BODY>"
-  print "</HTML>"
-  sys.exit(2)
+def getloads():
+    """
+        get the system load information for output and logging
 
-if status._code==8 or status._code==4:
-  # job is done
-  printheader("PDB2PQR Job Status Page")
-  print "<BODY>\n<P>"
-  print "<h3>Status</h3>"
-  print "Code: %s<BR>" % status._code
-  print "Message: %s<BR>" % status._message
-  print "Output Base URL: <a href=%s>%s</a><BR>" % (status._baseURL, status._baseURL)
-  print "</P>"
-  print "<HR>"
-  print "Click here to see your results: <a href=%s>%s</a>" % (status._baseURL, status._baseURL)
-  print "</BODY>"
-else:
-  # job is not done, refresh in 30 seconds
-  printheader("PDB2PQR Job Status Page", refresh)
-  print "<BODY>\n<P>"
-  print "<h3>Status</h3>"
-  print "Code: %s<BR>" % status._code
-  print "Message: %s<BR>" % status._message
-  print "Output Base URL: <a href=%s>%s</a><BR>" % (status._baseURL, status._baseURL)
-  print "Page will refresh in %d seconds" % refresh
-  print "</P>"
-  print "</BODY>"
+        returns
+            loads:  a three entry list containing the 1, 5, and
+                    15 minute loads. if the load file is not found,
+                    return none.
+    """
+    if loadpath == "": return none
+    try:
+        file = open(loadpath, 'ru')
+    except ioerror:
+        return none
 
-print "</HTML>"
+    line = file.readline()
+    words = string.split(line)
+    loads = words[:3]
+    
+    return loads
+
+def cleantmpdir():
+    """
+        clean up the temp directory for cgi.  if the size of the directory
+        is greater than limit, delete the older half of the files.  since
+        the files are stored by system time of creation, this is an
+        easier task.
+    """
+    newdir = []
+    size = 0.0
+    count = 0
+    path = INSTALLDIR + tmpdir
+
+    dir = os.listdir(path)
+    for filename in dir:
+        size = size + os.path.getsize("%s%s" % (path, filename))
+        period = string.find(filename,".")
+        id = filename[:period]
+        if id not in newdir:
+            newdir.append(id)
+            count += 1
+        
+    newdir.sort()
+    size = size / (1024.0 * 1024.0)
+    
+    newcount = 0
+    if size >= limit:
+        for filename in newdir:
+            if newcount > count/2.0: break
+            try:
+                os.remove("%s%s.pqr" % (path, filename))
+            except oserror: pass
+            try:
+                os.remove("%s%s.in" % (path, filename))
+            except oserror: pass
+            try:
+                os.remove("%s%s.html" % (path, filename))
+            except oserror: pass
+            newcount += 1
+
+def getquote(path):
+    """
+        get a quote to display for the refresh page.
+        uses fortune to generate a quote.
+
+        parameters:
+            path:   the path to the fortune script (str)
+        returns:
+            quote:   the quote to display (str)
+    """
+    fortune = os.popen(path)
+    quote = fortune.read()
+    quote = string.replace(quote, "\n", "<br>")
+    quote = string.replace(quote, "\t", "&nbsp;"*5)
+    quote = "%s<p>" % quote
+    return quote
+
+def printprogress(name, refreshname, reftime, starttime):
+    """
+        print the progress of the server
+
+        parameters
+            name:        the id of the html page to write to (string)
+            refreshname: the name of the html page to refresh to (string)
+            reftime:     the length of time to set the refresh wait to (int)
+            starttime:   the time as returned by time.time() that the run started (float)
+    """
+    elapsedtime = time.time() - starttime + refreshtime/2.0 # add in time offset
+    filename = "%s%s%s/%s-tmp.html" % (INSTALLDIR, tmpdir, jobid, name)
+    file = open(filename,"w")
+    file.write("<html>\n")
+    file.write("<head>\n")
+    file.write("<title>pdb2pqr progress</title>\n")
+    file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % stylesheet)
+    file.write("<meta http-equiv=\"refresh\" content=\"%s; url=%s\">\n" % \
+               (reftime, refreshname))
+    file.write("</head>\n")
+    file.write("<body>\n")
+    file.write("<h2>pdb2pqr progress</h2><p>\n")
+    file.write("the pdb2pqr server is generating your results - this page will automatically \n")
+    file.write("refresh every %s seconds.<p>\n" % refreshtime)
+    file.write("thank you for your patience!<p>\n")
+    file.write("server progress:<p>\n")
+    file.write("<blockquote>\n")
+    file.write("<font size=2>elapsed time:</font> <code>%.2f seconds</code><br>\n" % elapsedtime)
+    file.write("</blockquote>\n")
+    file.write("server information:<p>\n")
+    file.write("<blockquote>\n")
+    loads = getloads()
+    if loads != none:
+        file.write("<font size=2>server load:</font> <code>%s (1min)  %s (5min)  %s (15min)</code><br>\n" % (loads[0], loads[1], loads[2]))
+
+    file.write("<font size=2>server time:</font> <code>%s</code><br>\n" % (time.asctime(time.localtime())))
+    file.write("</blockquote>\n")
+    file.write("</body></html>")
+    file.close()
+
+def createresults(header, input, name, time, missedligands=[]):
+    """
+        create the results web page for cgi-based runs
+
+        parameters
+            header: the header of the pqr file (string)
+            input:   a flag whether an input file has been created (int)
+            tmpdir:  the resulting file directory (string)
+            name:    the result file root name, based on local time (string)
+            time:    the time taken to run the script (float)
+            missedligands: a list of ligand names whose parameters could
+                     not be assigned. optional. (list)
+    """
+    newheader = string.replace(header, "\n", "<br>")
+    newheader = string.replace(newheader," ","&nbsp;")
+
+    filename = "%s%s%s/%s.html" % (INSTALLDIR, tmpdir, jobid, name)
+    file = open(filename, "w")
+    
+    file.write("<html>\n")
+    file.write("<head>\n")
+    file.write("<title>pdb2pqr results</title>\n")
+    file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % stylesheet)
+    file.write("</head>\n")
+
+    file.write("<body>\n")
+    file.write("<h2>pdb2pqr results</h2>\n")
+    file.write("<p>\n")
+    file.write("here are the results from pdb2pqr.  the files will be available on the ")
+    file.write("server for a short period of time if you need to re-access the results.<p>\n")
+ 
+    file.write("<a href=\"%s%s%s.pqr\">%s.pqr</a><br>\n" % (website, tmpdir, name, name))
+    if input:
+        file.write("<a href=\"%s%s%s.in\">%s.in</a><br>\n" % (website, tmpdir, name, name))
+    pkaname = "%s%s%s/%s.propka" % (INSTALLDIR, tmpdir, jobid, name)
+    if os.path.isfile(pkaname):
+        file.write("<a href=\"%s%s%s.propka\">%s.propka</a><br>\n" % (website, tmpdir, name, name))
+    typename = "%s%s%s/%s-typemap.html" % (INSTALLDIR, tmpdir, jobid, name)
+    if os.path.isfile(typename):
+        file.write("<a href=\"%s%s%s-typemap.html\">%s-typemap.html</a><br>\n" % (website, tmpdir, name, name)) 
+    file.write("<p>the header for your pqr file, including any warnings generated, is:<p>\n")
+    file.write("<blockquote><code>\n")
+    file.write("%s<p>\n" % newheader)
+    file.write("</code></blockquote>\n")
+    if missedligands != []:
+        file.write("the forcefield that you have selected does not have ")
+        file.write("parameters for the following ligands in your pdb file.  please visit ")
+        file.write("<a href=\"http://davapc1.bioch.dundee.ac.uk/programs/prodrg/\">prodrg</a> ")
+        file.write("to convert these ligands into mol2 format.  this ligand can the be ")
+        file.write("parameterized in your pdb2pqr calculation using the peoe_pb methodology via ")
+        file.write("the 'assign charges to the ligand specified in a mol2 file' checkbox:<p>\n")
+        file.write("<blockquote><code>\n")
+        for item in missedligands:
+            file.write("%s<br>\n" % item)
+        file.write("<p></code></blockquote>\n")
+    file.write("if you would like to run pdb2pqr again, please click <a href=\"%s%s\">\n" % (website, webname))
+    file.write("here</a>.<p>\n")
+    file.write("if you would like to run apbs with these results, please click <a href=\"%s../apbs/index.py?pdb2pqr-id=%s\">here</a>.<p>\n" % (website[:-1], name))
+    file.write("<p>thank you for using the pdb2pqr server!<p>\n")
+    file.write("<font size=\"-1\"><p>total time on server: %.2f seconds</font><p>\n" % time)
+    file.write("<font size=\"-1\"><center><i>last updated %s</i></center></font>\n" % __date__) 
+    file.write("</body>\n")
+    file.write("</html>\n")
+
+def checkprogress(jobid=None,appServicePort=None,calctype=None):
+    """
+        Finds out if the job has been completed
+    """
+     
+    if have_opal:
+        
+        # construct soap request
+        try:
+            status=appServicePort.queryStatus(queryStatusRequest(jobid))
+        except Exception, e:
+            return ["error"]
+        if status._code == 4:
+            return ["error"]
+
+        if status._code == 8:
+            return ["complete",status]
+        else:
+            return ["pending",status]
+
+    else:
+        progress = []
+        if form["calctype"].value=="pdb2pqr":
+            file = open('%s%s%s/%s.sts' % (INSTALLDIR,TMPDIR,jobid,jobid))
+        else:
+            file = open('%s%s%s/status' % (INSTALLDIR,TMPDIR,jobid))
+
+        for line in file.readlines():
+            progress.append(string.strip(line))
+        file.close()
+        return progress
+
+def mainCGI():
+    """
+        Main method for determining the query page output
+    """
+    print "Content-type: text/html\n\n"
+    calctype = form["calctype"].value
+
+    # prepares for Opal query, if necessary
+    if have_opal:
+        if calctype=="pdb2pqr":
+            opal_url = PDB2PQR_OPAL_URL
+        elif calctype=="apbs":
+            opal_url = APBS_OPAL_URL
+        appLocator = AppServiceLocator()
+        appServicePort = appLocator.getAppServicePort(opal_url)
+    else:
+        appServicePort = None
+
+    # if PDB2PQR, determines if link to APBS calculation should be shown
+    if calctype=="pdb2pqr":    
+        #if(form["apbsinput"].value=="True"): # change to use a file
+        #    apbs_input = True
+        #else:
+        #    apbs_input = False
+        apbsInputFile = open('%s%s%s/apbs_input' % (INSTALLDIR, TMPDIR, form["jobid"].value))
+        apbs_input = apbsInputFile.read()
+        apbsInputFile.close()
+        if apbs_input=="True":
+            apbs_input = True
+        else:
+            apbs_input = False
+
+    if have_opal:
+        if form["calctype"].value=="pdb2pqr":
+            pdb2pqrJobIDFile = open('%s%s%s/pdb2pqr_opal_job_id' % (INSTALLDIR, TMPDIR, form["jobid"].value))
+            jobid = pdb2pqrJobIDFile.read()
+            pdb2pqrJobIDFile.close()
+        elif form["calctype"].value=="apbs":
+            apbsJobIDFile = open('%s%s%s/apbs_opal_job_id' % (INSTALLDIR, TMPDIR, form["jobid"].value))
+            jobid = apbsJobIDFile.read()
+            apbsJobIDFile.close()
+    else:
+        jobid = form["jobid"].value
+
+    cp = checkprogress(jobid,appServicePort,calctype) # finds out status of job
+    progress = cp[0]
+    
+        
+    if progress == "pending":
+        #if have_opal:
+        #    resultsurl = cp[1]._baseURL
+        #else:
+        if calctype=="pdb2pqr":
+            resultsurl = '%squerystatus.cgi?jobid=%s&apbsinput=%s&calctype=pdb2pqr' % (WEBSITE, form["jobid"].value, apbs_input)
+        else:
+            resultsurl = '%squerystatus.cgi?jobid=%s&calctype=apbs' % (WEBSITE, form["jobid"].value)
+
+    if progress == "complete":
+        print printheader("%s Job Status Page" % calctype.upper())
+
+    elif progress == "error":
+        print printheader("%s Job Status Page - Error" % calctype.upper(),0)
+
+    elif progress == "pending": # job is not complete, refresh in 30 seconds
+        print printheader("%s Job Status Page" % calctype.upper(), refresh)
+
+    print "<BODY>\n<P>"
+    print "<h3>Status"
+    if calctype=="apbs":
+        print "(EXPERIMENTAL)"
+    print "</h3>"
+    print "Message: %s<br />" % progress
+    print "</P>\n<HR>\n<P>"
+
+    if progress == "complete":
+        if calctype=="pdb2pqr":
+            nexturl = 'apbs_cgi.cgi?jobid=%s' % form["jobid"].value
+        else:
+            nexturl = 'jmol_input.cgi?jobid=%s' % form["jobid"].value
+            
+        print "Here are the results:<ul>"
+
+        if have_opal:
+            resp = appServicePort.getOutputs(getOutputsRequest(jobid))
+            for opalfile in resp._outputFile:
+                if opalfile._name[-8:]!="-input.p":
+                    print "<li><a href=%s>%s</a></li>" % (opalfile._url, opalfile._name)
+        else:
+            for line in cp[1:]:
+                line = os.path.basename(line)
+                if line[-8:]!="-input.p":
+                    print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,line)
+
+        if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
+            print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results (EXPERIMENTAL).</p>" % nexturl
+        elif calctype=="apbs":
+            print "</ul></p><hr><p><a href=%s>Click here</a> to run Jmol with your results (EXPERIMENTAL).</p>" % nexturl
+
+    elif progress == "error":
+        print "There was an error with your query request. This page will not refresh."
+    elif progress == "pending":
+        print "Page will refresh in %d seconds<br />" % refresh
+        print "<HR>"
+        print "<small>Your results will appear at <a href=%s>this page</a> (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
+        
+    print "</P>"
+    print "</BODY>"
+    print "</HTML>"
+
+if __name__ == "__main__" and os.environ.has_key("REQUEST_METHOD"):
+    """ Determine if called from command line or CGI """
+    refresh=30
+
+    if not form.has_key("jobid") and form["calctype"].value=="pdb2pqr":
+        print printheader("PDB2PQR Job Status - Error")
+        text="<BODY>\n"
+        text+="\t<H2>Missing jobid field</H2>\n"
+        text+="\t<P>Your request url is missing the jobid field</P>\n"
+        text+="</BODY>\n</HTML>"
+        print text
+        sys.exit(2)
+
+
+    if (form["calctype"].value=="pdb2pqr" and HAVE_PDB2PQR_OPAL=="1") or (form["calctype"].value=="apbs" and APBS_OPAL_URL!=""):
+        have_opal = True
+        from AppService_client import AppServiceLocator, getAppMetadataRequest, launchJobRequest, launchJobBlockingRequest, getOutputAsBase64ByNameRequest, queryStatusRequest, getOutputsRequest
+        from AppService_types import ns0
+        from ZSI.TC import String
+    else:
+        have_opal = False
+
+    mainCGI()

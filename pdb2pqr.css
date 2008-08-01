@@ -73,6 +73,14 @@ table {
 }
 td, th {
     padding:  5pt;
+    text-align: center;
+}
+
+table.apbs {
+    width: auto;
+    margin-left: 0;
+    margin-right: auto;
+    empty-cells: hide;
 }
 
 /* Definition lists */
@@ -166,4 +174,12 @@ div.affil li {
     list-style-type:  none;
     margin:  0;
     padding:  0;
+}
+
+/* Tooltips */
+.tooltip {
+	border-bottom-width: 1px;
+	border-bottom-color: #00000;
+	border-bottom-style: dotted;
+	line-height: 15pt;
 }

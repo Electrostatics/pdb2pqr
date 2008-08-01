@@ -29,6 +29,7 @@ from src.routines import *
 from src.protein import *
 from src.server import *
 from src.hydrogens import *
+from src.aconf import *
 from StringIO import *
 
 import httplib
@@ -57,7 +58,7 @@ def mainCGI():
     """
         Opal driver for running PDB2PQR from a web page
     """
-    serviceURL = "@OPALURL@"
+    serviceURL = OPALURL
     
     cgitb.enable()
     form = cgi.FieldStorage()

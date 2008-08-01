@@ -1,0 +1,382 @@
+"""
+    Driver for PDB2PQR
+
+    This module takes a PDB file as input and performs optimizations
+    before yielding a new PDB-style file as output.
+
+    Ported to Python by Todd Dolinsky (todd@ccb.wustl.edu)
+    Washington University in St. Louis
+
+    Parsing utilities provided by Nathan A. Baker (baker@biochem.wustl.edu)
+    Washington University in St. Louis
+
+	Copyright (c) 2002-2007, Jens Erik Nielsen, University College Dublin; 
+	Nathan A. Baker, Washington University in St. Louis; Paul Czodrowski & 
+	Gerhard Klebe, University of Marburg
+
+	All rights reserved.
+
+	Redistribution and use in source and binary forms, with or without modification, 
+	are permitted provided that the following conditions are met:
+
+		* Redistributions of source code must retain the above copyright notice, 
+		  this list of conditions and the following disclaimer.
+		* Redistributions in binary form must reproduce the above copyright notice, 
+		  this list of conditions and the following disclaimer in the documentation 
+		  and/or other materials provided with the distribution.
+		* Neither the names of University College Dublin, Washington University in 
+		  St. Louis, or University of Marburg nor the names of its contributors may 
+		  be used to endorse or promote products derived from this software without 
+		  specific prior written permission.
+
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	OF THE POSSIBILITY OF SUCH DAMAGE.
+
+"""
+
+__date__  = "17 March 2007"
+__author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen"
+__version__ = "1.3.0"
+
+
+import string
+import sys
+import getopt
+import os
+import time
+import httplib
+import re
+import glob
+import tempfile
+from src import pdb
+from src import utilities
+from src import structures
+from src import routines
+from src import protein
+#from src import server
+from src.pdb import *
+from src.utilities import *
+from src.structures import *
+from src.definitions import *
+from src.forcefield import *
+from src.routines import *
+from src.protein import *
+from src.server import *
+from src.hydrogens import *
+from src.aconf import *
+from StringIO import *
+from main import *
+
+def printHeader(pagetitle,have_opal=None,jobid=None):
+    """
+        Function to print html headers
+    """
+    if jobid:
+        if have_opal:
+            print "Location: querystatus.cgi?jobid=%s&typeofjob=opal\n" % (jobid,typeOfJob)
+        else:
+            print "Location: querystatus.cgi?jobid=%s&typeofjob=local\n" & (jobid,typeOfJob)
+
+    #print "Content-type: text/html\n"
+    print "<HTML>"
+    print "<HEAD>"
+    print "\t<TITLE>%s</TITLE>" % pagetitle
+    print "\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET
+    print "</HEAD>"
+    return
+
+def redirector(name):
+    """
+        Prints a page which redirects the user to querystatus.cgi
+    """
+    str = ""
+    #str+= "Content-type: text/html\n\n"
+    str+= "<html>\n"
+    str+= "\t<head>\n"
+    str+= "\t\t<meta http-equiv=\"Refresh\" content=\"0; url=%squerystatus.cgi?jobid=%s&calctype=pdb2pqr\">\n" % (WEBSITE, name)
+    str+= "\t</head>\n"
+    str+= "</html>\n"
+    return str
+
+def mainCGI():
+    """
+        Main driver for running PDB2PQR from a web page
+    """
+    print "Content-type: text/html\n"
+    import cgi
+    import cgitb
+
+    cgitb.enable()
+    form = cgi.FieldStorage()
+    ff = form["FF"].value 
+    input = 0
+
+    apbs_input = form.has_key("INPUT")
+
+    if HAVE_PDB2PQR_OPAL=="1":
+        have_opal = True
+        # Opal-specific import statments
+        from AppService_client import AppServiceLocator, getAppMetadataRequest, launchJobRequest, launchJobBlockingRequest, getOutputAsBase64ByNameRequest
+        from AppService_types import ns0
+        from ZSI.TC import String
+    else:
+        have_opal = False
+
+    if have_opal:
+        options = {}
+        options["ff"] = ff
+        fffile = None
+    else:
+        options = {"extensions":{}}
+ 
+  
+    if form.has_key("DEBUMP"):
+        options["debump"] = 1
+    else:
+        options["debump"] = 0
+    if form.has_key("OPT"):
+        options["opt"] = 1
+    else:
+        options["opt"] = 0
+    if form.has_key("PROPKA"):
+        try:
+            ph = float(form["PH"].value)
+            if ph < 0.0 or ph > 14.0: raise ValueError
+            options["ph"] = ph
+        except ValueError:
+             text = "The entered pH of %.2f is invalid!  " % form["PH"].value
+             text += "Please choose a pH between 0.0 and 14.0."
+             #print "Content-type: text/html\n"
+             print text
+             sys.exit(2)
+    if form.has_key("PDBID"):
+        pdbfile = getPDBFile(form["PDBID"].value)
+        pdbfilename = form["PDBID"].value
+    elif form.has_key("PDB"):
+        pdbfile = StringIO(form["PDB"].value)
+        pdbfilename = form["PDB"].filename
+        pdbfilename = re.split(r'[/\\]',pdbfilename)[-1]
+    if form.has_key("INPUT"):
+        input = 1
+        options["apbs"] = 1
+    if form.has_key("USERFF"):
+        if have_opal:
+            ffname = form["USERFF"].filename
+            ffname = re.split(r'[/\\]',ffname)[-1]
+            fffile = StringIO(form["USERFF"].value)
+            options["ff"] = ffname
+        else:
+            userff = StringIO(form["USERFF"].value)
+            ff = "user-defined"
+            options["userff"] = userff
+    if form.has_key("FFOUT"):
+        if form["FFOUT"].value != "internal":
+            options["ffout"] = form["FFOUT"].value
+    if form.has_key("CHAIN"):
+        options["chain"] = 1
+    if form.has_key("LIGAND"):
+        if have_opal:
+            ligandfilename=str(form["LIGAND"].filename)
+            ligandfilename=re.split(r'[/\\]',ligandfilename)[-1]
+
+        # for Windows-style newline compatibility
+        templigandfilename = tempfile.mkstemp()[1]
+        templigandfile = open(templigandfilename,'w')
+        templigandfile.write(form["LIGAND"].value)
+        templigandfile.close()
+        templigandfile = open(templigandfilename,'rU')
+        if have_opal:
+            options["ligand"] = templigandfile.read()
+        else:
+            templigandstring = templigandfile.read() # this variable is used again later to write this file to output
+            options["ligand"] = StringIO(templigandstring)
+            
+        templigandfile.close()
+        
+    if not have_opal:
+        pdbfilestring = pdbfile.read()
+        pdblist, errlist = readPDB(StringIO(pdbfilestring))
+        dummydef = Definition()
+        dummyprot = Protein(pdblist, dummydef)
+        if len(pdblist) == 0 and len(errlist) == 0:
+            text = "Unable to find PDB file - Please make sure this is "
+            text += "a valid PDB file ID!"
+            #print "Content-type: text/html\n"
+            print text
+            sys.exit(2)
+        elif dummyprot.numAtoms() > MAXATOMS and "opt" in options:
+            text = "<HTML><HEAD>"
+            text += "<TITLE>PDB2PQR Error</title>"
+            text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
+            text += "</HEAD><BODY><H2>PDB2PQR Error</H2><P>"
+            text += "Due to server limits, we are currently unable to optimize "
+            text += "proteins of greater than MAXATOMS atoms on the server (PDB2PQR "
+            text += "found %s atoms in the selected PDB file).  If you " % dummyprot.numAtoms()
+            text += "want to forgo optimization please try the server again.<P>"
+            text += "Otherwise you may use the standalone version of PDB2PQR that "
+            text += "is available from the <a href=\"http://pdb2pqr.sourceforge.net\">"
+            text += "PDB2PQR SourceForge project page</a>."
+            text += "</BODY></HTML>"
+            #print "Content-type: text/html\n"
+            print text
+            sys.exit(2)
+
+    try:
+        if have_opal:
+            ligandFile=None
+            ffFile=None
+        #else:
+        starttime = time.time()
+        name = setID(starttime)
+
+        os.makedirs('%s%s%s' % (INSTALLDIR, TMPDIR, name))
+        apbsInputFile = open('%s%s%s/apbs_input' % (INSTALLDIR, TMPDIR, name),'w')
+        apbsInputFile.write(str(apbs_input))
+        apbsInputFile.close()
+
+        if have_opal:
+            myopts=""
+            for key in options:
+                if key=="opt":
+                    if options[key]==0:
+                        # user does not want optimization
+                        key="noopt"
+                    else:
+                        # pdb2pqr optimizes by default, don't bother with flag
+                        continue
+                elif key=="debump":
+                    if options[key]==0:
+                        # user does not want debumping
+                        key="nodebump"
+                    else:
+                        # pdb2pqr debumps by default, so change this flag to --nodebump
+                        continue
+                elif key=="ph":
+                    val=options[key]
+                    key="with-ph=%s" % val
+                elif key=="ffout":
+                    val=options[key]
+                    key="ffout=%s" % val
+                elif key=="ligand":
+                    val=ligandfilename
+                    key="ligand=%s" % val
+                    ligandFile = ns0.InputFileType_Def('inputFile')
+                    ligandFile._name = val
+                    ligandFile._contents = options["ligand"]
+                elif key=="apbs":
+                    key="apbs-input"
+                elif key=="chain":
+                    key="chain"
+                elif key=="ff":
+                    val=options[key]
+                    key="ff=%s" % val
+                    if fffile:
+                      ffFile = ns0.InputFileType_Def('inputFile')
+                      ffFile._name = val
+                      ffFileTemp = open(fffile, "r")
+                      ffFileString = ffFileTemp.read()
+                      ffFileTemp.close()
+                      ffFile._contents = ffFileString
+                myopts+="--"+str(key)+" "
+            myopts+=str(pdbfilename)+" "
+            myopts+="%s.pqr" % str(pdbfilename)
+            appLocator = AppServiceLocator()
+            appServicePort = appLocator.getAppServicePort(PDB2PQR_OPAL_URL)
+            # launch job
+            req = launchJobRequest()
+            req._argList = myopts
+            inputFiles = []
+            pdbOpalFile = ns0.InputFileType_Def('inputFile')
+            pdbOpalFile._name = pdbfilename
+            pdbOpalFile._contents = pdbfile.read()
+            pdbfile.close()
+            inputFiles.append(pdbOpalFile)
+            if ligandFile:
+              inputFiles.append(ligandFile)
+            if ffFile:
+              inputFiles.append(ffFile)
+            req._inputFile=inputFiles
+            try:
+                resp=appServicePort.launchJob(req)
+            except Exception, e:
+                printHeader("PDB2PQR Job Submission - Error")
+                print "<BODY>\n<P>"
+                print "There was an error with your job submission<br>"
+                print "</P>\n</BODY>"
+                print "</HTML>"
+                sys.exit(2)
+            #printHeader("PDB2PQR Job Submission",have_opal,jobid=resp._jobID)
+            pdb2pqrOpalJobIDFile = open('%s%s%s/pdb2pqr_opal_job_id' % (INSTALLDIR, TMPDIR, name), 'w')
+            pdb2pqrOpalJobIDFile.write(resp._jobID)
+            pdb2pqrOpalJobIDFile.close()
+            print redirector(name)
+
+        else:
+            #pqrpath = startServer(name)
+            statusfile = open('%s%s%s/%s.sts' % (INSTALLDIR, TMPDIR, name, name), 'w')
+            statusfile.write('pending')
+            statusfile.close()
+            pid = os.fork()
+            if pid:
+                print redirector(name)
+                sys.exit()
+            else:
+                currentdir = os.getcwd()
+                os.chdir("/")
+                os.setsid()
+                os.umask(0)
+                os.chdir(currentdir)
+                os.close(1) # not sure if these
+                os.close(2) # two lines are necessary
+                pqrpath = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, name, name)
+                options["outname"] = pqrpath
+                header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
+                pqrfile = open(pqrpath, "w")
+                pqrfile.write(header)
+                for line in lines:
+                    pqrfile.write("%s\n" % string.strip(line))
+                pqrfile.close()
+                        
+                if input:
+                    from src import inputgen
+                    from src import psize
+                    method = "mg-auto"
+                    size = psize.Psize()
+                    size.parseInput(pqrpath)
+                    size.runPsize(pqrpath)
+                    async = 0 # No async files here!
+                    myinput = inputgen.Input(pqrpath, size, method, async)
+                    myinput.printInputFiles()
+                    myinput.dumpPickle()
+                            
+                endtime = time.time() - starttime
+                #createResults(header, input, name, endtime, missedligands)
+                logRun(options, endtime, len(lines), ff, os.environ["REMOTE_ADDR"])
+                #printHeader("PDB2PQR Job Submission",have_opal,jobid=name)
+                if form.has_key("LIGAND"):
+                    outputligandfile = open('%s%s%s/%s.mol2' % (INSTALLDIR,TMPDIR, name, name),'w')
+                    outputligandfile.write(templigandstring)
+                    outputligandfile.close()
+                outputpdbfile = open('%s%s%s/%s.pdb' % (INSTALLDIR,TMPDIR,name,name),'w')
+                outputpdbfile.write(pdbfilestring)
+                outputpdbfile.close()
+
+                statusfile = open('%s%s%s/%s.sts' % (INSTALLDIR, TMPDIR, name, name), 'w')
+                statusfile.write('complete\n')
+                filelist = glob.glob('%s%s%s/%s*' % (INSTALLDIR, TMPDIR, name, name))
+                for filename in filelist:
+                    if filename[-4:]!=".sts":
+                        statusfile.write(filename+'\n')
+                statusfile.close()
+
+    except StandardError, details:
+        print details
+        createError(name, details)

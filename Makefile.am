@@ -25,7 +25,7 @@ action_install_var = @action_install_var@
 CWD=`pwd`
 dirpath=$(CWD)/prefixfile 
 
-EXTRA_DIST = *.py *.css dat/* doc/* examples/* html/index.php html/master-index.html html/README \
+EXTRA_DIST = *.py *.css dat/* doc/* examples/* html/master-index.html html/README \
 	html/server.html.in src/aa.py src/definitions.py src/forcefield.py src/hydrogens.py \
 	src/__init__.py src/inputgen.py src/na.py src/pdb.py src/protein.py src/psize.py \
 	src/quatfit.py src/routines.py src/server.py.in src/structures.py src/utilities.py \
@@ -36,8 +36,9 @@ EXTRA_DIST = *.py *.css dat/* doc/* examples/* html/index.php html/master-index.
 
 distclean-local: clean-local
 clean-local: clean-ac
-	-rm -rf src/server.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh
-	rm -rf querystatus.cgi pdb2pqr-opal.cgi pdb2pqr.py
+	-rm -rf src/server.py src/aconf.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh
+	rm -rf querystatus.cgi apbs_cgi.cgi pdb2pqr.py jmol_input.cgi jmol.cgi
+	rm -rf *.pyc
 	rm -rf tests/adv-test/test.cpp tests/test/test.cpp
 
 clean-ac:
@@ -114,10 +115,18 @@ install:
 	  echo "Adding pdb2pqr.cgi" ; \
 	  cp $$c/pdb2pqr.cgi $(CWD)/$$dir/. ; \
 	  echo "Adding pdb2pqr.css" ; \
-	  cp $$c/pdb2pqr-opal.cgi $(CWD)/$$dir/. ; \
-	  echo "Adding pdb2pqr-opal.cgi" ; \
+	  cp $$c/apbs_cgi.cgi $(CWD)/$$dir/. ; \
+	  echo "Adding apbs_cgi.cgi" ; \
+	  cp $$c/jmol.cgi $(CWD)/$$dir/. ; \
+	  echo "Adding jmol.cgi" ; \
+	  cp $$c/jmol_input.cgi $(CWD)/$$dir/. ; \
+	  echo "Adding jmol_input.cgi" ; \
 	  cp $$c/querystatus.cgi $(CWD)/$$dir/. ; \
 	  echo "Adding querystatus.cgi" ; \
+	  cp $$c/Jmol.js $(CWD)/$$dir/. ; \
+	  echo "Adding Jmol.js" ; \
+	  cp $$c/JmolApplet.jar $(CWD)/$$dir/. ; \
+	  echo "Adding JmolApplet.jar" ; \
 	  cp $$c/pdb2pqr.css $(CWD)/$$dir/. ; \
 	  if ! test -d $(CWD)/$$dir/dat  ; then \
 	    mkdir $(CWD)/$$dir/dat ; \
@@ -162,7 +171,6 @@ install:
 	  if ! test -d $(CWD)/$$dir/html  ; then \
 	    mkdir $(CWD)/$$dir/html ; \
 	  fi ; \
-	  cp $$c/html/index.php $(CWD)/$$dir/html/. ; \
 	  cp $$c/html/master-index.html $(CWD)/$$dir/html/. ; \
 	  cp $$c/html/server.html $(CWD)/$$dir/html/server.html ; \
 	  if ! test -d $(CWD)/$$dir/src ; then \

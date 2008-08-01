@@ -249,6 +249,10 @@ if test "$with_pdb2pka" = "enable" ; then
   AC_MSG_RESULT([])
   AC_MSG_RESULT([------------- Begin Processing pdb2pka Configure Options -----------])
 
+dnl #######################
+dnl  Modified by Yong Huang
+dnl #######################
+
   # Test for Numeric install
   AC_MSG_CHECKING([whether you defined Numeric or Numpy])
   if (test -n "${NUMERIC}") ; then
@@ -311,8 +315,6 @@ if test "$with_pdb2pka" = "enable" ; then
     AC_MSG_RESULT([no]) 
     if test "$PY_NUMERIC" = "" ; then
       AC_MSG_CHECKING([for numpy includes files])  
-      pwd > cwdfile
-      cwd=`cat cwdfile`
       if test -f $PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
         PY_NUMERIC="-I$PY_PREFIX/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
@@ -321,11 +323,11 @@ if test "$with_pdb2pka" = "enable" ; then
         PY_NUMERIC="-I$PY_PREFIX/Extras/lib/python/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
-      elif test -f ${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
-        PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+      elif test -f ${prefix}numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy/arrayobject.h; then
+        PY_NUMERIC="-I${prefix}numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
-        SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
+        SITEPKGS=${prefix}numpy/lib/python$PY_VERSION/site-packages
         if test "${PACKAGE_PATH}" = ""; then
           PACKAGE_PATH=${SITEPKGS}
         else
@@ -335,18 +337,17 @@ if test "$with_pdb2pka" = "enable" ; then
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_FLAGS="$PY_HEADER -I/opt/rocks/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
       else
-        $py_path ./contrib/numpy-1.1.0/setup.py install --prefix=../numpy
-        PY_NUMERIC="-I${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
+        $py_path ./contrib/numpy-1.1.0/setup.py install --prefix=${prefix}numpy
+        PY_NUMERIC="-I${prefix}numpy/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy"
         AC_MSG_RESULT([$PY_NUMERIC])
         PY_CFLAGS="$PY_CFLAGS $PY_NUMERIC"
-        SITEPKGS=${cwd}/contrib/numpy/lib/python$PY_VERSION/site-packages
+        SITEPKGS=${prefix}numpy/lib/python$PY_VERSION/site-packages
         if test "${PACKAGE_PATH}" = ""; then
           PACKAGE_PATH=${SITEPKGS}
         else
           PACKAGE_PATH="${PACKAGE_PATH}:${SITEPKGS}"
         fi
       fi
-      rm cwdfile
     fi
   fi
 
@@ -441,30 +442,105 @@ AC_ARG_WITH(max-atoms,
   [MAX_ATOMS=$withval],
   [MAX_ATOMS=10000])
 
-AC_ARG_WITH(opal,
-	[  --with-opal=OPALURL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/Pdb2pqrOpalService.],
-	[OPALURL=$withval],
-	[OPALURL=""])
+HAVE_PDB2PQR_OPAL=0
 
-if test "$OPALURL" = "yes"; then
-  OPALURL="http://ws.nbcr.net/opal/services/Pdb2pqrOpalService"
+AC_ARG_WITH(opal,
+	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/Pdb2pqrOpalService.],
+	[PDB2PQR_OPAL_URL=$withval],
+	[PDB2PQR_OPAL_URL=""])
+
+if test "$PDB2PQR_OPAL_URL" = "yes"; then
+  PDB2PQR_OPAL_URL="http://ws.nbcr.net/opal/services/Pdb2pqrOpalService"
+  HAVE_PDB2PQR_OPAL=1
 fi
 
-if test "$OPALURL" != ""; then 
+if test "$PDB2PQR_OPAL_URL" != ""; then 
+  HAVE_PDB2PQR_OPAL=1
   if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/ZSI ; then
     echo ZSI is installed
   else
     #  need to install ZSI
     echo Installing ZSI.  This might take a while...
-    tar zxvf ZSI-1.7.tar.gz
-    cd ZSI-1.7 
+    cd contrib/ZSI-2.1-a1 
     if test `whoami` = "root"; then
       $py_path setup.py install
     else
       zsi_pyxml_install="true"
+      mkdir -p ${prefix}lib/python$PY_VERSION/site-packages
+      export PYTHONPATH=${prefix}lib/python$PY_VERSION/site-packages
+      $py_path setup.py install --prefix=${prefix}
+      if test -d ${prefix}ZSI ; then
+        echo ZSI is installed
+      else
+        cp -r ./build/lib/ZSI ${prefix}ZSI
+      fi
+      PYTHONPATH=""
+    fi 
+    cd ../..
+  fi
+
+  if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/_xmlplus ; then
+    echo PyXML is installed
+  else
+    #  need to install ZSI
+    echo Installing PyXML.  This might take a while...
+    tar zxvf PyXML-0.8.4.tar.gz
+    cd PyXML-0.8.4
+    if test `whoami` = "root"; then
+      $py_path setup.py build
+      $py_path setup.py install
+    else
+      zsi_pyxml_install="true"
+      $py_path setup.py build
       $py_path setup.py install --prefix=${prefix}
     fi 
     cd ..
+  fi
+fi  
+
+HAVE_APBS=""
+APBS_OPAL_URL=""
+
+AC_ARG_WITH(apbs,
+	[  --with-apbs=APBSPATH       Specify APBS executable location.],
+	[APBSPATH=$withval],
+	[APBSPATH=""])
+
+if test "$APBSPATH" != ""; then
+  HAVE_APBS=$APBSPATH
+fi
+
+AC_ARG_WITH(apbs-opal,
+	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://ws.nbcr.net/opal/services/ApbsOpalService],
+	[APBS_OPAL_URL=$withval],
+	[APBS_OPAL_URL=""])
+
+if test "$APBS_OPAL_URL" = "yes"; then
+  APBS_OPAL_URL="http://ws.nbcr.net/opal/services/ApbsOpalService"
+fi
+
+if test "$PDB2PQR_OPAL_URL" = "" && test "$APBS_OPAL_URL" != ""; then
+  if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/ZSI ; then
+    echo ZSI is installed
+  else
+    #  need to install ZSI
+    echo Installing ZSI.  This might take a while...
+    cd contrib/ZSI-2.1-a1 
+    if test `whoami` = "root"; then
+      $py_path setup.py install
+    else
+      zsi_pyxml_install="true"
+      mkdir -p ${prefix}lib/python$PY_VERSION/site-packages
+      export PYTHONPATH=${prefix}lib/python$PY_VERSION/site-packages
+      $py_path setup.py install --prefix=${prefix}
+      if test -d ${prefix}ZSI ; then
+        echo ZSI is installed
+      else
+        cp -r ./build/lib/ZSI ${prefix}ZSI
+      fi
+      PYTHONPATH=""
+    fi 
+    cd ../..
   fi
 
   if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/_xmlplus ; then
@@ -493,6 +569,8 @@ AC_CHECK_FILE(tmp/, hastmp="yes", hastmp="no")
 if test "${hastmp}" = "no"; then
   mkdir tmp
 fi
+
+cp .htaccess tmp
 
 chmod 777 tmp
 
@@ -532,11 +610,25 @@ fi
 #  fi
 #fi
 
-# Set the max number of atoms in a protein when not using Opal for job submission
-#  Also move pdb2pqr.py to pdb2pqr.cgi
-sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' -e 's%@PACKAGE_PATH@%'${PACKAGE_PATH}'%' -e 's%@WHICHPYTHON@%'${py_path}'%' pdb2pqr.py.in > pdb2pqr.py
+dnl #####################
+dnl   Added by Yong Huang
+dnl #####################
+
+# Create pdb2pqr.py, main.py and main.cgi; handle the shebangs
+sed -e 's%@WHICHPYTHON@%'${py_path}'%' pdb2pqr.py.in > pdb2pqr.py
 chmod 755 pdb2pqr.py
 cp pdb2pqr.py pdb2pqr.cgi
+chmod -x apbs_cgi.py
+chmod -x apbs_cgi.cgi
+
+sed -e 's%@WHICHPYTHON@%'${py_path}'%' apbs_cgi.py > apbs_cgi.cgi
+chmod 755 apbs_cgi.cgi
+
+sed -e 's%@WHICHPYTHON@%'${py_path}'%' jmol_input.py > jmol_input.cgi
+chmod 755 jmol_input.cgi
+
+sed -e 's%@WHICHPYTHON@%'${py_path}'%' jmol.py > jmol.cgi
+chmod 755 jmol.cgi
 
 #echo ${srcpath} > srcpathtemp1
 #sed 's/\//\\\//g' srcpathtemp1 > srcpathtemp2
@@ -581,16 +673,12 @@ rm -rf src/server.py.in.tmp.*
 
 AC_SUBST(website_install_var)
 
-if test -z "${OPALURL}" ; then
-  pdb2pqr_cgi=${URL}pdb2pqr.cgi
-else
-  pdb2pqr_cgi=${URL}pdb2pqr-opal.cgi
-fi
+pdb2pqr_cgi=${URL}pdb2pqr.cgi
 echo $pdb2pqr_cgi > actiontemp1
 sed 's/\//\\\//g' actiontemp1 > actiontemp2
 actionvar=`cat actiontemp2`
 rm actiontemp1 actiontemp2 
-if test -z "${OPALURL}" ; then
+if test -z "${PDB2PQR_OPAL_URL}" ; then
   sed -e 's/\@action\@/'${actionvar}'/g' \
       -e '/@WITHOPAL@/d' \
       -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' \
@@ -607,11 +695,7 @@ fi
 cp html/server.html index.html
 
 if test "${prefix}" != `pwd` ; then 
-  if test -z "${OPALURL}" ; then
-    pdb2pqr_cgi_install=${URL}pdb2pqr.cgi
-  else
-    pdb2pqr_cgi_install=${URL}pdb2pqr-opal.cgi
-  fi
+  pdb2pqr_cgi_install=${URL}pdb2pqr.cgi
   echo $pdb2pqr_cgi_install > action_install_temp1
   sed 's/\//\\\//g' action_install_temp1 > action_install_temp2
   action_install_var=`cat action_install_temp2`
@@ -624,9 +708,19 @@ fi
 
 AC_SUBST(action_install_var)
 
-sed -e 's%@OPALURL@%'${OPALURL}'%' -e 's%@WHICHPYTHON@%'${py_path}'%' pdb2pqr-opal.py > pdb2pqr-opal.cgi
-sed -e 's%@OPALURL@%'${OPALURL}'%' -e 's%@WHICHPYTHON@%'${py_path}'%' querystatus.py > querystatus.cgi
-chmod 755 pdb2pqr-opal.cgi
+sed -e 's%@PDB2PQR_OPAL_URL@%'${PDB2PQR_OPAL_URL}'%' \
+    -e 's%@WHICHPYTHON@%'${py_path}'%' \
+    -e 's%@HAVE_PDB2PQR_OPAL@%'${HAVE_PDB2PQR_OPAL}'%' querystatus.py > querystatus.cgi
+sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' \
+    -e 's%@PACKAGE_PATH@%'${PACKAGE_PATH}'%' \
+    -e 's%@PDB2PQR_OPAL_URL@%'${PDB2PQR_OPAL_URL}'%' \
+    -e 's%@HAVE_PDB2PQR_OPAL@%'${HAVE_PDB2PQR_OPAL}'%' \
+    -e 's%@HAVE_APBS@%'${HAVE_APBS}'%' \
+    -e 's%@APBS_OPAL_URL@%'${APBS_OPAL_URL}'%' \
+    -e 's%@website@%'${website}'%' \
+    -e 's%@srcpath@%'${srcpath}'%' \
+    -e 's%@INSTALLDIR@%'${prefix}'%' src/aconf.py.in > src/aconf.py
+#chmod 755 pdb2pqr-opal.cgi
 chmod 755 querystatus.cgi
 
 AC_SUBST(with_propka)
@@ -693,16 +787,16 @@ if test $prefix = `pwd` ; then
   echo "WEBSITE (path to the website directory):           ${website}"
   echo "   (WEBSITE can be changed with the --with-url option)"
   echo "PDB2PQR_CGI (path to pdb2pqr.cgi):                 ${pdb2pqr_cgi}"
-  echo "OPALURL (url to the pdb2pqr opal service):         ${OPALURL}"
+  echo "PDB2PQR_OPAL_URL (url to the pdb2pqr opal service):  ${PDB2PQR_OPAL_URL}"
 else
   echo "WEBSITE (path to the website directory):           ${website_install}"
   echo "   (WEBSITE can be changed with the --with-url option)"
   echo "PDB2PQR_CGI (path to pdb2pqr.cgi):                 ${pdb2pqr_cgi_install}"
-  if test "$OPALURL" = ""; then
+  if test "$PDB2PQR_OPAL_URL" = ""; then
     echo "PDB2PQR jobs will be forked on the server"
     echo "MAX_ATOMS (max number of atoms in a protein):     ${MAX_ATOMS}"
   else
-    echo "OPALURL (url to the pdb2pqr opal service):         ${OPALURL}"
+    echo "PDB2PQR_OPAL_URL (url to the pdb2pqr opal service): ${PDB2PQR_OPAL_URL}"
   fi
   echo
 fi
@@ -732,6 +826,5 @@ else
 fi
 
 if test "$zsi_pyxml_install" = "true" ; then
-  echo Since you are not root, PYXML and/or ZSI have been installed in your home directory
-  echo "You will need to do 'echo export PYTHONPATH=\${PYTHONPATH}:${prefix}lib/python$PY_VERSION/site-packages/: >>~/.bashrc'"
+  echo Since you are not root, PYXML and/or ZSI have been installed in your installation directory
 fi

@@ -550,8 +550,7 @@ class MOL2MOLECULE:
         self.parseAtoms(atoms)
         self.parseBonds(bonds)
         self.createlBondedAtoms()
-#        self.createPDBlineFromMOL2(atoms)
-        #
+        #self.createPDBlineFromMOL2(atoms)
 
     def parseAtoms(self,AtomList):
         """

@@ -43,7 +43,7 @@
 """
 
 __date__   = "17 March 2007"
-__author__ = "Todd Dolinsky"
+__author__ = "Todd Dolinsky, Samir Unni"
 
 import string
 import os

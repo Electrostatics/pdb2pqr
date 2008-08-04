@@ -393,10 +393,13 @@ class HETATM:
             self.serial = int(string.strip(line[6:11]))
             self.name = string.strip(line[12:16])
             self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
+            try:
+                self.resName = string.strip(line[17:20])
+                self.chainID = string.strip(line[21])
+                self.resSeq = int(string.strip(line[22:26]))
+                self.iCode = string.strip(line[26])
+            except: 
+                raise ValueError, 'Residue name must be less than 4 characters!'
             self.x = float(string.strip(line[30:38]))
             self.y = float(string.strip(line[38:46]))
             self.z = float(string.strip(line[46:54]))

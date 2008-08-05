@@ -47,6 +47,9 @@
     ----------------------------
 """
 
+__date__ = "4 June 2008"
+__author__ = "Dave Sept, Nathan Baker, Todd Dolinsky, Yong Huang"
+
 import string, sys, getopt
 from sys import stdout, stderr
 from math import log

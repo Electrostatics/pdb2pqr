@@ -7,7 +7,7 @@
 ##          components can be found in the PDB2PQR_SUBDIRS variable.
 ##
 ## Author:  Todd Dolinsky
-## Modified by J. Ren
+## Modified by J. Ren and Yong Huang
 ## ###########################################################################
 
 AUTOMAKE_OPTIONS = no-dependencies

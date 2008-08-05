@@ -43,6 +43,9 @@
     ----------------------------
 """
 
+__date__ = "4 August 2008"
+__author__ = "Todd Dolinsky, Yong Huang"
+
 import string, sys
 import copy  ### PC
 

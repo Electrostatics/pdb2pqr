@@ -437,6 +437,10 @@ dnl ####################
 dnl   Added by W Goodman
 dnl ####################
 
+dnl ########################
+dnl   Modified by Yong Huang
+dnl ########################
+
 AC_ARG_WITH(max-atoms,
   [  --with-max-atoms=MAX_ATOMS    Sets the maximum number of atoms in a protein for non-Opal job submission.  Default is 10000],
   [MAX_ATOMS=$withval],

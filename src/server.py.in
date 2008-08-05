@@ -42,8 +42,8 @@
     ----------------------------
 """
 
-__date__   = "17 March 2007"
-__author__ = "Todd Dolinsky, Samir Unni"
+__date__   = "4 August 2008"
+__author__ = "Todd Dolinsky, Samir Unni, Yong Huang"
 
 import string
 import os

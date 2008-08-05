@@ -58,6 +58,8 @@
 # ofrac = 0.1                  # Overlap factor between mesh partitions
 # redfac = 0.25               # The maximum factor by which a domain
                               # dimension can be reduced during focusing
+__date__ = "21 April 2007"
+__author__ = "Todd Dolinsky, Nathan Baker, Yong Huang"
 
 import string, sys
 import psize

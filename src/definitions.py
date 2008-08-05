@@ -41,8 +41,8 @@
 
 """
     
-__date__ = "28 February 2006"
-__author__ = "Jens Erik Nielsen, Todd Dolinsky"
+__date__ = "15 May 2008"
+__author__ = "Jens Erik Nielsen, Todd Dolinsky, Yong Huang"
 
 AAPATH = "dat/AA.xml"
 NAPATH = "dat/NA.xml"

@@ -43,8 +43,8 @@
 
 """
 
-__date__ = "28 February 2006"
-__author__ = "Todd Dolinsky"
+__date__ = "13 May 2008"
+__author__ = "Todd Dolinsky, Yong Huang"
 
 from pdb import *
 from structures import *

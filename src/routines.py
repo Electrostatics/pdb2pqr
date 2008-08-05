@@ -43,7 +43,7 @@
 
 """
 
-__date__ = "28 February 2006"
+__date__ = "1 August 2008"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky, Yong Huang"
 
 CELL_SIZE = 2

@@ -32,6 +32,7 @@ BETA PUBLIC RELEASE VERSION 1.4.0       8-5-08
   * Merged Samir's branch. Now PDB2PQR Opal and APBS Opal services are 
     available.
   * Added error handling for residue name longer than 4 characters.
+  * Updated hbond.py with Mike Bradley's definitions by default.
 	
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

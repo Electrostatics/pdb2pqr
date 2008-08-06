@@ -301,32 +301,38 @@ def apbsExec(logTime, form, apbsOptions):
         os.chdir(currentdir)
         os.close(1)
         os.close(2)
-        os.chdir('./tmp/%s' % logTime)
+        #os.chdir('./tmp/%s' % logTime)
+        os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, logTime))
         # LAUNCHING APBS HERE
-        status = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
-        status.write("pending\n")
-        status.close()
-        apbs_stdin, apbs_stdout, apbs_stderr = os.popen3('%s apbsinput.in' % HAVE_APBS)
+        statusfile = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
+        statusfile.write("running\n")
+        statusfile.close()
 
+
+        apbs_stdin, apbs_stdout, apbs_stderr = os.popen3('%s apbsinput.in' % HAVE_APBS)
 
         input = open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, logTime, apbsLog), 'w')
         input.write(apbs_stdout.read())
         input.close()
         
+        endtimefile = open('%s%s%s/apbs_end_time' % (INSTALLDIR, TMPDIR, logTime), 'w')
+        endtimefile.write(str(time.time()))
+        endtimefile.close()
+
         input = open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, logTime, apbsErrs), 'w')
         input.write(apbs_stderr.read())
         input.close()
 
-        status = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
-        status.write("complete\n")
-        status.write("%s%s%s/apbs_runtime_output.log\n" % (INSTALLDIR, TMPDIR, logTime))
-        status.write("%s%s%s/apbs_errors.log\n" % (INSTALLDIR, TMPDIR, logTime))
-        status.write("%s%s%s/apbsinput.in\n" % (INSTALLDIR, TMPDIR, logTime))
-        status.write("%s%s%s/io.mc\n" % (INSTALLDIR, TMPDIR, logTime))
-        status.write("%s%s%s/%s.pqr\n" % (INSTALLDIR, TMPDIR, logTime, logTime))
+        statusfile = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
+        statusfile.write("complete\n")
+        statusfile.write("%s%s%s/apbs_runtime_output.log\n" % (INSTALLDIR, TMPDIR, logTime))
+        statusfile.write("%s%s%s/apbs_errors.log\n" % (INSTALLDIR, TMPDIR, logTime))
+        statusfile.write("%s%s%s/apbsinput.in\n" % (INSTALLDIR, TMPDIR, logTime))
+        statusfile.write("%s%s%s/io.mc\n" % (INSTALLDIR, TMPDIR, logTime))
+        statusfile.write("%s%s%s/%s.pqr\n" % (INSTALLDIR, TMPDIR, logTime, logTime))
         for filename in glob.glob("%s%s%s/%s-*.dx" % (INSTALLDIR, TMPDIR, logTime, logTime)):
-            status.write(filename+"\n")
-        status.close()
+            statusfile.write(filename+"\n")
+        statusfile.close()
         sys.exit()
 
 def generateForm(file, initVars, pdb2pqrID, type):
@@ -430,7 +436,7 @@ def generateForm(file, initVars, pdb2pqrID, type):
             </head>
     <body>
         <!-- ... body of document ... -->
-        <h2>APBS web solver (EXPERIMENTAL)</h2>
+        <h2>APBS web solver <span style="color:red">(EXPERIMENTAL)</span></h2>
     """ % (cginame, cginame, cginame, initVars['calculationType'])) # hardcoded css link
     #file.write("<h3>Calculation for PQR file <a href=\"../tmp/%s/%s.pqr\" target=\"_blank\">%s</a></h3>\n" % ( initVars['pqrname'], initVars['pqrname'])) # HARDCODED - needs to be changed
     file.write("<h3>Calculation for PQR file <a href=\"tmp/%s/%s\" target=\"_blank\">%s</a></h3>\n" % (pdb2pqrID, initVars['pqrname'],initVars['pqrname']))
@@ -1711,11 +1717,16 @@ def convertOpalToLocal(jobid,pdb2pqrOpalJobID):
             fileName = jobid+fileName[4:]
             urllib.urlretrieve(file._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobid, fileName)) # HARDCODED
 
-def redirector(jobID):
-    str = ""
-    str+='<html> <head>'
-    str+='<meta http-equiv=\"refresh\" content=\"0;url=querystatus.cgi?jobid=%s&calctype=apbs\"/></head></html>' % jobID
-    return str
+def redirector(logTime):
+
+    starttimefile = open('%s%s%s/apbs_start_time' % (INSTALLDIR, TMPDIR, logTime), 'w')
+    starttimefile.write(str(time.time()))
+    starttimefile.close()
+
+    string = ""
+    string+='<html> <head>'
+    string+='<meta http-equiv=\"refresh\" content=\"0;url=querystatus.cgi?jobid=%s&calctype=apbs\"/></head></html>' % logTime
+    return string
 
 def mainInput() :
     """
@@ -1807,6 +1818,7 @@ def mainInput() :
             print redirector(logTime)
         else:
             apbsExec(logTime, form, apbsOptions)
+
 
 if __name__ == "__main__" and os.environ.has_key("REQUEST_METHOD"):
     """ Determine if called from command line or CGI """

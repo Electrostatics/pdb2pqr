@@ -95,16 +95,20 @@ def printHeader(pagetitle,have_opal=None,jobid=None):
 
 def redirector(name):
     """
-        Prints a page which redirects the user to querystatus.cgi
+        Prints a page which redirects the user to querystatus.cgi and writes starting time to file
     """
-    str = ""
-    #str+= "Content-type: text/html\n\n"
-    str+= "<html>\n"
-    str+= "\t<head>\n"
-    str+= "\t\t<meta http-equiv=\"Refresh\" content=\"0; url=%squerystatus.cgi?jobid=%s&calctype=pdb2pqr\">\n" % (WEBSITE, name)
-    str+= "\t</head>\n"
-    str+= "</html>\n"
-    return str
+
+    starttimefile = open('%s%s%s/pdb2pqr_start_time' % (INSTALLDIR, TMPDIR, name), 'w')
+    starttimefile.write(str(time.time()))
+    starttimefile.close()
+
+    string = ""
+    string+= "<html>\n"
+    string+= "\t<head>\n"
+    string+= "\t\t<meta http-equiv=\"Refresh\" content=\"0; url=%squerystatus.cgi?jobid=%s&calctype=pdb2pqr\">\n" % (WEBSITE, name)
+    string+= "\t</head>\n"
+    string+= "</html>\n"
+    return string
 
 def mainCGI():
     """
@@ -242,6 +246,7 @@ def mainCGI():
         apbsInputFile.write(str(apbs_input))
         apbsInputFile.close()
 
+
         if have_opal:
             myopts=""
             for key in options:
@@ -322,8 +327,10 @@ def mainCGI():
         else:
             #pqrpath = startServer(name)
             statusfile = open('%s%s%s/%s.sts' % (INSTALLDIR, TMPDIR, name, name), 'w')
-            statusfile.write('pending')
+            statusfile.write('running')
             statusfile.close()
+
+
             pid = os.fork()
             if pid:
                 print redirector(name)
@@ -339,6 +346,11 @@ def mainCGI():
                 pqrpath = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, name, name)
                 options["outname"] = pqrpath
                 header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
+
+                endtimefile = open('%s%s%s/pdb2pqr_end_time' % (INSTALLDIR, TMPDIR, name), 'w')
+                endtimefile.write(str(time.time()))
+                endtimefile.close()
+
                 pqrfile = open(pqrpath, "w")
                 pqrfile.write(header)
                 for line in lines:
@@ -376,6 +388,7 @@ def mainCGI():
                     if filename[-4:]!=".sts":
                         statusfile.write(filename+'\n')
                 statusfile.close()
+
 
     except StandardError, details:
         print details

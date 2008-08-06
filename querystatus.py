@@ -9,7 +9,7 @@ __author__ = "Wes Goodman, Samir Unni"
 import sys
 import cgi
 import cgitb
-import os,shutil,glob, string
+import os,shutil,glob,string,time
 from src.server import STYLESHEET
 from src.aconf import *
 
@@ -227,7 +227,7 @@ def checkprogress(jobid=None,appServicePort=None,calctype=None):
         if status._code == 8:
             return ["complete",status]
         else:
-            return ["pending",status]
+            return ["running",status]
 
     else:
         progress = []
@@ -288,8 +288,17 @@ def mainCGI():
     cp = checkprogress(jobid,appServicePort,calctype) # finds out status of job
     progress = cp[0]
     
+    if progress == "running" or progress == "complete":
+        timefile = open('%s%s%s/%s_start_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
+        starttime = float(timefile.read())
+        timefile.close()
+    if progress == "running" or have_opal:
+        runtime = time.time()-starttime
+    elif progress == "complete":
+        endtimefile = open('%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
+        runtime = float(endtimefile.read())-starttime
         
-    if progress == "pending":
+    if progress == "running":
         #if have_opal:
         #    resultsurl = cp[1]._baseURL
         #else:
@@ -304,15 +313,17 @@ def mainCGI():
     elif progress == "error":
         print printheader("%s Job Status Page - Error" % calctype.upper(),0)
 
-    elif progress == "pending": # job is not complete, refresh in 30 seconds
+    elif progress == "running": # job is not complete, refresh in 30 seconds
         print printheader("%s Job Status Page" % calctype.upper(), refresh)
 
     print "<BODY>\n<P>"
     print "<h3>Status"
     if calctype=="apbs":
-        print "(EXPERIMENTAL)"
+        print "<span style=\"color:red\">(EXPERIMENTAL)</span>"
     print "</h3>"
     print "Message: %s<br />" % progress
+    print "Run time: %s seconds<br />" % int(runtime)
+    print "Current time: %s<br />" % time.asctime()
     print "</P>\n<HR>\n<P>"
 
     if progress == "complete":
@@ -335,13 +346,13 @@ def mainCGI():
                     print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,line)
 
         if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
-            print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results (EXPERIMENTAL).</p>" % nexturl
+            print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
         elif calctype=="apbs":
-            print "</ul></p><hr><p><a href=%s>Click here</a> to run Jmol with your results (EXPERIMENTAL).</p>" % nexturl
+            print "</ul></p><hr><p><a href=%s>Click here</a> to run Jmol with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."
-    elif progress == "pending":
+    elif progress == "running":
         print "Page will refresh in %d seconds<br />" % refresh
         print "<HR>"
         print "<small>Your results will appear at <a href=%s>this page</a> (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl

@@ -69,7 +69,7 @@ def main(apbsOptions):
     print '\t<body>'
     print '\t\t<h3>Jmol Applet Configuration</h3>'
     print '\t\t<form action=\"%s\" method=\"post\" enctype=\"multipart/form-data\" name=\"%s\" id=\"%s\">\n' % (cgiFile, cgiName, cgiName)
-    print '\t\tSelect the type of visual representation you would like to see:'
+    print '\t\tSelect the type of visual representation:'
     print '\t\t<ul>'
     print '\t\t\t<input type=\"radio\" name=\"vistype\" value=\"jmol\"',
 
@@ -78,7 +78,7 @@ def main(apbsOptions):
     print '/> Jmol'
     print '\t\t<br />'
     print '\t\t<ul>'
-    print '\t\t\t<li>Please select the type of display'
+    print '\t\t\t<li>Select the type of display:'
     print '\t\t\t\t<ul>'
     if apbsOptions['writePot']:
         print '\t\t\t\t\t<input type=\"radio\" name=\"jmoltype\" value=\"pot\"',
@@ -124,7 +124,7 @@ def main(apbsOptions):
     print '\t\t\t\tMaximum color range:<input type=\"text\" name=\"jmolcolormax\" value="5.0"/>'
     print '\t\t\t</li>'
     print '\t\t</ul>'
-    print '\t\t<input type=\"radio\" name=\"vistype\" value=\"vmd\" disabled/> VMD (currently unavailable)'
+    #print '\t\t<input type=\"radio\" name=\"vistype\" value=\"vmd\" disabled/> VMD (currently unavailable)'
     print '\t\t<input type=\"hidden\" name=\"jobid\" value=\"%s\"/>' % jobid
     print '\t\t<input type=\"hidden\" name=\"pqrfilename\" value=\"%s\"/>\n' % apbsOptions['pqrFileName']
     print '\t\t\t\t</ul>'

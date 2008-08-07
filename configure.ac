@@ -628,8 +628,8 @@ chmod -x apbs_cgi.cgi
 sed -e 's%@WHICHPYTHON@%'${py_path}'%' apbs_cgi.py > apbs_cgi.cgi
 chmod 755 apbs_cgi.cgi
 
-sed -e 's%@WHICHPYTHON@%'${py_path}'%' jmol_input.py > jmol_input.cgi
-chmod 755 jmol_input.cgi
+sed -e 's%@WHICHPYTHON@%'${py_path}'%' visualize.py > visualize.cgi
+chmod 755 visualize.cgi
 
 sed -e 's%@WHICHPYTHON@%'${py_path}'%' jmol.py > jmol.cgi
 chmod 755 jmol.cgi

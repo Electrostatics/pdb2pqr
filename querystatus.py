@@ -330,7 +330,7 @@ def mainCGI():
         if calctype=="pdb2pqr":
             nexturl = 'apbs_cgi.cgi?jobid=%s' % form["jobid"].value
         else:
-            nexturl = 'jmol_input.cgi?jobid=%s' % form["jobid"].value
+            nexturl = 'visualize.cgi?jobid=%s' % form["jobid"].value
             
         print "Here are the results:<ul>"
 

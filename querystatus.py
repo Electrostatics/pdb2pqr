@@ -339,11 +339,19 @@ def mainCGI():
             for opalfile in resp._outputFile:
                 if opalfile._name[-8:]!="-input.p":
                     print "<li><a href=%s>%s</a></li>" % (opalfile._url, opalfile._name)
+            print "<li><a href=%s>Standard output</a></li>" % (resp._stdOut)
+            print "<li><a href=%s>Standard error</a></li>" % (resp._stdErr)
         else:
             for line in cp[1:]:
                 line = os.path.basename(line)
                 if line[-8:]!="-input.p":
-                    print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,line)
+                    if line[-11:]=="_stdout.txt":
+                        printname = "Standard output"
+                    elif line[-11:]=="_stderr.txt":
+                        printname = "Standard error"
+                    else:
+                        printname = line
+                    print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,printname)
 
         if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
             print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl

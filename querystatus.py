@@ -356,7 +356,7 @@ def mainCGI():
         if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
             print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
         elif calctype=="apbs":
-            print "</ul></p><hr><p><a href=%s>Click here</a> to run Jmol with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
+            print "</ul></p><hr><p><a href=%s>Click here</a> to visualize your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."

@@ -18,7 +18,6 @@ from src.server import setID
 #from initVars import *
 #from generateForm import generateForm
 #from apbsInputMake import *
-#from resultsPageGen import resultsPageGen
 #from apbsExec import apbsExec
 #from apbsExec import apbsOpalExec
 from sgmllib import SGMLParser
@@ -30,9 +29,9 @@ def apbsOpalExec(logTime, form, apbsOptions):
 
     #style = "%spdb2pqr.css" # HARDCODED
 
-    apbsLog = "apbs_runtime_output.log" 
+    #apbsLog = "apbs_runtime_output.log" 
 
-    apbsErrs = "apbs_errors.log" 
+    #apbsErrs = "apbs_errors.log" 
     
     # Copies PQR file to temporary directory
     pqrFileName = form["pdb2pqrid"].value + '.pqr'
@@ -68,7 +67,7 @@ def apbsOpalExec(logTime, form, apbsOptions):
             os.chdir('../../')
 
     #argv=[os.path.abspath("tmp/%s/%s.in") % (logTime, "apbsinput")] # HARDCODED??  
-    argv=[os.path.abspath("%s%s%s/apbsinput.in" % (INSTALLDIR, TMPDIR, logTime))] # HARDCODED??  
+    argv=[os.path.abspath("%s%s%s/apbsinput.in" % (INSTALLDIR, TMPDIR, logTime))]  
     appServicePortArray = execApbs(argv=argv)
     appServicePort = appServicePortArray[0]
 
@@ -80,178 +79,15 @@ def apbsOpalExec(logTime, form, apbsOptions):
 
     return resp._jobID
 
-def resultsPageGen(logTime, apbsInputMake, pqrFileName, status, apbsLog, apbsErrs):
-
-    tempPage = "results.html"
-    os.remove('%s/tmp/%s/%s' % (apbsInputMake.htmlDir, logTime, tempPage))
-
-    results = open('%s/tmp/%s/%s' % ( apbsInputMake.htmlDir, logTime, tempPage), 'w')
-
-    results.write('<html>')
-    results.write('<head>')
-    results.write('     <title>APBS - results</title>')
-    results.write('<link href=\"../../baker.css\" type=\"text/css\" rel=\"stylesheet\" />')
-    results.write('</head>')
-    results.write(' <body>')
-    results.write('Calculations complete (%s) with status %s' % (time.asctime(), status))
-    results.write('<p>')
-
-    results.write('<a href=\"%s\" >%s</a>\n' % ('apbsinput.in', 'APBS input file'))
-    results.write('<br />')
-    results.write('<a href=\"%s\" >%s</a>\n' % (pqrFileName, 'PQR input file'))
-    results.write('<br />')
-    results.write('DX files:')
-    results.write('<br />')
-    
-    dxFileLocation = pqrFileName[:-4]
-
-    if apbsInputMake.writeCharge == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-charge.dx', 'Biomolecular charge distribution'))
-        results.write('<br />')
-
-    if apbsInputMake.writePot == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-pot.dx', 'Electrostatic potential'))
-        results.write('<br />')
-
-    if apbsInputMake.writeSmol == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-smol.dx', 'Molecular surface defined solvent accessibility'))
-        results.write('<br />')
-
-    if apbsInputMake.writeSspl == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-sspl.dx', 'Spline-based solvent accessibility'))
-        results.write('<br />')
-
-    if apbsInputMake.writeVdw == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-vdw.dx', 'Van der Waals-based solvent accessibility'))
-        results.write('<br />')
-
-    if apbsInputMake.writeIvdw == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-ivdw.dx', 'Inflated van der Waals-based ion accessibility'))
-        results.write('<br />')
-
-    if apbsInputMake.writeLap == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-lap.dx', 'Laplacian of the potential'))
-        results.write('<br />')
-
-    if apbsInputMake.writeEdens == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-edens.dx', 'Energy density'))
-        results.write('<br />')
-
-    if apbsInputMake.writeNdens == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-ndens.dx', 'Mobile ion number density'))
-        results.write('<br />')
-
-    if apbsInputMake.writeQdens == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-qdens.dx', 'Mobile charge density'))
-        results.write('<br />')
-
-    if apbsInputMake.writeDielx == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-dielx.dx', 'Dielectric map shifted in x-direction'))
-        results.write('<br />')
-
-    if apbsInputMake.writeDiely == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-diely.dx', 'Dielectric map shifted in y-direction'))
-        results.write('<br />')
-        
-    if apbsInputMake.writeDielz == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-dielz.dx', 'Dielectric map shifted in z-direction'))
-        results.write('<br />')
-
-    if apbsInputMake.writeKappa == True:
-        results.write('<a href=\"%s\" >%s</a>\n' % (dxFileLocation + '-kappa.dx', 'Ion accessibility kappa map'))
-                
-    results.write('Logs:')
-    results.write('<br />')
-    results.write('<a href=\"%s\" >Runtime Log</a>\n' % ('../%s/%s' % (logTime,  apbsLog)))
-    results.write('<br />')
-    results.write('<a href=\"%s\" >Error Log</a>\n' % ('../%s/%s' % (logTime, apbsErrs)))
-    results.write('<br /> <br />')
-
-
-    cgifile = "%sjmol.py" % INSTALLDIR
-    cginame = "thisform"
-    defaultVisType = "jmol"
-
-    results.write('<form action=\"%s\" method=\"post\" enctype=\"multipart/form-data\" name=\"%s\" id=\"%s\">\n' % (cgifile, cginame, cginame))
-    results.write('<h3>Optional:</h3>\n')
-    results.write('Select the type of visual representation you would like to see:\n')
-    results.write('<ul>\n')
-    results.write('<input type=\"radio\" name=\"vistype\" value=\"jmol\"')
-    if defaultVisType == "jmol":
-        results.write('checked=\"checked\"')
-    results.write('/> Jmol\n')
-    results.write('<br />\n')
-    results.write('<ul>\n')
-    results.write('<li>\n')
-    results.write('Please select the type of display:\n')
-    results.write('<ul>\n')
-    checkJmolType = 0
-    if apbsInputMake.writePot == True:
-        results.write('<input type=\"radio\" name=\"jmoltype\" value=\"pot\"')
-        if checkJmolType == 0:
-            results.write('checked=\"checked\"')
-            checkJmolType = 1
-        results.write('/>Electrostatic potential\n')
-        results.write('<br />\n')
-    if apbsInputMake.writeLap == True:
-        results.write('<input type=\"radio\" name=\"jmoltype\" value=\"lap\"')
-        if checkJmolType == 0:
-            results.write('checked')
-            checkJmolType = 1
-        results.write('/>Laplacian of the potential\n')
-        results.write('<br />\n')
-    if apbsInputMake.writeEdens == True:
-        results.write('<input type=\"radio\" name=\"jmoltype\" value=\"edens\"')
-        if checkJmolType == 0:
-            results.write('checked')
-            checkJmolType = 1
-        results.write('/>Energy density\n')
-        results.write('<br />\n')
-    if apbsInputMake.writeNdens == True:
-        results.write('<input type=\"radio\" name=\"jmoltype\" value=\"ndens\"')        
-        if checkJmolType == 0:
-            results.write('checked')
-            checkJmolType = 1
-        results.write('/>Mobile ion number density\n')
-        results.write('<br />\n')
-    if apbsInputMake.writeQdens == True:
-        results.write('<input type=\"radio\" name=\"jmoltype\" value=\"qdens\"')
-        if checkJmolType == 0:
-            results.write('checked')
-            checkJmolType = 1
-        results.write('/>Mobile charge density\n')
-    results.write('</ul>\n')
-    results.write('</li>\n')
-    results.write('<li>\n')
-    results.write('Minimum color range:<input type=\"text\" name=\"jmolcolormin\" maxlength=\"10\" value="-5.0"/>\n')
-    results.write('</li>\n')
-    results.write('<li>\n')
-    results.write('Maximum color range:<input type=\"text\" name=\"jmolcolormax\" value="5.0"/>\n')
-    results.write('</li>\n')
-    results.write('</ul>\n')
-    results.write('<input type=\"radio\" name=\"vistype\" value=\"vmd\"')
-    results.write('disabled')
-    results.write('/> VMD (currently unavailable)\n')
-    results.write('<input type=\"hidden\" name=\"logtime\" value=\"%s\"/>\n' % logTime )
-    results.write('<input type=\"hidden\" name=\"pqrfilename\" value=\"%s\"/>\n' % apbsInputMake.pqrFileName )
-    results.write('<input type=\"hidden\" name=\"htmldir\" value=\"%s\"/>\n' % apbsInputMake.htmlDir )
-    results.write('</ul>\n')
-    results.write('<input type=\"submit\" value=\"Submit\"/>\n')
-    results.write('</form>\n')
-
-    results.write('</body> </html>')
-
-    results.close()
-
 def apbsExec(logTime, form, apbsOptions):
     
     tempPage = "results.html"
 
     # Temporary index.py html page - refreshes in 30 seconds
     
-    apbsLog = "apbs_runtime_output.log" 
+    #apbsLog = "apbs_runtime_output.log" 
 
-    apbsErrs = "apbs_errors.log" 
+    #apbsErrs = "apbs_errors.log" 
     
     # Copies PQR file to temporary directory
     pqrFileName = form["pdb2pqrid"].value + '.pqr'
@@ -311,7 +147,7 @@ def apbsExec(logTime, form, apbsOptions):
 
         apbs_stdin, apbs_stdout, apbs_stderr = os.popen3('%s apbsinput.in' % HAVE_APBS)
 
-        input = open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, logTime, apbsLog), 'w')
+        input = open('%s%s%s/apbs_stdout.txt' % (INSTALLDIR, TMPDIR, logTime), 'w')
         input.write(apbs_stdout.read())
         input.close()
         
@@ -319,14 +155,14 @@ def apbsExec(logTime, form, apbsOptions):
         endtimefile.write(str(time.time()))
         endtimefile.close()
 
-        input = open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, logTime, apbsErrs), 'w')
+        input = open('%s%s%s/apbs_stderr.txt' % (INSTALLDIR, TMPDIR, logTime), 'w')
         input.write(apbs_stderr.read())
         input.close()
 
         statusfile = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
         statusfile.write("complete\n")
-        statusfile.write("%s%s%s/apbs_runtime_output.log\n" % (INSTALLDIR, TMPDIR, logTime))
-        statusfile.write("%s%s%s/apbs_errors.log\n" % (INSTALLDIR, TMPDIR, logTime))
+        statusfile.write("%s%s%s/apbs_stdout.txt\n" % (INSTALLDIR, TMPDIR, logTime))
+        statusfile.write("%s%s%s/apbs_stderr.txt\n" % (INSTALLDIR, TMPDIR, logTime))
         statusfile.write("%s%s%s/apbsinput.in\n" % (INSTALLDIR, TMPDIR, logTime))
         statusfile.write("%s%s%s/io.mc\n" % (INSTALLDIR, TMPDIR, logTime))
         statusfile.write("%s%s%s/%s.pqr\n" % (INSTALLDIR, TMPDIR, logTime, logTime))

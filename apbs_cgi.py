@@ -162,8 +162,8 @@ def apbsExec(logTime, form, apbsOptions):
         statusfile = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
         statusfile.write("complete\n")
         statusfile.write("%s%s%s/apbsinput.in\n" % (INSTALLDIR, TMPDIR, logTime))
-        statusfile.write("%s%s%s/io.mc\n" % (INSTALLDIR, TMPDIR, logTime))
         statusfile.write("%s%s%s/%s.pqr\n" % (INSTALLDIR, TMPDIR, logTime, logTime))
+        statusfile.write("%s%s%s/io.mc\n" % (INSTALLDIR, TMPDIR, logTime))
         for filename in glob.glob("%s%s%s/%s-*.dx" % (INSTALLDIR, TMPDIR, logTime, logTime)):
             statusfile.write(filename+"\n")
         statusfile.write("%s%s%s/apbs_stdout.txt\n" % (INSTALLDIR, TMPDIR, logTime))

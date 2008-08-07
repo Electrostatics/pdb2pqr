@@ -75,7 +75,7 @@ def main(apbsOptions):
 
     if defaultVisType == "jmol":
         print ' checked=\"checked\"',
-    print '/> Jmol'
+    print '/> <a href=\"http://jmol.sourceforge.net/\" target=\"_blank\">Jmol</a> <a href=\"http://jmol.sourceforge.net/docs/\" target=\"_blank\"><font title=\"Jmol documentation\">(<span class=\"tooltip\">?</span>)</font></a>'
     print '\t\t<br />'
     print '\t\t<ul>'
     print '\t\t\t<li>Select the type of display:'

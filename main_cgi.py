@@ -326,7 +326,7 @@ def mainCGI():
 
         else:
             #pqrpath = startServer(name)
-            statusfile = open('%s%s%s/%s.sts' % (INSTALLDIR, TMPDIR, name, name), 'w')
+            statusfile = open('%s%s%s/pdb2pqr_status' % (INSTALLDIR, TMPDIR, name), 'w')
             statusfile.write('running')
             statusfile.close()
 
@@ -381,12 +381,11 @@ def mainCGI():
                 outputpdbfile.write(pdbfilestring)
                 outputpdbfile.close()
 
-                statusfile = open('%s%s%s/%s.sts' % (INSTALLDIR, TMPDIR, name, name), 'w')
+                statusfile = open('%s%s%s/pdb2pqr_status' % (INSTALLDIR, TMPDIR, name), 'w')
                 statusfile.write('complete\n')
                 filelist = glob.glob('%s%s%s/%s*' % (INSTALLDIR, TMPDIR, name, name))
                 for filename in filelist:
-                    if filename[-4:]!=".sts":
-                        statusfile.write(filename+'\n')
+                    statusfile.write(filename+'\n')
                 statusfile.close()
 
 

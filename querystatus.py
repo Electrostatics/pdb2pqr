@@ -231,10 +231,7 @@ def checkprogress(jobid=None,appServicePort=None,calctype=None):
 
     else:
         progress = []
-        if form["calctype"].value=="pdb2pqr":
-            file = open('%s%s%s/%s.sts' % (INSTALLDIR,TMPDIR,jobid,jobid))
-        else:
-            file = open('%s%s%s/status' % (INSTALLDIR,TMPDIR,jobid))
+        file = open('%s%s%s/%s_status' % (INSTALLDIR,TMPDIR,jobid, form["calctype"].value))
 
         for line in file.readlines():
             progress.append(string.strip(line))

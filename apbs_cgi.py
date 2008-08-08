@@ -140,7 +140,7 @@ def apbsExec(logTime, form, apbsOptions):
         #os.chdir('./tmp/%s' % logTime)
         os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, logTime))
         # LAUNCHING APBS HERE
-        statusfile = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
+        statusfile = open('%s%s%s/apbs_status' % (INSTALLDIR, TMPDIR, logTime),'w')
         statusfile.write("running\n")
         statusfile.close()
 
@@ -159,7 +159,7 @@ def apbsExec(logTime, form, apbsOptions):
         input.write(apbs_stderr.read())
         input.close()
 
-        statusfile = open('%s%s%s/status' % (INSTALLDIR, TMPDIR, logTime),'w')
+        statusfile = open('%s%s%s/apbs_status' % (INSTALLDIR, TMPDIR, logTime),'w')
         statusfile.write("complete\n")
         statusfile.write("%s%s%s/apbsinput.in\n" % (INSTALLDIR, TMPDIR, logTime))
         statusfile.write("%s%s%s/%s.pqr\n" % (INSTALLDIR, TMPDIR, logTime, logTime))

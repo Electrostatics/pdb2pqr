@@ -57,7 +57,7 @@ def main(apbsOptions):
     cgiName = "thisform"
     defaultVisType = "jmol"
     checkJmolType = True
-    cssFile = '../pdb2pqr/pdb2pqr.css'
+    cssFile = 'pdb2pqr.css'
     jobid = form['jobid'].value
 
     print '<html>'

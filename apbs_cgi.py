@@ -334,6 +334,7 @@ def generateForm(file, initVars, pdb2pqrID, type):
 
     print """/> Surface and charge distribution property calculations (does not require solution of the PBE) <a href=\"http://apbs.sourceforge.net/doc/user-guide/index.html#mg-dummy\" target=\"_blank\"><font title=\"mg-dummy\">(<span class=\"tooltip\">?</span>)</font></a>"""
 
+    print "<ul><li><input type=\"checkbox\" name=\"removewater\" value=\"on\" checked=\"checked\"/> Remove water from calculations and visualizations</li></ul>"
 
     print """
                 <div class=\"mg-auto mg-para mg-manual mg-dummy\">
@@ -1117,12 +1118,6 @@ def generateForm(file, initVars, pdb2pqrID, type):
                 #</blockquote>
                 
                 #""" #ADD PYTHON CODE ABOVE WHEN OPTIONS ARE AVAILABLE
-
-    print """
-                <ul><li><input type=\"checkbox\" name=\"removewater\" value=\"on\" checked=\"checked\"/> Remove water from calculations and visualizations</li></ul>
-
-                """
-
 
     print "<br />"
     if type=="local":

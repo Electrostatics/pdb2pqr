@@ -360,7 +360,7 @@ def mainCGI():
     elif progress == "running":
         print "Page will refresh in %d seconds<br />" % refresh
         print "<HR>"
-        print "<small>Your results will appear at <a href=%s>this page</a> (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
+        print "<small>Your results will appear at <a href=%s>this page</a>. If you want, you can bookmark it and come back later (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
         
     print "</P>"
     print "</BODY>"

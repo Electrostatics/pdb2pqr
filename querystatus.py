@@ -328,27 +328,95 @@ def mainCGI():
             nexturl = 'apbs_cgi.cgi?jobid=%s' % form["jobid"].value
         else:
             nexturl = 'visualize.cgi?jobid=%s' % form["jobid"].value
-            
+
+        if have_opal:    
+            resp = appServicePort.getOutputs(getOutputsRequest(jobid))
+            filelist = resp._outputFile
+
         print "Here are the results:<ul>"
+        print "<li>Input files<ul>"
+
+        if calctype=="pdb2pqr":
+            # this code should be cleaned up once local PDB2PQR runs output the PDB file with the .pdb extension
+            if have_opal:
+                for i in range(0,len(filelist)):
+                    if len(filelist[i]._name) == 4:
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+            else:
+                print "<li><a href=%s%s%s/%s.pdb>%s.pdb</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, jobid)
+
+        elif calctype=="apbs":
+            if have_opal:
+                for i in range(0,len(filelist)):
+                    if filelist[i]._name == "apbsinput.in" or filelist[i]._name[-4:] == ".pqr":
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+            else:
+                print "<li><a href=%s%s%s/apbsinput.in>apbsinput.in</a></li>" % (WEBSITE, TMPDIR, jobid)
+                print "<li><a href=%s%s%s/%s.pqr>%s.pqr</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, jobid)
+
+        print "</ul></li>"
+        print "<li>Output files<ul>"
+        
+        if calctype=="pdb2pqr":
+            if have_opal:
+                for i in range(0,len(filelist)):
+                    if filelist[i]._name[-7:]==".propka" or filelist[i]._name[-13:]=="-typemap.html" or filelist[i]._name[-4:]==".pqr" or filelist[i]._name[-3:]==".in":
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+            else:
+                outputfilelist = glob.glob('%s%s%s/*.propka' % (INSTALLDIR, TMPDIR, jobid))
+                for i in range(0,len(outputfilelist)):
+                    outputfilelist[i] = os.path.basename(outputfilelist[i])
+                for extension in ["-typemap.html", ".pqr", ".in"]:
+                    outputfilelist.append('%s%s' % (jobid, extension))
+                for outputfile in outputfilelist:
+                    print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
+
+                #for extension in ["-typemap.html", ".pqr", ".in"]:
+                #    print "<li><a href=%s%s%s/%s%s>%s%s</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, extension, jobid, extension)
+        elif calctype=="apbs":
+            if have_opal:
+                for i in range(0,len(filelist)):
+                    if filelist[i]._name[-3:]==".dx":
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+            else:
+                outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))
+                for outputfile in outputfilelist:
+                    print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfile), os.path.basename(outputfile))
+
+        print "</ul></li>"
+        print "<li>Runtime and debugging information<ul>"
 
         if have_opal:
-            resp = appServicePort.getOutputs(getOutputsRequest(jobid))
-            for opalfile in resp._outputFile:
-                if opalfile._name[-8:]!="-input.p":
-                    print "<li><a href=%s>%s</a></li>" % (opalfile._url, opalfile._name)
-            print "<li><a href=%s>Standard output</a></li>" % (resp._stdOut)
-            print "<li><a href=%s>Standard error</a></li>" % (resp._stdErr)
+            stdouturl = resp._stdOut
+            stderrurl = resp._stdErr
         else:
-            for line in cp[1:]:
-                line = os.path.basename(line)
-                if line[-8:]!="-input.p":
-                    if line[-11:]=="_stdout.txt":
-                        printname = "Standard output"
-                    elif line[-11:]=="_stderr.txt":
-                        printname = "Standard error"
-                    else:
-                        printname = line
-                    print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,printname)
+            stdouturl = "%s%s%s/%s_stdout.txt" % (WEBSITE, TMPDIR, jobid, calctype)
+            stderrurl = "%s%s%s/%s_stderr.txt" % (WEBSITE, TMPDIR, jobid, calctype)
+
+        print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
+        print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
+
+        print "</ul></li></ul>"
+
+
+        #if have_opal:
+        #    resp = appServicePort.getOutputs(getOutputsRequest(jobid))
+        #    for opalfile in resp._outputFile:
+        #        if opalfile._name[-8:]!="-input.p":
+        #            print "<li><a href=%s>%s</a></li>" % (opalfile._url, opalfile._name)
+        #    print "<li><a href=%s>Standard output</a></li>" % (resp._stdOut)
+        #    print "<li><a href=%s>Standard error</a></li>" % (resp._stdErr)
+        #else:
+        #    for line in cp[1:]:
+        #        line = os.path.basename(line)
+        #        if line[-8:]!="-input.p":
+        #            if line[-11:]=="_stdout.txt":
+        #                printname = "Standard output"
+        #            elif line[-11:]=="_stderr.txt":
+        #                printname = "Standard error"
+        #            else:
+        #                printname = line
+        #            print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,printname)
 
         if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
             print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl

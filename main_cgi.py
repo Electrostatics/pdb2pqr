@@ -345,7 +345,16 @@ def mainCGI():
                 os.close(2) # two lines are necessary
                 pqrpath = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, name, name)
                 options["outname"] = pqrpath
+                options["verbose"] = ""
+                orig_stdout = sys.stdout
+                orig_stderr = sys.stderr
+                sys.stdout = open('%s%s%s/pdb2pqr_stdout.txt' % (INSTALLDIR, TMPDIR, name), 'w')
+                sys.stderr = open('%s%s%s/pdb2pqr_stderr.txt' % (INSTALLDIR, TMPDIR, name), 'w')
                 header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
+                sys.stdout.close()
+                sys.stderr.close()
+                sys.stdout = orig_stdout
+                sys.stderr = orig_stderr
 
                 endtimefile = open('%s%s%s/pdb2pqr_end_time' % (INSTALLDIR, TMPDIR, name), 'w')
                 endtimefile.write(str(time.time()))

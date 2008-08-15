@@ -377,6 +377,9 @@ class HIS(Amino):
             elif self.getAtom("NE2").hdonor and not \
                      self.getAtom("NE2").hacceptor:
                 if self.hasAtom("HD1"): self.removeAtom("HD1")
+            elif self.getAtom("ND1").hacceptor and not \
+                     self.getAtom("ND1").hdonor:
+                if self.hasAtom("HD1"): self.removeAtom("HD1")
             else: # Default to HID
                 if self.hasAtom("HE2"): self.removeAtom("HE2")    
 

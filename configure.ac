@@ -469,7 +469,7 @@ if test "$PDB2PQR_OPAL_URL" != ""; then
     if test `whoami` = "root"; then
       $py_path setup.py install
     else
-      zsi_pyxml_install="true"
+      zsi_install="true"
       mkdir -p ${prefix}lib/python$PY_VERSION/site-packages
       export PYTHONPATH=${prefix}lib/python$PY_VERSION/site-packages
       $py_path setup.py install --prefix=${prefix}
@@ -481,24 +481,6 @@ if test "$PDB2PQR_OPAL_URL" != ""; then
       PYTHONPATH=""
     fi 
     cd ../..
-  fi
-
-  if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/_xmlplus ; then
-    echo PyXML is installed
-  else
-    #  need to install ZSI
-    echo Installing PyXML.  This might take a while...
-    tar zxvf PyXML-0.8.4.tar.gz
-    cd PyXML-0.8.4
-    if test `whoami` = "root"; then
-      $py_path setup.py build
-      $py_path setup.py install
-    else
-      zsi_pyxml_install="true"
-      $py_path setup.py build
-      $py_path setup.py install --prefix=${prefix}
-    fi 
-    cd ..
   fi
 fi  
 
@@ -533,7 +515,7 @@ if test "$PDB2PQR_OPAL_URL" = "" && test "$APBS_OPAL_URL" != ""; then
     if test `whoami` = "root"; then
       $py_path setup.py install
     else
-      zsi_pyxml_install="true"
+      zsi_install="true"
       mkdir -p ${prefix}lib/python$PY_VERSION/site-packages
       export PYTHONPATH=${prefix}lib/python$PY_VERSION/site-packages
       $py_path setup.py install --prefix=${prefix}
@@ -545,24 +527,6 @@ if test "$PDB2PQR_OPAL_URL" = "" && test "$APBS_OPAL_URL" != ""; then
       PYTHONPATH=""
     fi 
     cd ../..
-  fi
-
-  if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/_xmlplus ; then
-    echo PyXML is installed
-  else
-    #  need to install ZSI
-    echo Installing PyXML.  This might take a while...
-    tar zxvf PyXML-0.8.4.tar.gz
-    cd PyXML-0.8.4
-    if test `whoami` = "root"; then
-      $py_path setup.py build
-      $py_path setup.py install
-    else
-      zsi_pyxml_install="true"
-      $py_path setup.py build
-      $py_path setup.py install --prefix=${prefix}
-    fi 
-    cd ..
   fi
 fi  
 
@@ -829,6 +793,6 @@ else
   echo As a regular user, you must ask your system administrator to create a symbolic link that enables you to view $URL after you run \"make install\"
 fi
 
-if test "$zsi_pyxml_install" = "true" ; then
-  echo Since you are not root, PYXML and/or ZSI have been installed in your installation directory
+if test "$zsi_install" = "true" ; then
+  echo Since you are not root, ZSI have been installed in your installation directory
 fi

@@ -8,6 +8,8 @@
 //
 //
 
+#include <cstdlib>
+
 void MC::reformat_arrays() {
   //
   // Reformat the matrix

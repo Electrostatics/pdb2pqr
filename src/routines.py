@@ -1254,7 +1254,8 @@ class Routines:
         try:
             from propka.propkalib import runPKA
         except ImportError:
-            text = "Couldn't find propka - make sure it has been installed!"
+            text = "Couldn't find propka - make sure it has been installed!\n"
+            text += "(propka installation requires a version of Fortran complier, like g95, gfortran, etc.)"
             raise ValueError, text
 
         # Reorder the atoms in each residue to start with N

@@ -34,8 +34,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       8-22-08
   * Added error handling for residue name longer than 4 characters.
   * Updated hbond.py with Mike Bradley's definitions by default.
   * Removed PyXML-0.8.4, which is not required for ZSI installation.
-  * Updated propka error message for make adv-test -- need a version of 
-    Fortran compiler.
+  * Updated propka error message for make adv-test -- propka requires a 
+    version of Fortran compiler.
 	
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

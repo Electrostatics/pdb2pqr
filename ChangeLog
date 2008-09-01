@@ -1,5 +1,5 @@
-#############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       8-22-08
+-#############################################################################
+BETA PUBLIC RELEASE VERSION 1.4.0       9-1-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -53,6 +53,7 @@ BETA PUBLIC RELEASE VERSION 1.4.0       8-22-08
   * Fixed a bug involving MET, GLY as NTERM, CTERM with --ffout option.
   * Fixed a bug for PRO as C-terminus with PARSE forcefield. 
   * Fixed a bug for ND1 in HIS as hacceptor.
+  * Fixed the --clean option bug.
 
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.3.0       1-8-08

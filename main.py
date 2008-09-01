@@ -549,7 +549,11 @@ def mainCommand(argv):
     outpath = args[1]
     options["outname"] = outpath
 
-    header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
+    if "clean" not in options:
+        header, lines, missedligands = runPDB2PQR(pdblist, ff, options)
+    else:
+        header, lines = runPDB2PQR(pdblist, ff, options)
+        missedligands = None
 
     # Print the PQR file
     outfile = open(outpath,"w")

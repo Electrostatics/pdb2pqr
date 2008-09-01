@@ -36,6 +36,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       9-1-08
   * Removed PyXML-0.8.4, which is not required for ZSI installation.
   * Updated propka error message for make adv-test -- propka requires a 
     version of Fortran compiler.
+  * Updated na.py and PATCHES.xml so that PDB2PQR handles three lettered
+    RNA residue names (ADE, CYT, GUA, THY, and URA) as well.
 	
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

@@ -280,3 +280,139 @@ class U(Nucleic):
         """
         self.ffname = "RU"
         Nucleic.setState(self)
+
+class ADE(Nucleic):
+    """
+        Adenosine class
+
+        This class gives data about the Adenosine object, and inherits
+        off the base residue class.
+    """
+
+    def __init__(self, atoms, ref):
+        """
+            Initialize the class
+
+            Parameters
+                atoms:      A list of Atom objects to be stored in this class
+                            (list)
+        """
+        Nucleic.__init__(self, atoms, ref)
+        self.reference = ref
+
+    def setState(self):
+        """
+            Set the state to distinguish RNA from DNA.
+        """
+        if self.hasAtom("O2'"): self.ffname = "RA"
+        else: self.ffname = "DA"
+        Nucleic.setState(self)
+     
+class CYT(Nucleic):
+    """
+        Cytidine class
+
+        This class gives data about the Cytidine object, and inherits
+        off the base residue class.
+    """
+
+    def __init__(self, atoms, ref):
+        """
+            Initialize the class
+
+            Parameters
+                atoms:      A list of Atom objects to be stored in this class
+                            (list)
+        """
+        Nucleic.__init__(self, atoms, ref)
+        self.reference = ref
+        
+    def setState(self):
+        """
+            Set the state to distinguish RNA from DNA.
+        """
+        if self.hasAtom("O2'"): self.ffname = "RC"
+        else: self.ffname = "DC"
+        Nucleic.setState(self)
+        
+class GUA(Nucleic):
+    """
+        Guanosine class
+
+        This class gives data about the Guanosine object, and inherits
+        off the base residue class.
+    """
+
+    def __init__(self, atoms, ref):
+        """
+            Initialize the class
+
+            Parameters
+                atoms:      A list of Atom objects to be stored in this class
+                            (list)
+        """
+        Nucleic.__init__(self, atoms, ref)
+        self.reference = ref
+        
+    def setState(self):
+        """
+            Set the state to distinguish RNA from DNA.
+        """
+        if self.hasAtom("O2'"): self.ffname = "RG"
+        else: self.ffname = "DG"
+        Nucleic.setState(self)
+
+class THY(Nucleic):
+    """
+        Thymine class
+
+        This class gives data about the Thymine object, and inherits
+        off the base residue class.
+    """
+
+    def __init__(self, atoms, ref):
+        """
+            Initialize the class
+
+            Parameters
+                atoms:      A list of Atom objects to be stored in this class
+                            (list)
+        """
+        Nucleic.__init__(self, atoms, ref)
+        self.reference = ref
+        
+    def setState(self):
+        """
+            Set the state to distinguish RNA from DNA.  In this case it is
+            always DNA.
+        """
+        self.ffname = "DT"
+        Nucleic.setState(self)
+                
+class URA(Nucleic):
+    """
+        Uridine class
+
+        This class gives data about the Uridine object, and inherits
+        off the base residue class.
+    """
+
+    def __init__(self, atoms, ref):
+        """
+            Initialize the class
+
+            Parameters
+                atoms:      A list of Atom objects to be stored in this class
+                            (list)
+        """
+        Nucleic.__init__(self, atoms, ref)
+        self.reference = ref
+        
+    def setState(self):
+        """
+            Set the state to distinguish RNA from DNA.  In this case it is
+            always RNA.
+        """
+        self.ffname = "RU"
+        Nucleic.setState(self)
+

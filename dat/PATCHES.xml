@@ -661,4 +661,24 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
        </atom>
      </add>
    </patch>
+  <patch>
+     <name>ADE</name>
+     <applyto>A</applyto>
+  </patch>
+  <patch>
+     <name>CYT</name>
+     <applyto>C</applyto>
+  </patch>
+  <patch>
+     <name>GUA</name>
+     <applyto>G</applyto>
+  </patch>
+  <patch>
+     <name>THY</name>
+     <applyto>T</applyto>
+  </patch>
+  <patch>
+     <name>URA</name>
+     <applyto>U</applyto>
+  </patch>
 </patches>

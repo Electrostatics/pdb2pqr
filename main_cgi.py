@@ -44,7 +44,7 @@
 
 __date__  = "17 March 2007"
 __author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen, Samir Unni"
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 
 
 import string

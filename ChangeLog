@@ -1,5 +1,5 @@
 -#############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       9-1-08
+BETA PUBLIC RELEASE VERSION 1.4.0       9-3-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -38,6 +38,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       9-1-08
     version of Fortran compiler.
   * Updated na.py and PATCHES.xml so that PDB2PQR handles three lettered
     RNA residue names (ADE, CYT, GUA, THY, and URA) as well.
+  * Updated NA.xml with HO2' added as an alternative name for H2'', and H5" 
+    added as an alternative name for H5''. 
 	
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

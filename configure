@@ -3431,8 +3431,6 @@ echo $ECHO_N "checking whether you defined numpy... $ECHO_C" >&6; }
   if (test -n "${NUMPY}") ; then
     { echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }
-    { echo "$as_me:$LINENO: WARNING: Integration with Numpy is incomplete" >&5
-echo "$as_me: WARNING: Integration with Numpy is incomplete" >&2;}
     NUMPY_INC=`find ${NUMPY} -iname "arrayobject.h" | tail -n1`
     if test "$NUMPY_INC" = ""; then
         { { echo "$as_me:$LINENO: error: Please check your NUMPY path.  arrayobject.h cannot be found in ${NUMPY}" >&5

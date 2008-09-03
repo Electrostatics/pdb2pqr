@@ -95,6 +95,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>H5*2</altname>
       <altname>2H5'</altname>
       <altname>2H5*</altname>
+      <altname>H5"</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -324,6 +325,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>2HO*</altname>
       <altname>2H2'</altname>
       <altname>2H2*</altname>
+      <altname>HO2'</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -404,6 +406,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>H5*2</altname>
       <altname>2H5'</altname>
       <altname>2H5*</altname>
+      <altname>H5"</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -617,6 +620,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>2H2*</altname>
       <altname>2HO'</altname>
       <altname>2HO*</altname>
+      <altname>HO2'</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -697,6 +701,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>H5*2</altname>
       <altname>2H5'</altname>
       <altname>2H5*</altname>
+      <altname>H5"</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -936,6 +941,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>2H2*</altname>
       <altname>2HO'</altname>
       <altname>2HO*</altname>
+      <altname>HO2'</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>
@@ -1016,6 +1022,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>H5*2</altname>
       <altname>2H5'</altname>
       <altname>2H5*</altname>
+      <altname>H5"</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -1317,6 +1324,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>H5*2</altname>
       <altname>2H5'</altname>
       <altname>2H5*</altname> 
+      <altname>H5"</altname>
       <x>1.604968</x>
       <y>3.450028</y>
       <z>1.741178</z>
@@ -1520,6 +1528,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <altname>2HO*</altname>
       <altname>2H2'</altname>
       <altname>2H2*</altname>
+      <altname>HO2'</altname>
       <x>6.759278</x>
       <y>1.235228</y>
       <z>3.610987</z>

@@ -292,7 +292,6 @@ dnl #######################
   AC_MSG_CHECKING([whether you defined numpy])
   if (test -n "${NUMPY}") ; then
     AC_MSG_RESULT([yes])
-    AC_MSG_WARN([Integration with Numpy is incomplete])
     NUMPY_INC=`find ${NUMPY} -iname "arrayobject.h" | tail -n1`
     if test "$NUMPY_INC" = ""; then
         AC_MSG_ERROR([Please check your NUMPY path.  arrayobject.h cannot be found in ${NUMPY}])

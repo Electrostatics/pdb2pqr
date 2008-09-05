@@ -3771,7 +3771,6 @@ sed -e 's%@WHICHPYTHON@%'${py_path}'%' pdb2pqr.py.in > pdb2pqr.py
 chmod 755 pdb2pqr.py
 cp pdb2pqr.py pdb2pqr.cgi
 chmod -x apbs_cgi.py
-chmod -x apbs_cgi.cgi
 
 sed -e 's%@WHICHPYTHON@%'${py_path}'%' apbs_cgi.py > apbs_cgi.cgi
 chmod 755 apbs_cgi.cgi

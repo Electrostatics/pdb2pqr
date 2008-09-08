@@ -346,10 +346,10 @@
 			Debumping algorithm
 		</h4>
 		<p>
-			The debumping algorithm ensures that any new heavy or hydrogen atoms are not rebuilt within the Van der Waals radii of existing atoms. If this does occur, the sidechain of the residue in question will be rotated about an available χ angle until the steric conflict is resolved.
+			The debumping algorithm ensures that any new heavy or hydrogen atoms are not rebuilt within the Van der Waals radii of existing atoms. If this does occur, the sidechain of the residue in question will be rotated about an available &chi; angle until the steric conflict is resolved.
 		</p>
 		<p>
-			The number of residues that need to be debumped depends on the nature of the system and if hydrogen optimization will be performed. If hydrogens are the only atoms missing any potential conflicts are usually due to hydrogen bonds, and if optimization is enabled these conflicts are usually resolved during that step. In the case where a large number of heavy sidechain atoms are missing there could be additional debumping necessary - as the sidechain is rebuilt the initial χ angle may not be the optimal one, and thus a steric conflict may occur.
+			The number of residues that need to be debumped depends on the nature of the system and if hydrogen optimization will be performed. If hydrogens are the only atoms missing any potential conflicts are usually due to hydrogen bonds, and if optimization is enabled these conflicts are usually resolved during that step. In the case where a large number of heavy sidechain atoms are missing there could be additional debumping necessary - as the sidechain is rebuilt the initial &chi; angle may not be the optimal one, and thus a steric conflict may occur.
 		</p>
 		<h4>
 			Hydrogen bonding network optimization
@@ -380,7 +380,7 @@
 			The calculation of ligand charges necessitates detailed information on molecular structure and protonation states due to the large variation in the covalent structures of small-molecule protein ligands. The current version of PDB2PQR therefore requires the ligand structure, protonation state, and formal charge to be specified by the user in the popular MOL2 file format (<a href="http://www.tripos.com/data/support/mol2.pdf">link to PDF)</a>. Ligand structures in MOL2 format are readily available from popular molecular modeling software and free web services such as <a href="http://davapc1.bioch.dundee.ac.uk/programs/prodrg/">PRODRG</a>. Future versions of PDB2PQR will include a pdb2mol2 parser and automatic assignment of default ligand protonation states from a small-molecule pKa database.
 		</p>
 		<p>
-			The calculation of ligand charges in PDB2PQR is based on the partial equalization of orbital electronegativities (PEOE) procedure developed by Gasteiger and Marsili (<a href="#GaMa80">Gasteiger, 1980</a>). In the PEOE procedure, orbital electronegativities <i>χ</i> are linked to partial atomic charges <i>q</i> by a polynomial expansion (<i>χ= a + b q + c q<sup>2</sup> + d q<sup>3</sup></i>). The coefficients <i>a</i>, <i>b</i>, <i>c</i>, and <i>d</i> were optimized by Gasteiger and Marsili using gas phase data on ionization potentials and electron affinities. We utilize a PEOE algorithm, which has been optimized by <a href="#CzodEtal06">Czodrowski et al.</a> to obtain better agreement between theoretical and experimental solvation energies for a set of small molecules including the polar amino acids.
+			The calculation of ligand charges in PDB2PQR is based on the partial equalization of orbital electronegativities (PEOE) procedure developed by Gasteiger and Marsili (<a href="#GaMa80">Gasteiger, 1980</a>). In the PEOE procedure, orbital electronegativities <i>&chi;</i> are linked to partial atomic charges <i>q</i> by a polynomial expansion (<i>&chi;= a + b q + c q<sup>2</sup> + d q<sup>3</sup></i>). The coefficients <i>a</i>, <i>b</i>, <i>c</i>, and <i>d</i> were optimized by Gasteiger and Marsili using gas phase data on ionization potentials and electron affinities. We utilize a PEOE algorithm, which has been optimized by <a href="#CzodEtal06">Czodrowski et al.</a> to obtain better agreement between theoretical and experimental solvation energies for a set of small molecules including the polar amino acids.
 		</p>
 		<hr>
 		<p>

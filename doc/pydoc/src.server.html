@@ -6,9 +6,9 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.server</strong></big></big> (17 March 2007)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.server</strong></big></big> (4 August 2008)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/baker/coding/manifold/pdb2pqr/trunk/pdb2pqr/src/server.py">/Users/baker/coding/manifold/pdb2pqr/trunk/pdb2pqr/src/server.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/yhuang/pdb2pqr/trunk/pdb2pqr/src/server.py">/Users/yhuang/pdb2pqr/trunk/pdb2pqr/src/server.py</a></font></td></tr></table>
     <p><tt>CGI&nbsp;Server&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;various&nbsp;functions&nbsp;necessary&nbsp;to&nbsp;run&nbsp;PDB2PQR<br>
@@ -87,19 +87,6 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;time:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;time&nbsp;taken&nbsp;to&nbsp;run&nbsp;the&nbsp;script&nbsp;(float)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;missedligands:&nbsp;A&nbsp;list&nbsp;of&nbsp;ligand&nbsp;names&nbsp;whose&nbsp;parameters&nbsp;could<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not&nbsp;be&nbsp;assigned.&nbsp;Optional.&nbsp;(list)</tt></dd></dl>
- <dl><dt><a name="-getLoads"><strong>getLoads</strong></a>()</dt><dd><tt>Get&nbsp;the&nbsp;system&nbsp;load&nbsp;information&nbsp;for&nbsp;output&nbsp;and&nbsp;logging<br>
-&nbsp;<br>
-Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;loads:&nbsp;&nbsp;A&nbsp;three&nbsp;entry&nbsp;list&nbsp;containing&nbsp;the&nbsp;1,&nbsp;5,&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;15&nbsp;minute&nbsp;loads.&nbsp;If&nbsp;the&nbsp;load&nbsp;file&nbsp;is&nbsp;not&nbsp;found,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;None.</tt></dd></dl>
- <dl><dt><a name="-getQuote"><strong>getQuote</strong></a>(path)</dt><dd><tt>Get&nbsp;a&nbsp;quote&nbsp;to&nbsp;display&nbsp;for&nbsp;the&nbsp;refresh&nbsp;page.<br>
-Uses&nbsp;fortune&nbsp;to&nbsp;generate&nbsp;a&nbsp;quote.<br>
-&nbsp;<br>
-Parameters:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;path:&nbsp;&nbsp;&nbsp;The&nbsp;path&nbsp;to&nbsp;the&nbsp;fortune&nbsp;script&nbsp;(str)<br>
-Returns:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;quote:&nbsp;&nbsp;&nbsp;The&nbsp;quote&nbsp;to&nbsp;display&nbsp;(str)</tt></dd></dl>
  <dl><dt><a name="-logRun"><strong>logRun</strong></a>(options, nettime, size, ff, ip)</dt><dd><tt>Log&nbsp;the&nbsp;CGI&nbsp;run&nbsp;for&nbsp;data&nbsp;analysis.&nbsp;&nbsp;Log&nbsp;file&nbsp;format&nbsp;is&nbsp;as&nbsp;follows:<br>
 &nbsp;<br>
 DATE&nbsp;&nbsp;FF&nbsp;&nbsp;SIZE&nbsp;&nbsp;OPTIONS&nbsp;&nbsp;&nbsp;TIME<br>
@@ -110,18 +97,6 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;size:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;final&nbsp;number&nbsp;of&nbsp;non-HETATM&nbsp;atoms&nbsp;in&nbsp;the&nbsp;PDB&nbsp;file&nbsp;(int)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ff:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;ff&nbsp;used<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ip:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;ip&nbsp;address&nbsp;of&nbsp;the&nbsp;user</tt></dd></dl>
- <dl><dt><a name="-printAcceptance"><strong>printAcceptance</strong></a>(name)</dt><dd><tt>Print&nbsp;the&nbsp;first&nbsp;message&nbsp;to&nbsp;stdout&nbsp;(web&nbsp;browser)&nbsp;-&nbsp;set&nbsp;the<br>
-refresh&nbsp;to&nbsp;the&nbsp;&lt;id&gt;-tmp.html&nbsp;file.<br>
-&nbsp;<br>
-Parameters<br>
-&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;HTML&nbsp;page&nbsp;to&nbsp;redirect&nbsp;to&nbsp;(string)</tt></dd></dl>
- <dl><dt><a name="-printProgress"><strong>printProgress</strong></a>(name, refreshname, reftime, starttime)</dt><dd><tt>Print&nbsp;the&nbsp;progress&nbsp;of&nbsp;the&nbsp;server<br>
-&nbsp;<br>
-Parameters<br>
-&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;ID&nbsp;of&nbsp;the&nbsp;HTML&nbsp;page&nbsp;to&nbsp;write&nbsp;to&nbsp;(string)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;refreshname:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;HTML&nbsp;page&nbsp;to&nbsp;refresh&nbsp;to&nbsp;(string)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;reftime:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;length&nbsp;of&nbsp;time&nbsp;to&nbsp;set&nbsp;the&nbsp;refresh&nbsp;wait&nbsp;to&nbsp;(int)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;starttime:&nbsp;&nbsp;&nbsp;The&nbsp;time&nbsp;as&nbsp;returned&nbsp;by&nbsp;time.time()&nbsp;that&nbsp;the&nbsp;run&nbsp;started&nbsp;(float)</tt></dd></dl>
  <dl><dt><a name="-setID"><strong>setID</strong></a>(time)</dt><dd><tt>Given&nbsp;a&nbsp;floating&nbsp;point&nbsp;time.time(),&nbsp;generate&nbsp;an&nbsp;ID.<br>
 Use&nbsp;the&nbsp;tenths&nbsp;of&nbsp;a&nbsp;second&nbsp;to&nbsp;differentiate.<br>
 &nbsp;<br>
@@ -129,14 +104,6 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;time:&nbsp;&nbsp;The&nbsp;current&nbsp;time.time()&nbsp;(float)<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;:&nbsp;&nbsp;The&nbsp;file&nbsp;id&nbsp;(string)</tt></dd></dl>
- <dl><dt><a name="-startServer"><strong>startServer</strong></a>(name)</dt><dd><tt>Start&nbsp;the&nbsp;PDB2PQR&nbsp;server.&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;necessary&nbsp;so<br>
-that&nbsp;useful&nbsp;information&nbsp;can&nbsp;be&nbsp;displayed&nbsp;to&nbsp;the&nbsp;user&nbsp;-&nbsp;otherwise<br>
-nothing&nbsp;would&nbsp;be&nbsp;returned&nbsp;until&nbsp;the&nbsp;complete&nbsp;run&nbsp;finishes.<br>
-&nbsp;<br>
-Parameters<br>
-&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;ID&nbsp;name&nbsp;of&nbsp;the&nbsp;final&nbsp;file&nbsp;to&nbsp;create&nbsp;(string)<br>
-Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;pqrpath:&nbsp;The&nbsp;complete&nbsp;path&nbsp;to&nbsp;the&nbsp;pqr&nbsp;file&nbsp;(string)</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -144,22 +111,29 @@ Returns<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>LIMIT</strong> = 500.0<br>
+<td width="100%"><strong>APBS_OPAL_URL</strong> = ''<br>
+<strong>HAVE_APBS</strong> = ''<br>
+<strong>HAVE_PDB2PQR_OPAL</strong> = '0'<br>
+<strong>INSTALLDIR</strong> = '/Users/yhuang/pdb2pqr/'<br>
+<strong>LIMIT</strong> = 500.0<br>
 <strong>LOADPATH</strong> = '/proc/loadavg'<br>
-<strong>LOGPATH</strong> = '/Users/baker/coding/manifold/dist///tmp//usage.txt'<br>
+<strong>LOGPATH</strong> = '/Users/yhuang/pdb2pqr//tmp//usage.txt'<br>
+<strong>MAXATOMS</strong> = '10000'<br>
+<strong>PACKAGE_PATH</strong> = ''<br>
+<strong>PDB2PQR_OPAL_URL</strong> = ''<br>
 <strong>REFRESHTIME</strong> = 20<br>
-<strong>SRCPATH</strong> = '/Users/baker/coding/manifold/dist//'<br>
-<strong>STYLESHEET</strong> = 'http://nathan-bakers-macbook-pro.local/pdb2pqr//pdb2pqr.css'<br>
+<strong>SRCPATH</strong> = '/Users/yhuang/pdb2pqr/trunk/pdb2pqr/'<br>
+<strong>STYLESHEET</strong> = 'http://pitaya.wustl.edu/pdb2pqr/pdb2pqr.css'<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>WEBNAME</strong> = 'index.html'<br>
-<strong>WEBSITE</strong> = 'http://nathan-bakers-macbook-pro.local/pdb2pqr//'<br>
-<strong>__author__</strong> = 'Todd Dolinsky'<br>
-<strong>__date__</strong> = '17 March 2007'</td></tr></table><p>
+<strong>WEBSITE</strong> = 'http://pitaya.wustl.edu/pdb2pqr/'<br>
+<strong>__author__</strong> = 'Todd Dolinsky, Samir Unni, Yong Huang'<br>
+<strong>__date__</strong> = '4 August 2008'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Author</strong></big></font></td></tr>
     
 <tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%">Todd&nbsp;Dolinsky</td></tr></table>
+<td width="100%">Todd&nbsp;Dolinsky,&nbsp;Samir&nbsp;Unni,&nbsp;Yong&nbsp;Huang</td></tr></table>
 </body></html>

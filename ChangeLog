@@ -1,5 +1,5 @@
--#############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       9-3-08
+#############################################################################
+BETA PUBLIC RELEASE VERSION 1.4.0       9-16-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -40,6 +40,7 @@ BETA PUBLIC RELEASE VERSION 1.4.0       9-3-08
     RNA residue names (ADE, CYT, GUA, THY, and URA) as well.
   * Updated NA.xml with HO2' added as an alternative name for H2'', and H5" 
     added as an alternative name for H5''. 
+  * Updated version numbers in html/ and doc/pydoc/ .
 	
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

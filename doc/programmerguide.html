@@ -67,13 +67,13 @@
 		
 		<p> <a name="opal" id="opal"></a> </p>
 		<h3>Opal web services support</h3>
-		<p>The Opal Toolkit is a set of software produced by the <a href="http://nbcr.net/">National Biomedical Computational Resource (NBCR)</a>. It allows for the computing load for processor-intensive scientiﬁc applications to be shifted to a 3rd party and/or generic computing grid. This can be tremendously advantageous in situations where a large amount of computing power is not locally available, but is required, for the task at hand.</p>
+		<p>The Opal Toolkit is a set of software produced by the <a href="http://nbcr.net/">National Biomedical Computational Resource (NBCR)</a>. It allows for the computing load for processor-intensive scientific applications to be shifted to a 3rd party and/or generic computing grid. This can be tremendously advantageous in situations where a large amount of computing power is not locally available, but is required, for the task at hand.</p>
 		
 		<p>PDB2PQR adds optional support for the off-loading of PDB2PQR calculations to an Opal service, by use of the <code>--with-opal</code> compile-time flag.  Currently, the Opal service is only available via the PDB2PQR web interface.  Opal support has been integrated into PDB2PQR such that the end user will not be able to tell the difference between the local and web services (Opal) installations of PDB2PQR. The functionality is identical, allowing for Opal installs of PDB2PQR to be implemented with minimum disruption for current users of the PDB2PQR web interface.  By default, the Opal support in PDB2PQR makes use of the NBCR's Opal grid. However, the user can easily substitute in any functional Opal installation by specifying a URL at compile time, like so: 
 			<verbatim>--with-opal=http://www.example.com/services/opal</verbatim>
 		</p>
 		
-		<p>When an Opal job is launched, the relevant ﬁles are sent to the Opal servers by means of <a href="http://www.w3c.org/TR/SOAP">SOAP</a>.  	While the calculations are taking place, the user can use a SOAP request to query the Opal servers for the status of the calculation. If the calculation is complete, the server will return a list of URLs at which the resulting files can be found.</p>
+		<p>When an Opal job is launched, the relevant files are sent to the Opal servers by means of <a href="http://www.w3c.org/TR/SOAP">SOAP</a>.  	While the calculations are taking place, the user can use a SOAP request to query the Opal servers for the status of the calculation. If the calculation is complete, the server will return a list of URLs at which the resulting files can be found.</p>
 		
 		<p>When the APBS web interface becomes a part of production PDB2PQR installations, using Opal for calculations will become even more important, as APBS has significantly higher computational costs than PDB2PQR. Additionally, command line support for Opal in PDB2PQR is planned for a future release.</p>
 		

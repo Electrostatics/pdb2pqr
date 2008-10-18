@@ -436,10 +436,14 @@
 						In the case where you want to supplement an existing forcefield (i.e. AMBER, CHARMM, or PARSE) with a few additional atoms, you can either directly add these atoms to the respective forcefield's DAT file (found in the <code>dat/</code> directory), or copy the existing DAT file to a new name and add your parameters to this file. In the latter case you will need to specify the new forcefield's name on the command line; for instance, if you copy <code>dat/AMBER.DAT</code> to <code>dat/myff.DAT</code>, on the command line you will need to specify <code>--ff=myff</code>.
 					</dd>
 					<dt>
-						Adding a whole new forcefield
+						Adding a new forcefield
 					</dt>
 					<dd>
-						Similarly, if you want to add a whole new forcefield to PDB2PQR you will have to create a new parameter file. If the atom naming scheme of the forcefield is not the same as the canonical naming scheme of PDB2PQR, you will need to add patches as well - please see the <a href="programmerguide.html#xml">Programmer's Guide</a> for more information.
+						Similarly, if you want to add a new forcefield to PDB2PQR, you will have to create new parameter and names files, as discussed in the <a href="programmerguide.html#xml">Programmer's Guide</a>.
+						If the atom naming scheme of the forcefield is not the same as the <a href="http://pdb2pqr.sourceforge.net/programmerguide.html#canon">canonical naming scheme of PDB2PQR</a>, you will need to add patches as well (see <a href="programmerguide.html#xml">Programmer's Guide</a> for more information).
+						
+						If you are using the PDB2PQR command line version, put your user-defined .DAT file (e.g., USERDEFINED.DAT) and user-defined .names file (e.g., USERDEFINED.names) together in the dat/ folder.
+						If you are using the PDB2PQR web server, be sure to provide both a force field and names file in the web server forms.
 					</dd>
 				</dl>
 			</dd>

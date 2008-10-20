@@ -212,7 +212,7 @@ class Forcefield:
 
     """
 
-    def __init__(self, ff, definition, userff):
+    def __init__(self, ff, definition, userff, usernames = None):
         """
             Initialize the class by parsing the definition file
 
@@ -269,15 +269,33 @@ class Forcefield:
         # Now parse the XML file, associating with FF objects -
         # This is not necessary (if canonical names match ff names)
  
+
         defpath = getNamesFile(ff)
         if defpath != "":
         
             handler = ForcefieldHandler(self.map, definition.map)
             sax.make_parser()
-            
-            namesfile = open(defpath)
-            sax.parseString(namesfile.read(), handler)
+
+            if usernames != None:
+                namesfile = usernames
+                sax.parseString(namesfile.read(), handler)
+            else:
+                namesfile = open(defpath)
+                sax.parseString(namesfile.read(), handler)
             namesfile.close()
+
+        # CGI based .names file handling
+        else: 
+            handler = ForcefieldHandler(self.map, definition.map)
+            sax.make_parser()
+
+            if usernames != None:
+                namesfile = usernames            
+                sax.parseString(namesfile.getvalue(), handler)
+            else:
+                raise ValueError, "Please provide a valid .names file!"
+            namesfile.close()
+
 
     def hasResidue(self, resname):
         """

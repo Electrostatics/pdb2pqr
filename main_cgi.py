@@ -179,8 +179,10 @@ def mainCGI():
             options["ff"] = ffname
         else:
             userff = StringIO(form["USERFF"].value)
+            usernames = StringIO(form["USERNAMES"].value)
             ff = "user-defined"
             options["userff"] = userff
+            options["usernames"] = usernames
     if form.has_key("FFOUT"):
         if form["FFOUT"].value != "internal":
             options["ffout"] = form["FFOUT"].value

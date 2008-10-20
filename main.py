@@ -214,7 +214,10 @@ def runPDB2PQR(pdblist, ff, options):
 
     if "userff" in options: userff = options["userff"]
     else: userff = None
-    
+
+    if "usernames" in options: usernames = options["usernames"]
+    else: usernames = None
+
     if "verbose" in options: verbose = 1
     else: verbose = 0
 
@@ -323,7 +326,7 @@ def runPDB2PQR(pdblist, ff, options):
 
     myRoutines.setStates()
 
-    myForcefield = Forcefield(ff, myDefinition, userff)
+    myForcefield = Forcefield(ff, myDefinition, userff, usernames)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
   
     ligsuccess = 0

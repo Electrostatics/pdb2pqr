@@ -55,10 +55,12 @@ function setff(val){
 if(val == "user")
 {
 document.thisform.USERFF.disabled=false;
+document.thisform.USERNAMES.disabled=false;
 }
 else
 {
 document.thisform.USERFF.disabled=true;
+document.thisform.USERNAMES.disabled=true;
 }
 }
 
@@ -154,7 +156,9 @@ Pick a forcefield to use:
 <input type="RADIO" name="FF" value="parse" onClick="setff(this.value)">PARSE</input><BR>
 <input type="RADIO" name="FF" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
 <input type="RADIO" name="FF" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
-<input type="RADIO" name="FF" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED>
+<input type="RADIO" name="FF" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
+<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><BR>
+<label>&nbsp;&nbsp;* If you select user-defined forcefield, you also need to specify a user-defined .names file.</label><BR> 
 </blockquote>
 
 Pick an output naming scheme to use (<a href="http://pdb2pqr.sourceforge.net/userguide.html#outff">help</a>):

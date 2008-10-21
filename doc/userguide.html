@@ -427,23 +427,46 @@
 				Can I add my own charge and radius parameters to PDB2PQR?
 			</dt>
 			<dd>
-				Yes you can. Depending upon what is needed there are several options available:
+				Yes; there are two ways to add your own parameters to PDB2PQR:
 				<dl>
 					<dt>
 						Adding a few additional parameters to an existing forcefield
 					</dt>
 					<dd>
-						In the case where you want to supplement an existing forcefield (i.e. AMBER, CHARMM, or PARSE) with a few additional atoms, you can either directly add these atoms to the respective forcefield's DAT file (found in the <code>dat/</code> directory), or copy the existing DAT file to a new name and add your parameters to this file. In the latter case you will need to specify the new forcefield's name on the command line; for instance, if you copy <code>dat/AMBER.DAT</code> to <code>dat/myff.DAT</code>, on the command line you will need to specify <code>--ff=myff</code>.
+						If you are just adding the parameters of a few residues and atoms to an existing forcefield (e.g., AMBER), you can open the forcefield data file (<code>dat/AMBER.DAT</code>) directly and add your parameters. After the parameter addition, save the force field data file (<code>dat/AMBER.DAT</code>) with your changes. You should also update the corresponding .names file (<code>dat/AMBER.names</code>) if your added residue or atom naming scheme is different from the <a href="http://pdb2pqr.sourceforge.net/programmerguide.html#canon">canonical naming scheme</a> of PDB2PQR.
 					</dd>
 					<dt>
-						Adding a new forcefield
+						Adding an entirely new forcefield
 					</dt>
 					<dd>
-						Similarly, if you want to add a new forcefield to PDB2PQR, you will have to create new parameter and names files, as discussed in the <a href="programmerguide.html#xml">Programmer's Guide</a>.
-						If the atom naming scheme of the forcefield is not the same as the <a href="http://pdb2pqr.sourceforge.net/programmerguide.html#canon">canonical naming scheme of PDB2PQR</a>, you will need to add patches as well (see <a href="programmerguide.html#xml">Programmer's Guide</a> for more information).
-						
-						If you are using the PDB2PQR command line version, put your user-defined .DAT file (e.g., USERDEFINED.DAT) and user-defined .names file (e.g., USERDEFINED.names) together in the dat/ folder.
-						If you are using the PDB2PQR web server, be sure to provide both a force field and names file in the web server forms.
+						If you are adding a new forcefield to PDB2PQR, then you will need to follow the instructions below:
+						<ol>
+							<li>
+								Provide two files: your forcefield data file (e.g., <code>myff.DAT</code>).  If your atom naming scheme of the forcefield is different from the <a href="http://pdb2pqr.sourceforge.net/programmerguide.html#canon">canonical naming scheme</a> of PDB2PQR, then you will also need to provide a names files (<code>myff.names</code>).  It is recommended to build your own forcefield data file and names file based on existing <code>.DAT</code> and <code>.names</code> file formats.  For more information on the xml format used in <code>.names</code> files, please refer to the <a href="http://pdb2pqr.sourceforge.net/programmerguide.html#xml">xml section</a> in the programmer's guide.
+							</li>
+							<li>
+								After finishing your forcefield data file and names file, these can be used with either the command line or the web server versions of PDB2PQR:
+								<ul>
+									<li type="disc">
+										For command line execution:
+									</li>
+									<ol>
+										<li type="a">
+											Locate your PDB2PQR distribution and place the forcefield and names files in the dat/ directory.
+										</li>
+										<li type="a">
+											On PDB2PQR command line version, run:
+											<dd>
+												<code>$ python pdb2pqr.py [options] --ff=myff {path} {output-path}</code>
+											</dd>
+										</li>
+									</ol>
+									<li type="disc">
+										For the web server, select "User-defined forcefield" radio button, then specify your user-defined data file and names file. Select other options when needed, and then click "Submit".
+									</li>
+								</ul>
+							</li>
+						</ol>
 					</dd>
 				</dl>
 			</dd>

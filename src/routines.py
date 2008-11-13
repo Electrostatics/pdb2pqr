@@ -912,6 +912,66 @@ class Routines:
 
         self.write("Done.\n")
 
+    def debumpProteinTopology(self):
+        """
+            Make sure that none of the added atoms in testtop.py were 
+            rebuilt on top of existing atoms.  See each called function
+            for more information.
+        """
+        
+        self.write("Checking if we must debump any residues... \n")
+
+        # Do some setup
+
+        self.cells = Cells(CELL_SIZE)
+        self.cells.assignCells(self.protein)
+
+        self.calculateDihedralAngles()
+        self.setDonorsAndAcceptors()
+        self.updateInternalBonds()
+        self.setReferenceDistance()
+    
+        # Determine which residues to debump
+
+        for residue in self.protein.getResidues():
+            if not isinstance(residue, Amino): continue
+
+            # Initialize variables
+
+            conflictnames = []
+
+            for atom in residue.getAtoms():
+                atomname = atom.name
+                if not atom.added: continue
+                if atomname == "H": continue
+                if atom.optimizeable: continue
+               
+                nearatoms = self.findNearbyAtoms(atom)
+                
+                # If something is too close, we must debump the residue
+        
+                if nearatoms != {}:
+                    conflictnames.append(atomname)
+                    for repatom in nearatoms:
+                        self.write("%s %s is too close to %s %s\n" % \
+                                  (residue, atomname, repatom.residue, repatom.name),1) 
+
+            # If there are no conflicting atoms, move on
+
+            if conflictnames == []: continue
+
+            # Otherwise debump the residue
+
+            self.write("Starting to debump %s...\n" % residue, 1)
+            if self.debumpResidue(residue, conflictnames):
+                 self.write("Debumping Successful!\n\n",1)
+            else:
+                 text = "WARNING: Unable to debump %s\n" % residue
+                 self.write("********\n%s********\n\n" % text)
+                 self.warnings.append(text)  
+
+        self.write("Done.\n")
+
     def debumpResidue(self, residue, conflictnames):
         """
             Debump a specific residue.  Only should be called
@@ -956,7 +1016,7 @@ class Routines:
                 pivot = atomnames[2]
                 moveablenames = self.getMoveableNames(residue, pivot)
                 for name in moveablenames:
-                    nearatoms = self.findNearbyAtoms(residue.getAtom(name))
+                    nearatoms = self.findNearbyAtomsTopology(residue.getAtom(name))
                     for atom in nearatoms:
                         score += nearatoms[atom]
                 
@@ -1046,7 +1106,6 @@ class Routines:
             
         return bestatom
 
-
     def findNearbyAtoms(self, atom):
         """
             Find nearby atoms for conflict-checking.  Uses
@@ -1085,6 +1144,51 @@ class Routines:
                 
             if atom.isHydrogen() and atom.bonds[0].hdonor \
                and closeatom.hacceptor: continue
+            if closeatom.isHydrogen() and closeatom.bonds[0].hdonor \
+                   and atom.hacceptor:
+                continue
+
+            dist = distance(atom.getCoords(), closeatom.getCoords())
+            if dist < cutoff:
+                nearatoms[closeatom] = dist
+
+        return nearatoms
+
+    def findNearbyAtomsTopology(self, atom):
+        """
+            Find nearby atoms for conflict-checking in testtop.  
+            Uses neighboring cells to compare atoms rather than 
+            an all versus all O(n^2) algorithm.
+
+            Parameters
+                atom:  Find nearby atoms to this atom (Atom)
+            Returns
+                nearatoms:  A list of atoms close to the atom.
+        """
+        # Initialize some variables
+
+        nearatoms = {}
+        residue = atom.residue
+        cutoff = BUMP_DIST
+        if atom.isHydrogen(): cutoff = BUMP_HDIST
+
+        # Get atoms from nearby cells
+        
+        closeatoms = self.cells.getNearCells(atom)
+
+        # Loop through and see if any are within the cutoff
+        
+        for closeatom in closeatoms:
+            closeresidue = closeatom.residue
+            if closeresidue == residue and "H" not in atom.name: continue
+            if not isinstance(closeresidue, Amino): continue
+            if isinstance(residue, CYS):
+                if residue.SSbondedpartner == closeatom: continue
+                    
+            # Also ignore if this is a donor/acceptor pair
+                
+            if atom.isHydrogen() and closeatom.name == atom.bonds[0].name: continue 
+
             if closeatom.isHydrogen() and closeatom.bonds[0].hdonor \
                    and atom.hacceptor:
                 continue

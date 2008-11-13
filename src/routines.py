@@ -963,7 +963,7 @@ class Routines:
             # Otherwise debump the residue
 
             self.write("Starting to debump %s...\n" % residue, 1)
-            if self.debumpResidue(residue, conflictnames):
+            if self.debumpResidueTopology(residue, conflictnames):
                  self.write("Debumping Successful!\n\n",1)
             else:
                  text = "WARNING: Unable to debump %s\n" % residue
@@ -978,6 +978,71 @@ class Routines:
             if the residue has been detected to have a conflict.
             If called, try to rotate about dihedral angles to
             resolve the conflict.
+
+            Parameters
+                residue:  The residue in question
+                conflictnames:  A list of atomnames that were
+                                rebuilt too close to other atoms
+            Returns
+                1 if successful, 0 otherwise
+        """
+
+        # Initialize some variables
+        
+        step = 0
+        bestscore = 100
+        anglenum = -1
+        newcauses = []
+
+        # Try (up to 10 times) to find a workable solution
+        
+        while step < 10:
+
+            anglenum = self.pickDihedralAngle(residue, conflictnames, anglenum)
+            
+            if anglenum == -1: return 0
+            
+            self.write("Using dihedral angle number %i to debump the residue.\n" % anglenum, 1)
+
+            for i in range(72):
+                newangle = residue.dihedrals[anglenum] + 5.0
+                self.setDihedralAngle(residue, anglenum, newangle)
+
+                # Check for conflicts
+
+                score = 0
+                
+                atomnames = residue.reference.dihedrals[anglenum].split()
+                pivot = atomnames[2]
+                moveablenames = self.getMoveableNames(residue, pivot)
+                for name in moveablenames:
+                    nearatoms = self.findNearbyAtoms(residue.getAtom(name))
+                    for atom in nearatoms:
+                        score += nearatoms[atom]
+                
+                if score == 0:
+                    self.write("No conflicts found at angle %.2f.\n" % newangle, 1)
+                    return 1
+
+                # Set the best angle
+                
+                if score < bestscore:
+                    bestangle = newangle
+
+            self.setDihedralAngle(residue, anglenum, bestangle)
+            step += 1
+            
+
+        # If we're here, debumping was unsuccessful
+
+        return 0
+
+    def debumpResidueTopology(self, residue, conflictnames):
+        """
+            Debump a specific residue for testtop.  Only should 
+            be called if the residue has been detected to have a
+            conflict. If called, try to rotate about dihedral 
+            angles to resolve the conflict.
 
             Parameters
                 residue:  The residue in question

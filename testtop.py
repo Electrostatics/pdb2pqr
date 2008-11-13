@@ -67,9 +67,9 @@ def testTop(argv):
     ff = None
     for o,a in opts:
         undashed = o[2:]
-        if o in ("-n", "--nterm", "--Nterm", "--NTERM"):
+        if o in ("-n", "--nterm"):
             options["nterm"] = 1                 
-        elif o in ("-c", "--cterm", "--Cterm", "--CTERM"):
+        elif o in ("-c", "--cterm"):
             options["cterm"] = 1         
 
     text =  "\n--------------------------\n"

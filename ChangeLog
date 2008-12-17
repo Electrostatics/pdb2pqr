@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       10-20-08
+BETA PUBLIC RELEASE VERSION 1.4.0       11-17-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -42,8 +42,9 @@ BETA PUBLIC RELEASE VERSION 1.4.0       10-20-08
     added as an alternative name for H5''. 
   * Updated version numbers in html/ and doc/pydoc/ .
   * Updated web server. When selecting user-defined forcefield file from the 
-    web server, users should also provide .names file.  
-	
+    web server, users should also provide .names file.
+  * Removed http://enzyme.ucd.ie/Services/pdb2pqr/ from web server list.
+
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 
     files generated on Windows or old Mac OS platforms).

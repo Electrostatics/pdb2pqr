@@ -209,6 +209,8 @@ def runPDB2PQR(pdblist, ff, options):
     outroot = ""
     typemapname = ""
     lines = []
+    Lig = None
+    atomcount = 0   # Count the number of ATOM records in pdb
 
     # userff is CGI-based User Forcefield file object
 
@@ -261,6 +263,9 @@ def runPDB2PQR(pdblist, ff, options):
     if "ligand" in options:
         from pdb2pka.ligandclean import ligff
         myProtein, myDefinition, Lig = ligff.initialize(myDefinition, options["ligand"], pdblist, verbose)        
+        for atom in myProtein.getAtoms():
+            if atom.type == "ATOM": 
+                atomcount += 1
     else:
         myProtein = Protein(pdblist, myDefinition)
 
@@ -289,8 +294,11 @@ def runPDB2PQR(pdblist, ff, options):
         return header, lines
 
     if not "assign-only" in options:
-
-        myRoutines.findMissingHeavy()
+        # It is OK to process ligands with no ATOM records in the pdb
+        if atomcount == 0 and Lig != None:
+            pass
+        else:
+            myRoutines.findMissingHeavy()
         myRoutines.updateSSbridges()
 
         if "debump" in options:

@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       11-17-08
+BETA PUBLIC RELEASE VERSION 1.4.0       12-31-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -44,6 +44,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       11-17-08
   * Updated web server. When selecting user-defined forcefield file from the 
     web server, users should also provide .names file.
   * Removed http://enzyme.ucd.ie/Services/pdb2pqr/ from web server list.
+  * Eliminated the need for protein when processing other types (ligands, 
+    nucleic acids).
 
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

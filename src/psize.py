@@ -152,7 +152,7 @@ class Psize:
         tn = [0,0,0]
         for i in range(3):
             tn[i] = int(flen[i]/self.constants["space"] + 0.5)
-            self.n[i] = 32*(int((tn[i] - 1) / 32 + 0.5)) + 1
+            self.n[i] = 32*(int((tn[i] - 1) / 32.0 + 0.5)) + 1
             if self.n[i] < 33:
                 self.n[i] = 33
         return self.n

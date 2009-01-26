@@ -119,7 +119,7 @@ class Routines:
 
             for atom in residue.getAtoms():
                 rname, aname = forcefield.getNames(resname, atom.name)
-                if resname != 'LIG' and resname != 'WAT':
+                if resname != 'LIG' and resname != 'WAT' and rname != None:
                     if (residue.isNterm or residue.isCterm) and rname != residue.name: 
                         rname = residue.name
                 if aname != None and rname != None:

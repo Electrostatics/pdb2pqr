@@ -53,9 +53,13 @@
         <name>ASH</name>
         <useresname>ASP</useresname>
     </residue>
-     <residue>
+    <residue>
         <name>ASH</name>
         <useresname>ASPP</useresname>
+        <atom>
+            <name>HD1</name>
+            <useatomname>HD2</useatomname>
+        </atom>
     </residue>
     <residue>
         <name>GLH</name>
@@ -64,6 +68,10 @@
     <residue>
         <name>GLH</name>
         <useresname>GLUP</useresname>
+        <atom>
+            <name>HE1</name>
+            <useatomname>HE2</useatomname>
+        </atom>
     </residue>
     <residue>
         <name>ILE</name>

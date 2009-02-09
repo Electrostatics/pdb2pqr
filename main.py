@@ -114,6 +114,8 @@ def usage(rc):
     str = str + "        --ligand=<path>: Calculate the parameters for the ligand in\n"
     str = str + "                         mol2 format at the given path. Pdb2pka must\n"
     str = str + "                         be compiled\n"
+    str = str + "        --whitespace  :  Insert whitespaces between atom name and residue\n"
+    str = str + "                         name, between x and y, and between y and z\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
 
@@ -463,7 +465,7 @@ def mainCommand(argv):
 
 
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand="]
+    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace"]
 
     extensions = getAvailableExtensions(1)
     longOptlist += extensions.keys()
@@ -491,6 +493,7 @@ def mainCommand(argv):
         elif o == "--nodebump":  del options["debump"]
         elif o == "--noopt":    del options["opt"]
         elif o == "--apbs-input": options["input"] = 1
+        elif o == "--whitespace": options["whitespace"]  = 1
         elif o == "--with-ph":
             try:
                 ph = float(a)
@@ -569,8 +572,17 @@ def mainCommand(argv):
     # Print the PQR file
     outfile = open(outpath,"w")
     outfile.write(header)
+    # Adding whitespaces if --whitespace is in the options
     for line in lines:
-        outfile.write(line)
+        if "whitespace" in options: 
+            if line[0:4] == 'ATOM':
+                newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                outfile.write(newline)
+            elif line[0:6] == 'HETATM':
+                newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                outfile.write(newline)
+        else: 
+            outfile.write(line)
     outfile.close()
 
     if "input" in options:

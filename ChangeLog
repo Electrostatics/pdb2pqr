@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       2-2-08
+BETA PUBLIC RELEASE VERSION 1.4.0       2-9-08
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -47,6 +47,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       2-2-08
   * Eliminated the need for protein when processing other types (ligands, 
     nucleic acids).
   * Applied Robert's patch in psize.py.
+  * Made whitespace option available for both command line and web server 
+    versions.
 
  -BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 

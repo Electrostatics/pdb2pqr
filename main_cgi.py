@@ -188,6 +188,8 @@ def mainCGI():
             options["ffout"] = form["FFOUT"].value
     if form.has_key("CHAIN"):
         options["chain"] = 1
+    if form.has_key("WHITESPACE"):
+        options["whitespace"] = 1
     if form.has_key("LIGAND"):
         if have_opal:
             ligandfilename=str(form["LIGAND"].filename)
@@ -282,6 +284,8 @@ def mainCGI():
                     key="apbs-input"
                 elif key=="chain":
                     key="chain"
+                elif key=="whitespace":
+                    key="whitespace"
                 elif key=="ff":
                     val=options[key]
                     key="ff=%s" % val
@@ -365,7 +369,16 @@ def mainCGI():
                 pqrfile = open(pqrpath, "w")
                 pqrfile.write(header)
                 for line in lines:
-                    pqrfile.write("%s\n" % string.strip(line))
+                    # Adding whitespaces if --whitespace is in the options
+                    if options["whitespace"] == 1: 
+                        if line[0:4] == 'ATOM':
+                            newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                            pqrfile.write("%s\n" % string.strip(newline))
+                        elif line[0:6] == 'HETATM':
+                            newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                            pqrfile.write("%s\n" % string.strip(newline))
+                    else: 
+                        pqrfile.write("%s\n" % string.strip(line))
                 pqrfile.close()
                         
                 if input:

@@ -108,6 +108,10 @@ def mainCGI():
             options["ffout"] = form["FFOUT"].value
     if form.has_key("CHAIN"):
         options["chain"] = 1
+    if form.has_key("WHITESPACE"):
+        options["whitespace"] = 1
+    else:
+        options["whitespace"] = 0
     if form.has_key("LIGAND"):
         ligandfilename=str(form["LIGAND"].filename)
         ligandfilename=re.split(r'[/\\]',ligandfilename)[-1]
@@ -157,6 +161,8 @@ def mainCGI():
                 key="apbs-input"
             elif key=="chain":
                 key="chain"
+            elif key=="whitespace":
+                key="whitespace"
             elif key=="ff":
                 val=options[key]
                 key="ff=%s" % val

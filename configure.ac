@@ -10,7 +10,7 @@ dnl ##########################################################################
 dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
-AC_INIT([PDB2PQR], [1.4.0], [todd@ccb.wustl.edu])
+AC_INIT([PDB2PQR], [1.4.0], [baker@biochem.wustl.edu])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_SYSTEM

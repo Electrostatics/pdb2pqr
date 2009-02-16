@@ -903,6 +903,7 @@ class Routines:
             # Otherwise debump the residue
 
             self.write("Starting to debump %s...\n" % residue, 1)
+            self.write("Debumping cutoffs: %2.1f for heavy atoms, %2.1f for hydrogens.\n" % (BUMP_DIST, BUMP_HDIST), 1)
             if self.debumpResidue(residue, conflictnames):
                  self.write("Debumping Successful!\n\n",1)
             else:

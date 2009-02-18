@@ -190,8 +190,6 @@ def mainCGI():
         options["chain"] = 1
     if form.has_key("WHITESPACE"):
         options["whitespace"] = 1
-    else:
-        options["whitespace"] = 0
     if form.has_key("LIGAND"):
         if have_opal:
             ligandfilename=str(form["LIGAND"].filename)
@@ -372,7 +370,7 @@ def mainCGI():
                 pqrfile.write(header)
                 for line in lines:
                     # Adding whitespaces if --whitespace is in the options
-                    if options["whitespace"] == 1: 
+                    if "whitespace" in options.keys() and options["whitespace"] == 1: 
                         if line[0:4] == 'ATOM':
                             newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                             pqrfile.write("%s\n" % string.strip(newline))

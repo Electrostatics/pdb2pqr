@@ -110,8 +110,6 @@ def mainCGI():
         options["chain"] = 1
     if form.has_key("WHITESPACE"):
         options["whitespace"] = 1
-    else:
-        options["whitespace"] = 0
     if form.has_key("LIGAND"):
         ligandfilename=str(form["LIGAND"].filename)
         ligandfilename=re.split(r'[/\\]',ligandfilename)[-1]

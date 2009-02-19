@@ -184,10 +184,26 @@ the&nbsp;start&nbsp;and&nbsp;end&nbsp;residues.</tt></dd></dl>
 on&nbsp;top&nbsp;of&nbsp;existing&nbsp;atoms.&nbsp;&nbsp;See&nbsp;each&nbsp;called&nbsp;function<br>
 for&nbsp;more&nbsp;information.</tt></dd></dl>
 
+<dl><dt><a name="Routines-debumpProteinTopology"><strong>debumpProteinTopology</strong></a>(self)</dt><dd><tt>Make&nbsp;sure&nbsp;that&nbsp;none&nbsp;of&nbsp;the&nbsp;added&nbsp;atoms&nbsp;in&nbsp;testtop.py&nbsp;were&nbsp;<br>
+rebuilt&nbsp;on&nbsp;top&nbsp;of&nbsp;existing&nbsp;atoms.&nbsp;&nbsp;See&nbsp;each&nbsp;called&nbsp;function<br>
+for&nbsp;more&nbsp;information.</tt></dd></dl>
+
 <dl><dt><a name="Routines-debumpResidue"><strong>debumpResidue</strong></a>(self, residue, conflictnames)</dt><dd><tt>Debump&nbsp;a&nbsp;specific&nbsp;residue.&nbsp;&nbsp;Only&nbsp;should&nbsp;be&nbsp;called<br>
 if&nbsp;the&nbsp;residue&nbsp;has&nbsp;been&nbsp;detected&nbsp;to&nbsp;have&nbsp;a&nbsp;conflict.<br>
 If&nbsp;called,&nbsp;try&nbsp;to&nbsp;rotate&nbsp;about&nbsp;dihedral&nbsp;angles&nbsp;to<br>
 resolve&nbsp;the&nbsp;conflict.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;in&nbsp;question<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conflictnames:&nbsp;&nbsp;A&nbsp;list&nbsp;of&nbsp;atomnames&nbsp;that&nbsp;were<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rebuilt&nbsp;too&nbsp;close&nbsp;to&nbsp;other&nbsp;atoms<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;successful,&nbsp;0&nbsp;otherwise</tt></dd></dl>
+
+<dl><dt><a name="Routines-debumpResidueTopology"><strong>debumpResidueTopology</strong></a>(self, residue, conflictnames)</dt><dd><tt>Debump&nbsp;a&nbsp;specific&nbsp;residue&nbsp;for&nbsp;testtop.&nbsp;&nbsp;Only&nbsp;should&nbsp;<br>
+be&nbsp;called&nbsp;if&nbsp;the&nbsp;residue&nbsp;has&nbsp;been&nbsp;detected&nbsp;to&nbsp;have&nbsp;a<br>
+conflict.&nbsp;If&nbsp;called,&nbsp;try&nbsp;to&nbsp;rotate&nbsp;about&nbsp;dihedral&nbsp;<br>
+angles&nbsp;to&nbsp;resolve&nbsp;the&nbsp;conflict.<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;in&nbsp;question<br>
@@ -204,6 +220,15 @@ versus&nbsp;all&nbsp;O(n^2)&nbsp;algorithm,&nbsp;which&nbsp;saves&nbsp;a&nbsp;gr
 of&nbsp;time.&nbsp;&nbsp;There&nbsp;are&nbsp;several&nbsp;instances&nbsp;where&nbsp;we&nbsp;ignore<br>
 potential&nbsp;conflicts;&nbsp;these&nbsp;include&nbsp;donor/acceptor&nbsp;pairs,<br>
 atoms&nbsp;in&nbsp;the&nbsp;same&nbsp;residue,&nbsp;and&nbsp;bonded&nbsp;CYS&nbsp;bridges.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom:&nbsp;&nbsp;Find&nbsp;nearby&nbsp;atoms&nbsp;to&nbsp;this&nbsp;atom&nbsp;(Atom)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nearatoms:&nbsp;&nbsp;A&nbsp;list&nbsp;of&nbsp;atoms&nbsp;close&nbsp;to&nbsp;the&nbsp;atom.</tt></dd></dl>
+
+<dl><dt><a name="Routines-findNearbyAtomsTopology"><strong>findNearbyAtomsTopology</strong></a>(self, atom)</dt><dd><tt>Find&nbsp;nearby&nbsp;atoms&nbsp;for&nbsp;conflict-checking&nbsp;in&nbsp;testtop.&nbsp;&nbsp;<br>
+Uses&nbsp;neighboring&nbsp;cells&nbsp;to&nbsp;compare&nbsp;atoms&nbsp;rather&nbsp;than&nbsp;<br>
+an&nbsp;all&nbsp;versus&nbsp;all&nbsp;O(n^2)&nbsp;algorithm.<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atom:&nbsp;&nbsp;Find&nbsp;nearby&nbsp;atoms&nbsp;to&nbsp;this&nbsp;atom&nbsp;(Atom)<br>

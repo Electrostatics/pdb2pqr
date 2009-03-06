@@ -1286,7 +1286,7 @@ Optional Packages:
   --with-max-atoms=MAX_ATOMS    Sets the maximum number of atoms in a protein for non-Opal job submission.  Default is 10000
   --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/Pdb2pqrOpalService.
   --with-apbs=APBSPATH       Specify APBS executable location.
-  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://ws.nbcr.net/opal/services/ApbsOpalService
+  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://ws.nbcr.net/opal/services/APBS_1.1.0
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -3667,7 +3667,7 @@ fi
 
 
 if test "$APBS_OPAL_URL" = "yes"; then
-  APBS_OPAL_URL="http://ws.nbcr.net/opal/services/ApbsOpalService"
+  APBS_OPAL_URL="http://ws.nbcr.net/opal/services/APBS_1.1.0"
 fi
 
 if test "$PDB2PQR_OPAL_URL" = "" && test "$APBS_OPAL_URL" != ""; then

@@ -496,12 +496,12 @@ if test "$APBSPATH" != ""; then
 fi
 
 AC_ARG_WITH(apbs-opal,
-	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://ws.nbcr.net/opal/services/ApbsOpalService],
+	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://ws.nbcr.net/opal/services/APBS_1.1.0],
 	[APBS_OPAL_URL=$withval],
 	[APBS_OPAL_URL=""])
 
 if test "$APBS_OPAL_URL" = "yes"; then
-  APBS_OPAL_URL="http://ws.nbcr.net/opal/services/ApbsOpalService"
+  APBS_OPAL_URL="http://ws.nbcr.net/opal/services/APBS_1.1.0"
 fi
 
 if test "$PDB2PQR_OPAL_URL" = "" && test "$APBS_OPAL_URL" != ""; then

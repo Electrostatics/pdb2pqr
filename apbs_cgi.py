@@ -69,6 +69,11 @@ def apbsOpalExec(logTime, form, apbsOptions):
     #argv=[os.path.abspath("tmp/%s/%s.in") % (logTime, "apbsinput")] # HARDCODED??  
     argv=[os.path.abspath("%s%s%s/apbsinput.in" % (INSTALLDIR, TMPDIR, logTime))]  
     appServicePortArray = execApbs(argv=argv)
+
+    # if the version number doesn't match, execApbs returns False
+    if(appServicePortArray == False):
+        return False
+
     appServicePort = appServicePortArray[0]
 
     #aspFile = open('./tmp/%s/%s-asp' % (logTime, logTime),'w')
@@ -1550,13 +1555,14 @@ def convertOpalToLocal(jobid,pdb2pqrOpalJobID):
 
 def redirector(logTime):
 
-    starttimefile = open('%s%s%s/apbs_start_time' % (INSTALLDIR, TMPDIR, logTime), 'w')
-    starttimefile.write(str(time.time()))
-    starttimefile.close()
+    if str(logTime) != "False":
+        starttimefile = open('%s%s%s/apbs_start_time' % (INSTALLDIR, TMPDIR, logTime), 'w')
+        starttimefile.write(str(time.time()))
+        starttimefile.close()
 
     string = ""
     string+='<html> <head>'
-    string+='<meta http-equiv=\"refresh\" content=\"0;url=querystatus.cgi?jobid=%s&calctype=apbs\"/></head></html>' % logTime
+    string+='<meta http-equiv=\"refresh\" content=\"0;url=querystatus.cgi?jobid=%s&calctype=apbs\"/></head></html>' % str(logTime)
     return string
 
 def mainInput() :
@@ -1643,6 +1649,11 @@ def mainInput() :
 
         if have_opal:
             apbsOpalJobID = apbsOpalExec(logTime, form, apbsOptions)
+
+            # if the version number doesn't match, apbsOpalExec returns False
+            if(str(apbsOpalJobID) == 'False'):
+                print redirector(False)
+
             apbsOpalJobIDFile = open('%s%s%s/apbs_opal_job_id' % (INSTALLDIR, TMPDIR, logTime),'w')
             apbsOpalJobIDFile.write(apbsOpalJobID)
             apbsOpalJobIDFile.close()

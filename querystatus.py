@@ -245,6 +245,14 @@ def mainCGI():
     print "Content-type: text/html\n\n"
     calctype = form["calctype"].value
 
+    # prints version error, if it exists
+    if form["jobid"].value == 'False':
+        print printheader("%s Job Status Page" % calctype.upper())
+        progress = "version_mismatch"
+        runtime = 0
+    else:
+        progress = None
+
     # prepares for Opal query, if necessary
     if have_opal:
         if calctype=="pdb2pqr":
@@ -270,7 +278,7 @@ def mainCGI():
         else:
             apbs_input = False
 
-    if have_opal:
+    if have_opal and progress == None:
         if form["calctype"].value=="pdb2pqr":
             pdb2pqrJobIDFile = open('%s%s%s/pdb2pqr_opal_job_id' % (INSTALLDIR, TMPDIR, form["jobid"].value))
             jobid = pdb2pqrJobIDFile.read()
@@ -282,14 +290,15 @@ def mainCGI():
     else:
         jobid = form["jobid"].value
 
-    cp = checkprogress(jobid,appServicePort,calctype) # finds out status of job
-    progress = cp[0]
+    if progress == None:
+        cp = checkprogress(jobid,appServicePort,calctype) # finds out status of job
+        progress = cp[0]
     
     if progress == "running" or progress == "complete":
         timefile = open('%s%s%s/%s_start_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
         starttime = float(timefile.read())
         timefile.close()
-    if progress == "running" or have_opal:
+    if progress == "running" or (have_opal and progress != "version_mismatch"):
         runtime = time.time()-starttime
     elif progress == "complete":
         endtimefile = open('%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
@@ -429,6 +438,8 @@ def mainCGI():
         print "Page will refresh in %d seconds<br />" % refresh
         print "<HR>"
         print "<small>Your results will appear at <a href=%s>this page</a>. If you want, you can bookmark it and come back later (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
+    elif progress == "version_mismatch":
+        print "The versions of APBS on the local server and on the Opal server do not match, so the calculation could not be completed"
         
     print "</P>"
     print "</BODY>"

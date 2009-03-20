@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.0       2-9-08
+BETA PUBLIC RELEASE VERSION 1.4.0       3-20-09
 #############################################################################
  - NEW FEATURES
   * Updated html/master-index.html, deleted html/index.php.
@@ -68,6 +68,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       2-9-08
   * Fixed a bug for ND1 in HIS as hacceptor.
   * Fixed the --clean option bug.
   * Fixed a bug in CHARMM naming scheme.
+  * Fixed a bug in test.cpp of the simple test (which is related to recent 
+    modifications of 1AFS in Protein Data Bank).
 
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.3.0       1-8-08

@@ -1,5 +1,4 @@
 #!/bin/env python
-#!/usr/bin/python
 #
 # $Id$
 #
@@ -39,7 +38,7 @@ class inputGen:
         # Make the coarse grid twice as big as the protein
         #
         for axis in extent:
-            defaults['coarsedim'].append(axis*2.0)
+            defaults['coarsedim'].append(axis*3.0)
         #
         # Center coarse grid on the center of the molecule
         #
@@ -69,14 +68,11 @@ class inputGen:
         #
         import string
         coords=[]
-        fd=open(self.pqrfile, 'rU')
+        fd=open(self.pqrfile)
         line=fd.readline()
         while line:
             split=string.split(line)
             if split[0] in ['ATOM','HETATM']:
-                #print split
-                #print '0123456789012345678901234567890123456789012345678901234567890123456789'
-                #print line
                 x=float(line[30:38])
                 y=float(line[39:46])
                 z=float(line[47:55])
@@ -121,11 +117,13 @@ class inputGen:
         #
         # Set the type of calculation
         #
+#        print 'type: %s' % (type)
         self.type=type
         if type=='desolv':
             self.set_method('mg-manual')
         elif type=='background': 
             self.set_method('mg-auto')
+            self.finedim=[self.coarsedim[0]/1.5,self.coarsedim[1]/1.5,self.coarsedim[2]/1.5]
         elif type=='intene':
             self.set_method('mg-auto')
             self.setfineCenter(self.coarsecent)
@@ -156,9 +154,13 @@ class inputGen:
         text += "    dime %i %i %i\n" % (self.finegridpoints[0], self.finegridpoints[1], self.finegridpoints[2])
         if self.method=='mg-auto':
             text += "    cglen %.4f %.4f %.4f\n" % (self.coarsedim[0], self.coarsedim[1], self.coarsedim[2])
-            text += "    cgcent %.3f %.3f %.3f\n" %(self.coarsecent[0],self.coarsecent[1],self.coarsecent[2])
-        
             text += "    fglen %.4f %.4f %.4f\n" % (self.finedim[0], self.finedim[1], self.finedim[2])
+            text += "    cgcent %.3f %.3f %.3f\n" %(self.coarsecent[0],self.coarsecent[1],self.coarsecent[2])
+            for i in range(3):
+                while (self.finecent[i] - 0.5*self.finedim[i]) <= (self.coarsecent[i] - 0.5*self.coarsedim[i]):
+                    self.finecent[i] += 0.1     # make sure finest mesh does not fall off the coarser meshes
+                while (self.finecent[i] + 0.5*self.finedim[i]) >= (self.coarsecent[i] + 0.5*self.coarsedim[i]):
+                    self.finecent[i] -= 0.1     # make sure finest mesh does not fall off the coarser meshes
             text += "    fgcent %.3f %.3f %.3f\n" %(self.finecent[0],self.finecent[1],self.finecent[2])
         elif self.method=='mg-manual':
             text += "    glen %.4f %.4f %.4f\n" % (self.coarsedim[0], self.coarsedim[1], self.coarsedim[2])
@@ -171,16 +173,16 @@ class inputGen:
         text += "    mol 1\n"                            
         text += "    lpbe\n"                             
         text += "    bcfl sdh\n"                           
-        text += "    ion 1 0.150 2.0\n"            
-        text += "    ion -1 0.150 2.0\n"           
+        text += "    ion charge 1 conc 0.150 radius 2.0\n"            
+        text += "    ion charge -1 conc 0.150 radius 2.0\n"           
         text += "    pdie %5.2f\n"  %self.pdie                
         text += "    sdie %5.2f\n" %self.sdie                
         text += "    srfm smol\n"                   
         text += "    chgm spl2\n"
         text += "    srad 1.4\n"          
         text += "    swin 0.3\n"         
+        text += "    sdens 10.0\n"
         text += "    temp 298.15\n"     
-        text += "    gamma 0.105\n"    
         text += "    calcenergy total\n"
         text += "    calcforce no\n"
         text += "    write pot dx pot\n"

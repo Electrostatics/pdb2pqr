@@ -448,12 +448,12 @@ AC_ARG_WITH(max-atoms,
 HAVE_PDB2PQR_OPAL=0
 
 AC_ARG_WITH(opal,
-	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/Pdb2pqrOpalService.],
+	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://ws.nbcr.net/opal/services/pdb2pqr_1.4.0],
 	[PDB2PQR_OPAL_URL=$withval],
 	[PDB2PQR_OPAL_URL=""])
 
 if test "$PDB2PQR_OPAL_URL" = "yes"; then
-  PDB2PQR_OPAL_URL="http://ws.nbcr.net/opal/services/Pdb2pqrOpalService"
+  PDB2PQR_OPAL_URL="http://ws.nbcr.net/opal/services/pdb2pqr_1.4.0"
   HAVE_PDB2PQR_OPAL=1
 fi
 

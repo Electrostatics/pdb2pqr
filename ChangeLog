@@ -20,7 +20,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09
   * Updated Makefile.am with Manuel Prinz's patch (removed distclean2 and 
     appended its contents to distclean-local).
   * Updated configure.ac, pdb2pqr-opal.py; added AppService_client.py and 
-    AppService_types.py with Samir Unni's changes.
+    AppService_types.py with Samir Unni's changes, which fixed earlier
+    problems in invoking Opal services.
   * Applied two patches from Manuel Prinz to pdb2pka/pMC_mult.h and 
     pdb2pka/ligand_topology.py. 
   * Updated PARSE.DAT with the source of parameters. 
@@ -29,10 +30,12 @@ BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09
       a. Working version of NumPy dectected by autoconf.
       b. User requests no installation with --disable-pdb2pka option.
       c. User specifies external NumPy installation.  
-  * Merged Samir's branch. Now PDB2PQR Opal and APBS Opal services are 
-    available.
+  * Merged Samir Unni's branch. Now PDB2PQR Opal and APBS Opal services are 
+    available (through --with-opal and/or --with-apbs, --with-apbs-opal 
+    options at configure stage).
   * Added error handling for residue name longer than 4 characters.
-  * Updated hbond.py with Mike Bradley's definitions by default.
+  * Updated hbond.py with Mike Bradley's definitions for ANGLE_CUTOFF and 
+    DIST_CUTOFF by default.
   * Removed PyXML-0.8.4, which is not required for ZSI installation.
   * Updated propka error message for make adv-test -- propka requires a 
     version of Fortran compiler.
@@ -46,7 +49,8 @@ BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09
   * Removed http://enzyme.ucd.ie/Services/pdb2pqr/ from web server list.
   * Eliminated the need for protein when processing other types (ligands, 
     nucleic acids).
-  * Applied Robert's patch in psize.py.
+  * Updated psize.py with Robert Konecny's patch to fix inconsistent assignment
+    of fine grid numbers in some (very) rare cases.
   * Made whitespace option available for both command line and web server 
     versions.
   * Updated inputgen_pKa.py with the latest version.

@@ -376,7 +376,8 @@ def mainCGI():
                 for i in range(0,len(outputfilelist)):
                     outputfilelist[i] = os.path.basename(outputfilelist[i])
                 for extension in ["-typemap.html", ".pqr", ".in"]:
-                    outputfilelist.append('%s%s' % (jobid, extension))
+                    if extension != ".in" or apbs_input != False:
+                        outputfilelist.append('%s%s' % (jobid, extension))
                 for outputfile in outputfilelist:
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
 

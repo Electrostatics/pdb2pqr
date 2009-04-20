@@ -93,7 +93,7 @@ class Routines:
            for i in range(indent):
                out += "\t"
            out += message
-           sys.stderr.write(out)
+           sys.stdout.write(out)
 
     def getWarnings(self):
         """

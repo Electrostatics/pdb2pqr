@@ -545,7 +545,7 @@ def mainCommand(argv):
     text += "  PDB2PQR: an automated pipeline for the setup, execution,\n"
     text += "  and analysis of Poisson-Boltzmann electrostatics calculations.\n"
     text += "  Nucleic Acids Research 32 W665-W667 (2004).\n\n"
-    sys.stderr.write(text)
+    sys.stdout.write(text)
             
     path = args[0]
     file = getPDBFile(path)

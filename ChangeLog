@@ -1,4 +1,13 @@
 #############################################################################
+BETA PUBLIC RELEASE VERSION 1.4.1       4-20-09
+#############################################################################
+ - NEW FEATURES
+
+ - BUG FIXES
+  * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack
+    smashing problem in simple test on Ubuntu Linux with recent gcc versions.
+
+#############################################################################
 BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09
 #############################################################################
  - NEW FEATURES
@@ -55,7 +64,7 @@ BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09
     versions.
   * Updated inputgen_pKa.py with the latest version.
 
- -BUG FIXES
+ - BUG FIXES
   * Fixed a legacy bug with the web server (web server doesn't like ligand 
     files generated on Windows or old Mac OS platforms).
   * Fixed a bug in configure.ac, so that PDB2PQR no longer checks for 

@@ -15,7 +15,8 @@ CLEANFILES       = Algorithms.so
 
 noinst_PROGRAMS          = Algorithms.so
 Algorithms_so_SOURCES     = Algorithms.cpp  
-Algorithms_so_LINK        = $(CXX) -o $@ $(PY_SHARED)
+Algorithms_so_LINK        = $(CXX)
+Algorithms_so_LDFLAGS     = -o $@ $(PY_SHARED)
 Algorithms_so_LDADD       = $(PY_LDFLAGS)
 
 distclean-local: clean-local

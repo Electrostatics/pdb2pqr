@@ -26,12 +26,12 @@
 // [Model pKa: <model pKa value for above transition>]
 // END                                           # Record ends
 // END OF FILE                                   # File ends
+// Model pKa adjust for four neutral states
 * ASP
 Residue: ASP
 Grouptype: Acid
-//Transition: 1,2,3,4 -> 0
 Transition: 1,2,3,4 -> 0
-Model_pKa: 4.0
+Model_pKa: 3.6
 END
 
 // *Carboxylic_Acid
@@ -40,36 +40,58 @@ END
 // Transition: 1 -> 0
 // Model_pKa: 0.0
 // END 
-
+// Model pKa adjust for four neutral states
 * GLU
 Residue: GLU
 Grouptype: Acid
 Transition: 1,2,3,4 -> 0
-// Transition: 1 -> 0
-Model_pKa: 4.4
+Model_pKa: 3.8
 END
 
 * ARG
 Residue: ARG
 Grouptype: Base
-Transition: 1,2,3,4 -> 0
-Transition: 1 -> 0 
-Model_pKa: 12.0
+Transition: 1+2+3+4 -> 1+2+3+4+5 
+Model_pKa: 13.0
 END
 
 * LYS
 Residue: LYS
 Grouptype: Base
 Transition: 1 -> 0
-Model_pKa: 9.0
+Model_pKa: 10.4
 END 
 
-//* HIS
-//Residue: HIS
-//Grouptype: Base
-//Transition: 1,2->1+2
-//Model_pKa: 6.3
-//END 
+* TYR
+Residue: TYR
+Grouptype: Acid
+Transition: 1 -> 0
+Model_pKa: 9.6
+END 
+
+// Model pKa adjusted for two neutral states
+* HIS
+Residue: HIS
+Grouptype: Base
+Transition: 1,2->1+2
+Model_pKa: 6.6
+END 
+
+// Model pKa adjusted for two neutral states
+* NTR
+Residue: All
+Grouptype: Base
+Transition: 1,2->1+2
+Model_pKa: 8.3
+END
+
+// Model pKa adjusted for four neutral states
+* CTR
+Residue: All
+Grouptype: Acid
+Transition: 1,2,3,4 -> 0
+Model_pKa: 3.2
+END
 
 END OF FILE
 

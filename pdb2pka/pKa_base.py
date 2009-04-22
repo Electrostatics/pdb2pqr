@@ -27,7 +27,8 @@ class pKa:
         self.background = {}
         self.interactionEnergies = {}
         self.intrinsic_pKa = {}
-        self.calculated_pKa = {}
+        self.simulated_intrinsic_pKa = None
+        self.pKa = None
         #
         # Unique identifier
         #
@@ -100,7 +101,7 @@ class DefTitration:
     # number of startstates and endstates
     #
     
-    def __init__(self, startstates, endstates, modelpKa):
+    def __init__(self, startstates, endstates, modelpKa,name):
         #
         #    Initialize the pKaTransition object
         #
@@ -120,7 +121,7 @@ class DefTitration:
         self.endstates = endstates
         self.allstates=startstates+endstates
         self.modelpKa = modelpKa
-        #self.intrinsic_pKa=[] # We will have more than one intrinsic pKa per group
+        self.name = name
         #
         # Set transitions
         #
@@ -149,5 +150,6 @@ class DefTitration:
         text  = "\tStartstates: %s\n" % self.startstates
         text += "\tEndstates:   %s\n" % self.endstates
         text += "\tmodelpKa:    %.1f\n" % self.modelpKa
+        text += "\tName:        %s\n" % self.name
         return text
 

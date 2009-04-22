@@ -8,34 +8,32 @@
 //
 //
 
-#include <cstdlib>
-
 void MC::reformat_arrays() {
   //
   // Reformat the matrix
   //
-  printf ("Reformatting arrays\n");
+  //printf ("Reformatting arrays\n");
   _groups=static_cast<int>(_num_states.size());
-  printf ("Number of groups: %d\n",_groups);
-  for (int group=0;group<_groups;group++) {
-    printf ("Num_states for group %d is %d\n",group,_num_states[group]); 
-  }
+  //printf ("Number of groups: %d\n",_groups);
+  //for (int group=0;group<_groups;group++) {
+  //  printf ("Num_states for group %d is %d\n",group,_num_states[group]); 
+  //}
 
   //
   int count=0;
   for (int row=0;row<_groups;row++) {
-    printf ("Constructing matrix for group %d\n",row);
+    //printf ("Constructing matrix for group %d\n",row);
     vector<vector<vector<double > > > row_vals;
     for (int column=0;column<_groups;column++) {
-      printf ("Second level matrix for group %d\n",column);
+      //printf ("Second level matrix for group %d\n",column);
       vector<vector<double > > column_vals;
       for (int group1_states=0;group1_states<_num_states[row];group1_states++) {
 	vector<double> group1_s;
 	for (int group2_states=0;group2_states<_num_states[column];group2_states++) {
 	  group1_s.push_back(_lin_matrix[count]);
 	 
-	  printf ("While reformatting arrays: g1: %d, g2: %d, st1: %d st2: %d value: %5.3f\n",
-		  row,column,group1_states,group2_states,_lin_matrix[count]);
+	  // printf ("While reformatting arrays: g1: %d, g2: %d, st1: %d st2: %d value: %5.3f\n",
+	  //	  row,column,group1_states,group2_states,_lin_matrix[count]);
 	  count=count+1;
 	}
 	column_vals.push_back(group1_s);
@@ -82,14 +80,7 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
     charges.push_back(calc_charge(pH));
     max_pH=pH;
   }
-  //
-  // Print the intrinsic pKa values we got
-  //
-  for (int group=0;group<_groups;group++) {
-    for (int state=0;state<_num_states[group];state++) {
-      printf ("Intrinsic pKa group %d state %d is %5.2f\n",group,state,_intpKas[group][state]);
-    }
-  }
+  printf("\n");
   // 
   // Now determine pKa values
   //
@@ -108,7 +99,6 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
       float this_crg=charges[count][group];
       if (_acid_base[group]==1.0) {
 	if (this_crg<=0.5 && last_crg>0.5) {
-	  //pKa=(last_crg-0.5)/(last_crg-this_crg)*pH_step+(pH-pH_step);
 	  //
 	  // Get ph,charge sets and calc pKa from those
 	  //
@@ -125,7 +115,6 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
 	}
       } else {
 	if (this_crg<=-0.5 && last_crg>-0.5) {
-	  //pKa=(last_crg-(-0.5))/(last_crg-this_crg)*pH_step+(pH-pH_step);
 	  //
 	  // Get ph,charge sets and calc pKa from those
 	  //
@@ -209,7 +198,6 @@ double MC::calc_pKa(vector<float> charges,vector<double> pHs,double acid_base) {
   for (int count=0;count<static_cast<int>(pKas.size());count++) {
     sum=sum+pKas[count];
   }
-  //printf ("Done with calc_pKa\n");
   pKa=sum/static_cast<double>(pKas.size());
   return pKa;
 }
@@ -293,22 +281,18 @@ vector<float> MC::calc_charge(float pH) {
     //
     // Current charge state
     int cur_charge_state=_charged_state[rand_group][current_state[rand_group]];
-    //
-    //printf ("Group %d, current state: %d with charge %d\n",rand_group,current_state[rand_group],cur_charge_state);
     int rand_group_state=static_cast<int>(rand()%_num_states[rand_group]);
-    while (_charged_state[rand_group][rand_group_state]==cur_charge_state) {
-      //
+    // 
+    // Stay in while loop until we get a different state
+    //
+    while (rand_group_state==current_state[rand_group]) {
       rand_group_state=static_cast<int>(rand()%_num_states[rand_group]);
-      //printf ("New charged state: %d with charge %d. Numstates is %d \n",rand_group_state,
-      //      _charged_state[rand_group][rand_group_state],_num_states[rand_group]);
     }
-    //printf ("Changing group %d to state %d\n\n",rand_group,rand_group_state);
     // Change state
     try_state[rand_group]=abs(rand_group_state);
     //
     // Get the energy of the new state
     //
-    //try_energy_new=get_energy_fast(pH,try_state,rand_group,current_energy);
     try_energy_new=get_energy(pH,try_state);
     //
     // Keep or reject?
@@ -342,7 +326,6 @@ vector<float> MC::calc_charge(float pH) {
     if (step>eqsteps) {
       for (int count=0;count<_groups;count++) {
 	sum_state[count].push_back(current_state[count]);
-	//sum_state[count]=sum_state[count]+current_state[count];
       }
     }
   }
@@ -367,8 +350,9 @@ vector<float> MC::calc_charge(float pH) {
     }
     charge=charge_sum/(static_cast<float>(sample_steps));
     charges_thispH.push_back(charge);
-    printf ("pH: %5.2f, Group: %d, Charge: %5.3f\n",pH,count,charge);
   }
+  printf ("\b\b\b\b\b\b\b\b\b\b\b\bpH: %5.2f",pH);
+  fflush(stdout);
   return charges_thispH;
 }
 
@@ -387,87 +371,23 @@ double MC::get_energy(float pH,vector<int> state) {
     //
     // Add the energy from the intrinsic pKa
     //
-    //printf ("State in get_energy for group %d is %d\n",group1,state[group1]);
     int charge_grp1=_charged_state[group1][state[group1]];
     if (charge_grp1!=0) {
-    //printf ("Intrinsic pKa for group: %d in state %d is %5.2f\n",
-    // 	      group1,state[group1],
-    //       _intpKas[group1][state[group1]]);
       energy=energy+_acid_base[group1]*lnten*(pH_value-_intpKas[group1][state[group1]]);
     } else {
       energy=energy+_intpKas[group1][state[group1]]*lnten;
     }
-      //
-      // Entropy correction
-      //
-      //if (_charged_state[group1][state[group1]]==0 && _acid_base[group1]==-1) {
-      //energy=energy+log(static_cast<double>(_charged_state[group1].size())-1)*1.80;
-	//printf("Entropy correction: states-1 %d  correction: %5.3f \n",
-	//      (_charged_state[group1].size())-1,
-	//      log(static_cast<double>(_charged_state[group1].size())-1)*1.80 );
-      //}
-      //
-      // Add the charged-charged energies
-      //
-      //}
-    if (charge_grp1!=0) {
-      if (charge_grp1!=0) { //Is this a charged state?
-	for (int group2=0;group2<_groups;group2++) {
-	  int charge_grp2=_charged_state[group2][state[group2]];
-	  if (charge_grp2!=0 and group2!=group1) {
-	    // printf ("For group: %d Trying to get matrix: %d %d %d %d: %5.3f\n",
-// 		    group1,
-// 		    group1,
-// 		    group2,
-// 		    state[group1],
-// 		    state[group2],
-// 		    _matrix[group1][group2][state[group1]][state[group2]]/2.0);
-	    energy=energy+_matrix[group1][group2][state[group1]][state[group2]]/2.0;
-	  }
-	}
+    //
+    // Add the interaction energies
+    // All energies have been corrected in pkanew, so we add all intenes
+    //
+    for (int group2=0;group2<_groups;group2++) {
+      if (group1!=group2) {
+	energy=energy+_matrix[group1][group2][state[group1]][state[group2]]/2.0;
       }
     }
   }
-  //printf ("Exiting Energy calcs\n");
-  return energy;
+  return energy; 
 }
-	
-//
-// --------------------
-// 
   
-// double MC::get_energy_fast(float pH,vector<int> state,int change_group,double old_energy) {
-//   //
-//   // Calculate the energy of the present state
-//   //
-//   int startpointer;
-//   double energy=old_energy;
-//   double energy_diff=0.0;
-//   //
-//   // Add the energy from the intrinsic pKa
-//   //
-//   energy_diff=_acid_base[change_group]*lnten*(pH-_intpKas[change_group]);
-//   //
-//   // Add the charged-charged energies
-//   //
-//   for (int group2=0;group2<_groups;group2++) {
-//     if (state[group2]==1 && group2!=change_group) {
-//       energy_diff=energy_diff+_matrix[change_group][group2];
-//     }
-//   }
-//   //
-//   // Should we add or subtract the energy
-//   //
-//   if (state[change_group]==1) {
-//     //
-//     // Group became charged - add energy
-//     //
-//     energy=energy+energy_diff;
-//   } else {
-//     // 
-//     // Group became uncharged
-//     //
-//     energy=energy-energy_diff;
-//   }
-//   return energy;
-// }
+

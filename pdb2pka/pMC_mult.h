@@ -8,7 +8,6 @@
 
 #include <string>
 #include <vector>
-#include <stdlib.h>
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
@@ -27,7 +26,7 @@ class MC {
      vector<int>charged_state): _intpKas_lin(intpKas),_lin_matrix(lin_matrix),_acid_base(ab),_num_states(num_states),_charged_state_lin(charged_state) {
     reformat_arrays();
     // Set default value for MCsteps
-    _MCsteps=20000;
+    _MCsteps=2000000;
   };
   //
   vector<float> calc_pKas(float pH_start,float pH_end, float pH_step);

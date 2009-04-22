@@ -22,8 +22,8 @@ except:
     print
     print 'Missing libraries for interfacing with APBS'
     print
-    print 'You need to find apbslib.so, _apbslib.so and apbslib.py and symlink into the pdb2pqr/pKa source code directory'
-    print 'The files can be found in the tools/python dir of your apbs installation'
+    print 'You need to find _apbslib.so and apbslib.py and symlink into the pdb2pqr/pKa source code directory'
+    print 'The files can be found in the share/tools/python dir of your apbs installation'
     print
     sys.exit(0)
 
@@ -31,6 +31,7 @@ Python_kb = 1.3806581e-23
 Python_Na = 6.0221367e+23
 NOSH_MAXMOL = 20
 NOSH_MAXCALC = 20
+ACD_ERROR = 2    # < Error setting up calculation>
 
 class APBSError(Exception):
     """ APBSError class
@@ -54,246 +55,339 @@ class APBSError(Exception):
         """
         return `self.value`
 
-def getUnitConversion():
-    """
-        Get the unit conversion from kT to kJ/mol
+class runAPBS:
 
-        Returns
-            factor: The conversion factor (float)
-    """
-    temp = 298.15
-    factor = Python_kb/1000.0 * temp * Python_Na
-    return factor
-
-def runAPBS(protein, inputpath):
-    """
-        Run APBS, using the protein instead of a pqr file
-
-        Parameters
-            protein:    The protein object (protein)
-            inputpath:  The path to the APBS input file (string)
-        Returns
-            potentials: A list of lists of potentials at atom
-                        locations - one list for each APBS
-                        calculation
-    """
-    #print protein
-    #print inputpath
-
-    # Initialize the MALOC library
-    startVio()
-
-    # Initialize variables, arrays
-    com = Vcom_ctor(1)
-    rank = Vcom_rank(com)
-    size = Vcom_size(com)
-    mgparm = MGparm()
-    pbeparm = PBEparm()
-    mem = Vmem_ctor("Main")
-    pbe = new_pbelist(NOSH_MAXMOL)
-    pmg = new_pmglist(NOSH_MAXMOL)
-    pmgp = new_pmgplist(NOSH_MAXMOL)
-    realCenter = double_array(3)
-    totEnergy = []
-    x = []
-    y = []
-    z = []
-    chg = []
-    rad = []
-    #nforce = int_array(NOSH_MAXCALC)
-    #atomforce = new_atomforcelist(NOSH_MAXCALC)
-    #nfor = ptrcreate("int",0)
+    def __init__(self):
+        return
     
-    # Start the main timer
-    main_timer_start = time.clock()
 
-    # Check invocation
-    #stdout.write(getHeader())
+    def getUnitConversion(self):
+        """
+            Get the unit conversion from kT to kJ/mol
 
-    # Parse the input file
-    nosh = NOsh_ctor(rank, size)
-    #nosh = NOsh()
-    #NOsh_ctor2(nosh, rank, size)
-    sys.stdout.write("Parsing input file %s...\n" % inputpath)
-    if NOsh_parseFile(nosh, inputpath) != 1:
-        sys.stderr.write("main:  Error while parsing input file.\n")
-        raise APBSError, "Error while parsing input file!"
+            Returns
+                factor: The conversion factor (float)
+        """
+        temp = 298.15
+        factor = Python_kb/1000.0 * temp * Python_Na
+        return factor
 
-    # Load the molecules using Valist_load routine
+    def runAPBS(self,protein, inputpath, CM=None):
+        """
+            Run APBS, using the protein instead of a pqr file
 
-    alist = new_valist(NOSH_MAXMOL)
-    atoms = protein.getAtoms()
-    protsize = len(atoms)
-    for i in range(len(atoms)):
-        atom = atoms[i]
-        x.append(atom.get("x"))
-        y.append(atom.get("y"))
-        z.append(atom.get("z"))
-        chg.append(atom.get("ffcharge"))
-        rad.append(atom.get("radius"))
-  
-    myAlist = make_Valist(alist,0)
-    Valist_load(myAlist, protsize, x,y,z,chg,rad) 
+            Parameters
+                protein:    The protein object (protein)
+                inputpath:  The path to the APBS input file (string)
+            Returns
+                potentials: A list of lists of potentials at atom
+                            locations - one list for each APBS
+                            calculation
+        """
+        #
+        # Initialize the MALOC library
+        startVio()
 
-    # Initialize the energy holders
+        # Initialize variables, arrays
+        self.com = Vcom_ctor(1)
+        self.rank = Vcom_rank(self.com)
+        self.size = Vcom_size(self.com)
+        self.mgparm = MGparm()
+        self.pbeparm = PBEparm()
+        self.mem = Vmem_ctor("Main")
+        self.pbe = new_pbelist(NOSH_MAXMOL)
+        self.pmg = new_pmglist(NOSH_MAXMOL)
+        self.pmgp = new_pmgplist(NOSH_MAXMOL)
+        self.realCenter = double_array(3)
+        self.totEnergy = []
+        self.x = []
+        self.y = []
+        self.z = []
+        self.chg = []
+        self.rad = []
+        #nforce = int_array(NOSH_MAXCALC)
+        #atomforce = new_atomforcelist(NOSH_MAXCALC)
+        #nfor = ptrcreate("int",0)
 
-    for i in range(nosh.ncalc): totEnergy.append(0.0)
-    potList = []
-    
-    # Initialize the force holders
-    forceList = []
-  
-    # Load the dieletric maps
+        # Start the main timer
+        self.main_timer_start = time.clock()
 
-    dielXMap = new_gridlist(NOSH_MAXMOL)
-    dielYMap = new_gridlist(NOSH_MAXMOL)
-    dielZMap = new_gridlist(NOSH_MAXMOL)
-  
-    if loadDielMaps(nosh, dielXMap, dielYMap, dielZMap) != 1:
-        sys.stderr.write("Error reading dielectric maps!\n")
-        raise APBSError, "Error reading dielectric maps!"
- 
-    # Load the kappa maps
-    kappaMap = new_gridlist(NOSH_MAXMOL)
-    if loadKappaMaps(nosh, kappaMap) != 1:
-        sys.stderr.write("Error reading kappa maps!\n")
-        raise APBSError, "Error reading kappa maps!"
+        # Check invocation
+        #stdout.write(getHeader())
 
-    # Load the charge maps
-    chargeMap = new_gridlist(NOSH_MAXMOL)
-    if loadChargeMaps(nosh, chargeMap) != 1:
-        sys.stderr.write("Error reading charge maps!\n")
-        raise APBSError, "Error reading charge maps!"
-    
-    # Do the calculations
- 
-    sys.stdout.write("Preparing to run %d PBE calculations. \n" % nosh.ncalc)
-   
-    for icalc in xrange(nosh.ncalc):
-        sys.stdout.write("---------------------------------------------\n")
-        calc = NOsh_getCalc(nosh, icalc)
-        mgparm = calc.mgparm
-        pbeparm = calc.pbeparm
-        if calc.calctype != 0:
-            sys.stderr.write("main:  Only multigrid calculations supported!\n")
-            raise APBSError, "Only multigrid calculations supported!"
+        # Parse the input file
+        self.nosh = NOsh_ctor(self.rank, self.size)
+        #nosh = NOsh()
+        #NOsh_ctor2(nosh, rank, size)
+        sys.stdout.write("Parsing input file %s...\n" % inputpath)
+        if NOsh_parseInputFile(self.nosh, inputpath) != 1:
+            sys.stderr.write("main:  Error while parsing input file.\n")
+            raise APBSError, "Error while parsing input file!"
 
-        for k in range(0, nosh.nelec):
-            if NOsh_elec2calc(nosh,k) >= icalc:
-                break
+        # Load the molecules using Valist_load routine
 
-        name = NOsh_elecname(nosh, k+1)
-        if name == "":
-            sys.stdout.write("CALCULATION #%d:  MULTIGRID\n" % (icalc+1))
-        else:
-            sys.stdout.write("CALCULATION #%d (%s): MULTIGRID\n" % ((icalc+1),name))
-        sys.stdout.write("Setting up problem...\n")
-	
-        # Routine initMG
-	
-        if initMG(icalc, nosh, mgparm, pbeparm, realCenter, pbe, 
-              alist, dielXMap, dielYMap, dielZMap, kappaMap, chargeMap, 
-              pmgp, pmg) != 1:
-            sys.stderr.write("Error setting up MG calculation!\n")
-            raise APBSError, "Error setting up MG calculation!"
-	
-        # Print problem parameters 
-	
-        printMGPARM(mgparm, realCenter)
-        printPBEPARM(pbeparm)
-	
-        # Solve the problem : Routine solveMG
-	
-        thispmg = get_Vpmg(pmg,icalc)
+        self.alist = new_valist(NOSH_MAXMOL)
+        self.atoms = protein.getAtoms()
+        self.protsize = len(self.atoms)
 
-        if solveMG(nosh, thispmg, mgparm.type) != 1:
-            stderr.write("Error solving PDE! \n")
-            raise APBSError, "Error Solving PDE!"
+        # SETUP CALCULATIONS
 
-        # Set partition information : Routine setPartMG
+        if NOsh_setupElecCalc(self.nosh, self.alist) != 1:
+            sys.stderr.write("Error setting up ELEC calculations\n")
+            raise APBSError, "Error while setting up calculations!"
 
-        if setPartMG(nosh, mgparm, thispmg) != 1:
-            sys.stderr.write("Error setting partition info!\n")
-            raise APBSError, "Error setting partition info!"
-	
-        ret, totEnergy[icalc] = energyMG(nosh, icalc, thispmg, 0,
-                                         totEnergy[icalc], 0.0, 0.0, 0.0)
-	
-        # Set partition information
+        if NOsh_setupApolCalc(self.nosh, self.alist) == ACD_ERROR:
+            sys.stderr.write("Error setting up APOL calculations\n")
+            raise APBSError, "Error while setting up calculations!"
 
-        #aforce = get_AtomForce(atomforce, icalc)
-        #forceMG(mem, nosh, pbeparm, mgparm, thispmg, nfor, aforce, alist)
-        #ptrset(nforce,ptrvalue(nfor), icalc)
-	
-        # Write out data from MG calculations : Routine writedataMG	
-        writedataMG(rank, nosh, pbeparm, thispmg)
-	
-        # Write out matrix from MG calculations	
-        writematMG(rank, nosh, pbeparm, thispmg)
+        #
+        # DEBUGGING
+        #
+        self.cm_list=[]
 
-        # GET THE POTENTIALS
-              
-        potentials = getPotentials(nosh, pbeparm, thispmg, myAlist)
-        #print potentials
-        potList.append(potentials)
+        for i in range(len(self.atoms)):
+            atom = self.atoms[i]
+            self.x.append(atom.get("x"))
+            self.y.append(atom.get("y"))
+            self.z.append(atom.get("z"))
+            self.chg.append(atom.get("ffcharge"))
+            self.rad.append(atom.get("radius"))
+            self.cm_list.append([atom.resSeq,atom.name,atom.get("ffcharge")])
+
+        #
+        # DEBUG
+        #
+        if CM:
+            CM.display_charges(self.cm_list)
+        #
+
+        self.myAlist = make_Valist(self.alist,0)
+        Valist_load(self.myAlist, self.protsize, self.x,self.y,self.z,self.chg,self.rad) 
+
+        # Initialize the energy holders
+        for i in range(self.nosh.ncalc):    self.totEnergy.append(0.0)
+        potList = []
+
+        # Initialize the force holders
+        forceList = []
+
+        # Load the dieletric maps
+
+        self.dielXMap = new_gridlist(NOSH_MAXMOL)
+        self.dielYMap = new_gridlist(NOSH_MAXMOL)
+        self.dielZMap = new_gridlist(NOSH_MAXMOL)
+
+        if loadDielMaps(self.nosh, self.dielXMap, self.dielYMap, self.dielZMap) != 1:
+            sys.stderr.write("Error reading dielectric maps!\n")
+            raise APBSError, "Error reading dielectric maps!"
+
+        # Load the kappa maps
+        self.kappaMap = new_gridlist(NOSH_MAXMOL)
+        if loadKappaMaps(self.nosh, self.kappaMap) != 1:
+            sys.stderr.write("Error reading kappa maps!\n")
+            raise APBSError, "Error reading kappa maps!"
+
+        # Load the charge maps
+        self.chargeMap = new_gridlist(NOSH_MAXMOL)
+        if loadChargeMaps(self.nosh, self.chargeMap) != 1:
+            sys.stderr.write("Error reading charge maps!\n")
+            raise APBSError, "Error reading charge maps!"
+
+        # Do the calculations
+
+        sys.stdout.write("Preparing to run %d PBE calculations. \n" % self.nosh.ncalc)
+
+        for icalc in xrange(self.nosh.ncalc):
+            sys.stdout.write("---------------------------------------------\n")
+            self.calc = NOsh_getCalc(self.nosh, icalc)
+            self.mgparm = self.calc.mgparm
+            self.pbeparm = self.calc.pbeparm
+            if self.calc.calctype != 0:
+                sys.stderr.write("main:  Only multigrid calculations supported!\n")
+                raise APBSError, "Only multigrid calculations supported!"
+
+            for k in range(0, self.nosh.nelec):
+                if NOsh_elec2calc(self.nosh,k) >= icalc:
+                    break
+
+            name = NOsh_elecname(self.nosh, k+1)
+            #if name == "":
+            #    sys.stdout.write("CALCULATION #%d:  MULTIGRID\n" % (icalc+1))
+            #else:
+            #    sys.stdout.write("CALCULATION #%d (%s): MULTIGRID\n" % ((icalc+1),name))
+            #sys.stdout.write("Setting up problem...\n")
+
+            # Routine initMG
+
+            if initMG(icalc, self.nosh, self.mgparm, self.pbeparm, self.realCenter, self.pbe, 
+                  self.alist, self.dielXMap, self.dielYMap, self.dielZMap, self.kappaMap, self.chargeMap, 
+                  self.pmgp, self.pmg) != 1:
+                sys.stderr.write("Error setting up MG calculation!\n")
+                raise APBSError, "Error setting up MG calculation!"
+
+            # Print problem parameters 
+
+            #printMGPARM(self.mgparm, self.realCenter)
+            #printPBEPARM(self.pbeparm)
+
+            # Solve the problem : Routine solveMG
+
+            self.thispmg = get_Vpmg(self.pmg,icalc)
+
+            if solveMG(self.nosh, self.thispmg, self.mgparm.type) != 1:
+                stderr.write("Error solving PDE! \n")
+                raise APBSError, "Error Solving PDE!"
+
+            # Set partition information : Routine setPartMG
+
+            if setPartMG(self.nosh, self.mgparm, self.thispmg) != 1:
+                sys.stderr.write("Error setting partition info!\n")
+                raise APBSError, "Error setting partition info!"
+
+            ret, self.totEnergy[icalc] = energyMG(self.nosh, icalc, self.thispmg, 0,
+                                                  self.totEnergy[icalc], 0.0, 0.0, 0.0)
+
+            # Set partition information
+
+            #aforce = get_AtomForce(atomforce, icalc)
+            #forceMG(mem, nosh, pbeparm, mgparm, thispmg, nfor, aforce, alist)
+            #ptrset(nforce,ptrvalue(nfor), icalc)
+
+            # Write out data from MG calculations : Routine writedataMG	
+            writedataMG(self.rank, self.nosh, self.pbeparm, self.thispmg)
+
+            # Write out matrix from MG calculations	
+            writematMG(self.rank, self.nosh, self.pbeparm, self.thispmg)
+
+            # GET THE POTENTIALS
+
+            potentials = getPotentials(self.nosh, self.pbeparm, self.thispmg, self.myAlist)
+            potList.append(potentials)
+
+        #
+        # Cleanup
+        #
+        return potList
+
+    #
+    # ------
+    #
+
+    def get_potentials(self,protein):
+
+        import sys
+        import copy
+
+        sys.setrecursionlimit(10000)
+
+        delete_valist(self.alist)
+        self.alist = new_valist(NOSH_MAXMOL)
+        self.atoms = protein.getAtoms()
+        self.protsize = len(self.atoms)
+        proteincopy = copy.copy(protein)
+
+        for i in range(len(self.atoms)):
+            atom = self.atoms[i]
+            self.x.append(atom.get("x"))
+            self.y.append(atom.get("y"))
+            self.z.append(atom.get("z"))
+            self.chg.append(atom.get("ffcharge"))
+            self.rad.append(atom.get("radius"))
+            #self.cm_list.append([atom.resSeq,atom.name,atom.get("ffcharge")])
+        #
+        # DEBUG
+        #
+        #if CM:
+        #    CM.display_charges(self.cm_list)
+        #
+        self.myAlist = make_Valist(self.alist,0)
+
+        xlist = self.x[-1*(self.protsize):]
+        ylist = self.y[-1*(self.protsize):] 
+        zlist = self.z[-1*(self.protsize):]
+        chglist = self.chg[-1*(self.protsize):]
+        radlist = self.rad[-1*(self.protsize):]
+
+        Valist_load(self.myAlist, self.protsize, xlist, ylist, zlist, chglist, radlist)
+
+        potentials=[]
+        potentials = getPotentials(self.nosh,self.pbeparm,self.thispmg,self.myAlist)
+
+        protein = copy.copy(proteincopy)
+
+        # Free up the memory allocated for self.myAlist
+        remove_Valist(self.myAlist)
+
+        return potentials
+
+
+    #
+    # ------
+    #
         
-    # Handle print statements
+    def cleanup(self):
 
-    if nosh.nprint > 0:
-        sys.stdout.write("---------------------------------------------\n")
-        sys.stdout.write("PRINT STATEMENTS\n")
-    for iprint in xrange(nosh.nprint):
-        if NOsh_printWhat(nosh, iprint) == NPT_ENERGY:
-            printEnergy(com, nosh, totEnergy, iprint)
-        elif NOsh_printWhat(nosh, iprint) == NPT_FORCE:
-            printForce(com, nosh, nforce, atomforce, iprint)
-        else:
-            sys.stdout.write("Undefined PRINT keyword!\n")
-            break
+        # Handle print statements
 
-    sys.stdout.write("----------------------------------------\n")
-    sys.stdout.write("CLEANING UP AND SHUTTING DOWN...\n")
+        #if self.nosh.nprint > 0:
+        #    sys.stdout.write("---------------------------------------------\n")
+        #    sys.stdout.write("PRINT STATEMENTS\n")
+        #for iprint in xrange(self.nosh.nprint):
+        #    if NOsh_printWhat(self.nosh, iprint) == NPT_ENERGY:
+        #        printEnergy(self.com,self.nosh, self.totEnergy, iprint)
+        #    elif NOsh_printWhat(self.nosh, iprint) == NPT_FORCE:
+        #        printForce(self.com, self.nosh, self.nforce, self.atomforce, self.iprint)
+        #    else:
+        #        sys.stdout.write("Undefined PRINT keyword!\n")
+        #        break
 
-    # Clean up APBS structures
-    
-    #killForce(mem, nosh, nforce, atomforce)
-    killEnergy()
-    killMG(nosh, pbe, pmgp, pmg)
-    killChargeMaps(nosh, chargeMap)
-    killKappaMaps(nosh, kappaMap)
-    killDielMaps(nosh, dielXMap, dielYMap, dielZMap)
-    killMolecules(nosh, alist)
-    del nosh
+        #sys.stdout.write("----------------------------------------\n")
+        #sys.stdout.write("CLEANING UP AND SHUTTING DOWN...\n")
 
-    # Clean up Python structures
+        # Clean up APBS structures
 
-    #ptrfree(nfor)
-    delete_double_array(realCenter)
-    #delete_int_array(nforce)
-    #delete_atomforcelist(atomforce)
-    delete_valist(alist)
-    delete_gridlist(dielXMap)
-    delete_gridlist(dielYMap)
-    delete_gridlist(dielZMap)
-    delete_gridlist(kappaMap)
-    delete_gridlist(chargeMap)
-    delete_pmglist(pmg)
-    delete_pmgplist(pmgp)
-    delete_pbelist(pbe)
-    
-    
-    # Clean up MALOC structures
-    del com
-    del mem
-    
-    sys.stdout.write("\n")
-    sys.stdout.write("Thanks for using APBS!\n\n")
+        #killForce(mem, nosh, nforce, atomforce)
+        killEnergy()
+        killMG(self.nosh, self.pbe, self.pmgp, self.pmg)
+        killChargeMaps(self.nosh, self.chargeMap)
+        killKappaMaps(self.nosh, self.kappaMap)
+        killDielMaps(self.nosh, self.dielXMap, self.dielYMap, self.dielZMap)
 
-    # Stop the main timer
-    main_timer_stop = time.clock()
-    sys.stdout.write("Total execution time:  %1.6e sec\n" % (main_timer_stop - main_timer_start))
+        if self.myAlist.number == 0:
+            self.myAlist = make_Valist(self.alist,0)
+            Valist_load(self.myAlist, self.protsize, self.x,self.y,self.z,self.chg,self.rad) 
+        killMolecules(self.nosh, self.alist)
 
-    #Return potentials
-    #print potList
 
-    return potList
+        del self.nosh
+
+        # Clean up Python structures
+
+        #ptrfree(nfor)
+        delete_double_array(self.realCenter)
+        #delete_int_array(nforce)
+        #delete_atomforcelist(atomforce)
+        delete_valist(self.alist)
+        delete_gridlist(self.dielXMap)
+        delete_gridlist(self.dielYMap)
+        delete_gridlist(self.dielZMap)
+        delete_gridlist(self.kappaMap)
+        delete_gridlist(self.chargeMap)
+        delete_pmglist(self.pmg)
+        delete_pmgplist(self.pmgp)
+        delete_pbelist(self.pbe)
+
+        # Clean up MALOC structures
+        del self.com
+        del self.mem
+
+        #sys.stdout.write("\n")
+        #sys.stdout.write("Thanks for using APBS!\n\n")
+
+        # Stop the main timer
+        #main_timer_stop = time.clock()
+        #sys.stdout.write("Total execution time:  %1.6e sec\n" % (main_timer_stop - self.main_timer_start))
+
+        #Return
+
+        return 

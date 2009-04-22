@@ -116,6 +116,7 @@ def usage(rc):
     str = str + "                         be compiled\n"
     str = str + "        --whitespace  :  Insert whitespaces between atom name and residue\n"
     str = str + "                         name, between x and y, and between y and z\n"
+    str = str + "        --typemap :      Create Typemap output\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
 
@@ -227,6 +228,9 @@ def runPDB2PQR(pdblist, ff, options):
 
     if "opt" in options: optflag = 1
     else: optflag = 0
+
+    if "typemap" in options: typemapflag = 1
+    else: typemapflag = 0
 
     if "chain" in options: chainflag = 1
     else: chainflag = 0
@@ -380,7 +384,8 @@ def runPDB2PQR(pdblist, ff, options):
             misslist.remove(atom)
 
     # Creat the Typemap
-    myProtein.createHTMLTypeMap(myDefinition, typemapname)
+    if typemapflag:
+        myProtein.createHTMLTypeMap(myDefinition, typemapname)
 
     # Grab the protein charge
 
@@ -465,7 +470,7 @@ def mainCommand(argv):
 
 
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace"]
+    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace", "typemap"]
 
     extensions = getAvailableExtensions(1)
     longOptlist += extensions.keys()
@@ -494,6 +499,7 @@ def mainCommand(argv):
         elif o == "--noopt":    del options["opt"]
         elif o == "--apbs-input": options["input"] = 1
         elif o == "--whitespace": options["whitespace"]  = 1
+        elif o == "--typemap": options["typemap"] = 1
         elif o == "--with-ph":
             try:
                 ph = float(a)

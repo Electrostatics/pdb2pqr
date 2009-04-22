@@ -278,6 +278,14 @@ def mainCGI():
         else:
             apbs_input = False
 
+        typemapInputFile = open('%s%s%s/typemap' % (INSTALLDIR, TMPDIR, form["jobid"].value))
+        typemap = typemapInputFile.read()
+        typemapInputFile.close()
+        if typemap=="True":
+            typemap = True
+        else:
+            typemap = False
+
     if have_opal and progress == None:
         if form["calctype"].value=="pdb2pqr":
             pdb2pqrJobIDFile = open('%s%s%s/pdb2pqr_opal_job_id' % (INSTALLDIR, TMPDIR, form["jobid"].value))
@@ -369,7 +377,7 @@ def mainCGI():
         if calctype=="pdb2pqr":
             if have_opal:
                 for i in range(0,len(filelist)):
-                    if filelist[i]._name[-7:]==".propka" or filelist[i]._name[-13:]=="-typemap.html" or filelist[i]._name[-4:]==".pqr" or filelist[i]._name[-3:]==".in":
+                    if filelist[i]._name[-7:]==".propka" or (filelist[i]._name[-13:]=="-typemap.html" and typemap == True) or filelist[i]._name[-4:]==".pqr" or filelist[i]._name[-3:]==".in":
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
             else:
                 outputfilelist = glob.glob('%s%s%s/*.propka' % (INSTALLDIR, TMPDIR, jobid))
@@ -377,6 +385,8 @@ def mainCGI():
                     outputfilelist[i] = os.path.basename(outputfilelist[i])
                 for extension in ["-typemap.html", ".pqr", ".in"]:
                     if extension != ".in" or apbs_input != False:
+                        if extension == "-typemap.html" and typemap == False: 
+                            continue
                         outputfilelist.append('%s%s' % (jobid, extension))
                 for outputfile in outputfilelist:
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)

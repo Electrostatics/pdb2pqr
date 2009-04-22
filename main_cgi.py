@@ -124,6 +124,7 @@ def mainCGI():
     input = 0
 
     apbs_input = form.has_key("INPUT")
+    typemap = form.has_key("TYPEMAP")
 
     if HAVE_PDB2PQR_OPAL=="1":
         have_opal = True
@@ -190,6 +191,8 @@ def mainCGI():
         options["chain"] = 1
     if form.has_key("WHITESPACE"):
         options["whitespace"] = 1
+    if form.has_key("TYPEMAP"):
+        options["typemap"] = 1
     if form.has_key("LIGAND"):
         if have_opal:
             ligandfilename=str(form["LIGAND"].filename)
@@ -249,6 +252,9 @@ def mainCGI():
         apbsInputFile = open('%s%s%s/apbs_input' % (INSTALLDIR, TMPDIR, name),'w')
         apbsInputFile.write(str(apbs_input))
         apbsInputFile.close()
+        typemapInputFile = open('%s%s%s/typemap' % (INSTALLDIR, TMPDIR, name),'w')
+        typemapInputFile.write(str(typemap))
+        typemapInputFile.close()
 
 
         if have_opal:
@@ -286,6 +292,8 @@ def mainCGI():
                     key="chain"
                 elif key=="whitespace":
                     key="whitespace"
+                elif key=="typemap":
+                    key="typemap"
                 elif key=="ff":
                     val=options[key]
                     key="ff=%s" % val

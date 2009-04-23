@@ -376,14 +376,22 @@ class DefinitionAtom(Atom):
     """
         A trimmed down version of the Atom class
     """
-    def __init__(self):
+    def __init__(self, name=None, x=None, y=None, z=None):
         """
             Initialize the class
         """
-        self.name = ""
-        self.x = 0.0
-        self.y = 0.0
-        self.z = 0.0
+        self.name = name
+        self.x = x
+        self.y = y
+        self.z = z
+        if name == None:
+            self.name = ""
+        if x == None:
+            self.x = 0.0
+        if y == None:
+            self.y = 0.0
+        if z == None:
+            self.z = 0.0
         self.bonds = []
      
     def __str__(self):

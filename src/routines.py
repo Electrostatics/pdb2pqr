@@ -52,6 +52,11 @@ BUMP_HDIST = 1.5
 BONDED_SS_LIMIT = 2.5
 PEPTIDE_DIST = 1.7
 REPAIR_LIMIT = 10
+AAS = ["ALA","ARG","ASH","ASN","ASP","CYS","CYM","GLN","GLU","GLH","GLY",\
+       "HIS","HID","HIE","HIP","HSD","HSE","HSP","ILE","LEU","LYS","LYN",\
+       "MET","PHE","PRO","SER","THR","TRP","TYR","TYM","VAL"]
+NAS = ["A","A5","A3","C","C5","C3","G","G5","G3","T","T5","T3","U",\
+       "U5","U3","RA","RG","RC","RU","DA","DG","DC","DT"]
 
 import math
 import copy
@@ -64,7 +69,7 @@ from protein import *
 from definitions import *
 
 class Routines:
-    def __init__(self, protein, verbose):
+    def __init__(self, protein, verbose, definition = None):
         """
             Initialize the Routines class.  The class contains most
             of the main routines that run PDB2PQR
@@ -75,9 +80,14 @@ class Routines:
                           stdout
         """
         self.protein = protein
+        self.definition = definition
+        self.aadef = None
         self.verbose = verbose
         self.warnings = []
         self.cells = {}
+        if definition != None:
+            self.aadef = definition.getAA()
+            self.nadef = definition.getNA()
 
             
     def write(self, message, indent=0):
@@ -164,6 +174,24 @@ class Routines:
         self.write("Done.\n")            
         return hitlist, misslist
    
+    def updateResidueTypes(self):
+        """
+            Find the type of residue as notated in the Amino Acid definition
+        """
+        self.write("Updating Residue Types... ")
+        for chain in self.protein.getChains():
+            for residue in chain.get("residues"):
+                name = residue.get("name")
+                if name in AAS:
+                    residue.set("type",1)
+                elif name == "WAT":
+                    residue.set("type",3)
+                elif name in NAS:
+                    residue.set("type",4)
+                else: # Residue is a ligand or unknown
+                    residue.set("type",2)
+                 
+        self.write("Done\n")   
             
     def updateSSbridges(self):
         """
@@ -360,9 +388,9 @@ class Routines:
             the start and end residues.
         """
 
-	if len(chain.residues) == 0: 
-	    text = "Error: chain \"%s\" has 0 residues!" % chain.chainID
-	    raise ValueError, text
+        if len(chain.residues) == 0: 
+            text = "Error: chain \"%s\" has 0 residues!" % chain.chainID
+            raise ValueError, text
 
         # Set the N-Terminus/ 5' Terminus
 
@@ -597,7 +625,8 @@ class Routines:
         
         for bond in residue.reference.map[bondname].bonds:
             if bond.startswith("H"): hcount += 1
-            else: nextatomname = bond
+            elif bond != 'C-1' and bond != 'N+1': 
+                nextatomname = bond
 
         # Check if this is a tetrahedral group
 
@@ -849,6 +878,10 @@ class Routines:
             for atom in residue.getAtoms():
                 if atom.isBackbone():
                     atom.refdistance = -1 
+                elif residue.isCterm and atom.name == "HO":   # special case for HO in Cterm
+                    atom.refdistance = 3
+                elif residue.isNterm and (atom.name == "H3" or atom.name == "H2"):  # special case for H2 or H3 in Nterm
+                    atom.refdistance = 2 
                 else:
                     atom.refdistance = len(shortestPath(map, atom, caatom)) - 1
         
@@ -1119,10 +1152,10 @@ class Routines:
                     atomname = atoms[i]
                     if residue.hasAtom(atomname):
                         coords.append(residue.getAtom(atomname).getCoords())
-       
+
                 if len(coords) == 4: angle = getDihedral(coords[0], coords[1], coords[2], coords[3])
                 else: angle = None
-                 
+
                 residue.addDihedralAngle(angle)             
 
     def getClosestAtom(self, atom):
@@ -1208,9 +1241,9 @@ class Routines:
                     
             # Also ignore if this is a donor/acceptor pair
                 
-            if atom.isHydrogen() and atom.bonds[0].hdonor \
+            if atom.isHydrogen() and len(atom.bonds) != 0 and atom.bonds[0].hdonor \
                and closeatom.hacceptor: continue
-            if closeatom.isHydrogen() and closeatom.bonds[0].hdonor \
+            if closeatom.isHydrogen() and len(closeatom.bonds) != 0 and closeatom.bonds[0].hdonor \
                    and atom.hacceptor:
                 continue
 
@@ -1670,18 +1703,21 @@ class Cells:
         size = self.cellsize
         closeatoms = []
         cell = atom.get("cell")
-        x = cell[0]
-        y = cell[1]
-        z = cell[2]
-        for i in range(-1*size,2*size,size):
-            for j in range(-1*size,2*size,size):
-                for k in range(-1*size,2*size,size):
-                    newkey = (x+i, y+j, z+k)
-                    try:
-                        newatoms = self.cellmap[newkey]
-                        for atom2 in newatoms:
-                            if atom == atom2: continue
-                            closeatoms.append(atom2)
-                    except KeyError: pass
+        if cell == None:
+            return closeatoms
+        else:
+            x = cell[0]
+            y = cell[1]
+            z = cell[2]
+            for i in range(-1*size,2*size,size):
+                for j in range(-1*size,2*size,size):
+                    for k in range(-1*size,2*size,size):
+                        newkey = (x+i, y+j, z+k)
+                        try:
+                            newatoms = self.cellmap[newkey]
+                            for atom2 in newatoms:
+                                if atom == atom2: continue
+                                closeatoms.append(atom2)
+                        except KeyError: pass
                         
-        return closeatoms
+            return closeatoms

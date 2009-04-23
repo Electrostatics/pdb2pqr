@@ -128,4 +128,20 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
         <name>WAT</name>
         <opttype>Water</opttype>
     </class>
+    <class>
+        <name>ARG</name>
+        <opttype>Generic</opttype>
+    </class>
+    <class>
+        <name>LYS</name>
+        <opttype>Generic</opttype>
+    </class>
+    <class>
+        <name>NTR</name>
+        <opttype>Generic</opttype>
+    </class>
+    <class>
+        <name>CTR</name>
+        <opttype>Carboxylic</opttype>
+    </class>
 </hydrogens>

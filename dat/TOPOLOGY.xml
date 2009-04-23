@@ -2672,7 +2672,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 			<dihedral>N CA CB OG</dihedral>
 			<dihedral>CA CB OG HG</dihedral>
 		</reference>
-		<titrationstate> <!-- No changes to the LYS structure -->
+		<titrationstate> <!-- No changes to the SER structure -->
 			<name>SER</name>
 			<tautomer>
 				<name>SER</name>
@@ -2818,7 +2818,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 			<dihedral>N CA CB OG1</dihedral>
 			<dihedral>CA CB OG1 HG1</dihedral>
 		</reference>
-		<titrationstate> <!-- No changes to the LYS structure -->
+		<titrationstate> <!-- No changes to the THR structure -->
 			<name>THR</name>
 			<tautomer>
 				<name>THR</name>
@@ -3027,7 +3027,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 			<dihedral>CA CB CG CD1</dihedral>
 			<dihedral>CE2 CZ OH HH</dihedral>
 		</reference>
-		<titrationstate> <!-- No changes to the LYS structure -->
+		<titrationstate> <!-- No changes to the TYR structure -->
 			<name>TYR</name>
 			<tautomer>
 				<name>TYR</name>
@@ -3150,7 +3150,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 			</atom>
 			<dihedral>N CA CB SG</dihedral>
 		</reference>
-		<titrationstate> <!-- No changes to the LYS structure -->
+		<titrationstate> <!-- No changes to the CYS structure -->
 			<name>CYS</name>
 			<tautomer>
 				<name>CYS</name>

@@ -58,6 +58,10 @@
     <residue>
         <name>ASH</name>
         <useresname>AS0</useresname>
+        <atom>
+            <name>HD1</name>
+            <useatomname>HD2</useatomname>
+        </atom>
     </residue>
     <residue>
         <name>CYX</name>
@@ -70,6 +74,10 @@
     <residue>
         <name>GLH</name>
         <useresname>GL0</useresname>
+        <atom>
+            <name>HE1</name>
+            <useatomname>HE2</useatomname>
+        </atom>
     </residue>
     <residue>
         <name>HIE</name>

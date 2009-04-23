@@ -271,6 +271,34 @@ class Residue:
                 message = "Unable to set object \"%s\" in class Residue" % name
                 raise ValueError, message
 
+    def update_terminus_status(self):
+        """Update the isNterms and isCterm flags"""
+        #
+        # If Nterm then update counter of hydrogens
+        #
+        if self.isNterm:
+            count=0
+            atoms=['H','H2','H3']
+            for atom in atoms:
+                for atom2 in self.atoms:
+                    atomname=atom2.get('name')
+                    if atom==atomname:
+                        count=count+1
+            self.isNterm=count
+        #
+        # If Cterm then update counter
+        #
+        if self.isCterm:
+            self.isCterm=None
+            for atom in self.atoms:
+                atomname=atom.get('name')
+                if atomname=='HO':
+                    self.isCterm=2
+                    break
+            if not self.isCterm:
+                self.isCterm=1
+        return
+
     def numAtoms(self):
         """
             Get the number of atoms for the residue
@@ -563,6 +591,7 @@ class Atom(ATOM):
         self.added = 0
         self.optimizeable = 0
         self.refdistance = 0
+        self.id = None
           
     def __str__(self):
         """
@@ -580,7 +609,7 @@ class Atom(ATOM):
         str = str + string.rjust(tstr, 5)[:5]
         str = str + " "
         tstr = self.name
-        if len(tstr) == 4:
+        if len(tstr) == 4 or len(tstr.strip("FLIP")) == 4:
             str = str + string.ljust(tstr, 4)[:4]
         else:
             str = str + " " + string.ljust(tstr, 3)[:3]

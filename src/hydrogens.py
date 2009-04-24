@@ -1941,7 +1941,8 @@ class Carboxylic(Optimize):
                   pass
 
             if hydatom.name.endswith("1"):
-                residue.removeAtom("%s2" % hydatom.name[:-1])
+                if (hydatom.name[:-1] + "2") in residue.map.keys():
+                    residue.removeAtom("%s2" % hydatom.name[:-1])
                 residue.renameAtom(hydatom.name, "%s2" % hydatom.name[:-1])
                 bondname0 = self.atomlist[0].name
                 bondname1 = self.atomlist[1].name

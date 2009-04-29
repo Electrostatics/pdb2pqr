@@ -1,9 +1,11 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       4-22-09
+BETA PUBLIC RELEASE VERSION 1.4.1       4-29-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
     output if needed.
+  * Enabled "Create APBS Input File" by default on the web server, so that 
+    APBS calculation and visualization are more obvious to the users.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

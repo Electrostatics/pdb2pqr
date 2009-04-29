@@ -75,17 +75,6 @@ document.thisform.PH.disabled=true;
 }
 }
 
-function setchain(){
-if(document.thisform.INPUT.checked==true)
-{
-document.thisform.CHAIN.disabled=true;
-}
-else
-{
-document.thisform.CHAIN.disabled=false;
-}
-}
-
 function setligand(){
 if(document.thisform.LIGANDCHECK.checked==true)
 {
@@ -178,7 +167,7 @@ Available options:
 <input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
 <input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)"> Use <a href="http://propka.ki.ku.dk">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6  value="7" DISABLED><BR>
 <input type="CHECKBOX" name="LIGANDCHECK" onClick="setligand()"> Assign charges to the ligand specified in a MOL2 file</input>: <input type="file" name="LIGAND" size="25" maxlength=100 value="" DISABLED><BR>
-<input type="CHECKBOX" name="INPUT" onClick="setchain()"> Create an <a href="http://apbs.sourceforge.net">APBS</a> input file <span style="font-size:60%">(this also enables the option to run APBS and visualize your results through the web interface, if it has been installed)</span><BR>
+<input type="CHECKBOX" name="INPUT" CHECKED> Create an <a href="http://apbs.sourceforge.net">APBS</a> input file <span style="font-size:60%">(this also enables the option to run APBS and visualize your results through the web interface, if it has been installed)</span><BR>
 <input type="CHECKBOX" name="CHAIN"> Add/keep chain IDs in the PQR file<BR>
 <input type="CHECKBOX" name="WHITESPACE"> Insert whitespaces between atom name and residue name, between x and y, and between y and z<BR>
 <input type="CHECKBOX" name="TYPEMAP"> Create Typemap output

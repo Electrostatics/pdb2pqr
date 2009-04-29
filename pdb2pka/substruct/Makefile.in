@@ -176,8 +176,7 @@ AM_CXXFLAGS = $(PY_CFLAGS) $(PY_FLAGS)
 CCLD = $(CXX)
 CLEANFILES = Algorithms.so 
 Algorithms_so_SOURCES = Algorithms.cpp  
-Algorithms_so_LINK = $(CXX)
-Algorithms_so_LDFLAGS = -o $@ $(PY_SHARED)
+Algorithms_so_LINK = $(CXX) -o $@ $(PY_SHARED)
 Algorithms_so_LDADD = $(PY_LDFLAGS)
 all: all-am
 

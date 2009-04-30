@@ -686,7 +686,7 @@ class pKaRoutines:
         #
         # Write the charge matrix
         #
-        X.write_pdb2pka_matrix('%s.MATRIX.DAT' %pdbfile_name,self.matrix)
+        X.write_pdb2pka_matrix('%s.MATRIX.DAT' %pdbfile_name, correct_matrix)
         return
 
     #

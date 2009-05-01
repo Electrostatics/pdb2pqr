@@ -1788,8 +1788,7 @@ def usage(x):
     #
     # Print usage guidelines
     #
-    print 'Usage: pka.py --ff <forcefield> --lig <ligand in MOL2> <pdbfile>'
-    print 'Force field can be amber, charmm and parse'
+    print 'Usage: pka.py [--ff <forcefield>] <pdbfile>'
     print
     return
 
@@ -1847,10 +1846,10 @@ def startpKa():
             ligfilename=a
 
     #
-    # No forcefield?
+    # No forcefield? Set default forcefield to parse
     #
     if ff == None:
-        raise ValueError, "Forcefield not specified!"
+        ff = "parse"
 
     #
     # No dielectric constant

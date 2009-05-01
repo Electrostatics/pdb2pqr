@@ -16,8 +16,7 @@ SUBDIRS          = substruct
 
 noinst_PROGRAMS         = _pMC_mult.so
 _pMC_mult_so_SOURCES     = pMC_mult.cpp pMC_mult_wrap.cpp  
-_pMC_mult_so_LINK        = $(CXX)
-_pMC_mult_so_LDFLAGS     = -o $@ $(PY_SHARED)
+_pMC_mult_so_LINK        = $(CXX) -o $@ $(PY_SHARED)
 _pMC_mult_so_LDADD       = $(PY_LDFLAGS)
 
 #all:

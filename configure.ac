@@ -497,6 +497,17 @@ if test "$APBSPATH" != ""; then
   HAVE_APBS=$APBSPATH
 fi
 
+# Passing apbslib.py and _apbslib.so files from APBS to pdb2pka
+echo ${HAVE_APBS} > HAVE_APBS_FILE 
+HAVE_APBS_PYTHON_DIR=`sed -e 's|bin/apbs|share/tools/python|g' HAVE_APBS_FILE`
+if test -e ${HAVE_APBS_PYTHON_DIR}/apbslib.py; then
+  cp  ${HAVE_APBS_PYTHON_DIR}/apbslib.py ./pdb2pka
+fi
+if test -e ${HAVE_APBS_PYTHON_DIR}/_apbslib.so; then
+  cp ${HAVE_APBS_PYTHON_DIR}/_apbslib.so ./pdb2pka
+fi
+rm -f HAVE_APBS_FILE
+
 AC_ARG_WITH(apbs-opal,
 	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://ws.nbcr.net/opal/services/APBS_1.1.0],
 	[APBS_OPAL_URL=$withval],

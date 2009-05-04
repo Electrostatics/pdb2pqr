@@ -285,7 +285,7 @@ def runPDB2PQR(pdblist, ff, options):
     for residue in myProtein.getResidues():
         multoccupancy = 0
         for atom in residue.getAtoms():
-            if atom.get("occupancy") < 1.00:
+            if atom.get("occupancy") < 1.00 and residue.name != "LIG":
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s\n" % (atom.name, residue)
                 sys.stderr.write(txt)

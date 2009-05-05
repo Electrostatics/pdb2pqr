@@ -322,7 +322,7 @@ class Residue:
         self.resSeq = value
         for atom in self.atoms:
             atom.set("resSeq",value)
-            atom.set("iCode","")
+            #atom.set("iCode","")
 
     def setChainID(self, value):
         """
@@ -625,7 +625,10 @@ class Atom(ATOM):
         str = str + string.ljust(tstr, 1)[:1]
         tstr = "%d" % self.resSeq
         str = str + string.rjust(tstr, 4)[:4]
-        str = str + "    "
+        if self.iCode != "":
+            str = str + "%s   " % self.iCode
+        else:
+            str = str + "    "
         tstr = "%8.3f" % self.x
         str = str + string.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.y

@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       4-29-09
+BETA PUBLIC RELEASE VERSION 1.4.1       5-5-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -8,6 +8,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       4-29-09
     APBS calculation and visualization are more obvious to the users.
   * Added warnings to stderr and the REMARK field in the output PQR file 
     regarding multiple occupancy entries in PDB file.
+  * Added more informative messages in REMARK field, explaining why PDB2PQR
+    was unable to assign charges to certain atoms.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

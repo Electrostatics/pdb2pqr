@@ -566,7 +566,7 @@ class Atom(ATOM):
             raise ValueError, "Invalid atom type %s (Atom Class IN structures.py)!"
         self.serial = atom.serial
         self.name = atom.name
-        self.altLoc = ""
+        self.altLoc = atom.altLoc
         self.resName = atom.resName
         self.chainID = atom.chainID
         self.resSeq = atom.resSeq

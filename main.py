@@ -285,13 +285,13 @@ def runPDB2PQR(pdblist, ff, options):
     for residue in myProtein.getResidues():
         multoccupancy = 0
         for atom in residue.getAtoms():
-            if atom.get("occupancy") < 1.00 and residue.name != "LIG":
+            if atom.altLoc != "":
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s\n" % (atom.name, residue)
                 sys.stderr.write(txt)
         if multoccupancy == 1:
             myRoutines.warnings.append("WARNING: multiple occupancies found in %s,\n" % (residue))
-            myRoutines.warnings.append("         at lease one of the instances is being ignored.\n")
+            myRoutines.warnings.append("         at least one of the instances is being ignored.\n")
 
     myRoutines.setTermini()
     myRoutines.updateBonds()

@@ -10,6 +10,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       5-5-09
     regarding multiple occupancy entries in PDB file.
   * Added more informative messages in REMARK field, explaining why PDB2PQR
     was unable to assign charges to certain atoms.
+  * Updated structures.py, now PDB2PQR keeps the insertion codes from PDB 
+    files.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

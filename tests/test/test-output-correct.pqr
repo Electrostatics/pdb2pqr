@@ -143,6 +143,10 @@ REMARK   5              5299 C17 in TES 325
 REMARK   5              5300 O17 in TES 325
 REMARK   5              5301 C18 in TES 325
 REMARK   5              5302 C19 in TES 325
+REMARK   5 This is usually due to the fact that this residue is not
+REMARK   5 an amino acid or nucleic acid; or, there are no parameters
+REMARK   5 available for the specific protonation state of this
+REMARK   5 residue in the selected forcefield.
 REMARK   5
 REMARK   6 Total charge on this protein: 2.0000 e
 REMARK   6

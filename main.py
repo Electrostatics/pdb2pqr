@@ -172,6 +172,10 @@ def printPQRHeader(atomlist, reslist, charge, ff, warnings, options):
                       (atom.get("serial"), atom.get("name"), \
                        atom.get("residue").get("name"), \
                        atom.get("residue").get("resSeq"))
+        header += "REMARK   5 This is usually due to the fact that this residue is not\n"
+        header += "REMARK   5 an amino acid or nucleic acid; or, there are no parameters\n" 
+        header += "REMARK   5 available for the specific protonation state of this\n" 
+        header += "REMARK   5 residue in the selected forcefield.\n"
         header += "REMARK   5\n"
     if len(reslist) != 0:
         header += "REMARK   5 WARNING: Non-integral net charges were found in\n"

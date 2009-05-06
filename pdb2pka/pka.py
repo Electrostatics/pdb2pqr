@@ -7,8 +7,8 @@
 # Copyright University College Dublin & Washington University St. Louis 2004-2007
 # All rights reserved
 #
-__date__="16 August 2005"
-__author__="Jens Erik Nielsen, Todd Dolinsky"
+__date__="22 April, 2009"
+__author__="Jens Erik Nielsen, Todd Dolinsky, Yong Huang, Tommy Carstensen"
 
 debug=None
 import getopt
@@ -265,7 +265,6 @@ class pKaRoutines:
 	#
 	# -----------------------------------
 	#
-	
 	def calculatePairwiseInteractions(self):
 		#
 		# Calculate the pairwise interaction energies
@@ -283,6 +282,7 @@ class pKaRoutines:
 		residue = pKa.residue
 		pKaGroup = pKa.pKaGroup
 		ambiguity = pKa.amb
+
 		#
 		# Loop over each titration
 		#
@@ -335,8 +335,8 @@ class pKaRoutines:
 				# this group
 				#
 				self.matrix[pKa][titration][state],self.all_potentials[pKa][titration][state]=self.get_interaction_energies(pKa,titration,state,mode)
-#				print "self.matrix[%s][%s][%s]: %f" % (pKa.residue, titration, state, self.matrix[pKa][titration][state])
-		return 
+
+		return
 
 	#
 	# ----
@@ -560,7 +560,6 @@ class pKaRoutines:
 		ln10=math.log(10)
 		for pKa in self.pKas:
 			pKaGroup = pKa.pKaGroup
-#			 print "Appending for group: %s" % (pKaGroup.name)
 			for titration in pKaGroup.DefTitrations:
 				#
 				# Acid/Base
@@ -736,7 +735,7 @@ class pKaRoutines:
 		#
 		# Write the charge matrix
 		#
-		X.write_pdb2pka_matrix('%s.MATRIX.DAT' %pdbfile_name,self.matrix)
+		X.write_pdb2pka_matrix('%s.MATRIX.DAT' %pdbfile_name, correct_matrix)
 		return
 
 	#
@@ -1033,7 +1032,6 @@ class pKaRoutines:
 					atomlist=[]
 					for atomname in atomnames:
 						atomlist.append(residue.getAtom(atomname))
-#					 print "len(self.protein.getAtoms()): %s" % (len(self.protein.getAtoms()))
 					#
 					# Switch the states of all other titratable groups to the neutral reference state
 					#
@@ -1043,7 +1041,6 @@ class pKaRoutines:
 						for other_titration in other_pKa.pKaGroup.DefTitrations:
 							self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,self.neutral_ref_state[other_pKa][other_titration])
 
-#					 print "len(self.protein.getAtoms()) AFTER: %s" % (len(self.protein.getAtoms()))
 					#
 					# Switch the state for the group in question
 					#
@@ -1095,7 +1092,6 @@ class pKaRoutines:
 						self.apbs_setup.setfineCenter(all_center)
 					else:
 						self.apbs_setup.setfineCenter(center)
-#						 self.apbs_setup.setfineCenter(all_center)
 					self.apbs_setup.set_type('background')
 					#
 					# Run APBS
@@ -1401,7 +1397,6 @@ class pKaRoutines:
 		for atom in residue.getAtoms():
 			atomname = atom.get("name")
 			if atomname not in atomlist: continue
-#			 if atomname.find('FLIP')!=-1: continue
 			charge, radius = self.forcefield.getParams1(residue, atomname)
 			if radius != None:
 				atom.set("radius", radius)
@@ -1449,12 +1444,8 @@ class pKaRoutines:
 					atomname = atom.get("name")
 					if atomname.find('FLIP')!=-1:
 						continue
-#					 if atomname == "HD1": ###PC  # Not sure if this is appropriate, I will keep it for now.  --Yong Huang
-#						 charge = 0.44
-#						 radius = 1.05
 					else:
 						charge, radius = self.forcefield.getParams1(residue, atomname)
-#						 print "residue: %s, atom: %s, charge: %s, radius: %s, residue.isNterm: %s" % (residue, atomname, charge, radius, residue.isNterm) 
 					###PC
 					if radius != None:
 						atom.set("radius", radius)
@@ -1670,7 +1661,6 @@ class pKaRoutines:
 		for chain in self.protein.getChains():
 			for residue in chain.get("residues"):
 				resname = residue.get("name")
-#				 print 'resname: %s' % (resname)
 				for group in self.pKagroups:
 					if resname == group:
 						amb=self.find_hydrogen_amb_for_titgroup(residue,group)
@@ -1922,11 +1912,12 @@ def startpKa():
 		elif o == "--lig":
 			ligfilename=a
 
+
 	#
-	# No forcefield?
+	# No forcefield? Set default forcefield to parse
 	#
 	if ff == None:
-		raise ValueError, "Forcefield not specified!"
+		ff = "parse"
 
 	#
 	# No dielectric constant
@@ -1971,7 +1962,6 @@ def remove_hydrogens(pdb):
 
 
 def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,):
-
 	#
 	# remove hydrogen atoms
 	#

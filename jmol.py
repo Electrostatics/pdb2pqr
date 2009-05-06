@@ -12,6 +12,11 @@ from sys import stdout, stderr, stdin
 from src.aconf import *
 
 def jmolGen():
+    """
+        Write the contents of the (static) page containing the Jmol applet to a
+        file, then output a dynamic page that redirects to that static page.
+    """
+
     file = stdout
     file.write("Content-type: text/html\n\n")
     cgitb.enable()

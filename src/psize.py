@@ -101,6 +101,20 @@ class Psize:
                     self.maxlen[i] = max(center[i]+rad, self.maxlen[i])
             elif string.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
+                # Special handling for no ATOM entries in the pqr file, only HETATM entries
+                if self.gotatom == 0:
+                    subline = string.replace(line[30:], "-", " -")
+                    words = string.split(subline)
+                    if len(words) < 4:    
+                        continue
+                    self.q = self.q + float(words[3])
+                    rad = float(words[4])
+                    center = []
+                    for word in words[0:3]:
+                        center.append(float(word))
+                    for i in range(3):
+                        self.minlen[i] = min(center[i]-rad, self.minlen[i])
+                        self.maxlen[i] = max(center[i]+rad, self.maxlen[i])
     
     def setConstant(self, name, value):
         """ Set a constant to a value; returns 0 if constant not found """

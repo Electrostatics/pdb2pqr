@@ -107,7 +107,7 @@ class pKaRoutines:
     """
         Class for running all pKa related functions
     """
-    def __init__(self, protein, routines, forcefield,apbs_setup):
+    def __init__(self, protein, routines, forcefield, apbs_setup, maps = None, sd =None):
         """
             Initialize the class using needed objects
 
@@ -134,7 +134,8 @@ class pKaRoutines:
         # Set the verbosity level
         #
         self.verbose=None
-        
+        self.maps=maps
+        self.sd=sd
         return
     
     #
@@ -203,6 +204,9 @@ class pKaRoutines:
         #
         self.findTitratableGroups()
         
+        if self.maps==2:
+            self.generateMaps()
+        
         if ghost:
             """ Calculate Pairwise Interactions """
             potentialDifference=self.calculatePotentialDifferences()
@@ -221,6 +225,56 @@ class pKaRoutines:
     #
     # -----------------------------------
     #
+    
+    def generateMaps(self):
+        #
+        # generate 3D maps using pdie and sdie
+        #
+        pKa = self.pKas[0]
+        residue = pKa.residue
+        pKaGroup = pKa.pKaGroup
+        ambiguity = pKa.amb
+
+        print "-----> Generating initial coarse grid 3D dielectric and kappa maps"
+        titration=pKaGroup.DefTitrations[0]
+        possiblestates = titration.allstates
+        state=possiblestates[0]
+        atomnames = self.getAtomsForPotential(pKa,titration)
+        
+        self.apbs_setup.set_type('desolv')
+        
+        myRoutines = Routines(self.protein, 0)
+        myRoutines.updateResidueTypes()
+        myRoutines.updateSSbridges()
+        myRoutines.updateBonds()
+        myRoutines.updateInternalBonds()
+        pKa.residue.fixed = 2
+
+        myRoutines.debumpProtein()
+
+        self.zeroAllRadiiCharges()
+        self.setCharges(residue, atomnames)
+        self.setAllRadii()
+        self.getAPBSPotentials(pKa,titration,state)
+        
+        self.apbs_setup.maps = 1
+        xdiel = 'xdiel_default.dx'
+        ydiel = 'ydiel_default.dx'
+        zdiel = 'zdiel_default.dx'
+        kappa = 'kappa_default.dx'
+        
+        if self.sd:
+            xdiel, ydiel, zdiel = smooth(xdiel,ydiel,zdiel)
+        
+        self.apbs_setup.xdiel = xdiel
+        self.apbs_setup.ydiel = ydiel
+        self.apbs_setup.zdiel = zdiel
+        self.apbs_setup.kappa = kappa
+    #
+    # -----------------------------------
+    #
+    
+        
     def calculatePotentialDifferences(self):
         #
         # calculate potential difference of backbone atoms when each titratable group is set to charged and neutral states
@@ -265,6 +319,7 @@ class pKaRoutines:
     #
     # -----------------------------------
     #
+    
     def calculatePairwiseInteractions(self):
         #
         # Calculate the pairwise interaction energies
@@ -1837,8 +1892,9 @@ def usage(x):
     #
     # Print usage guidelines
     #
-    print 'Usage: pka.py --ff <forcefield> --lig <ligand in MOL2> --pdie <protein diel cons> --maps <1 for using 3D maps>'
-    print '--xdiel <xdiel maps> --ydiel <ydiel maps> --zdiel <zdiel maps> --kappa <ion-accessibility map> <pdbfile>'
+    print 'Usage: pka.py --ff <forcefield> --lig <ligand in MOL2> --pdie <protein diel cons> --maps <1 for using provided 3D maps; 2 for genereting new maps>'
+    print '--xdiel <xdiel maps> --ydiel <ydiel maps> --zdiel <zdiel maps> --kappa <ion-accessibility map> '
+    print '--smooth <st.dev [A] of Gaussian smooting of 3D maps at the boundary, bandthwith=3 st.dev> <pdbfile>'
     print 'Force field can be amber, charmm and parse'
     print
     return
@@ -1860,7 +1916,7 @@ def startpKa():
     print 'PDB2PQR pKa calculations'
     print
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=",'lig=',"pdie=","maps=","xdiel=","ydiel=","zdiel=","kappa=",]
+    longOptlist = ["help","verbose","ff=",'lig=',"pdie=","maps=","xdiel=","ydiel=","zdiel=","kappa=","smooth=",]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
@@ -1885,6 +1941,7 @@ def startpKa():
     ydiel=None
     zdiel=None
     kappa=None
+    sd=None
     
     for o,a in opts:
         if o in ("-v","--verbose"):
@@ -1901,6 +1958,8 @@ def startpKa():
             pdie = int(a)
         elif o == "--maps":
             maps = int(a)
+        elif o == "--smooth":
+            sd = float(a)
         elif o == "--xdiel":
             xdiel = string.lower(a)
         elif o == "--ydiel":
@@ -1931,7 +1990,7 @@ def startpKa():
     #
     # Call the pre_init function
     #
-    return pre_init(pdbfilename=path,ff=ff,ligand=ligfilename,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,)
+    return pre_init(pdbfilename=path,ff=ff,ligand=ligfilename,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,sd=sd,)
 
 #
 # ----
@@ -1961,7 +2020,7 @@ def remove_hydrogens(pdb):
     return
 
 
-def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,):
+def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,sd=None,):
     #
     # remove hydrogen atoms
     #
@@ -2181,20 +2240,42 @@ def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,
             sys.exit(0)
             
         print 'Setting mobile ion-accessibility function map to: ',igen.kappa
+        
+        if sd:
+            xdiel_smooth, ydiel_smooth, zdiel_smooth = smooth(xdiel,ydiel,zdiel)
+            igen.xdiel = xdiel_smooth
+            igen.ydiel = ydiel_smooth
+            igen.zdiel = zdiel_smooth
     #
     # Return all we need
     #
-    return myProtein, myRoutines, myForcefield,igen, ligand_titratable_groups
+    return myProtein, myRoutines, myForcefield,igen, ligand_titratable_groups, maps, sd
 
 #
 # -----------------------------------------------
 #
 
+
+def smooth(xdiel,ydiel,zdiel):
+    print '\nSmooting dielectric constant using Gaussian filter:\n'
+    
+    diel=[xdiel,ydiel,zdiel]
+    for d in diel:
+        os.system('%s/smooth --format=dx --input=%s --output=%s_smooth.dx --filter=gaussian --stddev=%d --bandwidth=3'%(scriptpath,d,d[:-3],sd))
+    xdiel_smooth='%s_smooth.dx' %xdiel[:-3]
+    ydiel_smooth='%s_smooth.dx' %ydiel[:-3]
+    zdiel_smooth='%s_smooth.dx' %zdiel[:-3]
+    
+    return xdiel_smooth, ydiel_smooth, zdiel_smooth
+#
+# -----------------------------------------------
+#
+
+
 def test_interface():
     """Test the interface with pKaTool"""
     import pKaTool.pKa_calc
     X=pKaTool.pKa_calc.Monte_Carlo_Mult_CPP()
-    
     X.intrinsic_pKa={':0001:ASP':[0.0,4.0,5.0]}
     X.charged_state={':0001:ASP':[0,1,1]}
     X.acid_base={':0001:ASP':-1}
@@ -2351,8 +2432,8 @@ if __name__ == "__main__":
         #
         # Do a real pKa calculation
         #
-        protein, routines, forcefield,apbs_setup, ligand_titratable_groups = startpKa()
-        mypkaRoutines = pKaRoutines(protein, routines, forcefield,apbs_setup)
+        protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd = startpKa()
+        mypkaRoutines = pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd)
         #
         # Debugging
         #

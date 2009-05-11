@@ -193,10 +193,11 @@ class inputGen:
             text += "    usemap kappa 1\n"
         text += "    write pot dx pot\n"
         text += "    write smol dx acc\n"
-#       text += "    write dielx dx xdiel1\n"
-#       text += "    write diely dx ydiel1\n"
-#       text += "    write dielz dx zdiel1\n"
-#       text += "    write kappa dx kappa1\n"
+        if self.maps==2:
+            text += "    write dielx dx xdiel_default\n"
+            text += "    write diely dx ydiel_default\n"
+            text += "    write dielz dx zdiel_default\n"
+            text += "    write kappa dx kappa_default\n"
         text += "end\n"
         return text
 

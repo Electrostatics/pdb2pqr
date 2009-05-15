@@ -32,7 +32,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = tests
+subdir = tests/test-long
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -165,7 +165,8 @@ top_srcdir = @top_srcdir@
 website_install_var = @website_install_var@
 with_pdb2pka = @with_pdb2pka@
 with_propka = @with_propka@
-SUBDIRS = test adv-test test-long .
+SUBDIRS = .
+CLEANFILES = ./out/*.*
 all: all-recursive
 
 .SUFFIXES:
@@ -178,9 +179,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  tests/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  tests/test-long/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  tests/Makefile
+	  $(AUTOMAKE) --gnu  tests/test-long/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -395,6 +396,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -472,6 +474,9 @@ uninstall-am:
 	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
 	tags-recursive uninstall uninstall-am
 
+
+test:
+	./test.sh
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

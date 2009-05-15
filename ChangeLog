@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       5-8-09
+BETA PUBLIC RELEASE VERSION 1.4.1       5-15-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -12,6 +12,9 @@ BETA PUBLIC RELEASE VERSION 1.4.1       5-8-09
     was unable to assign charges to certain atoms.
   * Updated structures.py, now PDB2PQR keeps the insertion codes from PDB 
     files.
+  * Added "make test-long", which runs PDB2PQR on a long list (249) of PDBs
+    by default, it is also possible to let it run on specified number of 
+    PDBs, e.g.,  export TESTNUM=50; make test-long . 
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

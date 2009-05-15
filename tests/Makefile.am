@@ -1,1 +1,1 @@
-SUBDIRS = test adv-test .
+SUBDIRS = test adv-test test-long .

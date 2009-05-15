@@ -146,10 +146,13 @@ sed -e 's%@srcdir@%'${srcpath}'%' tests/test/test.cpp.in > tests/test/test.cpp
 sed -e 's%@srcdir@%'${srcpath}'%' tests/adv-test/test.cpp.in > tests/adv-test/test.cpp
 sed -e 's%@py_path@%'${py_path}'%' tests/test/test.sh.in > tests/test/test.sh.tmp.1
 sed -e 's%@py_path@%'${py_path}'%' tests/adv-test/test.sh.in > tests/adv-test/test.sh.tmp.1
+sed -e 's%@py_path@%'${py_path}'%' tests/test-long/test.sh.in > tests/test-long/test.sh.tmp.1
 sed -e 's%@srcdir@%'${srcpath}'%' tests/test/test.sh.tmp.1 > tests/test/test.sh
 sed -e 's%@srcdir@%'${srcpath}'%' tests/adv-test/test.sh.tmp.1 > tests/adv-test/test.sh
+sed -e 's%@srcdir@%'${srcpath}'%' tests/test-long/test.sh.tmp.1 > tests/test-long/test.sh
 rm -f tests/test/test.sh.tmp.*
 rm -f tests/adv-test/test.sh.tmp.*
+rm -f tests/test-long/test.sh.tmp.*
 
 AC_MSG_CHECKING([for python include directory])
 changequote(<<, >>)dnl
@@ -558,6 +561,8 @@ chmod o+x tests/test/test.sh
 chmod u+x tests/test/test.sh
 chmod o+x tests/adv-test/test.sh
 chmod u+x tests/adv-test/test.sh
+chmod o+x tests/test-long/test.sh
+chmod u+x tests/test-long/test.sh
 
 if test "${prefix}" != `pwd` ; then 
   website_install=${URL}
@@ -721,6 +726,7 @@ if test -n "${PDB2PQR_SUBDIRS}"; then
 	tests/Makefile
 	tests/test/Makefile
 	tests/adv-test/Makefile
+	tests/test-long/Makefile
    ])
    echo
    echo ---------------------------------------------------------------------------------------

@@ -36,7 +36,7 @@ EXTRA_DIST = *.py *.css dat/* doc/* examples/* html/master-index.html html/READM
 
 distclean-local: clean-local
 clean-local: clean-ac
-	-rm -rf src/server.py src/aconf.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh
+	-rm -rf src/server.py src/aconf.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh tests/test-long/test.sh
 	rm -rf querystatus.cgi apbs_cgi.cgi pdb2pqr.py visualize.cgi jmol.cgi
 	rm -rf *.pyc
 	rm -rf tests/adv-test/test.cpp tests/test/test.cpp
@@ -49,6 +49,9 @@ test:
 
 adv-test:
 	tests/adv-test/test.sh
+
+test-long:
+	tests/test-long/test.sh
 
 install:
 	make

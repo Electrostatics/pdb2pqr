@@ -3257,10 +3257,13 @@ sed -e 's%@srcdir@%'${srcpath}'%' tests/test/test.cpp.in > tests/test/test.cpp
 sed -e 's%@srcdir@%'${srcpath}'%' tests/adv-test/test.cpp.in > tests/adv-test/test.cpp
 sed -e 's%@py_path@%'${py_path}'%' tests/test/test.sh.in > tests/test/test.sh.tmp.1
 sed -e 's%@py_path@%'${py_path}'%' tests/adv-test/test.sh.in > tests/adv-test/test.sh.tmp.1
+sed -e 's%@py_path@%'${py_path}'%' tests/test-long/test.sh.in > tests/test-long/test.sh.tmp.1
 sed -e 's%@srcdir@%'${srcpath}'%' tests/test/test.sh.tmp.1 > tests/test/test.sh
 sed -e 's%@srcdir@%'${srcpath}'%' tests/adv-test/test.sh.tmp.1 > tests/adv-test/test.sh
+sed -e 's%@srcdir@%'${srcpath}'%' tests/test-long/test.sh.tmp.1 > tests/test-long/test.sh
 rm -f tests/test/test.sh.tmp.*
 rm -f tests/adv-test/test.sh.tmp.*
+rm -f tests/test-long/test.sh.tmp.*
 
 { echo "$as_me:$LINENO: checking for python include directory" >&5
 echo $ECHO_N "checking for python include directory... $ECHO_C" >&6; }
@@ -3746,6 +3749,8 @@ chmod o+x tests/test/test.sh
 chmod u+x tests/test/test.sh
 chmod o+x tests/adv-test/test.sh
 chmod u+x tests/adv-test/test.sh
+chmod o+x tests/test-long/test.sh
+chmod u+x tests/test-long/test.sh
 
 if test "${prefix}" != `pwd` ; then
   website_install=${URL}
@@ -3898,7 +3903,7 @@ echo "${ECHO_T}------------- End Processing PDB2PQR Configure Options ----------
 { echo "$as_me:$LINENO: result: " >&5
 echo "${ECHO_T}" >&6; }
 if test -n "${PDB2PQR_SUBDIRS}"; then
-   ac_config_files="$ac_config_files Makefile pdb2pka/Makefile pdb2pka/substruct/Makefile tests/Makefile tests/test/Makefile tests/adv-test/Makefile"
+   ac_config_files="$ac_config_files Makefile pdb2pka/Makefile pdb2pka/substruct/Makefile tests/Makefile tests/test/Makefile tests/adv-test/Makefile tests/test-long/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4499,6 +4504,7 @@ do
     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
     "tests/test/Makefile") CONFIG_FILES="$CONFIG_FILES tests/test/Makefile" ;;
     "tests/adv-test/Makefile") CONFIG_FILES="$CONFIG_FILES tests/adv-test/Makefile" ;;
+    "tests/test-long/Makefile") CONFIG_FILES="$CONFIG_FILES tests/test-long/Makefile" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

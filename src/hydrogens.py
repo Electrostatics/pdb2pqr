@@ -1904,6 +1904,9 @@ class Carboxylic(Optimize):
         residue = self.residue
         optinstance = self.optinstance        
 
+        # No need to rename if hydatom is not in residue.map
+        if hydatom.name not in residue.map.keys():
+            return
         # Take off the extension
         if len(hydatom.name) == 4:
             hname = hydatom.name[:-1]

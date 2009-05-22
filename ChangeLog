@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       5-15-09
+BETA PUBLIC RELEASE VERSION 1.4.1       5-22-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -24,6 +24,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       5-15-09
   * Fixed a bug in psize.py: for a pqr file with no ATOM entries but only 
     HETATM entries in it, inputgen.py should still create an APBS input file
     with reasonable grid lengths. 
+  * Added special handling for special mol2 formats (unwanted white spaces
+    or blank lines in ATOM or BOND records).
 
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09

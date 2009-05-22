@@ -179,8 +179,11 @@ class inputGen:
         text += "    ion charge 1 conc 0.150 radius 2.0\n"            
         text += "    ion charge -1 conc 0.150 radius 2.0\n"           
         text += "    pdie %5.2f\n"  %self.pdie                
-        text += "    sdie %5.2f\n" %self.sdie                
-        text += "    srfm smol\n"                   
+        text += "    sdie %5.2f\n" %self.sdie
+        if self.maps == 2:
+            text += "    srfm mol\n"
+        else:
+            text += "    srfm smol\n"
         text += "    chgm spl2\n"
         text += "    srad 1.4\n"
         text += "    swin 0.3\n" 

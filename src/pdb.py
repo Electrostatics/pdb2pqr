@@ -564,6 +564,9 @@ class MOL2MOLECULE:
         """
         for AtomLine in AtomList:
             SeparatedAtomLine = AtomLine.split()
+            # Special handling for blank lines
+            if len(SeparatedAtomLine) == 0:
+                continue
 
             # Error checking
             if len(SeparatedAtomLine) < 8:
@@ -591,6 +594,9 @@ class MOL2MOLECULE:
         """
         for BondLine in BondList:
             SeparatedBondLine = BondLine.split()
+            # Special handling for blank lines
+            if len(SeparatedBondLine) == 0:
+                continue
             if len(SeparatedBondLine) < 4:
                 raise Exception, "Bad bond entry in MOL2 file: %s" % BondLine
             try:

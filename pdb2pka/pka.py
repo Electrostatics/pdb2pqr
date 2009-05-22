@@ -11,7 +11,7 @@ __date__="22 April, 2009"
 __author__="Jens Erik Nielsen, Todd Dolinsky, Yong Huang, Tommy Carstensen"
 
 debug=None
-import getopt
+import optparse
 import sys, os
 from pKa_base import *
 
@@ -1915,78 +1915,110 @@ def startpKa():
     print
     print 'PDB2PQR pKa calculations'
     print
-    shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=",'lig=',"pdie=","maps=","xdiel=","ydiel=","zdiel=","kappa=","smooth=",]
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], shortOptlist, longOptlist)
-    except getopt.GetoptError, details:
-        sys.stderr.write("GetoptError:  %s\n" % details)
-        usage(2)
-        sys.exit(0)
-    #
-    #
-    #
-    if len(args) < 1 or len(args) > 9:
-        sys.stderr.write("Incorrect number (%d) of arguments!\n" % len(args))
-        usage(2)
-        sys.exit(0)
+    parser = optparse.OptionParser()
 
-    verbose = 0
-    ligfilename=None
-    ff = None
-    pdie = None
-    maps=None
-    xdiel=None
-    ydiel=None
-    zdiel=None
-    kappa=None
-    sd=None
-    
-    for o,a in opts:
-        if o in ("-v","--verbose"):
-            verbose = 1
-        elif o in ("-h","--help"):
-            usage(2)
-            sys.exit()
-        elif o == "--ff":
-            if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE"]:
-                ff = string.lower(a)
-            else:
-                raise ValueError, "Invalid forcefield %s!" % a
-        elif o == "--pdie":
-            pdie = int(a)
-        elif o == "--maps":
-            maps = int(a)
-        elif o == "--smooth":
-            sd = float(a)
-        elif o == "--xdiel":
-            xdiel = string.lower(a)
-        elif o == "--ydiel":
-            ydiel = string.lower(a)
-        elif o == "--zdiel":
-            zdiel = string.lower(a)
-        elif o == "--kappa":
-            kappa = string.lower(a)
-        elif o == "--lig":
-            ligfilename=a
+    ##
+    ## set optparse options
+    ##
+    parser.add_option(
+        '-v','--verbose',
+        dest='verbose',
+        action="store_true",
+        default=False,
+        )
+    parser.add_option(
+        '--pdie',
+        dest='pdie',
+        default=8,
+        type='int',
+        help='<protein dielectric constant>',
+        )
+    parser.add_option(
+        '--ff',
+        dest='ff',
+        type='choice',
+        default='parse',
+        choices=("amber","AMBER","charmm","CHARMM","parse","PARSE",),
+        help='<force field (amber, charmm, parse)>',
+        )
+    parser.add_option(
+        '--lig',
+        dest='lig',
+        type='str',
+        default=None,
+        help='<ligand in MOL2>',
+        )
+    parser.add_option(
+        '--maps',
+        dest='maps',
+        default=None,
+        type='int',
+        help='<1 for using provided 3D maps; 2 for genereting new maps>',
+        )
+    parser.add_option(
+        '--xdiel',
+        dest='xdiel',
+        default=None,
+        type='str',
+        help='<xdiel maps>',
+        )
+    parser.add_option(
+        '--ydiel',
+        dest='ydiel',
+        default=None,
+        type='str',
+        help='<ydiel maps>',
+        )
+    parser.add_option(
+        '--zdiel',
+        dest='zdiel',
+        default=None,
+        type='str',
+        help='<zdiel maps>',
+        )
+    parser.add_option(
+        '--kappa',
+        dest='kappa',
+        default=None,
+        type='str',
+        help='<ion-accessibility map>',
+        )
+    parser.add_option(
+        '--smooth',
+        dest='sd',
+        default=None,
+        type='float',
+        help='<st.dev [A] of Gaussian smooting of 3D maps at the boundary, bandthwith=3 st.dev>',
+        )
+    (options,args,) = parser.parse_args()
 
+    ##
+    ## parse optparse options
+    ##
+    ff = options.ff.lower()
+    pdie = options.pdie
+    verbose = options.verbose
+    ligfilename = options.lig
+    maps = options.maps
+    xdiel = options.xdiel
+    ydiel = options.ydiel
+    zdiel = options.zdiel
+    kappa = options.kappa
+    sd = options.sd
+    if verbose == False:
+        verbose = 0
+    elif verbose == True:
+        verbose = 1
 
-    #
-    # No forcefield? Set default forcefield to parse
-    #
-    if ff == None:
-        ff = "parse"
-
-    #
-    # No dielectric constant
-    #
-    if pdie == None:
-        pdie = 8
     #
     # Find the PDB file
     #
+    if len(args) != 1:
+        sys.stderr.write("Usage: pka.py [options] <pdbfile>\n")
+        sys.exit(0)
     path = args[0]
+
     #
     # Call the pre_init function
     #

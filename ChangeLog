@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       5-26-09
+BETA PUBLIC RELEASE VERSION 1.4.1       5-27-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -28,6 +28,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       5-26-09
     with reasonable grid lengths. 
   * Added special handling for special mol2 formats (unwanted white spaces
     or blank lines in ATOM or BOND records).
+  * Added template file to doc directory, which fixed a broken link in 
+    programmer guide.
 
 #############################################################################
 BETA PUBLIC RELEASE VERSION 1.4.0       3-31-09

@@ -503,11 +503,15 @@ fi
 # Passing apbslib.py and _apbslib.so files from APBS to pdb2pka
 echo ${HAVE_APBS} > HAVE_APBS_FILE 
 HAVE_APBS_PYTHON_DIR=`sed -e 's|bin/apbs|share/tools/python|g' HAVE_APBS_FILE`
+HAVE_APBS_MESH_DIR=`sed -e 's|bin/apbs|share/tools/mesh|g' HAVE_APBS_FILE`
 if test -e ${HAVE_APBS_PYTHON_DIR}/apbslib.py; then
   cp  ${HAVE_APBS_PYTHON_DIR}/apbslib.py ./pdb2pka
 fi
 if test -e ${HAVE_APBS_PYTHON_DIR}/_apbslib.so; then
   cp ${HAVE_APBS_PYTHON_DIR}/_apbslib.so ./pdb2pka
+fi
+if test -e ${HAVE_APBS_MESH_DIR}/smooth; then
+  cp  ${HAVE_APBS_MESH_DIR}/smooth ./pdb2pka
 fi
 rm -f HAVE_APBS_FILE
 

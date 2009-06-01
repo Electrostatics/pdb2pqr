@@ -142,6 +142,7 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
   //
   int num_pHs=0;
   for (float pH=pH_start;pH<pH_end;pH=pH+pH_step) {
+    printf ("\b\b\b\b\b\b\b\b\b\b\b\bpH: %5.2f",pH);
     num_pHs++;
   }
   pKas.push_back(pH_start);

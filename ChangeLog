@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       5-27-09
+BETA PUBLIC RELEASE VERSION 1.4.1       6-9-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -17,6 +17,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       5-27-09
     PDBs, e.g.,  export TESTNUM=50; make test-long . 
   * Updated NBCR opal service urls from http://ws.nbcr.net/opal/... to 
     http://ws.nbcr.net/opal2/...
+  * Compressed APBS OpenDX output files in zip format, so that users can 
+    download zip files from the web server.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

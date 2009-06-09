@@ -401,7 +401,15 @@ def mainCGI():
             else:
                 outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))
                 for outputfile in outputfilelist:
-                    print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfile), os.path.basename(outputfile))
+                    # compressing APBS OpenDX output files
+                    currentpath = os.getcwd()
+                    workingpath = os.path.dirname(outputfile)
+                    os.chdir(workingpath)
+                    syscommand = 'zip -9 ' + os.path.basename(outputfile) + '.zip ' + os.path.basename(outputfile)
+                    os.system(syscommand)
+                    os.chdir(currentpath) 
+                    outputfilezip = outputfile+".zip"
+                    print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfilezip), os.path.basename(outputfilezip))
 
         print "</ul></li>"
         print "<li>Runtime and debugging information<ul>"

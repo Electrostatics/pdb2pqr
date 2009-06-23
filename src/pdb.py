@@ -577,13 +577,12 @@ class MOL2MOLECULE:
             try:
                 mol2pdb = '%s%5i%5s%4s%2s%4i    %8.3f%8.3f%8.3f' %\
                    (fakeRecord,int(SeparatedAtomLine[0]),
-                    SeparatedAtomLine[1],SeparatedAtomLine[7],
+                    SeparatedAtomLine[1],SeparatedAtomLine[7][:4],
                     fakeChain,int(SeparatedAtomLine[6]),
                     float(SeparatedAtomLine[2]),float(SeparatedAtomLine[3]),
                     float(SeparatedAtomLine[4]))
             except ValueError:
                 raise Exception, "Bad atom entry in MOL2 file: %s" % AtomLine
-
             thisAtom = HETATM(mol2pdb, SeparatedAtomLine[5],[],[])
             self.lPDBAtoms.append(mol2pdb)
             self.lAtoms.append(thisAtom)

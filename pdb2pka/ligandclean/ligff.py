@@ -74,9 +74,9 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
 
     if verbose:
         print "ligand_titratable_groups", ligand_titratable_groups
-    
+    #
     # Append the ligand data to the end of the PDB data
-
+    #
     newpdblist=[]
        
     # First the protein
@@ -91,14 +91,17 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     
     # Now the ligand
 
-    for e in Lig.lAtoms: 
+    for e in Lig.lAtoms:
         e.resName = "LIG"
         newpdblist.append(e)
+    newpdblist.append(TER)
+    newpdblist.append(END)
      
     protein = Protein(newpdblist, definition)
     for rrres in  protein.chainmap['L'].residues:
         for aaat in rrres.atoms:
             for ligatoms in Lig.lAtoms:
+               
                 if ligatoms.name == aaat.name:
                     aaat.sybylType = ligatoms.sybylType
     
@@ -136,7 +139,6 @@ class ligforcefield(Forcefield):
 
             Additionally, ligands can be considered within this class
         """
-        print "lig_instance", lig_instance
         self.residues = {}
         self.name = ff
         defpath = ""

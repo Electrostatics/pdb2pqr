@@ -737,6 +737,9 @@ class LIG(Residue):
         self.ffname = "WAT"
         self.map = {}
         self.reference = ref
+
+        self.isNterm = 0
+        self.isCterm = 0
         
         # Create each atom
 

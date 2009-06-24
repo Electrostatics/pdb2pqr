@@ -199,20 +199,24 @@ class pKaRoutines:
     #
         
     def runpKa(self,ghost=None):
-        #
+        """
         #    Main driver for running pKa calculations
-        #
+        """
         self.findTitratableGroups()
         
         if self.maps==2:
             self.generateMaps()
-        
+        #
+        # Are we calculating ghost titrations?
+        #
         if ghost:
             """ Calculate Pairwise Interactions """
             potentialDifference=self.calculatePotentialDifferences()
-            return potentialDifference
-                        
+            return potentialDifference   
         else:
+            #
+            # Normal pKa calculation
+            #
             self.calculateIntrinsicpKa()
     
             """ Calculate Pairwise Interactions """
@@ -227,9 +231,9 @@ class pKaRoutines:
     #
     
     def generateMaps(self):
-        #
+        """
         # generate 3D maps using pdie and sdie
-        #
+        """
         pKa = self.pKas[0]
         residue = pKa.residue
         pKaGroup = pKa.pKaGroup
@@ -270,15 +274,18 @@ class pKaRoutines:
         self.apbs_setup.ydiel = ydiel
         self.apbs_setup.zdiel = zdiel
         self.apbs_setup.kappa = kappa
+        return
+
+    
     #
     # -----------------------------------
     #
     
         
     def calculatePotentialDifferences(self):
-        #
+        """
         # calculate potential difference of backbone atoms when each titratable group is set to charged and neutral states
-        #
+        """
         import cPickle
         potentialDifference={}
         for pKa in self.pKas:
@@ -297,14 +304,14 @@ class pKaRoutines:
                         potentialDifference[titgroup][atom_uniqueid]=0.00
                 
             #
-            #loop over each titration
+            # Loop over each titration
             #
             for titration in pKaGroup.DefTitrations:
                 startstates = titration.startstates
                 endstates = titration.endstates
                 possiblestates = titration.allstates
                 #
-                #loop over each state
+                # Loop over each state
                 #                           
                 for state in possiblestates:
                     for atom in self.protein.getAtoms():
@@ -930,9 +937,9 @@ class pKaRoutines:
     #
         
     def calculateIntrinsicpKa(self):
-        #
-        #  Calculate the intrinsic pKa
-        #
+        """
+        #  Calculate the intrinsic pKa values for all titratable groups
+        """
         self.calculateDesolvation()
         self.calculateBackground()  
         #
@@ -1295,7 +1302,7 @@ class pKaRoutines:
                     # Calculate the difference in self energy for this state
                     #
                     desolvation = (proteinEnergy - solutionEnergy)/2.0 # Reaction field energy
-                    print 'Desolvation for %s %d in state %s is %5.3f'  \
+                    print 'Desolvation for %s %d in state %s is %5.3f '  \
                           %(residue.name,residue.resSeq,state,desolvation)
                     print
                     print '======================================='
@@ -1315,6 +1322,188 @@ class pKaRoutines:
         pickle.dump(savedict,fd)
         fd.close()
         return
+
+    #
+    # ----
+    #
+
+    def calculate_desolvation_for_residues(self,residues):
+        """Calculate desolvation for individual residues - not necessarily titratable groups.
+        Do this only for the standard charge state of the residue"""
+        self.findTitratableGroups()
+        #
+        # Define all the residue names
+        #
+        calc_residues=residues[:]
+        for calc_res in calc_residues:
+            for chain in self.protein.getChains():
+                for residue in chain.get("residues"):
+                    resname = residue.get("name")
+                    import string
+                    name='%s:%s:%s' %(chain.chainID,string.zfill(residue.resSeq,4),resname)
+                    #
+                    # Do we have a match?
+                    #
+                    if calc_res==name:
+                        #
+                        # Yes, calculate desolvation for this residue
+                        #
+                        atomlist=[]
+                        atomnames=[]
+                        for atom in residue.getAtoms():
+                            atomlist.append(atom)
+                            atomnames.append(atom.name)
+                        #
+                        # Switch all the other groups to the neutral reference state
+                        #
+                        #for other_pKa in self.pKas:
+                        #    if pKa==other_pKa:
+                        #        continue
+                        #    for other_titration in other_pKa.pKaGroup.DefTitrations:
+                        #        self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,self.neutral_ref_state[other_pKa][other_titration])
+                        #
+                        # Calculate the self energy for each this residue in solution and in the protein
+                        #        
+                        print "---------> Calculating desolvation energy for residue %s in solvent" %(residue.name)
+                        #
+                        # Center the map on our set of atoms
+                        #
+                        center=self.get_atoms_center(atomlist)
+                        self.apbs_setup.setfineCenter(center)
+                        self.apbs_setup.set_type('desolv')
+                        #
+                        # Switch to the state
+                        # Assign, radii, charges
+                        #
+                        #self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
+                        #pKa.residue.fixed = 2
+                        #
+                        # 'Unfix' all residues and delete all hydrogens
+                        #
+                        for xchain in self.protein.getChains():
+                            for xresidue in xchain.get("residues"):
+                                xresidue.fixed=0
+                                #if not isinstance(residue, Amino): continue
+                                #for atom in residue.get('atoms'):
+                                #    if atom.isHydrogen():
+                                #        
+                                #        print 'Removing',atom.resSeq,atom.name,atom.isHydrogen()
+                                #        residue.removeAtom(atom.name)
+                                        
+                        myRoutines = Routines(self.protein, 0)
+                        myRoutines.updateResidueTypes()
+                        myRoutines.updateSSbridges()
+                        myRoutines.updateBonds()
+                        myRoutines.updateInternalBonds()
+                        myRoutines.addHydrogens()
+                        myRoutines.setStates()
+
+                        for other_pKa in self.pKas:
+                            for other_titration in other_pKa.pKaGroup.DefTitrations:
+                                #print other_titration
+                                #start_state=
+                                #print other_titration.name
+                                if other_titration.name=='ASP' or other_titration.name=='CTR':
+                                    state=0
+                                    self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,0)
+                                
+
+                        
+                        self.hydrogenRoutines.setOptimizeableHydrogens()
+                        self.hydrogenRoutines.initializeFullOptimization()
+                        self.hydrogenRoutines.optimizeHydrogens()
+                        self.hydrogenRoutines.cleanup()
+                        myRoutines.debumpProtein()
+                        myRoutines.setStates()
+                        #
+                        #
+                        #
+                        self.zeroAllRadiiCharges()
+                        self.setCharges(residue, atomnames)
+                        self.setRadii(residue, atomnames)
+
+                        #
+                        # Run APBS first time for the state in solvent
+                        #
+                        if debug:
+                            CM.set_calc('Desolv solv %s %s' %(pKa.residue.resSeq,state))
+
+                        solutionEnergy=self.get_elec_energy(self.getAPBSPotentials(save_results=False),atomlist)
+                        #
+                        # Now we set all radii (= in protein)
+                        #
+                        self.setAllRadii()
+                        #
+                        # Run APBS again, - this time for the state in the protein
+                        #
+                        
+                        print '--------> Calculating self energy for residue %d %s  in the protein' %(residue.resSeq,residue.name)
+                        proteinEnergy = self.get_elec_energy(self.getAPBSPotentials(save_results=False),atomlist)
+                        #
+                        # Calculate the difference in self energy for this state
+                        #
+                        desolvation = (proteinEnergy - solutionEnergy)/2.0 # Reaction field energy
+                        print 'Desolvation for %s %d is %5.3f kT'  \
+                              %(residue.name,residue.resSeq,desolvation)
+                        #
+                        # Calculate electrostatic interaction energy
+                        #
+                        #
+                        # Set charges on all other residues
+                        #
+                        self.zeroAllRadiiCharges()
+                        self.setAllRadii()
+                        #
+                        # Here we should define the protonation state we want to use
+                        #
+                        for chain in self.protein.getChains():
+                            for otherresidue in chain.get("residues"):
+                                if residue == otherresidue:
+                                    continue
+                                #
+                                # Get list of all the atoms
+                                #
+                                otherlist = []
+                                for atom in otherresidue.atoms:
+                                    if not atom:
+                                        continue
+                                    if atom.get('name').find('FLIP')==-1:
+                                        otherlist.append(atom.get("name"))
+                                self.setCharges(otherresidue, otherlist)
+                        #
+                        # Center the map on our residue
+                        #
+                        center=self.get_atoms_center(atomlist)
+                        
+                        all_center,extent=self.apbs_setup.getCenter()
+                        
+                        #
+                        # For small proteins we set the center to the center of the molecule
+                        #
+                        if extent[0]<20.0 or extent[1]<20.0 or extent[2]<20.0:
+                            self.apbs_setup.setfineCenter(all_center)
+                        else:
+                            self.apbs_setup.setfineCenter(center)
+                        self.apbs_setup.set_type('background')
+                        #
+                        # Run APBS
+                        #
+                        if debug:
+                            CM.set_calc('background %s %s' %(pKa.residue.resSeq,state))
+                        potentials=self.getAPBSPotentials(save_results=False)
+                        #
+                        # Assign charges to our residue
+                        #
+                        self.setCharges(residue, atomnames)
+                        #
+                        # Return the potentials - same order as in atomnames
+                        #
+                        interaction_energy=self.get_elec_energy(potentials,atomlist)
+                        
+        print 'Desolvation energy: %5.3f kT' %desolvation
+        print 'Interaction energy: %5.3f kT' %interaction_energy
+        return desolvation, interaction_energy, proteinEnergy/2.0,solutionEnergy/2.0
+
 
     #
     # ---------
@@ -1388,7 +1577,7 @@ class pKaRoutines:
     # ----------------------------------
     #
 
-    def getAPBSPotentials(self,group,titration,state,cleanup=1):
+    def getAPBSPotentials(self,group=None,titration=None,state=None,cleanup=1,save_results=True):
         """
         #    Run APBS and get the potentials 
         #
@@ -1398,20 +1587,21 @@ class pKaRoutines:
         #
         # Do we have results for this calculation?
         #
-        result_file=os.path.join(phidir,'%s_%s_%s.potentials' %(self.apbs_setup.type,group.uniqueid,state))
-        import cPickle
-        loaded=None
-        if os.path.isfile(result_file):
-            #
-            # Yes!
-            #
-            fd=open(result_file,'rb')
-            try:
-                potentials=cPickle.load(fd)
-                fd.close()
-                loaded=1
-            except:
-                fd.close()
+        if save_results:
+            result_file=os.path.join(phidir,'%s_%s_%s.potentials' %(self.apbs_setup.type,group.uniqueid,state))
+            import cPickle
+            loaded=None
+            if os.path.isfile(result_file):
+                #
+                # Yes!
+                #
+                fd=open(result_file,'rb')
+                try:
+                    potentials=cPickle.load(fd)
+                    fd.close()
+                    loaded=1
+                except:
+                    fd.close()
         loaded=None
         #
         # Run calc again if needed
@@ -1423,9 +1613,10 @@ class pKaRoutines:
             if cleanup:
                 self.APBS.cleanup()
                 self.APBS=None
-            fd=open(result_file,'wb')
-            cPickle.dump(potentials,fd)
-            fd.close()
+            if save_results:
+                fd=open(result_file,'wb')
+                cPickle.dump(potentials,fd)
+                fd.close()
         return potentials
 
     #
@@ -1453,7 +1644,9 @@ class pKaRoutines:
             atomname = atom.get("name")
             if atomname not in atomlist: continue
             charge, radius = self.forcefield.getParams1(residue, atomname)
-            if radius != None:
+            if hasattr(atom,'secret_radius'):
+                atom.set('radius',atom.secret_radius)
+            elif radius != None:
                 atom.set("radius", radius)
             else:
                 text = "Could not find radius for atom %s" % atomname
@@ -1477,7 +1670,11 @@ class pKaRoutines:
             if atomname not in atomlist:
                 continue
             charge, radius = self.forcefield.getParams1(residue, atomname)
-            if charge != None:
+           
+            if hasattr(atom,'secret_charge'):
+                #print 'setting secret charge for',atom,atom.secret_charge
+                atom.set("ffcharge",atom.secret_charge)
+            elif charge != None:
                 atom.set("ffcharge", charge)
             else:
                 text = "Could not find charge for atom %s" % atomname
@@ -1502,7 +1699,10 @@ class pKaRoutines:
                     else:
                         charge, radius = self.forcefield.getParams1(residue, atomname)
                     ###PC
-                    if radius != None:
+                    
+                    if hasattr(atom,'secret_radius'):
+                        atom.set("radius",atom.secret_radius)
+                    elif radius != None:
                         atom.set("radius", radius)
                     else:
                         if residue.type != 2:
@@ -1528,13 +1728,14 @@ class pKaRoutines:
     #
                 
     def getAtomsForPotential(self, pKa,titration, get_neutral_state=None):
-        #
+        """
         #    Find the atoms that are needed for measuring the potential,
         #    only selecting atoms where the charge changes.
         #    Parameters
         #        pKa:  The pKa object (pKa)
         #    Returns:
         #        atomnames:  A list of atomnames to measure (list)
+        """
         neutral_state=None
         atomnames = []
         newatomnames = []
@@ -1745,6 +1946,7 @@ class pKaRoutines:
         # Find a neutral state for each group
         #
         self.neutral_ref_state={}
+        #self.charged_state={}
         for this_pka in pKalist:
             residue = this_pka.residue
             pKaGroup = this_pka.pKaGroup
@@ -1935,6 +2137,13 @@ def startpKa():
         help='<protein dielectric constant>',
         )
     parser.add_option(
+        '--sdie',
+        dest='sdie',
+        default=80,
+        type='int',
+        help='<solvent dielectric constant>',
+        )
+    parser.add_option(
         '--ff',
         dest='ff',
         type='choice',
@@ -1943,11 +2152,12 @@ def startpKa():
         help='<force field (amber, charmm, parse)>',
         )
     parser.add_option(
-        '--lig',
-        dest='lig',
+        '--ligand',
+        dest='ligand',
         type='str',
-        default=None,
-        help='<ligand in MOL2>',
+        action='append',
+        default=[],
+        help='<ligand in MOL2 format>',
         )
     parser.add_option(
         '--maps',
@@ -1991,6 +2201,16 @@ def startpKa():
         type='float',
         help='<st.dev [A] of Gaussian smooting of 3D maps at the boundary, bandthwith=3 st.dev>',
         )
+    #
+    # Options for doing partial calculations
+    #
+    parser.add_option('--res_energy',
+                      dest='desolvation_res',
+                      default=[],
+                      action='append',
+                      type='string',
+                      help='Calculate desolvation energy and interaction energy for this residue in its default protonation state. Protonation states can be specified with the --protonation_state argument')
+    parser.add_option('--PS_file',dest='PS_file',default='',type='string',action='store',help='Set protonation states according to the pdb2pka protonation state file (option --PS_file)')
     (options,args,) = parser.parse_args()
 
     ##
@@ -1999,7 +2219,6 @@ def startpKa():
     ff = options.ff.lower()
     pdie = options.pdie
     verbose = options.verbose
-    ligfilename = options.lig
     maps = options.maps
     xdiel = options.xdiel
     ydiel = options.ydiel
@@ -2022,14 +2241,14 @@ def startpKa():
     #
     # Call the pre_init function
     #
-    return pre_init(pdbfilename=path,ff=ff,ligand=ligfilename,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,sd=sd,)
+    return pre_init(pdbfilename=path,ff=ff,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,sd=sd,options=options),options
 
 #
 # ----
 #
 
 def remove_hydrogens(pdb):
-
+    """Remove hydrogens from the PDB file"""
     fd = open(pdb,'r')
     l_lines_i = fd.readlines()
     fd.close()
@@ -2051,8 +2270,13 @@ def remove_hydrogens(pdb):
 
     return
 
+#
+# ----
+#
 
-def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,sd=None,):
+
+def pre_init(pdbfilename=None,ff=None,verbose=None,pdie=8,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,sd=None,options=None):
+    """This function cleans the PDB and prepares the APBS input file"""
     #
     # remove hydrogen atoms
     #
@@ -2065,7 +2289,7 @@ def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,
     pdbfile_name=pdbfilename
     pdbfile = getPDBFile(pdbfilename)
     pdblist, errlist = readPDB(pdbfile)
-    
+    #
     if len(pdblist) == 0 and len(errlist) == 0:
         print "Unable to find file %s!\n" % path
         os.remove(path)
@@ -2090,81 +2314,98 @@ def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,
     #
     Lig=None
     MOL2FLAG = False 
-    if not ligand:
+    if not options.ligand:
         dummydef = Definition()
         myProtein = Protein(pdblist, dummydef)
     else:
         #
-        # Read the ligand into Paul's code
+        # Mol2 ligands and PDB ligands are treated differently
         #
-        Lig = ligandclean.ligff.ligand_charge_handler()
-        Lig.read(ligand)
-        #
-        # Create the ligand definition from the mol2 data
-        #
-        import NEWligand_topology
-        MOL2FLAG = True
-        #
-        X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,MOL2FLAG)
-        #
-        # Add it to the 'official' definition
-        #
-        ligresidue=myDefinition.parseDefinition(X.lines, 'LIG', 2)
-        myDefinition.AAdef.addResidue(ligresidue)
-        #
-        # Look for titratable groups in the ligand
-        #
-        print '==============================\n================================\n======================='
-        ligand_titratable_groups=X.find_titratable_groups()
-        print '==============================\n================================\n======================='
-        print "ligand_titratable_groups", ligand_titratable_groups
-        #
-        # ------------------------------------------------------
-        # Creation of ligand definition and identification of ligand titgrps done
-        # Start loading everything into PDB2PQR
-        #
-        # Append the ligand data to the end of the PDB data
-        #
-        newpdblist=[]
-        # First the protein
-        for line in pdblist:
-            if isinstance(line, END) or isinstance(line,MASTER):
-                continue
-            newpdblist.append(line)
-        # Now the ligand
-        for e in Lig.lAtoms:
-            newpdblist.append(e)
-        #
-        # Add a TER and an END record for good measure
-        #
-        newpdblist.append(TER)
-        newpdblist.append(END)
-        #
-        # Let PDB2PQR parse the entire file
-        #
-        myProtein = Protein(newpdblist)
-
+        if options.ligand!=[]:
+            for ligand in options.ligand:
+                #
+                # Open ligand mol2 file
+                #
+                if os.path.isfile(ligand):
+                    ligfd=open(ligand, 'rU')
+                else:
+                    print 'skipping ligand',ligand
+                    continue
+                #
+                # Read the ligand into Paul's code
+                #
+                from ligandclean import ligff
+                myProtein, myDefinition, Lig = ligff.initialize(myDefinition, ligfd, pdblist, verbose)
+                #
+                # Create the ligand definition from the mol2 data
+                #
+                #import NEWligand_topology
+                #MOL2FLAG = True # somethign is rotten here
+                ##
+                #X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,MOL2FLAG)
+                #
+                # Add it to the 'official' definition
+                #
+                #ligresidue=myDefinition.parseDefinition(X.lines, 'LIG', 2)
+                #myDefinition.AAdef.addResidue(ligresidue)
+                #
+                # Look for titratable groups in the ligand
+                #
+                #print '==============================\n================================\n======================='
+                #ligand_titratable_groups=X.find_titratable_groups()
+                #print '==============================\n================================\n======================='
+                #print "ligand_titratable_groups", ligand_titratable_groups
+            #
+            # ------------------------------------------------------
+            # Creation of ligand definition and identification of ligand titgrps done
+            # Start loading everything into PDB2PQR
+            #
+            # Append the ligand data to the end of the PDB data
+            #
+            #newpdblist=[]
+            # First the protein
+            #for line in pdblist:
+            #    if isinstance(line, END) or isinstance(line,MASTER):
+            #        continue
+            #    newpdblist.append(line)
+            ## Now the ligand
+            #for e in Lig.lAtoms:
+            #    newpdblist.append(e)
+            #
+            # Add a TER and an END record for good measure
+            #
+            #newpdblist.append(TER)
+            #newpdblist.append(END)
+            #
+            # Let PDB2PQR parse the entire file
+            #
+            #myProtein = Protein(newpdblist)
         #
         # Post-Processing for adding sybylTypes to lig-atoms in myProtein
         # Jens: that's the quick and easy solution
-        for rrres in  myProtein.chainmap['L'].residues:
-            for aaat in rrres.atoms:
-                for ligatoms in Lig.lAtoms:
-                    if ligatoms.name == aaat.name:
-                        aaat.sybylType = ligatoms.sybylType
-                        #
-                        # setting the formal charges
-                        if ligatoms.sybylType == "O.co2":
-                            aaat.formalcharge = -0.5
-                        else: aaat.formalcharge = 0.0
-                        xxxlll = []
-                        for xxx in ligatoms.lBondedAtoms:
-                            xxxlll.append(xxx.name)
-                        aaat.intrabonds = xxxlll
-                        #
-                        # charge initialisation must happen somewhere else
-                        # but i don't know where...
-                        aaat.charge = 0.0
+        #
+        #for rrres in  myProtein.chainmap['L'].residues:
+        #    for aaat in rrres.atoms:
+        #        for ligatoms in Lig.lAtoms:
+        #            if ligatoms.name == aaat.name:
+        #                aaat.sybylType = ligatoms.sybylType
+        #                #
+        #                # setting the formal charges
+        #                if ligatoms.sybylType == "O.co2":
+        #                    aaat.formalcharge = -0.5
+        #                else: aaat.formalcharge = 0.0
+        #                xxxlll = []
+        #                for xxx in ligatoms.lBondedAtoms:
+        #                    xxxlll.append(xxx.name)
+        #                aaat.intrabonds = xxxlll
+        #                #
+        #                # charge initialisation must happen somewhere else
+        #                # but i don't know where...
+        #                aaat.charge = 0.0#
+
+
+
+
         #
     #
     # =======================================================================
@@ -2209,15 +2450,70 @@ def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,
     #
     # Choose the correct forcefield
     #
-    if not Lig:
-        myForcefield = Forcefield(ff, myDefinition, None)
-    else:
-        # Here I am now passing the instance of Lig that's already been create - I have not
-        # yet changed it in ligforcefield.... It will give an error for now
+    myForcefield = Forcefield(ff, myDefinition, None)
+    if Lig:
+        hitlist, misslist = myRoutines.applyForcefield(myForcefield)
         #
-        myForcefield = ligandclean.ligff.ligforcefield(ff,Lig)
-        print "That's Lig: ", Lig
-        print "That's X:   " , X
+        # Can we get charges for the ligand?
+        #
+        templist=[]
+        ligsuccess=False
+        for residue in myProtein.getResidues():
+            if isinstance(residue, LIG):
+                templist = []
+                Lig.make_up2date(residue)
+                net_charge=0.0
+                print 'Ligand',residue
+                print 'Atom\tCharge\tRadius'
+                for atom in residue.getAtoms():
+                    if atom.mol2charge:
+                        atom.ffcharge=atom.mol2charge
+                    else:
+                        atom.ffcharge = Lig.ligand_props[atom.name]["charge"]
+                    #
+                    # Find the net charge
+                    #
+                    net_charge=net_charge+atom.ffcharge
+                    #
+                    # Assign radius
+                    #
+                    atom.radius = Lig.ligand_props[atom.name]["radius"]
+                    print '%s\t%6.4f\t%6.4f' %(atom.name,atom.ffcharge,atom.radius)
+                    if atom in misslist:
+                        misslist.pop(misslist.index(atom))
+                        templist.append(atom)
+                    #
+                    # Store the charge and radius in the atom instance for later use
+                    # This really should be done in a nicer way, but this will do for now
+                    #
+                    atom.secret_radius=atom.radius
+                    atom.secret_charge=atom.ffcharge
+                    #
+                    #
+                    
+                charge = residue.getCharge()
+                if abs(charge - int(charge)) > 0.001:
+                    # Ligand parameterization failed
+                    myProtein.residues.remove(residue)
+                    print 'Charge on ligand is not integer!'
+                    raise Exception('Non-integer charge on ligand')
+                else:
+                    ligsuccess = 1
+                    # Mark these atoms as hits
+                    hitlist = hitlist + templist
+                #
+                # Print the net charge
+                #
+                print 'Net charge for ligand %s is: %5.3f' %(residue.name,net_charge)
+    #
+    # Temporary fix; if ligand was successful, pull all ligands from misslist
+    # Not sure if this is needed at all here ...? (Jens wrote this)
+    #
+    if ligsuccess:
+        templist = misslist[:]
+        for atom in templist:
+            if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+            misslist.remove(atom)                    
     
     if verbose:
         print "Created protein object (after processing myRoutines) -"
@@ -2239,7 +2535,7 @@ def pre_init(pdbfilename=None,ff=None,ligand=None,verbose=1,pdie=None,maps=None,
     #
     igen.pdie = pdie
     print 'Setting protein dielectric constant to ',igen.pdie
-    igen.sdie=80
+    igen.sdie=options.sdie
     igen.maps=maps
     if maps==1:
         print "Using dielectric and mobile ion-accessibility function maps in PBE"
@@ -2315,6 +2611,10 @@ def test_interface():
     X._calc_pKas(0.0,10.0,0.5)
     return
 
+#
+# ----
+#
+
 def titrate_one_group(name,intpkas,is_charged,acidbase):
     """Titrate a single group and return the pKa value for it"""
     names=[name]
@@ -2368,8 +2668,46 @@ def titrate_one_group(name,intpkas,is_charged,acidbase):
         print pKavals[count:count+30]
         raise Exception('Incorrect data format from pMC_mult')
     return intpka
+
+#
+# -----
+#
+
+def get_res_energies(pdbfile,mol2file,residue):
+    """Get desolvation energies and interaction energies for a residue in a protein-ligand complex"""
+    ##
+    ## parse optparse options
+    ##
+    ff = 'parse'
+    pdie = 8
+    verbose = False
+    maps = False
+    xdiel = None
+    ydiel = None
+    zdiel = None
+    kappa = None
+    sd = None
+    if verbose == False:
+        verbose = 0
+    elif verbose == True:
+        verbose = 1
+    class junkclass:
+
+        def __init__(self):
+            self.sdie=80
+            self.ligand=[mol2file]
+    junkclass_instance=junkclass()
+    #
+    # Call the pre_init function
+    #
+    (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd)=pre_init(pdbfilename=pdbfile,ff=ff,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,sd=sd,options=junkclass_instance)
+    mypkaRoutines = pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd)
+    print 'Doing desolvation for single residue',residue
+    return mypkaRoutines.calculate_desolvation_for_residues(residues=[residue])
+        
             
 if __name__ == "__main__":
+
     state=1
     if state==0:
         import pMC_mult
@@ -2464,25 +2802,34 @@ if __name__ == "__main__":
         #
         # Do a real pKa calculation
         #
-        protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd = startpKa()
+        (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
+        
         mypkaRoutines = pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd)
         #
         # Debugging
         #
-        if debug:
-            CM.init_protein(mypkaRoutines)
+        #if debug:
+        #    CM.init_protein(mypkaRoutines)
         #
         # Deal with ligands
         #
-        if ligand_titratable_groups:
-            print "lig (before mypKaRoutines) ", ligand_titratable_groups['titratableatoms']
-            mypkaRoutines.insert_new_titratable_group(ligand_titratable_groups)
-        mypkaRoutines.runpKa()
+        #if ligand_titratable_groups:
+        #    print "lig (before mypKaRoutines) ", ligand_titratable_groups['titratableatoms']
+        #    mypkaRoutines.insert_new_titratable_group(ligand_titratable_groups)
+        #
+        # What should we do?
+        #
+        if options.desolvation_res:
+            print 'Doing desolvation for single residues',options.desolvation_res
+            mypkaRoutines.calculate_desolvation_for_residues(residues=options.desolvation_res)
+        else:
+            print 'Doing full pKa calculation'
+            mypkaRoutines.runpKa(options)
     elif state==2:
         #
         # Just assign charges
         #
-        protein, routines, forcefield,apbs_setup, ligand_titratable_groups = startpKa()
+        (protein, routines, forcefield,apbs_setup, ligand_titratable_groups,maps,sd),options = startpKa()
         for chain in protein.getChains():
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):

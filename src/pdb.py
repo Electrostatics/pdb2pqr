@@ -412,6 +412,8 @@ class HETATM:
             self.lBondedAtoms = lBondedAtoms
             self.lBonds = lBonds
             self.radius = 1.0
+            self.isCterm=0
+            self.isNterm=0
             ###
             try:
                 self.occupancy = float(string.strip(line[54:60]))
@@ -584,6 +586,13 @@ class MOL2MOLECULE:
             except ValueError:
                 raise Exception, "Bad atom entry in MOL2 file: %s" % AtomLine
             thisAtom = HETATM(mol2pdb, SeparatedAtomLine[5],[],[])
+            if len(SeparatedAtomLine)>8:
+                charge=SeparatedAtomLine[8]
+                try:
+                    thisAtom.mol2charge=float(charge)
+                except:
+                    print 'Warning. Non-float charge in mol2 file.',charge
+                    thisAtom.mol2charge=None
             self.lPDBAtoms.append(mol2pdb)
             self.lAtoms.append(thisAtom)
         

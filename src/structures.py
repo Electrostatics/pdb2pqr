@@ -179,7 +179,8 @@ class Residue:
         self.chainID = sampleAtom.chainID
         self.resSeq = sampleAtom.resSeq
         self.iCode = sampleAtom.iCode
-       
+        #
+        #
         self.map = {}
 
         self.naname = None
@@ -592,6 +593,11 @@ class Atom(ATOM):
         self.optimizeable = 0
         self.refdistance = 0
         self.id = None
+
+        self.mol2charge=None
+        if hasattr(atom,'mol2charge'):
+            self.mol2charge=atom.mol2charge
+        
           
     def __str__(self):
         """

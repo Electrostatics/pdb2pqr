@@ -277,7 +277,7 @@ def generateForm(file, initVars, pdb2pqrID, type):
             </head>
     <body>
         <!-- ... body of document ... -->
-        <h2>APBS web solver <span style="color:red">(EXPERIMENTAL)</span></h2>
+        <h2>APBS web solver</h2>
     """ % (cginame, cginame, cginame, initVars['calculationType'])) # hardcoded css link
     #file.write("<h3>Calculation for PQR file <a href=\"../tmp/%s/%s.pqr\" target=\"_blank\">%s</a></h3>\n" % ( initVars['pqrname'], initVars['pqrname'])) # HARDCODED - needs to be changed
     file.write("<h3>Calculation for PQR file <a href=\"tmp/%s/%s\" target=\"_blank\">%s</a></h3>\n" % (pdb2pqrID, initVars['pqrname'],initVars['pqrname']))
@@ -1135,7 +1135,7 @@ def generateForm(file, initVars, pdb2pqrID, type):
     print "/>"
 
     print "<input type=\"hidden\" name=\"mol\" value=\"1\"/>"
-    print "<input type=\"submit\" value=\"Submit (EXPERIMENTAL)\"/>"
+    print "<input type=\"submit\" value=\"Submit\"/>"
 
     print """
         </form> 

@@ -66,7 +66,7 @@ def main(apbsOptions):
     print '\t\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">' % cssFile
     print '\t</head>'
     print '\t<body>'
-    print '\t\t<h3>Visualization Configuration <span style="color:red">(EXPERIMENTAL)</span></h3>'
+    print '\t\t<h3>Visualization Configuration</h3>'
     print '\t\t<form action=\"%s\" method=\"post\" enctype=\"multipart/form-data\" name=\"%s\" id=\"%s\">\n' % (cgiFile, cgiName, cgiName)
     print '\t\tSelect the type of visual representation:'
     print '\t\t<ul>'

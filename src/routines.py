@@ -493,7 +493,7 @@ class Routines:
 
                     for res in reslist:
                         newchain.addResidue(res)
-		        chain.residues.remove(res)
+                        chain.residues.remove(res)
                         res.setChainID(chainid)
 		
 		

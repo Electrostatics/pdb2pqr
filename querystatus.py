@@ -332,8 +332,6 @@ def mainCGI():
 
     print "<BODY>\n<P>"
     print "<h3>Status"
-    if calctype=="apbs":
-        print "<span style=\"color:red\">(EXPERIMENTAL)</span>"
     print "</h3>"
     print "Message: %s<br />" % progress
     print "Run time: %s seconds<br />" % int(runtime)
@@ -447,9 +445,9 @@ def mainCGI():
         #            print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,printname)
 
         if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
-            print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
+            print "</ul></p><hr><p><a href=%s>Click here</a> to run APBS with your results.</p>" % nexturl
         elif calctype=="apbs":
-            print "</ul></p><hr><p><a href=%s>Click here</a> to visualize your results <span style=\"color:red\">(EXPERIMENTAL)</span>.</p>" % nexturl
+            print "</ul></p><hr><p><a href=%s>Click here</a> to visualize your results.</p>" % nexturl
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."

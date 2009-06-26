@@ -2505,15 +2505,15 @@ def pre_init(pdbfilename=None,ff=None,verbose=None,pdie=8,maps=None,xdiel=None,y
                 # Print the net charge
                 #
                 print 'Net charge for ligand %s is: %5.3f' %(residue.name,net_charge)
-    #
-    # Temporary fix; if ligand was successful, pull all ligands from misslist
-    # Not sure if this is needed at all here ...? (Jens wrote this)
-    #
-    if ligsuccess:
-        templist = misslist[:]
-        for atom in templist:
-            if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
-            misslist.remove(atom)                    
+        #
+        # Temporary fix; if ligand was successful, pull all ligands from misslist
+        # Not sure if this is needed at all here ...? (Jens wrote this)
+        #
+        if ligsuccess:
+            templist = misslist[:]
+            for atom in templist:
+                if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+                misslist.remove(atom)                    
     
     if verbose:
         print "Created protein object (after processing myRoutines) -"

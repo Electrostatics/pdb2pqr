@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       6-25-09
+BETA PUBLIC RELEASE VERSION 1.4.1       6-26-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -21,6 +21,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       6-25-09
     download zip files from the web server.
   * Removed "EXPERIMENTAL" from APBS web solver interface and Jmol 
     visualization interface.
+  * Updated all APBS related urls from http://apbs.sourceforge.net/... to
+    http:/apbs.wustl.edu/...
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

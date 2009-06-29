@@ -335,6 +335,36 @@ class pKaRoutines:
             self.get_interaction_energies_setup(pKa)
         return
 
+    def get_default_protonation_states(self, residues):
+        """Get default protonation states for a list of residues"""
+        defaultprotonationstates = {}
+        for residue in residues:
+            for atom in residue.atoms:
+                print "%s" % (atom)
+            key = residue.name + '_' + residue.chainID + '_' + str(residue.resSeq)
+            if residue.name in ["ASP", "GLU"]:
+                defaultprotonationstates[key] = "0"
+            elif residue.name in ["LYS", "TYR"]:
+                defaultprotonationstates[key] = "1"
+            elif residue.name == "ARG":
+                defaultprotonationstates[key] = "1+2+3+4+5"
+            elif residue.name == "HIS":
+                if residue.hasAtom("HD1") and residue.hasAtom("HE2"):
+                    defaultprotonationstates[key] = "1+2"
+                elif residue.hasAtom("HD1"):
+                    defaultprotonationstates[key] = "1"
+                elif residue.hasAtom("HE2"):
+                    defaultprotonationstates[key] = "2"
+            if residue.isNterm:
+                key = 'NTR' + '_' + residue.chainID + '_' + str(residue.resSeq)
+                defaultprotonationstates[key] = "1+2"
+            elif residue.isCterm:
+                key = 'CTR' + '_' + residue.chainID + '_' + str(residue.resSeq)
+                defaultprotonationstates[key] = "0"
+
+        #print "defaultprotonationstates: %s" % (defaultprotonationstates)
+        return defaultprotonationstates
+
     #
     # -----
     #
@@ -383,9 +413,12 @@ class pKaRoutines:
 
                     pKa.residue.fixed = 2
 
+                    self.hydrogenRoutines.setOptimizeableHydrogens()
                     self.hydrogenRoutines.initializeFullOptimization()
 
                     self.hydrogenRoutines.optimizeHydrogens()
+                    self.hydrogenRoutines.cleanup()
+                    myRoutines.setStates()
 
                     myRoutines.debumpProtein()
 
@@ -1117,9 +1150,12 @@ class pKaRoutines:
 
                     pKa.residue.fixed = 2
 
+                    self.hydrogenRoutines.setOptimizeableHydrogens()
                     self.hydrogenRoutines.initializeFullOptimization()
 
                     self.hydrogenRoutines.optimizeHydrogens()
+                    self.hydrogenRoutines.cleanup()
+                    myRoutines.setStates()
 
                     myRoutines.debumpProtein()
 
@@ -1266,9 +1302,12 @@ class pKaRoutines:
 
                     pKa.residue.fixed = 2
 
+                    self.hydrogenRoutines.setOptimizeableHydrogens()
                     self.hydrogenRoutines.initializeFullOptimization()
 
                     self.hydrogenRoutines.optimizeHydrogens()
+                    self.hydrogenRoutines.cleanup()
+                    myRoutines.setStates()
 
                     myRoutines.debumpProtein()
 
@@ -2431,6 +2470,7 @@ def pre_init(pdbfilename=None,ff=None,verbose=None,pdie=8,maps=None,xdiel=None,y
     myRoutines.applyNameScheme(Forcefield(ff, myDefinition, None))
     myRoutines.findMissingHeavy()
     myRoutines.addHydrogens()
+    myRoutines.debumpProtein()
 
     #myRoutines.randomizeWaters()
     myProtein.reSerialize()
@@ -2445,8 +2485,12 @@ def pre_init(pdbfilename=None,ff=None,verbose=None,pdie=8,maps=None,xdiel=None,y
     #
     # Here we should inject the info!!
     #
+    myhydRoutines.setOptimizeableHydrogens()
     myhydRoutines.initializeFullOptimization()
     myhydRoutines.optimizeHydrogens()
+    myhydRoutines.cleanup()
+    myRoutines.setStates()
+
     #
     # Choose the correct forcefield
     #

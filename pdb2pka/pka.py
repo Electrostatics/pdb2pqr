@@ -2868,7 +2868,7 @@ if __name__ == "__main__":
             mypkaRoutines.calculate_desolvation_for_residues(residues=options.desolvation_res)
         else:
             print 'Doing full pKa calculation'
-            mypkaRoutines.runpKa(options)
+            mypkaRoutines.runpKa()
     elif state==2:
         #
         # Just assign charges

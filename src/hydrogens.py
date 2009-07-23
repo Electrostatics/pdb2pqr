@@ -2606,6 +2606,7 @@ class hydrogenRoutines:
         conf = []
         patchmap = []
         refmap = {}
+        refmap2 = {}
         titrationstatemap = {}
         tautomermap = {}
         conformermap = {}
@@ -2622,6 +2623,18 @@ class hydrogenRoutines:
                     tautomermap[tautomer.name] = tautomer
                     for conformer in tautomer.conformers:
                         conformermap[conformer.name] = conformer
+
+        # If we are going to use the flip conformers of HIS as reference ...
+        if conformermap['HSP2'].boolean == "True":
+            refmap2['HIS'] = refmap['HIS']
+            for add in conformermap['HSP2'].conformerAdds:
+                for atom in add.atoms:
+                    for refatom in refmap2['HIS'].atoms:
+                        if atom.name == refatom.name:
+                            refatom.x = atom.x
+                            refatom.y = atom.y
+                            refatom.z = atom.z
+            refmap['HIS'] = refmap2['HIS']
 
         if name == 'CYS':
             reference = refmap['CYS']

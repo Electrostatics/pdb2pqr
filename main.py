@@ -117,6 +117,10 @@ def usage(rc):
     str = str + "        --whitespace  :  Insert whitespaces between atom name and residue\n"
     str = str + "                         name, between x and y, and between y and z\n"
     str = str + "        --typemap :      Create Typemap output\n"
+    str = str + "        --neutraln  :    Make the N-terminus of this protein to be neutral\n"
+    str = str + "                         (default is charged)\n"
+    str = str + "        --neutralc  :    Make the C-terminus of this protein to be neutral\n"
+    str = str + "                         (default is charged)\n"
     str = str + "        --verbose (-v):  Print information to stdout\n"
     str = str + "        --help    (-h):  Display the usage information\n"
 
@@ -215,6 +219,8 @@ def runPDB2PQR(pdblist, ff, options):
     outname = ""
     outroot = ""
     typemapname = ""
+    neutraln = None
+    neutralc = None
     lines = []
     Lig = None
     atomcount = 0   # Count the number of ATOM records in pdb
@@ -297,7 +303,10 @@ def runPDB2PQR(pdblist, ff, options):
             myRoutines.warnings.append("WARNING: multiple occupancies found in %s,\n" % (residue))
             myRoutines.warnings.append("         at least one of the instances is being ignored.\n")
 
-    myRoutines.setTermini()
+    if "neutraln" in options: neutraln = 1
+    if "neutralc" in options: neutralc = 1
+
+    myRoutines.setTermini(neutraln, neutralc)
     myRoutines.updateBonds()
 
     if "clean" in options:
@@ -485,7 +494,7 @@ def mainCommand(argv):
 
 
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace", "typemap"]
+    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace", "typemap", "neutraln", "neutralc"]
 
     extensions = getAvailableExtensions(1)
     longOptlist += extensions.keys()
@@ -541,6 +550,16 @@ def mainCommand(argv):
             if defpath == "":
                 raise ValueError, "Unable to find parameter files for forcefield %s!" % ff
             
+        elif o == "--neutraln": 
+            if ff not in ["parse", "PARSE"]:
+                raise ValueError, "neutraln option only works with PARSE forcefield!"
+            options["neutraln"]  = 1
+
+        elif o == "--neutralc": 
+            if ff not in ["parse", "PARSE"]:
+                raise ValueError, "neutralc option only works with PARSE forcefield!"
+            options["neutralc"]  = 1
+
         elif o == "--chain": options["chain"] = 1
         elif o == "--ffout":
             if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE","tyl06","TYL06"]:

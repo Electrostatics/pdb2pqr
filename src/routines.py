@@ -382,7 +382,7 @@ class Routines:
                isinstance(residue, Nucleic):
                 residue.setState()
 
-    def assignTermini(self, chain):
+    def assignTermini(self, chain, neutraln = None, neutralc = None):
         """
             Assign the termini for the given chain by looking at
             the start and end residues.
@@ -399,6 +399,8 @@ class Routines:
             res0.set("isNterm",1)
             if isinstance(res0, PRO):
                 self.applyPatch("NEUTRAL-NTERM", res0)
+            elif neutraln == 1:
+                self.applyPatch("NEUTRAL-NTERM", res0)
             else:
                 self.applyPatch("NTERM",res0)
         elif isinstance(res0, Nucleic):
@@ -410,7 +412,10 @@ class Routines:
         reslast = chain.residues[-1]
         if isinstance(reslast, Amino):
             reslast.set("isCterm",1)
-            self.applyPatch("CTERM", reslast)
+            if neutralc == 1:
+                self.applyPatch("NEUTRAL-CTERM", reslast)
+            else:
+                self.applyPatch("CTERM", reslast)
         elif isinstance(reslast, Nucleic):
             reslast.set("is3term",1)
             self.applyPatch("3TERM", reslast)
@@ -419,7 +424,10 @@ class Routines:
                 resthis = chain.residues[-1 - i]
                 if isinstance(resthis, Amino):
                     resthis.set("isCterm",1)
-                    self.applyPatch("CTERM", resthis)
+                    if neutralc == 1:
+                        self.applyPatch("NEUTRAL-CTERM", resthis)
+                    else:
+                        self.applyPatch("CTERM", resthis)
                     break
                 elif resthis.name in ["NH2","NME"]: break
                 elif isinstance(resthis, Nucleic):
@@ -427,7 +435,7 @@ class Routines:
                     self.applyPatch("3TERM", resthis)
                     break
                     
-    def setTermini(self):
+    def setTermini(self, neutraln = None, neutralc = None):
         """
             Set the termini for the protein. First set all known
             termini by looking at the ends of the chain. Then
@@ -438,7 +446,7 @@ class Routines:
         # First assign the known termini
 
         for chain in self.protein.getChains():
-            self.assignTermini(chain)
+            self.assignTermini(chain, neutraln, neutralc)
 
         # Now determine if there are any hidden chains
 
@@ -497,8 +505,8 @@ class Routines:
                         res.setChainID(chainid)
 		
 		
-                    self.assignTermini(chain)
-                    self.assignTermini(newchain)
+                    self.assignTermini(chain, neutraln, neutralc)
+                    self.assignTermini(newchain, neutraln, neutralc)
                     
 		    reslist = []
 		    c += 1

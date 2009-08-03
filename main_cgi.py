@@ -125,6 +125,8 @@ def mainCGI():
 
     apbs_input = form.has_key("INPUT")
     typemap = form.has_key("TYPEMAP")
+    neutraln = form.has_key("NEUTRALN")
+    neutralc = form.has_key("NEUTRALC")
 
     if HAVE_PDB2PQR_OPAL=="1":
         have_opal = True
@@ -193,6 +195,10 @@ def mainCGI():
         options["whitespace"] = 1
     if form.has_key("TYPEMAP"):
         options["typemap"] = 1
+    if form.has_key("NEUTRALN"):
+        options["neutraln"] = 1
+    if form.has_key("NEUTRALC"):
+        options["neutralc"] = 1
     if form.has_key("LIGAND"):
         if have_opal:
             ligandfilename=str(form["LIGAND"].filename)

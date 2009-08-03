@@ -273,6 +273,30 @@
 				Create a template <a href="http://apbs.wustl.edu">APBS</a> input file based on the generated PQR file.
 			</dd>
 			<dt>
+				<code>--whitespace</code>
+			</dt>
+			<dd>
+				Put an extra whitespace between atom name and residue name to <code>{output-path}-whitespace.pqr</code>, this may (or may not) break strict PDB formatting and cause problems for some visualization programs.
+			</dd>
+			<dt>
+				<code>--typemap</code>
+			</dt>
+			<dd>
+				Create Typemap output.
+			</dd>
+			<dt>
+				<code>--neutraln</code>
+			</dt>
+			<dd>
+				Make the N-terminus of this protein neutral (default is charged).
+			</dd>
+			<dt>
+				<code>--neutralc</code>
+			</dt>
+			<dd>
+				Make the C-terminus of this protein neutral (default is charged).
+			</dd>
+			<dt>
 				<code>--verbose (-v)</code>
 			</dt>
 			<dd>
@@ -324,12 +348,6 @@
 			</dt>
 			<dd>
 				Print a list of salt bridges to <code>{output-path}.salt</code>
-			</dd>
-			<dt>
-				<code>--whitespace</code>
-			</dt>
-			<dd>
-				Put an extra whitespace between atom name and residue name to <code>{output-path}-whitespace.pqr</code>, this may (or may not) break strict PDB formatting and cause problems for some visualization programs.
 			</dd>
 		</dl>
 		<hr>

@@ -86,6 +86,20 @@ document.thisform.LIGAND.disabled=true;
 }
 }
 
+function setneutraln(){
+if(document.thisform.NEUTRALN.checked==true)
+{
+document.getElementById("parse").checked=true;
+}
+}
+
+function setneutralc(){
+if(document.thisform.NEUTRALC.checked==true)
+{
+document.getElementById("parse").checked=true;
+}
+}
+
 //-->
 </SCRIPT>
 </head>
@@ -140,12 +154,12 @@ Please enter either:
 
 Pick a forcefield to use: 
 <blockquote>
-<input type="RADIO" name="FF" value="amber" onClick="setff(this.value)" CHECKED>AMBER</input><BR> 
-<input type="RADIO" name="FF" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
-<input type="RADIO" name="FF" value="parse" onClick="setff(this.value)">PARSE</input><BR>
-<input type="RADIO" name="FF" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
-<input type="RADIO" name="FF" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
-<input type="RADIO" name="FF" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
+<input type="RADIO" name="FF" id = "amber" value="amber" onClick="setff(this.value)" CHECKED>AMBER</input><BR> 
+<input type="RADIO" name="FF" id = "charmm" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
+<input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)">PARSE</input><BR>
+<input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
+<input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
+<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
 <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><BR>
 <label>&nbsp;&nbsp;* If you select user-defined forcefield, you also need to specify a user-defined .names file.</label><BR> 
 </blockquote>
@@ -171,8 +185,8 @@ Available options:
 <input type="CHECKBOX" name="CHAIN"> Add/keep chain IDs in the PQR file<BR>
 <input type="CHECKBOX" name="WHITESPACE"> Insert whitespaces between atom name and residue name, between x and y, and between y and z<BR>
 <input type="CHECKBOX" name="TYPEMAP"> Create Typemap output<BR>
-<input type="CHECKBOX" name="NEUTRALN"> Make the protein's N-terminus neutral (requires PARSE forcefield)<BR>
-<input type="CHECKBOX" name="NEUTRALC"> Make the protein's C-terminus neutral (requires PARSE forcefield)
+<input type="CHECKBOX" name="NEUTRALN" onClick="setneutraln()"> Make the protein's N-terminus neutral (requires PARSE forcefield)<BR>
+<input type="CHECKBOX" name="NEUTRALC" onClick="setneutralc()"> Make the protein's C-terminus neutral (requires PARSE forcefield)
 </blockquote>
 
 <input type="submit" value="Submit"><P>

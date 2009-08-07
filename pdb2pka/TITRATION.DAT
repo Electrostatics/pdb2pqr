@@ -30,7 +30,8 @@
 * ASP
 Residue: ASP
 Grouptype: Acid
-Transition: 1,2,3,4 -> 0
+//Transition: 1,2,3,4 -> 0
+Transition: ASH1c,ASH1t,ASH2c,ASH2t -> ASP
 Model_pKa: 3.6
 END
 
@@ -44,28 +45,32 @@ END
 * GLU
 Residue: GLU
 Grouptype: Acid
-Transition: 1,2,3,4 -> 0
+//Transition: 1,2,3,4 -> 0
+Transition: GLH1c,GLH1t,GLH2c,GLH2t -> GLU
 Model_pKa: 3.8
 END
 
 * ARG
 Residue: ARG
 Grouptype: Base
-Transition: 1+2+3+4 -> 1+2+3+4+5 
+//Transition: 1+2+3+4 -> 1+2+3+4+5 
+Transition: ARG0 -> ARG
 Model_pKa: 13.0
 END
 
 * LYS
 Residue: LYS
 Grouptype: Base
-Transition: 1 -> 0
+//Transition: 1 -> 0
+Transition: LYS -> LYS0
 Model_pKa: 10.4
 END 
 
 * TYR
 Residue: TYR
 Grouptype: Acid
-Transition: 1 -> 0
+//Transition: 1 -> 0
+Transition: TYR -> TYR-
 Model_pKa: 9.6
 END 
 
@@ -73,7 +78,8 @@ END
 * HIS
 Residue: HIS
 Grouptype: Base
-Transition: 1,2->1+2
+//Transition: 1,2->1+2
+Transition: HSD,HSE->HSP
 Model_pKa: 6.6
 END 
 
@@ -81,7 +87,8 @@ END
 * NTR
 Residue: All
 Grouptype: Base
-Transition: 1,2->1+2
+//Transition: 1,2->1+2
+Transition: H3,H2 -> H3+H2
 Model_pKa: 8.3
 END
 
@@ -89,7 +96,8 @@ END
 * CTR
 Residue: All
 Grouptype: Acid
-Transition: 1,2,3,4 -> 0
+//Transition: 1,2,3,4 -> 0
+Transition: CTR01c,CTR01t,CTR02c,CTR02t -> CTR-
 Model_pKa: 3.2
 END
 

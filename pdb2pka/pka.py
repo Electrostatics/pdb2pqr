@@ -401,7 +401,7 @@ class pKaRoutines:
                 # Here we switch the center group to a particular state
                 #
                 self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
-                intenename=pdbfile_name+'.intene_%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,state)
+                intenename=pdbfile_name+'.intene_%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name, state))
                 import os
                 if not os.path.isfile(intenename):
 
@@ -439,9 +439,9 @@ class pKaRoutines:
 
     def get_interaction_energies(self,pKa_center,titration_center,state_center,mode):
         """Get the potentials and charges at all titratable groups"""
-        print '------------>Charge - charge interactions for group: %s, state: %s' %(pKa_center.residue.resSeq,state_center)
-        intenename=pdbfile_name+'.intene_%s_%s_%s_%s' %(titration_center.name,pKa_center.residue.chainID,pKa_center.residue.resSeq,state_center)
-        allpotsname=pdbfile_name+'.intene_%s_%s_%s_%s_allpots' %(titration_center.name,pKa_center.residue.chainID,pKa_center.residue.resSeq,state_center)
+        print '------------>Charge - charge interactions for group: %s, state: %s' %(pKa_center.residue.resSeq,self.get_state_name(titration_center.name, state_center))
+        intenename=pdbfile_name+'.intene_%s_%s_%s_%s' %(titration_center.name,pKa_center.residue.chainID,pKa_center.residue.resSeq,self.get_state_name(titration_center.name, state_center))
+        allpotsname=pdbfile_name+'.intene_%s_%s_%s_%s_allpots' %(titration_center.name,pKa_center.residue.chainID,pKa_center.residue.resSeq,self.get_state_name(titration_center.name, state_center))
         read_allpots=None
         #
 
@@ -520,7 +520,7 @@ class pKaRoutines:
 
                 for state in possiblestates:
                     all_potentials[pKa][titration][state]={}
-                    name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,state)
+                    name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name, state))
 
                     if savedict.has_key(name):
                         energies[pKa][titration][state]= savedict[name]
@@ -769,7 +769,7 @@ class pKaRoutines:
                         chg_intpkas.append(pKa.intrinsic_pKa[state])
                     else:
                         neut_intpkas.append(pKa.intrinsic_pKa[state])
-                    print 'State: %s, charge: %5.2f, intpka: %5.3f' %(state,crg,pKa.intrinsic_pKa[state])
+                    print 'State: %s (%s), charge: %5.2f, intpka: %5.3f' %(state,self.get_state_name(titration.name, state),crg,pKa.intrinsic_pKa[state])
               
                 pkas[name]['intpka']=pKa.simulated_intrinsic_pKa
                 pkas[name]['delec']=pKavals[count]-pkas[name]['intpka']
@@ -982,10 +982,10 @@ class pKaRoutines:
         #
         for pKa in self.pKas:
             print "======== Residue: %s ========" % (pKa.residue)
-            print 'State\tModel pKa\tDesolvation\tBackground'
+            print '     State\tModel pKa\tDesolvation\tBackground'
             for titration in pKa.pKaGroup.DefTitrations:
                 for state in titration.allstates:
-                    print '%10s\t%5.3f\t\t%5.3f\t\t%5.3f' %(state,titration.modelpKa,pKa.desolvation[state],pKa.background[state])
+                    print '%10s\t%5.3f\t\t%5.3f\t\t%5.3f' %(self.get_state_name(titration.name, state),titration.modelpKa,pKa.desolvation[state],pKa.background[state])
         print
         print
         #
@@ -1023,7 +1023,7 @@ class pKaRoutines:
                         # Now calculate intrinsic pKa
                         #
                         intpKa=titration.modelpKa+dpKa_desolv+dpKa_backgr   
-                        print 'Energy difference for %s -> %s [reference state] is %5.2f pKa units' %(state,ref_state,intpKa)
+                        print 'Energy difference for %6s   -> %6s [reference state] is %5.2f pKa units' %(self.get_state_name(titration.name, state),self.get_state_name(titration.name, ref_state),intpKa)
                         pKa.intrinsic_pKa[state]=intpKa
                     else:
                         #
@@ -1038,7 +1038,7 @@ class pKaRoutines:
                             dpKa_desolv=-dpKa_desolv
                             dpKa_backgr=-dpKa_backgr
                         dpKa=dpKa_desolv+dpKa_backgr
-                        print 'Energy difference for %s -> %s [reference state] is %5.2f pKa units' %(state,ref_state,dpKa)
+                        print 'Energy difference for %6s   -> %6s [reference state] is %5.2f pKa units' %(self.get_state_name(titration.name, state),self.get_state_name(titration.name, ref_state),dpKa)
                         pKa.intrinsic_pKa[state]=dpKa
             # -----------------------------------------------------------------
             # Get the intrinsic pKa with a small MC calculation
@@ -1115,7 +1115,7 @@ class pKaRoutines:
                     #
                     # Set the name for this energy
                     #
-                    name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,state)
+                    name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name, state))
                     if savedict.has_key(name):
                         pKa.background[state] = savedict[name]
                         continue
@@ -1139,7 +1139,7 @@ class pKaRoutines:
                     #
                     # Switch the state for the group in question
                     #
-                    print "----------> Calculating Background for state %s" % state
+                    print "----------> Calculating Background for state %s" % (self.get_state_name(titration.name, state))
                     self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
 
                     myRoutines = Routines(self.protein, 0)
@@ -1277,11 +1277,11 @@ class pKaRoutines:
                 #        
                 #fixedstates = self.hydrogenRoutines.getstates(ambiguity)
                 for state in possiblestates:
-                    name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,state)
+                    name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name, state))
                     if savedict.has_key(name):
                         pKa.desolvation[state] = savedict[name]
                         continue
-                    print "---------> Calculating desolvation energy for residue %s state %s in solvent" %(residue.name,state)
+                    print "---------> Calculating desolvation energy for residue %s state %s in solvent" %(residue.name,self.get_state_name(titration.name, state))
                     #
                     # Center the map on our set of atoms
                     #
@@ -1331,7 +1331,7 @@ class pKaRoutines:
                     # Run APBS again, - this time for the state in the protein
                     #
 
-                    print '--------> Calculating self energy for residue %s %d state %s in the protein' %(residue.name,residue.resSeq,state)
+                    print '--------> Calculating self energy for residue %s %d state %s in the protein' %(residue.name,residue.resSeq,self.get_state_name(titration.name, state))
 
                     if debug:
                         CM.set_calc('Desolv prot %s %s' %(pKa.residue.resSeq,state))
@@ -2040,6 +2040,14 @@ class pKaRoutines:
                mygroups: A dictionary of pKaGroups
         """
         mygroups = {}
+        titrationdict = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4', 'ASP': '0',
+                         'GLH1c': '1', 'GLH1t': '2', 'GLH2c': '3', 'GLH2t': '4', 'GLU': '0',
+                         'ARG0': '1+2+3+4', 'ARG': '1+2+3+4+5',
+                         'LYS': '1', 'LYS0': '0',
+                         'TYR': '1', 'TYR-': '0',
+                         'HSD': '1', 'HSE': '2', 'HSP': '1+2', 
+                         'H3': '1', 'H2': '2', 'H3+H2': '1+2',
+                         'CTR01c': '1', 'CTR01t': '2', 'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
         filename = TITRATIONFILE
         if not os.path.isfile(TITRATIONFILE):
             raise ValueError, "Could not find TITRATION.DAT!"
@@ -2091,9 +2099,9 @@ class pKaRoutines:
                     
                     split=string.split(line[11:],'->')
                     for number in string.split(split[0], ','):
-                        startstates.append(string.strip(number))                        
+                        startstates.append(titrationdict[string.strip(number)])                        
                     for number in string.split(split[1], ','):
-                        endstates.append(string.strip(number))
+                        endstates.append(titrationdict[string.strip(number)])
 
                     line = file.readline()
                     #
@@ -2124,6 +2132,29 @@ class pKaRoutines:
         
         return mygroups
 
+    def get_state_name(self, titrationname, state):
+        """
+            Get the titration state name from numbers
+            Returns: real titration state name as in TITRATION.DAT
+        """
+        reverse_titrationdict = {}
+        if titrationname == 'ASP':
+            reverse_titrationdict = {'1': 'ASH1c', '2': 'ASH1t', '3': 'ASH2c', '4': 'ASH2t', '0': 'ASP'}
+        elif titrationname == 'GLU':
+            reverse_titrationdict = {'1': 'GLH1c', '2': 'GLH1t', '3': 'GLH2c', '4': 'GLH2t', '0': 'GLU'}
+        elif titrationname == 'ARG':
+            reverse_titrationdict = {'1+2+3+4': 'ARG0', '1+2+3+4+5': 'ARG'}
+        elif titrationname == 'LYS':
+            reverse_titrationdict = {'1': 'LYS', '0': 'LYS0'}
+        elif titrationname == 'TYR':
+            reverse_titrationdict = {'1': 'TYR', '0': 'TYR-'}
+        elif titrationname == 'HIS':
+            reverse_titrationdict = {'1': 'HSD', '2': 'HSE', '1+2': 'HSP'}
+        elif titrationname == 'NTR':
+            reverse_titrationdict = {'1': 'H3', '2': 'H2', '1+2': 'H3+H2'}
+        elif titrationname == 'CTR':
+            reverse_titrationdict = {'1': 'CTR01c', '2': 'CTR01t', '3': 'CTR02c', '4': 'CTR02t', '0': 'CTR-'}
+        return reverse_titrationdict[state]
 
 #
 # -------------

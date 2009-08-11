@@ -1,1 +1,1 @@
-SUBDIRS = test adv-test test-long .
+SUBDIRS = test adv-test test-long local-test .

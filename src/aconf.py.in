@@ -69,8 +69,11 @@ HAVE_PDB2PQR_OPAL = "@HAVE_PDB2PQR_OPAL@"
 """ The HAVE_APBS flag """
 HAVE_APBS = "@HAVE_APBS@"
 
-""" The HAVE_APBS_OPAL flag """
+""" The APBS_OPAL_URL flag """
 APBS_OPAL_URL = "@APBS_OPAL_URL@"
+
+""" The DEFAULT_APBS_OPAL_URL flag """
+DEFAULT_APBS_OPAL_URL = "@DEFAULT_APBS_OPAL_URL@"
 
 """ The installation directory """
 INSTALLDIR = "@INSTALLDIR@"

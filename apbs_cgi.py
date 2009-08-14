@@ -68,7 +68,11 @@ def apbsOpalExec(logTime, form, apbsOptions):
 
     #argv=[os.path.abspath("tmp/%s/%s.in") % (logTime, "apbsinput")] # HARDCODED??  
     argv=[os.path.abspath("%s%s%s/apbsinput.in" % (INSTALLDIR, TMPDIR, logTime))]  
-    appServicePortArray = execApbs(argv=argv)
+    if DEFAULT_APBS_OPAL_URL == "0":
+        vars={'service_url' : APBS_OPAL_URL}
+    else:
+        vars = None
+    appServicePortArray = execApbs(vars=vars, argv=argv)
 
     # if the version number doesn't match, execApbs returns False
     if(appServicePortArray == False):

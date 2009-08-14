@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       6-26-09
+BETA PUBLIC RELEASE VERSION 1.4.1       8-11-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create typemap
@@ -23,8 +23,11 @@ BETA PUBLIC RELEASE VERSION 1.4.1       6-26-09
     visualization interface.
   * Updated all APBS related urls from http://apbs.sourceforge.net/... to
     http:/apbs.wustl.edu/...
+  * Merged PDB2PKA code, PDB2PKA is functional now.
   * Added two new options: --neutraln and --neutralc, so that users can 
-    manually make the N-termini or C-termini of their proteins neutral    
+    manually make the N-termini or C-termini of their proteins neutral.    
+  * Added a local-test, which addresses the issue of Debian-like Linux
+    distros not allowing fetching PDBs from the web.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

@@ -3692,7 +3692,11 @@ fi
 
 if test "$APBS_OPAL_URL" = "yes"; then
   APBS_OPAL_URL="http://ws.nbcr.net/opal2/services/APBS_1.1.0"
+  DEFAULT_APBS_OPAL_URL="1"
+else
+  DEFAULT_APBS_OPAL_URL="0"
 fi
+
 
 if test "$PDB2PQR_OPAL_URL" = "" && test "$APBS_OPAL_URL" != ""; then
   if test -d $PY_PREFIX/lib/python$PY_VERSION/site-packages/ZSI ; then
@@ -3896,6 +3900,7 @@ sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' \
     -e 's%@HAVE_PDB2PQR_OPAL@%'${HAVE_PDB2PQR_OPAL}'%' \
     -e 's%@HAVE_APBS@%'${HAVE_APBS}'%' \
     -e 's%@APBS_OPAL_URL@%'${APBS_OPAL_URL}'%' \
+    -e 's%@DEFAULT_APBS_OPAL_URL@%'${DEFAULT_APBS_OPAL_URL}'%' \
     -e 's%@website@%'${website}'%' \
     -e 's%@srcpath@%'${srcpath}'%' \
     -e 's%@INSTALLDIR@%'${prefix}'%' src/aconf.py.in > src/aconf.py

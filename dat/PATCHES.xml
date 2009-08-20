@@ -139,6 +139,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <applyto>HIS</applyto>
   </patch>
   <patch>
+    <name>AR0</name>
+    <applyto>ARG</applyto>
+    <remove>HE</remove>
+  </patch>
+  <patch>
     <name>LYN</name>
     <applyto>LYS</applyto>
     <remove>HZ3</remove>

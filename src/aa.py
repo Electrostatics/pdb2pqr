@@ -199,6 +199,14 @@ class ARG(Amino):
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
+    def setState(self):
+        """
+           Set the name to use for the forcefield based on the current
+           state.  
+        """
+        if "AR0" in self.patches or self.name == "AR0": self.ffname = "AR0"
+        Amino.setState(self)
+
 class ASN(Amino):
     """
         Asparagine class

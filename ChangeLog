@@ -1,9 +1,9 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       8-11-09
+BETA PUBLIC RELEASE VERSION 1.4.1       8-20-09
 #############################################################################
  - NEW FEATURES
-  * Disabled Typemap output by default, added --typemap flag to create typemap
-    output if needed.
+  * Disabled Typemap output by default, added --typemap flag to create 
+    typemap output if needed.
   * Enabled "Create APBS Input File" by default on the web server, so that 
     APBS calculation and visualization are more obvious to the users.
   * Added warnings to stderr and the REMARK field in the output PQR file 
@@ -28,6 +28,9 @@ BETA PUBLIC RELEASE VERSION 1.4.1       8-11-09
     manually make the N-termini or C-termini of their proteins neutral.    
   * Added a local-test, which addresses the issue of Debian-like Linux
     distros not allowing fetching PDBs from the web.
+  * Added deprotonated Arginine form for post-PROPKA routines. This only 
+    works for PARSE forcefield as other forcefields lack deprotonated ARG
+    parameters.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

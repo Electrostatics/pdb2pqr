@@ -1558,8 +1558,11 @@ class Routines:
                 value = pkadic[key]
                 del pkadic[key]
                 if resname == "ARG" and ph >= value:
-                    warn = (key, "neutral")
-                    warnings.append(warn)
+                    if string.lower(ff) == "parse":
+                        self.applyPatch("AR0", residue)
+                    else:
+                        warn = (key, "neutral")
+                        warnings.append(warn)
                 elif resname == "ASP" and ph < value:
                     if residue.isCterm and ff in ["amber","tyl06"]:
                         warn = (key, "Protonated at C-Terminal")

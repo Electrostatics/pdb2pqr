@@ -1533,7 +1533,7 @@ class Routines:
                     value = pkadic[key]
                     del pkadic[key]
                     if ph >= value:
-                        if ff in ["amber","charmm","tyl06"]:
+                        if string.lower(ff) in ["amber","charmm","tyl06","peoepb"]:
                             warn = ("N-terminal %s" % key, "neutral")
                             warnings.append(warn)
                         else:
@@ -1546,7 +1546,7 @@ class Routines:
                     value = pkadic[key]
                     del pkadic[key]
                     if ph < value:
-                        if ff in ["amber","charmm", "tyl06"]:
+                        if string.lower(ff) in ["amber","charmm", "tyl06","peoepb"]:
                             warn = ("C-terminal %s" % key, "neutral")
                             warnings.append(warn)
                         else:
@@ -1564,25 +1564,25 @@ class Routines:
                         warn = (key, "neutral")
                         warnings.append(warn)
                 elif resname == "ASP" and ph < value:
-                    if residue.isCterm and ff in ["amber","tyl06"]:
+                    if residue.isCterm and string.lower(ff) in ["amber","tyl06"]:
                         warn = (key, "Protonated at C-Terminal")
                         warnings.append(warn)
-                    elif residue.isNterm and ff in ["amber","tyl06"]:
+                    elif residue.isNterm and string.lower(ff) in ["amber","tyl06"]:
                         warn = (key, "Protonated at N-Terminal")
                         warnings.append(warn)
                     else:
                         self.applyPatch("ASH", residue)
                 elif resname == "CYS" and ph >= value:
-                    if ff == "charmm":
+                    if string.lower(ff) == "charmm":
                         warn = (key, "negative")
                         warnings.append(warn)
                     else:
                         self.applyPatch("CYM", residue)
                 elif resname == "GLU" and ph < value:
-                    if residue.isCterm and ff in ["amber","tyl06"]:
+                    if residue.isCterm and string.lower(ff) in ["amber","tyl06"]:
                         warn = (key, "Protonated at C-Terminal")
                         warnings.append(warn)
-                    elif residue.isNterm and ff in ["amber","tyl06"]:
+                    elif residue.isNterm and string.lower(ff) in ["amber","tyl06"]:
                         warn = (key, "Protonated at N-Terminal")
                         warnings.append(warn)
                     else:
@@ -1590,19 +1590,19 @@ class Routines:
                 elif resname == "HIS" and ph < value:
                     self.applyPatch("HIP", residue)              
                 elif resname == "LYS" and ph >= value:
-                    if ff == "charmm":
+                    if string.lower(ff) == "charmm":
                         warn = (key, "neutral")
                         warnings.append(warn)
-                    elif ff in ["amber","tyl06"] and residue.get("isCterm"):
+                    elif string.lower(ff) in ["amber","tyl06"] and residue.get("isCterm"):
                         warn = (key, "neutral at C-Terminal")
                         warnings.append(warn)
-                    elif ff == "tyl06" and residue.get("isNterm"):
+                    elif string.lower(ff) == "tyl06" and residue.get("isNterm"):
                         warn = (key, "neutral at N-Terminal")
                         warnings.append(warn)  
                     else:
                         self.applyPatch("LYN", residue)
                 elif resname == "TYR" and ph >= value:
-                    if ff in ["charmm", "amber", "tyl06"]:
+                    if string.lower(ff) in ["charmm", "amber", "tyl06","peoepb"]:
                         warn = (key, "negative")
                         warnings.append(warn)
                     else:

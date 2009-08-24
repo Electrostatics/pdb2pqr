@@ -69,7 +69,7 @@ class Elec:
     """
         An object for the ELEC section of an APBS input file
     """
-    def __init__(self, size, method, asyncflag):
+    def __init__(self, pqrpath, size, method, asyncflag, istrng=0, potdx=0):
         """
             Initialize the variables that can be set in this object
             Users can modify any of these variables (that's why
@@ -89,6 +89,7 @@ class Elec:
             self.dime = size.getSmallest()
 
         self.method = method
+        self.istrng = istrng
         self.glen = size.getCoarseGridDims()
         self.cglen = size.getCoarseGridDims()
         self.fglen = size.getFineGridDims()
@@ -106,7 +107,7 @@ class Elec:
         self.lpbe = 1
         self.npbe = 0
         self.bcfl = "sdh"
-        self.ion = [] # Multiple ions possible
+        self.ion = [[-1,1.815],[1,1.875]] # Multiple ions possible
         self.pdie = 2.0
         self.sdie = 78.54
         self.srfm = "smol"
@@ -118,7 +119,10 @@ class Elec:
         self.gamma = 0.105
         self.calcenergy = "total"
         self.calcforce = "no"
-        self.write = [["pot", "dx", "pot"]] # Multiple write statements possible
+        if potdx == 1:
+            self.write = [["pot", "dx", pqrpath]]
+        else:
+            self.write = [["pot", "dx", "pot"]] # Multiple write statements possible
     
     def __str__(self):
         """
@@ -150,8 +154,9 @@ class Elec:
         if self.lpbe: text += "    lpbe\n"
         else: text += "    npbe\n"
         text += "    bcfl %s\n" % self.bcfl
-        for ion in self.ion:
-            text += "    ion %.2f %.3f %.2f\n" % (ion[0], ion[1], ion[2])               
+        if self.istrng > 0:
+            for ion in self.ion:
+                text += "    ion charge %.2f conc %.3f radius %.4f\n" % (ion[0], self.istrng, ion[1])               
         text += "    pdie %.4f\n" % self.pdie                
         text += "    sdie %.4f\n" % self.sdie                
         text += "    srfm %s\n" % self.srfm                   
@@ -172,7 +177,7 @@ class Input:
         The input class.  Each input object is one APBS input file.
     """
 
-    def __init__(self, pqrpath, size, method, asyncflag):
+    def __init__(self, pqrpath, size, method, asyncflag, istrng=0, potdx=0):
         """
             Initialize the input file class.  Each input file contains
             a PQR name, a list of elec objects, and a list of strings
@@ -200,16 +205,22 @@ class Input:
 
         # Initialize variables to default elec values
 
-        elec1 = Elec(size, method, asyncflag)
-        elec2 = Elec(size, method, asyncflag)
-        setattr(elec2, "sdie", 2.0)
-        setattr(elec2, "write", [])
+        elec1 = Elec(pqrpath, size, method, asyncflag, istrng, potdx)
+        if potdx == 0:
+            elec2 = Elec(pqrpath, size, method, asyncflag, istrng, potdx)
+            setattr(elec2, "sdie", 2.0)
+            setattr(elec2, "write", [])
+        else:
+            elec2 = ""
         self.elecs = [elec1, elec2]
      
         i = string.rfind(pqrpath, "/") + 1
         self.pqrname = pqrpath[i:]
 
-        self.prints = ["print elecEnergy 2 - 1 end"]     
+        if potdx == 0:
+            self.prints = ["print elecEnergy 2 - 1 end"]     
+        else:
+            self.prints = []
 
     def __str__(self):
         """
@@ -322,6 +333,7 @@ def usage():
     usage = usage + "  --help               : Display this text\n"
     usage = usage + "  --split              : Split an existing parallel input file to multiple\n"
     usage = usage + "                         async input files.\n"
+    usage = usage + "  --potdx              : Create an input to compute an electrostatic potential map.\n"
     usage = usage + "  --method=<value>     : Force output file to write a specific APBS ELEC\n"
     usage = usage + "                         method.  Options are para (parallel), auto\n"
     usage = usage + "                         (automatic), manual (manual), or async (asynchronous).\n"
@@ -347,6 +359,7 @@ def usage():
     usage = usage + "  --redfac=<value>     : The maximum factor by which a domain\n"
     usage = usage + "                         dimension can be reduced during focusing\n"
     usage = usage + "                         [default = %g]\n" % size.getConstant("redfac")
+    usage = usage + "  --istrng=<value>     : Ionic strength (M). Na+ anc Cl- ions will be used\n"
     sys.stderr.write(usage)
     sys.exit(2)
 
@@ -355,7 +368,7 @@ def main():
     import getopt
     filename = ""
     shortOptList = ""
-    longOptList = ["help","split","method=","cfac=","space=","gmemceil=","gmemfac=","ofrac=","redfac="]
+    longOptList = ["help","split","potdx","method=","cfac=","space=","gmemceil=","gmemfac=","ofrac=","redfac=","istrng="]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
@@ -373,11 +386,14 @@ def main():
     size = psize.Psize()
     async = 0
     split = 0
+    istrng = 0
+    potdx = 0
     
     for o, a in opts:
         if o == "--help":
             usage()
         if o == "--split": split = 1
+        if o == "--potdx": potdx = 1
         if o == "--method":
             if a == "para":
                 sys.stdout.write("Forcing a parallel calculation\n")
@@ -407,12 +423,14 @@ def main():
             size.setConstant("ofrac", float(a))
         if o == "--redfac":
             size.setConstant("redfac", float(a))
+        if o == "--istrng":
+            istrng = float(a)
 
     if split == 1:
         splitInput(filename)
     else:
         size.runPsize(filename)
-        input = Input(filename, size, method, async)
+        input = Input(filename, size, method, async, istrng, potdx)
         input.printInputFiles()
 
 if __name__ == "__main__": main()

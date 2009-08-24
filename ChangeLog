@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       8-20-09
+BETA PUBLIC RELEASE VERSION 1.4.1       8-24-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create 
@@ -31,6 +31,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       8-20-09
   * Added deprotonated Arginine form for post-PROPKA routines. This only 
     works for PARSE forcefield as other forcefields lack deprotonated ARG
     parameters.
+  * Updated inputgen.py with --potdx and --istrng options added, original
+    modification code provided by Miguel Ortiz-Lombardía.
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

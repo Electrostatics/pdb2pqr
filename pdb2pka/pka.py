@@ -405,22 +405,9 @@ class pKaRoutines:
                 import os
                 if not os.path.isfile(intenename):
 
-                    myRoutines = Routines(self.protein, 0)
-                    myRoutines.updateResidueTypes()
-                    myRoutines.updateSSbridges()
-                    myRoutines.updateBonds()
-                    myRoutines.updateInternalBonds()
-
                     pKa.residue.fixed = 2
 
-                    self.hydrogenRoutines.setOptimizeableHydrogens()
-                    self.hydrogenRoutines.initializeFullOptimization()
-
-                    self.hydrogenRoutines.optimizeHydrogens()
-                    self.hydrogenRoutines.cleanup()
-                    myRoutines.setStates()
-
-                    myRoutines.debumpProtein()
+                    self.hbondOptimization()
 
                 self.zeroAllRadiiCharges()
                 self.setAllRadii()
@@ -1081,6 +1068,33 @@ class pKaRoutines:
     # --------------------------------
     #
 
+    def hbondOptimization(self):
+        """
+        #
+        #   Routines needed for H-bond optimization
+        #
+        """
+        # Setting up
+        myRoutines = Routines(self.protein, 0)
+        myRoutines.updateResidueTypes()
+        myRoutines.updateSSbridges()
+        myRoutines.updateBonds()
+        myRoutines.updateInternalBonds()
+
+        # Initialize H-bond optimization
+        self.hydrogenRoutines.setOptimizeableHydrogens()
+        self.hydrogenRoutines.initializeFullOptimization()
+
+        # Full optimization
+        self.hydrogenRoutines.optimizeHydrogens()
+
+        # Clean up, debump
+        self.hydrogenRoutines.cleanup()
+        myRoutines.setStates()
+        myRoutines.debumpProtein()
+
+        return
+
     def calculateBackground(self,onlypKa=None):
         #
         #    Calculate background interaction energies
@@ -1145,22 +1159,9 @@ class pKaRoutines:
                     print "----------> Calculating Background for state %s" % (self.get_state_name(titration.name,state))
                     self.hydrogenRoutines.switchstate('pKa', ambiguity, self.get_state_name(titration.name,state)) 
 
-                    myRoutines = Routines(self.protein, 0)
-                    myRoutines.updateResidueTypes()
-                    myRoutines.updateSSbridges()
-                    myRoutines.updateBonds()
-                    myRoutines.updateInternalBonds()
-
                     pKa.residue.fixed = 2
 
-                    self.hydrogenRoutines.setOptimizeableHydrogens()
-                    self.hydrogenRoutines.initializeFullOptimization()
-
-                    self.hydrogenRoutines.optimizeHydrogens()
-                    self.hydrogenRoutines.cleanup()
-                    myRoutines.setStates()
-
-                    myRoutines.debumpProtein()
+                    self.hbondOptimization()
 
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
@@ -1226,7 +1227,6 @@ class pKaRoutines:
         pickle.dump(savedict,fd)
         fd.close()
         return
-
 
     #
     # --------------------------------
@@ -1297,22 +1297,9 @@ class pKaRoutines:
 
                     self.hydrogenRoutines.switchstate('pKa', ambiguity, self.get_state_name(titration.name,state)) 
 
-                    myRoutines = Routines(self.protein, 0)
-                    myRoutines.updateResidueTypes()
-                    myRoutines.updateSSbridges()
-                    myRoutines.updateBonds()
-                    myRoutines.updateInternalBonds()
-
                     pKa.residue.fixed = 2
 
-                    self.hydrogenRoutines.setOptimizeableHydrogens()
-                    self.hydrogenRoutines.initializeFullOptimization()
-
-                    self.hydrogenRoutines.optimizeHydrogens()
-                    self.hydrogenRoutines.cleanup()
-                    myRoutines.setStates()
-
-                    myRoutines.debumpProtein()
+                    self.hbondOptimization()
 
                     self.zeroAllRadiiCharges()
                     self.setCharges(residue, atomnames)

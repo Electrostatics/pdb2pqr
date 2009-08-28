@@ -2138,7 +2138,15 @@ class hydrogenRoutines:
         # This routine does not remove all hydrogens, merely the titratable
         # ones as defined in HYDROGENS.DAT
         #
-        id=str(id)
+        titrationdict = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4', 'ASP': '0',
+                         'GLH1c': '1', 'GLH1t': '2', 'GLH2c': '3', 'GLH2t': '4', 'GLU': '0',
+                         'ARG0': '1+2+3+4', 'ARG': '1+2+3+4+5',
+                         'LYS': '1', 'LYS0': '0',
+                         'TYR': '1', 'TYR-': '0',
+                         'HSD': '1', 'HSE': '2', 'HSP': '1+2', 
+                         'H3': '1', 'H2': '2', 'H3+H2': '1+2',
+                         'CTR01c': '1', 'CTR01t': '2', 'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
+        id=titrationdict[id]
         id=id.split('+')
         new_id=[]
         for i in id:

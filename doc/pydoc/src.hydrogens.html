@@ -6,7 +6,7 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
 <tr bgcolor="#7799ee">
 <td valign=bottom>&nbsp;<br>
-<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.hydrogens</strong></big></big> (16 May 2008)</font></td
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.hydrogens</strong></big></big> (22 April 2009)</font></td
 ><td align=right valign=bottom
 ><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/yhuang/pdb2pqr/trunk/pdb2pqr/src/hydrogens.py">/Users/yhuang/pdb2pqr/trunk/pdb2pqr/src/hydrogens.py</a></font></td></tr></table>
     <p><tt>Hydrogen&nbsp;optimization&nbsp;for&nbsp;PDB2PQR<br>
@@ -58,13 +58,14 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy.html">copy</a><br>
 <a href="getopt.html">getopt</a><br>
-</td><td width="25%" valign=top><a href="math.html">math</a><br>
-<a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="re.html">re</a><br>
+<a href="math.html">math</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="re.html">re</a><br>
 <a href="xml.sax.html">xml.sax</a><br>
 </td><td width="25%" valign=top><a href="string.html">string</a><br>
 <a href="sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+<a href="src.topology.html">src.topology</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -72,17 +73,21 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="src.hydrogens.html#OptimizationHolder">OptimizationHolder</a>
+<dt><font face="helvetica, arial"><a href="src.hydrogens.html#HydrogenConformation">HydrogenConformation</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#HydrogenDefinition">HydrogenDefinition</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#OptimizationHolder">OptimizationHolder</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#Optimize">Optimize</a>
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="src.hydrogens.html#Alcoholic">Alcoholic</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#Carboxylic">Carboxylic</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#Flip">Flip</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#Generic">Generic</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#Water">Water</a>
 </font></dt></dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="src.hydrogens.html#PotentialBond">PotentialBond</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#hydrogenAmbiguity">hydrogenAmbiguity</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.hydrogens.html#hydrogenRoutines">hydrogenRoutines</a>
 </font></dt><dt><font face="helvetica, arial"><a href="xml.sax.handler.html#ContentHandler">xml.sax.handler.ContentHandler</a>
 </font></dt><dd>
@@ -479,6 +484,169 @@ atom.</tt></dd></dl>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Generic">class <strong>Generic</strong></a>(<a href="src.hydrogens.html#Optimize">Optimize</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Generic">Generic</a>&nbsp;optimization&nbsp;class<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Generic-__init__"><strong>__init__</strong></a>(self, residue, optinstance, routines)</dt><dd><tt>Initialize&nbsp;the&nbsp;generic&nbsp;optimization&nbsp;class</tt></dd></dl>
+
+<dl><dt><a name="Generic-complete"><strong>complete</strong></a>(self)</dt><dd><tt>If&nbsp;not&nbsp;already&nbsp;fixed,&nbsp;finalize</tt></dd></dl>
+
+<dl><dt><a name="Generic-finalize"><strong>finalize</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="src.hydrogens.html#Optimize">Optimize</a>:<br>
+<dl><dt><a name="Generic-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>String&nbsp;output&nbsp;for&nbsp;debugging</tt></dd></dl>
+
+<dl><dt><a name="Generic-debug"><strong>debug</strong></a>(self, txt)</dt><dd><tt>Easy&nbsp;way&nbsp;to&nbsp;turn&nbsp;on/off&nbsp;debugging</tt></dd></dl>
+
+<dl><dt><a name="Generic-getHbondangle"><strong>getHbondangle</strong></a>(self, atom1, atom2, atom3)</dt><dd><tt>Get&nbsp;the&nbsp;angle&nbsp;between&nbsp;three&nbsp;atoms<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom1:&nbsp;&nbsp;The&nbsp;first&nbsp;atom&nbsp;(atom)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom2:&nbsp;&nbsp;The&nbsp;second&nbsp;(vertex)&nbsp;atom&nbsp;(atom)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom3:&nbsp;&nbsp;The&nbsp;third&nbsp;atom&nbsp;(atom)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;angle:&nbsp;&nbsp;The&nbsp;angle&nbsp;between&nbsp;the&nbsp;atoms&nbsp;(float)</tt></dd></dl>
+
+<dl><dt><a name="Generic-getPairEnergy"><strong>getPairEnergy</strong></a>(self, donor, acceptor)</dt><dd><tt>Get&nbsp;the&nbsp;energy&nbsp;between&nbsp;two&nbsp;atoms<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;donor:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;first&nbsp;atom&nbsp;in&nbsp;the&nbsp;pair&nbsp;(Atom)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;acceptor:&nbsp;The&nbsp;second&nbsp;atom&nbsp;in&nbsp;the&nbsp;pair&nbsp;(Atom)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;energy:&nbsp;&nbsp;&nbsp;The&nbsp;energy&nbsp;of&nbsp;the&nbsp;pair&nbsp;(float)</tt></dd></dl>
+
+<dl><dt><a name="Generic-getPositionWithThreeBonds"><strong>getPositionWithThreeBonds</strong></a>(self, atom)</dt><dd><tt>If&nbsp;there's&nbsp;three&nbsp;bonds&nbsp;in&nbsp;a&nbsp;tetrahedral&nbsp;geometry,<br>
+there's&nbsp;only&nbsp;one&nbsp;available&nbsp;position.&nbsp;&nbsp;Find&nbsp;that<br>
+position.</tt></dd></dl>
+
+<dl><dt><a name="Generic-getPositionsWithTwoBonds"><strong>getPositionsWithTwoBonds</strong></a>(self, atom)</dt><dd><tt>Given&nbsp;a&nbsp;tetrahedral&nbsp;geometry&nbsp;with&nbsp;two<br>
+existing&nbsp;bonds,&nbsp;return&nbsp;the&nbsp;two&nbsp;potential<br>
+sets&nbsp;of&nbsp;coordinates&nbsp;that&nbsp;are&nbsp;possible&nbsp;for<br>
+a&nbsp;new&nbsp;bond.</tt></dd></dl>
+
+<dl><dt><a name="Generic-isHbond"><strong>isHbond</strong></a>(self, donor, acc)</dt><dd><tt>Determine&nbsp;whether&nbsp;this&nbsp;donor&nbsp;acceptor&nbsp;pair&nbsp;is&nbsp;a<br>
+hydrogen&nbsp;bond</tt></dd></dl>
+
+<dl><dt><a name="Generic-makeAtomWithNoBonds"><strong>makeAtomWithNoBonds</strong></a>(self, atom, closeatom, addname)</dt><dd><tt>Called&nbsp;for&nbsp;water&nbsp;oxygen&nbsp;atoms&nbsp;with&nbsp;no&nbsp;current&nbsp;bonds.<br>
+Uses&nbsp;the&nbsp;closeatom&nbsp;to&nbsp;place&nbsp;the&nbsp;new&nbsp;atom&nbsp;directly<br>
+colinear&nbsp;with&nbsp;the&nbsp;atom&nbsp;and&nbsp;the&nbsp;closeatom.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;oxygen&nbsp;atom&nbsp;of&nbsp;the&nbsp;water<br>
+&nbsp;&nbsp;&nbsp;&nbsp;closeatom:&nbsp;The&nbsp;nearby&nbsp;atom&nbsp;(donor/acceptor)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;addname:&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;atom&nbsp;to&nbsp;add</tt></dd></dl>
+
+<dl><dt><a name="Generic-makeAtomWithOneBondH"><strong>makeAtomWithOneBondH</strong></a>(self, atom, addname)</dt><dd><tt>Add&nbsp;a&nbsp;hydrogen&nbsp;to&nbsp;an&nbsp;alcoholic&nbsp;donor&nbsp;with&nbsp;one<br>
+existing&nbsp;bond.</tt></dd></dl>
+
+<dl><dt><a name="Generic-makeAtomWithOneBondLP"><strong>makeAtomWithOneBondLP</strong></a>(self, atom, addname)</dt><dd><tt>Add&nbsp;a&nbsp;lone&nbsp;pair&nbsp;to&nbsp;an&nbsp;alcoholic&nbsp;donor&nbsp;with&nbsp;one<br>
+existing&nbsp;bond.</tt></dd></dl>
+
+<dl><dt><a name="Generic-makeWaterWithOneBond"><strong>makeWaterWithOneBond</strong></a>(self, atom, addname)</dt><dd><tt>Add&nbsp;an&nbsp;atom&nbsp;to&nbsp;a&nbsp;water&nbsp;residue&nbsp;that&nbsp;already&nbsp;has<br>
+one&nbsp;bond.&nbsp;&nbsp;Uses&nbsp;the&nbsp;water&nbsp;reference&nbsp;structure&nbsp;to<br>
+align&nbsp;the&nbsp;new&nbsp;atom.</tt></dd></dl>
+
+<dl><dt><a name="Generic-tryPositionsWithThreeBondsH"><strong>tryPositionsWithThreeBondsH</strong></a>(self, donor, acc, newname, loc)</dt><dd><tt>Try&nbsp;making&nbsp;a&nbsp;hydrogen&nbsp;bond&nbsp;with&nbsp;the&nbsp;lone&nbsp;available<br>
+position.</tt></dd></dl>
+
+<dl><dt><a name="Generic-tryPositionsWithThreeBondsLP"><strong>tryPositionsWithThreeBondsLP</strong></a>(self, acc, donor, newname, loc)</dt><dd><tt>Try&nbsp;making&nbsp;a&nbsp;hydrogen&nbsp;bond&nbsp;using&nbsp;the&nbsp;lone<br>
+available&nbsp;hydrogen&nbsp;position.</tt></dd></dl>
+
+<dl><dt><a name="Generic-tryPositionsWithTwoBondsH"><strong>tryPositionsWithTwoBondsH</strong></a>(self, donor, acc, newname, loc1, loc2)</dt><dd><tt>Try&nbsp;adding&nbsp;a&nbsp;new&nbsp;hydrogen&nbsp;two&nbsp;the&nbsp;two&nbsp;potential<br>
+locations.&nbsp;&nbsp;If&nbsp;both&nbsp;form&nbsp;hydrogen&nbsp;bonds,&nbsp;place&nbsp;at<br>
+whatever&nbsp;returns&nbsp;the&nbsp;best&nbsp;bond&nbsp;as&nbsp;determined&nbsp;by<br>
+getPairEnergy.</tt></dd></dl>
+
+<dl><dt><a name="Generic-tryPositionsWithTwoBondsLP"><strong>tryPositionsWithTwoBondsLP</strong></a>(self, acc, donor, newname, loc1, loc2)</dt><dd><tt>Try&nbsp;placing&nbsp;an&nbsp;LP&nbsp;on&nbsp;a&nbsp;tetrahedral&nbsp;geometry&nbsp;with<br>
+two&nbsp;existing&nbsp;bonds.&nbsp;&nbsp;If&nbsp;this&nbsp;isn't&nbsp;a&nbsp;hydrogen&nbsp;bond<br>
+it&nbsp;can&nbsp;return&nbsp;-&nbsp;otherwise&nbsp;ensure&nbsp;that&nbsp;the&nbsp;H(D)-A-LP<br>
+angle&nbsp;is&nbsp;minimized.</tt></dd></dl>
+
+<dl><dt><a name="Generic-trySingleAlcoholicH"><strong>trySingleAlcoholicH</strong></a>(self, donor, acc, newatom)</dt><dd><tt>After&nbsp;a&nbsp;new&nbsp;bond&nbsp;has&nbsp;been&nbsp;added&nbsp;using<br>
+makeAtomWithOneBond*,&nbsp;try&nbsp;to&nbsp;find&nbsp;the&nbsp;best&nbsp;orientation<br>
+by&nbsp;rotating&nbsp;to&nbsp;form&nbsp;a&nbsp;hydrogen&nbsp;bond.&nbsp;&nbsp;If&nbsp;a&nbsp;bond<br>
+cannot&nbsp;be&nbsp;formed,&nbsp;remove&nbsp;the&nbsp;newatom&nbsp;(thereby<br>
+returning&nbsp;to&nbsp;a&nbsp;single&nbsp;bond).</tt></dd></dl>
+
+<dl><dt><a name="Generic-trySingleAlcoholicLP"><strong>trySingleAlcoholicLP</strong></a>(self, acc, donor, newatom)</dt><dd><tt>After&nbsp;a&nbsp;new&nbsp;bond&nbsp;has&nbsp;been&nbsp;added&nbsp;using<br>
+makeAtomWithOneBond*,&nbsp;ensure&nbsp;that&nbsp;a<br>
+hydrogen&nbsp;bond&nbsp;has&nbsp;been&nbsp;made.&nbsp;&nbsp;If&nbsp;so,&nbsp;try&nbsp;to<br>
+minimze&nbsp;the&nbsp;H(D)-A-LP&nbsp;angle.&nbsp;&nbsp;If&nbsp;that&nbsp;cannot<br>
+be&nbsp;minimized,&nbsp;ignore&nbsp;the&nbsp;bond&nbsp;and&nbsp;remove&nbsp;the<br>
+atom.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HydrogenConformation">class <strong>HydrogenConformation</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#HydrogenConformation">HydrogenConformation</a>&nbsp;class<br>
+&nbsp;<br>
+The&nbsp;<a href="#HydrogenConformation">HydrogenConformation</a>&nbsp;class&nbsp;contains&nbsp;data&nbsp;about&nbsp;possible<br>
+hydrogen&nbsp;conformations&nbsp;as&nbsp;specified&nbsp;in&nbsp;the&nbsp;hydrogen&nbsp;data&nbsp;file.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="HydrogenConformation-__init__"><strong>__init__</strong></a>(self, hname, boundatom, bondlength)</dt><dd><tt>Initialize&nbsp;the&nbsp;object<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hname&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;hydrogen&nbsp;name&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;boundatom&nbsp;&nbsp;:&nbsp;The&nbsp;atom&nbsp;the&nbsp;hydrogen&nbsp;is&nbsp;bound&nbsp;to&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bondlength&nbsp;:&nbsp;The&nbsp;bond&nbsp;length&nbsp;(float)</tt></dd></dl>
+
+<dl><dt><a name="HydrogenConformation-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Used&nbsp;for&nbsp;debugging&nbsp;purposes<br>
+&nbsp;<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;output:&nbsp;&nbsp;Information&nbsp;about&nbsp;this&nbsp;conformation&nbsp;(string)</tt></dd></dl>
+
+<dl><dt><a name="HydrogenConformation-addAtom"><strong>addAtom</strong></a>(self, atom)</dt><dd><tt>Add&nbsp;an&nbsp;atom&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;atoms<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom:&nbsp;The&nbsp;atom&nbsp;to&nbsp;be&nbsp;added&nbsp;(DefinitionAtom)</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HydrogenDefinition">class <strong>HydrogenDefinition</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#HydrogenDefinition">HydrogenDefinition</a>&nbsp;class<br>
+&nbsp;<br>
+The&nbsp;<a href="#HydrogenDefinition">HydrogenDefinition</a>&nbsp;class&nbsp;provides&nbsp;information&nbsp;on&nbsp;possible<br>
+ambiguities&nbsp;in&nbsp;amino&nbsp;acid&nbsp;hydrogens.&nbsp;&nbsp;It&nbsp;is&nbsp;essentially&nbsp;the&nbsp;hydrogen<br>
+definition&nbsp;file&nbsp;in&nbsp;object&nbsp;form.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="HydrogenDefinition-__init__"><strong>__init__</strong></a>(self, name, opttype, optangle, map)</dt><dd><tt>Initialize&nbsp;the&nbsp;object&nbsp;with&nbsp;information&nbsp;from&nbsp;the&nbsp;definition&nbsp;file<br>
+&nbsp;<br>
+Parameters:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;grouping&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;opttype:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;optimization&nbsp;type&nbsp;of&nbsp;the&nbsp;grouping&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;optangle:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;optimization&nbsp;angle&nbsp;of&nbsp;the&nbsp;grouping&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;map:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;map&nbsp;of&nbsp;Hydrogens.&nbsp;&nbsp;<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;See&nbsp;HYDROGENS.XML&nbsp;for&nbsp;more&nbsp;information</tt></dd></dl>
+
+<dl><dt><a name="HydrogenDefinition-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Used&nbsp;for&nbsp;debugging&nbsp;purposes<br>
+&nbsp;<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;output:&nbsp;&nbsp;The&nbsp;information&nbsp;about&nbsp;this&nbsp;definition&nbsp;(string)</tt></dd></dl>
+
+<dl><dt><a name="HydrogenDefinition-addConf"><strong>addConf</strong></a>(self, conf)</dt><dd><tt>Add&nbsp;a&nbsp;<a href="#HydrogenConformation">HydrogenConformation</a>&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;conformations<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;conf:&nbsp;&nbsp;The&nbsp;conformation&nbsp;to&nbsp;be&nbsp;added&nbsp;(<a href="#HydrogenConformation">HydrogenConformation</a>)</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="HydrogenHandler">class <strong>HydrogenHandler</strong></a>(<a href="xml.sax.handler.html#ContentHandler">xml.sax.handler.ContentHandler</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
@@ -856,6 +1024,27 @@ atom.</tt></dd></dl>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="hydrogenAmbiguity">class <strong>hydrogenAmbiguity</strong></a></font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;class&nbsp;containing&nbsp;information&nbsp;about&nbsp;the&nbsp;ambiguity<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="hydrogenAmbiguity-__init__"><strong>__init__</strong></a>(self, residue, hdef, routines)</dt><dd><tt>Initialize&nbsp;the&nbsp;class&nbsp;-&nbsp;if&nbsp;the&nbsp;residue&nbsp;has&nbsp;a&nbsp;rotateable&nbsp;hydrogen,<br>
+remove&nbsp;it.&nbsp;&nbsp;If&nbsp;it&nbsp;can&nbsp;be&nbsp;flipped,&nbsp;pre-flip&nbsp;the&nbsp;residue&nbsp;by&nbsp;creating<br>
+all&nbsp;additional&nbsp;atoms.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;in&nbsp;question&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hdef:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;hydrogen&nbsp;definition&nbsp;matching&nbsp;the&nbsp;residue<br>
+&nbsp;&nbsp;&nbsp;&nbsp;routines:&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;general&nbsp;routines&nbsp;object</tt></dd></dl>
+
+<dl><dt><a name="hydrogenAmbiguity-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Print&nbsp;the&nbsp;ambiguity&nbsp;for&nbsp;debugging&nbsp;purposes</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="hydrogenRoutines">class <strong>hydrogenRoutines</strong></a></font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
@@ -900,12 +1089,42 @@ Returns<br>
 <dl><dt><a name="hydrogenRoutines-optimizeHydrogens"><strong>optimizeHydrogens</strong></a>(self)</dt><dd><tt>The&nbsp;main&nbsp;driver&nbsp;for&nbsp;the&nbsp;optimization.&nbsp;&nbsp;Should&nbsp;be<br>
 called&nbsp;only&nbsp;after&nbsp;the&nbsp;optlist&nbsp;has&nbsp;been&nbsp;initialized.</tt></dd></dl>
 
+<dl><dt><a name="hydrogenRoutines-pKa_switchstate"><strong>pKa_switchstate</strong></a>(self, amb, id)</dt><dd><tt>Switch&nbsp;a&nbsp;residue&nbsp;to&nbsp;a&nbsp;new&nbsp;state&nbsp;by&nbsp;first&nbsp;removing&nbsp;all<br>
+hydrogens.&nbsp;this&nbsp;routine&nbsp;is&nbsp;used&nbsp;in&nbsp;pKa&nbsp;calculations&nbsp;only!<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;amb&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;amibiguity&nbsp;to&nbsp;switch&nbsp;(tuple)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;state&nbsp;id&nbsp;to&nbsp;switch&nbsp;to&nbsp;(list)</tt></dd></dl>
+
+<dl><dt><a name="hydrogenRoutines-parseHydrogen"><strong>parseHydrogen</strong></a>(self, res)</dt><dd><tt>&nbsp;&nbsp;&nbsp;&nbsp;Parse&nbsp;a&nbsp;list&nbsp;of&nbsp;lines&nbsp;in&nbsp;order&nbsp;to&nbsp;make&nbsp;a&nbsp;hydrogen<br>
+&nbsp;&nbsp;&nbsp;&nbsp;definition<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lines:&nbsp;&nbsp;The&nbsp;lines&nbsp;to&nbsp;parse&nbsp;(list)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mydef:&nbsp;&nbsp;The&nbsp;hydrogen&nbsp;definition&nbsp;object&nbsp;(<a href="#HydrogenDefinition">HydrogenDefinition</a>)<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;the&nbsp;current&nbsp;definition:&nbsp;&nbsp;Name&nbsp;Ttyp&nbsp;&nbsp;A&nbsp;R&nbsp;#&nbsp;Stdconf&nbsp;&nbsp;&nbsp;HT&nbsp;Chi&nbsp;OPTm</tt></dd></dl>
+
+<dl><dt><a name="hydrogenRoutines-readHydrogenDefinition"><strong>readHydrogenDefinition</strong></a>(self)</dt><dd><tt>Read&nbsp;the&nbsp;Hydrogen&nbsp;Definition&nbsp;file<br>
+&nbsp;<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hydrodef:&nbsp;&nbsp;The&nbsp;hydrogen&nbsp;definition&nbsp;()</tt></dd></dl>
+
 <dl><dt><a name="hydrogenRoutines-setOptimizeableHydrogens"><strong>setOptimizeableHydrogens</strong></a>(self)</dt><dd><tt>Set&nbsp;any&nbsp;hydrogen&nbsp;listed&nbsp;in&nbsp;HYDROGENS.xml&nbsp;that<br>
 is&nbsp;optimizeable.&nbsp;&nbsp;Used&nbsp;BEFORE&nbsp;hydrogen&nbsp;optimization<br>
 to&nbsp;label&nbsp;atoms&nbsp;so&nbsp;that&nbsp;they&nbsp;won't&nbsp;be&nbsp;debumped&nbsp;-&nbsp;i.e.<br>
 if&nbsp;SER&nbsp;HG&nbsp;is&nbsp;too&nbsp;close&nbsp;to&nbsp;another&nbsp;atom,&nbsp;don't&nbsp;debump<br>
 but&nbsp;wait&nbsp;for&nbsp;optimization.&nbsp;&nbsp;This&nbsp;function&nbsp;should&nbsp;not<br>
 be&nbsp;used&nbsp;if&nbsp;full&nbsp;optimization&nbsp;is&nbsp;not&nbsp;taking&nbsp;place.</tt></dd></dl>
+
+<dl><dt><a name="hydrogenRoutines-switchstate"><strong>switchstate</strong></a>(self, states, amb, id)</dt><dd><tt>Switch&nbsp;a&nbsp;residue&nbsp;to&nbsp;a&nbsp;new&nbsp;state&nbsp;by&nbsp;first&nbsp;removing&nbsp;all<br>
+hydrogens.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;states:&nbsp;The&nbsp;list&nbsp;of&nbsp;states&nbsp;(list)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;amb&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;amibiguity&nbsp;to&nbsp;switch&nbsp;(tuple)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;state&nbsp;id&nbsp;to&nbsp;switch&nbsp;to&nbsp;(int)</tt></dd></dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -915,6 +1134,7 @@ be&nbsp;used&nbsp;if&nbsp;full&nbsp;optimization&nbsp;is&nbsp;not&nbsp;taking&nb
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>AAPATH</strong> = 'dat/AA.xml'<br>
+<strong>AAS</strong> = ['ALA', 'ARG', 'ASH', 'ASN', 'ASP', 'CYS', 'CYM', 'GLN', 'GLU', 'GLH', 'GLY', 'HIS', 'HID', 'HIE', 'HIP', 'HSD', 'HSE', 'HSP', 'ILE', 'LEU', ...]<br>
 <strong>ANGLE_CUTOFF</strong> = 20.0<br>
 <strong>BACKBONE</strong> = ['N', 'CA', 'C', 'O', 'O2', 'HA', 'HN', 'H', 'tN']<br>
 <strong>BONDED_SS_LIMIT</strong> = 2.5<br>
@@ -926,12 +1146,14 @@ be&nbsp;used&nbsp;if&nbsp;full&nbsp;optimization&nbsp;is&nbsp;not&nbsp;taking&nb
 <strong>HDEBUG</strong> = 0<br>
 <strong>HYDPATH</strong> = 'dat/HYDROGENS.xml'<br>
 <strong>NAPATH</strong> = 'dat/NA.xml'<br>
+<strong>NAS</strong> = ['A', 'A5', 'A3', 'C', 'C5', 'C3', 'G', 'G5', 'G3', 'T', 'T5', 'T3', 'U', 'U5', 'U3', 'RA', 'RG', 'RC', 'RU', 'DA', ...]<br>
 <strong>PATCHPATH</strong> = 'dat/PATCHES.xml'<br>
 <strong>PEPTIDE_DIST</strong> = 1.7<br>
 <strong>REPAIR_LIMIT</strong> = 10<br>
 <strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>TOPOLOGYPATH</strong> = 'dat/TOPOLOGY.xml'<br>
 <strong>__author__</strong> = 'Todd Dolinsky, Jens Erik Nielsen, Yong Huang'<br>
-<strong>__date__</strong> = '16 May 2008'</td></tr></table><p>
+<strong>__date__</strong> = '22 April 2009'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

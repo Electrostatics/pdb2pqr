@@ -130,7 +130,7 @@ Parameters<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="DefinitionAtom-__init__"><strong>__init__</strong></a>(self)</dt><dd><tt>Initialize&nbsp;the&nbsp;class</tt></dd></dl>
+<dl><dt><a name="DefinitionAtom-__init__"><strong>__init__</strong></a>(self, name<font color="#909090">=None</font>, x<font color="#909090">=None</font>, y<font color="#909090">=None</font>, z<font color="#909090">=None</font>)</dt><dd><tt>Initialize&nbsp;the&nbsp;class</tt></dd></dl>
 
 <dl><dt><a name="DefinitionAtom-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>A&nbsp;basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
 
@@ -507,6 +507,8 @@ useful.<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;value:&nbsp;&nbsp;The&nbsp;new&nbsp;value&nbsp;of&nbsp;resSeq&nbsp;(int)</tt></dd></dl>
 
+<dl><dt><a name="DefinitionResidue-update_terminus_status"><strong>update_terminus_status</strong></a>(self)</dt><dd><tt>Update&nbsp;the&nbsp;isNterms&nbsp;and&nbsp;isCterm&nbsp;flags</tt></dd></dl>
+
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -529,6 +531,7 @@ Parameters<br>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>AAPATH</strong> = 'dat/AA.xml'<br>
+<strong>AAS</strong> = ['ALA', 'ARG', 'ASH', 'ASN', 'ASP', 'CYS', 'CYM', 'GLN', 'GLU', 'GLH', 'GLY', 'HIS', 'HID', 'HIE', 'HIP', 'HSD', 'HSE', 'HSP', 'ILE', 'LEU', ...]<br>
 <strong>BACKBONE</strong> = ['N', 'CA', 'C', 'O', 'O2', 'HA', 'HN', 'H', 'tN']<br>
 <strong>BONDED_SS_LIMIT</strong> = 2.5<br>
 <strong>BUMP_DIST</strong> = 2.0<br>
@@ -536,6 +539,7 @@ Parameters<br>
 <strong>CELL_SIZE</strong> = 2<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
 <strong>NAPATH</strong> = 'dat/NA.xml'<br>
+<strong>NAS</strong> = ['A', 'A5', 'A3', 'C', 'C5', 'C3', 'G', 'G5', 'G3', 'T', 'T5', 'T3', 'U', 'U5', 'U3', 'RA', 'RG', 'RC', 'RU', 'DA', ...]<br>
 <strong>PATCHPATH</strong> = 'dat/PATCHES.xml'<br>
 <strong>PEPTIDE_DIST</strong> = 1.7<br>
 <strong>REPAIR_LIMIT</strong> = 10<br>

@@ -110,6 +110,24 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;userff:&nbsp;&nbsp;A&nbsp;link&nbsp;to&nbsp;the&nbsp;file&nbsp;for&nbsp;CGI&nbsp;based&nbsp;user-defined<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forcefields</tt></dd></dl>
 
+<dl><dt><a name="Forcefield-getAmberParams"><strong>getAmberParams</strong></a>(self, residue, name)</dt><dd><tt>Get&nbsp;the&nbsp;forcefield&nbsp;definitions&nbsp;from&nbsp;the&nbsp;Amber&nbsp;database<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;atom&nbsp;name&nbsp;(string)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resname:&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;amber&nbsp;residue<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atomname:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;amber&nbsp;atom</tt></dd></dl>
+
+<dl><dt><a name="Forcefield-getCharmmParams"><strong>getCharmmParams</strong></a>(self, residue, name)</dt><dd><tt>Get&nbsp;the&nbsp;forcefield&nbsp;definitions&nbsp;from&nbsp;the&nbsp;Charmm&nbsp;database<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;atom&nbsp;name&nbsp;(string)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resname:&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;Charmm&nbsp;residue<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atomname:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;Charmm&nbsp;atom</tt></dd></dl>
+
 <dl><dt><a name="Forcefield-getGroup"><strong>getGroup</strong></a>(self, resname, atomname)</dt><dd><tt>Get&nbsp;the&nbsp;group/type&nbsp;associated&nbsp;with&nbsp;the&nbsp;input<br>
 fields.&nbsp;&nbsp;If&nbsp;not&nbsp;found,&nbsp;return&nbsp;a&nbsp;null&nbsp;string.<br>
 &nbsp;<br>
@@ -140,6 +158,27 @@ Parameters<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;charge:&nbsp;&nbsp;&nbsp;The&nbsp;charge&nbsp;on&nbsp;the&nbsp;atom&nbsp;(float)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;radius:&nbsp;&nbsp;&nbsp;The&nbsp;radius&nbsp;of&nbsp;the&nbsp;atom&nbsp;(float)</tt></dd></dl>
+
+<dl><dt><a name="Forcefield-getParams1"><strong>getParams1</strong></a>(self, residue, name)</dt><dd><tt>Get&nbsp;the&nbsp;parameters&nbsp;associated&nbsp;with&nbsp;the&nbsp;input&nbsp;fields.<br>
+The&nbsp;residue&nbsp;itself&nbsp;is&nbsp;needed&nbsp;instead&nbsp;of&nbsp;simply&nbsp;its&nbsp;name<br>
+because&nbsp;&nbsp;the&nbsp;forcefield&nbsp;may&nbsp;use&nbsp;a&nbsp;different&nbsp;residue&nbsp;name<br>
+than&nbsp;the&nbsp;standard&nbsp;amino&nbsp;acid&nbsp;name.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;atom&nbsp;name&nbsp;(string)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;charge:&nbsp;&nbsp;&nbsp;The&nbsp;charge&nbsp;on&nbsp;the&nbsp;atom&nbsp;(float)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;radius:&nbsp;&nbsp;&nbsp;The&nbsp;radius&nbsp;of&nbsp;the&nbsp;atom&nbsp;(float)</tt></dd></dl>
+
+<dl><dt><a name="Forcefield-getParseParams"><strong>getParseParams</strong></a>(self, residue, name)</dt><dd><tt>Get&nbsp;the&nbsp;forcefield&nbsp;definitions&nbsp;from&nbsp;the&nbsp;Parse&nbsp;database<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;atom&nbsp;name&nbsp;(string)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resname:&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;amber&nbsp;residue<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atomname:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;amber&nbsp;atom</tt></dd></dl>
 
 <dl><dt><a name="Forcefield-getResidue"><strong>getResidue</strong></a>(self, resname)</dt><dd><tt>Return&nbsp;the&nbsp;residue&nbsp;object&nbsp;with&nbsp;the&nbsp;given&nbsp;resname<br>
 &nbsp;<br>

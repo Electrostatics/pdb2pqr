@@ -42,9 +42,9 @@
 
 """
 
-__date__  = "4 August 2008"
+__date__  = "2 September 2009"
 __author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen, Samir Unni, Yong Huang"
-__version__ = "1.4.0"
+__version__ = "1.5"
 
 
 import string

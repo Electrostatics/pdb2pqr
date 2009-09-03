@@ -1,5 +1,5 @@
 #############################################################################
-BETA PUBLIC RELEASE VERSION 1.4.1       8-24-09
+BETA PUBLIC RELEASE VERSION 1.5         9-1-09
 #############################################################################
  - NEW FEATURES
   * Disabled Typemap output by default, added --typemap flag to create 
@@ -33,6 +33,8 @@ BETA PUBLIC RELEASE VERSION 1.4.1       8-24-09
     parameters.
   * Updated inputgen.py with --potdx and --istrng options added, original
     modification code provided by Miguel Ortiz-Lombardía.
+  * Changed default Opal service from http://ws.nbcr.net/opal2/services/pdb2pqr_1.4.0
+    to http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.5
 
  - BUG FIXES
   * Added -fno-stack-protector to CXXFLAGS in configure. This fixes the stack

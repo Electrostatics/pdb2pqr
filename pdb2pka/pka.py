@@ -405,9 +405,13 @@ class pKaRoutines:
                 import os
                 if not os.path.isfile(intenename):
 
-                    pKa.residue.fixed = 2
+                    # Not allowing current protonation state to be explored during H-bond optimization
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = False
 
                     self.hbondOptimization()
+
+                    # residue.stateboolean returns to default value (True)  
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = True
 
                 self.zeroAllRadiiCharges()
                 self.setAllRadii()
@@ -1128,6 +1132,7 @@ class pKaRoutines:
                 #
                 # Loop over all states and calculate the Background Interaction energy for each
                 #
+                print "Background residue.stateboolean: %s" % (residue.stateboolean)
                 for state in possiblestates:
                     #
                     # Set the name for this energy
@@ -1159,9 +1164,13 @@ class pKaRoutines:
                     print "----------> Calculating Background for state %s" % (self.get_state_name(titration.name,state))
                     self.hydrogenRoutines.switchstate('pKa', ambiguity, self.get_state_name(titration.name,state)) 
 
-                    pKa.residue.fixed = 2
+                    # Not allowing current protonation state to be explored during H-bond optimization
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = False
 
                     self.hbondOptimization()
+
+                    # residue.stateboolean returns to default value (True)  
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = True
 
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
@@ -1280,6 +1289,9 @@ class pKaRoutines:
                 #        
                 #fixedstates = self.hydrogenRoutines.getstates(ambiguity)
                 for state in possiblestates:
+                    # Adding a stateboolean structure (dictionary) here, default values are True, meaning the current protonation state
+                    # is allowed to be explored during H-bond optimization. False means not allowed.
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = True
                     name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name,state))
                     if savedict.has_key(name):
                         pKa.desolvation[self.get_state_name(titration.name,state)] = savedict[name]
@@ -1297,9 +1309,13 @@ class pKaRoutines:
 
                     self.hydrogenRoutines.switchstate('pKa', ambiguity, self.get_state_name(titration.name,state)) 
 
-                    pKa.residue.fixed = 2
+                    # Not allowing current protonation state to be explored during H-bond optimization
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = False
 
                     self.hbondOptimization()
+
+                    # residue.stateboolean returns to default value (True)  
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = True
 
                     self.zeroAllRadiiCharges()
                     self.setCharges(residue, atomnames)
@@ -1343,6 +1359,7 @@ class pKaRoutines:
                     # Check for bumps and modify energy if needed
                     #
                     pass
+
         #
         # Dump a pickle file
         #

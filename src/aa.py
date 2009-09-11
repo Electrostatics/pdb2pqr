@@ -85,6 +85,7 @@ class Amino(Residue):
         self.missing = []
         self.reference = ref
         self.fixed = 0
+        self.stateboolean = {}
         
         # Create each atom
 

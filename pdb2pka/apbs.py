@@ -22,7 +22,7 @@ except:
     print
     print 'Missing libraries for interfacing with APBS'
     print
-    print 'You need to find _apbslib.so and apbslib.py and symlink into the pdb2pqr/pKa source code directory'
+    print 'You need to find _apbslib.so and apbslib.py and symlink into the pdb2pqr/pdb2pka source code directory'
     print 'The files can be found in the share/tools/python dir of your apbs installation'
     print
     sys.exit(0)

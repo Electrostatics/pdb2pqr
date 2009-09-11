@@ -2318,7 +2318,7 @@ class hydrogenRoutines:
         for residue in self.protein.getResidues():
             optinstance = self.isOptimizeable(residue)
             if isinstance(residue, Amino):
-                if residue.fixed == 2:
+                if False in residue.stateboolean.values():
                     residue.fixed = 1
                 else:
                     residue.fixed = 0 

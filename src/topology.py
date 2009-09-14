@@ -99,8 +99,6 @@ class TopologyHandler(sax.ContentHandler):
 				self.currentConformer = TopologyConformer(self.currentTautomer)
 			elif tagName == "name":
 				self.currentElement = tagName
-			elif tagName == "boolean":
-				self.currentElement = tagName
 			elif tagName == "atom":
 				if self.currentConformerAdd != None:
 					#print "    Adding atom to conformerAdd..."
@@ -158,8 +156,6 @@ class TopologyHandler(sax.ContentHandler):
 			elif tagName == "z":
 				pass
 			elif tagName == "name":
-				pass
-			elif tagName == "boolean":
 				pass
 			elif tagName == "bond":
 				pass
@@ -221,9 +217,6 @@ class TopologyHandler(sax.ContentHandler):
 					self.currentResidue.name = text
 				else:
 					print "    *** Don't know what to do with name %s!" % text
-			elif self.currentElement == "boolean":
-				if self.currentConformer != None:
-					self.currentConformer.boolean = text
 			elif self.currentElement == "x":
 				#print "    Setting atom x coordinate to %s" % text
 				self.currentAtom.x = float(text)
@@ -313,7 +306,6 @@ class TopologyConformer:
 		self.topologyTautomer = topologyTautomer
 		self.topologyTautomer.conformers.append(self)
 		self.name = None
-		self.boolean = True
 		self.conformerAdds = []
 		self.conformerRemoves = []
 	def __str__(self):

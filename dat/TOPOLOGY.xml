@@ -145,7 +145,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>ASP</name>
 				<conformer>
 					<name>ASP</name>
-					<boolean>True</boolean>   <!-- Boolean data structure to indicate whether this conformer is explored for pKa calculation or not -->
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -157,7 +156,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Hydrogen HD1 on OD1 -->
 				<conformer>
 					<name>ASH1c</name>
-					<boolean>True</boolean>
 <!-- HD1 on OD1 cis-->
 					<add>
 						<atom>
@@ -173,7 +171,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer>
 					<name>ASH1t</name>
-					<boolean>True</boolean>
 <!-- HD1 on OD1 trans-->
 					<add>
 						<atom>
@@ -193,7 +190,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Hydrogen HD2 on OD2 -->
 				<conformer>
 					<name>ASH2c</name>
-					<boolean>True</boolean>
 <!-- HD2 on OD2 cis-->
 					<add>
 						<atom>
@@ -209,7 +205,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer>
 					<name>ASH2t</name>
-					<boolean>True</boolean>
 <!-- HD2 on OD2 trans-->
 					<add>
 						<atom>
@@ -367,7 +362,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>GLU</name>
 				<conformer>
 					<name>GLU</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -379,7 +373,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Hydrogen HE1 on OE1 -->
 				<conformer>
 					<name>GLH1c</name>
-					<boolean>True</boolean>
 <!-- HE1 on OE1 cis-->
 					<add>
 						<atom>
@@ -395,7 +388,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer>
 					<name>GLH1t</name>
-					<boolean>True</boolean>
 <!-- HE1 on OE1 trans-->
 					<add>
 						<atom>
@@ -415,7 +407,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Hydrogen HE2 on OE2 -->
 				<conformer>
 					<name>GLH2c</name>
-					<boolean>True</boolean>
 <!-- HE2 on OE2 cis-->
 					<add>
 						<atom>
@@ -431,7 +422,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer>
 					<name>GLH2t</name>
-					<boolean>True</boolean>
 <!-- HE2 on OE2 trans-->
 					<add>
 						<atom>
@@ -671,7 +661,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>ARG</name>
 				<conformer>
 					<name>ARG</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -897,7 +886,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 			<tautomer>
 				<name>HSD</name>
 				<conformer> <!-- HSD flip 1 -->
-					<boolean>True</boolean>
 					<name>HSD1</name>
 					<remove>
 						<atom>
@@ -907,7 +895,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer> <!-- HSD flip 2 -->
 					<name>HSD2</name>
-					<boolean>False</boolean>
 					<remove>
 						<atom>
 							<name>ND1</name>
@@ -999,7 +986,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>HSE</name>
 				<conformer> <!-- HSE flip 1 -->
 					<name>HSE1</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>HD1</name>
@@ -1008,7 +994,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer> <!-- HSE flip 2 -->
 					<name>HSE2</name>
-					<boolean>False</boolean>
 					<remove>
 						<atom>
 							<name>ND1</name>
@@ -1103,11 +1088,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>HSP</name> 
 				<conformer> <!-- HSP flip 1 -->
 					<name>HSP1</name>
-					<boolean>True</boolean>
 				</conformer>
 				<conformer> <!-- HSP flip 2 -->
 					<name>HSP2</name>
-					<boolean>False</boolean>
 					<remove>
 						<atom>
 							<name>ND1</name>
@@ -1209,7 +1192,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>HIS-</name>
 				<conformer> <!-- HIS- flip 1 -->
 					<name>HIS-1</name>
-					<boolean>False</boolean>
 					<remove>
 						<atom>
 							<name>HD1</name>
@@ -1221,7 +1203,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer> <!-- HIS- flip 2 -->
 					<name>HIS-2</name>
-					<boolean>False</boolean>
 					<remove>
 						<atom>
 							<name>ND1</name>
@@ -1317,7 +1298,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>NTER</name>
 				<conformer>
 					<name>NTER</name>
-					<boolean>True</boolean>
 					<add>
 						<atom>
 							<name>H</name>
@@ -1365,7 +1345,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>NTER0</name>
 				<conformer>
 					<name>NTER0</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>H3</name>
@@ -1415,7 +1394,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>CTER</name>
 				<conformer>
 					<name>CTER</name>
-					<boolean>True</boolean>
 					<add>
 						<atom>
 							<name>OXT</name>
@@ -1454,7 +1432,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Hydrogen HO on O' -->
 				<conformer>
 					<name>CTER01c</name>
-					<boolean>True</boolean>
 <!-- HO on O' cis-->
 					<add>
 						<atom>
@@ -1493,7 +1470,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer>
 					<name>CTER01t</name>
-					<boolean>True</boolean>
 <!-- HO on O' trans-->
 					<add>
 						<atom>
@@ -1536,7 +1512,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Hydrogen HO on OXT -->
 				<conformer>
 					<name>CTER02c</name>
-					<boolean>True</boolean>
 <!-- HO on OXT cis-->
 					<add>
 						<atom>
@@ -1575,7 +1550,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				</conformer>
 				<conformer>
 					<name>CTER02t</name>
-					<boolean>True</boolean>
 <!-- HO on OXT trans-->
 					<add>
 						<atom>
@@ -1745,11 +1719,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>ASN</name>
 				<conformer> <!-- ASN flip 1, no changes necessary to the ASN reference -->
 					<name>ASN1</name>
-					<boolean>True</boolean>
 				</conformer>
 				<conformer> <!-- ASN flip 2 -->
 					<name>ASN2</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>OD1</name>
@@ -2140,11 +2112,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>GLN</name>
 				<conformer> <!-- GLN flip 1, no changes necessary to the GLN model in reference -->
 					<name>GLN1</name>
-					<boolean>True</boolean>
 				</conformer>
 				<conformer> <!-- GLN flip 2 -->
 					<name>GLN2</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>OE1</name>
@@ -2586,7 +2556,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>LYS</name>
 				<conformer>
 					<name>LYS</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -2596,7 +2565,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>LYS0</name>
 				<conformer>
 					<name>LYS0</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>HZ3</name>
@@ -2710,7 +2678,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>SER</name>
 				<conformer>
 					<name>SER</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -2720,7 +2687,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>SER-</name>
 				<conformer>
 					<name>SER-</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>HG</name>
@@ -2858,7 +2824,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>THR</name>
 				<conformer>
 					<name>THR</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -2868,7 +2833,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>THR-</name>
 				<conformer>
 					<name>THR-</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>HG1</name>
@@ -3069,7 +3033,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>TYR</name>
 				<conformer>
 					<name>TYR</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -3079,7 +3042,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>TYR-</name>
 				<conformer>
 					<name>TYR-</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>HH</name>
@@ -3194,7 +3156,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>CYS</name>
 				<conformer>
 					<name>CYS</name>
-					<boolean>True</boolean>
 				</conformer>
 			</tautomer>
 		</titrationstate>
@@ -3204,7 +3165,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 				<name>CYS-</name>
 				<conformer>
 					<name>CYS-</name>
-					<boolean>True</boolean>
 					<remove>
 						<atom>
 							<name>HG</name>

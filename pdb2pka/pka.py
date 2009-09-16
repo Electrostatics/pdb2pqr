@@ -1132,7 +1132,6 @@ class pKaRoutines:
                 #
                 # Loop over all states and calculate the Background Interaction energy for each
                 #
-                print "Background residue.stateboolean: %s" % (residue.stateboolean)
                 for state in possiblestates:
                     #
                     # Set the name for this energy

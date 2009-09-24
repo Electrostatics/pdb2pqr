@@ -1895,8 +1895,6 @@ pwd > cwdfile
 cwd=`awk -F"/" '{ print $NF }' cwdfile`
 rm cwdfile
 
-export CXXFLAGS="-g -O2 -fno-stack-protector"
-
 if test ${prefix} == "NONE" ; then
   if test `whoami` = "root" ; then
     if test -d "/var/www/html/pdb2pqr" ; then

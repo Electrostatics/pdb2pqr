@@ -9,7 +9,7 @@ __author__ = "Wes Goodman, Samir Unni"
 import sys
 import cgi
 import cgitb
-import os,shutil,glob,string,time
+import os,shutil,glob,string,time,urllib
 from src.server import STYLESHEET
 from src.aconf import *
 
@@ -395,7 +395,16 @@ def mainCGI():
             if have_opal:
                 for i in range(0,len(filelist)):
                     if filelist[i]._name[-3:]==".dx":
-                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                        # compressing APBS OpenDX output files
+                        currentpath = os.getcwd()
+                        zipjobid = filelist[i]._name.split("-")[0]
+                        urllib.urlretrieve(filelist[i]._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, zipjobid, filelist[i]._name))
+                        os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, zipjobid))
+                        syscommand = 'zip -9 ' + filelist[i]._name + '.zip ' + filelist[i]._name
+                        os.system(syscommand)
+                        os.chdir(currentpath)
+                        outputfilezip = filelist[i]._name + '.zip'
+                        print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputfilezip, outputfilezip)
             else:
                 outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))
                 for outputfile in outputfilelist:

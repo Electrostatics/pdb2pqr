@@ -725,6 +725,17 @@ AC_SUBST(with_pdb2pka)
 
 PDB2PQR_SUBDIRS="${PDB2PQR_SUBDIRS} tests"
 
+# Checking for OpenBabel
+echo
+echo "checking for OpenBabel..."
+r=`which babel`
+if test ! -z $r; then
+  echo "OpenBabel found in $r, you can use OpenBabel to generate MOL2 files."
+else
+  echo "OpenBabel not found."
+fi
+echo
+
 dnl ##########################################################################
 dnl 11. generate the makefiles
 dnl ##########################################################################

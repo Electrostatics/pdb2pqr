@@ -3910,6 +3910,17 @@ chmod 755 querystatus.cgi
 
 PDB2PQR_SUBDIRS="${PDB2PQR_SUBDIRS} tests"
 
+# Checking for OpenBabel
+echo
+echo "checking for OpenBabel..."
+r=`which babel`
+if test ! -z $r; then
+  echo "OpenBabel found in $r, you can use OpenBabel to generate MOL2 files."
+else
+  echo "OpenBabel not found."
+fi
+echo
+
 
 { echo "$as_me:$LINENO: result: ------------- End Processing PDB2PQR Configure Options -----------" >&5
 echo "${ECHO_T}------------- End Processing PDB2PQR Configure Options -----------" >&6; }

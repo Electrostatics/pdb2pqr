@@ -4,6 +4,7 @@
 // (C) Jens Erik Nielsen, University College Dublin 2005
 //
 #include "pMC_mult.h"
+#include "stdio.h"
 //
 //
 //

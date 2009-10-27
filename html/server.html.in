@@ -109,7 +109,7 @@ document.getElementById("parse").checked=true;
 <P>
 <I>Currently using PDB2PQR Version 1.5</I>
 <P>
-Return to <a href="http://pdb2pqr.sourceforge.net/">the PDB2PQR homepage</a>.<br> 	
+Return to <a href="http://www.poissonboltzmann.org/pdb2pqr">the PDB2PQR homepage</a>.<br> 	
 <hr> 	
 This server enables a user to convert <a href="http://www.rcsb.org/pdb/">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
 
@@ -117,7 +117,7 @@ pKa calculations are performed by <a href="http://propka.ki.ku.dk">PROPKA</a>.<P
 
 For more information on PDB2PQR please see the:<BR>
 <ul>
-	<li> <a href="http://pdb2pqr.sourceforge.net">Home Page</a>
+	<li> <a href="http://www.poissonboltzmann.org/pdb2pqr">Home Page</a>
 	</li>
 	<li> <a href="http://pdb2pqr.sourceforge.net/userguide.html">User Guide</a> </li>
 	<li> <a href="http://pdb2pqr.sourceforge.net/examples/">Examples</a> </li>
@@ -133,7 +133,7 @@ If you use the PDB2PQR service in a publication, please cite:
 is limited to a maximum size of @MAXATOMS@ atoms per protein.  If you are interested
 in using PDB2PQR for larger proteins, you are encouraged to download a command
 line version of PDB2PQR from the <a
-	href="http://pdb2pqr.sourceforge.net">PDB2PQR home page</a>.  For
+	href="http://www.poissonboltzmann.org/pdb2pqr">PDB2PQR home page</a>.  For
 additional limitations, please see the <a
 	href="http://pdb2pqr.sourceforge.net/userguide.html">PDB2PQR user
 	guide</a> <P>

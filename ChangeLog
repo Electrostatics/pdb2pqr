@@ -1,1 +1,9 @@
 Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
+
+# These are notes for the current version of PDB2PQR
+
+- NEW FEATURES
+  * Added Swanson force field based on Swanson et al paper (http://dx.doi.org/10.1021/ct600216k).
+
+
+- BUG FIXES

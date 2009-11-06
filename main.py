@@ -86,8 +86,9 @@ def usage(rc):
     str = str + "\n"
     str = str + "Usage: pdb2pqr.py [options] --ff=<forcefield> <path> <output-path>\n"
     str = str + "    Required Arguments:\n"
-    str = str + "        <forcefield>  :  The forcefield to use - currently amber\n"
-    str = str + "                         charmm, parse, and tyl06  are supported.\n"
+    str = str + "        <forcefield>  :  The forcefield to use - currently amber,\n"
+    str = str + "                         charmm, parse, tyl06, peoepb and swanson\n"
+    str = str + "                         are supported.\n"
     str = str + "        <path>        :  The path to the PDB file or an ID\n"
     str = str + "                         to obtain from the PDB archive\n"
     str = str + "        <output-path> :  The desired output name of the PQR file\n"
@@ -562,7 +563,7 @@ def mainCommand(argv):
 
         elif o == "--chain": options["chain"] = 1
         elif o == "--ffout":
-            if a in ["amber","AMBER","charmm","CHARMM","parse","PARSE","tyl06","TYL06"]:
+            if a.lower() in ["amber","charmm","parse","tyl06","peoepb","swanson"]:
                 options["ffout"] = a
             else:
                 raise ValueError, "Invalid forcefield naming scheme %s!" % a

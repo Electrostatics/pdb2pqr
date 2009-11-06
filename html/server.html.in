@@ -158,6 +158,7 @@ Pick a forcefield to use:
 <input type="RADIO" name="FF" id = "charmm" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
 <input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)">PARSE</input><BR>
 <input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
+<input type="RADIO" name="FF" id = "swanson" value="swanson" onClick="setff(this.value)">SWANSON</input><BR> 
 <input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
 <input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
 <label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><BR>
@@ -171,6 +172,7 @@ Pick an output naming scheme to use (<a href="http://pdb2pqr.sourceforge.net/use
 <input type="RADIO" name="FFOUT" value="charmm">CHARMM</input><BR>
 <input type="RADIO" name="FFOUT" value="parse">PARSE</input><BR>
 <input type="RADIO" name="FFOUT" value="peoepb">PEOEPB</input><BR>
+<input type="RADIO" name="FFOUT" value="swanson">SWANSON</input><BR>
 <input type="RADIO" name="FFOUT" value="tyl06">TYL06</input>
 
 </blockquote>

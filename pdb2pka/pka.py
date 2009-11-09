@@ -32,6 +32,8 @@ try:
         scriptpath=os.getcwd()
     else:
         scriptpath=os.path.join(os.getcwd(),os.path.split(file_name)[0])
+        if scriptpath[-1] == "/":
+            scriptpath=scriptpath[:-1]
 except:
     scriptpath=os.path.split(sys.argv[0])[0]
     if scriptpath=='.':

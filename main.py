@@ -507,6 +507,7 @@ def mainCommand(argv):
 
     if len(args) != 2:
         sys.stderr.write("Incorrect number (%d) of arguments!\n" % len(args))
+        sys.stderr.write("args: %s" % (args))
         usage(2)
 
     options = {"debump":1,"opt":1,"extensions":{}}

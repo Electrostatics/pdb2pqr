@@ -495,7 +495,7 @@ def mainCommand(argv):
 
 
     shortOptlist = "h,v"
-    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace","typemap","neutraln","neutralc","userff=","usernames="]
+    longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace","typemap","neutraln","neutralc","userff","usernames"]
 
     extensions = getAvailableExtensions(1)
     longOptlist += extensions.keys()
@@ -507,7 +507,7 @@ def mainCommand(argv):
 
     if len(args) != 2:
         sys.stderr.write("Incorrect number (%d) of arguments!\n" % len(args))
-        sys.stderr.write("args: %s" % (args))
+        sys.stderr.write("argv: %s, args: %s" % (argv, args))
         usage(2)
 
     options = {"debump":1,"opt":1,"extensions":{}}
@@ -544,13 +544,16 @@ def mainCommand(argv):
             del options["opt"]
             options["clean"] = 1
         elif o == "--ff":      
-            ff = a
+            if "userff" in opts:
+                ff = "user-defined"
+            else:
+                ff = a
             
-            # Check to make sure forcefield file is available
+                # Check to make sure forcefield file is available
 
-            defpath = getFFfile(ff)
-            if defpath == "":
-                raise ValueError, "Unable to find parameter files for forcefield %s!" % ff
+                defpath = getFFfile(ff)
+                if defpath == "":
+                    raise ValueError, "Unable to find parameter files for forcefield %s!" % ff
         elif o == "--neutraln": 
             if ff not in ["parse", "PARSE"]:
                 raise ValueError, "neutraln option only works with PARSE forcefield!"

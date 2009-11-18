@@ -178,12 +178,17 @@ def mainCGI():
         if have_opal:
             ffname = form["USERFF"].filename
             ffname = re.split(r'[/\\]',ffname)[-1]
+            if ffname[-4:] == ".DAT":
+               ffname = ffname[:-4]
             fffile = StringIO(form["USERFF"].value)
-            options["ff"] = ffname
+            namesfile = StringIO(form["USERNAMES"].value)
+            ff = "user-defined"
+            options["userff"] = fffile
+            options["usernames"] = namesfile
         else:
             userff = StringIO(form["USERFF"].value)
             usernames = StringIO(form["USERNAMES"].value)
-            ff = "user-defined"
+            options["ff"] = "user-defined"
             options["userff"] = userff
             options["usernames"] = usernames
     if form.has_key("FFOUT"):
@@ -306,9 +311,10 @@ def mainCGI():
                     if fffile:
                       ffFile = ns0.InputFileType_Def('inputFile')
                       ffFile._name = val
-                      ffFileTemp = open(fffile, "r")
-                      ffFileString = ffFileTemp.read()
-                      ffFileTemp.close()
+                      #ffFileTemp = open(fffile, "r")
+                      #ffFileString = ffFileTemp.read()
+                      ffFileString = fffile.read()
+                      #ffFileTemp.close()
                       ffFile._contents = ffFileString
                 myopts+="--"+str(key)+" "
             myopts+=str(pdbfilename)+" "

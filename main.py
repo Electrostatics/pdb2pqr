@@ -550,7 +550,8 @@ def mainCommand(argv):
             defpath = getFFfile(ff)
             if defpath == "":
                 raise ValueError, "Unable to find parameter files for forcefield %s!" % ff
-            
+        elif o == "--userff" or o == "--usernames":
+            pass
         elif o == "--neutraln": 
             if ff not in ["parse", "PARSE"]:
                 raise ValueError, "neutraln option only works with PARSE forcefield!"

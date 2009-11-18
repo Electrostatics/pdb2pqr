@@ -182,7 +182,7 @@ def mainCGI():
                ffname = ffname[:-4]
             fffile = StringIO(form["USERFF"].value)
             namesfile = StringIO(form["USERNAMES"].value)
-            ff = "user-defined"
+            options["ff"] = "user-defined"
             options["userff"] = fffile
             options["usernames"] = namesfile
         else:

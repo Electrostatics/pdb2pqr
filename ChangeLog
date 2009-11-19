@@ -8,3 +8,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 
 - BUG FIXES
   * Fixed a minor bug: when starting pka.py from pdb2pka directory using command like "python pka.py [options] inputfile", we need to make sure scriptpath does not end with "/".
+  * Fixed a bug which caused "coercing to Unicode: need string or buffer, instance found" when submitting PDB2PQR jobs with user-defined force fields on Opal based web server. 

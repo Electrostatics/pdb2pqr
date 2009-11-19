@@ -182,7 +182,7 @@ def mainCGI():
                ffname = ffname[:-4]
             fffile = StringIO(form["USERFF"].value)
             namesfile = StringIO(form["USERNAMES"].value)
-            options["ff"] = "user-defined"
+            options["ff"] = ffname
             options["userff"] = fffile
             options["usernames"] = namesfile
         else:
@@ -255,6 +255,7 @@ def mainCGI():
         if have_opal:
             ligandFile=None
             ffFile=None
+            namesFile=None
         #else:
         starttime = time.time()
         name = setID(starttime)
@@ -310,12 +311,17 @@ def mainCGI():
                     key="ff=%s" % val
                     if fffile:
                       ffFile = ns0.InputFileType_Def('inputFile')
-                      ffFile._name = val
+                      ffFile._name = val + ".DAT"
                       #ffFileTemp = open(fffile, "r")
                       #ffFileString = ffFileTemp.read()
                       ffFileString = fffile.read()
                       #ffFileTemp.close()
                       ffFile._contents = ffFileString
+                    if namesfile:
+                      namesFile = ns0.InputFileType_Def('inputFile')
+                      namesFile._name = val + ".names"
+                      namesFileString = namesfile.read()
+                      namesFile._contents = namesFileString
                 myopts+="--"+str(key)+" "
             myopts+=str(pdbfilename)+" "
             myopts+="%s.pqr" % str(pdbfilename)
@@ -334,6 +340,8 @@ def mainCGI():
               inputFiles.append(ligandFile)
             if ffFile:
               inputFiles.append(ffFile)
+            if namesFile:
+              inputFiles.append(namesFile)
             req._inputFile=inputFiles
             try:
                 resp=appServicePort.launchJob(req)

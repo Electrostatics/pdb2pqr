@@ -234,8 +234,6 @@ def runPDB2PQR(pdblist, ff, options):
     if "usernames" in options: usernames = options["usernames"]
     else: usernames = None
 
-    print "userff: %s, usernames: %s in runPDB2PQR()\n" % (userff, usernames)
-
     if "verbose" in options: verbose = 1
     else: verbose = 0
 

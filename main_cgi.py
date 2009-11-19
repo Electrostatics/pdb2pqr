@@ -43,7 +43,7 @@
 """
 
 __date__  = "2 September 2009"
-__author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen, Samir Unni"
+__author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen, Samir Unni, Yong Huang"
 __version__ = "1.5"
 
 
@@ -141,6 +141,7 @@ def mainCGI():
         options = {}
         options["ff"] = ff
         fffile = None
+        namesfile = None
     else:
         options = {"extensions":{}}
  
@@ -312,10 +313,7 @@ def mainCGI():
                     if fffile:
                       ffFile = ns0.InputFileType_Def('inputFile')
                       ffFile._name = val + ".DAT"
-                      #ffFileTemp = open(fffile, "r")
-                      #ffFileString = ffFileTemp.read()
                       ffFileString = fffile.read()
-                      #ffFileTemp.close()
                       ffFile._contents = ffFileString
                     if namesfile:
                       namesFile = ns0.InputFileType_Def('inputFile')

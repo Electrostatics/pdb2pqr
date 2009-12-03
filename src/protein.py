@@ -200,9 +200,17 @@ class Protein:
         """
         self.reSerialize()
         text = []
+        currentchainID = None
         for atom in atomlist:
+            # Print the "TER" records between chains
+            if currentchainID == None:
+                currentchainID = atom.chainID
+            elif atom.chainID != currentchainID:
+                currentchainID = atom.chainID
+                text.append("TER\n")
             if not chainflag: atom.chainID = ""
             text.append("%s\n" % str(atom))
+        text.append("TER\nEND")
         return text
 
     def createHTMLTypeMap(self, definition, outfilename):

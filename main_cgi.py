@@ -332,6 +332,7 @@ def mainCGI():
             pdbOpalFile = ns0.InputFileType_Def('inputFile')
             pdbOpalFile._name = pdbfilename
             pdbOpalFile._contents = pdbfile.read()
+            pdbOpalFileLength = len(pdbOpalFile._contents.split('\n'))
             pdbfile.close()
             inputFiles.append(pdbOpalFile)
             if ligandFile:
@@ -355,6 +356,9 @@ def mainCGI():
             pdb2pqrOpalJobIDFile.write(resp._jobID)
             pdb2pqrOpalJobIDFile.close()
             print redirector(name)
+            # Log the CGI run information for Opal
+            endtime = time.time() - starttime
+            logRun(options, endtime, pdbOpalFileLength, ff, os.environ["REMOTE_ADDR"])
 
         else:
             #pqrpath = startServer(name)

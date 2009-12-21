@@ -10,3 +10,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
   * Fixed a minor bug: when starting pka.py from pdb2pka directory using command like "python pka.py [options] inputfile", we need to make sure scriptpath does not end with "/".
   * Fixed a bug which caused "coercing to Unicode: need string or buffer, instance found" when submitting PDB2PQR jobs with user-defined force fields on Opal based web server. 
   * Fixed a bug in main_cgi.py, now Opal-based PDB2PQR jobs should also be logged in usage.txt file.
+  * Updated src/utilities.py with a bug fix provided by Greg Cipriano, which prevents infinite loops in analyzing connected atoms in certain cases.

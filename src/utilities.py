@@ -118,11 +118,11 @@ def analyzeConnectivity(map, key):
         key = keys[0]
         if key not in list:
             list.append(key)
-
-        if key in map:
-            for value in map[key]:
-                if value not in list:
-                    keys.append(value)
+            # The following 4 lines are modified by Greg Cipriano as a bug fix
+            if key in map:
+                for value in map[key]:
+                    if value not in list:
+                        keys.append(value)
     
         keys.pop(keys.index(key))
         

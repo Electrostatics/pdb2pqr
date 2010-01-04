@@ -3,14 +3,14 @@
   CGI Module for checking on the status of an OPAL job
 """
 
-__date__   = "27 August 2007"
-__author__ = "Wes Goodman, Samir Unni"
+__date__   = "4 January 2010"
+__author__ = "Wes Goodman, Samir Unni, Yong Huang"
 
 import sys
 import cgi
 import cgitb
 import os,shutil,glob,string,time,urllib
-from src.server import STYLESHEET
+from src.server import *
 from src.aconf import *
 
 cgitb.enable()
@@ -374,9 +374,23 @@ def mainCGI():
         
         if calctype=="pdb2pqr":
             if have_opal:
+                # Getting PDB2PQR Opal run log info
+                if os.path.isfile('%s%s%s/pdb2pqr_opal_log' % (INSTALLDIR, TMPDIR, form["jobid"].value)):
+                    pdb2pqrOpalLogFile=open('%s%s%s/pdb2pqr_opal_log' % (INSTALLDIR, TMPDIR, form["jobid"].value), 'r')
+                    logstr=pdb2pqrOpalLogFile.read().split('\n')
+                    logopts = eval(logstr[0])
+                    logff = logstr[1]
+                    REMOTE_ADDR = logstr[2]
+                    pdb2pqrOpalLogFile.close()
                 for i in range(0,len(filelist)):
                     if filelist[i]._name[-7:]==".propka" or (filelist[i]._name[-13:]=="-typemap.html" and typemap == True) or filelist[i]._name[-4:]==".pqr" or filelist[i]._name[-3:]==".in":
+                        if filelist[i]._name[-4:]==".pqr":
+                            # Getting pqr file length for PDB2PQR Opal run
+                            f=urllib.urlopen(filelist[i]._url)
+                            pqrOpalFileLength = len(f.readlines())
+                            f.close()
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                logRun(logopts, runtime, pqrOpalFileLength, logff, REMOTE_ADDR)
             else:
                 outputfilelist = glob.glob('%s%s%s/*.propka' % (INSTALLDIR, TMPDIR, jobid))
                 for i in range(0,len(outputfilelist)):

@@ -283,17 +283,17 @@ def generateForm(file, initVars, pdb2pqrID, type):
         <!-- ... body of document ... -->
         <h2>APBS web solver</h2>
     """ % (cginame, cginame, cginame, initVars['calculationType'])) # hardcoded css link
-    #file.write("<h3>Calculation for PQR file <a href=\"../tmp/%s/%s.pqr\" target=\"_blank\">%s</a></h3>\n" % ( initVars['pqrname'], initVars['pqrname'])) # HARDCODED - needs to be changed
-    file.write("<h3>Calculation for PQR file <a href=\"tmp/%s/%s\" target=\"_blank\">%s</a></h3>\n" % (pdb2pqrID, initVars['pqrname'],initVars['pqrname']))
+    file.write("<h3>Calculation on <a href=\"tmp/%s/%s\" target=\"_blank\">%s</a> with default values provided by PDB2PQR:</h3>\n" % (pdb2pqrID, initVars['pqrname'],initVars['pdbID']))
     # Write out the form element
     print "<form action=\"%s\" method=\"post\" enctype=\"multipart/form-data\" name=\"%s\" id=\"%s\">" % (cgifile, cginame, cginame)
-
+    print "<input type=\"submit\" value=\"Launch\"/><br /><br />"
     print """
+            If you prefer to run APBS with custom values, click here:
+            <input type=\"checkbox\" name=\"customvalues\" onClick=\"toggle(\'params\');"/>
+            <br /><br />
             
-            Please specify the type of calculation:
-            <br />
-            <b>Note:</b> Default values for all required parameters were filled in with default values provided by PDB2PQR. <br /> All parameters for the specified calculation must be fullfilled, unless indicated otherwise.
-            <br />
+            <div id=\"params\" style=\"display:none\">
+            Please specify the type of calculation (all parameters for the specified calculation must be fullfilled, unless indicated otherwise):
             <br />
 
     """
@@ -700,7 +700,7 @@ def generateForm(file, initVars, pdb2pqrID, type):
                 </ul>
                     </blockquote>
                 </blockquote>
-                    </div></div>"""
+                    </div>"""#</div>"""
 
 
     #print       """<ul>
@@ -1114,7 +1114,9 @@ def generateForm(file, initVars, pdb2pqrID, type):
     print """
                 <li><input type=\"radio\" name=\"writeformat\" value=\"avs\" disabled=\"disabled\"/> AVS UCD (finite element only) <a href=\"http://apbs.wustl.edu/MediaWiki/index.php/ELEC_input_file_section#write\" target=\"_blank\"><font title=\"avs\">(<span class=\"tooltip\">?</span>)</font></a></li>
                 <li><input type=\"radio\" name=\"writeformat\" value=\"uhbd\" disabled=\"disabled\"/> UBHD (multigrid only) <a href=\"http://apbs.wustl.edu/MediaWiki/index.php/ELEC_input_file_section#write\" target=\"_blank\"><font title=\"uhbd\">(<span class=\"tooltip\">?</span>)</font></a></li>
-                </ul></blockquote>"""
+                </ul></blockquote>
+            </div>"""
+
 
 
     #print """<ul><li>Choose type of operator to output <a href=\"http://apbs.wustl.edu/MediaWiki/index.php/ELEC_input_file_section#writemat\" target=\"_blank\"><font title=\"type\">(<span class=\"tooltip\">?</span>)</font></a>:</li></ul>"""
@@ -1139,7 +1141,6 @@ def generateForm(file, initVars, pdb2pqrID, type):
     print "/>"
 
     print "<input type=\"hidden\" name=\"mol\" value=\"1\"/>"
-    print "<input type=\"submit\" value=\"Submit\"/>"
 
     print """
         </form> 
@@ -1163,6 +1164,7 @@ def unpickleVars(pdb2pqrID):
     myElec = inputObj.elecs[0]
 
     apbsOptions['pqrname'] = pdb2pqrID+'.pqr'
+    apbsOptions['pdbID'] = inputObj.pqrname[:-4]
     
     if myElec.cgcent[0:3] == "mol":
         apbsOptions['coarseGridCenterMethod'] = "molecule"

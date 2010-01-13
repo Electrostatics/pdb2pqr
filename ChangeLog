@@ -5,6 +5,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 - NEW FEATURES
   * Added Swanson force field based on Swanson et al paper (http://dx.doi.org/10.1021/ct600216k).
   * Modified printAtoms() method. Now "TER" is printed at the end of every chain.
+  * Added Google Analytics code to get the statistics on the production server.
 
 - BUG FIXES
   * Fixed a minor bug: when starting pka.py from pdb2pka directory using command like "python pka.py [options] inputfile", we need to make sure scriptpath does not end with "/".

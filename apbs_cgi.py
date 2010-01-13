@@ -1149,6 +1149,15 @@ def generateForm(file, initVars, pdb2pqrID, type):
                 src="http://www.w3.org/Icons/valid-xhtml10"
                     alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
                   </p>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-11026338-3");
+pageTracker._trackPageview();
+} catch(err) {}</script>
     </body>
 </html>
 

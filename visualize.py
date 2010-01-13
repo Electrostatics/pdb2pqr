@@ -130,6 +130,15 @@ def main(apbsOptions):
     print '\t\t\t<input type=\"submit\" value=\"Submit\"/>'
     print '\t\t</form>'
 
+    print '\t<script type="text/javascript">'
+    print '\tvar gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");'
+    print '\tdocument.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));'
+    print '\t</script>'
+    print '\t<script type="text/javascript">'
+    print '\ttry {'
+    print '\tvar pageTracker = _gat._getTracker("UA-11026338-3");'
+    print '\tpageTracker._trackPageview();'
+    print '\t} catch(err) {}</script>'
     print '\t</body>'
     print '</html>'
 

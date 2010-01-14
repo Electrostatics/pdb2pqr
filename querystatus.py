@@ -142,6 +142,15 @@ def printprogress(name, refreshname, reftime, starttime):
 
     file.write("<font size=2>server time:</font> <code>%s</code><br>\n" % (time.asctime(time.localtime())))
     file.write("</blockquote>\n")
+    file.write("<script type=\"text/javascript\">")
+    file.write("var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");")
+    file.write("document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));")
+    file.write("</script>")
+    file.write("<script type=\"text/javascript\">")
+    file.write("try {")
+    file.write("var pageTracker = _gat._getTracker(\"UA-11026338-3\");")
+    file.write("pageTracker._trackPageview();")
+    file.write("} catch(err) {}</script>")
     file.write("</body></html>")
     file.close()
 
@@ -206,6 +215,15 @@ def createresults(header, input, name, time, missedligands=[]):
     file.write("<p>thank you for using the pdb2pqr server!<p>\n")
     file.write("<font size=\"-1\"><p>total time on server: %.2f seconds</font><p>\n" % time)
     file.write("<font size=\"-1\"><center><i>last updated %s</i></center></font>\n" % __date__) 
+    file.write("<script type=\"text/javascript\">")
+    file.write("var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");")
+    file.write("document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));")
+    file.write("</script>")
+    file.write("<script type=\"text/javascript\">")
+    file.write("try {")
+    file.write("var pageTracker = _gat._getTracker(\"UA-11026338-3\");")
+    file.write("pageTracker._trackPageview();")
+    file.write("} catch(err) {}</script>")
     file.write("</body>\n")
     file.write("</html>\n")
 
@@ -482,6 +500,15 @@ def mainCGI():
         print "The versions of APBS on the local server and on the Opal server do not match, so the calculation could not be completed"
         
     print "</P>"
+    print "<script type=\"text/javascript\">"
+    print "var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");"
+    print "document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));"
+    print "</script>"
+    print "<script type=\"text/javascript\">"
+    print "try {"
+    print "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
+    print "pageTracker._trackPageview();"
+    print "} catch(err) {}</script>"
     print "</BODY>"
     print "</HTML>"
 
@@ -494,6 +521,15 @@ if __name__ == "__main__" and os.environ.has_key("REQUEST_METHOD"):
         text="<BODY>\n"
         text+="\t<H2>Missing jobid field</H2>\n"
         text+="\t<P>Your request url is missing the jobid field</P>\n"
+        text += "<script type=\"text/javascript\">"
+        text += "var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");"
+        text += "document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));"
+        text += "</script>"
+        text += "<script type=\"text/javascript\">"
+        text += "try {"
+        text += "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
+        text += "pageTracker._trackPageview();"
+        text += "} catch(err) {}</script>"
         text+="</BODY>\n</HTML>"
         print text
         sys.exit(2)

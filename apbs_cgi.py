@@ -283,7 +283,7 @@ def generateForm(file, initVars, pdb2pqrID, type):
         <!-- ... body of document ... -->
         <h2>APBS web solver</h2>
     """ % (cginame, cginame, cginame, initVars['calculationType'])) # hardcoded css link
-    file.write("<h3>Calculation on <a href=\"tmp/%s/%s\" target=\"_blank\">%s</a> with default values provided by PDB2PQR:</h3>\n" % (pdb2pqrID, initVars['pqrname'],initVars['pdbID']))
+    file.write("<h3>Calculation on <a href=\"tmp/%s/%s\" target=\"_blank\">%s</a> with default values provided by PDB2PQR:</h3><br />\n" % (pdb2pqrID, initVars['pqrname'],initVars['pdbID']))
     # Write out the form element
     print "<form action=\"%s\" method=\"post\" enctype=\"multipart/form-data\" name=\"%s\" id=\"%s\">" % (cgifile, cginame, cginame)
     print "<input type=\"submit\" value=\"Launch\"/><br /><br />"

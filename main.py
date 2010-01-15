@@ -493,7 +493,6 @@ def mainCommand(argv):
     if package_path != "":
         sys.path.extend(package_path.split(":"))
 
-
     shortOptlist = "h,v"
     longOptlist = ["help","verbose","ff=","ffout=","nodebump","noopt","with-ph=","apbs-input","chain","clean","assign-only", "ligand=", "whitespace","typemap","neutraln","neutralc","userff","usernames"]
 
@@ -555,13 +554,9 @@ def mainCommand(argv):
                 if defpath == "":
                     raise ValueError, "Unable to find parameter files for forcefield %s!" % ff
         elif o == "--neutraln": 
-            if ff not in ["parse", "PARSE"]:
-                raise ValueError, "neutraln option only works with PARSE forcefield!"
             options["neutraln"]  = 1
 
         elif o == "--neutralc": 
-            if ff not in ["parse", "PARSE"]:
-                raise ValueError, "neutralc option only works with PARSE forcefield!"
             options["neutralc"]  = 1
 
         elif o == "--chain": options["chain"] = 1
@@ -577,7 +572,15 @@ def mainCommand(argv):
                 raise ValueError, "Unable to find ligand file %s!\n" % a
         elif undashed in extensions.keys():
             options["extensions"][undashed] = extensions[undashed]
-            
+
+    if "--neutraln" in opts:
+        if ff not in ["parse", "PARSE"]:
+            raise ValueError, "neutraln option only works with PARSE forcefield!"
+
+    if "--neutralc" in opts:
+        if ff not in ["parse", "PARSE"]:
+            raise ValueError, "neutralc option only works with PARSE forcefield!"
+
     if ff == None and "clean" not in options:
         raise ValueError, "Forcefield not specified!"
 

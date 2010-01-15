@@ -260,6 +260,7 @@ def mainCGI():
     """
         Main method for determining the query page output
     """
+    logopts = {}
     print "Content-type: text/html\n\n"
     calctype = form["calctype"].value
 
@@ -507,6 +508,9 @@ def mainCGI():
     print "<script type=\"text/javascript\">"
     print "try {"
     print "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
+    if logopts != {}:
+        for key in logopts:
+            print "pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, logopts[key])
     print "pageTracker._trackPageview();"
     print "} catch(err) {}</script>"
     print "</BODY>"

@@ -254,6 +254,8 @@ def mainCGI():
             text += "<script type=\"text/javascript\">"
             text += "try {"
             text += "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
+            for key in options:
+                text += "pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, options[key])
             text += "pageTracker._trackPageview();"
             text += "} catch(err) {}</script>"
             text += "</BODY></HTML>"
@@ -277,7 +279,6 @@ def mainCGI():
         typemapInputFile = open('%s%s%s/typemap' % (INSTALLDIR, TMPDIR, name),'w')
         typemapInputFile.write(str(typemap))
         typemapInputFile.close()
-
 
         if have_opal:
             myopts=""
@@ -364,6 +365,8 @@ def mainCGI():
                 print "<script type=\"text/javascript\">"
                 print "try {"
                 print "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
+                for key in options:
+                    print "pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, options[key])
                 print "pageTracker._trackPageview();"
                 print "} catch(err) {}</script>"
                 print "</BODY>"

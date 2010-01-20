@@ -61,6 +61,7 @@ def jmolGen():
     jmolpage.write('<script type=\"text/javascript\">\n')
     jmolpage.write('jmolApplet(600, \"script myscript.spt\");\n')
     jmolpage.write('</script>\n')
+    jmolpage.write('<h3>You can perform simple operations like a MouseOver; or right-clicking on the biomolecule then making your selections.</h3>\n')
     jmolpage.write('<script type=\"text/javascript\">\n')
     jmolpage.write('var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");\n')
     jmolpage.write('document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));\n')

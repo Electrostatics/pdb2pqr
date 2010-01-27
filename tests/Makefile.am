@@ -1,1 +1,1 @@
-SUBDIRS = test adv-test test-long local-test .
+SUBDIRS = test adv-test test-long local-test test-webserver .

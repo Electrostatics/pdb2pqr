@@ -7,6 +7,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
   * Modified printAtoms() method. Now "TER" is printed at the end of every chain.
   * Added Google Analytics code to get the statistics on the production server.
   * Modified APBS calculation page layout to hide parameters by default and display PDB ID
+  * Added "make test-webserver", which tests a long list of PDBs (246 PDBs) on the production PDB2PQR web server.
 
 - BUG FIXES
   * Fixed a minor bug: when starting pka.py from pdb2pka directory using command like "python pka.py [options] inputfile", we need to make sure scriptpath does not end with "/".

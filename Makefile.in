@@ -620,7 +620,7 @@ uninstall-am:
 
 distclean-local: clean-local
 clean-local: clean-ac
-	-rm -rf src/server.py src/aconf.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh tests/test-long/test.sh tests/local-test/test-output-user* tests/local-test/test.sh
+	-rm -rf src/server.py src/aconf.py index.html html/server.html pdb2pqr.cgi tmp/ pdb2pka/*.o pdb2pka/*.so pdb2pka/substruct/*.so pdb2pka/substruct/*.o junk *~ tests/test/test-output-user* tests/test/test.sh tests/adv-test/test-output-user* tests/adv-test/test.sh tests/test-long/test.sh tests/test-webserver/test.sh tests/local-test/test-output-user* tests/local-test/test.sh
 	rm -rf querystatus.cgi apbs_cgi.cgi pdb2pqr.py visualize.cgi jmol.cgi
 	rm -rf *.pyc
 	rm -rf tests/adv-test/test.cpp tests/test/test.cpp tests/local-test/test.cpp
@@ -639,6 +639,9 @@ test-long:
 
 local-test:
 	tests/local-test/test.sh
+
+test-webserver:
+	tests/test-webserver/test.sh
 
 install:
 	make

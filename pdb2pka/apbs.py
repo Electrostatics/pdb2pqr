@@ -145,6 +145,11 @@ class runAPBS:
         #
         self.cm_list=[]
 
+        #print 'These are the charges in the PQR file'
+        #print 'atom name\tresnum\tresname\tcharge\tradius'
+        #res_charge=0.0
+        #old_res=-1
+        #old_res_name=''
         for i in range(len(self.atoms)):
             atom = self.atoms[i]
             self.x.append(atom.get("x"))
@@ -153,7 +158,17 @@ class runAPBS:
             self.chg.append(atom.get("ffcharge"))
             self.rad.append(atom.get("radius"))
             self.cm_list.append([atom.resSeq,atom.name,atom.get("ffcharge")])
-
+            #if atom.resSeq!=old_res:
+                #if old_res!=-1:
+                #    print '%4i %4s %6.4f' %(old_res,old_res_name,res_charge)
+            #    res_charge=atom.get('ffcharge')
+            #    old_res=atom.resSeq
+            #    old_res_name=atom.resName
+            #else:
+            #    res_charge=res_charge+atom.get('ffcharge')
+                
+            #print '%5s\t%4i\t%5s\t%6.4f\t%6.4f' %(atom.name,atom.resSeq,atom.resName,atom.get("ffcharge"),atom.get('radius'))
+        #print '%4i %4s %6.4f' %(old_res,old_res_name,res_charge)
         #
         # DEBUG
         #

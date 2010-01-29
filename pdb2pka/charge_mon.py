@@ -6,7 +6,8 @@ class charge_mon(Frame):
         Frame.__init__(self)
         self.master.title('Charge monitor')
         height=800
-        width=1200
+        width=2000
+        self.width=width
         self.cv=Canvas(self.master,bd=5,bg='white',
                        width=width,
                        height=height,
@@ -18,14 +19,19 @@ class charge_mon(Frame):
         return
 
     def init_protein(self,pkaroutines):
-
+        # Initialize the protein
+        # count the number of residues
+        self.numres=0
+        for chain in pkaroutines.protein.chains:
+            for residue in chain.residues:
+                self.numres=self.numres+1
+        self.numres=float(self.numres)
+        #
         self.cv.create_text(0,self.calc,text='Setup',anchor='nw')
         x_count=self.seqstart
         self.res_pos={}
         for chain in pkaroutines.protein.chains:
-            print chain.chainID
             for residue in chain.residues:
-                print residue.name, residue.resSeq
                 if residue.name=='ASP' or residue.name=='GLU':
                     fill='red'
                 elif residue.name=='LYS' or residue.name=='ARG':
@@ -34,7 +40,7 @@ class charge_mon(Frame):
                     fill='black'
                 self.cv.create_text(x_count,self.calc,text='%3d' %residue.resSeq,anchor='nw',fill=fill)
                 self.res_pos[residue.resSeq]=x_count
-                x_count=x_count+24
+                x_count=x_count+int((self.width-100)/self.numres)
         self.calc=self.calc+15
         self.master.update()
         return
@@ -84,14 +90,15 @@ class charge_mon(Frame):
             else:
                 fill='yellow'
 
-            self.cv.create_rectangle(x_count,self.calc,x_count+24,self.calc+10,fill=fill)
+            self.cv.create_rectangle(x_count,self.calc,x_count+int((self.width-100)/self.numres),self.calc+10,fill=fill)
             if fill=='yellow':
-                later.append([x_count,'%4.2f' %charges[resid]])
+                later.append([x_count,'%4.2f' %charges[resid],resid])
         #
         # Print all the wrong charges
         #
-        for x_count,text in later:
+        for x_count,text,resid in later:
             self.cv.create_text(x_count,self.calc,text=text,anchor='nw',fill='black')
+            print '!!Wrong charge: %s %s' %(text,str(resid))
         #
         # Update and increment row
         #

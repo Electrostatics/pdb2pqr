@@ -10,7 +10,7 @@
 __date__="22 April, 2009"
 __author__="Jens Erik Nielsen, Todd Dolinsky, Yong Huang, Tommy Carstensen"
 
-debug=None
+debug=False
 import optparse
 import sys, os
 from pKa_base import *
@@ -403,7 +403,10 @@ class pKaRoutines:
                 # Here we switch the center group to a particular state
                 #
                 self.hydrogenRoutines.switchstate('pKa', ambiguity, self.get_state_name(titration.name,state)) 
-                intenename=pdbfile_name+'.intene_%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name,state))
+                intenename=pdbfile_name+'.intene_%s_%s_%s_%s' %(titration.name,
+                                                                pKa.residue.chainID,
+                                                                pKa.residue.resSeq,
+                                                                self.get_state_name(titration.name,state))
                 import os
                 if not os.path.isfile(intenename):
 
@@ -641,9 +644,6 @@ class pKaRoutines:
         acidbase=[]
         state_counter=[]
         is_charged_state=[]
-        #print
-        #print
-        #print 'Residue\tIntrinsic pKa'
         import math
         ln10=math.log(10)
         for pKa in self.pKas:
@@ -1096,8 +1096,8 @@ class pKaRoutines:
 
         # Clean up, debump
         self.hydrogenRoutines.cleanup()
-        myRoutines.setStates()
-        myRoutines.debumpProtein()
+        myRoutines.setStates() # this identifies the protonation states to pdb2pqr
+        #myRoutines.debumpProtein() # why do we debump after setting the states?
 
         return
 
@@ -1374,7 +1374,27 @@ class pKaRoutines:
     # ----
     #
 
-    def calculate_desolvation_for_residues(self,residues):
+    def init_stateboolean(self):
+        """Initialize stateboolean for all residues/titratable groups"""
+        for pKa in self.pKas:
+            residue = pKa.residue
+            pKaGroup = pKa.pKaGroup
+            ambiguity = pKa.amb
+            for titration in pKaGroup.DefTitrations:
+                possiblestates = titration.allstates
+                for state in possiblestates:
+                    # Adding a stateboolean structure (dictionary) here, default values are True, meaning the current protonation state
+                    # is allowed to be explored during H-bond optimization. False means not allowed.
+                    if not hasattr(residue,'stateboolean'):
+                        residue.stateboolean={}
+                    residue.stateboolean[self.get_state_name(titration.name, state)] = True
+        return
+
+    #
+    # ----
+    #
+
+    def calculate_desolvation_for_residues(self,residues,fix_states={}):
         """Calculate desolvation for individual residues - not necessarily titratable groups.
         Do this only for the standard charge state of the residue"""
         self.findTitratableGroups()
@@ -1401,14 +1421,6 @@ class pKaRoutines:
                             atomlist.append(atom)
                             atomnames.append(atom.name)
                         #
-                        # Switch all the other groups to the neutral reference state
-                        #
-                        #for other_pKa in self.pKas:
-                        #    if pKa==other_pKa:
-                        #        continue
-                        #    for other_titration in other_pKa.pKaGroup.DefTitrations:
-                        #        self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,self.neutral_ref_state[other_pKa][other_titration])
-                        #
                         # Calculate the self energy for each this residue in solution and in the protein
                         #        
                         print "---------> Calculating desolvation energy for residue %s in solvent" %(residue.name)
@@ -1419,49 +1431,66 @@ class pKaRoutines:
                         self.apbs_setup.setfineCenter(center)
                         self.apbs_setup.set_type('desolv')
                         #
-                        # Switch to the state
-                        # Assign, radii, charges
+                        # Add hydrogens
                         #
-                        #self.hydrogenRoutines.switchstate('pKa', ambiguity, state) 
-                        #pKa.residue.fixed = 2
+                        self.init_stateboolean() # Initialize stateboolean
                         #
-                        # 'Unfix' all residues and delete all hydrogens
+                        # this is where we fix the protonation state of some groups, if needed
                         #
-                        for xchain in self.protein.getChains():
-                            for xresidue in xchain.get("residues"):
-                                xresidue.fixed=0
-                                #if not isinstance(residue, Amino): continue
-                                #for atom in residue.get('atoms'):
-                                #    if atom.isHydrogen():
-                                #        
-                                #        print 'Removing',atom.resSeq,atom.name,atom.isHydrogen()
-                                #        residue.removeAtom(atom.name)
-                                        
-                        myRoutines = Routines(self.protein, 0)
-                        myRoutines.updateResidueTypes()
-                        myRoutines.updateSSbridges()
-                        myRoutines.updateBonds()
-                        myRoutines.updateInternalBonds()
-                        myRoutines.addHydrogens()
-                        myRoutines.setStates()
-
                         for other_pKa in self.pKas:
-                            for other_titration in other_pKa.pKaGroup.DefTitrations:
-                                #print other_titration
-                                #start_state=
-                                #print other_titration.name
-                                if other_titration.name=='ASP' or other_titration.name=='CTR':
-                                    state=0
-                                    self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,0)
-                                
-
-                        
-                        self.hydrogenRoutines.setOptimizeableHydrogens()
-                        self.hydrogenRoutines.initializeFullOptimization()
-                        self.hydrogenRoutines.optimizeHydrogens()
-                        self.hydrogenRoutines.cleanup()
-                        myRoutines.debumpProtein()
-                        myRoutines.setStates()
+                            resname=other_pKa.residue.__str__()
+                            if fix_states.has_key(resname):
+                                for fix_record in fix_states[resname]:
+                                    fix_titration=fix_record['titgroup']
+                                    fix_state=fix_record['state']
+                                    for other_titration in other_pKa.pKaGroup.DefTitrations:
+                                        if other_titration.name==fix_titration:
+                                            print 'other_titration',other_titration
+                                            print 'Fixing protonation state of %s to %s' %(other_pKa.residue.__str__(),fix_state)
+                                            self.hydrogenRoutines.switchstate('pKa', other_pKa.amb, fix_state)
+                                            #
+                                            # Disallow all other states during Hbond optimization
+                                            #
+                                            possiblestates = other_titration.allstates
+                                            for state in possiblestates:
+                                                # Adding a stateboolean structure (dictionary) here, default values are True,
+                                                # meaning the current protonation state
+                                                # is allowed to be explored during H-bond optimization. False means not allowed.
+                                                other_pKa.residue.stateboolean[self.get_state_name(other_titration.name, state)] = False
+                                            other_pKa.residue.stateboolean[state]=True
+                            else:
+                                #
+                                # Fix in standard protonation state - this should not be needed
+                                #
+                                default_states={'ASP':'ASP',
+                                                'GLU':'GLU',
+                                                'ARG':'ARG',
+                                                'LYS':'LYS',
+                                                'TYR':'TYR',
+                                                'NTR':'H3+H2',
+                                                'CTR':'CTR-'}
+                                for other_titration in other_pKa.pKaGroup.DefTitrations:
+                                    if default_states.has_key(other_titration.name):
+                                        self.hydrogenRoutines.switchstate('pKa',other_pKa.amb,default_states[other_titration.name])
+                                        #
+                                        # Disallow all other states
+                                        #
+                                        possiblestates = other_titration.allstates
+                                        for state in possiblestates:
+                                            # Adding a stateboolean structure (dictionary) here, default values are True,
+                                            # meaning the current protonation state
+                                            # is allowed to be explored during H-bond optimization. False means not allowed.
+                                            other_pKa.residue.stateboolean[self.get_state_name(other_titration.name, state)] = False
+                                        other_pKa.residue.stateboolean[default_states[other_titration.name]]=True
+                        #
+                        # Fixing done, now optimize and calculate
+                        #
+                        #
+                        self.hbondOptimization()
+                        #self.hydrogenRoutines.optimizeHydrogens()
+                        #self.hydrogenRoutines.cleanup()
+                        #myRoutines.debumpProtein()
+                        #myRoutines.setStates()
                         #
                         #
                         #
@@ -1473,7 +1502,7 @@ class pKaRoutines:
                         # Run APBS first time for the state in solvent
                         #
                         if debug:
-                            CM.set_calc('Desolv solv %s %s' %(pKa.residue.resSeq,state))
+                            CM.set_calc('Desolv solv %s %s' %(residue.resSeq,state))
 
                         solutionEnergy=self.get_elec_energy(self.getAPBSPotentials(save_results=False),atomlist)
                         #
@@ -1536,7 +1565,7 @@ class pKaRoutines:
                         # Run APBS
                         #
                         if debug:
-                            CM.set_calc('background %s %s' %(pKa.residue.resSeq,state))
+                            CM.set_calc('background %s %s' %(residue.resSeq,state))
                         potentials=self.getAPBSPotentials(save_results=False)
                         #
                         # Assign charges to our residue
@@ -1595,6 +1624,7 @@ class pKaRoutines:
         count=0
         totphi=0.0
         totcrg=0.0
+        netcrg=0.0
         found=0
         for atom in self.protein.getAtoms():
             if not atom:
@@ -1604,6 +1634,7 @@ class pKaRoutines:
                     continue
                 if is_sameatom(atom,atom_2):
                     totcrg=totcrg+abs(atom.get("ffcharge"))
+                    netcrg=netcrg+atom.get("ffcharge")
                     totphi=totphi+abs(potentials[-1][count])
                     energy=energy+(potentials[-1][count])*atom.get("ffcharge")
                     found=found+1
@@ -1617,7 +1648,9 @@ class pKaRoutines:
         if abs(totphi)<0.01 or abs(totcrg)<0.01:
             print 'total abs phi',totphi
             print 'total abs crg',totcrg
+            print 'net charge   ',netcrg
             raise 'Something is rotten'
+        
         return energy
 
     #
@@ -1962,39 +1995,43 @@ class pKaRoutines:
         sys.stdout.flush()
         if self.verbose:
             print
+        #
+        pKagroupList=self.pKagroups.keys()
+        #
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
                 resname = residue.get("name")
-                for group in self.pKagroups:
+                for group in pKagroupList:
                     if resname == group:
                         amb=self.find_hydrogen_amb_for_titgroup(residue,group)
                         thispKa = pKa(residue, self.pKagroups[group], amb)
                         pKalist.append(thispKa)
                         if self.verbose:
                             print "\t%s %s" % (resname, residue.resSeq)
-                    if residue.isNterm and group=='NTR':
-                        #
-                        # N-terminus
-                        #
-                        amb=self.find_hydrogen_amb_for_titgroup(residue,group)
-                        thispKa=pKa(residue,self.pKagroups[group],amb)
-                        pKalist.append(thispKa)
-                        if self.verbose:
-                            print "\t%s %s" % (resname, residue.resSeq)
-                    if residue.isCterm and group=='CTR':
-                        #
-                        # C-terminus
-                        #
-                        amb=self.find_hydrogen_amb_for_titgroup(residue,group)
-                        thispKa=pKa(residue,self.pKagroups[group],amb)
-                        pKalist.append(thispKa)
-                        if self.verbose:
-                            print "\t%s %s" % (resname, residue.resSeq)
+                    elif group=='NTR':
+                        if residue.isNterm:
+                            #
+                            # N-terminus
+                            #
+                            amb=self.find_hydrogen_amb_for_titgroup(residue,group)
+                            thispKa=pKa(residue,self.pKagroups[group],amb)
+                            pKalist.append(thispKa)
+                            if self.verbose:
+                                print "\t%s %s" % (resname, residue.resSeq)
+                    elif group=='CTR':
+                        if residue.isCterm:
+                            #
+                            # C-terminus
+                            #
+                            amb=self.find_hydrogen_amb_for_titgroup(residue,group)
+                            thispKa=pKa(residue,self.pKagroups[group],amb)
+                            pKalist.append(thispKa)
+                            if self.verbose:
+                                print "\t%s %s" % (resname, residue.resSeq)
         #
         # Find a neutral state for each group
         #
         self.neutral_ref_state={}
-        #self.charged_state={}
         for this_pka in pKalist:
             residue = this_pka.residue
             pKaGroup = this_pka.pKaGroup
@@ -2007,7 +2044,6 @@ class pKaRoutines:
         # Store pKa groups in self.pKas
         #
         self.pKas=pKalist
-        print 'done'
         return 
 
     #
@@ -2158,6 +2194,7 @@ class pKaRoutines:
         elif titrationname == 'TYR':
             reverse_titrationdict = {'1': 'TYR', '0': 'TYR-'}
         elif titrationname == 'HIS':
+            
             reverse_titrationdict = {'1': 'HSD', '2': 'HSE', '1+2': 'HSP'}
         elif titrationname == 'NTR':
             reverse_titrationdict = {'1': 'H3', '2': 'H2', '1+2': 'H3+H2'}
@@ -2576,11 +2613,10 @@ def pre_init(pdbfilename=None,ff=None,verbose=1,pdie=8,maps=None,xdiel=None,ydie
                     #
                     
                 charge = residue.getCharge()
-                if abs(charge - int(charge)) > 0.001:
+                if abs(charge - round(charge)) > 0.01:
                     # Ligand parameterization failed
                     myProtein.residues.remove(residue)
-                    print 'Charge on ligand is not integer!'
-                    raise Exception('Non-integer charge on ligand')
+                    raise Exception('Non-integer charge on ligand: %8.5f' %charge)
                 else:
                     ligsuccess = 1
                     # Mark these atoms as hits
@@ -2757,7 +2793,7 @@ def titrate_one_group(name,intpkas,is_charged,acidbase):
 # -----
 #
 
-def get_res_energies(pdbfile,mol2file,residue):
+def get_res_energies(pdbfile,mol2file,residue,fix_states={}):
     """Get desolvation energies and interaction energies for a residue in a protein-ligand complex"""
     ##
     ## parse optparse options
@@ -2786,8 +2822,13 @@ def get_res_energies(pdbfile,mol2file,residue):
     #
     (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd)=pre_init(pdbfilename=pdbfile,ff=ff,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,sd=sd,options=junkclass_instance)
     mypkaRoutines = pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd)
+    if debug:
+        CM.init_protein(mypkaRoutines)
     print 'Doing desolvation for single residue',residue
-    return mypkaRoutines.calculate_desolvation_for_residues(residues=[residue])
+    x=mypkaRoutines.calculate_desolvation_for_residues(residues=[residue],fix_states=fix_states)
+    if debug:
+        CM.mainloop()
+    return x
         
             
 if __name__ == "__main__":

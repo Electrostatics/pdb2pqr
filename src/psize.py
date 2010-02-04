@@ -58,8 +58,8 @@ class Psize:
     """Master class for parsing input files and suggesting settings"""
     def __init__(self):
         self.constants = {"cfac": 1.7, "fadd":20, "space": 0.50, "gmemfac": 200, "gmemceil": 400, "ofrac":0.1, "redfac": 0.25 }
-        self.minlen = [360.0, 360.0, 360.0]
-        self.maxlen = [0.0, 0.0, 0.0]
+        self.minlen = [None, None, None]
+        self.maxlen = [None, None, None]
         self.q = 0.0
         self.gotatom = 0
         self.gothet = 0
@@ -97,8 +97,10 @@ class Psize:
                 for word in words[0:3]:
                     center.append(float(word))
                 for i in range(3):
-                    self.minlen[i] = min(center[i]-rad, self.minlen[i])
-                    self.maxlen[i] = max(center[i]+rad, self.maxlen[i])
+                    if self.minlen[i] == None or center[i]-rad < self.minlen[i]:
+                        self.minlen[i] = center[i]-rad
+                    if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
+                        self.maxlen[i] = center[i]+rad
             elif string.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
                 # Special handling for no ATOM entries in the pqr file, only HETATM entries
@@ -113,8 +115,10 @@ class Psize:
                     for word in words[0:3]:
                         center.append(float(word))
                     for i in range(3):
-                        self.minlen[i] = min(center[i]-rad, self.minlen[i])
-                        self.maxlen[i] = max(center[i]+rad, self.maxlen[i])
+                        if self.minlen[i] == None or center[i]-rad < self.minlen[i]:
+                            self.minlen[i] = center[i]-rad
+                        if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
+                            self.maxlen[i] = center[i]+rad
     
     def setConstant(self, name, value):
         """ Set a constant to a value; returns 0 if constant not found """

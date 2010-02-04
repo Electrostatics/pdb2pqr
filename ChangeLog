@@ -16,3 +16,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
   * Updated src/utilities.py with a bug fix provided by Greg Cipriano, which prevents infinite loops in analyzing connected atoms in certain cases.
   * Fixed a bug related to neutraln and/or neutralc selections on the web server.
   * Fixed a special case with --ffout and 1AIK, where the N-terminus is acetylated.
+  * Fixed a bug in psize.py per Michael Lerner's suggestion. The old version of psize.py gives wrong cglen and fglen results in special cases (e.g., all y coordinates are negative values).

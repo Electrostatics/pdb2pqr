@@ -10,7 +10,7 @@
     PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
     Poisson-Boltzmann electrostatics calculations
 
-	Copyright (c) 2002-2009, Jens Erik Nielsen, University College Dublin; 
+	Copyright (c) 2002-2010, Jens Erik Nielsen, University College Dublin; 
 	Nathan A. Baker, Washington University in St. Louis; Paul Czodrowski & 
 	Gerhard Klebe, University of Marburg
 

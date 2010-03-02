@@ -354,9 +354,9 @@ def usage(rc):
     usage = usage + "                         [default = %g]\n" % psize.getConstant("fadd")
     usage = usage + "  --space=<value>      : Desired fine mesh resolution\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("space")
-    usage = usage + "  --gememfac=<value>    : Number of bytes per grid point required\n"
+    usage = usage + "  --gmemfac=<value>    : Number of bytes per grid point required\n"
     usage = usage + "                         for sequential MG calculation\n"
-    usage = usage + "                         [default = %g]\n" % psize.getConstant("gememfac")
+    usage = usage + "                         [default = %g]\n" % psize.getConstant("gmemfac")
     usage = usage + "  --gmemceil=<value>   : Max MB allowed for sequential MG\n"
     usage = usage + "                         calculation.  Adjust this to force the\n"
     usage = usage + "                         script to perform faster calculations (which\n"
@@ -375,7 +375,7 @@ def usage(rc):
 def main():
     filename = ""
     shortOptList = "h"
-    longOptList = ["help", "cfac=", "fadd=", "space=", "gememfac=", "gmemceil=", "ofrac=", "redfac="]
+    longOptList = ["help", "cfac=", "fadd=", "space=", "gmemfac=", "gmemceil=", "ofrac=", "redfac="]
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
     except getopt.GetoptError, details:
@@ -398,8 +398,8 @@ def main():
             psize.setConstant("fadd", int(a))
         if o.lower() == "--space":
             psize.setConstant("space", float(a))
-        if o.lower() == "--gememfac":
-            psize.setConstant("gememfac", int(a))
+        if o.lower() == "--gmemfac":
+            psize.setConstant("gmemfac", int(a))
         if o.lower() == "--gmemceil":
             psize.setConstant("gmemceil",  int(a))
         if o.lower() == "--ofrac":

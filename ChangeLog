@@ -17,3 +17,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
   * Fixed a bug related to neutraln and/or neutralc selections on the web server.
   * Fixed a special case with --ffout and 1AIK, where the N-terminus is acetylated.
   * Fixed a bug in psize.py per Michael Lerner's suggestion. The old version of psize.py gives wrong cglen and fglen results in special cases (e.g., all y coordinates are negative values).
+  * Fixed a bug in main_cgi.py, eliminated input/output file name confusions whether a PDB ID or a pdb file is provided on the web server.

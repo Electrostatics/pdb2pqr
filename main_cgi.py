@@ -332,7 +332,10 @@ def mainCGI():
                       namesFile._contents = namesFileString
                 myopts+="--"+str(key)+" "
             myopts+=str(pdbfilename)+" "
-            myopts+="%s.pqr" % str(pdbfilename)
+            if pdbfilename[-4:]==".pdb":
+                myopts+="%s.pqr" % str(pdbfilename[:-4])
+            else:
+                myopts+="%s.pqr" % str(pdbfilename)
             appLocator = AppServiceLocator()
             appServicePort = appLocator.getAppServicePort(PDB2PQR_OPAL_URL)
             # launch job

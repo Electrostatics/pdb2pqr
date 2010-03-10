@@ -168,7 +168,6 @@ class inputGen:
         elif self.method=='mg-manual':
             text += "    glen %.4f %.4f %.4f\n" % (self.coarsedim[0], self.coarsedim[1], self.coarsedim[2])
             text += "    gcent %.3f %.3f %.3f\n" %(self.coarsecent[0],self.coarsecent[1],self.coarsecent[2])
-            text += "    nlev 4\n"
             
         else:
             raise 'unknown method'

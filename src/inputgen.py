@@ -133,7 +133,6 @@ class Elec:
         text += "    %s\n" % self.method
         text += "    dime %i %i %i\n" % (self.dime[0], self.dime[1], self.dime[2])
         if self.method == "mg-manual":
-            text += "    nlev %i\n" % self.nlev
             text += "    glen %.3f %.3f %.3f\n" % (self.glen[0], self.glen[1], self.glen[2])
             text += "    gcent %s\n" % self.gcent
         elif self.method == "mg-auto":

@@ -330,7 +330,8 @@ def mainCGI():
                       namesFile._name = val + ".names"
                       namesFileString = namesfile.read()
                       namesFile._contents = namesFileString
-                myopts+="--"+str(key)+" "
+                if key not in ["userff", "usernames"]:
+                    myopts+="--"+str(key)+" "
             myopts+=str(pdbfilename)+" "
             if pdbfilename[-4:]==".pdb":
                 myopts+="%s.pqr" % str(pdbfilename[:-4])
@@ -380,6 +381,10 @@ def mainCGI():
             pdb2pqrOpalJobIDFile.write(resp._jobID)
             pdb2pqrOpalJobIDFile.close()
             print redirector(name)
+            if options.has_key("userff"):
+                options["userff"] = ffFileString
+            if options.has_key("usernames"):
+                options["usernames"] = namesFileString
             # Recording CGI run information for PDB2PQR Opal
             pdb2pqrOpalLogFile = open('%s%s%s/pdb2pqr_opal_log' % (INSTALLDIR, TMPDIR, name), 'w')
             pdb2pqrOpalLogFile.write(str(options)+'\n'+str(ff)+'\n'+str(os.environ["REMOTE_ADDR"]))

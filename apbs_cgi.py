@@ -1565,7 +1565,10 @@ def convertOpalToLocal(jobid,pdb2pqrOpalJobID):
     for file in resp._outputFile:
         fileName = file._name
         if fileName!="Standard Output" and fileName!="Standard Error":
-            fileName = jobid+fileName[4:]
+            if fileName.rfind('-') != -1:
+                fileName = jobid+fileName[fileName.rfind('-'):]
+            elif fileName.rfind('.') != -1:
+                fileName = jobid+fileName[fileName.rfind('.'):]
             urllib.urlretrieve(file._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobid, fileName)) # HARDCODED
 
 def redirector(logTime):

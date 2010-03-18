@@ -20,3 +20,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
   * Fixed a bug in psize.py per Michael Lerner's suggestion. The old version of psize.py gives wrong cglen and fglen results in special cases (e.g., all y coordinates are negative values).
   * Fixed a bug in main_cgi.py, eliminated input/output file name confusions whether a PDB ID or a pdb file is provided on the web server.
   * Fixed a bug which causes run time error on the web server when user-defined force field and names files are provided.
+  * Fixed a bug in apbs_cgi.py: pdb file names submitted by users are not always 4 characters long.

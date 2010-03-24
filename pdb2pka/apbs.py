@@ -202,6 +202,12 @@ class runAPBS:
             sys.stderr.write("Error reading kappa maps!\n")
             raise APBSError, "Error reading kappa maps!"
 
+        # Load the potential maps
+        self.potMap = new_gridlist(NOSH_MAXMOL)
+        if loadPotMaps(self.nosh, self.potMap) != 1:
+            sys.stderr.write("Error reading potential maps!\n")
+            raise APBSError, "Error reading potential maps!"
+
         # Load the charge maps
         self.chargeMap = new_gridlist(NOSH_MAXMOL)
         if loadChargeMaps(self.nosh, self.chargeMap) != 1:
@@ -236,7 +242,7 @@ class runAPBS:
 
             if initMG(icalc, self.nosh, self.mgparm, self.pbeparm, self.realCenter, self.pbe, 
                   self.alist, self.dielXMap, self.dielYMap, self.dielZMap, self.kappaMap, self.chargeMap, 
-                  self.pmgp, self.pmg) != 1:
+                  self.pmgp, self.pmg, self.potMap) != 1:
                 sys.stderr.write("Error setting up MG calculation!\n")
                 raise APBSError, "Error setting up MG calculation!"
 
@@ -366,6 +372,7 @@ class runAPBS:
         killMG(self.nosh, self.pbe, self.pmgp, self.pmg)
         killChargeMaps(self.nosh, self.chargeMap)
         killKappaMaps(self.nosh, self.kappaMap)
+        killPotMaps(self.nosh, self.potMap)
         killDielMaps(self.nosh, self.dielXMap, self.dielYMap, self.dielZMap)
 
         if self.myAlist.number == 0:
@@ -387,6 +394,7 @@ class runAPBS:
         delete_gridlist(self.dielYMap)
         delete_gridlist(self.dielZMap)
         delete_gridlist(self.kappaMap)
+        delete_gridlist(self.potMap)
         delete_gridlist(self.chargeMap)
         delete_pmglist(self.pmg)
         delete_pmgplist(self.pmgp)

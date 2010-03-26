@@ -3,6 +3,7 @@ from peoe_PDB2PQR import PEOE as calc_charges
 from src.pdb import *
 from src.definitions import *
 from pdb2pka import NEWligand_topology
+import sys
 import string
 
 def initialize(definition, ligdesc, pdblist, verbose=0):
@@ -24,7 +25,12 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     
     Lig = ligand_charge_handler()
     Lig.read(ligdesc)
-    
+    atomnamelist=[]
+    for atom in Lig.lAtoms:
+        if atom.name in atomnamelist:
+            sys.stderr.write("WARNING: Duplicate atom names (%s) found in ligand file, please change duplicate atom names to aviod atom overwritting!\n" % atom.name)
+        else:
+            atomnamelist.append(atom.name)
     # Create the ligand definition from the mol2 data
 
     MOL2FLAG = True
@@ -96,7 +102,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
         newpdblist.append(e)
     newpdblist.append(TER)
     newpdblist.append(END)
-     
+
     protein = Protein(newpdblist, definition)
     for rrres in  protein.chainmap['L'].residues:
         for aaat in rrres.atoms:

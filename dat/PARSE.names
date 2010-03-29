@@ -178,4 +178,52 @@
         <name>CPRO</name>
         <useresname>PR-</useresname>
     </residue>
+
+<!-- Nucleic Acid Subtitutions -->
+
+   <residue>
+       <name>[RD][ACGTU][35]?$</name>
+       <atom>
+          <name>H5'</name>
+          <useatomname>H5'1</useatomname>
+       </atom>
+       <atom>
+          <name>H5''</name>
+          <useatomname>H5'2</useatomname>
+       </atom>
+       <atom>
+          <name>H2'</name>
+          <useatomname>H2'1</useatomname>
+       </atom>
+   </residue>
+   <residue>
+       <name>D[ACGT][35]?$</name>
+       <atom>
+          <name>H2''</name>
+          <useatomname>H2'2</useatomname>
+       </atom>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
+   </residue>
+   <residue>
+       <name>R[ACGU][35]?$</name>
+       <atom>
+          <name>H2''</name>
+          <useatomname>HO'2</useatomname>
+       </atom>
+       <atom>
+          <name>OP1</name>
+          <useatomname>O1P</useatomname>
+       </atom>
+       <atom>
+          <name>OP2</name>
+          <useatomname>O2P</useatomname>
+       </atom>
+   </residue>
 </parse>

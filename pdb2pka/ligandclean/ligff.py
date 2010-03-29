@@ -28,7 +28,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     atomnamelist=[]
     for atom in Lig.lAtoms:
         if atom.name in atomnamelist:
-            sys.stderr.write("WARNING: Duplicate atom names (%s) found in ligand file, please change duplicate atom names to aviod atom overwritting!\n" % atom.name)
+            sys.stderr.write("WARNING: Duplicate atom names (%s) found in ligand file, please change duplicate atom names to aviod atom overwriting!\n" % atom.name)
         else:
             atomnamelist.append(atom.name)
     # Create the ligand definition from the mol2 data

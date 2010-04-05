@@ -4,9 +4,9 @@
     
 """
 
-__date__  = "2 September 2009"
+__date__  = "5 April 2010"
 __author__ = "Wes Goodman, Yong Huang"
-__version__ = "1.5"
+__version__ = "1.6"
 
 import string
 import sys

@@ -10,7 +10,7 @@ dnl ##########################################################################
 dnl ##########################################################################
 dnl 0. autoconf initialization
 dnl ##########################################################################
-AC_INIT([PDB2PQR], [1.5], [baker@biochem.wustl.edu])
+AC_INIT([PDB2PQR], [1.6], [baker@biochem.wustl.edu])
 AC_PREREQ(2.56)
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_SYSTEM
@@ -106,7 +106,7 @@ dnl #
 dnl #   Never try to set the interface numbers so that they correspond to the
 dnl #   release number of your package. This is an abuse that only fosters
 dnl #   misunderstanding of the purpose of library versions.
-AM_INIT_AUTOMAKE(PDB2PQR, 1.5)
+AM_INIT_AUTOMAKE(PDB2PQR, 1.6)
 PDB2PQR_VERSION="1:5"
 AC_SUBST(PDB2PQR_VERSION)
 ACLOCAL=":";
@@ -458,12 +458,12 @@ AC_ARG_WITH(max-atoms,
 HAVE_PDB2PQR_OPAL=0
 
 AC_ARG_WITH(opal,
-	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.5],
+	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.6],
 	[PDB2PQR_OPAL_URL=$withval],
 	[PDB2PQR_OPAL_URL=""])
 
 if test "$PDB2PQR_OPAL_URL" = "yes"; then
-  PDB2PQR_OPAL_URL="http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.5"
+  PDB2PQR_OPAL_URL="http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.6"
   HAVE_PDB2PQR_OPAL=1
 fi
 
@@ -521,12 +521,12 @@ fi
 rm -f HAVE_APBS_FILE
 
 AC_ARG_WITH(apbs-opal,
-	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://sccne.wustl.edu:8082/opal2/services/apbs-1.2],
+	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://sccne.wustl.edu:8082/opal2/services/apbs-1.2.1],
 	[APBS_OPAL_URL=$withval],
 	[APBS_OPAL_URL=""])
 
 if test "$APBS_OPAL_URL" = "yes"; then
-  APBS_OPAL_URL="http://sccne.wustl.edu:8082/opal2/services/apbs-1.2"
+  APBS_OPAL_URL="http://sccne.wustl.edu:8082/opal2/services/apbs-1.2.1"
   DEFAULT_APBS_OPAL_URL="1"
 else
   DEFAULT_APBS_OPAL_URL="0"

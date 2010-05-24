@@ -269,6 +269,10 @@ def mainCGI():
         print printheader("%s Job Status Page" % calctype.upper())
         progress = "version_mismatch"
         runtime = 0
+    elif form["jobid"].value == 'notenoughmem':
+        print printheader("%s Job Status Page" % calctype.upper())
+        progress = "not_enough_memory"
+        runtime = 0
     else:
         progress = None
 
@@ -325,7 +329,7 @@ def mainCGI():
         timefile = open('%s%s%s/%s_start_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
         starttime = float(timefile.read())
         timefile.close()
-    if progress == "running" or (have_opal and progress != "version_mismatch"):
+    if progress == "running" or (have_opal and progress != "version_mismatch" and progress != "not_enough_memory"):
         runtime = time.time()-starttime
     elif progress == "complete":
         endtimefile = open('%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))

@@ -25,7 +25,7 @@ from sgmllib import SGMLParser
 def apbsOpalExec(logTime, form, apbsOptions):
     
     sys.path.append(os.path.dirname(HAVE_APBS))
-    from ApbsClient import execApbs, initRemoteVars
+    from ApbsClient import execApbs, initRemoteVars, enoughMemory
 
     #style = "%spdb2pqr.css" # HARDCODED
 
@@ -72,6 +72,11 @@ def apbsOpalExec(logTime, form, apbsOptions):
         vars={'service_url' : APBS_OPAL_URL}
     else:
         vars = None
+
+    # Check for enough memory
+    if(not enoughMemory(argv[-1])):
+        return 'notenoughmem'
+
     appServicePortArray = execApbs(vars=vars, argv=argv)
 
     # if the version number doesn't match, execApbs returns False
@@ -1572,14 +1577,14 @@ def convertOpalToLocal(jobid,pdb2pqrOpalJobID):
             urllib.urlretrieve(file._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobid, fileName)) # HARDCODED
 
 def redirector(logTime):
-
-    if str(logTime) != "False":
+    if (str(logTime) != "False") and (str(logTime) != "notenoughmem"):
         starttimefile = open('%s%s%s/apbs_start_time' % (INSTALLDIR, TMPDIR, logTime), 'w')
         starttimefile.write(str(time.time()))
         starttimefile.close()
 
     string = ""
     string+='<html> <head>'
+    # status is passed to querystatus.cgi
     string+='<meta http-equiv=\"refresh\" content=\"0;url=querystatus.cgi?jobid=%s&calctype=apbs\"/></head></html>' % str(logTime)
     return string
 
@@ -1672,10 +1677,15 @@ def mainInput() :
             if(str(apbsOpalJobID) == 'False'):
                 print redirector(False)
 
+            # Check if not enough memory
+            elif(str(apbsOpalJobID) == 'notenoughmem'):
+                print redirector('notenoughmem')
+            else:
+                print redirector(logTime)
+
             apbsOpalJobIDFile = open('%s%s%s/apbs_opal_job_id' % (INSTALLDIR, TMPDIR, logTime),'w')
             apbsOpalJobIDFile.write(apbsOpalJobID)
             apbsOpalJobIDFile.close()
-            print redirector(logTime)
         else:
             apbsExec(logTime, form, apbsOptions)
 

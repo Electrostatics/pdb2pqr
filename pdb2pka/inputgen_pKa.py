@@ -126,7 +126,7 @@ class inputGen:
             self.finedim=[self.coarsedim[0]/1.5,self.coarsedim[1]/1.5,self.coarsedim[2]/1.5]
         elif type=='intene':
             self.set_method('mg-auto')
-            self.setfineCenter(self.coarsecent)
+            #self.setfineCenter(self.coarsecent)
             #
             # Set the grid to be a little bigger than the protein
             #
@@ -207,11 +207,87 @@ class inputGen:
     # ------
     #
 
+    def getText_sub_focus(self):
+        """
+            Get the text associated with the inputgen object
+
+            Returns
+                text:  The input file (string)
+        """
+        import math
+        grids_per_A = 2.0
+        dimension = 65
+        scale = grids_per_A/((dimension-1.0)/(2.0*max(self.coarsedim)/3.0))
+        if scale <= 1.0:
+            depth = 1
+        else:
+            depth = int(math.log(scale)/math.log(2.0)) + 3
+        
+        grid_dim = float(math.pow(2,depth-1)/grids_per_A)
+        
+        text  = "read\n"
+        text += "    mol pqr %s\n" % self.pqrname
+        text += "end\n"
+        text += "elec\n"
+        text += "    mg-manual\n"
+        text += "    dime %i %i %i\n" % (dimension, dimension, dimension)
+        text += "    grid %.2f %.2f %.2f\n" % (grid_dim, grid_dim, grid_dim)
+        text += "    gcent %.3f %.3f %.3f\n" % (self.finecent[0],self.finecent[1],self.finecent[2])
+        text += "    mol 1\n"                            
+        text += "    lpbe\n"                             
+        text += "    bcfl sdh\n"                           
+        text += "    ion charge 1 conc 0.150 radius 2.0\n"            
+        text += "    ion charge -1 conc 0.150 radius 2.0\n"           
+        text += "    pdie %5.2f\n"  %self.pdie                
+        text += "    sdie %5.2f\n" %self.sdie
+        text += "    srfm mol\n"
+        text += "    chgm spl0\n"
+        text += "    srad 1.4\n"
+        text += "    swin 0.3\n" 
+        text += "    sdens 10.0\n"
+        text += "    temp 298.15\n"     
+        text += "    calcenergy total\n"
+        text += "    calcforce no\n"
+        text += "end\n"
+        
+        for i in range(1, depth):
+            text += "elec\n"
+            text += "    mg-manual\n"
+            text += "    dime %i %i %i\n" % (dimension, dimension, dimension)
+            text += "    grid %.2f %.2f %.2f\n" % (grid_dim, grid_dim, grid_dim)
+            text += "    gcent %.3f %.3f %.3f\n" % (self.finecent[0],self.finecent[1],self.finecent[2])
+            text += "    mol 1\n"                            
+            text += "    lpbe\n"
+            text += "    bcfl focus\n"                           
+            text += "    ion charge 1 conc 0.150 radius 2.0\n"            
+            text += "    ion charge -1 conc 0.150 radius 2.0\n"           
+            text += "    pdie %5.2f\n"  %self.pdie                
+            text += "    sdie %5.2f\n" %self.sdie
+            text += "    srfm mol\n"
+            text += "    chgm spl0\n"
+            text += "    srad 1.4\n"
+            text += "    swin 0.3\n" 
+            text += "    sdens 10.0\n"
+            text += "    temp 298.15\n"     
+            text += "    calcenergy total\n"
+            text += "    calcforce no\n"
+            text += "end\n"
+        return text
+
+    #
+    # ------
+    #
+
     def getText(self):
         #
         # Energy statements
         #
-        text=self.getText_sub()
+        if (self.maps == 1) or (self.maps ==2):
+            text=self.getText_sub()
+            if self.type=='intene':
+                self.setfineCenter(self.coarsecent)
+        else:
+            text=self.getText_sub_focus()
         if self.type=='background' or self.type=='intene':
             text += "\nprint energy 1 end\n"
             text += "\nquit\n"

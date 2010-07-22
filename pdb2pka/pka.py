@@ -393,6 +393,11 @@ class pKaRoutines:
             # Get the atomnames
             #
             atomnames = self.getAtomsForPotential(pKa,titration)
+            atomlist=[]
+            for atomname in atomnames:
+                atomlist.append(residue.getAtom(atomname))
+            center=self.get_atoms_center(atomlist)
+            self.apbs_setup.setfineCenter(center)
             #
             # Get all states
             #
@@ -1200,10 +1205,10 @@ class pKaRoutines:
                     #
                     # For small proteins we set the center to the center of the molecule
                     #
-                    if extent[0]<20.0 or extent[1]<20.0 or extent[2]<20.0:
-                        self.apbs_setup.setfineCenter(all_center)
-                    else:
-                        self.apbs_setup.setfineCenter(center)
+                    #if extent[0]<20.0 or extent[1]<20.0 or extent[2]<20.0:
+                    #    self.apbs_setup.setfineCenter(all_center)
+                    #else:
+                    self.apbs_setup.setfineCenter(center)
                     self.apbs_setup.set_type('background')
                     #
                     # Run APBS
@@ -1556,10 +1561,10 @@ class pKaRoutines:
                         #
                         # For small proteins we set the center to the center of the molecule
                         #
-                        if extent[0]<20.0 or extent[1]<20.0 or extent[2]<20.0:
-                            self.apbs_setup.setfineCenter(all_center)
-                        else:
-                            self.apbs_setup.setfineCenter(center)
+                        #if extent[0]<20.0 or extent[1]<20.0 or extent[2]<20.0:
+                        #    self.apbs_setup.setfineCenter(all_center)
+                        #else:
+                        self.apbs_setup.setfineCenter(center)
                         self.apbs_setup.set_type('background')
                         #
                         # Run APBS

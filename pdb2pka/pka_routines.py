@@ -509,6 +509,7 @@ class pKaRoutines:
                 # Get all states
                 #
                 possiblestates = titration.allstates
+                atomnames=self.getAtomsForPotential(pKa,titration)
                 #
                 # Calculate the interaction energy with a charged state. If that energy is not large, then
                 # assume that all other energies for this titgroup are zero

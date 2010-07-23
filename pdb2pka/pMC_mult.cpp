@@ -240,25 +240,7 @@ vector<float> MC::calc_charge(float pH) {
   //
   double current_energy=get_energy(pH,current_state);
   //
-  // Count the number of charged and uncharged states
-  //
-  vector <int> charged_states;
-  vector <int> uncharged_states;
-  for (int group=0;group<_groups;group++) {
-    int cha=0;
-    int uncha=0;
-    for (int state=0;state<_num_states[group];state++) {
-      if (_charged_state[group][state]) {
-	cha++;
-      } else {
-	uncha++;
-      }
-    }
-    charged_states.push_back(cha);
-    uncharged_states.push_back(uncha);
-  }
   // Need to incorporate direct switching between neutral states.. no tie now
-  //
   //
   // Start the MC loop
   //
@@ -281,8 +263,6 @@ vector<float> MC::calc_charge(float pH) {
     //
     // Change to a random state
     //
-    // Current charge state
-    int cur_charge_state=_charged_state[rand_group][current_state[rand_group]];
     int rand_group_state=static_cast<int>(rand()%_num_states[rand_group]);
     // 
     // Stay in while loop until we get a different state

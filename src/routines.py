@@ -893,6 +893,92 @@ class Routines:
                 else:
                     atom.refdistance = len(shortestPath(map, atom, caatom)) - 1
         
+    def getbumpscore(self,residue):
+        """Get an bump score for the current structure"""
+        
+        # Do some setup
+
+        self.cells = Cells(CELL_SIZE)
+        self.cells.assignCells(self.protein)
+
+        self.calculateDihedralAngles()
+        self.setDonorsAndAcceptors()
+        self.updateInternalBonds()
+        self.setReferenceDistance()
+        bumpscore=0.0
+        #for residue in self.protein.getResidues():
+        if not isinstance(residue, Amino): return 0.0
+        # Initialize variables
+        
+        conflictnames = []
+        
+        for atom in residue.getAtoms():
+            atomname = atom.name
+            #if not atom.added: continue
+            if atomname[0] != "H": continue
+            #if atom.optimizeable: continue
+            #print atomname,atom.optimizeable,atom.added
+            bumpscore=bumpscore+self.getbumpscore_atom(atom)
+        print
+        print '========BUMPSCORE: %5.1f==============' %bumpscore
+        print
+        return bumpscore
+
+
+    def getbumpscore_atom(self, atom):
+        """
+            Find nearby atoms for conflict-checking.  Uses
+            neighboring cells to compare atoms rather than an all
+            versus all O(n^2) algorithm, which saves a great deal
+            of time.  There are several instances where we ignore
+            potential conflicts; these include donor/acceptor pairs,
+            atoms in the same residue, and bonded CYS bridges.
+
+            Parameters
+                atom:  Find nearby atoms to this atom (Atom)
+            Returns
+                bumpscore: a bump score sum((dist-cutoff)**20 for all near atoms
+
+            Jens rewrote this function from findNearbyAtoms to
+            be usable for detecting bumps for optimzable hydrogens
+        """
+        # Initialize some variables
+
+        nearatoms = {}
+        residue = atom.residue
+        cutoff = BUMP_DIST
+        if atom.isHydrogen(): cutoff = 0.8
+        #print 'H bump distance',BUMP_HDIST
+        #stop
+        # Get atoms from nearby cells
+        
+        closeatoms = self.cells.getNearCells(atom)
+
+        # Loop through and see if any are within the cutoff
+
+        bumpscore=0.0
+        for closeatom in closeatoms:
+            closeresidue = closeatom.residue
+            if closeresidue == residue: continue
+            if not isinstance(closeresidue, Amino): continue
+            if isinstance(residue, CYS):
+                if residue.SSbondedpartner == closeatom: continue
+                    
+            # Also ignore if this is a donor/acceptor pair
+                
+            #if atom.isHydrogen() and len(atom.bonds) != 0 and atom.bonds[0].hdonor \
+            #   and closeatom.hacceptor: continue
+            #if closeatom.isHydrogen() and len(closeatom.bonds) != 0 and closeatom.bonds[0].hdonor \
+            #       and atom.hacceptor:
+            #    continue
+
+            dist = distance(atom.getCoords(), closeatom.getCoords())
+            if dist < cutoff:
+                bumpscore=bumpscore+1000.0
+                #nearatoms[closeatom] = (dist-cutoff)**2
+        return bumpscore
+
+
     def debumpProtein(self):
         """
             Make sure that none of the added atoms were rebuilt

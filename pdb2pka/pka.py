@@ -172,6 +172,11 @@ def startpKa():
         help='<st.dev [A] of Gaussian smooting of 3D maps at the boundary, bandthwith=3 st.dev>',
         )
     #
+    # Cut off energy for calculating non-charged-charged interaction energies
+    #
+    parser.add_option('--pairene',dest='pairene',type='float',default=1.0,
+                      help='Cutoff energy in kT for calculating non charged-charged interaction energies. Default: %default')
+    #
     # Options for doing partial calculations
     #
     parser.add_option('--res_energy',
@@ -639,7 +644,9 @@ if __name__ == "__main__":
         #
         (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
         import pka_routines
-        mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd)
+        mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd,
+                                                 pdbfile_name,
+                                                 options=options)
         #
         # Debugging
         #

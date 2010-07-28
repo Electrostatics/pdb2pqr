@@ -919,9 +919,6 @@ class Routines:
             #if atom.optimizeable: continue
             #print atomname,atom.optimizeable,atom.added
             bumpscore=bumpscore+self.getbumpscore_atom(atom)
-        print
-        print '========BUMPSCORE: %5.1f==============' %bumpscore
-        print
         return bumpscore
 
 
@@ -943,13 +940,12 @@ class Routines:
             be usable for detecting bumps for optimzable hydrogens
         """
         # Initialize some variables
-
         nearatoms = {}
         residue = atom.residue
         cutoff = BUMP_DIST
-        if atom.isHydrogen(): cutoff = 0.8
-        #print 'H bump distance',BUMP_HDIST
-        #stop
+        if atom.isHydrogen(): cutoff = 1.0
+        #print 'Cutoff distance',cutoff
+
         # Get atoms from nearby cells
         
         closeatoms = self.cells.getNearCells(atom)
@@ -959,8 +955,12 @@ class Routines:
         bumpscore=0.0
         for closeatom in closeatoms:
             closeresidue = closeatom.residue
-            if closeresidue == residue: continue
-            if not isinstance(closeresidue, Amino): continue
+            #print 'Closeatomname',atom.name,closeatom.name
+            if closeresidue == residue and closeatom.name not in ['N','CA','C','O']:
+                continue
+            
+            if not isinstance(closeresidue, Amino):
+                continue
             if isinstance(residue, CYS):
                 if residue.SSbondedpartner == closeatom: continue
                     
@@ -976,6 +976,7 @@ class Routines:
             if dist < cutoff:
                 bumpscore=bumpscore+1000.0
                 #nearatoms[closeatom] = (dist-cutoff)**2
+        print 'BUMPSCORE',bumpscore
         return bumpscore
 
 

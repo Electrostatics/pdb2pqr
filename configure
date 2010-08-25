@@ -1284,9 +1284,9 @@ Optional Packages:
   --with-python=PYTHONPATH           Specify Python location.
   --with-url=URL           Set url for the website.  Default http://fully_qualified_domain/pdb2pqr.
   --with-max-atoms=MAX_ATOMS    Sets the maximum number of atoms in a protein for non-Opal job submission.  Default is 10000
-  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.6
+  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr-1.6
   --with-apbs=APBSPATH       Specify APBS executable location.
-  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://sccne.wustl.edu:8082/opal2/services/apbs-1.2.1
+  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://kryptonite.nbcr.net/opal2/services/apbs-1.3
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -3621,7 +3621,7 @@ fi
 
 
 if test "$PDB2PQR_OPAL_URL" = "yes"; then
-  PDB2PQR_OPAL_URL="http://sccne.wustl.edu:8082/opal2/services/pdb2pqr-1.6"
+  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr-1.6"
   HAVE_PDB2PQR_OPAL=1
 fi
 
@@ -3692,7 +3692,7 @@ fi
 
 
 if test "$APBS_OPAL_URL" = "yes"; then
-  APBS_OPAL_URL="http://sccne.wustl.edu:8082/opal2/services/apbs-1.2.1"
+  APBS_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/apbs-1.3"
   DEFAULT_APBS_OPAL_URL="1"
 else
   DEFAULT_APBS_OPAL_URL="0"

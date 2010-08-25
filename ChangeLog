@@ -3,23 +3,6 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 # These are notes for the current version of PDB2PQR
 
 - NEW FEATURES
-  * Added Swanson force field based on Swanson et al paper (http://dx.doi.org/10.1021/ct600216k).
-  * Modified printAtoms() method. Now "TER" is printed at the end of every chain.
-  * Added Google Analytics code to get the statistics on the production server.
-  * Modified APBS calculation page layout to hide parameters by default and display PDB ID
-  * Added "make test-webserver", which tests a long list of PDBs (246 PDBs) on the production PDB2PQR web server.
-  * Removed nlev from inputgen.py and inputgen_pKa.py as nlev keyword is now deprecated in APBS.
-  * Added PARSE parameters for RNA, data from: Tang C. L., Alexov E, Pyle A. M., Honig B. Calculation of pKas in RNA: On the Structural Origins and Functional Roles of Protonated Nucleotides. Journal of Molecular Biology 366 (5) 1475-1496, 2007.
-
+ * Switched Opal service urls from sccne.wustl.edu to NBCR.
 
 - BUG FIXES
-  * Fixed a minor bug: when starting pka.py from pdb2pka directory using command like "python pka.py [options] inputfile", we need to make sure scriptpath does not end with "/".
-  * Fixed a bug which caused "coercing to Unicode: need string or buffer, instance found" when submitting PDB2PQR jobs with user-defined force fields on Opal based web server. 
-  * Fixed a bug in main_cgi.py, now Opal-based PDB2PQR jobs should also be logged in usage.txt file.
-  * Updated src/utilities.py with a bug fix provided by Greg Cipriano, which prevents infinite loops in analyzing connected atoms in certain cases.
-  * Fixed a bug related to neutraln and/or neutralc selections on the web server.
-  * Fixed a special case with --ffout and 1AIK, where the N-terminus is acetylated.
-  * Fixed a bug in psize.py per Michael Lerner's suggestion. The old version of psize.py gives wrong cglen and fglen results in special cases (e.g., all y coordinates are negative values).
-  * Fixed a bug in main_cgi.py, eliminated input/output file name confusions whether a PDB ID or a pdb file is provided on the web server.
-  * Fixed a bug which causes run time error on the web server when user-defined force field and names files are provided.
-  * Fixed a bug in apbs_cgi.py: pdb file names submitted by users are not always 4 characters long.

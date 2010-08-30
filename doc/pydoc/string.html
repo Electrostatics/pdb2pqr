@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>string</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/string.py">/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/string.py</a><br><a href="http://www.python.org/doc/current/lib/module-string.html">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/string.py">/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/string.py</a><br><a href="http://docs.python.org/library/string">Module Docs</a></font></td></tr></table>
     <p><tt>A&nbsp;collection&nbsp;of&nbsp;string&nbsp;operations&nbsp;(most&nbsp;are&nbsp;no&nbsp;longer&nbsp;used).<br>
 &nbsp;<br>
 Warning:&nbsp;most&nbsp;of&nbsp;the&nbsp;code&nbsp;you&nbsp;see&nbsp;here&nbsp;isn't&nbsp;normally&nbsp;used&nbsp;nowadays.<br>
@@ -31,7 +31,7 @@ printable&nbsp;--&nbsp;a&nbsp;string&nbsp;containing&nbsp;all&nbsp;characters&nb
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="re.html">re</a><br>
@@ -46,11 +46,54 @@ printable&nbsp;--&nbsp;a&nbsp;string&nbsp;containing&nbsp;all&nbsp;characters&nb
 <dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="string.html#Template">Template</a>
+<dt><font face="helvetica, arial"><a href="string.html#Formatter">Formatter</a>
+</font></dt><dt><font face="helvetica, arial"><a href="string.html#Template">Template</a>
 </font></dt></dl>
 </dd>
 </dl>
  <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Formatter">class <strong>Formatter</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Formatter-check_unused_args"><strong>check_unused_args</strong></a>(self, used_args, args, kwargs)</dt></dl>
+
+<dl><dt><a name="Formatter-convert_field"><strong>convert_field</strong></a>(self, value, conversion)</dt></dl>
+
+<dl><dt><a name="Formatter-format"><strong>format</strong></a>(self, format_string, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="Formatter-format_field"><strong>format_field</strong></a>(self, value, format_spec)</dt></dl>
+
+<dl><dt><a name="Formatter-get_field"><strong>get_field</strong></a>(self, field_name, args, kwargs)</dt><dd><tt>#&nbsp;given&nbsp;a&nbsp;field_name,&nbsp;find&nbsp;the&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;it&nbsp;references.<br>
+#&nbsp;&nbsp;field_name:&nbsp;&nbsp;&nbsp;the&nbsp;field&nbsp;being&nbsp;looked&nbsp;up,&nbsp;e.g.&nbsp;"0.name"<br>
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;"lookup[3]"<br>
+#&nbsp;&nbsp;used_args:&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;set&nbsp;of&nbsp;which&nbsp;args&nbsp;have&nbsp;been&nbsp;used<br>
+#&nbsp;&nbsp;args,&nbsp;kwargs:&nbsp;as&nbsp;passed&nbsp;in&nbsp;to&nbsp;vformat</tt></dd></dl>
+
+<dl><dt><a name="Formatter-get_value"><strong>get_value</strong></a>(self, key, args, kwargs)</dt></dl>
+
+<dl><dt><a name="Formatter-parse"><strong>parse</strong></a>(self, format_string)</dt><dd><tt>#&nbsp;returns&nbsp;an&nbsp;iterable&nbsp;that&nbsp;contains&nbsp;tuples&nbsp;of&nbsp;the&nbsp;form:<br>
+#&nbsp;(literal_text,&nbsp;field_name,&nbsp;format_spec,&nbsp;conversion)<br>
+#&nbsp;literal_text&nbsp;can&nbsp;be&nbsp;zero&nbsp;length<br>
+#&nbsp;field_name&nbsp;can&nbsp;be&nbsp;None,&nbsp;in&nbsp;which&nbsp;case&nbsp;there's&nbsp;no<br>
+#&nbsp;&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;to&nbsp;format&nbsp;and&nbsp;output<br>
+#&nbsp;if&nbsp;field_name&nbsp;is&nbsp;not&nbsp;None,&nbsp;it&nbsp;is&nbsp;looked&nbsp;up,&nbsp;formatted<br>
+#&nbsp;&nbsp;with&nbsp;format_spec&nbsp;and&nbsp;conversion&nbsp;and&nbsp;then&nbsp;used</tt></dd></dl>
+
+<dl><dt><a name="Formatter-vformat"><strong>vformat</strong></a>(self, format_string, args, kwargs)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -82,7 +125,7 @@ Data and other attributes defined here:<br>
 
 <dl><dt><strong>idpattern</strong> = '[_a-z][_a-z0-9]*'</dl>
 
-<dl><dt><strong>pattern</strong> = &lt;_sre.SRE_Pattern object at 0x3037f0&gt;</dl>
+<dl><dt><strong>pattern</strong> = &lt;_sre.SRE_Pattern object at 0x1002637a0&gt;</dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.routines</strong></big></big> (1 August 2008)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/yhuang/pdb2pqr/trunk/pdb2pqr/src/routines.py">/Users/yhuang/pdb2pqr/trunk/pdb2pqr/src/routines.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/routines.py">/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/routines.py</a></font></td></tr></table>
     <p><tt><a href="#Routines">Routines</a>&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;protein&nbsp;object&nbsp;used&nbsp;in&nbsp;PDB2PQR&nbsp;and&nbsp;methods<br>
@@ -54,7 +54,7 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy.html">copy</a><br>
@@ -254,6 +254,23 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;pivot:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;pivot&nbsp;atomname</tt></dd></dl>
 
 <dl><dt><a name="Routines-getWarnings"><strong>getWarnings</strong></a>(self)</dt><dd><tt>Get&nbsp;all&nbsp;warnings&nbsp;generated&nbsp;from&nbsp;routines</tt></dd></dl>
+
+<dl><dt><a name="Routines-getbumpscore"><strong>getbumpscore</strong></a>(self, residue)</dt><dd><tt>Get&nbsp;an&nbsp;bump&nbsp;score&nbsp;for&nbsp;the&nbsp;current&nbsp;structure</tt></dd></dl>
+
+<dl><dt><a name="Routines-getbumpscore_atom"><strong>getbumpscore_atom</strong></a>(self, atom)</dt><dd><tt>Find&nbsp;nearby&nbsp;atoms&nbsp;for&nbsp;conflict-checking.&nbsp;&nbsp;Uses<br>
+neighboring&nbsp;cells&nbsp;to&nbsp;compare&nbsp;atoms&nbsp;rather&nbsp;than&nbsp;an&nbsp;all<br>
+versus&nbsp;all&nbsp;O(n^2)&nbsp;algorithm,&nbsp;which&nbsp;saves&nbsp;a&nbsp;great&nbsp;deal<br>
+of&nbsp;time.&nbsp;&nbsp;There&nbsp;are&nbsp;several&nbsp;instances&nbsp;where&nbsp;we&nbsp;ignore<br>
+potential&nbsp;conflicts;&nbsp;these&nbsp;include&nbsp;donor/acceptor&nbsp;pairs,<br>
+atoms&nbsp;in&nbsp;the&nbsp;same&nbsp;residue,&nbsp;and&nbsp;bonded&nbsp;CYS&nbsp;bridges.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atom:&nbsp;&nbsp;Find&nbsp;nearby&nbsp;atoms&nbsp;to&nbsp;this&nbsp;atom&nbsp;(Atom)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bumpscore:&nbsp;a&nbsp;bump&nbsp;score&nbsp;sum((dist-cutoff)**20&nbsp;for&nbsp;all&nbsp;near&nbsp;atoms<br>
+&nbsp;<br>
+Jens&nbsp;rewrote&nbsp;this&nbsp;function&nbsp;from&nbsp;findNearbyAtoms&nbsp;to<br>
+be&nbsp;usable&nbsp;for&nbsp;detecting&nbsp;bumps&nbsp;for&nbsp;optimzable&nbsp;hydrogens</tt></dd></dl>
 
 <dl><dt><a name="Routines-pickDihedralAngle"><strong>pickDihedralAngle</strong></a>(self, residue, conflictnames, oldnum<font color="#909090">=None</font>)</dt><dd><tt>Choose&nbsp;an&nbsp;angle&nbsp;number&nbsp;to&nbsp;use&nbsp;in&nbsp;debumping<br>
 &nbsp;<br>

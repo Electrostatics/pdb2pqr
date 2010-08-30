@@ -8,13 +8,13 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>os</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/os.py">/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/os.py</a><br><a href="http://www.python.org/doc/current/lib/module-os.html">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/os.py">/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/os.py</a><br><a href="http://docs.python.org/library/os">Module Docs</a></font></td></tr></table>
     <p><tt>OS&nbsp;routines&nbsp;for&nbsp;Mac,&nbsp;NT,&nbsp;or&nbsp;Posix&nbsp;depending&nbsp;on&nbsp;what&nbsp;system&nbsp;we're&nbsp;on.<br>
 &nbsp;<br>
 This&nbsp;exports:<br>
-&nbsp;&nbsp;-&nbsp;all&nbsp;functions&nbsp;from&nbsp;posix,&nbsp;nt,&nbsp;os2,&nbsp;mac,&nbsp;or&nbsp;ce,&nbsp;e.g.&nbsp;unlink,&nbsp;stat,&nbsp;etc.<br>
-&nbsp;&nbsp;-&nbsp;os.path&nbsp;is&nbsp;one&nbsp;of&nbsp;the&nbsp;modules&nbsp;posixpath,&nbsp;ntpath,&nbsp;or&nbsp;macpath<br>
-&nbsp;&nbsp;-&nbsp;os.name&nbsp;is&nbsp;'posix',&nbsp;'nt',&nbsp;'os2',&nbsp;'mac',&nbsp;'ce'&nbsp;or&nbsp;'riscos'<br>
+&nbsp;&nbsp;-&nbsp;all&nbsp;functions&nbsp;from&nbsp;posix,&nbsp;nt,&nbsp;os2,&nbsp;or&nbsp;ce,&nbsp;e.g.&nbsp;unlink,&nbsp;stat,&nbsp;etc.<br>
+&nbsp;&nbsp;-&nbsp;os.path&nbsp;is&nbsp;one&nbsp;of&nbsp;the&nbsp;modules&nbsp;posixpath,&nbsp;or&nbsp;ntpath<br>
+&nbsp;&nbsp;-&nbsp;os.name&nbsp;is&nbsp;'posix',&nbsp;'nt',&nbsp;'os2',&nbsp;'ce'&nbsp;or&nbsp;'riscos'<br>
 &nbsp;&nbsp;-&nbsp;os.curdir&nbsp;is&nbsp;a&nbsp;string&nbsp;representing&nbsp;the&nbsp;current&nbsp;directory&nbsp;('.'&nbsp;or&nbsp;':')<br>
 &nbsp;&nbsp;-&nbsp;os.pardir&nbsp;is&nbsp;a&nbsp;string&nbsp;representing&nbsp;the&nbsp;parent&nbsp;directory&nbsp;('..'&nbsp;or&nbsp;'::')<br>
 &nbsp;&nbsp;-&nbsp;os.sep&nbsp;is&nbsp;the&nbsp;(or&nbsp;a&nbsp;most&nbsp;common)&nbsp;pathname&nbsp;separator&nbsp;('/'&nbsp;or&nbsp;':'&nbsp;or&nbsp;'\\')<br>
@@ -34,14 +34,15 @@ and&nbsp;opendir),&nbsp;and&nbsp;leave&nbsp;all&nbsp;pathname&nbsp;manipulation&
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="UserDict.html">UserDict</a><br>
-</td><td width="25%" valign=top><a href="copy_reg.html">copy_reg</a><br>
-</td><td width="25%" valign=top><a href="posixpath.html">posixpath</a><br>
+<a href="copy_reg.html">copy_reg</a><br>
+</td><td width="25%" valign=top><a href="errno.html">errno</a><br>
+<a href="posixpath.html">posixpath</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -86,7 +87,7 @@ Methods defined here:<br>
 
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x1ea9a0&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x10011afc0&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <hr>
 Methods inherited from <a href="exceptions.html#EnvironmentError">EnvironmentError</a>:<br>
@@ -101,9 +102,6 @@ Data descriptors inherited from <a href="exceptions.html#EnvironmentError">Envir
 </dl>
 <dl><dt><strong>filename</strong></dt>
 <dd><tt>exception&nbsp;filename</tt></dd>
-</dl>
-<dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
 </dl>
 <dl><dt><strong>strerror</strong></dt>
 <dd><tt>exception&nbsp;strerror</tt></dd>
@@ -126,11 +124,15 @@ Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd
 
 <dl><dt><a name="OSError-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
 
+<dl><dt><a name="OSError-__unicode__"><strong>__unicode__</strong></a>(...)</dt></dl>
+
 <hr>
 Data descriptors inherited from <a href="exceptions.html#BaseException">BaseException</a>:<br>
 <dl><dt><strong>__dict__</strong></dt>
 </dl>
 <dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
 </dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -190,6 +192,9 @@ Data descriptors defined here:<br>
 <dl><dt><strong>st_atime</strong></dt>
 <dd><tt>time&nbsp;of&nbsp;last&nbsp;access</tt></dd>
 </dl>
+<dl><dt><strong>st_birthtime</strong></dt>
+<dd><tt>time&nbsp;of&nbsp;creation</tt></dd>
+</dl>
 <dl><dt><strong>st_blksize</strong></dt>
 <dd><tt>blocksize&nbsp;for&nbsp;filesystem&nbsp;I/O</tt></dd>
 </dl>
@@ -234,9 +239,9 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x212000&gt;<dd><tt>T.<a href="#stat_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x1001579c0&gt;<dd><tt>T.<a href="#stat_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
-<dl><dt><strong>n_fields</strong> = 18</dl>
+<dl><dt><strong>n_fields</strong> = 19</dl>
 
 <dl><dt><strong>n_sequence_fields</strong> = 10</dl>
 
@@ -316,7 +321,7 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x2120c0&gt;<dd><tt>T.<a href="#statvfs_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x100157b60&gt;<dd><tt>T.<a href="#statvfs_result-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <dl><dt><strong>n_fields</strong> = 10</dl>
 
@@ -373,6 +378,9 @@ existence,&nbsp;or&nbsp;the&nbsp;inclusive-OR&nbsp;of&nbsp;R_OK,&nbsp;W_OK,&nbsp
  <dl><dt><a name="-chdir"><strong>chdir</strong></a>(...)</dt><dd><tt><a href="#-chdir">chdir</a>(path)<br>
 &nbsp;<br>
 Change&nbsp;the&nbsp;current&nbsp;working&nbsp;directory&nbsp;to&nbsp;the&nbsp;specified&nbsp;path.</tt></dd></dl>
+ <dl><dt><a name="-chflags"><strong>chflags</strong></a>(...)</dt><dd><tt><a href="#-chflags">chflags</a>(path,&nbsp;flags)<br>
+&nbsp;<br>
+Set&nbsp;file&nbsp;flags.</tt></dd></dl>
  <dl><dt><a name="-chmod"><strong>chmod</strong></a>(...)</dt><dd><tt><a href="#-chmod">chmod</a>(path,&nbsp;mode)<br>
 &nbsp;<br>
 Change&nbsp;the&nbsp;access&nbsp;permissions&nbsp;of&nbsp;a&nbsp;file.</tt></dd></dl>
@@ -385,6 +393,9 @@ Change&nbsp;root&nbsp;directory&nbsp;to&nbsp;path.</tt></dd></dl>
  <dl><dt><a name="-close"><strong>close</strong></a>(...)</dt><dd><tt><a href="#-close">close</a>(fd)<br>
 &nbsp;<br>
 Close&nbsp;a&nbsp;file&nbsp;descriptor&nbsp;(for&nbsp;low&nbsp;level&nbsp;IO).</tt></dd></dl>
+ <dl><dt><a name="-closerange"><strong>closerange</strong></a>(...)</dt><dd><tt><a href="#-closerange">closerange</a>(fd_low,&nbsp;fd_high)<br>
+&nbsp;<br>
+Closes&nbsp;all&nbsp;file&nbsp;descriptors&nbsp;in&nbsp;[fd_low,&nbsp;fd_high),&nbsp;ignoring&nbsp;errors.</tt></dd></dl>
  <dl><dt><a name="-confstr"><strong>confstr</strong></a>(...)</dt><dd><tt><a href="#-confstr">confstr</a>(name)&nbsp;-&gt;&nbsp;string<br>
 &nbsp;<br>
 Return&nbsp;a&nbsp;string-valued&nbsp;system&nbsp;configuration&nbsp;variable.</tt></dd></dl>
@@ -442,6 +453,14 @@ args&nbsp;may&nbsp;be&nbsp;a&nbsp;list&nbsp;or&nbsp;tuple&nbsp;of&nbsp;strings.<
 &nbsp;<br>
 Change&nbsp;to&nbsp;the&nbsp;directory&nbsp;of&nbsp;the&nbsp;given&nbsp;file&nbsp;descriptor.&nbsp;&nbsp;fildes&nbsp;must&nbsp;be<br>
 opened&nbsp;on&nbsp;a&nbsp;directory,&nbsp;not&nbsp;a&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-fchmod"><strong>fchmod</strong></a>(...)</dt><dd><tt><a href="#-fchmod">fchmod</a>(fd,&nbsp;mode)<br>
+&nbsp;<br>
+Change&nbsp;the&nbsp;access&nbsp;permissions&nbsp;of&nbsp;the&nbsp;file&nbsp;given&nbsp;by&nbsp;file<br>
+descriptor&nbsp;fd.</tt></dd></dl>
+ <dl><dt><a name="-fchown"><strong>fchown</strong></a>(...)</dt><dd><tt><a href="#-fchown">fchown</a>(fd,&nbsp;uid,&nbsp;gid)<br>
+&nbsp;<br>
+Change&nbsp;the&nbsp;owner&nbsp;and&nbsp;group&nbsp;id&nbsp;of&nbsp;the&nbsp;file&nbsp;given&nbsp;by&nbsp;file&nbsp;descriptor<br>
+fd&nbsp;to&nbsp;the&nbsp;numeric&nbsp;uid&nbsp;and&nbsp;gid.</tt></dd></dl>
  <dl><dt><a name="-fdopen"><strong>fdopen</strong></a>(...)</dt><dd><tt><a href="#-fdopen">fdopen</a>(fd&nbsp;[,&nbsp;mode='r'&nbsp;[,&nbsp;bufsize]])&nbsp;-&gt;&nbsp;file_object<br>
 &nbsp;<br>
 Return&nbsp;an&nbsp;open&nbsp;file&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;connected&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl>
@@ -527,6 +546,14 @@ Kill&nbsp;a&nbsp;process&nbsp;with&nbsp;a&nbsp;signal.</tt></dd></dl>
  <dl><dt><a name="-killpg"><strong>killpg</strong></a>(...)</dt><dd><tt><a href="#-killpg">killpg</a>(pgid,&nbsp;sig)<br>
 &nbsp;<br>
 Kill&nbsp;a&nbsp;process&nbsp;group&nbsp;with&nbsp;a&nbsp;signal.</tt></dd></dl>
+ <dl><dt><a name="-lchflags"><strong>lchflags</strong></a>(...)</dt><dd><tt><a href="#-lchflags">lchflags</a>(path,&nbsp;flags)<br>
+&nbsp;<br>
+Set&nbsp;file&nbsp;flags.<br>
+This&nbsp;function&nbsp;will&nbsp;not&nbsp;follow&nbsp;symbolic&nbsp;links.</tt></dd></dl>
+ <dl><dt><a name="-lchmod"><strong>lchmod</strong></a>(...)</dt><dd><tt><a href="#-lchmod">lchmod</a>(path,&nbsp;mode)<br>
+&nbsp;<br>
+Change&nbsp;the&nbsp;access&nbsp;permissions&nbsp;of&nbsp;a&nbsp;file.&nbsp;If&nbsp;path&nbsp;is&nbsp;a&nbsp;symlink,&nbsp;this<br>
+affects&nbsp;the&nbsp;link&nbsp;itself&nbsp;rather&nbsp;than&nbsp;the&nbsp;target.</tt></dd></dl>
  <dl><dt><a name="-lchown"><strong>lchown</strong></a>(...)</dt><dd><tt><a href="#-lchown">lchown</a>(path,&nbsp;uid,&nbsp;gid)<br>
 &nbsp;<br>
 Change&nbsp;the&nbsp;owner&nbsp;and&nbsp;group&nbsp;id&nbsp;of&nbsp;path&nbsp;to&nbsp;the&nbsp;numeric&nbsp;uid&nbsp;and&nbsp;gid.<br>
@@ -809,7 +836,7 @@ Wait&nbsp;for&nbsp;completion&nbsp;of&nbsp;a&nbsp;given&nbsp;child&nbsp;process.
  <dl><dt><a name="-waitpid"><strong>waitpid</strong></a>(...)</dt><dd><tt><a href="#-waitpid">waitpid</a>(pid,&nbsp;options)&nbsp;-&gt;&nbsp;(pid,&nbsp;status)<br>
 &nbsp;<br>
 Wait&nbsp;for&nbsp;completion&nbsp;of&nbsp;a&nbsp;given&nbsp;child&nbsp;process.</tt></dd></dl>
- <dl><dt><a name="-walk"><strong>walk</strong></a>(top, topdown<font color="#909090">=True</font>, onerror<font color="#909090">=None</font>)</dt><dd><tt>Directory&nbsp;tree&nbsp;generator.<br>
+ <dl><dt><a name="-walk"><strong>walk</strong></a>(top, topdown<font color="#909090">=True</font>, onerror<font color="#909090">=None</font>, followlinks<font color="#909090">=False</font>)</dt><dd><tt>Directory&nbsp;tree&nbsp;generator.<br>
 &nbsp;<br>
 For&nbsp;each&nbsp;directory&nbsp;in&nbsp;the&nbsp;directory&nbsp;tree&nbsp;rooted&nbsp;at&nbsp;top&nbsp;(including&nbsp;top<br>
 itself,&nbsp;but&nbsp;excluding&nbsp;'.'&nbsp;and&nbsp;'..'),&nbsp;yields&nbsp;a&nbsp;3-tuple<br>
@@ -844,6 +871,10 @@ report&nbsp;the&nbsp;<a href="#error">error</a>&nbsp;to&nbsp;continue&nbsp;with&
 to&nbsp;abort&nbsp;the&nbsp;walk.&nbsp;&nbsp;Note&nbsp;that&nbsp;the&nbsp;filename&nbsp;is&nbsp;available&nbsp;as&nbsp;the<br>
 filename&nbsp;attribute&nbsp;of&nbsp;the&nbsp;exception&nbsp;<a href="__builtin__.html#object">object</a>.<br>
 &nbsp;<br>
+By&nbsp;default,&nbsp;os.walk&nbsp;does&nbsp;not&nbsp;follow&nbsp;symbolic&nbsp;links&nbsp;to&nbsp;subdirectories&nbsp;on<br>
+systems&nbsp;that&nbsp;support&nbsp;them.&nbsp;&nbsp;In&nbsp;order&nbsp;to&nbsp;get&nbsp;this&nbsp;functionality,&nbsp;set&nbsp;the<br>
+optional&nbsp;argument&nbsp;'followlinks'&nbsp;to&nbsp;true.<br>
+&nbsp;<br>
 Caution:&nbsp;&nbsp;if&nbsp;you&nbsp;pass&nbsp;a&nbsp;relative&nbsp;pathname&nbsp;for&nbsp;top,&nbsp;don't&nbsp;change&nbsp;the<br>
 current&nbsp;working&nbsp;directory&nbsp;between&nbsp;resumptions&nbsp;of&nbsp;walk.&nbsp;&nbsp;walk&nbsp;never<br>
 changes&nbsp;the&nbsp;current&nbsp;directory,&nbsp;and&nbsp;assumes&nbsp;that&nbsp;the&nbsp;client&nbsp;doesn't<br>
@@ -851,8 +882,9 @@ either.<br>
 &nbsp;<br>
 Example:<br>
 &nbsp;<br>
+import&nbsp;os<br>
 from&nbsp;os.path&nbsp;import&nbsp;join,&nbsp;getsize<br>
-for&nbsp;root,&nbsp;dirs,&nbsp;files&nbsp;in&nbsp;<a href="#-walk">walk</a>('python/Lib/email'):<br>
+for&nbsp;root,&nbsp;dirs,&nbsp;files&nbsp;in&nbsp;os.<a href="#-walk">walk</a>('python/Lib/email'):<br>
 &nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;root,&nbsp;"consumes",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;sum([getsize(join(root,&nbsp;name))&nbsp;for&nbsp;name&nbsp;in&nbsp;files]),<br>
 &nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"bytes&nbsp;in",&nbsp;len(files),&nbsp;"non-directory&nbsp;files"<br>
@@ -887,8 +919,10 @@ Write&nbsp;a&nbsp;string&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl
 <strong>F_OK</strong> = 0<br>
 <strong>NGROUPS_MAX</strong> = 16<br>
 <strong>O_APPEND</strong> = 8<br>
+<strong>O_ASYNC</strong> = 64<br>
 <strong>O_CREAT</strong> = 512<br>
 <strong>O_DIRECTORY</strong> = 1048576<br>
+<strong>O_DSYNC</strong> = 4194304<br>
 <strong>O_EXCL</strong> = 2048<br>
 <strong>O_EXLOCK</strong> = 32<br>
 <strong>O_NDELAY</strong> = 4<br>
@@ -911,13 +945,14 @@ Write&nbsp;a&nbsp;string&nbsp;to&nbsp;a&nbsp;file&nbsp;descriptor.</tt></dd></dl
 <strong>WUNTRACED</strong> = 2<br>
 <strong>W_OK</strong> = 2<br>
 <strong>X_OK</strong> = 1<br>
-<strong>__all__</strong> = ['altsep', 'curdir', 'pardir', 'sep', 'pathsep', 'linesep', 'defpath', 'name', 'path', 'devnull', 'SEEK_SET', 'SEEK_CUR', 'SEEK_END', 'EX_CANTCREAT', 'EX_CONFIG', 'EX_DATAERR', 'EX_IOERR', 'EX_NOHOST', 'EX_NOINPUT', 'EX_NOPERM', ...]<br>
+<strong>__all__</strong> = ['altsep', 'curdir', 'pardir', 'sep', 'extsep', 'pathsep', 'linesep', 'defpath', 'name', 'path', 'devnull', 'SEEK_SET', 'SEEK_CUR', 'SEEK_END', 'EX_CANTCREAT', 'EX_CONFIG', 'EX_DATAERR', 'EX_IOERR', 'EX_NOHOST', 'EX_NOINPUT', ...]<br>
 <strong>altsep</strong> = None<br>
-<strong>confstr_names</strong> = {'CS_PATH': 1, 'CS_XBS5_ILP32_OFF32_CFLAGS': 20, 'CS_XBS5_ILP32_OFF32_LDFLAGS': 21, 'CS_XBS5_ILP32_OFF32_LIBS': 22, 'CS_XBS5_ILP32_OFF32_LINTFLAGS': 23, 'CS_XBS5_ILP32_OFFBIG_CFLAGS': 24, 'CS_XBS5_ILP32_OFFBIG_LDFLAGS': 25, 'CS_XBS5_ILP32_OFFBIG_LIBS': 26, 'CS_XBS5_ILP32_OFFBIG_LINTFLAGS': 27, 'CS_XBS5_LP64_OFF64_CFLAGS': 28, ...}<br>
+<strong>confstr_names</strong> = {'CS_DARWIN_USER_CACHE_DIR': 65538, 'CS_DARWIN_USER_DIR': 65536, 'CS_DARWIN_USER_TEMP_DIR': 65537, 'CS_PATH': 1, 'CS_XBS5_ILP32_OFF32_CFLAGS': 20, 'CS_XBS5_ILP32_OFF32_LDFLAGS': 21, 'CS_XBS5_ILP32_OFF32_LIBS': 22, 'CS_XBS5_ILP32_OFF32_LINTFLAGS': 23, 'CS_XBS5_ILP32_OFFBIG_CFLAGS': 24, 'CS_XBS5_ILP32_OFFBIG_LDFLAGS': 25, ...}<br>
 <strong>curdir</strong> = '.'<br>
 <strong>defpath</strong> = ':/bin:/usr/bin'<br>
 <strong>devnull</strong> = '/dev/null'<br>
-<strong>environ</strong> = {'_': '/usr/bin/pydoc', 'XDG_DATA_HOME': '/Users...sw/etc/sgml/catalog', 'COMMAND_MODE': 'unix2003'}<br>
+<strong>environ</strong> = {'GROUP': 'staff', 'REMOTEHOST': '', 'VERSIONER_...'MACHTYPE': 'x86_64', 'COMMAND_MODE': 'unix2003'}<br>
+<strong>extsep</strong> = '.'<br>
 <strong>linesep</strong> = '<font color="#c040c0">\n</font>'<br>
 <strong>name</strong> = 'posix'<br>
 <strong>pardir</strong> = '..'<br>

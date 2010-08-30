@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>re</strong></big></big> (version 2.2.1)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/re.py">/System/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/re.py</a><br><a href="http://www.python.org/doc/current/lib/module-re.html">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/re.py">/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/re.py</a><br><a href="http://docs.python.org/library/re">Module Docs</a></font></td></tr></table>
     <p><tt>Support&nbsp;for&nbsp;regular&nbsp;expressions&nbsp;(RE).<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;provides&nbsp;regular&nbsp;expression&nbsp;matching&nbsp;operations&nbsp;similar&nbsp;to<br>
@@ -24,7 +24,8 @@ concatenate&nbsp;ordinary&nbsp;characters,&nbsp;so&nbsp;last&nbsp;matches&nbsp;t
 The&nbsp;special&nbsp;characters&nbsp;are:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;any&nbsp;character&nbsp;except&nbsp;a&nbsp;newline.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"^"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;the&nbsp;start&nbsp;of&nbsp;the&nbsp;string.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"$"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"$"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;string&nbsp;or&nbsp;just&nbsp;before&nbsp;the&nbsp;newline&nbsp;at<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;string.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"*"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;0&nbsp;or&nbsp;more&nbsp;(greedy)&nbsp;repetitions&nbsp;of&nbsp;the&nbsp;preceding&nbsp;RE.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Greedy&nbsp;means&nbsp;that&nbsp;it&nbsp;will&nbsp;match&nbsp;as&nbsp;many&nbsp;repetitions&nbsp;as&nbsp;possible.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;1&nbsp;or&nbsp;more&nbsp;(greedy)&nbsp;repetitions&nbsp;of&nbsp;the&nbsp;preceding&nbsp;RE.<br>
@@ -32,7 +33,7 @@ The&nbsp;special&nbsp;characters&nbsp;are:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;*?,+?,??&nbsp;Non-greedy&nbsp;versions&nbsp;of&nbsp;the&nbsp;previous&nbsp;three&nbsp;special&nbsp;characters.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;{m,n}&nbsp;&nbsp;&nbsp;&nbsp;Matches&nbsp;from&nbsp;m&nbsp;to&nbsp;n&nbsp;repetitions&nbsp;of&nbsp;the&nbsp;preceding&nbsp;RE.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;{m,n}?&nbsp;&nbsp;&nbsp;Non-greedy&nbsp;version&nbsp;of&nbsp;the&nbsp;above.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"\\"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Either&nbsp;escapes&nbsp;special&nbsp;characters&nbsp;or&nbsp;signals&nbsp;a&nbsp;special&nbsp;sequence.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"\\"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Either&nbsp;escapes&nbsp;special&nbsp;characters&nbsp;or&nbsp;signals&nbsp;a&nbsp;special&nbsp;sequence.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;[]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Indicates&nbsp;a&nbsp;set&nbsp;of&nbsp;characters.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;"^"&nbsp;as&nbsp;the&nbsp;first&nbsp;character&nbsp;indicates&nbsp;a&nbsp;complementing&nbsp;set.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"|"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A|B,&nbsp;creates&nbsp;an&nbsp;RE&nbsp;that&nbsp;will&nbsp;match&nbsp;either&nbsp;A&nbsp;or&nbsp;B.<br>
@@ -45,6 +46,10 @@ The&nbsp;special&nbsp;characters&nbsp;are:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(?#...)&nbsp;&nbsp;A&nbsp;comment;&nbsp;ignored.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(?=...)&nbsp;&nbsp;Matches&nbsp;if&nbsp;...&nbsp;matches&nbsp;next,&nbsp;but&nbsp;doesn't&nbsp;consume&nbsp;the&nbsp;string.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;(?!...)&nbsp;&nbsp;Matches&nbsp;if&nbsp;...&nbsp;doesn't&nbsp;match&nbsp;next.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(?&lt;=...)&nbsp;Matches&nbsp;if&nbsp;preceded&nbsp;by&nbsp;...&nbsp;(must&nbsp;be&nbsp;fixed&nbsp;length).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(?&lt;!...)&nbsp;Matches&nbsp;if&nbsp;not&nbsp;preceded&nbsp;by&nbsp;...&nbsp;(must&nbsp;be&nbsp;fixed&nbsp;length).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(?(id/name)yes|no)&nbsp;Matches&nbsp;yes&nbsp;pattern&nbsp;if&nbsp;the&nbsp;group&nbsp;with&nbsp;id/name&nbsp;matched,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;(optional)&nbsp;no&nbsp;pattern&nbsp;otherwise.<br>
 &nbsp;<br>
 The&nbsp;special&nbsp;sequences&nbsp;consist&nbsp;of&nbsp;"\\"&nbsp;and&nbsp;a&nbsp;character&nbsp;from&nbsp;the&nbsp;list<br>
 below.&nbsp;&nbsp;If&nbsp;the&nbsp;ordinary&nbsp;character&nbsp;is&nbsp;not&nbsp;on&nbsp;the&nbsp;list,&nbsp;then&nbsp;the<br>
@@ -71,6 +76,7 @@ This&nbsp;module&nbsp;exports&nbsp;the&nbsp;following&nbsp;functions:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;subn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Same&nbsp;as&nbsp;sub,&nbsp;but&nbsp;also&nbsp;return&nbsp;the&nbsp;number&nbsp;of&nbsp;substitutions&nbsp;made.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;split&nbsp;&nbsp;&nbsp;&nbsp;Split&nbsp;a&nbsp;string&nbsp;by&nbsp;the&nbsp;occurrences&nbsp;of&nbsp;a&nbsp;pattern.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;findall&nbsp;&nbsp;Find&nbsp;all&nbsp;occurrences&nbsp;of&nbsp;a&nbsp;pattern&nbsp;in&nbsp;a&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;finditer&nbsp;Return&nbsp;an&nbsp;iterator&nbsp;yielding&nbsp;a&nbsp;match&nbsp;object&nbsp;for&nbsp;each&nbsp;match.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;compile&nbsp;&nbsp;Compile&nbsp;a&nbsp;pattern&nbsp;into&nbsp;a&nbsp;RegexObject.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;purge&nbsp;&nbsp;&nbsp;&nbsp;Clear&nbsp;the&nbsp;regular&nbsp;expression&nbsp;cache.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;escape&nbsp;&nbsp;&nbsp;Backslash&nbsp;all&nbsp;non-alphanumerics&nbsp;in&nbsp;a&nbsp;string.<br>
@@ -78,8 +84,10 @@ This&nbsp;module&nbsp;exports&nbsp;the&nbsp;following&nbsp;functions:<br>
 Some&nbsp;of&nbsp;the&nbsp;functions&nbsp;in&nbsp;this&nbsp;module&nbsp;takes&nbsp;flags&nbsp;as&nbsp;optional&nbsp;parameters:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;I&nbsp;&nbsp;IGNORECASE&nbsp;&nbsp;Perform&nbsp;case-insensitive&nbsp;matching.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;L&nbsp;&nbsp;LOCALE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Make&nbsp;\w,&nbsp;\W,&nbsp;\b,&nbsp;\B,&nbsp;dependent&nbsp;on&nbsp;the&nbsp;current&nbsp;locale.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;MULTILINE&nbsp;&nbsp;&nbsp;"^"&nbsp;matches&nbsp;the&nbsp;beginning&nbsp;of&nbsp;lines&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;string.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"$"&nbsp;matches&nbsp;the&nbsp;end&nbsp;of&nbsp;lines&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;MULTILINE&nbsp;&nbsp;&nbsp;"^"&nbsp;matches&nbsp;the&nbsp;beginning&nbsp;of&nbsp;lines&nbsp;(after&nbsp;a&nbsp;newline)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"$"&nbsp;matches&nbsp;the&nbsp;end&nbsp;of&nbsp;lines&nbsp;(before&nbsp;a&nbsp;newline)&nbsp;as&nbsp;well<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;as&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;string.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;DOTALL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"."&nbsp;matches&nbsp;any&nbsp;character&nbsp;at&nbsp;all,&nbsp;including&nbsp;the&nbsp;newline.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;X&nbsp;&nbsp;VERBOSE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ignore&nbsp;whitespace&nbsp;and&nbsp;comments&nbsp;for&nbsp;nicer&nbsp;looking&nbsp;RE's.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;UNICODE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Make&nbsp;\w,&nbsp;\W,&nbsp;\b,&nbsp;\B,&nbsp;dependent&nbsp;on&nbsp;the&nbsp;Unicode&nbsp;locale.<br>
@@ -89,7 +97,7 @@ This&nbsp;module&nbsp;also&nbsp;defines&nbsp;an&nbsp;exception&nbsp;'<a href="#e
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy_reg.html">copy_reg</a><br>
@@ -135,7 +143,7 @@ Methods inherited from <a href="exceptions.html#Exception">exceptions.Exception<
 
 <hr>
 Data and other attributes inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x1e8a40&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x100119f80&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <hr>
 Methods inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
@@ -159,6 +167,8 @@ Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd
 
 <dl><dt><a name="error-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
 
+<dl><dt><a name="error-__unicode__"><strong>__unicode__</strong></a>(...)</dt></dl>
+
 <hr>
 Data descriptors inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
 <dl><dt><strong>__dict__</strong></dt>
@@ -166,7 +176,6 @@ Data descriptors inherited from <a href="exceptions.html#BaseException">exceptio
 <dl><dt><strong>args</strong></dt>
 </dl>
 <dl><dt><strong>message</strong></dt>
-<dd><tt>exception&nbsp;message</tt></dd>
 </dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

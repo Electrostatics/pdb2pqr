@@ -766,6 +766,11 @@ install:
 	  fi ; \
 	  cp $$c/html/master-index.html $(CWD)/$$dir/html/. ; \
 	  cp $$c/html/server.html $(CWD)/$$dir/html/server.html ; \
+	  if ! test -d $(CWD)/$$dir/jmol ; then \
+	    mkdir $(CWD)/$$dir/jmol ; \
+	  fi ; \
+	  echo "Adding jmol/" ; \
+	  cp $$c/jmol/*.* $(CWD)/$$dir/jmol/. ; \
 	  if ! test -d $(CWD)/$$dir/src ; then \
 	    mkdir $(CWD)/$$dir/src ; \
 	  fi ; \

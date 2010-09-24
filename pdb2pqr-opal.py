@@ -6,7 +6,7 @@
 
 __date__  = "5 April 2010"
 __author__ = "Wes Goodman, Yong Huang"
-__version__ = "1.6"
+__version__ = "1.7"
 
 import string
 import sys

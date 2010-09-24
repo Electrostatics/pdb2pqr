@@ -437,10 +437,10 @@ def mainCGI():
                         zipjobid = filelist[i]._name.split("-")[0]
                         urllib.urlretrieve(filelist[i]._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, zipjobid, filelist[i]._name))
                         os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, zipjobid))
-                        syscommand = 'zip -9 ' + filelist[i]._name + '.zip ' + filelist[i]._name
+                        syscommand = 'tar -czvf ' + filelist[i]._name + '.gz ' + filelist[i]._name
                         os.system(syscommand)
                         os.chdir(currentpath)
-                        outputfilezip = filelist[i]._name + '.zip'
+                        outputfilezip = filelist[i]._name + '.gz'
                         print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputfilezip, outputfilezip)
             else:
                 outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))
@@ -449,10 +449,10 @@ def mainCGI():
                     currentpath = os.getcwd()
                     workingpath = os.path.dirname(outputfile)
                     os.chdir(workingpath)
-                    syscommand = 'zip -9 ' + os.path.basename(outputfile) + '.zip ' + os.path.basename(outputfile)
+                    syscommand = 'tar -czvf ' + os.path.basename(outputfile) + '.gz ' + os.path.basename(outputfile)
                     os.system(syscommand)
                     os.chdir(currentpath) 
-                    outputfilezip = outputfile+".zip"
+                    outputfilezip = outputfile+".gz"
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfilezip), os.path.basename(outputfilezip))
 
         print "</ul></li>"

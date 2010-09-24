@@ -107,7 +107,7 @@ document.getElementById("parse").checked=true;
 <BODY>
 <h2>PDB2PQR Server</h2>
 <P>
-<I>Currently using PDB2PQR Version 1.6</I>
+<I>Currently using PDB2PQR Version 1.7</I>
 <P>
 Return to <a href="http://www.poissonboltzmann.org/pdb2pqr">the PDB2PQR homepage</a>.<br> 	
 <hr> 	
@@ -205,6 +205,10 @@ PDB2PQR Opal integration by:
 <a href="http://nbcr.net">Wes Goodman</a><BR>
 <a href="http://agave.wustl.edu">Samir Unni</a><BR>
 <a href="http://agave.wustl.edu">Yong Huang</a><P>
+</blockquote>
+JMol visualization scripts and applets provided by:
+<blockquote>
+<a href="http://chemapps.stolaf.edu/jmol">Robert Hanson</a><P>
 </blockquote>
 
 PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project program, and the <a href="http://nbcr.net">National Biomedical Computation Resource</a>.<P>

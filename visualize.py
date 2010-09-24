@@ -62,73 +62,14 @@ def main(apbsOptions):
 
     print '<html>'
     print '\t<head>'
-    print '\t\t<title>Visualization Configuration</title>'
-    print '\t\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">' % cssFile
+    print '\t\t<title>Visualization</title>'
+    print '\t\t<link rel="stylesheet" href="pdb2pqr.css" type="text/css">'
+    print '\t\t<script type="text/JavaScript" src="jmol/Jmol.js"></script>'
+    print '\t\t<script type="text/JavaScript">APPLET_PATH="jmol/";GZIP=""</script>'
+    print '\t\t<script type="text/JavaScript" src="jmol/apbsjmol.js"></script>'
     print '\t</head>'
-    print '\t<body>'
-    print '\t\t<h3>Visualization Configuration</h3>'
-    print '\t\t<form action=\"%s\" method=\"post\" enctype=\"multipart/form-data\" name=\"%s\" id=\"%s\">\n' % (cgiFile, cgiName, cgiName)
-    print '\t\tSelect the type of visual representation:'
-    print '\t\t<ul>'
-    print '\t\t\t<input type=\"radio\" name=\"vistype\" value=\"jmol\"',
-
-    if defaultVisType == "jmol":
-        print ' checked=\"checked\"',
-    print '/> <a href=\"http://jmol.sourceforge.net/\" target=\"_blank\">Jmol</a> <a href=\"http://jmol.sourceforge.net/docs/\" target=\"_blank\"><font title=\"Jmol documentation\">(<span class=\"tooltip\">?</span>)</font></a>'
-    print '\t\t<br />'
-    print '\t\t<ul>'
-    print '\t\t\t<li>Select the type of display:'
-    print '\t\t\t\t<ul>'
-    if apbsOptions['writePot']:
-        print '\t\t\t\t\t<input type=\"radio\" name=\"jmoltype\" value=\"pot\"',
-        if checkJmolType:
-            print ' checked=\"checked\"',
-            checkJmolType = False
-        print '/>Electrostatic Potential'
-        print '\t\t\t\t\t<br />'
-
-    if apbsOptions['writeLap']:
-        print '\t\t\t\t\t<input type=\"radio\" name=\"jmoltype\" value=\"lap\"',
-        if checkJmolType:
-            print ' checked=\"checked\"',
-            checkJmolType = False
-        print '/>Laplacian of the potential'
-        print '<br />'
-    if apbsOptions['writeEdens']:
-        print '\t\t\t\t\t<input type=\"radio\" name=\"jmoltype\" value=\"edens\"',
-        if checkJmolType:
-            print ' checked=\"checked\"',
-            checkJmolType = False
-        print '/>Energy density'
-        print '<br />'
-    if apbsOptions['writeNdens']:
-        print '\t\t\t\t\t<input type=\"radio\" name=\"jmoltype\" value=\"ndens\"',
-        if checkJmolType:
-            print ' checked=\"checked\"',
-            checkJmolType = False
-        print '/>Mobile ion number density'
-        print '<br />'
-    if apbsOptions['writeQdens']:
-        print '\t\t\t\t\t<input type=\"radio\" name=\"jmoltype\" value=\"qdens\"'
-        if checkJmolType:
-            print ' checked=\"checked\"',
-            checkJmolType = False
-        print '/>Mobile charge density'
-    print '\t\t\t\t</ul>'
-    print '\t\t\t</li>'
-    print '\t\t\t<li>'
-    print '\t\t\t\tMinimum color range: <input type=\"text\" name=\"jmolcolormin\" size=4 maxlength=6 value="-5.0"/> kT/e'
-    print '\t\t\t</li>'
-    print '\t\t\t<li>'
-    print '\t\t\t\tMaximum color range: <input type=\"text\" name=\"jmolcolormax\" size=4 maxlength=6 value="5.0"/> kT/e'
-    print '\t\t\t</li>'
-    print '\t\t</ul>'
-    #print '\t\t<input type=\"radio\" name=\"vistype\" value=\"vmd\" disabled/> VMD (currently unavailable)'
-    print '\t\t<input type=\"hidden\" name=\"jobid\" value=\"%s\"/>' % jobid
-    print '\t\t<input type=\"hidden\" name=\"pqrfilename\" value=\"%s\"/>\n' % apbsOptions['pqrFileName']
-    print '\t\t\t\t</ul>'
-    print '\t\t\t<input type=\"submit\" value=\"Submit\"/>'
-    print '\t\t</form>'
+    print '\t<body onload="init()">'
+    print '\t\t<script type="text/javascript">createVisualization(%s, -5.0, 5.0)</script>' % (jobid)
 
     print '\t<script type="text/javascript">'
     print '\tvar gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");'

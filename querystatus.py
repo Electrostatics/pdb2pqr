@@ -437,7 +437,12 @@ def mainCGI():
                         zipjobid = filelist[i]._name.split("-")[0]
                         urllib.urlretrieve(filelist[i]._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, zipjobid, filelist[i]._name))
                         os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, zipjobid))
-                        syscommand = 'tar -czvf ' + filelist[i]._name + '.gz ' + filelist[i]._name
+                        # making both the dx file and the compressed file (.gz) available in the directory  
+                        syscommand = 'cp %s dxbkupfile' % (filelist[i]._name)
+                        os.system(syscommand)
+                        syscommand = 'gzip -9 ' + filelist[i]._name
+                        os.system(syscommand)
+                        syscommand = 'mv dxbkupfile %s' % (filelist[i]._name)
                         os.system(syscommand)
                         os.chdir(currentpath)
                         outputfilezip = filelist[i]._name + '.gz'
@@ -449,7 +454,12 @@ def mainCGI():
                     currentpath = os.getcwd()
                     workingpath = os.path.dirname(outputfile)
                     os.chdir(workingpath)
-                    syscommand = 'tar -czvf ' + os.path.basename(outputfile) + '.gz ' + os.path.basename(outputfile)
+                    # making both the dx file and the compressed file (.gz) available in the directory  
+                    syscommand = 'cp %s dxbkupfile' % (os.path.basename(outputfile))
+                    os.system(syscommand)
+                    syscommand = 'gzip ' + os.path.basename(outputfile)
+                    os.system(syscommand)
+                    syscommand = 'mv dxbkupfile %s' % (os.path.basename(outputfile))
                     os.system(syscommand)
                     os.chdir(currentpath) 
                     outputfilezip = outputfile+".gz"

@@ -457,7 +457,7 @@ def mainCGI():
                     # making both the dx file and the compressed file (.gz) available in the directory  
                     syscommand = 'cp %s dxbkupfile' % (os.path.basename(outputfile))
                     os.system(syscommand)
-                    syscommand = 'gzip ' + os.path.basename(outputfile)
+                    syscommand = 'gzip -9 ' + os.path.basename(outputfile)
                     os.system(syscommand)
                     syscommand = 'mv dxbkupfile %s' % (os.path.basename(outputfile))
                     os.system(syscommand)

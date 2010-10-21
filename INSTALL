@@ -12,9 +12,9 @@ Fortran compilers:
         --with-url        Set URL for the website.  Default is http://fully_qualified_domain
         --disable-propbka Disable propka
         --disable-pdb2pka Disable pdb2pka
-        --with-opal       Enable PDB2PQR Opal web service. Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr-1.7
+        --with-opal       Enable PDB2PQR Opal web service. Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7
         --with-apbs       Enable the APBS web service. Must be pointing to a local APBS binary (requires APBS 1.1.0 or newer version)
-        --with-apbs-opal  Enable APBS Opal web service. Default is http://kryptonite.nbcr.net/opal2/services/apbs-1.3
+        --with-apbs-opal  Enable APBS Opal web service. Default is http://kryptonite.nbcr.net/opal2/services/apbs_1.3
         NUMPY             Location of Numpy. Default is $PY_DIR/lib/python$PY_VERSION/site-packages/numpy/core/include/numpy
         
     $ make

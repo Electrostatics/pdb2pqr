@@ -458,12 +458,12 @@ AC_ARG_WITH(max-atoms,
 HAVE_PDB2PQR_OPAL=0
 
 AC_ARG_WITH(opal,
-	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr-1.7],
+	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7],
 	[PDB2PQR_OPAL_URL=$withval],
 	[PDB2PQR_OPAL_URL=""])
 
 if test "$PDB2PQR_OPAL_URL" = "yes"; then
-  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr-1.7"
+  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7"
   HAVE_PDB2PQR_OPAL=1
 fi
 
@@ -521,12 +521,12 @@ fi
 rm -f HAVE_APBS_FILE
 
 AC_ARG_WITH(apbs-opal,
-	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://kryptonite.nbcr.net/opal2/services/apbs-1.3],
+	[  --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://kryptonite.nbcr.net/opal2/services/apbs_1.3],
 	[APBS_OPAL_URL=$withval],
 	[APBS_OPAL_URL=""])
 
 if test "$APBS_OPAL_URL" = "yes"; then
-  APBS_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/apbs-1.3"
+  APBS_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/apbs_1.3"
   DEFAULT_APBS_OPAL_URL="1"
 else
   DEFAULT_APBS_OPAL_URL="0"

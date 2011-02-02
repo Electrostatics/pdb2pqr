@@ -325,16 +325,16 @@ def mainCGI():
         cp = checkprogress(jobid,appServicePort,calctype) # finds out status of job
         progress = cp[0]
     
+    starttime = time.time()
+    
     if progress == "running" or progress == "complete":
         timefile = open('%s%s%s/%s_start_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
-        timefile.close()
-        
-    if progress == "running" or (have_opal and progress != "version_mismatch" and progress != "not_enough_memory"):
         starttime = float(timefile.read())
+        timefile.close()
+    if progress == "running" or (have_opal and progress != "version_mismatch" and progress != "not_enough_memory"):
         runtime = time.time()-starttime
     elif progress == "complete":
         endtimefile = open('%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
-        starttime = float(timefile.read())
         runtime = float(endtimefile.read())-starttime
         
     if progress == "running":

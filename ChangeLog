@@ -7,3 +7,5 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Added more JMol controls for visualization, JMol code and applets provided by Bob Hanson.
 
 - BUG FIXES
+
+ *Fixed crash when querystatus.cgi is running with opal and progress is None.

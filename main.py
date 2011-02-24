@@ -522,8 +522,8 @@ def mainCommand(argv):
         elif o in ("-h","--help"):
             usage(2)
             sys.exit()
-        elif o == "--nodebump":  del options["debump"]
-        elif o == "--noopt":    del options["opt"]
+        elif o == "--nodebump":  options.pop("debump", None)
+        elif o == "--noopt":    options.pop("opt", None)
         elif o == "--apbs-input": options["input"] = 1
         elif o == "--whitespace": options["whitespace"]  = 1
         elif o == "--typemap": options["typemap"] = 1
@@ -537,12 +537,12 @@ def mainCommand(argv):
                 text += "Please choose a pH between 0.0 and 14.0."
                 raise ValueError, text
         elif o == "--assign-only":
-            del options["debump"]
-            del options["opt"]
+            options.pop("debump", None)
+            options.pop("opt", None)
             options["assign-only"] = 1
         elif o == "--clean":
-            del options["debump"]
-            del options["opt"]
+            options.pop("debump", None)
+            options.pop("opt", None)
             options["clean"] = 1
         elif o == "--ff":      
             if "userff" in opts:

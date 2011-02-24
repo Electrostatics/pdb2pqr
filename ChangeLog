@@ -8,4 +8,6 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 
 - BUG FIXES
 
- *Fixed crash when querystatus.cgi is running with opal and progress is None.
+ *Fixed crash when pdb filename has spaces using Opal. The job will still fail due to a limitation in Opal but the error is handled correctly.
+ *Fixed specific combinations of commandline arguments causing pdb2pqr.py to crash.
+

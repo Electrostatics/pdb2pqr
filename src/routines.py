@@ -291,6 +291,8 @@ class Routines:
                            (res1, res2)
                     self.write(text, 1)
                     self.warnings.append(text)
+                    res2.peptideC = None
+                    res1.peptideN = None
 
     def applyPatch(self, patchname, residue):
         """

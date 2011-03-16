@@ -11,3 +11,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  *Fixed crash when opal returns an error.
  *Fixed specific combinations of commandline arguments causing pdb2pqr.py to crash.
  *Fixed opal job failing when filenames have spaces.
+ *Fixed gap in backbone causing irrationally placed hydrogens.

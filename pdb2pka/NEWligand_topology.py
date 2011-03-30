@@ -428,9 +428,9 @@ class get_ligand_topology:
                  
 
     def find_titratable_groups(self):
-        #
+        """#
         # Look for simple substructures that would be titratable groups in the ligand
-        #
+        #"""
         atoms=self.atoms.keys()
         #
         # ring detection (including deleting redundancies & sorting issues)

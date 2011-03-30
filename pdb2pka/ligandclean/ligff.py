@@ -55,9 +55,9 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
         atommap[i] = name
         ligresidue.map[name] = obj
         i += 1
-
+    #
     # The second to last line has a list of bonded partners
-
+    #
     line = X.lines[-2]
     bonds = string.split(line)
 
@@ -115,7 +115,8 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
 
                     if ligatoms.sybylType == "O.co2":
                         aaat.formalcharge = -0.5
-                    else: aaat.formalcharge = 0.0
+                    else: 
+                        aaat.formalcharge = 0.0
                     xxxlll = []
                     #for xxx in ligatoms.lBondedAtoms:
                     for bond in ligresidue.getAtom(aaat.name).bonds:
@@ -130,6 +131,9 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
 
     return protein, definition, Lig
 
+#
+# -----
+#
 
 class ligforcefield(Forcefield):
     """

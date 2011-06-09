@@ -306,7 +306,7 @@ class inputGen:
         #
         # Eh?
         #
-        raise 'type not set'
+        raise Exception('type not set')
 
     #
     # ------

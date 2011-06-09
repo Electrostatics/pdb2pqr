@@ -180,7 +180,8 @@ class runAPBS:
         Valist_load(self.myAlist, self.protsize, self.x,self.y,self.z,self.chg,self.rad) 
 
         # Initialize the energy holders
-        for i in range(self.nosh.ncalc):    self.totEnergy.append(0.0)
+        for i in range(self.nosh.ncalc):    
+            self.totEnergy.append(0.0)
         potList = []
 
         # Initialize the force holders

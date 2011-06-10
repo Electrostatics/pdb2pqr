@@ -1,18 +1,35 @@
 #!/usr/bin/env python
-print 'Hello'
-import sys
-sys.path.append('/home/mag_local/development/pdb2pqr')
+#
+# This is a module in development for making conformationally averaged PBE maps
+#
+debug=False
+import sys, os
+
+print __file__
+import os
+try:
+    file_name=__file__
+    if file_name[:2]=='./':
+        scriptpath=os.getcwd()
+    else:
+        scriptpath=os.path.join(os.getcwd(),os.path.split(file_name)[0])
+        if scriptpath[-1] == "/":
+            scriptpath=scriptpath[:-1]
+except:
+    scriptpath=os.path.split(sys.argv[0])[0]
+    if scriptpath=='.':
+        scriptpath=os.getcwd()
+#
+# Add to import path
+#
+pdb2pqr_path=os.path.split(scriptpath)[0]
+sys.path.append(pdb2pqr_path)
+
 import string
 import math
 import string
 import getopt
 import time
-from src import pdb
-from src import utilities
-from src import structures
-from src import routines
-from src import protein
-from src import server
 from src.pdb import *
 from src.utilities import *
 from src.structures import *
@@ -29,17 +46,23 @@ from src.hydrogens import *
 #
 verbose=True
 ff='parse'
-myDefinition = Definition()
+
+#
+# Read the PDB file
 #
 pdbfile_name='2lzt.pka.pdb'
 pdbfile = getPDBFile(pdbfile_name)
 pdblist, errlist = readPDB(pdbfile)
                
-
-# Here, self.protein is the PDB2PQR instance. you will get this with something like:
+#
+# Instantiate pdb2pqr
+#
+myDefinition = Definition()
 myProtein = Protein(pdblist, myDefinition)
 
-# then you do:
+#
+# Setup everything
+#
 myRoutines = Routines(myProtein, verbose)
 myRoutines.updateResidueTypes()
 myRoutines.updateSSbridges()
@@ -49,16 +72,15 @@ myRoutines.updateInternalBonds()
 
 myforcefield=Forcefield(ff, myDefinition, None)
 myRoutines.applyNameScheme(myforcefield)
+
 myRoutines.findMissingHeavy()
 myRoutines.addHydrogens()
 myRoutines.debumpProtein()
-
-#myRoutines.randomizeWaters()
 myProtein.reSerialize()
 
-# to clean up and add hydrogens.
-
-# optimze hydrogens:
+#
+# Addn and optimze hydrogens:
+# 
 from src.hydrogens import hydrogenRoutines
 myRoutines.updateInternalBonds()
 myRoutines.calculateDihedralAngles()
@@ -76,16 +98,16 @@ print "Created protein object (after processing myRoutines) -"
 print "\tNumber of residues in protein: %s" % myProtein.numResidues()
 print "\tNumber of atoms in protein   : %s" % myProtein.numAtoms()
 
-# To print the charges do:
-if False:
-    for chain in myProtein.getChains():
-        print 'Chain',chain
-        for residue in chain.get("residues"):
-            print residue
-            for atom in residue.get("atoms"):
-                atomname = atom.get("name")
-                charge, radius = myforcefield.getParams1(residue, atomname)
-                print atomname,charge,radius
+#
+# Assign charges
+#
+for chain in myProtein.getChains():
+    for residue in chain.get("residues"):
+        for atom in residue.get("atoms"):
+            atomname = atom.get("name")
+            charge, radius = myforcefield.getParams1(residue, atomname)
+            atom.set("radius", radius)
+            atom.set("ffcharge", charge)
 
 #import src.psize
 #size=src.psize.Psize()
@@ -95,13 +117,19 @@ async=0
 split=0
 import pdb2pka.inputgen_pKa as IP
 igen = IP.inputGen(pdbfile_name)
-igen.maps=0
-igen.set_type('desolv')
-igen.pdie=8
+igen.maps=None
+igen.set_type('intene')
+igen.pdie=8.0
+igen.sdie=80.0
+all_center,extent=igen.getCenter()
+igen.setfineCenter(all_center)
+print 'Center: %5.1fA %5.1fA %5.1fA' %(all_center[0],all_center[1],all_center[2])
+print 'Extent: %5.1fA %5.1fA %5.1fA'  %(extent[0],extent[1],extent[2])
+
 
 apbs_inputfile=igen.printInput()
-import pdb2pka.apbs as RAPBS
-APBS=RAPBS.runAPBS()
+from pdb2pka.apbs import *
+APBS=runAPBS()
 potentials = APBS.runAPBS(myProtein, apbs_inputfile)
 APBS.cleanup()
 

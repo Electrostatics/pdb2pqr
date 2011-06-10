@@ -8,14 +8,14 @@ try:
 except:
     import numpy as Numeric
     
-from sets import Set
+#from sets import Set
 from ligandclean.trial_templates import *
 from ligandclean.lookuptable import *
-try:
-    from substruct import Algorithms
-except ImportError:
-    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"    
-    raise ImportError, txt
+#try:
+#    from substruct import Algorithms
+#except ImportError:
+#    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"    
+#    raise ImportError, txt
 from types import *
 
 def length(vector):
@@ -570,7 +570,7 @@ class get_ligand_topology:
                 for cliq_ee in ee:
                     templateList.append(output[1][cliq_ee][1])
                     ligList.append(output[1][cliq_ee][0])
-                temp_templateList = list(Set(templateList))
+                temp_templateList = list(set(templateList))
                 matchedLigAtoms =[]
                 temptemp = []
                 if len(temp_templateList) == len(ligList) and (len(ee) == len(templates[current_template].keys())):
@@ -627,19 +627,19 @@ class get_ligand_topology:
                     for comparing in range(internalCounter,len(AllCliqueList)):
                         # do not compare a clique with itself
                         if xxxx != AllCliqueList[internalCounter]:
-                            if len(Set(xxxx).intersection(Set(AllCliqueList[internalCounter]))) > 0:
+                            if len(set(xxxx).intersection(set(AllCliqueList[internalCounter]))) > 0:
                                 if len(xxxx) >= len(AllCliqueList[internalCounter]) and xxxx not in NonRedundantCliques:  # >= INSTEAD of >
                                                                                                                           # piperidine case!
                                     # avoid that subset is added to this list
                                     if len(NonRedundantCliques) != 0:
                                         # loop over all entries
                                         for possiblyredundantentries in NonRedundantCliques:
-                                            if Set(possiblyredundantentries).issubset(Set(xxxx)):
+                                            if set(possiblyredundantentries).issubset(set(xxxx)):
                                                 print NonRedundantCliques
                                                 NonRedundantCliques.remove(possiblyredundantentries)
                                                 NonRedundantCliques.append(xxxx)
                                                 print NonRedundantCliques
-                                            elif Set(xxxx).issubset(Set(possiblyredundantentries)):
+                                            elif set(xxxx).issubset(set(possiblyredundantentries)):
                                                 #print "found subset which is not added to the list"
                                                 pass
                                     else:
@@ -648,10 +648,10 @@ class get_ligand_topology:
                                 elif len(AllCliqueList[internalCounter]) >=  len(xxxx) and AllCliqueList[internalCounter] not in NonRedundantCliques:
                                     if len(NonRedundantCliques) != 0:
                                         for possiblyredundantentries in NonRedundantCliques:
-                                            if Set(possiblyredundantentries).issubset(Set(AllCliqueList[internalCounter])):
+                                            if set(possiblyredundantentries).issubset(set(AllCliqueList[internalCounter])):
                                                 NonRedundantCliques.remove(possiblyredundantentries)
                                                 NonRedundantCliques.append(AllCliqueList[internalCounter])
-                                            elif Set(AllCliqueList[internalCounter]).issubset(Set(possiblyredundantentries)):
+                                            elif set(AllCliqueList[internalCounter]).issubset(set(possiblyredundantentries)):
                                                 #print "found subset which is not added to the list"
                                                 pass
                                     else:

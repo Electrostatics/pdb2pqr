@@ -52,7 +52,7 @@ class conf_avg:
 			pdblist, errlist = readPDB(pdbfile)
 
 			pots=self.get_potentials(currentPDB,pdblist)
-			potentials.append(pots)
+			potentials.append(pots[0])
 		#
 		# Average potentials
 		#
@@ -66,7 +66,7 @@ class conf_avg:
 		return potentials
 	
 	def run_pdb2pqr(self,currentPDB,pdblist):
-        """Run pdb2pqr, prepare input for apbs"""
+		"""Run pdb2pqr, prepare input for apbs"""
 		#
 		# Instantiate pdb2pqr
 		#
@@ -153,10 +153,16 @@ class conf_avg:
 		return potentials
 
 	def average_potentials(self,potentials):
-		"""This function will average many potential maps"""
+		"""This function averages many potential maps"""
+		avg_pots=[]
+		for i in range(0,len(potentials[0])):
+			currSum=0
+			for j in range(0,len(potentials)):
+				currSum+=potentials[j][i]
+			currAvg=currSum/len(potentials)
+			avg_pots.append(currAvg)
 
-		avg_pots=potentials
-
+		print avg_pots
 		return avg_pots
 
 

@@ -5,6 +5,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 - NEW FEATURES
  * Switched Opal service urls from sccne.wustl.edu to NBCR.
  * Added more JMol controls for visualization, JMol code and applets provided by Bob Hanson.
+ * Changed default forcefield to PARSE in web interface.
 
 - BUG FIXES
 

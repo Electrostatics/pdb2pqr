@@ -158,7 +158,7 @@ Pick a forcefield to use:
 <blockquote>
 <input type="RADIO" name="FF" id = "amber" value="amber" onClick="setff(this.value)" CHECKED>AMBER</input><BR> 
 <input type="RADIO" name="FF" id = "charmm" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
-<input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)">PARSE</input><BR>
+<input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)" CHECKED >PARSE</input><BR>
 <input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
 <input type="RADIO" name="FF" id = "swanson" value="swanson" onClick="setff(this.value)">SWANSON</input><BR> 
 <input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>

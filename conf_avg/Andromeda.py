@@ -46,8 +46,13 @@ class conf_avg:
 	def __init__(self,options):
 		
 		potentials=[]
+		
+		listOfFiles=os.listdir(options.directoryPath)
 
-		for currentPDB in options.pdbfile_name:
+#options.pdbfile_name
+
+		for currentPDB in listOfFiles:
+			print ".........................................................................................WORKING ON " + currentPDB
 			pdbfile = getPDBFile(currentPDB)
 			pdblist, errlist = readPDB(pdbfile)
 
@@ -169,8 +174,12 @@ class conf_avg:
 if __name__=='__main__':
 	from optparse import OptionParser
 	parser = OptionParser(usage='%prog [options]',version='%prog 1.0')
-	parser.add_option('-p','--pdb',dest='pdbfile_name',action='store',type='string',nargs=2,default='2lzt.pka.pdb',
-                  help='The PDB file. Default: %default')
+#	parser.add_option('-p','--pdb',dest='pdbfile_name',action='store',type='string',nargs=2,default='2lzt.pka.pdb',
+#                  help='The PDB file. Default: %default')
+	parser.add_option('-d','--dir',dest='directoryPath',action='store',type='string',default='',
+				  help='Direcotry of the PDB files. Default: %default')
+
+# I have to fix the path thing
 
 	(options, args) = parser.parse_args()
 

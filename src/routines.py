@@ -386,7 +386,7 @@ class Routines:
                isinstance(residue, Nucleic):
                 residue.setState()
 
-    def assignTermini(self, chain, neutraln = None, neutralc = None):
+    def assignTermini(self, chain, neutraln = False, neutralc = False):
         """
             Assign the termini for the given chain by looking at
             the start and end residues.
@@ -403,7 +403,7 @@ class Routines:
             res0.set("isNterm",1)
             if isinstance(res0, PRO):
                 self.applyPatch("NEUTRAL-NTERM", res0)
-            elif neutraln == 1:
+            elif neutraln:
                 self.applyPatch("NEUTRAL-NTERM", res0)
             else:
                 self.applyPatch("NTERM",res0)
@@ -416,7 +416,7 @@ class Routines:
         reslast = chain.residues[-1]
         if isinstance(reslast, Amino):
             reslast.set("isCterm",1)
-            if neutralc == 1:
+            if neutralc:
                 self.applyPatch("NEUTRAL-CTERM", reslast)
             else:
                 self.applyPatch("CTERM", reslast)
@@ -428,7 +428,7 @@ class Routines:
                 resthis = chain.residues[-1 - i]
                 if isinstance(resthis, Amino):
                     resthis.set("isCterm",1)
-                    if neutralc == 1:
+                    if neutralc:
                         self.applyPatch("NEUTRAL-CTERM", resthis)
                     else:
                         self.applyPatch("CTERM", resthis)
@@ -439,12 +439,13 @@ class Routines:
                     self.applyPatch("3TERM", resthis)
                     break
                     
-    def setTermini(self, neutraln = None, neutralc = None):
+    def setTermini(self, neutraln = False, neutralc = False):
         """
             Set the termini for the protein. First set all known
             termini by looking at the ends of the chain. Then
             examine each residue, looking for internal chain breaks.
         """
+        
         self.write("Setting the termini... \n")
 
         # First assign the known termini
@@ -455,98 +456,110 @@ class Routines:
         # Now determine if there are any hidden chains
 
         letters = string.ascii_uppercase + string.ascii_lowercase
-        numchains = len(self.protein.getChains())
         c = 0
+
         while c < len(self.protein.getChains()):
-
             chain = self.protein.chains[c]
-
             reslist = []
-	    origlist = []	
 
-	    # origlist holds the original residue list for the chain
-	
-	    for residue in chain.getResidues():
-	        origlist.append(residue)
-            
+            origlist = []
+
+            # origlist holds the original residue list for the chain
+
+            for residue in chain.getResidues():
+                origlist.append(residue)
+
             for residue in origlist:
-	        reslist.append(residue)
+                reslist.append(residue)
                 oldid = residue.chainID
-                
+
                 # Look for ending termini
-   		
-		fixflag = 0
+
+                fixflag = 0
                 if isinstance(residue, Amino):
-		    if (residue.hasAtom("OXT") and not residue.isCterm):
-			fixflag = 1
+                    if (residue.hasAtom("OXT") and not residue.isCterm):
+                        fixflag = 1
 
-		elif isinstance(residue, Nucleic):
-		    if ((residue.hasAtom("H3T") or residue.name.endswith("3"))\
-		      and not residue.is3term):
-			fixflag = 1
+                elif isinstance(residue, Nucleic):
+                    if ((residue.hasAtom("H3T") or residue.name.endswith("3"))\
+                      and not residue.is3term):
+                        fixflag = 1
 
-		if fixflag:
+                if fixflag:
 
                     # Get an available chain ID
-                    
-                    numchains = len(self.protein.getChains())
                     chainid = letters[0]
                     id = 0
+                    idLength = 1
                     while chainid in self.protein.chainmap:
                         id += 1
-                        chainid = letters[id]
+                        if id >= len(letters):
+                            idLength += 1
+                            id = 0
+                        chainid = letters[id] * idLength
 
+                    if(idLength > 1):
+                        message = 'Warning: Reusing chain id: ' + chainid[0] + '\n'
+                        self.write(message)
+                        
                     # Make a new chain with these residues
+                    newchain = Chain(chainid[0])
 
-                    newchain = Chain(chainid)
-		  
                     self.protein.chainmap[chainid] = newchain
-                    self.protein.chains.insert(c, newchain)		  
+                    self.protein.chains.insert(c, newchain)
 
                     for res in reslist:
                         newchain.addResidue(res)
                         chain.residues.remove(res)
-                        res.setChainID(chainid)
-		
-		
+                        res.setChainID(chainid[0])
+
                     self.assignTermini(chain, neutraln, neutralc)
                     self.assignTermini(newchain, neutraln, neutralc)
-                    
-		    reslist = []
-		    c += 1
-		   
+
+                    reslist = []
+                    c += 1
+
             c += 1
 
         # Update the final chain's chainID if it is "" unless it's all water
 
         if "" in self.protein.chainmap:
 
-	    notwat = 0
-	    for res in chain.residues:
-		if not isinstance(res, WAT): 
-		    notwat = 1
-	            break
+            notwat = 0
+            for res in chain.residues:
+                if not isinstance(res, WAT):
+                    notwat = 1
+                    break
 
-	    if notwat == 0: 
-		self.write("Done.\n")
-		return		
+            if notwat == 0:
+                self.write("Done.\n")
+                return
 
             chain = self.protein.chainmap[""]
             chainid = letters[0]
             id = 0
+            idLength = 1
             while chainid in self.protein.chainmap:
                 id += 1
-                chainid = letters[id]
+                if id >= len(letters):
+                    idLength += 1
+                    id = 0
+                chainid = letters[id] * idLength
 
+            if(idLength > 1):
+                message = 'Warning: Reusing chain id: ' + chainid[0] + '\n'
+                self.write(message)
+                
             # Use the new chainID
 
             self.protein.chainmap[chainid] = chain
             del self.protein.chainmap[""]
 
             for res in chain.residues:
-                res.setChainID(chainid)
-            
+                res.setChainID(chainid[0])
+
         self.write("Done.\n")
+
 
     def findMissingHeavy(self):
         """

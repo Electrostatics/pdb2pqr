@@ -175,6 +175,7 @@ def mainCGI():
         pdbfilename = form["PDB"].filename
         pdbfilename = re.split(r'[/\\]',pdbfilename)[-1]
         pdbfilename = pdbfilename.replace(' ', '_')
+        pdbfilename = pdbfilename.replace('-', '_')
     if form.has_key("INPUT"):
         input = 1
         options["apbs"] = 1
@@ -183,6 +184,7 @@ def mainCGI():
             ffname = form["USERFF"].filename
             ffname = re.split(r'[/\\]',ffname)[-1]
             ffname = ffname.replace(' ', '_')
+            ffname = ffname.replace('-', '_')
             if ffname[-4:] == ".DAT":
                ffname = ffname[:-4]
             fffile = StringIO(form["USERFF"].value)
@@ -214,6 +216,7 @@ def mainCGI():
             ligandfilename=str(form["LIGAND"].filename)
             ligandfilename=re.split(r'[/\\]',ligandfilename)[-1]
             ligandfilename = ligandfilename.replace(' ', '_')
+            ligandfilename = ligandfilename.replace('-', '_')
 
         # for Windows-style newline compatibility
         templigandfilename = tempfile.mkstemp()[1]

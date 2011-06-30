@@ -200,7 +200,7 @@ class conf_avg:
 		import pdb2pka.inputgen_pKa as IP
 		igen = IP.inputGen(currentPDB)
 		igen.maps=None
-		igen.set_type('intene')
+		igen.set_type('background')
 		igen.pdie=8.0
 		igen.sdie=80.0
 		all_center,extent=igen.getCenter()

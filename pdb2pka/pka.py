@@ -234,7 +234,7 @@ def startpKa():
 #
 
 
-def pre_init(pdbfilename=None,ff=None,verbose=1,pdie=8,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,sd=None,options=None):
+def pre_init(pdbfilename=None,ff=None,verbose=1,pdie=8.0,maps=None,xdiel=None,ydiel=None,zdiel=None,kappa=None,sd=None,options=None):
     """This function cleans the PDB and prepares the APBS input file"""
     #
     # remove hydrogen atoms

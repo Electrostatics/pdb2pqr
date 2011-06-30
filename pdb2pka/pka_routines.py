@@ -1480,7 +1480,6 @@ class pKaRoutines:
                     #
                     # Run APBS first time for the state in solvent
                     #
-
                     if debug:
                         CM.set_calc('Desolv solv %s %s' %(pKa.residue.resSeq,state))
 

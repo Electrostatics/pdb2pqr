@@ -248,6 +248,7 @@ class inputGen:
         text += "    temp 298.15\n"     
         text += "    calcenergy total\n"
         text += "    calcforce no\n"
+        text += "    write pot dx potential0\n"
         text += "end\n"
         
         for i in range(1, depth):
@@ -271,6 +272,7 @@ class inputGen:
             text += "    temp 298.15\n"     
             text += "    calcenergy total\n"
             text += "    calcforce no\n"
+            text += "    write pot dx potential%d\n" %i
             text += "end\n"
         return text
 

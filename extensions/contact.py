@@ -17,9 +17,7 @@ from src.routines import *
 DIST_CUTOFF = 3.5         # max distance  
 
 def usage():
-    str  = "        --contact     :  Print a list of contacts to\n"
-    str += "                         {output-path}.con\n"
-    return str
+    return 'Print a list of contacts to {output-path}.con\n'
 
 def contact(routines, outroot):
     """

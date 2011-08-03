@@ -101,44 +101,44 @@ def setID(time):
     id = "%s%s" % (strID[:period], strID[(period+1):(period+2)])
     return id
 
-def logRun(options, nettime, size, ff, ip):
-    """
-        Log the CGI run for data analysis.  Log file format is as follows:
-
-        DATE  FF  SIZE  OPTIONS   TIME
-
-        Parameters
-            options: The options used for this run (dict)
-            nettime: The total time taken for the run (float)
-            size:    The final number of non-HETATM atoms in the PDB file (int)
-            ff:      The name of the ff used
-            ip:      The ip address of the user
-    """
-    if LOGPATH == "" or LOGPATH == None: return
-    date = time.asctime(time.localtime())
-    debump  = 0
-    opt  = 0
-    propka = 0
-    file = open(LOGPATH,"a")
-
-    if "ffout" in options: ffout = options["ffout"]
-    else: ffout="internal"
-
-    text = "%s\t%s\t%s\t%s\t" % (date, ip, ff, ffout)
-
-    opts = ""
-    if "debump" in options:  opts += "debump,"
-    if "opt" in options:  opts += "optimize,"
-    if "ph" in options: opts += "propka,"
-    if "ligand" in options: opts += "ligand,"
-    if "apbs" in options: opts += "apbs,"
-    if "chain" in options: opts += "chain,"
-    
-    if opts == "": opts = "none,"
-
-    text += "%s\t%s\t%.2f\n" % (opts[:-1], size, nettime)
-    file.write(text)
-    file.close()
+#def logRun(options, nettime, size, ff, ip):
+#    """
+#        Log the CGI run for data analysis.  Log file format is as follows:
+#
+#        DATE  FF  SIZE  OPTIONS   TIME
+#
+#        Parameters
+#            options: The options used for this run (dict)
+#            nettime: The total time taken for the run (float)
+#            size:    The final number of non-HETATM atoms in the PDB file (int)
+#            ff:      The name of the ff used
+#            ip:      The ip address of the user
+#    """
+#    if LOGPATH == "" or LOGPATH == None: return
+#    date = time.asctime(time.localtime())
+#    debump  = 0
+#    opt  = 0
+#    propka = 0
+#    file = open(LOGPATH,"a")
+#
+#    if "ffout" in options: ffout = options["ffout"]
+#    else: ffout="internal"
+#
+#    text = "%s\t%s\t%s\t%s\t" % (date, ip, ff, ffout)
+#
+#    opts = ""
+#    if "debump" in options:  opts += "debump,"
+#    if "opt" in options:  opts += "optimize,"
+#    if "ph" in options: opts += "propka,"
+#    if "ligand" in options: opts += "ligand,"
+#    if "apbs" in options: opts += "apbs,"
+#    if "chain" in options: opts += "chain,"
+#    
+#    if opts == "": opts = "none,"
+#
+#    text += "%s\t%s\t%.2f\n" % (opts[:-1], size, nettime)
+#    file.write(text)
+#    file.close()
 
 def cleanTmpdir():
     """

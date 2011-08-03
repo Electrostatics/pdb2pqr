@@ -18,11 +18,13 @@ def usage():
         A small function that will be added to the overall PDB2PQR
         usage.  Note that the root of the file name (in this case template.py)
         becomes the command line option.
+        
+        ex. chi.py will add the --chi command line option.
 
-        Returns
-            str:  The usage for this function 
+        Returns a string describing the usage for this function.
+        This will be used for help text for command line option for this function.
     """
-    str = "        --template    :  Put usage here\n"
+    str = "Put usage here"
     return str
 
 def template(routines, outroot):

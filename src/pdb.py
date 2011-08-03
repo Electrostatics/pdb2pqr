@@ -423,7 +423,7 @@ class HETATM:
                 self.segID = string.strip(line[72:76])
                 self.element = string.strip(line[76:78])
                 self.charge = string.strip(line[78:80])
-            except ValueError, IndexError:
+            except (ValueError, IndexError):
                 self.occupancy = 0.00
                 self.tempFactor = 0.00
                 self.segID = ""
@@ -704,7 +704,7 @@ class ATOM:
                 self.segID = string.strip(line[72:76])
                 self.element = string.strip(line[76:78])
                 self.charge = string.strip(line[78:80])
-            except ValueError, IndexError:
+            except (ValueError, IndexError):
                 self.occupancy = 0.00
                 self.tempFactor = 0.00
                 self.segID = ""
@@ -925,8 +925,7 @@ class MTRIX1:
             self.mn3 = float(string.strip(line[30:40]))
             self.vn = float(string.strip(line[45:55]))
             try:  self.iGiven = int(string.strip(line[45:55]))
-            except ValueError:  self.iGiven = None
-            except IndexError:  self.iGiven = None
+            except (ValueError, IndexError):  self.iGiven = None
         else:  raise ValueError, record
 
 class SCALE3:
@@ -2420,6 +2419,10 @@ def readPDB(file):
 
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of records we can't parse
+    
+    #We can come up with nothing if can't get our file off the web.
+    if file is None:
+        return pdblist, errlist
 
     while 1: 
         line = string.strip(file.readline())

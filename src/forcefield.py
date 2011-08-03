@@ -213,19 +213,20 @@ class Forcefield:
         transformations are done within.
 
     """
-
+    #TODO: pass ff and ff names file like objects instead of sorting out whether
+    #to use user created files here. 
     def __init__(self, ff, definition, userff, usernames = None):
         """
             Initialize the class by parsing the definition file
 
             Parameters
-                ff: The name of the forcefield (string)
+                ff: The name of the forcefield (string) can be None.
                 definition: The definition objects
                 userff:  A link to the file for CGI based user-defined
                          forcefields
         """
         self.map = {}
-        self.name = ff
+        self.name = str(ff)
         defpath = ""
 
         if userff == None:
@@ -235,7 +236,8 @@ class Forcefield:
           
             file = open(defpath, 'rU')
 
-        else: file = userff
+        else: 
+            file = userff
 
         lines = file.readlines()
         for line in lines:
@@ -257,7 +259,7 @@ class Forcefield:
                 try:
                     group = fields[4]
                     atom = ForcefieldAtom(atomname, charge, radius, resname, group)
-                except:
+                except IndexError:
                     atom = ForcefieldAtom(atomname, charge, radius, resname)
 
                 myResidue = self.getResidue(resname)
@@ -285,15 +287,13 @@ class Forcefield:
                 namesfile = open(defpath)
                 sax.parseString(namesfile.read(), handler)
             namesfile.close()
-
-        # CGI based .names file handling
         else: 
             handler = ForcefieldHandler(self.map, definition.map)
             sax.make_parser()
 
             if usernames != None:
                 namesfile = usernames            
-                sax.parseString(namesfile.getvalue(), handler)
+                sax.parseString(namesfile.read(), handler)
             else:
                 raise ValueError, "Please provide a valid .names file!"
             namesfile.close()

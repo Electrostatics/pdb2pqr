@@ -15,9 +15,7 @@ from src.utilities import *
 from src.routines import *
 
 def usage():
-    str  = "        --chi         :  Print the per-residue backbone chi\n"
-    str += "                         angle to {output-path}.chi\n"
-    return str
+    return 'Print the per-residue backbone chi angle to {output-path}.chi'
 
 def chi(routines, outroot):
     """

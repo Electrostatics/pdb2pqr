@@ -14,10 +14,7 @@ from src.utilities import *
 from src.routines import *
 
 def usage():
-    str =  "        --rama        :  Print the per-residue phi and psi\n"
-    str += "                         angles to {output-path}.rama for\n"
-    str += "                         Ramachandran plots\n"
-    return str
+    return 'Print the per-residue phi and psi angles to {output-path}.rama for Ramachandran plots'
 
 def rama(routines, outroot):
     """

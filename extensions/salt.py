@@ -22,9 +22,7 @@ from src.routines import *
 DIST_CUTOFF = 4.0         # maximum cation to anion atom distance in angstroms
 
 def usage():
-    str  = "        --salt        :  Print a list of salt bridges to\n"
-    str += "                         {output-path}.salt\n"
-    return str
+    return 'Print a list of salt bridges to {output-path}.salt'
 
 def salt(routines, outroot):
     """

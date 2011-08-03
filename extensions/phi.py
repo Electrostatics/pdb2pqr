@@ -15,9 +15,7 @@ from src.utilities import *
 from src.routines import *
 
 def usage():
-    str  = "        --phi         :  Print the per-residue backbone phi\n"
-    str += "                         angle to {output-path}.phi\n"
-    return str
+    return 'Print the per-residue backbone phi angle to {output-path}.phi'
 
 def phi(routines, outroot):
     """

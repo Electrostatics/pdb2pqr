@@ -15,9 +15,7 @@ from src.utilities import *
 from src.routines import *
 
 def usage():
-    str  = "        --psi         :  Print the per-residue backbone psi\n"
-    str += "                         angle to {output-path}.psi\n"
-    return str
+    return 'Print the per-residue backbone psi angle to {output-path}.psi'
 
 def psi(routines, outroot):
     """

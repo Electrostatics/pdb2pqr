@@ -53,6 +53,11 @@ import string
 import math
 import os
 import sys
+from aconf import INSTALLDIR, TMPDIR
+
+def appendToLogFile(jobName, fileName, input):
+    with open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName), 'w') as f:
+        f.write(input)
 
 def sortDictByValue(dict):
     """
@@ -155,11 +160,17 @@ def getAngle(coords1, coords2, coords3):
             angle = 360.0 - angle
         return angle
 
+#TODO: with changes to --userff and --usernames getFFfile and getNamesFile do not need to go on wild 
+#goose chases to find the files in question.
 def getFFfile(name):
     """
         Grab the forcefield file.  May or may not residue in the dat/
         directory.
     """
+    
+    if name is None:
+        return ''
+    
     path = ""
     dirs = sys.path + ["dat"]
     if name in ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]: name = name.upper()
@@ -193,6 +204,10 @@ def getNamesFile(name):
         Returns
             path:  The path to the file (string)
     """
+    
+    if name is None:
+        return ''
+    
     path = ""
     dirs = sys.path + ["dat"]
     if name in ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]: name = name.upper()
@@ -254,7 +269,12 @@ def getPDBFile(path):
     if not os.path.isfile(path):
         URLpath = "http://www.rcsb.org/pdb/cgi/export.cgi/" + path + \
                   ".pdb?format=PDB&pdbId=" + path + "&compression=None"
-        file = urllib.urlopen(URLpath)
+        try:
+            file = urllib.urlopen(URLpath)
+            if file.getcode() != 200 or 'nosuchfile' in file.geturl() :
+                raise IOError
+        except IOError:
+            return None
     else:
         file = open(path, 'rU')
     return file

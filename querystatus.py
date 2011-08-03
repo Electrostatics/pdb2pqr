@@ -275,6 +275,18 @@ def mainCGI():
         runtime = 0
     else:
         progress = None
+        
+    #Check for error html
+    errorpath = '%s%s%s.html' % (INSTALLDIR, TMPDIR, form["jobid"].value)
+    if os.path.isfile(errorpath):
+        string = ""
+        string+= "<html>\n"
+        string+= "\t<head>\n"
+        string+= "\t\t<meta http-equiv=\"Refresh\" content=\"0; url=%s%s%s.html\">\n" % (WEBSITE, TMPDIR, form["jobid"].value)
+        string+= "\t</head>\n"
+        string+= "</html>\n"
+        print string
+        return
 
     # prepares for Opal query, if necessary
     if have_opal:
@@ -409,8 +421,8 @@ def mainCGI():
                     pdb2pqrOpalLogFile=open('%s%s%s/pdb2pqr_opal_log' % (INSTALLDIR, TMPDIR, form["jobid"].value), 'r')
                     logstr=pdb2pqrOpalLogFile.read().split('\n')
                     logopts = eval(logstr[0])
-                    logff = logstr[1]
-                    REMOTE_ADDR = logstr[2]
+#                    logff = logstr[1]
+#                    REMOTE_ADDR = logstr[2]
                     pdb2pqrOpalLogFile.close()
                 for i in range(0,len(filelist)):
                     if filelist[i]._name[-7:]==".propka" or (filelist[i]._name[-13:]=="-typemap.html" and typemap == True) or filelist[i]._name[-4:]==".pqr" or filelist[i]._name[-3:]==".in":
@@ -420,7 +432,7 @@ def mainCGI():
                             pqrOpalFileLength = len(f.readlines())
                             f.close()
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
-                logRun(logopts, runtime, pqrOpalFileLength, logff, REMOTE_ADDR)
+#                logRun(logopts, runtime, pqrOpalFileLength, logff, REMOTE_ADDR)
             else:
                 outputfilelist = glob.glob('%s%s%s/*.propka' % (INSTALLDIR, TMPDIR, jobid))
                 for i in range(0,len(outputfilelist)):

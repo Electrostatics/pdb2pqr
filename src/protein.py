@@ -190,13 +190,13 @@ class Protein:
             residue = Residue(residue)
         return residue
 
-    def printAtoms(self, atomlist, chainflag=0):
+    def printAtoms(self, atomlist, chainflag=False):
         """
             Get the text for the entire protein
             Parameters
                 atomlist:  The list of atoms to include (list)
                 chainflag: Flag whether to print chainid or not -
-                              Defaults to 0 (int)
+                              Defaults to False
             Returns
                 text:      The list of (stringed) atoms (list)
         """

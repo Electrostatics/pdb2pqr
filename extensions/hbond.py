@@ -32,9 +32,7 @@ DIST_CUTOFF = 3.4         # D to A distance
 
 
 def usage():
-    str  = "        --hbond       :  Print a list of hydrogen bonds to\n"
-    str += "                         {output-path}.hbond\n"
-    return str
+    return 'Print a list of hydrogen bonds to {output-path}.hbond'
 
 def hbond(routines, outroot):
     """

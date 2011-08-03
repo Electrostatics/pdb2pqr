@@ -149,14 +149,14 @@ additional limitations, please see the <a
 
 Please enter either:
 <blockquote>
-<input type="RADIO" name="TEXTCONTROL" value="ID" onClick="check(this.value)" CHECKED>a PDB ID</input>: <input type="text" name="PDBID" size=4 maxlength=6 value=""> <BR>
-<input type="RADIO" name="TEXTCONTROL" value="UPLOAD" onClick="check(this.value)">upload a PDB file</input>: <input type="file" name="PDB" size="25" maxlength=100 value="" DISABLED>
+<input type="RADIO" name="PDBSOURCE" value="ID" onClick="check(this.value)" CHECKED>a PDB ID</input>: <input type="text" name="PDBID" size=4 maxlength=6 value=""> <BR>
+<input type="RADIO" name="PDBSOURCE" value="UPLOAD" onClick="check(this.value)">upload a PDB file</input>: <input type="file" name="PDB" size="25" maxlength=100 value="" DISABLED>
 </blockquote>
 <P>
 
 Pick a forcefield to use: 
 <blockquote>
-<input type="RADIO" name="FF" id = "amber" value="amber" onClick="setff(this.value)" CHECKED>AMBER</input><BR> 
+<input type="RADIO" name="FF" id = "amber" value="amber" onClick="setff(this.value)">AMBER</input><BR> 
 <input type="RADIO" name="FF" id = "charmm" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
 <input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)" CHECKED >PARSE</input><BR>
 <input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>

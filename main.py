@@ -417,7 +417,7 @@ def mainCommand(argv):
     parser = OptionParser(description=description, usage=usage, version='%prog (Version ' + __version__ + ')')
     
 
-    group = OptionGroup(parser,"Manditory options", "One of the following options must be used.")
+    group = OptionGroup(parser,"Mandatory options", "One of the following options must be used.")
     group.add_option('--ff', dest='ff', metavar='FIELD_NAME', choices=validForcefields,
                       help='The forcefield to use - currently amber, ' +
                            'charmm, parse, tyl06, peoepb and swanson ' +

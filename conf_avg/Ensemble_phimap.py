@@ -30,6 +30,7 @@ import math
 import string
 import getopt
 import time
+import shutil
 from src.pdb import *
 from src.utilities import *
 from src.structures import *
@@ -57,10 +58,6 @@ class conf_avg:
         else:
             # Single file
             potentials.append(self.process_one_pdb(os.path.join(os.getcwd(),options.pdbfilename)))
-		#
-		# Average potentials
-		#
-        avg_pots=self.average_potentials(potentials)
         return
         
     #
@@ -216,21 +213,18 @@ class conf_avg:
 		import pdb2pka.apbs 
 		APBS=pdb2pka.apbs.runAPBS()
 		potentials = APBS.runAPBS(myProtein, apbs_inputfile)
+		# copies snapshots to separate directories so that they are not overwritten
+		global run_no
+		mydir="snapshot"+str(run_no)
+		if not os.path.exists(mydir):
+			os.mkdir(mydir)
+		for i in range(0,4):
+			myfile="potential"+str(i)+".dx"
+			mypath=mydir+'/'+myfile
+			shutil.copyfile(myfile,mypath)
+		run_no+=1
 		APBS.cleanup()
 		return potentials
-        
-    def average_potentials(self,potentials):
-        """This function averages many potential maps"""
-        avg_pots=[]
-        for i in range(0,len(potentials[0])):
-            currSum=0
-            for j in range(0,len(potentials)):
-                currSum+=potentials[j][i]
-            currAvg=currSum/len(potentials)
-            avg_pots.append(currAvg)
-
-        print avg_pots
-        return avg_pots
 
 #
 # ----
@@ -253,6 +247,8 @@ if __name__=='__main__':
     # We can think about adding flags for not solvating the structure etc here
     #
 
+	# A global value keeping track of how many snapshot directories to create
+    run_no=0
 
 
     (options, args) = parser.parse_args()

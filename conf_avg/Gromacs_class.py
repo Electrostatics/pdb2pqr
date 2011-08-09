@@ -46,7 +46,7 @@ class GROMACS:
         # Filenames
         #
         self.files={}
-        return
+        return 
 
     #
     # ------

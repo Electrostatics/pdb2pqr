@@ -58,6 +58,9 @@ class conf_avg:
         else:
             # Single file
             potentials.append(self.process_one_pdb(os.path.join(os.getcwd(),options.pdbfilename)))
+        avgPotList=self.avg_pots()
+        self.writeAvgPots(avgPotList)
+        print "done"
         return
         
     #
@@ -225,6 +228,65 @@ class conf_avg:
 		run_no+=1
 		APBS.cleanup()
 		return potentials
+
+    def avg_pots(self):
+		"""reads in potentials and averages them"""
+		topdir=os.getcwd()
+		for snapshot_no in range(0,run_no):
+			os.chdir("snapshot"+str(snapshot_no))
+			currPotFile=open("potential0.dx","r")
+			print "starting snapshot no.", snapshot_no
+			#discard first lines
+			for j in range(0,10):
+				currPotFile.readline()
+
+			#get number of data items (in case a different grid than 65x65x65 is used)
+			dataItems=currPotFile.readline().split()[9]
+			dataLines=int(math.ceil(float(dataItems)/3))
+
+			#initialize the list that will store current list of potentials read from the file
+			currPotList=[]
+			for j in range(0,dataLines):
+				currLine=currPotFile.readline().split()
+				currPotList.append(currLine)
+				
+			#flatten the currPotList
+			flatCurrPotList=[item for sublist in currPotList for item in sublist]
+			
+			#initialize current sum list (only on the first go)
+			if snapshot_no == 0:
+				currSumPotList=[0]*len(flatCurrPotList)
+			
+			#add current potential list to sum of previous potential lists
+			for k in range(0,len(flatCurrPotList)):
+				currSumPotList[k]+=float(flatCurrPotList[k])
+
+			os.chdir(topdir)
+			currPotFile.close()
+
+			print "done with snapshot no. ", snapshot_no
+		
+		#initialize averaged potentials list
+		avgPotList=[0]*len(flatCurrPotList)
+		#do the averaging
+		for j in range(0,len(currSumPotList)):
+			avgPotList[j]=float(currSumPotList[j])/(snapshot_no+1)
+
+		return avgPotList
+
+    def writeAvgPots(self,avgPotList):
+		"""writes averaged potentials into a file"""
+		avgPotsFile = open('averaged_pots', 'w')
+		counter=0
+		for each in avgPotList:
+			avgPotsFile.write(str(each))
+			avgPotsFile.write(" ")
+			counter+=1
+			if counter%3==0:
+				avgPotsFile.write("\n")
+		avgPotsFile.close()
+		return
+
 
 #
 # ----

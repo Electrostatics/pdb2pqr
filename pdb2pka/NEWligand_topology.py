@@ -11,11 +11,11 @@ except:
 #from sets import Set
 from ligandclean.trial_templates import *
 from ligandclean.lookuptable import *
-#try:
-#    from substruct import Algorithms
-#except ImportError:
-#    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"    
-#    raise ImportError, txt
+try:
+    from substruct import Algorithms
+except ImportError:
+    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"    
+    raise ImportError, txt
 from types import *
 
 def length(vector):

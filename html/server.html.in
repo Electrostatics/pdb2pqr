@@ -109,7 +109,7 @@ document.getElementById("parse").checked=true;
 <BODY>
 <h2>PDB2PQR Server</h2>
 <P>
-<I>Currently using PDB2PQR Version 1.7</I>
+<I>Currently using PDB2PQR Version 1.7.1</I>
 <P>
 Return to <a href="http://www.poissonboltzmann.org/pdb2pqr">the PDB2PQR homepage</a>.<br> 	
 <hr> 	

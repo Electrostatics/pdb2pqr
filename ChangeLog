@@ -5,6 +5,3 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 - NEW FEATURES
 
 - BUG FIXES
-
- *Fixed ligand command line option.
- *Fixed capitalization of force field in PQR header.

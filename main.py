@@ -477,11 +477,11 @@ def mainCommand(argv):
     
     group.add_option('--neutraln', dest='neutraln', action='store_true', default=False,
                       help='Make the N-terminus of this protein neutral (default is charged). ' +
-                           'Requires PARSE force field')  
+                           'Requires PARSE force field.')  
     
     group.add_option('--neutralc', dest='neutralc', action='store_true', default=False,
                       help='Make the C-terminus of this protein neutral (default is charged). ' +
-                           'Requires PARSE force field')  
+                           'Requires PARSE force field.')  
 
     group.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
                       help='Print information to stdout.')

@@ -263,7 +263,7 @@ def getPDBFile(path):
             file:  File object containing PDB file (file object)
     """
 
-    import os, urllib
+    import urllib
 
     file = None
     if not os.path.isfile(path):

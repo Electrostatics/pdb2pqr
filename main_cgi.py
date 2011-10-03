@@ -83,9 +83,9 @@ def printHeader(pagetitle,have_opal=None,jobid=None):
     """
     if jobid:
         if have_opal:
-            print "Location: querystatus.cgi?jobid=%s&typeofjob=opal\n" % (jobid,typeOfJob)
+            print "Location: querystatus.cgi?jobid=%s&typeofjob=opal\n" % (jobid,)
         else:
-            print "Location: querystatus.cgi?jobid=%s&typeofjob=local\n" & (jobid,typeOfJob)
+            print "Location: querystatus.cgi?jobid=%s&typeofjob=local\n" % (jobid,)
 
     #print "Content-type: text/html\n"
     print "<HTML>"
@@ -303,7 +303,6 @@ def handleOpal(weboptions):
     # Opal-specific import statments
     from AppService_client import AppServiceLocator, getAppMetadataRequest, launchJobRequest, launchJobBlockingRequest, getOutputAsBase64ByNameRequest
     from AppService_types import ns0
-    from ZSI.TC import String
 
     inputFiles = []
     
@@ -352,8 +351,8 @@ def handleOpal(weboptions):
         print "<script type=\"text/javascript\">"
         print "try {"
         print "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
-        for key in options:
-            print "pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, options[key])
+        for key in weboptions:
+            print "pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, weboptions[key])
         print "pageTracker._trackPageview();"
         print "} catch(err) {}</script>"
         print "</BODY>"

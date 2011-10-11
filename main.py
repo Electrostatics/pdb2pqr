@@ -404,7 +404,7 @@ def mainCommand(argv):
         Main driver for running program from the command line.
     """
     
-    fieldNames = ('amber','charmm','parse', 'ty106','peopb','swanson')
+    fieldNames = ('amber','charmm','parse', 'tyl06','peoepb','swanson')
     
     validForcefields = []
     validForcefields.extend(fieldNames)
@@ -421,8 +421,8 @@ def mainCommand(argv):
 
     group = OptionGroup(parser,"Mandatory options", "One of the following options must be used.")
     group.add_option('--ff', dest='ff', metavar='FIELD_NAME', choices=validForcefields,
-                      help='The forcefield to use - currently amber, ' +
-                           'charmm, parse, tyl06, peoepb and swanson ' +
+                      help='The forcefield to use - currently AMBER, ' +
+                           'CHARMM, PARSE, TYL06, PEOEPB and SWANSON ' +
                            'are supported.')
     
     group.add_option('--userff', dest='userff', metavar='USER_FIELD_FILE', 
@@ -450,8 +450,8 @@ def mainCommand(argv):
     
     group.add_option('--ffout', dest='ffout', metavar='FIELD_NAME',choices=validForcefields,
                       help='Instead of using the standard canonical naming scheme for residue and atom names, ' +
-                           'use the names from the given forcefield - currently amber, ' +
-                           'charmm, parse, tyl06, peoepb and swanson ' +
+                           'use the names from the given forcefield - currently AMBER, ' +
+                           'CHARMM, PARSE, TYL06, PEOEPB and SWANSON ' +
                            'are supported.')
     
     group.add_option('--usernames', dest='usernames', metavar='USER_NAME_FILE', 

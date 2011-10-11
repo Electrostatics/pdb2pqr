@@ -232,7 +232,7 @@ class Forcefield:
         if userff == None:
             defpath = getFFfile(ff)
             if defpath == "":
-                raise ValueError, "Unable to find forcefield parameter file %s!" % path
+                raise ValueError, "Unable to find forcefield parameter file %s!" % ff
           
             file = open(defpath, 'rU')
 

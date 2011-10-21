@@ -3298,7 +3298,7 @@ case $host_os in
       PY_SHARED="-G"
       PY_LDFLAGS="-lF77 -lm -lM77 -lsunmath";;
    darwin*)
-      PY_LDFLAGS="-Wl,-framework -Wl,Python -bundle";;
+      PY_LDFLAGS="${LDFLAGS} -Wl,-framework -Wl,Python -bundle";;
 esac
 
 case $host_cpu in

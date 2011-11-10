@@ -9,3 +9,4 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Fixed misspelled command line options that prevented the use of PEOEPB and TYL06.
  * Fixed error handling when certain data files are missing.
  * Fixed LDFLAGS environment variable not being used along with python specific linker flags to link Algorithms.o and _pMC_mult.so
+ * Fixed possible Attribute error when applying naming scheme. 

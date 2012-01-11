@@ -95,41 +95,41 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
     //
     for (float pH=pH_start;pH<pH_end;pH=pH+pH_step) {
       if ((pH-max_pH)>0.0) {
-	continue;
+        continue;
       }
       float this_crg=charges[count][group];
       if (_acid_base[group]==1.0) {
-	if (this_crg<=0.5 && last_crg>0.5) {
-	  //
-	  // Get ph,charge sets and calc pKa from those
-	  //
-	  vector<double> pHs_pKadet;
-	  vector<float> charges_pKadet;
-	  int count2=count-static_cast<int>(datapoints);
-	  if (count2<0) {count2=0;}
-	  for (double pH2=max(pH_start,pH-datapoints*pH_step);pH2<min(pH_end,pH+datapoints*pH_step);pH2=pH2+pH_step) {
-	    pHs_pKadet.push_back(pH2);
-	    charges_pKadet.push_back(charges[count2][group]);
-	    count2=count2+1;
-	  }
-	  pKa=calc_pKa(charges_pKadet,pHs_pKadet,_acid_base[group]);
-	}
+        if (this_crg<=0.5 && last_crg>0.5) {
+          //
+          // Get ph,charge sets and calc pKa from those
+          //
+          vector<double> pHs_pKadet;
+          vector<float> charges_pKadet;
+          int count2=count-static_cast<int>(datapoints);
+          if (count2<0) {count2=0;}
+          for (double pH2=max(pH_start,pH-datapoints*pH_step);pH2<min(pH_end,pH+datapoints*pH_step);pH2=pH2+pH_step) {
+            pHs_pKadet.push_back(pH2);
+            charges_pKadet.push_back(charges[count2][group]);
+            count2=count2+1;
+          }
+          pKa=calc_pKa(charges_pKadet,pHs_pKadet,_acid_base[group]);
+        }
       } else {
-	if (this_crg<=-0.5 && last_crg>-0.5) {
-	  //
-	  // Get ph,charge sets and calc pKa from those
-	  //
-	  vector<double> pHs_pKadet;
-	  vector<float> charges_pKadet;
-	  int count2=count-static_cast<int>(datapoints);
-	  if (count2<0) {count2=0;}
-	  for (double pH2=max(pH_start,pH-datapoints*pH_step);pH2<min(pH_end,pH+datapoints*pH_step);pH2=pH2+pH_step) {
-	    pHs_pKadet.push_back(pH2);
-	    charges_pKadet.push_back(charges[count2][group]);
-	    count2=count2+1;
-	  }
-	  pKa=calc_pKa(charges_pKadet,pHs_pKadet,_acid_base[group]);
-	}
+        if (this_crg<=-0.5 && last_crg>-0.5) {
+          //
+          // Get ph,charge sets and calc pKa from those
+          //
+          vector<double> pHs_pKadet;
+          vector<float> charges_pKadet;
+          int count2=count-static_cast<int>(datapoints);
+          if (count2<0) {count2=0;}
+          for (double pH2=max(pH_start,pH-datapoints*pH_step);pH2<min(pH_end,pH+datapoints*pH_step);pH2=pH2+pH_step) {
+            pHs_pKadet.push_back(pH2);
+            charges_pKadet.push_back(charges[count2][group]);
+            count2=count2+1;
+          }
+          pKa=calc_pKa(charges_pKadet,pHs_pKadet,_acid_base[group]);
+        }
       }
       last_crg=this_crg;
       count=count+1;
@@ -285,21 +285,21 @@ vector<float> MC::calc_charge(float pH) {
       // Keep
       //
       for (int count=0;count<_groups;count++) {
-	current_state[count]=try_state[count];
+        current_state[count]=try_state[count];
       }
       current_energy=try_energy_new;
     } else {
       if (diff<20.0) {
-	tilf=static_cast<double>(rand()) / (static_cast<double>(RAND_MAX)+static_cast<double>(1));
-	if (tilf<exp(-diff)) {
-	  //
-	  // Keep
-	  //
-	  for (int count=0;count<_groups;count++) {
-	    current_state[count]=try_state[count];
-	  }
-	  current_energy=try_energy_new;
-	}
+        tilf=static_cast<double>(rand()) / (static_cast<double>(RAND_MAX)+static_cast<double>(1));
+        if (tilf<exp(-diff)) {
+          //
+          // Keep
+          //
+          for (int count=0;count<_groups;count++) {
+            current_state[count]=try_state[count];
+          }
+          current_energy=try_energy_new;
+        }
       }
     }
     //
@@ -307,7 +307,7 @@ vector<float> MC::calc_charge(float pH) {
     //
     if (step>eqsteps) {
       for (int count=0;count<_groups;count++) {
-	sum_state[count].push_back(current_state[count]);
+        sum_state[count].push_back(current_state[count]);
       }
     }
   }

@@ -9,7 +9,8 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Combined hbond and hbondwhatit into one extension (hbond) with new command line parameters. (No more hacking hbond.py)
  * Combined rama, phi, psi into one extension (rama) with new command line parameters.
  * Extensions may now add their own command line arguments. Extensions with their own command line arguments will be grouped separately.
- * Improved interface for extensions. 
+ * Improved interface for extensions.
+ * Added opal configuration file.
  
 - BUG FIXES
  * Cleaned up white space in several files and some pydev warnings.
@@ -18,7 +19,6 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Fixed --protonation=new option for propka30.
  * Improved time reporting for apbs jobs.
  * Fixed opal runtime reporting.
-
  * Fixed misspelled command line options that prevented the use of PEOEPB and TYL06.
  * Fixed error handling when certain data files are missing.
  * Fixed LDFLAGS environment variable not being used along with python specific linker flags to link Algorithms.o and _pMC_mult.so

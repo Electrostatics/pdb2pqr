@@ -93,7 +93,7 @@ class Chain:
                 item = getattr(self, name)
                 return item
             except AttributeError:
-                message = "Unable to get object \"%s\" in class Chain" % name
+                message = 'Unable to get object "%s" in class Chain' % name
                 raise ValueError, message
 
     def addResidue(self, residue):
@@ -104,7 +104,7 @@ class Chain:
                 residue: The residue to be added (Residue)
         """
         self.residues.append(residue)
-
+        
     def numResidues(self):
         """
             Get the number of residues for the chain
@@ -155,6 +155,13 @@ class Chain:
             for atom in myList:
                 atomlist.append(atom)
         return atomlist
+    
+    def getSummary(self):
+        output = []
+        for residue in self.residues:
+            output.append(residue.letterCode())
+            
+        return ''.join(output)
 
 
 class Residue:
@@ -212,7 +219,8 @@ class Residue:
         """
         text = "%s %s %i" % (self.name, self.chainID, self.resSeq)
         return text
-
+    
+    #TODO: Kill this in a fire.
     def get(self, name):
         """
             Get a member of the Residue class
@@ -266,7 +274,8 @@ class Residue:
             Returns
                 item:          The value of the member   
         """
-        if name == "resSeq": self.setResSeq(value)
+        if name == "resSeq": 
+            self.setResSeq(value)
         else:
             try:
                 setattr(self, name, value)
@@ -307,10 +316,9 @@ class Residue:
             Get the number of atoms for the residue
 
             Returns
-                count:  Number of atoms in the residue (int)
+                Number of atoms in the residue (int)
         """
-        count = len(self.atoms)
-        return count
+        return len(self.atoms)
                     
     def setResSeq(self, value):
         """
@@ -421,17 +429,13 @@ class Residue:
             Parameters
                 resname: The name of the residue to retrieve (string)
         """
-        try:
-            return self.map[name]
-        except KeyError:
-            return None
+        return self.map.get(name);
 
     def getAtoms(self):
         return self.atoms
 
     def hasAtom(self, name):
-        if name in self.map: return 1
-        else: return 0
+        return name in self.map
 
     def getCharge(self):
         """
@@ -442,11 +446,14 @@ class Residue:
             Returns:
                 charge: The charge of the residue (float)
         """
-        charge = 0.0
-        for atom in self.atoms:
-            atomcharge = atom.get("ffcharge")
-            if atomcharge != None:
-                charge = charge + atomcharge
+        #ffcharge can be None.
+        charge = (atom.ffcharge for atom in self.atoms if atom.ffcharge)
+        charge = sum(charge)
+#        charge = 0.0
+#        for atom in self.atoms:
+#            atomcharge = atom.get("ffcharge")
+#            if atomcharge != None:
+#                charge += atomcharge
 
         charge = float("%.4f" % charge)
         return charge
@@ -543,6 +550,9 @@ class Residue:
         # Change the list pointer
 
         self.atoms = templist[:]
+        
+    def letterCode(self):
+        return 'X'
 
 class Atom(ATOM):
     """
@@ -600,12 +610,14 @@ class Atom(ATOM):
         if hasattr(atom,'mol2charge'):
             self.mol2charge=atom.mol2charge
         
-          
-    def __str__(self):
+    
+    def getCommonStringRep(self, chainflag=False):
         """
-            Returns a string of the new atom type.  Uses the ATOM string
-            output but changes the first field to either by ATOM or
-            HETATM as necessary.
+            Returns a string of the common column of the new atom type.  
+            Uses the ATOM string output but changes the first field 
+            to either by ATOM or HETATM as necessary.
+            
+            This is used to create the output for pqr and pdb files! No touchy!
 
             Returns
                 str: String with ATOM/HETATM field set appropriately
@@ -629,7 +641,10 @@ class Atom(ATOM):
             str = str + " " + string.ljust(tstr, 3)[:3]
             
         str = str + " "
-        tstr = self.chainID
+        if chainflag:
+            tstr = self.chainID
+        else:
+            tstr = ''
         str = str + string.ljust(tstr, 1)[:1]
         tstr = "%d" % self.resSeq
         str = str + string.rjust(tstr, 4)[:4]
@@ -642,15 +657,81 @@ class Atom(ATOM):
         tstr = "%8.3f" % self.y
         str = str + string.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.z
-        str = str + string.ljust(tstr, 8)[:8]
-        if self.ffcharge != None: ffcharge = "%.4f" % self.ffcharge
-        else: ffcharge = "0.0000"
+        str = str + string.ljust(tstr, 8)[:8] 
+        return str
+        
+    def __str__(self):
+        """
+            Returns a string of the new atom type.  Uses the ATOM string
+            output but changes the first field to either by ATOM or
+            HETATM as necessary.
+            
+            This is used to create the output for pqr files! No touchy!
+
+            Returns
+                str: String with ATOM/HETATM field set appropriately
+        """
+        return self.getPQRString()
+    
+    
+    def getPQRString(self, chainflag=False):
+        """
+            Returns a string of the new atom type.  Uses the ATOM string
+            output but changes the first field to either by ATOM or
+            HETATM as necessary.
+            
+            This is used to create the output for pqr files! No touchy!
+
+            Returns
+                str: String with ATOM/HETATM field set appropriately
+        """
+        str = self.getCommonStringRep(chainflag=chainflag)
+        
+        if self.ffcharge != None: 
+            ffcharge = "%.4f" % self.ffcharge
+        else: 
+            ffcharge = "0.0000"
         str = str + string.rjust(ffcharge, 8)[:8]
-        if self.radius != None: ffradius = "%.4f" % self.radius
-        else: ffradius = "0.0000"
+        if self.radius != None: 
+            ffradius = "%.4f" % self.radius
+        else: 
+            ffradius = "0.0000"
         str = str + string.rjust(ffradius, 7)[:7]
+
         return str
     
+    
+    def getPDBString(self):
+        """
+            Returns a string of the new atom type.  Uses the ATOM string
+            output but changes the first field to either by ATOM or
+            HETATM as necessary.
+            
+            This is for the pdb representation of the atom. The propka30 module 
+            depends on this being correct. No touchy!
+
+            Returns
+                str: String with ATOM/HETATM field set appropriately
+        """
+        str = self.getCommonStringRep()
+        
+        tstr = "%6.2f" % self.occupancy
+        str = str + string.ljust(tstr, 6)[:6]
+        tstr = "%6.2f" % self.tempFactor
+        str = str + string.rjust(tstr, 6)[:6]
+        tstr = self.segID
+        str = str + string.ljust(tstr, 4)[:4]
+        tstr = self.element
+        str = str + string.ljust(tstr, 2)[:2]
+        tstr = self.charge
+        str = str + string.ljust(tstr, 2)[:2]
+
+
+        return str
+    
+    #TODO: What? Why? Isn't this Python?
+    #Are we really doing attribute access based
+    # on dynamic names? A search of the code says no.
     def get(self, name):
         """
             Get a member of the Atom class
@@ -721,8 +802,6 @@ class Atom(ATOM):
                 ffcharge:   The forcefield charge on the atom
                 hdonor:     Whether the atom is a hydrogen donor
                 hacceptor:  Whether the atom is a hydrogen acceptor
-            Returns
-                item:       The value of the member
         """
         try:
             setattr(self, name, value)
@@ -755,9 +834,7 @@ class Atom(ATOM):
             Returns
                 value: 1 if Atom is a Hydrogen, 0 otherwise
         """
-        value = 0
-        if self.name[0] == "H": value = 1
-        return value
+        return self.name[0] == "H"
 
     def isBackbone(self):
         """
@@ -766,10 +843,7 @@ class Atom(ATOM):
             Returns
                 state: 1 if true, 0 if false
         """
-        state = 0
-        if self.name in BACKBONE:
-            state = 1
-        return state
+        return self.name in BACKBONE
 
     def hasReference(self):
         """
@@ -777,11 +851,10 @@ class Atom(ATOM):
             All known atoms should have reference objects.
 
             Returns
-                1 if atom has a reference object, 0 otherwise.
+                True if atom has a reference object, False otherwise.
         """
 
-        if self.reference != None: return 1
-        else: return 0
+        return self.reference != None
 
     
         

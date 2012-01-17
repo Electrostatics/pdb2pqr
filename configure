@@ -677,7 +677,6 @@ URL
 install_dir_var
 website_install_var
 action_install_var
-with_propka
 with_pdb2pka
 LIBOBJS
 LTLIBOBJS
@@ -1275,7 +1274,6 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
-  --disable-propka        Disable propka compilation
   --disable-pdb2pka       Disable pdb2pka compilation
 
 Optional Packages:
@@ -3318,46 +3316,6 @@ PY_FLAGS=$PY_FLAGS
 
 PDB2PQR_SUBDIRS=""
 
-# A.  propka
-
-{ echo "$as_me:$LINENO: checking for --disable-propka" >&5
-echo $ECHO_N "checking for --disable-propka... $ECHO_C" >&6; }
-# Check whether --enable-propka was given.
-if test "${enable_propka+set}" = set; then
-  enableval=$enable_propka;  with_propka="$enableval"
-else
-   with_propka="enable"
-
-fi
-
-
-if test "$with_propka" = "yes" ; then
-  with_propka="enable"
-elif test "$with_propka" = "no"; then
-  with_propka="disable"
-fi
-
-if test "${with_propka}" = "enable"; then
-     PDB2PQR_SUBDIRS="propka"
-     { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-     { echo "$as_me:$LINENO: result: " >&5
-echo "${ECHO_T}" >&6; }
-     { echo "$as_me:$LINENO: result: ------------- Begin Processing PropKa Configure Options -----------" >&5
-echo "${ECHO_T}------------- Begin Processing PropKa Configure Options -----------" >&6; }
-     cd propka
-     ./configure py_path=$py_path
-     cd ..
-     { echo "$as_me:$LINENO: result: ------------- End Processing PropKa Configure Options -----------" >&5
-echo "${ECHO_T}------------- End Processing PropKa Configure Options -----------" >&6; }
-     { echo "$as_me:$LINENO: result: " >&5
-echo "${ECHO_T}" >&6; }
-else
-     { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-     PDB2PQR_SUBDIRS=""
-fi
-
 # B. pdb2pka
 
 { echo "$as_me:$LINENO: checking for--disable-pdb2pka" >&5
@@ -3906,7 +3864,6 @@ sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' \
     -e 's%@INSTALLDIR@%'${prefix}'%' src/aconf.py.in > src/aconf.py
 #chmod 755 pdb2pqr-opal.cgi
 chmod 755 querystatus.cgi
-
 
 
 
@@ -4734,13 +4691,12 @@ for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
 website_install_var!$website_install_var$ac_delim
 action_install_var!$action_install_var$ac_delim
-with_propka!$with_propka$ac_delim
 with_pdb2pka!$with_pdb2pka$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 6; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 5; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -5225,7 +5181,6 @@ echo
 echo "User ID:       ${USER}"
 echo "Version:       ${VERSION}"
 echo "Install Dir:   ${prefix}"
-echo "propka:        ${with_propka}"
 echo "pdb2pka:       ${with_pdb2pka}"
 echo "PY_CFLAGS:     ${PY_CFLAGS}"
 echo

@@ -55,6 +55,7 @@ import getopt
 from optparse import OptionParser, OptionGroup
 import os
 import time
+import copy
 from src import pdb
 from src import utilities
 from src import structures
@@ -134,15 +135,13 @@ def printPQRHeader(atomlist, reslist, charge, ff, warnings, pH, ffout):
 
     return header
 
-class ExtentionOptions(object):
-    pass
-
 def runPDB2PQR(pdblist, ff,
                outname = "",
                ph = None,
                verbose = False,
-               extentions = [],
-               ententionOptions = ExtentionOptions(),
+               selectedExtensions = [],
+               extensionOptions = utilities.ExtraOptions(),
+               propkaOptions = None,
                clean = False,
                neutraln = False,
                neutralc = False,
@@ -168,8 +167,9 @@ def runPDB2PQR(pdblist, ff,
             ph:            The desired ph of the system (float)
             verbose:       When True, script will print information to stdout
                              When False, no detailed information will be printed (float)
-            extentions:      List of extensions to run
-            ententionOptions:optionParser like option object that is passed to each object. 
+            extensions:      List of extensions to run
+            extensionOptions:optionParser like option object that is passed to each object. 
+            propkaOptions:optionParser like option object for propka30.
             clean:         only return original PDB file in aligned format.
             neutraln:      Make the N-terminus of this protein neutral
             neutralc:      Make the C-terminus of this protein neutral
@@ -207,7 +207,9 @@ def runPDB2PQR(pdblist, ff,
     if not ph is None:
         pka = True
         pkaname = outroot + ".propka"
-        if os.path.isfile(pkaname): os.remove(pkaname)
+        #TODO: What? Shouldn't it be up to propka on how to handle this?
+        if os.path.isfile(pkaname): 
+            os.remove(pkaname)
     else: 
         pka = False
 
@@ -257,11 +259,10 @@ def runPDB2PQR(pdblist, ff,
         lines = myProtein.printAtoms(myProtein.getAtoms(), chain)
       
         # Process the extensions
-        # TODO: kill the eval call.
-        for ext in extentions:
+        for ext in selectedExtensions:
             module = extensions.extDict[ext]
-            call = "module.%s(myRoutines, outroot)" % ext
-            eval(call)  
+            tempRoutines = copy.deepcopy(myRoutines)
+            module.run_extension(tempRoutines, outroot, extensionOptions)
     
         if verbose:
             print "Total time taken: %.2f seconds\n" % (time.time() - start)
@@ -287,7 +288,7 @@ def runPDB2PQR(pdblist, ff,
             myRoutines.debumpProtein()  
 
         if pka:
-            myRoutines.runPROPKA(ph, ff, pkaname)
+            myRoutines.runPROPKA(ph, ff, outroot, pkaname, propkaOptions)
 
         myRoutines.addHydrogens()
 
@@ -301,7 +302,7 @@ def runPDB2PQR(pdblist, ff,
             myhydRoutines.initializeFullOptimization()
             myhydRoutines.optimizeHydrogens()
         else:
-            myhydRoutines = hydrogenRoutines(myRoutines)
+            #myhydRoutines = hydrogenRoutines(myRoutines)
             myhydRoutines.initializeWaterOptimization()
             myhydRoutines.optimizeHydrogens()
 
@@ -355,7 +356,8 @@ def runPDB2PQR(pdblist, ff,
     if ligsuccess:
         templist = misslist[:]
         for atom in templist:
-            if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+            if isinstance(atom.residue, (Amino, Nucleic)): 
+                continue
             misslist.remove(atom)
 
     # Create the Typemap
@@ -383,16 +385,16 @@ def runPDB2PQR(pdblist, ff,
     # Determine if any of the atoms in misslist were ligands
     missedligandresidues = []
     for atom in misslist:
-        if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+        if isinstance(atom.residue, (Amino, Nucleic)): 
+            continue
         if atom.resName not in missedligandresidues:
             missedligandresidues.append(atom.resName)
 
     # Process the extensions
-    #TODO: kill the eval call.
-    for ext in extentions:
+    for ext in selectedExtensions:
         module = extensions.extDict[ext]
-        call = "module.%s(myRoutines, outroot)" % ext
-        eval(call)
+        tempRoutines = copy.deepcopy(myRoutines)
+        module.run_extension(tempRoutines, outroot, extensionOptions)
 
     if verbose:
         print "Total time taken: %.2f seconds\n" % (time.time() - start)
@@ -457,10 +459,6 @@ def mainCommand(argv):
     group.add_option('--usernames', dest='usernames', metavar='USER_NAME_FILE', 
                       help='The user created names file to use. Required if using --userff')
     
-    group.add_option('--with-ph', dest='pH', action='store', type='float',
-                      help='Use propka to calculate pKas and apply them to the molecule given the pH value. ' +
-                           'Actual PropKa results will be output to <output-path>.propka.')
-    
     group.add_option('--apbs-input', dest='input', action='store_true', default=False,
                       help='Create a template APBS input file based on the generated PQR file.  Also creates a Python ' +
                            'pickle for using these parameters in other programs.')
@@ -487,7 +485,20 @@ def mainCommand(argv):
                       help='Print information to stdout.')
     parser.add_option_group(group)
     
-    extentionsGroup = extensions.setupExtensionsOptions(parser)
+    
+    propkaroup = OptionGroup(parser,"propka options")
+    
+    propkaroup.add_option('--with-ph', dest='pH', action='store', type='float',
+                      help='Use propka to calculate pKas and apply them to the molecule given the pH value. ' +
+                           'Actual PropKa results will be output to <output-path>.propka.')
+    
+    propkaroup.add_option("--reference", dest="reference", default="neutral", 
+           help="setting which reference to use for stability calculations [neutral/low-pH]")
+    
+    parser.add_option_group(propkaroup)
+    
+    
+    extensions.setupExtensionsOptions(parser)
     
     (options, args) = parser.parse_args() 
     
@@ -499,9 +510,14 @@ def mainCommand(argv):
     package_path = PACKAGE_PATH
     if package_path != "":
         sys.path.extend(package_path.split(":"))
+       
+    propkaOpts = None 
+    if (not options.pH is None): 
+        if(options.pH < 0.0 or options.pH > 14.0):
+            parser.error('%i is not a valid pH!  Please choose a pH between 0.0 and 14.0.' % options.pH)
         
-    if (not options.pH is None) and (options.pH < 0.0 or options.pH > 14.0):
-        parser.error('%i is not a valid pH!  Please choose a pH between 0.0 and 14.0.' % options.pH)
+        #build propka options
+        propkaOpts = utilities.createPropkaOptions(options.pH, options.verbose)
         
     if options.assign_only or options.clean:
         options.debump = options.optflag = False
@@ -556,15 +572,10 @@ def mainCommand(argv):
     sys.stdout.write(text)
             
     path = args[0]
-    file = getPDBFile(path)
-    pdblist, errlist = readPDB(file)
+    pdbFile = getPDBFile(path)
+    pdblist, errlist = readPDB(pdbFile)
     
     if len(pdblist) == 0 and len(errlist) == 0:
-        #TODO: Why are we doing this?
-#        try: 
-#            os.remove(path)
-#        except OSError: 
-#            pass
         parser.error("Unable to find file %s!" % path)
 
     if len(errlist) != 0 and options.verbose:
@@ -574,23 +585,16 @@ def mainCommand(argv):
     outpath = args[1]
     options.outname = outpath
 
-    #In case no extensions were specified.
-    if options.active_extentions is None:
-        options.active_extentions = []
+    #In case no extensions were specified or no extensions exist.
+    if not hasattr(options, 'active_extensions' ) or options.active_extensions is None:
+        options.active_extensions = []
         
-    #Filter out the options specifically for extentions.
-    #Passed into runPDB2PQR, but not used by any extention yet.
-    extentionOpts = ExtentionOptions()
-    
-    if extentionsGroup is not None:
-        for opt in extentionsGroup.option_list:
-            if opt.dest == 'active_extentions':
-                continue
-            setattr(extentionOpts, opt.dest, 
-                    getattr(options, opt.dest))
+    #I see no point in hiding options from extensions.
+    extensionOpts = options
 
     #TODO: The ideal would be to pass a file like object for the second
-    # argument and get rid of the userff and username arguments to this function.
+    # argument and add a third for names then
+    # get rid of the userff and username arguments to this function.
     # This would also do away with the redundent checks and such in 
     # the Forcefield constructor.
     header, lines, missedligands = runPDB2PQR(pdblist, 
@@ -598,8 +602,9 @@ def mainCommand(argv):
                                               outname = options.outname,
                                               ph = options.pH,
                                               verbose = options.verbose,
-                                              extentions = options.active_extentions,
-                                              ententionOptions = extentionOpts,
+                                              selectedExtensions = options.active_extensions,
+                                              propkaOptions = propkaOpts,
+                                              extensionOptions = extensionOpts,
                                               clean = options.clean,
                                               neutraln = options.neutraln,
                                               neutralc = options.neutralc,

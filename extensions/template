@@ -23,15 +23,32 @@ def usage():
 
         Returns a string describing the usage for this function.
         This will be used for help text for command line option for this function.
+        Defining this function is optional.
     """
     str = "Put usage here"
     return str
+    
+def addExtensionOptions(extensionGroup):
+	"""
+		Add options specific to this extension to the option parser.
+		This function is optional.
+		
+		extensionGroup: A link to the OptionParser group object for extension
+						options. See the Python OptionParser documentation.
+						
+						Option names must not conflict with other option names.
+	"""
+	extensionGroup.add_option('--Ni', dest='Ni', action='store_true', default=False,
+							  help='Include N atoms in template output')
+	extensionGroup.add_option('--Ox', dest='Ox', action='store_true', default=False,
+							  help='Include O atoms in template output')
 
-def template(routines, outroot):
+def run_extension(routines, outroot, options):
     """
         The main function.  This will be called after all other PDB2PQR
         activity has been completed.  There are two useful parameters
-        that must be passed into the function
+        that must be passed into the function.
+        This functions is required.
 
         Parameters
             routines:  A link to the routines object  The routines object
@@ -47,6 +64,9 @@ def template(routines, outroot):
                        "example" will just return "example".  For other
                        extension scripts we have appended the function name
                        to the outroot.
+            options:   A options parser like class containing additional options
+                       created for this extension by the optional addExtensionOptions
+                       function.
     """
 
     outname = outroot + ".template"

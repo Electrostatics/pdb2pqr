@@ -13,9 +13,7 @@ var TRANSP_GIF = APPLET_PATH + "/apbstransp.gif"
 
 // I think this should take care of the temp file path:
 
-var FILE_PATH = (document.location.href.indexOf("kryptonite.nbcr.net") >= 0 ? "/pdb2pqr/tmp" 
-		: document.location.href.indexOf("examples-12") >= 0 ? "http://cupid.wustl.edu/~yonghuang/pdb2pqr/tmp" 
-		: "tmp");
+var FILE_PATH = (document.location.href.indexOf("examples-12") >= 0 ? "http://cupid.wustl.edu/~yonghuang/pdb2pqr/tmp" : "tmp");
 
 
 ////// testing only //////

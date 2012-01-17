@@ -164,7 +164,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 website_install_var = @website_install_var@
 with_pdb2pka = @with_pdb2pka@
-with_propka = @with_propka@
 SUBDIRS = .
 all: all-recursive
 

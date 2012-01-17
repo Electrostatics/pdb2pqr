@@ -205,36 +205,6 @@ dnl ##########################################################################
 
 PDB2PQR_SUBDIRS=""
 
-# A.  propka
-
-AC_MSG_CHECKING([for --disable-propka])
-AC_ARG_ENABLE(propka,
-     [AC_HELP_STRING([--disable-propka], [Disable propka compilation])],
-     [ with_propka="$enableval" ],
-     [ with_propka="enable" ]
-)
-
-if test "$with_propka" = "yes" ; then
-  with_propka="enable"
-elif test "$with_propka" = "no"; then
-  with_propka="disable"
-fi
-
-if test "${with_propka}" = "enable"; then
-     PDB2PQR_SUBDIRS="propka"
-     AC_MSG_RESULT([no])
-     AC_MSG_RESULT([])
-     AC_MSG_RESULT([------------- Begin Processing PropKa Configure Options -----------])
-     cd propka
-     ./configure py_path=$py_path
-     cd ..
-     AC_MSG_RESULT([------------- End Processing PropKa Configure Options -----------])
-     AC_MSG_RESULT([])
-else
-     AC_MSG_RESULT([yes])
-     PDB2PQR_SUBDIRS=""
-fi
-
 # B. pdb2pka
 
 AC_MSG_CHECKING([for--disable-pdb2pka])
@@ -722,7 +692,6 @@ sed -e 's%@MAXATOMS@%'${MAX_ATOMS}'%' \
 #chmod 755 pdb2pqr-opal.cgi
 chmod 755 querystatus.cgi
 
-AC_SUBST(with_propka)
 AC_SUBST(with_pdb2pka)
 
 PDB2PQR_SUBDIRS="${PDB2PQR_SUBDIRS} tests"
@@ -775,7 +744,6 @@ echo
 echo "User ID:       ${USER}"
 echo "Version:       ${VERSION}"
 echo "Install Dir:   ${prefix}"
-echo "propka:        ${with_propka}"
 echo "pdb2pka:       ${with_pdb2pka}"
 echo "PY_CFLAGS:     ${PY_CFLAGS}"
 echo 

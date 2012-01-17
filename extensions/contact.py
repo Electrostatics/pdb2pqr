@@ -11,24 +11,25 @@
 __date__ = "April 2007"
 __author__ = "Julie C. Mitchell"
 
-from src.utilities import *
-from src.routines import *
+from src.utilities import distance
+from src.routines import Cells
 
 DIST_CUTOFF = 3.5         # max distance  
 
 def usage():
     return 'Print a list of contacts to {output-path}.con\n'
 
-def contact(routines, outroot):
+def run_extension(routines, outroot, options):
     """
         Print a list of contacts.
 
         Parameters
             routines:  A link to the routines object
             outroot:   The root of the output name
+            options:   options object 
     """
     outname = outroot + ".con"
-    file = open(outname, "w")
+    outfile = open(outname, "w")
 
     # Initialize - set nearby cells, donors/acceptors
     
@@ -39,34 +40,41 @@ def contact(routines, outroot):
     routines.cells.assignCells(protein)
 
     for thisatom in protein.getAtoms():
-
         # Grab the list of thisatoms
-        if not thisatom.hdonor: continue
+        if not thisatom.hdonor: 
+            continue
         thisatomhs = []
         for bond in thisatom.bonds:
-            if bond.isHydrogen(): thisatomhs.append(bond)
-        if thisatomhs == []: continue
+            if bond.isHydrogen(): 
+                thisatomhs.append(bond)
+        if thisatomhs == []: 
+            continue
 
-      
         # For each thisatom, grab all thatatomeptors
             
         count = 0
         closeatoms = routines.cells.getNearCells(thisatom)
         for thatatom in closeatoms:
-			if (thisatom.residue == thatatom.residue): continue  # comment this out to include interresidue contacts
-			if (thatatom.isHydrogen()): continue
-			thisdist = distance(thisatom.getCoords(), thatatom.getCoords())
-			if (thisdist <= DIST_CUTOFF): 
-				count = count+1
-				thisBstring='S'
-				thatBstring='S'
-				hscore= 0.0
-				if (thisatom.hdonor & thatatom.hacceptor): hscore = 1.0
-				if (thisatom.hacceptor & thatatom.hdonor): hscore = 1.0
-				if (thisatom.isBackbone()): thisBstring='B'
-				if (thatatom.isBackbone()): thatBstring='B'
-				file.write("%4d %4d %-4s (%4d  ) %s     %-4s<>%4d %-4s (%4d  ) %s     %-4s D=%6.2f  H-ene=%6.2f  Sym=  (%s-%s)\n" % \
-				  (count, thisatom.residue.resSeq,thisatom.residue.name,thisatom.residue.resSeq, thisatom.residue.chainID,thisatom.name,thatatom.residue.resSeq,thatatom.residue.name,thatatom.residue.resSeq, thatatom.residue.chainID,thatatom.name, thisdist, hscore, thisBstring, thatBstring)) 
-				
+            if (thisatom.residue == thatatom.residue): 
+                continue  # comment this out to include interresidue contacts
+            if (thatatom.isHydrogen()): 
+                continue
+            thisdist = distance(thisatom.getCoords(), thatatom.getCoords())
+            if (thisdist <= DIST_CUTOFF): 
+                count = count+1
+                thisBstring='S'
+                thatBstring='S'
+                hscore= 0.0
+                if (thisatom.hdonor & thatatom.hacceptor): 
+                    hscore = 1.0
+                if (thisatom.hacceptor & thatatom.hdonor): 
+                    hscore = 1.0
+                if (thisatom.isBackbone()): 
+                    thisBstring='B'
+                if (thatatom.isBackbone()): 
+                    thatBstring='B'
+                outfile.write("%4d %4d %-4s (%4d  ) %s     %-4s<>%4d %-4s (%4d  ) %s     %-4s D=%6.2f  H-ene=%6.2f  Sym=  (%s-%s)\n" % \
+                  (count, thisatom.residue.resSeq,thisatom.residue.name,thisatom.residue.resSeq, thisatom.residue.chainID,thisatom.name,thatatom.residue.resSeq,thatatom.residue.name,thatatom.residue.resSeq, thatatom.residue.chainID,thatatom.name, thisdist, hscore, thisBstring, thatBstring)) 
+
     routines.write("\n")
-    file.close()
+    outfile.close()

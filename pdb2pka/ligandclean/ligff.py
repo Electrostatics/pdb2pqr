@@ -269,14 +269,14 @@ class ligand_charge_handler(MOL2MOLECULE):
         # identical to the one we have
         #
         if not getattr(self,'ligand_props',None):
-           self.recalc_charges(residue)
-           qqqgesges = 0.0
-           for aa in residue.atoms:
-               #print "newly_calced  %s  %1.4f " %(aa.name, aa.charge)
-               qqqgesges = qqqgesges +  aa.charge
-           #print "-------------------------------"
-           #print "newly_calced - net charge %1.4f" %(qqqgesges)
-           #print
+            self.recalc_charges(residue)
+            qqqgesges = 0.0
+            for aa in residue.atoms:
+                #print "newly_calced  %s  %1.4f " %(aa.name, aa.charge)
+                qqqgesges = qqqgesges +  aa.charge
+            #print "-------------------------------"
+            #print "newly_calced - net charge %1.4f" %(qqqgesges)
+            #print
         else:
             atoms_last_calc=self.ligand_props.keys()
             #

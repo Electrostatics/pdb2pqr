@@ -2440,12 +2440,12 @@ def readPDB(file):
             errlist.append(record)
         except StandardError, details:
             if record == "ATOM" or record == "HETATM":
-               try:
-                   obj = readAtom(line)
-                   pdblist.append(obj)
-               except StandardError, details:
-                   sys.stderr.write("Error parsing line: %s\n" % details)
-                   sys.stderr.write("<%s>\n" % string.strip(line))
+                try:
+                    obj = readAtom(line)
+                    pdblist.append(obj)
+                except StandardError, details:
+                    sys.stderr.write("Error parsing line: %s\n" % details)
+                    sys.stderr.write("<%s>\n" % string.strip(line))
             elif record == "SITE" or record == "TURN":
                 pass
             elif record == "SSBOND" or record == "LINK":

@@ -77,7 +77,7 @@ class Protein:
         self.referencemap = definition.map
         self.patchmap = definition.patches
 
-        dict = {}
+        chainDict = {}
         previousAtom = None
         residue = []
         numModels = 0
@@ -103,15 +103,15 @@ class Protein:
                 if previousAtom == None:
                     previousAtom = record
                 
-                if chainID not in dict:
+                if chainID not in chainDict:
                     myChain = Chain(chainID)
-                    dict[chainID] = myChain
+                    chainDict[chainID] = myChain
                         
                 if resSeq != previousAtom.resSeq or \
                       iCode != previousAtom.iCode or \
                       chainID != previousAtom.chainID:
                     myResidue = self.createResidue(residue, previousAtom.resName)
-                    dict[previousAtom.chainID].addResidue(myResidue)
+                    chainDict[previousAtom.chainID].addResidue(myResidue)
                     residue = []
 
                 residue.append(record)
@@ -119,7 +119,7 @@ class Protein:
 
             elif isinstance(record, END):
                 myResidue = self.createResidue(residue, previousAtom.resName)
-                dict[previousAtom.chainID].addResidue(myResidue)
+                chainDict[previousAtom.chainID].addResidue(myResidue)
                 residue = []
 
             elif isinstance(record, MODEL):
@@ -127,7 +127,7 @@ class Protein:
                 if residue == []: continue
                 if numModels > 1:
                     myResidue = self.createResidue(residue, previousAtom.resName)    
-                    dict[previousAtom.chainID].addResidue(myResidue)
+                    chainDict[previousAtom.chainID].addResidue(myResidue)
                     break
 
             elif isinstance(record, TER):
@@ -135,23 +135,23 @@ class Protein:
 
         if residue != [] and numModels <= 1:
             myResidue = self.createResidue(residue, previousAtom.resName)
-            dict[previousAtom.chainID].addResidue(myResidue)
+            chainDict[previousAtom.chainID].addResidue(myResidue)
 
         # Keep a map for accessing chains via chainID
 
-        self.chainmap = dict.copy()
+        self.chainmap = chainDict.copy()
 
         # Make a list for sequential ordering of chains
         
-        if dict.has_key(""):
-            dict["ZZ"] = dict[""]
-            del dict[""]
+        if chainDict.has_key(""):
+            chainDict["ZZ"] = chainDict[""]
+            del chainDict[""]
 
-        keys = dict.keys()
+        keys = chainDict.keys()
         keys.sort()
 
         for key in keys:
-            self.chains.append(dict[key])
+            self.chains.append(chainDict[key])
 
         for chain in self.chains:
             #if chain.numResidues() == 1:
@@ -186,7 +186,7 @@ class Protein:
             else:
                 obj = "%s(residue, refobj)" % resname
                 residue = eval(obj)
-        except KeyError, NameError:
+        except (KeyError, NameError):
             residue = Residue(residue)
         return residue
 
@@ -210,8 +210,7 @@ class Protein:
             elif atom.chainID != currentchainID:
                 currentchainID = atom.chainID
                 text.append("TER\n")
-            if not chainflag: atom.chainID = ""
-            text.append("%s\n" % str(atom))
+            text.append("%s\n" % atom.getPQRString(chainflag=chainflag))
         text.append("TER\nEND")
         return text
 
@@ -248,9 +247,7 @@ class Protein:
         file.write("<tr><th>Atom Number</th><th>Atom Name</th><th>Residue Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>CHARMM Atom Type</th></tr>\n")
        
         for atom in self.getAtoms():
-            if isinstance(atom.residue, Amino) or \
-               isinstance(atom.residue, WAT) or \
-               isinstance(atom.residue, Nucleic):
+            if isinstance(atom.residue, (Amino, WAT, Nucleic)):
                 resname = atom.residue.ffname
             else:
                 resname = atom.residue.name
@@ -338,7 +335,7 @@ class Protein:
         for chain in self.chains:
             for residue in chain.get("residues"):
                 rescharge = residue.getCharge()
-                charge = charge + rescharge
+                charge += rescharge
                 if isinstance(residue, Nucleic):               
                     if residue.is3term or residue.is5term: continue
                 if float("%i" % rescharge) != rescharge:
@@ -353,3 +350,9 @@ class Protein:
                 chains: The list of chains in the protein (chain)
         """
         return self.chains
+    
+    def getSummary(self):
+        output = []
+        for chain in self.chains:
+            output.append(chain.getSummary())
+        return ' '.join(output)

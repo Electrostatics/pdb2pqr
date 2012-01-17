@@ -187,16 +187,16 @@ install:
 	  echo "Adding python files from src/" ; \
 	  cp $$c/src/*.py* $(CWD)/$$dir/src/. ; \
 	  cp $$c/src/server.py $(CWD)/$$dir/src/server.py ; \
-	  if test "$(PROPKA)" == "enable" ; then \
-	    if ! test -d $(CWD)/$$dir/propka ; then \
-	      mkdir $(CWD)/$$dir/propka ; \
-	    fi ; \
-	    echo "Adding propka"; \
-	    cp $$c/propka/propka $(CWD)/$$dir/propka/. ; \
-	    cp $$c/propka/propkalib.i $(CWD)/$$dir/propka/. ; \
-	    cp $$c/propka/*.py $(CWD)/$$dir/propka/. ; \
-	    cp $$c/propka/*.so $(CWD)/$$dir/propka/. ; \
+	  if ! test -d $(CWD)/$$dir/propka30 ; then \
+	    mkdir $(CWD)/$$dir/propka30 ; \
 	  fi ; \
+          if ! test -d $(CWD)/$$dir/propka30/Source ; then \
+            mkdir $(CWD)/$$dir/propka30/Source ; \
+          fi ; \
+	  echo "Adding propka"; \
+	  cp $$c/propka30/*.py $(CWD)/$$dir/propka30/. ; \
+	  cp $$c/propka30/Source/*.py $(CWD)/$$dir/propka30/Source/. ; \
+          cp $$c/propka30/Source/ions.list $(CWD)/$$dir/propka30/Source/ions.list ; \
 	  if test "$(PDB2PKA)" == "enable" ; then \
 	    if ! test -d $(CWD)/$$dir/pdb2pka ; then \
 	      mkdir $(CWD)/$$dir/pdb2pka ; \

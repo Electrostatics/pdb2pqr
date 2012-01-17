@@ -49,26 +49,113 @@ __author__ = "Todd Dolinsky, Yong Huang"
 SMALL = 1.0e-7
 DIHEDRAL = 57.2958
 
-import string
 import math
 import os
 import sys
 from aconf import INSTALLDIR, TMPDIR
 
-def appendToLogFile(jobName, fileName, input):
+def startLogFile(jobName, fileName, logInput):
     with open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName), 'w') as f:
-        f.write(input)
+        f.write(logInput)
+        
+def appendToLogFile(jobName, fileName, logInput):
+    with open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName), 'a') as f:
+        f.write(logInput)
+        
+def getTrackingScriptString(jobid=None):
+    """
+    For injecting tracking script into a web page.
+    
+    jobid -> current jobid. Adds "jobid" custom variable to events and page views on this page.
+    """
+    customVarString = ""
+    
+    if jobid is not None:
+        customVarString = "_gaq.push(['_setCustomVar',1,'jobid','{jobid}',3]);".format(jobid=str(jobid))
+        
+    #If you look closely you'll see escaped { and }.
+    string = """<script type="text/javascript">
 
-def sortDictByValue(dict):
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-27546792-1']);
+  _gaq.push(['_setDomainName', 'pnl.gov']);
+  _gaq.push(['_setAllowLinker', true]);
+  {customVar}
+  _gaq.push(['_trackPageview']);
+
+  (function() {{
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  }})();
+
+</script>""".format(customVar=customVarString)
+    return string
+
+def getEventTrackingString(category, action, label, value=None):
+    valueString = ', {value}'.format(value=value) if value is not None else ""
+    eventString = '_gaq.push(["_trackEvent", "{category}", "{action}", "{label}"{valuestr}]);\n'
+    return eventString.format(category=str(category), action=str(action), label=str(label), valuestr=valueString)
+
+class ExtraOptions(object):
+    pass
+
+def createPropkaOptions(pH, verbose=False):
+    """
+    Create a propka options object for running propka.
+    """
+    #build propka options
+    propkaOpts = ExtraOptions()
+    propkaOpts.pH = pH
+    propkaOpts.reference = "neutral"
+    propkaOpts.chains = None
+    propkaOpts.thermophiles = None
+    propkaOpts.alignment = None
+    propkaOpts.mutations = None
+    propkaOpts.verbose = verbose
+    propkaOpts.protonation = "old-school"
+    propkaOpts.window = (0.0, 14.0, 1.0)
+    propkaOpts.grid = (0.0, 14.0, 0.1)
+    propkaOpts.mutator = None
+    propkaOpts.mutator_options = None
+    propkaOpts.display_coupled_residues = None
+    propkaOpts.print_iterations = None
+    propkaOpts.version_label = "Nov30"
+    
+    #These adds a few bits to propkaOpts 
+    from propka30.Source import lib
+    lib.interpretMutator(propkaOpts)
+    #With the current defaults used here this does not do anything.
+    #However if we start adding the propka options we'll need to do this.
+    lib.setDefaultAlignmentFiles(propkaOpts)
+    
+    return propkaOpts
+
+
+#totalDelay = 0
+#
+#def getEventTrackingString(category, action, label, value=None):
+#    global totalDelay
+#    valueString = ', "{value}"'.format(value=value) if value is not None else ""
+#    eventString = 'setTimeout(\'_gaq.push(["_trackEvent", "{category}", "{action}", "{label}"{valuestr}])\',{delay});\n'
+#    result =  eventString.format(category=str(category), 
+#                                 action=str(action), 
+#                                 label=str(label), 
+#                                 valuestr=valueString,
+#                                 delay=totalDelay)
+#    totalDelay+=500
+#    return result
+
+def sortDictByValue(inputdict):
     """
         Sort a dictionary by its values
 
         Parameters
-            dict:  The dictionary to sort (dict)
+            inputdict:  The dictionary to sort (inputdict)
         Returns
             items: The dictionary sorted by value (list)
     """
-    items = [(v, k) for k, v in dict.items()]
+    items = [(v, k) for k, v in inputdict.items()]
     items.sort()
     items.reverse()             
     items = [ k for v, k in items]

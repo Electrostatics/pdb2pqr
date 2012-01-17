@@ -179,7 +179,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 website_install_var = @website_install_var@
 with_pdb2pka = @with_pdb2pka@
-with_propka = @with_propka@
 AUTOMAKE_OPTIONS = no-dependencies
 SUFFIXES = .H .h .C .cc .c .f .o .cpp .so
 AM_CXXFLAGS = $(PY_CFLAGS) $(PY_FLAGS)

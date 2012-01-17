@@ -10,6 +10,7 @@ __version__ = "0.0.1"
 
 from src.aconf import *
 import cgi, cgitb, pickle, urllib, os, glob
+from src.utilities import getEventTrackingString, getTrackingScriptString
 
 cgitb.enable()
 form = cgi.FieldStorage()
@@ -60,28 +61,29 @@ def main(apbsOptions):
     cssFile = 'pdb2pqr.css'
     jobid = form['jobid'].value
 
-    print '<html>'
-    print '\t<head>'
-    print '\t\t<title>Visualization</title>'
-    print '\t\t<link rel="stylesheet" href="pdb2pqr.css" type="text/css">'
-    print '\t\t<script type="text/JavaScript" src="jmol/Jmol.js"></script>'
-    print '\t\t<script type="text/JavaScript">APPLET_PATH="jmol/";GZIP=""</script>'
-    print '\t\t<script type="text/JavaScript" src="jmol/apbsjmol.js"></script>'
-    print '\t</head>'
-    print '\t<body onload="init()">'
-    print '\t\t<script type="text/javascript">createVisualization(%s, -5.0, 5.0)</script>' % (jobid)
+    string =  """
+<html>
+    <head>
+        {trackingscript}
+        <script type="text/javascript">
+            {trackingevents}
+        </script>
+        <title>Visualization</title>
+        <link rel="stylesheet" href="pdb2pqr.css" type="text/css">
+        <script type="text/JavaScript" src="jmol/Jmol.js"></script>
+        <script type="text/JavaScript">APPLET_PATH="jmol/";GZIP=""</script>
+        <script type="text/JavaScript" src="jmol/apbsjmol.js"></script>
+    </head>
+    <body onload="init()">
+        <script type="text/javascript">createVisualization({jobid}, -5.0, 5.0)</script>
+    </body>
+</html>""".format(jobid=jobid,
+                  trackingevents=getEventTrackingString(category='apbs',
+                                                        action='visualize', 
+                                                        label=str(os.environ["REMOTE_ADDR"])),
+                  trackingscript=getTrackingScriptString(jobid=jobid))
 
-    print '\t<script type="text/javascript">'
-    print '\tvar gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");'
-    print '\tdocument.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E"));'
-    print '\t</script>'
-    print '\t<script type="text/javascript">'
-    print '\ttry {'
-    print '\tvar pageTracker = _gat._getTracker("UA-11026338-3");'
-    print '\tpageTracker._trackPageview();'
-    print '\t} catch(err) {}</script>'
-    print '\t</body>'
-    print '</html>'
+    print string
 
 
 main(initVars())

@@ -182,6 +182,9 @@ class ALA(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'A'
 
 class ARG(Amino):
     """
@@ -201,6 +204,9 @@ class ARG(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'R'
 
     def setState(self):
         """
@@ -228,6 +234,9 @@ class ASN(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'N'
 
 class ASP(Amino):
     """
@@ -247,6 +256,9 @@ class ASP(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'D'
 
     def setState(self):
         """
@@ -276,6 +288,9 @@ class CYS(Amino):
         self.reference = ref
         self.SSbonded = 0
         self.SSbondedpartner = None
+        
+    def letterCode(self):
+        return 'C'
 
     def setState(self):
         """
@@ -306,6 +321,9 @@ class GLN(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'Q'
 
 class GLU(Amino):
     """
@@ -325,6 +343,9 @@ class GLU(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'E'
 
     def setState(self):
         """
@@ -353,6 +374,9 @@ class GLY(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'G'
 
 class HIS(Amino):
     """
@@ -372,6 +396,9 @@ class HIS(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'H'
 
     def setState(self):
         """
@@ -419,6 +446,9 @@ class ILE(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'I'
 
 class LEU(Amino):
     """
@@ -438,6 +468,9 @@ class LEU(Amino):
         """
         Amino.__init__(self, atoms, ref)        
         self.reference = ref
+        
+    def letterCode(self):
+        return 'L'
 
 class LYS(Amino):
     """
@@ -457,6 +490,9 @@ class LYS(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'K'
 
     def setState(self):
         """
@@ -483,6 +519,9 @@ class MET(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'M'
 
 class PHE(Amino):
     """
@@ -502,6 +541,9 @@ class PHE(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'F'
 
 class PRO(Amino):
     """
@@ -521,6 +563,9 @@ class PRO(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'P'
 
     def setState(self):
         """
@@ -553,6 +598,9 @@ class SER(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'S'
 
 class THR(Amino):
     """
@@ -572,6 +620,9 @@ class THR(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'T'
 
 class TRP(Amino):
     """
@@ -591,6 +642,9 @@ class TRP(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'W'
 
 class TYR(Amino):
     """
@@ -610,6 +664,9 @@ class TYR(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'Y'
 
     def setState(self):
         """
@@ -636,6 +693,9 @@ class VAL(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
+        
+    def letterCode(self):
+        return 'V'
 
 
 class WAT(Residue):

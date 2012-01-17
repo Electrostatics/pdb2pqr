@@ -16,24 +16,25 @@
 __date__ = "25 August 2006"
 __author__ = "Mike Bradley"
 
-from src.utilities import *
-from src.routines import *
+from src.utilities import distance
+from src.routines import Cells
 
 DIST_CUTOFF = 4.0         # maximum cation to anion atom distance in angstroms
 
 def usage():
     return 'Print a list of salt bridges to {output-path}.salt'
 
-def salt(routines, outroot):
+def run_extension(routines, outroot, options):
     """
         Print a list of salt bridges.
 
         Parameters
             routines:  A link to the routines object
             outroot:   The root of the output name
+            options:   options object 
     """
     outname = outroot + ".salt"
-    file = open(outname, "w")
+    outfile = open(outname, "w")
 
     routines.write("Printing salt bridge list...\n")
 
@@ -57,22 +58,26 @@ def salt(routines, outroot):
         # check that we've found a cation
         if cation.residue.name == "NMET":
             print "YES NMET"
-        if cation.residue.name not in posresList: continue
-        else:
-            if cation.name not in posatomList: continue
+        if cation.residue.name not in posresList: 
+            continue
+        elif cation.name not in posatomList: 
+                continue
         # For each cation, grab all potential anions in nearby cells
         closeatoms = routines.cells.getNearCells(cation)
         for anion in closeatoms:
-            if cation.residue.name == anion.residue.name: continue
-            if anion.residue.name not in negresList: continue
-            else:
-                if anion.name not in negatomList: continue
+            if cation.residue.name == anion.residue.name: 
+                continue
+            if anion.residue.name not in negresList: 
+                continue
+            elif anion.name not in negatomList: 
+                    continue
             # Do distance check
             dist = distance(cation.getCoords(), anion.getCoords())
-            if dist > DIST_CUTOFF: continue
+            if dist > DIST_CUTOFF: 
+                continue
             #routines.write("Cation: %s %s\tAnion: %s %s\tsaltdist: %.2f\n" % \
             #          (cation.residue, cation.name, anion.residue, anion.name, dist)) 
-            file.write("Cation: %s %s\tAnion: %s %s\tsaltdist: %.2f\n" % \
+            outfile.write("Cation: %s %s\tAnion: %s %s\tsaltdist: %.2f\n" % \
                       (cation.residue, cation.name, anion.residue, anion.name, dist))
     #routines.write("\n")
-    file.close()
+    outfile.close()

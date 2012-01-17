@@ -174,9 +174,9 @@ class Definition:
             if defpath == "":
                 raise ValueError, "%s not found!" % path
 
-            file = open(defpath)
-            sax.parseString(file.read(), handler)
-            file.close()
+            acidFile = open(defpath)
+            sax.parseString(acidFile.read(), handler)
+            acidFile.close()
 
             self.map.update(handler.map)
     
@@ -187,9 +187,9 @@ class Definition:
             raise ValueError, "%s not found!" % PATCHPATH
      
         handler.map = {}
-        file = open(defpath)
-        sax.parseString(file.read(), handler)
-        file.close()
+        patchFile = open(defpath)
+        sax.parseString(patchFile.read(), handler)
+        patchFile.close()
 
         # Apply specific patches to the reference object, allowing users
         #  to specify protonation states in the PDB file

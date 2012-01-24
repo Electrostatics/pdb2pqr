@@ -620,45 +620,45 @@ class Atom(ATOM):
             This is used to create the output for pqr and pdb files! No touchy!
 
             Returns
-                str: String with ATOM/HETATM field set appropriately
+                outstr: String with ATOM/HETATM field set appropriately
         """
-        str = ""
+        outstr = ""
         tstr = self.type
-        str = str + string.ljust(tstr, 6)[:6]
+        outstr += string.ljust(tstr, 6)[:6]
         tstr = "%d" % self.serial
-        str = str + string.rjust(tstr, 5)[:5]
-        str = str + " "
+        outstr += string.rjust(tstr, 5)[:5]
+        outstr += " "
         tstr = self.name
         if len(tstr) == 4 or len(tstr.strip("FLIP")) == 4:
-            str = str + string.ljust(tstr, 4)[:4]
+            outstr += string.ljust(tstr, 4)[:4]
         else:
-            str = str + " " + string.ljust(tstr, 3)[:3]
+            outstr += " " + string.ljust(tstr, 3)[:3]
 
         tstr = self.resName
         if len(tstr) == 4:
-            str = str + string.ljust(tstr, 4)[:4]
+            outstr += string.ljust(tstr, 4)[:4]
         else:
-            str = str + " " + string.ljust(tstr, 3)[:3]
+            outstr += " " + string.ljust(tstr, 3)[:3]
             
-        str = str + " "
+        outstr += " "
         if chainflag:
             tstr = self.chainID
         else:
             tstr = ''
-        str = str + string.ljust(tstr, 1)[:1]
+        outstr += string.ljust(tstr, 1)[:1]
         tstr = "%d" % self.resSeq
-        str = str + string.rjust(tstr, 4)[:4]
+        outstr += string.rjust(tstr, 4)[:4]
         if self.iCode != "":
-            str = str + "%s   " % self.iCode
+            outstr += "%s   " % self.iCode
         else:
-            str = str + "    "
+            outstr += "    "
         tstr = "%8.3f" % self.x
-        str = str + string.ljust(tstr, 8)[:8]
+        outstr += string.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.y
-        str = str + string.ljust(tstr, 8)[:8]
+        outstr += string.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.z
-        str = str + string.ljust(tstr, 8)[:8] 
-        return str
+        outstr += string.ljust(tstr, 8)[:8] 
+        return outstr
         
     def __str__(self):
         """
@@ -685,20 +685,20 @@ class Atom(ATOM):
             Returns
                 str: String with ATOM/HETATM field set appropriately
         """
-        str = self.getCommonStringRep(chainflag=chainflag)
+        outstr = self.getCommonStringRep(chainflag=chainflag)
         
         if self.ffcharge != None: 
             ffcharge = "%.4f" % self.ffcharge
         else: 
             ffcharge = "0.0000"
-        str = str + string.rjust(ffcharge, 8)[:8]
+        outstr += string.rjust(ffcharge, 8)[:8]
         if self.radius != None: 
             ffradius = "%.4f" % self.radius
         else: 
             ffradius = "0.0000"
-        str = str + string.rjust(ffradius, 7)[:7]
+        outstr += string.rjust(ffradius, 7)[:7]
 
-        return str
+        return outstr
     
     
     def getPDBString(self):
@@ -713,21 +713,21 @@ class Atom(ATOM):
             Returns
                 str: String with ATOM/HETATM field set appropriately
         """
-        str = self.getCommonStringRep()
+        outstr = self.getCommonStringRep(chainflag=True)
         
         tstr = "%6.2f" % self.occupancy
-        str = str + string.ljust(tstr, 6)[:6]
+        outstr += string.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.tempFactor
-        str = str + string.rjust(tstr, 6)[:6]
+        outstr += string.rjust(tstr, 6)[:6]
         tstr = self.segID
-        str = str + string.ljust(tstr, 4)[:4]
+        outstr += string.ljust(tstr, 4)[:4]
         tstr = self.element
-        str = str + string.ljust(tstr, 2)[:2]
-        tstr = self.charge
-        str = str + string.ljust(tstr, 2)[:2]
+        outstr += string.ljust(tstr, 2)[:2]
+        tstr = str(self.charge)
+        outstr += string.ljust(tstr, 2)[:2]
 
 
-        return str
+        return outstr
     
     #TODO: What? Why? Isn't this Python?
     #Are we really doing attribute access based

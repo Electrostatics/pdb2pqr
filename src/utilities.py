@@ -62,6 +62,17 @@ def appendToLogFile(jobName, fileName, logInput):
     with open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName), 'a') as f:
         f.write(logInput)
         
+def resetLogFile(jobName, fileName):
+    """
+    For clearing out old log files if needed.
+    Used mainly for removing apbs_end_time if apbs is rerun.
+    """
+    filename = '%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName)
+    try:
+        os.remove(filename)
+    except EnvironmentError:
+        pass
+        
 def getTrackingScriptString(jobid=None):
     """
     For injecting tracking script into a web page.
@@ -77,8 +88,8 @@ def getTrackingScriptString(jobid=None):
     string = """<script type="text/javascript">
 
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-27546792-1']);
-  _gaq.push(['_setDomainName', 'pnl.gov']);
+  _gaq.push(['_setAccount', 'UA-11026338-3']);
+  _gaq.push(['_setDomainName', 'none']);
   _gaq.push(['_setAllowLinker', true]);
   {customVar}
   _gaq.push(['_trackPageview']);

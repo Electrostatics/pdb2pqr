@@ -4,7 +4,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
 
 - NEW FEATURES
  * Updated propka to version 3.0
- * Added residue interaction energy plugin.
+ * Added residue interaction energy extension.
  * Added protein summary extension. 
  * Combined hbond and hbondwhatit into one extension (hbond) with new command line parameters. (No more hacking hbond.py)
  * Combined rama, phi, psi into one extension (rama) with new command line parameters.

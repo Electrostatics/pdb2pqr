@@ -1,7 +1,7 @@
 <appConfig xmlns="http://nbcr.sdsc.edu/opal/types"
            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <metadata appName="PDB2PQR 1.7.1">
-    <usage><![CDATA[PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations, providing a platform-independent utility for converting protein files in PDB format to PQR format. Version 1.7.1.
+  <metadata appName="PDB2PQR 1.8">
+    <usage><![CDATA[PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations, providing a platform-independent utility for converting protein files in PDB format to PQR format. Version 1.8.
 <BR><A HREF=http://www.nbcr.net/ws_help/PDB2PQR/>
 Tutorial: http://www.nbcr.net/ws_help/PDB2PQR/
 </A>
@@ -229,16 +229,6 @@ Options:
                 <id>whatif</id>
                 <tag>--whatif</tag>
                 <textDesc>Change hbond output to WHAT-IF format.</textDesc>
-            </flag>
-            <flag>
-                <id>angle_cutoff</id>
-                <tag>--angle_cutoff</tag>
-                <textDesc>Angle cutoff to use when creating hbond data (default 30.0)</textDesc>
-            </flag>
-            <flag>
-                <id>distance_cutoff</id>
-                <tag>--distance_cutoff</tag>
-                <textDesc>Distance cutoff to use when creating hbond data (default 3.4)</textDesc>
             </flag>
             <flag>
                 <id>old_distance_method</id>

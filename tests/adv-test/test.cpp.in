@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#define bufsize 200
 
 void error_msg(char *);
 
@@ -15,17 +16,17 @@ int main()
   ifstream cinfile, uinfile, cinfile2, uinfile2;
   bool check_error;
 
-  char cline[100];
+  char cline[bufsize];
   char cfield1[10], cfield3[10], cfield4[10];
   int cfield2, cfield5;
   float cfield6, cfield7, cfield8, cfield9, cfield10, ctotal;
 
-  char uline[100];
+  char uline[bufsize];
   char ufield1[10], ufield3[10], ufield4[10];
   int ufield2, ufield5;
   float ufield6, ufield7, ufield8, ufield9, ufield10, utotal;
 
-  char c[100], u[100];
+  char c[bufsize], u[bufsize];
 
   check_error = false;
   ctotal = 0.0;
@@ -45,12 +46,12 @@ int main()
   if (!uinfile2)
     error_msg("test-output-user.propka could not be opened");
 
-  cinfile.getline(cline, 100);
-  uinfile.getline(uline, 100);
+  cinfile.getline(cline, bufsize);
+  uinfile.getline(uline, bufsize);
 
   while(!cinfile.eof() && !uinfile.eof()) {
-    cinfile.getline(cline, 100);
-    uinfile.getline(uline, 100);
+    cinfile.getline(cline, bufsize);
+    uinfile.getline(uline, bufsize);
     sscanf(cline, "%s", cfield1);
 
     if (strcmp(cfield1, "REMARK") == 0) {
@@ -62,8 +63,8 @@ int main()
   } 
 
   while(!cinfile.eof() && !uinfile.eof()) {
-    cinfile.getline(cline, 100);
-    uinfile.getline(uline, 100);
+    cinfile.getline(cline, bufsize);
+    uinfile.getline(uline, bufsize);
 
     sscanf(cline, "%s %d %s %s %d %f %f %f %f %f", cfield1, &cfield2, cfield3, cfield4, &cfield5, &cfield6, &cfield7, &cfield8, &cfield9, &cfield10);
     sscanf(uline, "%s %d %s %s %d %f %f %f %f %f", ufield1, &ufield2, ufield3, ufield4, &ufield5, &ufield6, &ufield7, &ufield8, &ufield9, &ufield10);
@@ -86,8 +87,8 @@ int main()
     error_msg("Advanced test failed because the numbers in the user PQR output file and the expected values are too big");
 
   while(!cinfile2.eof() && !uinfile2.eof()) {
-    cinfile2.getline(cline, 100);
-    uinfile2.getline(uline, 100);
+    cinfile2.getline(cline, bufsize);
+    uinfile2.getline(uline, bufsize);
 
     sscanf(cline, "%s", c);
     sscanf(uline, "%s", u);
@@ -96,14 +97,16 @@ int main()
       if (strcmp(c, u) != 0) {
         error_msg("Propka files produced different numbers of fields");
       }
-
+      //Get header line after SUMMARY line.
+      uinfile2.getline(uline, bufsize);
+      cinfile2.getline(uline, bufsize);
       break;
     }
   }
 
-  for (int i = 0; i < 47; i++) {
-    cinfile2.getline(cline, 100);
-    uinfile2.getline(uline, 100);
+  for (int i = 0; i < 48; i++) {
+    cinfile2.getline(cline, bufsize);
+    uinfile2.getline(uline, bufsize);
 
     sscanf(cline, "%s %d %s %f", cfield1, &cfield2, cfield3, &cfield9);
     sscanf(uline, "%s %d %s %f", ufield1, &ufield2, ufield3, &ufield9);

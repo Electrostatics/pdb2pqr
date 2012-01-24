@@ -1282,7 +1282,7 @@ Optional Packages:
   --with-python=PYTHONPATH           Specify Python location.
   --with-url=URL           Set url for the website.  Default http://fully_qualified_domain/pdb2pqr.
   --with-max-atoms=MAX_ATOMS    Sets the maximum number of atoms in a protein for non-Opal job submission.  Default is 10000
-  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7.1
+  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.8
   --with-apbs=APBSPATH       Specify APBS executable location.
   --with-apbs-opal=APBS_OPAL_URL       Specify APBS Opal url. Default is http://kryptonite.nbcr.net/opal2/services/apbs_1.3
 
@@ -3579,7 +3579,7 @@ fi
 
 
 if test "$PDB2PQR_OPAL_URL" = "yes"; then
-  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7.1"
+  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.8"
   HAVE_PDB2PQR_OPAL=1
 fi
 

@@ -108,8 +108,8 @@ document.getElementById("parse").checked=true;
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-27546792-1']);
-  _gaq.push(['_setDomainName', 'pnl.gov']);
+  _gaq.push(['_setAccount', 'UA-11026338-3']);
+  _gaq.push(['_setDomainName', 'none']);
   _gaq.push(['_setAllowLinker', true]);
   _gaq.push(['_trackPageview']);
 
@@ -125,7 +125,7 @@ document.getElementById("parse").checked=true;
 <BODY>
 <h2>PDB2PQR Server</h2>
 <P>
-<I>Currently using PDB2PQR Version 1.7.1</I>
+<I>Currently using PDB2PQR Version 1.8</I>
 <P>
 Return to <a href="http://www.poissonboltzmann.org/pdb2pqr">the PDB2PQR homepage</a>.<br> 	
 <hr> 	

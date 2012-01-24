@@ -24,7 +24,7 @@ from sgmllib import SGMLParser
 from src.utilities import (getTrackingScriptString, 
                            getEventTrackingString,
                            startLogFile,
-                           appendToLogFile)
+                           resetLogFile)
 
 def apbsOpalExec(logTime, form, apbsOptions):
     
@@ -1587,6 +1587,7 @@ def convertOpalToLocal(jobid,pdb2pqrOpalJobID):
 def redirector(logTime):
     if (str(logTime) != "False") and (str(logTime) != "notenoughmem"):
         startLogFile(logTime, 'apbs_start_time', str(time.time()))
+        resetLogFile(logTime, 'apbs_end_time')
 #        starttimefile = open('%s%s%s/apbs_start_time' % (INSTALLDIR, TMPDIR, logTime), 'w')
 #        starttimefile.write(str(time.time()))
 #        starttimefile.close()

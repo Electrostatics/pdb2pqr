@@ -352,8 +352,14 @@ def mainCGI():
                                                                 "complete")):
         runtime = time.time()-starttime
     elif progress == "complete":
-        endtimefile = open('%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
-        runtime = float(endtimefile.read())-starttime
+        endTimeFileString = '%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value)
+        if have_opal and not os.path.isfile(endTimeFileString):
+            runtime = time.time()-starttime
+            with open(endTimeFileString, 'w') as endTimeFile:
+                endTimeFile.write(str(time.time()))
+        else:
+            with open(endTimeFileString, 'r') as endTimeFile:
+                runtime = float(endTimeFile.read())-starttime
     else:
         runtime = -1
         
@@ -367,13 +373,13 @@ def mainCGI():
             resultsurl = '%squerystatus.cgi?jobid=%s&calctype=apbs' % (WEBSITE, form["jobid"].value)
 
     if progress == "complete":
-        print printheader("%s Job Status Page" % calctype.upper(), jobid=jobid)
+        print printheader("%s Job Status Page" % calctype.upper(), jobid=form["jobid"].value)
 
     elif progress == "error":
-        print printheader("%s Job Status Page - Error" % calctype.upper(),0, jobid=jobid)
+        print printheader("%s Job Status Page - Error" % calctype.upper(),0, jobid=form["jobid"].value)
 
     elif progress == "running": # job is not complete, refresh in 30 seconds
-        print printheader("%s Job Status Page" % calctype.upper(), refresh, jobid=jobid)
+        print printheader("%s Job Status Page" % calctype.upper(), refresh, jobid=form["jobid"].value)
 
     print "<BODY>\n<P>"
     print "<h3>Status"

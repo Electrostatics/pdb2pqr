@@ -428,12 +428,12 @@ AC_ARG_WITH(max-atoms,
 HAVE_PDB2PQR_OPAL=0
 
 AC_ARG_WITH(opal,
-	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7.1],
+	[  --with-opal=PDB2PQR_OPAL_URL			Set url for the Opal service.  Default is http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.8],
 	[PDB2PQR_OPAL_URL=$withval],
 	[PDB2PQR_OPAL_URL=""])
 
 if test "$PDB2PQR_OPAL_URL" = "yes"; then
-  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.7.1"
+  PDB2PQR_OPAL_URL="http://kryptonite.nbcr.net/opal2/services/pdb2pqr_1.8"
   HAVE_PDB2PQR_OPAL=1
 fi
 

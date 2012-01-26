@@ -338,7 +338,7 @@ class WebOptions(object):
         if 'ffout' in self.runoptions:
             commandLine.append('--ffout=%s' % self.runoptions['ffout'])
             
-        for o in ('chain', 'typemap', 'neutraln', 'neutralc'):
+        for o in ('chain', 'typemap', 'neutraln', 'neutralc', 'verbose'):
             if self.runoptions[o]:
                 commandLine.append('--' + o)
             

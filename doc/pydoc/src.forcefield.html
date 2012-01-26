@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.forcefield</strong></big></big> (6 November 2007)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/forcefield.py">/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/forcefield.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/forcefield.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/forcefield.py</a></font></td></tr></table>
     <p><tt><a href="#Forcefield">Forcefield</a>.py<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;takes&nbsp;a&nbsp;pdblist&nbsp;as&nbsp;input&nbsp;and&nbsp;replaces&nbsp;the&nbsp;occupancy&nbsp;and<br>
@@ -22,9 +22,11 @@ residues&nbsp;of&nbsp;atoms.<br>
 PDB2PQR&nbsp;--&nbsp;An&nbsp;automated&nbsp;pipeline&nbsp;for&nbsp;the&nbsp;setup,&nbsp;execution,&nbsp;and&nbsp;analysis&nbsp;of<br>
 Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;(c)&nbsp;2002-2010,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Nathan&nbsp;A.&nbsp;Baker,&nbsp;Washington&nbsp;University&nbsp;in&nbsp;St.&nbsp;Louis;&nbsp;Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg<br>
+Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
+Nathan&nbsp;A.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific&nbsp;<br>
+Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;<br>
+Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;U.S.&nbsp;Department&nbsp;Energy.;&nbsp;<br>
+Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;All&nbsp;rights&nbsp;reserved.<br>
 &nbsp;<br>
@@ -36,10 +38,10 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and/or&nbsp;other&nbsp;materials&nbsp;provided&nbsp;with&nbsp;the&nbsp;distribution.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Washington&nbsp;University&nbsp;in&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;St.&nbsp;Louis,&nbsp;or&nbsp;University&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pacific&nbsp;Northwest&nbsp;National&nbsp;Laboratory,&nbsp;US&nbsp;Department&nbsp;of&nbsp;Energy,&nbsp;or&nbsp;University<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED&nbsp;<br>
@@ -105,7 +107,7 @@ transformations&nbsp;are&nbsp;done&nbsp;within.<br>&nbsp;</tt></td></tr>
 <dl><dt><a name="Forcefield-__init__"><strong>__init__</strong></a>(self, ff, definition, userff, usernames<font color="#909090">=None</font>)</dt><dd><tt>Initialize&nbsp;the&nbsp;class&nbsp;by&nbsp;parsing&nbsp;the&nbsp;definition&nbsp;file<br>
 &nbsp;<br>
 Parameters<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ff:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;forcefield&nbsp;(string)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ff:&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;forcefield&nbsp;(string)&nbsp;can&nbsp;be&nbsp;None.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;definition:&nbsp;The&nbsp;definition&nbsp;objects<br>
 &nbsp;&nbsp;&nbsp;&nbsp;userff:&nbsp;&nbsp;A&nbsp;link&nbsp;to&nbsp;the&nbsp;file&nbsp;for&nbsp;CGI&nbsp;based&nbsp;user-defined<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forcefields</tt></dd></dl>
@@ -435,7 +437,9 @@ Returns<br>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>DIHEDRAL</strong> = 57.2958<br>
+<strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
 <strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>__author__</strong> = 'Todd Dolinsky, Yong Huang'<br>
 <strong>__date__</strong> = '6 November 2007'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.routines</strong></big></big> (1 August 2008)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/routines.py">/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/routines.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/routines.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/routines.py</a></font></td></tr></table>
     <p><tt><a href="#Routines">Routines</a>&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;protein&nbsp;object&nbsp;used&nbsp;in&nbsp;PDB2PQR&nbsp;and&nbsp;methods<br>
@@ -19,9 +19,11 @@ used&nbsp;to&nbsp;correct,&nbsp;analyze,&nbsp;and&nbsp;optimize&nbsp;that&nbsp;p
 PDB2PQR&nbsp;--&nbsp;An&nbsp;automated&nbsp;pipeline&nbsp;for&nbsp;the&nbsp;setup,&nbsp;execution,&nbsp;and&nbsp;analysis&nbsp;of<br>
 Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;(c)&nbsp;2002-2010,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Nathan&nbsp;A.&nbsp;Baker,&nbsp;Washington&nbsp;University&nbsp;in&nbsp;St.&nbsp;Louis;&nbsp;Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg<br>
+Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
+Nathan&nbsp;A.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific&nbsp;<br>
+Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;<br>
+Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;U.S.&nbsp;Department&nbsp;Energy.;&nbsp;<br>
+Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;All&nbsp;rights&nbsp;reserved.<br>
 &nbsp;<br>
@@ -33,10 +35,10 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and/or&nbsp;other&nbsp;materials&nbsp;provided&nbsp;with&nbsp;the&nbsp;distribution.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Washington&nbsp;University&nbsp;in&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;St.&nbsp;Louis,&nbsp;or&nbsp;University&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pacific&nbsp;Northwest&nbsp;National&nbsp;Laboratory,&nbsp;US&nbsp;Department&nbsp;of&nbsp;Energy,&nbsp;or&nbsp;University<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED&nbsp;<br>
@@ -152,7 +154,7 @@ Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;misslist:&nbsp;&nbsp;&nbsp;A&nbsp;list&nbsp;of&nbsp;atoms&nbsp;that&nbsp;were&nbsp;not&nbsp;found&nbsp;in<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;forcefield&nbsp;(list)</tt></dd></dl>
 
-<dl><dt><a name="Routines-applyNameScheme"><strong>applyNameScheme</strong></a>(self, forcefield)</dt><dd><tt>Apply&nbsp;the&nbsp;naming&nbsp;scheme&nbsp;of&nbsp;the&nbsp;give&nbsp;forcefield&nbsp;to&nbsp;the&nbsp;atoms<br>
+<dl><dt><a name="Routines-applyNameScheme"><strong>applyNameScheme</strong></a>(self, forcefield)</dt><dd><tt>Apply&nbsp;the&nbsp;naming&nbsp;scheme&nbsp;of&nbsp;the&nbsp;given&nbsp;forcefield&nbsp;to&nbsp;the&nbsp;atoms<br>
 within&nbsp;the&nbsp;protein<br>
 &nbsp;<br>
 Parameters<br>
@@ -175,7 +177,7 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;patchname:&nbsp;&nbsp;The&nbsp;name&nbsp;of&nbsp;the&nbsp;patch&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;residue&nbsp;to&nbsp;apply&nbsp;the&nbsp;patch&nbsp;to&nbsp;(residue)</tt></dd></dl>
 
-<dl><dt><a name="Routines-assignTermini"><strong>assignTermini</strong></a>(self, chain, neutraln<font color="#909090">=None</font>, neutralc<font color="#909090">=None</font>)</dt><dd><tt>Assign&nbsp;the&nbsp;termini&nbsp;for&nbsp;the&nbsp;given&nbsp;chain&nbsp;by&nbsp;looking&nbsp;at<br>
+<dl><dt><a name="Routines-assignTermini"><strong>assignTermini</strong></a>(self, chain, neutraln<font color="#909090">=False</font>, neutralc<font color="#909090">=False</font>)</dt><dd><tt>Assign&nbsp;the&nbsp;termini&nbsp;for&nbsp;the&nbsp;given&nbsp;chain&nbsp;by&nbsp;looking&nbsp;at<br>
 the&nbsp;start&nbsp;and&nbsp;end&nbsp;residues.</tt></dd></dl>
 
 <dl><dt><a name="Routines-calculateDihedralAngles"><strong>calculateDihedralAngles</strong></a>(self)</dt><dd><tt>Calculate&nbsp;the&nbsp;dihedral&nbsp;angle&nbsp;for&nbsp;every&nbsp;residue&nbsp;within&nbsp;the&nbsp;protein</tt></dd></dl>
@@ -290,17 +292,7 @@ Parameters<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;bestnum&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;The&nbsp;new&nbsp;dihedral&nbsp;angle&nbsp;number&nbsp;(int)</tt></dd></dl>
 
-<dl><dt><a name="Routines-rebuildTetrahedral"><strong>rebuildTetrahedral</strong></a>(self, residue, atomname)</dt><dd><tt>Rebuild&nbsp;a&nbsp;tetrahedral&nbsp;hydrogen&nbsp;group.&nbsp;&nbsp;This&nbsp;is&nbsp;necessary<br>
-due&nbsp;to&nbsp;the&nbsp;shortcomings&nbsp;of&nbsp;the&nbsp;quatfit&nbsp;routine&nbsp;-&nbsp;given&nbsp;a<br>
-tetrahedral&nbsp;geometry&nbsp;and&nbsp;two&nbsp;existing&nbsp;hydrogens,&nbsp;the<br>
-quatfit&nbsp;routines&nbsp;have&nbsp;two&nbsp;potential&nbsp;solutions.&nbsp;&nbsp;This&nbsp;function<br>
-uses&nbsp;basic&nbsp;tetrahedral&nbsp;geometry&nbsp;to&nbsp;fix&nbsp;this&nbsp;issue.<br>
-&nbsp;<br>
-Parameters<br>
-&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;in&nbsp;question&nbsp;(residue)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;atomname:&nbsp;The&nbsp;atomname&nbsp;to&nbsp;add&nbsp;(string)<br>
-Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;successful,&nbsp;0&nbsp;otherwise</tt></dd></dl>
+<dl><dt><a name="Routines-removeHydrogens"><strong>removeHydrogens</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="Routines-repairHeavy"><strong>repairHeavy</strong></a>(self)</dt><dd><tt>Repair&nbsp;all&nbsp;heavy&nbsp;atoms.&nbsp;&nbsp;Unfortunately&nbsp;the&nbsp;first&nbsp;time&nbsp;we<br>
 get&nbsp;to&nbsp;an&nbsp;atom&nbsp;we&nbsp;might&nbsp;not&nbsp;be&nbsp;able&nbsp;to&nbsp;rebuild&nbsp;it&nbsp;-&nbsp;it<br>
@@ -309,7 +301,7 @@ chains).&nbsp;&nbsp;As&nbsp;such&nbsp;a&nbsp;'seenmap'&nbsp;is&nbsp;used&nbsp;to
 we've&nbsp;already&nbsp;seen&nbsp;and&nbsp;subsequent&nbsp;attempts&nbsp;to&nbsp;rebuild&nbsp;the<br>
 atom.</tt></dd></dl>
 
-<dl><dt><a name="Routines-runPROPKA"><strong>runPROPKA</strong></a>(self, ph, ff, outname)</dt><dd><tt>Run&nbsp;PROPKA&nbsp;on&nbsp;the&nbsp;current&nbsp;protein,&nbsp;setting&nbsp;protonation&nbsp;states&nbsp;to<br>
+<dl><dt><a name="Routines-runPROPKA"><strong>runPROPKA</strong></a>(self, ph, ff, rootname, outname, options)</dt><dd><tt>Run&nbsp;PROPKA&nbsp;on&nbsp;the&nbsp;current&nbsp;protein,&nbsp;setting&nbsp;protonation&nbsp;states&nbsp;to<br>
 the&nbsp;correct&nbsp;values<br>
 &nbsp;<br>
 Parameters<br>
@@ -339,7 +331,7 @@ as&nbsp;to&nbsp;distinguish&nbsp;between&nbsp;various&nbsp;protonation&nbsp;stat
 &nbsp;<br>
 See&nbsp;aa.py&nbsp;for&nbsp;residue-specific&nbsp;functions.</tt></dd></dl>
 
-<dl><dt><a name="Routines-setTermini"><strong>setTermini</strong></a>(self, neutraln<font color="#909090">=None</font>, neutralc<font color="#909090">=None</font>)</dt><dd><tt>Set&nbsp;the&nbsp;termini&nbsp;for&nbsp;the&nbsp;protein.&nbsp;First&nbsp;set&nbsp;all&nbsp;known<br>
+<dl><dt><a name="Routines-setTermini"><strong>setTermini</strong></a>(self, neutraln<font color="#909090">=False</font>, neutralc<font color="#909090">=False</font>)</dt><dd><tt>Set&nbsp;the&nbsp;termini&nbsp;for&nbsp;the&nbsp;protein.&nbsp;First&nbsp;set&nbsp;all&nbsp;known<br>
 termini&nbsp;by&nbsp;looking&nbsp;at&nbsp;the&nbsp;ends&nbsp;of&nbsp;the&nbsp;chain.&nbsp;Then<br>
 examine&nbsp;each&nbsp;residue,&nbsp;looking&nbsp;for&nbsp;internal&nbsp;chain&nbsp;breaks.</tt></dd></dl>
 
@@ -365,6 +357,20 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;message:&nbsp;The&nbsp;message&nbsp;to&nbsp;write&nbsp;(string)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;indent&nbsp;:&nbsp;The&nbsp;indent&nbsp;level&nbsp;(int,&nbsp;default=0)</tt></dd></dl>
 
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Routines-rebuildTetrahedral"><strong>rebuildTetrahedral</strong></a>(residue, atomname)</dt><dd><tt>Rebuild&nbsp;a&nbsp;tetrahedral&nbsp;hydrogen&nbsp;group.&nbsp;&nbsp;This&nbsp;is&nbsp;necessary<br>
+due&nbsp;to&nbsp;the&nbsp;shortcomings&nbsp;of&nbsp;the&nbsp;quatfit&nbsp;routine&nbsp;-&nbsp;given&nbsp;a<br>
+tetrahedral&nbsp;geometry&nbsp;and&nbsp;two&nbsp;existing&nbsp;hydrogens,&nbsp;the<br>
+quatfit&nbsp;routines&nbsp;have&nbsp;two&nbsp;potential&nbsp;solutions.&nbsp;&nbsp;This&nbsp;function<br>
+uses&nbsp;basic&nbsp;tetrahedral&nbsp;geometry&nbsp;to&nbsp;fix&nbsp;this&nbsp;issue.<br>
+&nbsp;<br>
+Parameters<br>
+&nbsp;&nbsp;&nbsp;&nbsp;residue:&nbsp;&nbsp;The&nbsp;residue&nbsp;in&nbsp;question&nbsp;(residue)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;atomname:&nbsp;The&nbsp;atomname&nbsp;to&nbsp;add&nbsp;(string)<br>
+Returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;successful,&nbsp;0&nbsp;otherwise</tt></dd></dl>
+
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -380,12 +386,14 @@ Parameters<br>
 <strong>BUMP_HDIST</strong> = 1.5<br>
 <strong>CELL_SIZE</strong> = 2<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
+<strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
 <strong>NAPATH</strong> = 'dat/NA.xml'<br>
 <strong>NAS</strong> = ['A', 'A5', 'A3', 'C', 'C5', 'C3', 'G', 'G5', 'G3', 'T', 'T5', 'T3', 'U', 'U5', 'U3', 'RA', 'RG', 'RC', 'RU', 'DA', ...]<br>
 <strong>PATCHPATH</strong> = 'dat/PATCHES.xml'<br>
 <strong>PEPTIDE_DIST</strong> = 1.7<br>
 <strong>REPAIR_LIMIT</strong> = 10<br>
 <strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>__author__</strong> = 'Jens Erik Nielsen, Todd Dolinsky, Yong Huang'<br>
 <strong>__date__</strong> = '1 August 2008'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.na</strong></big></big> (28 February 2006)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/na.py">/user/yhuang/pdb2pqr/trunk/pdb2pqr/src/na.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/na.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/na.py</a></font></td></tr></table>
     <p><tt><a href="#Nucleic">Nucleic</a>&nbsp;Acid&nbsp;Structures&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;base&nbsp;nucleic&nbsp;acid&nbsp;structures&nbsp;for<br>
@@ -19,9 +19,11 @@ pdb2pqr.<br>
 PDB2PQR&nbsp;--&nbsp;An&nbsp;automated&nbsp;pipeline&nbsp;for&nbsp;the&nbsp;setup,&nbsp;execution,&nbsp;and&nbsp;analysis&nbsp;of<br>
 Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Copyright&nbsp;(c)&nbsp;2002-2010,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Nathan&nbsp;<a href="#A">A</a>.&nbsp;Baker,&nbsp;Washington&nbsp;University&nbsp;in&nbsp;St.&nbsp;Louis;&nbsp;Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg<br>
+Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
+Nathan&nbsp;<a href="#A">A</a>.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific&nbsp;<br>
+Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;<br>
+Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;<a href="#U">U</a>.S.&nbsp;Department&nbsp;Energy.;&nbsp;<br>
+Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;All&nbsp;rights&nbsp;reserved.<br>
 &nbsp;<br>
@@ -33,10 +35,10 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and/or&nbsp;other&nbsp;materials&nbsp;provided&nbsp;with&nbsp;the&nbsp;distribution.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Washington&nbsp;University&nbsp;in&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;St.&nbsp;Louis,&nbsp;or&nbsp;University&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pacific&nbsp;Northwest&nbsp;National&nbsp;Laboratory,&nbsp;US&nbsp;Department&nbsp;of&nbsp;Energy,&nbsp;or&nbsp;University<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND&nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED&nbsp;<br>
@@ -76,17 +78,37 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 <dt><font face="helvetica, arial"><a href="src.na.html#Nucleic">Nucleic</a>
 </font></dt><dd>
 <dl>
+<dt><font face="helvetica, arial"><a href="src.na.html#ADE">ADE</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="src.na.html#A">A</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#ADE">ADE</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#C">C</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#CYT">CYT</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#G">G</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#GUA">GUA</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#T">T</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#THY">THY</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#U">U</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.na.html#URA">URA</a>
 </font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.na.html#CYT">CYT</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.na.html#C">C</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.na.html#GUA">GUA</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.na.html#G">G</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.na.html#THY">THY</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.na.html#T">T</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.na.html#URA">URA</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.na.html#U">U</a>
+</font></dt></dl>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
@@ -95,26 +117,26 @@ Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="A">class <strong>A</strong></a>(<a href="src.na.html#Nucleic">Nucleic</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="A">class <strong>A</strong></a>(<a href="src.na.html#ADE">ADE</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Adenosine&nbsp;class<br>
-&nbsp;<br>
-This&nbsp;class&nbsp;gives&nbsp;data&nbsp;about&nbsp;the&nbsp;Adenosine&nbsp;object,&nbsp;and&nbsp;inherits<br>
-off&nbsp;the&nbsp;base&nbsp;residue&nbsp;class.<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>#Define&nbsp;alternate&nbsp;names&nbsp;for&nbsp;<a href="#Nucleic">Nucleic</a>&nbsp;acids.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="src.na.html#A">A</a></dd>
+<dd><a href="src.na.html#ADE">ADE</a></dd>
 <dd><a href="src.na.html#Nucleic">Nucleic</a></dd>
 <dd><a href="src.structures.html#Residue">src.structures.Residue</a></dd>
 </dl>
 <hr>
-Methods defined here:<br>
+Methods inherited from <a href="src.na.html#ADE">ADE</a>:<br>
 <dl><dt><a name="A-__init__"><strong>__init__</strong></a>(self, atoms, ref)</dt><dd><tt>Initialize&nbsp;the&nbsp;class<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
+
+<dl><dt><a name="A-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="A-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.</tt></dd></dl>
 
@@ -181,7 +203,7 @@ Returns:<br>
 <dl><dt><a name="A-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="A-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -270,6 +292,8 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
 
+<dl><dt><a name="ADE-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="ADE-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.</tt></dd></dl>
 
 <hr>
@@ -335,7 +359,7 @@ Returns:<br>
 <dl><dt><a name="ADE-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="ADE-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -403,26 +427,24 @@ Parameters<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="C">class <strong>C</strong></a>(<a href="src.na.html#Nucleic">Nucleic</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="C">class <strong>C</strong></a>(<a href="src.na.html#CYT">CYT</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Cytidine&nbsp;class<br>
-&nbsp;<br>
-This&nbsp;class&nbsp;gives&nbsp;data&nbsp;about&nbsp;the&nbsp;Cytidine&nbsp;object,&nbsp;and&nbsp;inherits<br>
-off&nbsp;the&nbsp;base&nbsp;residue&nbsp;class.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="src.na.html#C">C</a></dd>
+<dd><a href="src.na.html#CYT">CYT</a></dd>
 <dd><a href="src.na.html#Nucleic">Nucleic</a></dd>
 <dd><a href="src.structures.html#Residue">src.structures.Residue</a></dd>
 </dl>
 <hr>
-Methods defined here:<br>
+Methods inherited from <a href="src.na.html#CYT">CYT</a>:<br>
 <dl><dt><a name="C-__init__"><strong>__init__</strong></a>(self, atoms, ref)</dt><dd><tt>Initialize&nbsp;the&nbsp;class<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
+
+<dl><dt><a name="C-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="C-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.</tt></dd></dl>
 
@@ -489,7 +511,7 @@ Returns:<br>
 <dl><dt><a name="C-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="C-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -578,6 +600,8 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
 
+<dl><dt><a name="CYT-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="CYT-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.</tt></dd></dl>
 
 <hr>
@@ -643,7 +667,7 @@ Returns:<br>
 <dl><dt><a name="CYT-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="CYT-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -711,26 +735,24 @@ Parameters<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="G">class <strong>G</strong></a>(<a href="src.na.html#Nucleic">Nucleic</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="G">class <strong>G</strong></a>(<a href="src.na.html#GUA">GUA</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Guanosine&nbsp;class<br>
-&nbsp;<br>
-This&nbsp;class&nbsp;gives&nbsp;data&nbsp;about&nbsp;the&nbsp;Guanosine&nbsp;object,&nbsp;and&nbsp;inherits<br>
-off&nbsp;the&nbsp;base&nbsp;residue&nbsp;class.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="src.na.html#G">G</a></dd>
+<dd><a href="src.na.html#GUA">GUA</a></dd>
 <dd><a href="src.na.html#Nucleic">Nucleic</a></dd>
 <dd><a href="src.structures.html#Residue">src.structures.Residue</a></dd>
 </dl>
 <hr>
-Methods defined here:<br>
+Methods inherited from <a href="src.na.html#GUA">GUA</a>:<br>
 <dl><dt><a name="G-__init__"><strong>__init__</strong></a>(self, atoms, ref)</dt><dd><tt>Initialize&nbsp;the&nbsp;class<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
+
+<dl><dt><a name="G-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="G-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.</tt></dd></dl>
 
@@ -797,7 +819,7 @@ Returns:<br>
 <dl><dt><a name="G-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="G-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -886,6 +908,8 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
 
+<dl><dt><a name="GUA-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="GUA-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.</tt></dd></dl>
 
 <hr>
@@ -951,7 +975,7 @@ Returns:<br>
 <dl><dt><a name="GUA-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="GUA-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -1097,10 +1121,12 @@ Returns:<br>
 
 <dl><dt><a name="Nucleic-hasAtom"><strong>hasAtom</strong></a>(self, name)</dt></dl>
 
+<dl><dt><a name="Nucleic-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="Nucleic-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="Nucleic-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -1168,26 +1194,24 @@ Parameters<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="T">class <strong>T</strong></a>(<a href="src.na.html#Nucleic">Nucleic</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="T">class <strong>T</strong></a>(<a href="src.na.html#THY">THY</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Thymine&nbsp;class<br>
-&nbsp;<br>
-This&nbsp;class&nbsp;gives&nbsp;data&nbsp;about&nbsp;the&nbsp;Thymine&nbsp;object,&nbsp;and&nbsp;inherits<br>
-off&nbsp;the&nbsp;base&nbsp;residue&nbsp;class.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="src.na.html#T">T</a></dd>
+<dd><a href="src.na.html#THY">THY</a></dd>
 <dd><a href="src.na.html#Nucleic">Nucleic</a></dd>
 <dd><a href="src.structures.html#Residue">src.structures.Residue</a></dd>
 </dl>
 <hr>
-Methods defined here:<br>
+Methods inherited from <a href="src.na.html#THY">THY</a>:<br>
 <dl><dt><a name="T-__init__"><strong>__init__</strong></a>(self, atoms, ref)</dt><dd><tt>Initialize&nbsp;the&nbsp;class<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
+
+<dl><dt><a name="T-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="T-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.&nbsp;&nbsp;In&nbsp;this&nbsp;case&nbsp;it&nbsp;is<br>
 always&nbsp;DNA.</tt></dd></dl>
@@ -1255,7 +1279,7 @@ Returns:<br>
 <dl><dt><a name="T-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="T-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -1344,6 +1368,8 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
 
+<dl><dt><a name="THY-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="THY-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.&nbsp;&nbsp;In&nbsp;this&nbsp;case&nbsp;it&nbsp;is<br>
 always&nbsp;DNA.</tt></dd></dl>
 
@@ -1410,7 +1436,7 @@ Returns:<br>
 <dl><dt><a name="THY-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="THY-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -1478,26 +1504,24 @@ Parameters<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="U">class <strong>U</strong></a>(<a href="src.na.html#Nucleic">Nucleic</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="U">class <strong>U</strong></a>(<a href="src.na.html#URA">URA</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Uridine&nbsp;class<br>
-&nbsp;<br>
-This&nbsp;class&nbsp;gives&nbsp;data&nbsp;about&nbsp;the&nbsp;Uridine&nbsp;object,&nbsp;and&nbsp;inherits<br>
-off&nbsp;the&nbsp;base&nbsp;residue&nbsp;class.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="src.na.html#U">U</a></dd>
+<dd><a href="src.na.html#URA">URA</a></dd>
 <dd><a href="src.na.html#Nucleic">Nucleic</a></dd>
 <dd><a href="src.structures.html#Residue">src.structures.Residue</a></dd>
 </dl>
 <hr>
-Methods defined here:<br>
+Methods inherited from <a href="src.na.html#URA">URA</a>:<br>
 <dl><dt><a name="U-__init__"><strong>__init__</strong></a>(self, atoms, ref)</dt><dd><tt>Initialize&nbsp;the&nbsp;class<br>
 &nbsp;<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
+
+<dl><dt><a name="U-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="U-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.&nbsp;&nbsp;In&nbsp;this&nbsp;case&nbsp;it&nbsp;is<br>
 always&nbsp;RNA.</tt></dd></dl>
@@ -1565,7 +1589,7 @@ Returns:<br>
 <dl><dt><a name="U-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="U-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -1654,6 +1678,8 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atoms:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#A">A</a>&nbsp;list&nbsp;of&nbsp;Atom&nbsp;objects&nbsp;to&nbsp;be&nbsp;stored&nbsp;in&nbsp;this&nbsp;class<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(list)</tt></dd></dl>
 
+<dl><dt><a name="URA-letterCode"><strong>letterCode</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="URA-setState"><strong>setState</strong></a>(self)</dt><dd><tt>Set&nbsp;the&nbsp;state&nbsp;to&nbsp;distinguish&nbsp;RNA&nbsp;from&nbsp;DNA.&nbsp;&nbsp;In&nbsp;this&nbsp;case&nbsp;it&nbsp;is<br>
 always&nbsp;RNA.</tt></dd></dl>
 
@@ -1720,7 +1746,7 @@ Returns:<br>
 <dl><dt><a name="URA-numAtoms"><strong>numAtoms</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;number&nbsp;of&nbsp;atoms&nbsp;for&nbsp;the&nbsp;residue<br>
 &nbsp;<br>
 Returns<br>
-&nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;atoms&nbsp;in&nbsp;the&nbsp;residue&nbsp;(int)</tt></dd></dl>
 
 <dl><dt><a name="URA-removeAtom"><strong>removeAtom</strong></a>(self, atomname)</dt><dd><tt>Remove&nbsp;an&nbsp;atom&nbsp;from&nbsp;the&nbsp;residue&nbsp;object.<br>
 &nbsp;<br>
@@ -1793,7 +1819,9 @@ Parameters<br>
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>BACKBONE</strong> = ['N', 'CA', 'C', 'O', 'O2', 'HA', 'HN', 'H', 'tN']<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
+<strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
 <strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>__author__</strong> = 'Todd Dolinsky'<br>
 <strong>__date__</strong> = '28 February 2006'</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">

@@ -393,8 +393,9 @@ def runPDB2PQR(pdblist, ff,
     # Process the extensions
     for ext in selectedExtensions:
         module = extensions.extDict[ext]
-        tempRoutines = copy.deepcopy(myRoutines)
-        module.run_extension(tempRoutines, outroot, extensionOptions)
+        #tempRoutines = copy.deepcopy(myRoutines)
+        module.run_extension(myRoutines, outroot, extensionOptions)
+        
 
     if verbose:
         print "Total time taken: %.2f seconds\n" % (time.time() - start)

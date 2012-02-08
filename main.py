@@ -393,6 +393,7 @@ def runPDB2PQR(pdblist, ff,
     # Process the extensions
     for ext in selectedExtensions:
         module = extensions.extDict[ext]
+        #TODO: figure out a way to do this without crashing...
         #tempRoutines = copy.deepcopy(myRoutines)
         module.run_extension(myRoutines, outroot, extensionOptions)
         

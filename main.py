@@ -644,7 +644,7 @@ def mainCommand(argv):
         size.parseInput(outpath)
         size.runPsize(outpath)
         async = 0 # No async files here!
-        input = inputgen.Input(outpath, size, method, async)
+        input = inputgen.Input(outpath, size, method, async, potdx=True)
         input.printInputFiles()
         input.dumpPickle()
 

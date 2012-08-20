@@ -8,4 +8,5 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Rolled back change that prevented plugins from interfering with each other. Large proteins would cause a stack overflow when trying to do a deep copy.
  * Updated INSTALL file to reflect no more need for Fortran.
  * Fixed apbs input file to match what web interface produces.
- * Added stderr and stdout to web error page.
+ * Added stderr and stdout to web error page. 
+ * Fixed user specified mobile ion species not being passed to apbs input file.

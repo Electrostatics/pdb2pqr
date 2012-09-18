@@ -310,12 +310,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 <!-- Nucleic Acid Patches -->
 
   <patch>
-    <name>RA</name>
-    <applyto>A</applyto>
-  </patch>
-  <patch>
     <name>DA</name>
-    <applyto>A</applyto>
+    <applyto>RA</applyto>
     <add>
        <atom>
           <name>C2'</name>
@@ -370,7 +366,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RA3</name>
-     <applyto>A</applyto>
+     <applyto>RA</applyto>
      <add>
        <atom>
          <name>H3T</name>
@@ -383,7 +379,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RA5</name>
-     <applyto>A</applyto>
+     <applyto>RA</applyto>
      <remove>O1P</remove>
      <remove>P</remove>
      <remove>O2P</remove>
@@ -397,13 +393,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
        </atom>
      </add>
   </patch>
-  <patch>
-    <name>RC</name>
-    <applyto>C</applyto>
-  </patch>
+  
   <patch>
     <name>DC</name>
-    <applyto>C</applyto>
+    <applyto>RC</applyto>
     <add>
        <atom>
           <name>C2'</name>
@@ -458,7 +451,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RC3</name>
-     <applyto>C</applyto>
+     <applyto>RC</applyto>
      <add>
        <atom>
          <name>H3T</name>
@@ -471,7 +464,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RC5</name>
-     <applyto>C</applyto>
+     <applyto>RC</applyto>
      <remove>O1P</remove>
      <remove>P</remove>
      <remove>O2P</remove>
@@ -485,13 +478,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
        </atom>
      </add>
   </patch>
-  <patch>
-    <name>RG</name>
-    <applyto>G</applyto>
-  </patch>
+  
   <patch>
     <name>DG</name>
-    <applyto>G</applyto>
+    <applyto>RG</applyto>
     <add>
        <atom>
           <name>C2'</name>
@@ -546,7 +536,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RG3</name>
-     <applyto>G</applyto>
+     <applyto>RG</applyto>
      <add>
        <atom>
          <name>H3T</name>
@@ -559,7 +549,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RG5</name>
-     <applyto>G</applyto>
+     <applyto>RG</applyto>
      <remove>O1P</remove>
      <remove>P</remove>
      <remove>O2P</remove>
@@ -573,13 +563,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
        </atom>
      </add>
   </patch>
-  <patch>
-    <name>DT</name>
-    <applyto>T</applyto>
-  </patch>
+  
   <patch>
      <name>DT3</name>
-     <applyto>T</applyto>
+     <applyto>DT</applyto>
      <add>
        <atom>
          <name>H3T</name>
@@ -606,13 +593,10 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
        </atom>
      </add>
   </patch>
-  <patch>
-    <name>RU</name>
-    <applyto>U</applyto>
-  </patch>
+  
   <patch>
      <name>RU3</name>
-     <applyto>U</applyto>
+     <applyto>RU</applyto>
      <add>
        <atom>
          <name>H3T</name>
@@ -625,7 +609,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>RU5</name>
-     <applyto>U</applyto>
+     <applyto>RU</applyto>
      <remove>O1P</remove>
      <remove>P</remove>
      <remove>O2P</remove>
@@ -668,24 +652,4 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
        </atom>
      </add>
    </patch>
-  <patch>
-     <name>ADE</name>
-     <applyto>A</applyto>
-  </patch>
-  <patch>
-     <name>CYT</name>
-     <applyto>C</applyto>
-  </patch>
-  <patch>
-     <name>GUA</name>
-     <applyto>G</applyto>
-  </patch>
-  <patch>
-     <name>THY</name>
-     <applyto>T</applyto>
-  </patch>
-  <patch>
-     <name>URA</name>
-     <applyto>U</applyto>
-  </patch>
 </patches>

@@ -298,19 +298,19 @@ class URA(Nucleic):
         self.ffname = "RU"
         Nucleic.setState(self)
         
-#Define alternate names for Nucleic acids.
-class A(ADE):
+#Tie the class name to the base name in NA.XML
+class RA(ADE):
     pass
      
-class C(CYT):
+class RC(CYT):
     pass
         
-class G(GUA):
+class RG(GUA):
     pass
         
-class T(THY):
+class DT(THY):
     pass
         
-class U(URA):
+class RU(URA):
     pass
 

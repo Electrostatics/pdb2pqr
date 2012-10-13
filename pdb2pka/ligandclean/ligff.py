@@ -6,6 +6,8 @@ from pdb2pka import NEWligand_topology
 import sys
 import string
 
+from src.errors import PDBInputError
+
 def initialize(definition, ligdesc, pdblist, verbose=0):
     """
         Initialize a ligand calculation by adding ligand atoms to the definition.
@@ -26,11 +28,16 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     Lig = ligand_charge_handler()
     Lig.read(ligdesc)
     atomnamelist=[]
+    duplicatesFound = False
     for atom in Lig.lAtoms:
         if atom.name in atomnamelist:
-            sys.stderr.write("WARNING: Duplicate atom names (%s) found in ligand file, please change duplicate atom names to aviod atom overwriting!\n" % atom.name)
+            duplicatesFound = True
+            sys.stderr.write("Duplicate atom names (%s) found in ligand file!\n" % atom.name)
         else:
             atomnamelist.append(atom.name)
+            
+    if duplicatesFound:
+        raise PDBInputError, "Duplicate atoms names."
     # Create the ligand definition from the mol2 data
 
     MOL2FLAG = True
@@ -46,7 +53,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
         obj = DefinitionAtom()
         entries = string.split(line)
         if len(entries) != 4:
-            raise ValueError, "Invalid line for MOL2 definition!"
+            raise PDBInputError, "Invalid line for MOL2 definition!"
         name = entries[0]
         obj.name = name
         obj.x = float(entries[1])

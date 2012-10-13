@@ -59,6 +59,8 @@ from utilities import *
 from structures import *
 from routines import *
 
+from errors import PDBInternalError
+
 class DefinitionHandler(sax.ContentHandler):
    
     def __init__(self):
@@ -91,10 +93,10 @@ class DefinitionHandler(sax.ContentHandler):
         if name == "residue": # Complete Residue object
             residue = self.curholder
             if not isinstance(residue, DefinitionResidue):
-                raise ValueError, "Internal error parsing XML!"
+                raise PDBInternalError, "Internal error parsing XML!"
             resname = residue.name
             if resname == "":
-                raise ValueError, "Residue name not set in XML!"
+                raise PDBInternalError, "Residue name not set in XML!"
             else:
                 self.map[resname] = residue
                 self.curholder = None
@@ -103,10 +105,10 @@ class DefinitionHandler(sax.ContentHandler):
         elif name == "patch": # Complete patch object
             patch = self.curholder
             if not isinstance(patch, Patch):
-                raise ValueError, "Internal error parsing XML!"
+                raise PDBInternalError, "Internal error parsing XML!"
             patchname = patch.name
             if patchname == "":
-                raise ValueError, "Residue name not set in XML!"
+                raise PDBInternalError, "Residue name not set in XML!"
             else:
                 self.patches.append(patch)
                 self.curholder = None
@@ -116,10 +118,10 @@ class DefinitionHandler(sax.ContentHandler):
         elif name == "atom": # Complete atom object
             atom = self.curatom
             if not isinstance(atom, DefinitionAtom):
-                raise ValueError, "Internal error parsing XML!"
+                raise PDBInternalError, "Internal error parsing XML!"
             atomname = atom.name
             if atomname == "":
-                raise ValueError, "Atom name not set in XML!"
+                raise PDBInternalError, "Atom name not set in XML!"
             else:
                 self.curholder.map[atomname] = atom
                 self.curatom = None
@@ -172,7 +174,7 @@ class Definition:
         for path in [AAPATH, NAPATH]:
             defpath = getDatFile(path)
             if defpath == "":
-                raise ValueError, "%s not found!" % path
+                raise PDBInternalError, "%s not found!" % path
 
             acidFile = open(defpath)
             sax.parseString(acidFile.read(), handler)
@@ -184,7 +186,7 @@ class Definition:
 
         defpath = getDatFile(PATCHPATH)
         if defpath == "":
-            raise ValueError, "%s not found!" % PATCHPATH
+            raise PDBInternalError, "%s not found!" % PATCHPATH
      
         handler.map = {}
         patchFile = open(defpath)

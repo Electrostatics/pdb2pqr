@@ -58,6 +58,7 @@ import re
 
 from xml import sax
 from utilities import *
+from errors import PDBInputError, PDBInternalError
 
 class ForcefieldHandler(sax.ContentHandler):
    
@@ -232,7 +233,7 @@ class Forcefield:
         if userff == None:
             defpath = getFFfile(ff)
             if defpath == "":
-                raise ValueError, "Unable to find forcefield parameter file %s!" % self.name
+                raise PDBInputError, "Unable to find forcefield parameter file %s!" % self.name
           
             file = open(defpath, 'rU')
 
@@ -254,7 +255,7 @@ class Forcefield:
                     if defpath != "": txt += " %s!" % defpath
                     else: txt += "!"
                     txt += " Please use a valid parameter file."
-                    raise ValueError, txt
+                    raise PDBInputError, txt
             
                 try:
                     group = fields[4]
@@ -295,7 +296,7 @@ class Forcefield:
                 namesfile = usernames            
                 sax.parseString(namesfile.read(), handler)
             else:
-                raise ValueError, "Please provide a valid .names file!"
+                raise PDBInputError, "Please provide a valid .names file!"
             namesfile.close()
 
 
@@ -904,7 +905,7 @@ class ForcefieldAtom:
             return item
         except AttributeError:
             message = "Unable to access object \"%s\" in class ForcefieldAtom" % name
-            raise ValueError, message
+            raise PDBInternalError, message
 
     def __str__(self):
         """

@@ -72,6 +72,7 @@ from src.server import *
 from src.hydrogens import *
 from src.aconf import *
 from StringIO import *
+from src.errors import PDB2PQRError
 
 import extensions
 
@@ -599,26 +600,30 @@ def mainCommand(argv):
     # get rid of the userff and username arguments to this function.
     # This would also do away with the redundent checks and such in 
     # the Forcefield constructor.
-    header, lines, missedligands = runPDB2PQR(pdblist, 
-                                              options.ff, 
-                                              outname = options.outname,
-                                              ph = options.pH,
-                                              verbose = options.verbose,
-                                              selectedExtensions = options.active_extensions,
-                                              propkaOptions = propkaOpts,
-                                              extensionOptions = extensionOpts,
-                                              clean = options.clean,
-                                              neutraln = options.neutraln,
-                                              neutralc = options.neutralc,
-                                              ligand = options.ligand,
-                                              assign_only = options.assign_only,
-                                              chain = options.chain,
-                                              debump = options.debump,
-                                              opt = options.opt,
-                                              typemap = options.typemap,
-                                              userff = userfffile,
-                                              usernames = usernamesfile,
-                                              ffout = options.ffout)
+    try:
+        header, lines, missedligands = runPDB2PQR(pdblist, 
+                                                  options.ff, 
+                                                  outname = options.outname,
+                                                  ph = options.pH,
+                                                  verbose = options.verbose,
+                                                  selectedExtensions = options.active_extensions,
+                                                  propkaOptions = propkaOpts,
+                                                  extensionOptions = extensionOpts,
+                                                  clean = options.clean,
+                                                  neutraln = options.neutraln,
+                                                  neutralc = options.neutralc,
+                                                  ligand = options.ligand,
+                                                  assign_only = options.assign_only,
+                                                  chain = options.chain,
+                                                  debump = options.debump,
+                                                  opt = options.opt,
+                                                  typemap = options.typemap,
+                                                  userff = userfffile,
+                                                  usernames = usernamesfile,
+                                                  ffout = options.ffout)
+    except PDB2PQRError as er:
+        print er
+        sys.exit(1)
     
     # Print the PQR file
     outfile = open(outpath,"w")

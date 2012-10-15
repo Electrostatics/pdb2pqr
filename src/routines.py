@@ -324,7 +324,7 @@ class Routines:
                 residue:    The residue to apply the patch to (residue)
         """
         if patchname not in self.protein.patchmap:
-            raise PDBInternalError, "Unable to find patch %s!" % patchname
+            raise PDBInternalError("Unable to find patch %s!" % patchname)
 
         # Make a copy of the reference, i.e. a new reference for
         # this patch.  Two examples:
@@ -403,7 +403,7 @@ class Routines:
 
         if len(chain.residues) == 0:
             text = "Error: chain \"%s\" has 0 residues!" % chain.chainID
-            raise PDBInputError, text
+            raise PDBInputError(text)
 
         # Set the N-Terminus/ 5' Terminus
 
@@ -611,7 +611,7 @@ class Routines:
                     self.write("Deleted this atom.\n")
 
         if heavycount == 0:
-            raise PDBInputError, "No heavy atoms found!"
+            raise PDBInputError("No heavy atoms found!")
 
         misspct = 100.0 * float(misscount) / heavycount
         if misspct > REPAIR_LIMIT:
@@ -619,7 +619,7 @@ class Routines:
             error += "%i, %.2f%%) heavy atoms to accurately repair the file.  " % \
                      (heavycount, misspct)
             error += "The current repair limit is set at %i%%." % REPAIR_LIMIT
-            raise PDBInputError, error
+            raise PDBInputError(error)
         elif misscount > 0:
             self.write("Missing %i out of %i heavy atoms (%.2f percent) - " % \
                        (misscount, heavycount, misspct))
@@ -891,7 +891,7 @@ class Routines:
                         text = "Too few atoms present to reconstruct or cap residue %s in structure!\n" % (residue)
                         text += "This error is generally caused by missing backbone atoms in this protein;\n"
                         text += "you must use an external program to complete gaps in the protein backbone."
-                        raise PDBInputError, text
+                        raise PDBInputError(text)
                     else: missing.append(atomname)
 
                 else: # Rebuild the atom
@@ -920,7 +920,7 @@ class Routines:
 
             if caatom == None:
                 text = "Cannot set references to %s without CA atom!\n"
-                raise PDBInputError, text
+                raise PDBInputError(text)
 
             # Set up the linked map
 
@@ -1515,7 +1515,7 @@ class Routines:
             if residue.hasAtom(atomname):
                 coordlist.append(residue.getAtom(atomname).getCoords())
             else:
-                raise PDBInputError, "Error occurred while trying to debump!"
+                raise PDBInputError("Error occurred while trying to debump!")
 
         initcoords = subtract(coordlist[2], coordlist[1])
 
@@ -1546,7 +1546,7 @@ class Routines:
             if residue.hasAtom(atomname):
                 coordlist.append(residue.getAtom(atomname).getCoords())
             else:
-                raise PDBInputError, "Error occurred while trying to debump!"
+                raise PDBInputError("Error occurred while trying to debump!")
 
         di = getDihedral(coordlist[0], coordlist[1], coordlist[2], coordlist[3])
         residue.dihedrals[anglenum] = di

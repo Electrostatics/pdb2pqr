@@ -255,7 +255,7 @@ class Forcefield:
                     if defpath != "": txt += " %s!" % defpath
                     else: txt += "!"
                     txt += " Please use a valid parameter file."
-                    raise PDBInputError, txt
+                    raise PDBInputError(txt)
             
                 try:
                     group = fields[4]
@@ -296,7 +296,7 @@ class Forcefield:
                 namesfile = usernames            
                 sax.parseString(namesfile.read(), handler)
             else:
-                raise PDBInputError, "Please provide a valid .names file!"
+                raise PDBInputError("Please provide a valid .names file!")
             namesfile.close()
 
 
@@ -905,7 +905,7 @@ class ForcefieldAtom:
             return item
         except AttributeError:
             message = "Unable to access object \"%s\" in class ForcefieldAtom" % name
-            raise PDBInternalError, message
+            raise PDBInternalError(message)
 
     def __str__(self):
         """

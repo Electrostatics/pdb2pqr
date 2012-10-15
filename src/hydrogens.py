@@ -102,7 +102,7 @@ class HydrogenHandler(sax.ContentHandler):
         if name == "class": # Complete Residue object
             obj = self.curholder
             if not isinstance(obj, OptimizationHolder):
-                raise PDBInternalError, "Internal error parsing XML!"
+                raise PDBInternalError("Internal error parsing XML!")
           
             self.map[obj.name] = obj
             self.curholder = None
@@ -112,10 +112,10 @@ class HydrogenHandler(sax.ContentHandler):
         elif name == "atom": # Complete atom object
             atom = self.curatom
             if not isinstance(atom, DefinitionAtom):
-                raise PDBInternalError, "Internal error parsing XML!"
+                raise PDBInternalError("Internal error parsing XML!")
             atomname = atom.name
             if atomname == "":
-                raise PDBInternalError, "Atom name not set in XML!"
+                raise PDBInternalError("Atom name not set in XML!")
             else:
                 self.curholder.map[atomname] = atom
                 self.curatom = None
@@ -820,7 +820,7 @@ class Flip(Optimize):
 
         anglenum = residue.reference.dihedrals.index(dihedral)
         if anglenum == -1:
-            raise PDBInternalError, "Unable to find Flip dihedral angle!"
+            raise PDBInternalError("Unable to find Flip dihedral angle!")
 
         newangle = 180.0 + residue.dihedrals[anglenum]
         self.routines.setDihedralAngle(residue, anglenum, newangle) 
@@ -1282,7 +1282,7 @@ class Water(Optimize):
 
         oxatom = residue.getAtom("O")
         if oxatom == None:
-            raise PDBInternalError, "Unable to find oxygen atom in %s!" % residue
+            raise PDBInternalError("Unable to find oxygen atom in %s!" % residue)
 
         oxatom.hdonor = 1
         oxatom.hacceptor = 1
@@ -1634,7 +1634,7 @@ class Carboxylic(Optimize):
 
             anglenum = residue.reference.dihedrals.index(di)
             if anglenum == -1:
-                raise PDBInternalError, "Unable to find Carboxylic dihedral angle!"
+                raise PDBInternalError("Unable to find Carboxylic dihedral angle!")
 
             if residue.dihedrals[anglenum] == None: 
                 self.atomlist.append(bondatom)
@@ -2019,7 +2019,7 @@ class hydrogenRoutines:
 
         defpath = getDatFile(HYDPATH)
         if defpath == "":
-            raise PDBInternalError, "Could not find %s!" % HYDPATH 
+            raise PDBInternalError("Could not find %s!" % HYDPATH) 
      
         hydrogenFile = open(defpath)
         sax.parseString(hydrogenFile.read(), handler)
@@ -2059,7 +2059,7 @@ class hydrogenRoutines:
         # JENS: From here on only for Hbond optimisation - is it's used at all?
         #
         if stateID > len(states):
-            raise PDBInternalError, "Invalid State ID!"
+            raise PDBInternalError("Invalid State ID!")
         
         # First Remove all Hs
         residue = getattr(amb,"residue")
@@ -2106,7 +2106,7 @@ class hydrogenRoutines:
                     refcoords.append(resatom.getCoords())
                     defcoords.append(atom.getCoords())
                 else:
-                    raise PDBInternalError, "Could not find necessary atom!"
+                    raise PDBInternalError("Could not find necessary atom!")
 
             newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
@@ -2200,7 +2200,7 @@ class hydrogenRoutines:
                     refcoords.append(resatom.getCoords())
                     defcoords.append(atom.getCoords())
                 else:
-                    raise PDBInternalError, "Could not find necessary atom!"
+                    raise PDBInternalError("Could not find necessary atom!")
 
             newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
@@ -2596,7 +2596,7 @@ class hydrogenRoutines:
 
         toppath = getDatFile(TOPOLOGYPATH)
         if toppath == "":
-            raise PDBInternalError, "Could not find %s!" % TOPOLOGYPATH 
+            raise PDBInternalError("Could not find %s!" % TOPOLOGYPATH) 
      
         topfile = open(toppath)
         top = topology.Topology(topfile)

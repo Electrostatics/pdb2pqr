@@ -37,7 +37,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
             atomnamelist.append(atom.name)
             
     if duplicatesFound:
-        raise PDBInputError, "Duplicate atoms names."
+        raise PDBInputError("Duplicate atoms names.")
     # Create the ligand definition from the mol2 data
 
     MOL2FLAG = True
@@ -53,7 +53,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
         obj = DefinitionAtom()
         entries = string.split(line)
         if len(entries) != 4:
-            raise PDBInputError, "Invalid line for MOL2 definition!"
+            raise PDBInputError("Invalid line for MOL2 definition!")
         name = entries[0]
         obj.name = name
         obj.x = float(entries[1])

@@ -76,7 +76,19 @@ from src.errors import PDB2PQRError
 
 import extensions
 
-def printPQRHeader(atomlist, reslist, charge, ff, warnings, pH, ffout):
+def getOldHeader(pdblist):
+    oldHeader = StringIO()
+    headerTypes = (HEADER, TITLE, COMPND, SOURCE, KEYWDS, EXPDTA, AUTHOR, REVDAT, JRNL, REMARK, SPRSDE)
+    for pdbObj in pdblist:
+        if not isinstance(pdbObj,headerTypes):
+            break
+        
+        oldHeader.write(str(pdbObj))
+        oldHeader.write('\n')
+        
+    return oldHeader.getvalue()
+
+def printPQRHeader(pdblist, atomlist, reslist, charge, ff, warnings, pH, ffout):
     """
         Print the header for the PQR file
 
@@ -133,7 +145,11 @@ def printPQRHeader(atomlist, reslist, charge, ff, warnings, pH, ffout):
         header += "REMARK   5\n"
     header += "REMARK   6 Total charge on this protein: %.4f e\n" % charge
     header += "REMARK   6\n"
-
+#    header += "REMARK   6 Original PDB header follows\n"
+#    header += "REMARK   6\n"
+#
+#    header += getOldHeader(pdblist)
+    
     return header
 
 def runPDB2PQR(pdblist, ff,
@@ -380,7 +396,7 @@ def runPDB2PQR(pdblist, ff,
             myNameScheme = myForcefield
         myRoutines.applyNameScheme(myNameScheme)
 
-    header = printPQRHeader(misslist, reslist, charge, ff, myRoutines.getWarnings(), ph, ffout)
+    header = printPQRHeader(pdblist, misslist, reslist, charge, ff, myRoutines.getWarnings(), ph, ffout)
     lines = myProtein.printAtoms(hitlist, chain)
 
     # Determine if any of the atoms in misslist were ligands

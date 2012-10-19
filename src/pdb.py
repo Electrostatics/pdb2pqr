@@ -2005,6 +2005,7 @@ class REMARK:
         """
         record = string.strip(line[0:6])
         if record == "REMARK":
+            self.text = line.rstrip('\r\n')
             self.remarkNum = int(string.strip(line[7:10]))
             self.remarkDict = {}
             remarkText = line[11:70]
@@ -2032,6 +2033,8 @@ class REMARK:
             else:
                 self.remarkDict["text"] = string.strip(line[11:70])
  
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class JRNL:
@@ -2055,7 +2058,11 @@ class JRNL:
         record = string.strip(line[0:6])
         if record == "JRNL":
             self.text = string.strip(line[12:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class SPRSDE:
@@ -2098,7 +2105,11 @@ class SPRSDE:
             self.sIdCodes.append(string.strip(line[56:60]))
             self.sIdCodes.append(string.strip(line[61:65]))
             self.sIdCodes.append(string.strip(line[66:70]))
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class REVDAT:
@@ -2141,7 +2152,11 @@ class REVDAT:
             self.records.append(string.strip(line[46:52]))
             self.records.append(string.strip(line[53:59]))
             self.records.append(string.strip(line[60:66]))
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class AUTHOR:
@@ -2163,7 +2178,11 @@ class AUTHOR:
         record = string.strip(line[0:6])
         if record == "AUTHOR":
             self.authorList = string.strip(line[10:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class EXPDTA:
@@ -2195,7 +2214,11 @@ class EXPDTA:
         record = string.strip(line[0:6])
         if record == "EXPDTA":
             self.technique = string.strip(line[10:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class KEYWDS:
@@ -2221,7 +2244,11 @@ class KEYWDS:
         record = string.strip(line[0:6])
         if record == "KEYWDS":
             self.keywds = string.strip(line[10:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 @RegisterLineParser
 class SOURCE:
@@ -2246,9 +2273,13 @@ class SOURCE:
         record = string.strip(line[0:6])
         if record == "SOURCE":
             self.source = string.strip(line[10:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
-
+@RegisterLineParser
 class COMPND:
     """ COMPND field
        
@@ -2276,8 +2307,13 @@ class COMPND:
         record = string.strip(line[0:6])
         if record == "COMPND":
             self.compound = string.strip(line[10:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
+@RegisterLineParser
 class CAVEAT:
     """ CAVEAT field
 
@@ -2301,6 +2337,7 @@ class CAVEAT:
             self.comment = string.strip(line[19:70])
         else:  raise ValueError, record
 
+@RegisterLineParser
 class TITLE:
     """ TITLE field
  
@@ -2320,8 +2357,13 @@ class TITLE:
         record = string.strip(line[0:6])
         if record == "TITLE":
             self.title = string.strip(line[10:70])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
-    
+        
+    def __str__(self):
+        return self.text
+
+@RegisterLineParser    
 class OBSLTE:
     """ OBSLTE field
 
@@ -2399,7 +2441,11 @@ class HEADER:
             self.classification = string.strip(line[10:50])
             self.depDate = string.strip(line[50:59])
             self.IDcode = string.strip(line[62:66])
+            self.text = line.rstrip('\r\n')
         else:  raise ValueError, record
+        
+    def __str__(self):
+        return self.text
 
 def readAtom(line):
     """

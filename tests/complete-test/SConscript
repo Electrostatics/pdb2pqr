@@ -1,0 +1,164 @@
+Import('env')
+Import('pdb2pqr')
+Import('setupTest')
+import sys
+
+commandLineStart = sys.executable + ' ' + str(pdb2pqr[0])
+testList = []
+
+def buildTest(input_file_names,
+			  out_file_names, 
+			  correct_file_name,  
+			  test_name, 
+			  command_line_stuffs,
+			  out_propka_file_name=None, 
+			  correct_propka_file_name=None,
+			  test_chain=False ):
+			  
+    test_result_file_name = test_name + '.result'
+    if not isinstance(input_file_names, (list,tuple)):
+    	input_file_names = [input_file_names]
+    	
+    if not isinstance(out_file_names, (list,tuple)):
+    	out_file_names = [out_file_names]
+    	
+    if out_propka_file_name is not None:
+    	out_file_names.append(out_propka_file_name)
+
+    runTest = env.Command(out_file_names, input_file_names, commandLineStart + ' {0} ${{SOURCES[0]}} ${{TARGETS[0]}}'.format(command_line_stuffs))
+	
+    output_tests = []
+    validatePQRResult = env.Command(test_result_file_name, 
+									[out_file_names[0], correct_file_name],
+                                	ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}',
+                                	has_chain=test_chain))
+                                	
+    output_tests.append(validatePQRResult)
+    
+    if out_propka_file_name is not None and correct_propka_file_name is not None:
+        test_result_file_name = test_name + '.propka.result'
+        validatePROPKAResult = env.Command(test_result_file_name, [out_propka_file_name, correct_propka_file_name],
+                                   			ComparePROPKA('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
+        output_tests.append(validatePROPKAResult)
+							
+    aliasObj = setupTest(test_name, runTest, output_tests)
+    testList.append(aliasObj)
+    return aliasObj
+
+#Test All Force Fields and Force Field out options
+for ff_name in ('AMBER', 'CHARMM', 'PARSE', 'TYL06', 'PEOEPB', 'SWANSON'):
+
+    out_file_name = 'test-output-1AFS-{0}.pqr'.format(ff_name)
+    correct_file_name = 'test-output-1AFS-{0}-correct.pqr'.format(ff_name)
+    test_name = 'test-ff-{0}'.format(ff_name)
+    command_line_stuffs = '--ff={0} --ffout={0} --whitespace'.format(ff_name)
+	
+	
+    buildTest('1AFS.pdb',
+    		  out_file_name,
+			  correct_file_name,
+			  test_name,
+			  command_line_stuffs)
+
+#Test Clean
+buildTest('1AFS.pdb',
+		  'test-output-1AFS-clean.pqr', 
+		  'test-output-1AFS-clean-correct.pqr',
+		  'test-clean',
+		  '--clean --whitespace')
+		  
+#Test assign only
+#We must use 1A1P as it has the needed atoms in HIS to keep the run from failing as it otherwise should.
+buildTest('1A1P.pdb',
+		  'test-output-1A1P-assign-only.pqr', 
+		  'test-output-1A1P-assign-only-correct.pqr',
+		  'test-assign-only',
+		  '--ff=AMBER --assign-only --whitespace')
+
+#Test nodebump and noopt
+
+buildTest('1AFS.pdb',
+          'test-output-1AFS-nodebump-noopt.pqr', 
+		  'test-output-1AFS-nodebump-noopt-correct.pqr',
+		  'test-nodebump-noopt',
+		  '--ff=AMBER --nodebump --noopt --whitespace')
+		  
+#Test chain
+
+buildTest('1AFS.pdb',
+          'test-output-1AFS-chain.pqr', 
+		  'test-output-1AFS-chain-correct.pqr',
+		  'test-chain',
+		  '--ff=AMBER --chain --whitespace',
+		  test_chain=True)
+		  
+#Test neutraln and neutralc
+
+buildTest('1AFS.pdb',
+          'test-output-1AFS-neutraln-neutralc.pqr', 
+		  'test-output-1AFS-neutraln-neutralc-correct.pqr',
+		  'test-neutraln-neutralc',
+		  '--ff=PARSE --neutraln --neutralc --whitespace')
+
+#Test ligand	  
+buildTest(['1HPX.pdb', 'LIG_1HPX.mol2'],
+          'test-output-1HPX-ligand.pqr', 
+		  'test-output-1HPX-ligand-correct.pqr',
+		  'test-ligand',
+		  '--ff=AMBER --ligand=${SOURCES[1]} --whitespace')
+		  
+#Test ph and ligand	  
+for ph in xrange(1,14):
+
+	out_file_name = 'test-output-1HPX-ligand-ph{0}.pqr'.format(ph)
+	correct_file_name = 'test-output-1HPX-ligand-ph{0}-correct.pqr'.format(ph)
+    
+	propka_out_file_name = 'test-output-1HPX-ligand-ph{0}.propka'.format(ph)
+	propka_correct_file_name = 'test-output-1HPX-ligand-ph{0}-correct.propka'.format(ph)
+    
+	test_name = 'test-ligand-ph{0}'.format(ph)
+	command_line_stuffs = '--ff=AMBER --ligand=${{SOURCES[1]}} --with-ph={0} --whitespace'.format(ph)
+    
+	buildTest(['1HPX.pdb', 'LIG_1HPX.mol2'],
+	          out_file_name, 
+			  correct_file_name,
+			  test_name,
+			  command_line_stuffs,
+			  propka_out_file_name,
+			  propka_correct_file_name)
+			  
+#Test reference	  
+buildTest(['1AFS.pdb'],
+          'test-output-1AFS-ph-neutral.pqr', 
+		  'test-output-1AFS-ph-neutral-correct.pqr',
+		  'test-ph-neutral',
+		  '--ff=AMBER --with-ph=7.0 --reference=neutral --whitespace',
+		  'test-output-1AFS-ph-neutral.propka',
+		  'test-output-1AFS-ph-neutral-correct.propka')
+		  
+buildTest(['1AFS.pdb'],
+          'test-output-1AFS-ph-low-ph.pqr', 
+		  'test-output-1AFS-ph-low-ph-correct.pqr',
+		  'test-ph-low-Ph',
+		  '--ff=AMBER --with-ph=7.0 --reference=low-pH --whitespace',
+		  'test-output-1AFS-ph-low-ph.propka',
+		  'test-output-1AFS-ph-low-ph-correct.propka')
+
+#Test user ff and names		  
+buildTest(['1AFS.pdb', 'AMBER.DAT', 'AMBER.names'],
+          'test-output-1AFS-usernames-user-ff.pqr', 
+		  'test-output-1AFS-usernames-user-ff-correct.pqr',
+		  'test-username-user-ff',
+		  '--userff=${SOURCES[1]} --usernames=${SOURCES[2]} --whitespace')
+		  
+#Test misc options to make sure they don't crash.
+test_obj = buildTest(['1AFS.pdb'],
+			          ['test-output-1AFS-misc.pqr', 
+			           'test-output-1AFS-misc.in', 
+			           'test-output-1AFS-misc-input.p', 
+			           'test-output-1AFS-misc-typemap.html'], 
+					  'test-output-1AFS-misc-correct.pqr',
+					  'test-misc-options',
+					  '--ff=AMBER --apbs-input --whitespace --typemap --include_header')
+		  
+Alias('complete-test', testList)

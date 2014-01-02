@@ -1,0 +1,62 @@
+Import('env')
+Import('pdb2pqr')
+import sys
+
+def setupTest(testName, testRunBuilder, valRunBuilders):
+	if GetOption("clean"):
+	    env.Default(testRunBuilder)
+	    for vb in valRunBuilders:
+		    env.Default(vb)
+	else:
+	    Depends(testRunBuilder, DEFAULT_TARGETS)
+	    for vb in valRunBuilders:
+		    Depends(vb, testRunBuilder)
+	   
+	testAliasObj = Alias(testName, [testRunBuilder] + valRunBuilders )
+	AlwaysBuild(testRunBuilder)
+	for vb in valRunBuilders:
+		AlwaysBuild(vb)
+		
+	return testAliasObj
+	
+commandLineStart = sys.executable + ' ' + str(pdb2pqr[0])
+
+Export('setupTest')
+
+#Basic Test
+
+runTest = env.Command('test/test-output-user.pqr', None,
+                      commandLineStart + ' --ff=AMBER 1AFS $TARGET')
+
+validatePQRResult = env.Command('test/pqr.result', ['test/test-output-user.pqr', 'test/test-output-correct.pqr'],
+                                ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
+							
+aliasObj = setupTest('test', runTest, [validatePQRResult])
+
+#Local Test
+
+runTest = env.Command('local-test/test-output-user.pqr', 'local-test/1AFS.pdb',
+                      commandLineStart + ' --ff=AMBER $SOURCE $TARGET')
+
+validatePQRResult = env.Command('local-test/pqr.result', ['local-test/test-output-user.pqr', 'local-test/test-output-correct.pqr'],
+                                ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
+							
+aliasObj = setupTest('local-test', runTest, [validatePQRResult])
+
+#Advanced Test
+
+runTest = env.Command('adv-test/test-output-user.pqr', 'adv-test/LIG_1HPX.mol2',
+                      commandLineStart + ' --with-ph=7.00 --ligand=$SOURCE --ff=AMBER 1HPX $TARGET')
+
+validatePQRResult = env.Command('adv-test/pqr.result', ['adv-test/test-output-user.pqr', 'adv-test/test-output-correct.pqr'],
+                                ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
+							
+validatePROPKAResult = env.Command('adv-test/propka.result', ['adv-test/test-output-user.propka', 'adv-test/test-output-correct.propka'],
+                                   ComparePROPKA('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
+							
+env.Clean(runTest, 'adv-test/test-output-user.propka')
+
+aliasObj = setupTest('advtest', runTest, [validatePQRResult, validatePROPKAResult])
+
+SConscript('test-long/SConscript')
+SConscript('complete-test/SConscript')

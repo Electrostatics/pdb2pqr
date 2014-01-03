@@ -40,7 +40,7 @@
 
  
 import string, sys, copy, math
-
+from Source.lib import pka_print
 
 
 def getCatchAllCompareWithExperiment(argv):
@@ -321,7 +321,7 @@ def getExperiment(fullname):
                     "GLU  21 B":  3.70,
                    }
     else: 
-      print("could not find experimental data for \"%s\"" % (name))
+      pka_print("could not find experimental data for \"%s\"" % (name))
       sys.exit(9)
 
     return experiment
@@ -347,6 +347,6 @@ def makeErrorPlot(points):
     for i in range(0, 41):
       error = float(i)/10.0
       fraction = error_list[i]/number_of_points
-      print("%6.2lf%6.2lf" % (error, fraction))
+      pka_print("%6.2lf%6.2lf" % (error, fraction))
 
 

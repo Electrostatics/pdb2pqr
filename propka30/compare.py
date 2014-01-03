@@ -39,7 +39,7 @@
 
 import math
 #import data
-
+from Source.lib import pka_print
 
 if False:
     def compareWithExperiment(protein, file=None, list=None, set=None, label="ALL", **argv):
@@ -58,7 +58,7 @@ if False:
                 dpka_exp = pka_exp - residue.pKa_mod
                 dpka_clc = residue.pKa_pro - residue.pKa_mod
                 diff     = residue.pKa_pro - pka_exp
-                print( "compare:%s%6.2lf%6.2lf %6.2lf" % (key, residue.pKa_pro, pka_exp, diff) )
+                pka_print( "compare:%s%6.2lf%6.2lf %6.2lf" % (key, residue.pKa_pro, pka_exp, diff) )
                 # adding to 'compare' list
                 list.append(diff)
                 # writing to 'comp.dat' file
@@ -95,7 +95,7 @@ def makeErrorPlot(points, filename=None):
       fraction = error_list[i]/number_of_points
       str = "%6.2lf%6.3lf" % (error, fraction)
       if filename == None:
-        print(str)
+        pka_print(str)
       else:
         str += "\n"; file.write(str)
 
@@ -113,7 +113,7 @@ def calculateMUE(points):
         abs_sum += abs(point)
     mue  = abs_sum/number_of_points
 
-    print("mue  =     %6.4lf" % (mue))
+    pka_print("mue  =     %6.4lf" % (mue))
 
 
 def calculateRMSD(points):
@@ -126,7 +126,7 @@ def calculateRMSD(points):
         sqr_sum += pow(point, 2)
     rmsd = pow(sqr_sum/number_of_points, 0.5)
 
-    print("rmsd =     %6.4lf (%d)" % (rmsd, number_of_points))
+    pka_print("rmsd =     %6.4lf (%d)" % (rmsd, number_of_points))
 
 
 def calculateShift(points):
@@ -160,13 +160,13 @@ def printDesolvationDistances(protein):
             if atom.element == "C" and atom.name not in ["C", "CA"]:
               contribution = enumerator/pow(test_distance, 4)
               sum += contribution
-              print("%s  %-3s %6.2lf %6.2lf" % (residue.label, atom.name, test_distance, contribution))
+              pka_print("%s  %-3s %6.2lf %6.2lf" % (residue.label, atom.name, test_distance, contribution))
           if test_distance < distance and atom.element == "C":
             distance = test_distance
             closest = atom
         if distance <  8.0 and False:
-          print("%s %6.2lf  %s" % (residue.label, distance, closest.name))
-    print("sum:%8.4lf" % (sum))
+          pka_print("%s %6.2lf  %s" % (residue.label, distance, closest.name))
+    pka_print("sum:%8.4lf" % (sum))
 
 
 def regression(points):
@@ -180,7 +180,7 @@ def regression(points):
     sum_yy = 0.00
     number_of_points = len(points)
     for x, y in points:
-      print("%6.2lf %6.2lf" % (x, y))
+      pka_print("%6.2lf %6.2lf" % (x, y))
       sum_x  += x
       sum_y  += y
       sum_xx += x*x
@@ -191,6 +191,6 @@ def regression(points):
     intercept   = (sum_y*sum_xx - sum_x*sum_xy) / (number_of_points*sum_xx - sum_x*sum_x)
     correlation = (number_of_points*sum_xy - sum_x*sum_y) / math.sqrt((number_of_points*sum_xx - sum_x*sum_x)*(number_of_points*sum_yy - sum_y*sum_y))
 
-    print("%6.2lf + %8.4lf*x, r=%6.3lf" % (intercept, slope, correlation))
+    pka_print("%6.2lf + %8.4lf*x, r=%6.3lf" % (intercept, slope, correlation))
 
 

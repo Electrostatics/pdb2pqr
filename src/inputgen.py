@@ -221,7 +221,7 @@ class Input:
         if not potdx:
             self.prints = ["print elecEnergy 2 - 1 end"]     
         else:
-            self.prints = []
+            self.prints = ["print elecEnergy 1 end"]
 
     def __str__(self):
         """

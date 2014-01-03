@@ -45,7 +45,7 @@ import Source.mutate as mutate
 from Source.protein import Protein
 from Source.pdb import readPDB
 import Source.version as propka
- 
+pka_print = lib.pka_print
 
 
 def main():
@@ -70,16 +70,16 @@ def main():
 
     # II. making mutations and calculating the folding energy
     for mutation in options.mutations:
-      print(mutation)
+      pka_print(mutation)
       newProtein = mutate.makeMutatedProtein(myProtein, atoms=atoms, mutation=mutation, options=options)
 
       # calculating pKa values for ionizable residues
       newProtein.calculatePKA(version=version, options=options)
       newProtein.writePKA(options=options)
       dG_mut = newProtein.calculateFoldingEnergy(options=options)
-      print("staliblization:")
-      print("%8.2lf %6.2lf  %s" % (dG_ref, dG_ref-dG_ref, "WT"))
-      print("%8.2lf %6.2lf  %s" % (dG_mut, dG_mut-dG_ref, "Mutant"))
+      pka_print("staliblization:")
+      pka_print("%8.2lf %6.2lf  %s" % (dG_ref, dG_ref-dG_ref, "WT"))
+      pka_print("%8.2lf %6.2lf  %s" % (dG_mut, dG_mut-dG_ref, "Mutant"))
       newProtein.writePDB(hydrogens=True, options=options)
 
 

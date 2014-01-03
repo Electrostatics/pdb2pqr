@@ -38,6 +38,7 @@
 #-------------------------------------------------------------------------------------------------------
 import string, sys, copy
 import lib
+pka_print = lib.pka_print
 
 excluded_resNames = ["H2O", "HOH", "SO4", "PO4", "PEG", "EPE", "NAG", "TRS"]
 
@@ -83,7 +84,7 @@ def readPDB(filename, file=None, verbose=True, tags = ["ATOM"]):
             done_atoms = True
         else:
           # printing alternative configurations
-          """print(line)"""
+          """pka_print(line)"""
 
 
     # creating and adding the existing configurations to atoms
@@ -93,9 +94,9 @@ def readPDB(filename, file=None, verbose=True, tags = ["ATOM"]):
         chainID = getChainID(line)
         reskey = "%-3s%4d%2s" % (getResName(line), getResNumb(line), chainID)
         if chainID not in atoms:
-          print("incorrect labeling in %s, please correct your pdbfile; could not find chain '%s'" % (filename, chainID)); sys.exit(8)
+          pka_print("incorrect labeling in %s, please correct your pdbfile; could not find chain '%s'" % (filename, chainID)); sys.exit(8)
         if reskey not in atoms[chainID]:
-          print("incorrect labeling in %s, please correct your pdbfile; could not find '%s'" % (filename, reskey)); sys.exit(8)
+          pka_print("incorrect labeling in %s, please correct your pdbfile; could not find '%s'" % (filename, reskey)); sys.exit(8)
         for atom in atoms[chainID][reskey]:
           if atom.name == getAtomName(line):
             key = makeConfigurationKey(line, i_model)
@@ -111,9 +112,9 @@ def readPDB(filename, file=None, verbose=True, tags = ["ATOM"]):
             str = "%s%4d  %4s%3d%7s" % (atom.resName, atom.resNumb, atom.name, len(atom.configurations.keys()), atom.type)
             for key in atom.configurations.keys():
               str += "%5s" % (key)
-            print(str)
+            pka_print(str)
 
-    #print(number_of_configurations, models_configurations)
+    #pka_print(number_of_configurations, models_configurations)
     #sys.exit(9)
 
     return  atoms
@@ -267,8 +268,8 @@ def openPdbFile(filename):
         # this might be a simulated annealing file from Xplor
         file = open(filename)
     else:
-        print("trying to pass me a rotten pdbfile \"%s\" - no pdb extension" % (filename))
-        print("check if there is a dot in full path ...")
+        pka_print("trying to pass me a rotten pdbfile \"%s\" - no pdb extension" % (filename))
+        pka_print("check if there is a dot in full path ...")
         sys.exit(9)
 
     return  file
@@ -374,7 +375,7 @@ class Atom:
             str += " %6d" % (self.resNumb)
             str += " %s" % (self.chainID)
             str += "  %s" % (self.name)
-            print(str)
+            pka_print(str)
 
 
     def trimConfigurations(self, configurations=None):
@@ -421,7 +422,7 @@ class Atom:
               resLabel = "%-3s%4d%2s" % (self.resName, self.resNumb, self.chainID)
               keys = ""
               for item in self.configurations.keys(): keys += "%5s" % (item)
-              print("configuration '%s' not found in '%s' atom '%s' [%s]" % (key, resLabel, self.name, keys))
+              pka_print("configuration '%s' not found in '%s' atom '%s' [%s]" % (key, resLabel, self.name, keys))
               sys.exit(8)
 
 

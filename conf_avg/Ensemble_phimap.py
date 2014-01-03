@@ -30,7 +30,6 @@ import math
 import string
 import getopt
 import time
-import shutil
 from src.pdb import *
 from src.utilities import *
 from src.structures import *
@@ -58,9 +57,10 @@ class conf_avg:
         else:
             # Single file
             potentials.append(self.process_one_pdb(os.path.join(os.getcwd(),options.pdbfilename)))
-        avgPotList=self.avg_pots()
-        self.writeAvgPots(avgPotList)
-        print "done"
+		#
+		# Average potentials
+		#
+        avg_pots=self.average_potentials(potentials)
         return
         
     #
@@ -216,77 +216,21 @@ class conf_avg:
 		import pdb2pka.apbs 
 		APBS=pdb2pka.apbs.runAPBS()
 		potentials = APBS.runAPBS(myProtein, apbs_inputfile)
-		# copies snapshots to separate directories so that they are not overwritten
-		global run_no
-		mydir="snapshot"+str(run_no)
-		if not os.path.exists(mydir):
-			os.mkdir(mydir)
-		for i in range(0,4):
-			myfile="potential"+str(i)+".dx"
-			mypath=mydir+'/'+myfile
-			shutil.copyfile(myfile,mypath)
-		run_no+=1
 		APBS.cleanup()
 		return potentials
+        
+    def average_potentials(self,potentials):
+        """This function averages many potential maps"""
+        avg_pots=[]
+        for i in range(0,len(potentials[0])):
+            currSum=0
+            for j in range(0,len(potentials)):
+                currSum+=potentials[j][i]
+            currAvg=currSum/len(potentials)
+            avg_pots.append(currAvg)
 
-    def avg_pots(self):
-		"""reads in potentials and averages them"""
-		topdir=os.getcwd()
-		for snapshot_no in range(0,run_no):
-			os.chdir("snapshot"+str(snapshot_no))
-			currPotFile=open("potential0.dx","r")
-			print "starting snapshot no.", snapshot_no
-			#discard first lines
-			for j in range(0,10):
-				currPotFile.readline()
-
-			#get number of data items (in case a different grid than 65x65x65 is used)
-			dataItems=currPotFile.readline().split()[9]
-			dataLines=int(math.ceil(float(dataItems)/3))
-
-			#initialize the list that will store current list of potentials read from the file
-			currPotList=[]
-			for j in range(0,dataLines):
-				currLine=currPotFile.readline().split()
-				currPotList.append(currLine)
-				
-			#flatten the currPotList
-			flatCurrPotList=[item for sublist in currPotList for item in sublist]
-			
-			#initialize current sum list (only on the first go)
-			if snapshot_no == 0:
-				currSumPotList=[0]*len(flatCurrPotList)
-			
-			#add current potential list to sum of previous potential lists
-			for k in range(0,len(flatCurrPotList)):
-				currSumPotList[k]+=float(flatCurrPotList[k])
-
-			os.chdir(topdir)
-			currPotFile.close()
-
-			print "done with snapshot no. ", snapshot_no
-		
-		#initialize averaged potentials list
-		avgPotList=[0]*len(flatCurrPotList)
-		#do the averaging
-		for j in range(0,len(currSumPotList)):
-			avgPotList[j]=float(currSumPotList[j])/(snapshot_no+1)
-
-		return avgPotList
-
-    def writeAvgPots(self,avgPotList):
-		"""writes averaged potentials into a file"""
-		avgPotsFile = open('averaged_pots', 'w')
-		counter=0
-		for each in avgPotList:
-			avgPotsFile.write(str(each))
-			avgPotsFile.write(" ")
-			counter+=1
-			if counter%3==0:
-				avgPotsFile.write("\n")
-		avgPotsFile.close()
-		return
-
+        print avg_pots
+        return avg_pots
 
 #
 # ----
@@ -309,8 +253,6 @@ if __name__=='__main__':
     # We can think about adding flags for not solvating the structure etc here
     #
 
-	# A global value keeping track of how many snapshot directories to create
-    run_no=0
 
 
     (options, args) = parser.parse_args()

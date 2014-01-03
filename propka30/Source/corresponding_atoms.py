@@ -40,7 +40,7 @@
 #-------------------------------------------------------------------------------------------------------
 
 import sys
-from lib import residueList, atomList
+from lib import residueList, atomList, pka_print
 
 
 #    NOTE:
@@ -207,7 +207,7 @@ def main():
           str += " %-3s %-3s" % (name1, name2)
           name1, name2 = corresponding_atoms[resName2][resName1][i]
           str += "%-5s %-3s %-3s\n" % (" ", name1, name2)
-        print(str)
+        pka_print(str)
         if resName1 == resName2:
           break
 

@@ -28,7 +28,7 @@ from src.utilities import (getTrackingScriptString,
 
 def apbsOpalExec(logTime, form, apbsOptions):
     
-    sys.path.append(os.path.dirname(HAVE_APBS))
+    sys.path.append(os.path.dirname(APBS_LOCATION))
     from ApbsClient import execApbs, initRemoteVars, enoughMemory
 
     #style = "%spdb2pqr.css" # HARDCODED
@@ -72,10 +72,7 @@ def apbsOpalExec(logTime, form, apbsOptions):
 
     #argv=[os.path.abspath("tmp/%s/%s.in") % (logTime, "apbsinput")] # HARDCODED??  
     argv=[os.path.abspath("%s%s%s/apbsinput.in" % (INSTALLDIR, TMPDIR, logTime))]  
-    if DEFAULT_APBS_OPAL_URL == "0":
-        vars={'service_url' : APBS_OPAL_URL}
-    else:
-        vars = None
+    vars={'service_url' : APBS_OPAL_URL}
 
     # Check for enough memory
     if(not enoughMemory(argv[-1])):
@@ -164,7 +161,7 @@ def apbsExec(logTime, form, apbsOptions):
 #        statusfile.close()
 
 
-        apbs_stdin, apbs_stdout, apbs_stderr = os.popen3('%s apbsinput.in' % HAVE_APBS)
+        apbs_stdin, apbs_stdout, apbs_stderr = os.popen3('%s apbsinput.in' % APBS_LOCATION)
 
         startLogFile(logTime, 'apbs_stdout.txt', apbs_stdout.read())
 #        stdoutFile=open('%s%s%s/apbs_stdout.txt' % (INSTALLDIR, TMPDIR, logTime), 'w')

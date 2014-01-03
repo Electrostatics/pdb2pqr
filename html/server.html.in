@@ -125,7 +125,7 @@ document.getElementById("parse").checked=true;
 <BODY>
 <h2>PDB2PQR Server</h2>
 <P>
-<I>Currently using PDB2PQR Version 1.8</I>
+<I>Currently using PDB2PQR Version @PDB2PQR_VERSION@</I>
 <P>
 Return to <a href="http://www.poissonboltzmann.org/pdb2pqr">the PDB2PQR homepage</a>.<br> 	
 <hr> 	
@@ -135,10 +135,9 @@ pKa calculations are performed by <a href="http://propka.ki.ku.dk">PROPKA</a>.<P
 
 For more information on PDB2PQR please see the:<BR>
 <ul>
-	<li> <a href="http://www.poissonboltzmann.org/pdb2pqr">Home Page</a>
-	</li>
-	<li> <a href="http://pdb2pqr.sourceforge.net/userguide.html">User Guide</a> </li>
-	<li> <a href="http://pdb2pqr.sourceforge.net/examples/">Examples</a> </li>
+	<li> <a href="http://www.poissonboltzmann.org/pdb2pqr">Home Page</a> </li>
+	<li> <a href="http://www.poissonboltzmann.org/pdb2pqr/user-guide">User Guide</a> </li>
+	<li> <a href="http://www.poissonboltzmann.org/pdb2pqr/examples">Examples</a> </li>
 </ul>
 
 If you use the PDB2PQR service in a publication, please cite:
@@ -153,7 +152,7 @@ in using PDB2PQR for larger proteins, you are encouraged to download a command
 line version of PDB2PQR from the <a
 	href="http://www.poissonboltzmann.org/pdb2pqr">PDB2PQR home page</a>.  For
 additional limitations, please see the <a
-	href="http://pdb2pqr.sourceforge.net/userguide.html">PDB2PQR user
+	href="http://www.poissonboltzmann.org/pdb2pqr/user-guide">PDB2PQR user
 	guide</a> <P>
 <B>Note:</B> This server uses automatic refreshing to update the status of your PDB2PQR submission.  Do not use the <i>back</i> button on your browser while the server is running.<P>
 @WITHOPAL@
@@ -178,14 +177,14 @@ Pick a forcefield to use:
 <input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
 <input type="RADIO" name="FF" id = "swanson" value="swanson" onClick="setff(this.value)">SWANSON</input><BR> 
 <input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
-<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
-<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://pdb2pqr.sourceforge.net/userguide.html#userff">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><BR>
+<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://www.poissonboltzmann.org/pdb2pqr/frequently-asked-questions/can-i-add-my-own-charge-and-radius-parameters-to-pdb2pqr">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
+<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://www.poissonboltzmann.org/pdb2pqr/frequently-asked-questions/can-i-add-my-own-charge-and-radius-parameters-to-pdb2pqr">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><BR>
 <label>&nbsp;&nbsp;* If you select user-defined forcefield, you also need to specify a user-defined .names file.</label><BR> 
 </blockquote>
 
-Pick an output naming scheme to use (<a href="http://pdb2pqr.sourceforge.net/userguide.html#outff">help</a>):
+Pick an output naming scheme to use (<a href="http://www.poissonboltzmann.org/pdb2pqr/frequently-asked-questions/can-pdb2pqr-output-create-a-pqr-file-using-forcefield-specific-residue-and-atom-names">help</a>):
 <blockquote>
-<input type="RADIO" name="FFOUT" value="internal" CHECKED>Internal naming scheme</input> (<a href="http://pdb2pqr.sourceforge.net/programmerguide.html#canon">What's this?</a>)<BR>
+<input type="RADIO" name="FFOUT" value="internal" CHECKED>Internal naming scheme</input> (<a href="http://www.poissonboltzmann.org/pdb2pqr/programmers-guide/canonical-naming-scheme">What's this?</a>)<BR>
 <input type="RADIO" name="FFOUT" value="amber">AMBER</input><BR>
 <input type="RADIO" name="FFOUT" value="charmm">CHARMM</input><BR>
 <input type="RADIO" name="FFOUT" value="parse">PARSE</input><BR>
@@ -199,9 +198,9 @@ Available options:
 <blockquote>
 <input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<BR>
 <input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
-<input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)"> Use <a href="http://propka.ki.ku.dk">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6  value="7" DISABLED><BR>
+<input type="CHECKBOX" name="PROPKA" value="SETPKA" onClick="setph(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk">PROPKA</a> to assign protonation states at pH <input type="text" name="PH" size=4 maxlength=6  value="7"><BR>
 <input type="CHECKBOX" name="LIGANDCHECK" onClick="setligand()"> Assign charges to the ligand specified in a MOL2 file</input>: <input type="file" name="LIGAND" size="25" maxlength=100 value="" DISABLED><BR>
-<input type="CHECKBOX" name="INPUT" CHECKED> Create an <a href="http://apbs.wustl.edu">APBS</a> input file <span style="font-size:60%">(this also enables the option to run APBS and visualize your results through the web interface, if it has been installed)</span><BR>
+<input type="CHECKBOX" name="INPUT" CHECKED> Create an <a href="http://www.poissonboltzmann.org/apbs">APBS</a> input file <span style="font-size:60%">(this also enables the option to run APBS and visualize your results through the web interface, if it has been installed)</span><BR>
 <input type="CHECKBOX" name="CHAIN"> Add/keep chain IDs in the PQR file<BR>
 <input type="CHECKBOX" name="WHITESPACE"> Insert whitespaces between atom name and residue name, between x and y, and between y and z<BR>
 <input type="CHECKBOX" name="TYPEMAP"> Create Typemap output<BR>
@@ -214,15 +213,16 @@ Available options:
 <HR>
 The PDB2PQR application and web server was written by:
 <blockquote>
-<a href="http://enzyme.ucd.ie//group_members/jens/">Jens Erik Nielsen</a><BR>
+<a href="http://enzyme.ucd.ie/main/index.php/Main_Page">Jens Erik Nielsen</a><BR>
 <a href="http://agave.wustl.edu">Todd Dolinsky</a><BR>
-<a href="http://agave.wustl.edu">Nathan Baker</a><P>
+<a href="http://nabaker.me/">Nathan Baker</a><BR>
+Kyle Monson<P>
 </blockquote>
 PDB2PQR Opal integration by:
 <blockquote>
 <a href="http://nbcr.net">Wes Goodman</a><BR>
-<a href="http://agave.wustl.edu">Samir Unni</a><BR>
-<a href="http://agave.wustl.edu">Yong Huang</a><P>
+Samir Unni<BR>
+Yong Huang<P>
 </blockquote>
 JMol visualization scripts and applets provided by:
 <blockquote>
@@ -231,8 +231,8 @@ JMol visualization scripts and applets provided by:
 
 PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project program, and the <a href="http://nbcr.net">National Biomedical Computation Resource</a>.<P>
 
-Before sending a bug report you may want to check the <a href="http://sourceforge.net/mailarchive/forum.php?forum=pdb2pqr-users">pdb2pqr-users mailing list archives</a> or the existing <a href="http://sourceforge.net/tracker/?group_id=144228&atid=758143">PDB2PQR SourceForge Bug List</a> to make sure your question has not already been addressed. Otherwise please post all bug reports or feature requests to the appropriate <a href="http://sourceforge.net/tracker/?group_id=144228">PDB2PQR SourceForge Tracker</a>.<P>
-For additional support you may contact the <a href="http://lists.sourceforge.net/lists/listinfo/pdb2pqr-users">pdb2pqr-users mailing list</a>.<P>
+Before sending a bug report you may want to check the <a href="http://sourceforge.net/mailarchive/forum.php?forum=pdb2pqr-users">pdb2pqr-users mailing list archives</a> to make sure your question has not already been addressed.<P>
+For additional support, feature requests, and bug reports you may contact the <a href="http://lists.sourceforge.net/lists/listinfo/pdb2pqr-users">pdb2pqr-users mailing list</a>.<P>
 <HR>
 		<center>
 			<small>

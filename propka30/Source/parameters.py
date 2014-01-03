@@ -38,6 +38,7 @@
 #-------------------------------------------------------------------------------------------------------
 import math
 import lib
+pka_print = lib.pka_print
 import sys, os
 from calculator import calculate
 
@@ -271,7 +272,7 @@ def checkPair(resType1, resType2):
     if [resType1, resType2].count("LIG") == 1:
         return "T"
     elif [resType1, resType2].count("LIG") == 2:
-        print('Ligand-ligand interaction detected!!')
+        pka_print('Ligand-ligand interaction detected!!')
         return 'F'
 
 
@@ -336,7 +337,7 @@ def getIndicies(name1, name2):
         elif name == "TRP":
             indicies.append(9)
         else:
-            print("cannot find indicies for residue \"%s\" " % (name))
+            pka_print("cannot find indicies for residue \"%s\" " % (name))
             sys.exit(9)
 
     if   indicies[0] > 6 and indicies[1] > 6:
@@ -384,12 +385,12 @@ def checkCooArgException(residue_coo, residue_arg, dpka_max=None, cutoff=None, v
       distance, f_angle, nada = lib.calculateAngleFactor(closest_coo_atom, closest_arg_atom, atom3)
       value = calculate.SideChainEnergy(distance, dpka_max, cutoff, f_angle)
       value_tot += value
-      #print(">>> %s %s: %6.2lf %6.2lf %s" % (closest_coo_atom.name, closest_arg_atom.name, distance, value, iter))
+      #pka_print(">>> %s %s: %6.2lf %6.2lf %s" % (closest_coo_atom.name, closest_arg_atom.name, distance, value, iter))
       str += "%6.2lf" % (value)
       #str += "%6.2lf" % (distance)
       excluded_atoms.append(closest_coo_atom)
       excluded_atoms.append(closest_arg_atom)
-    #print(str)
+    #pka_print(str)
 
     return exception, value
 
@@ -494,7 +495,7 @@ def makeVersion(label="Jan15", verbose=True):
     elif label == "Oct13":
       version = Oct13(verbose=verbose)
     else:
-      print("Could not find version %s" % (label))
+      pka_print("Could not find version %s" % (label))
       sys.exit(9)
 
     return version
@@ -519,7 +520,7 @@ def setVersion(label="default"):
     elif label == "Dec19":
       version = Dec19()
     else:
-      print("Could not find version %s" % (label))
+      pka_print("Could not find version %s" % (label))
       sys.exit(9)
 
     return version
@@ -576,29 +577,29 @@ class Version(object):
         """
         str  = "WARNING: you are trying to create a 'default' version object. "
         str += " This object contains the cross section of all versions and is not a complete version itself."
-        print(str)
+        pka_print(str)
         sys.exit(8)
         self.ions = {}
         self.name = "default"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
 
     def printVersion(self):
         """
         Print out the properties of this version - more a test and debug feature.
         """
-        print("version = %s" % (self.name))
-        print("  desolvation   = %s" % (self.DesolvationModel))
-        print("    prefactor   = %6.2lf" % (self.desolvationPrefactor))
-        print("    allowance   = %6.2lf" % (self.desolvationAllowance))
-        print("    scaled      = %s" % (self.desolvationScaled))
-        print("  Coulomb       = %s" % (self.CoulombModel))
-        print("    prefactor   = %s" % (self.coulomb_maxpka))
-        print("    cutoff      = %s" % (self.coulomb_cutoff))
-        print("    diel        = %s" % (self.coulomb_diel))
-        print("    scaled diel = %s" % (self.coulomb_scaled_diel))
-        print("    scaled      = %s" % (self.coulomb_scaled))
+        pka_print("version = %s" % (self.name))
+        pka_print("  desolvation   = %s" % (self.DesolvationModel))
+        pka_print("    prefactor   = %6.2lf" % (self.desolvationPrefactor))
+        pka_print("    allowance   = %6.2lf" % (self.desolvationAllowance))
+        pka_print("    scaled      = %s" % (self.desolvationScaled))
+        pka_print("  Coulomb       = %s" % (self.CoulombModel))
+        pka_print("    prefactor   = %s" % (self.coulomb_maxpka))
+        pka_print("    cutoff      = %s" % (self.coulomb_cutoff))
+        pka_print("    diel        = %s" % (self.coulomb_diel))
+        pka_print("    scaled diel = %s" % (self.coulomb_scaled_diel))
+        pka_print("    scaled      = %s" % (self.coulomb_scaled))
 
 
     def calculateWeight(self, Nmass):
@@ -677,7 +678,7 @@ class Version(object):
         setting the Coulomb model, and its parameters
         """
         if label not in self.CoulombDefault:
-          print("do not accept Coulomb model \"%s\\n" % (label)); sys.exit(9)
+          pka_print("do not accept Coulomb model \"%s\\n" % (label)); sys.exit(9)
         else:
           self.CoulombModel = label
 
@@ -710,7 +711,7 @@ class Version(object):
         """
         desolvation_parameters = getDesolvationParameters()
         if label not in desolvation_parameters:
-          print("do not accept solvation model \"%s\\n" % (label))
+          pka_print("do not accept solvation model \"%s\\n" % (label))
           sys.exit(9)
         else:
           self.DesolvationModel = label
@@ -749,7 +750,7 @@ class Version(object):
         elif self.DesolvationModel in ["VolumeModel", "ScaledVolumeModel"]:
           Nmass, Emass, Nlocl, Elocl = calculate.radialVolumeDesolvation(residue, atoms, self, verbose=verbose)
         else:
-          print("Desolvation \"%s\" is not implemented" % (self.DesolvationModel))
+          pka_print("Desolvation \"%s\" is not implemented" % (self.DesolvationModel))
           sys.exit(8)
 
         return Nmass, Emass, Nlocl, Elocl
@@ -871,7 +872,7 @@ class Version(object):
         elif self.CoulombModel == "Coulomb":
           return calculate.CoulombEnergy(distance, weight, self, verbose=False)
         else:
-          print("Coulomb \"%s\" is not implemented" % (self.CoulombModel))
+          pka_print("Coulomb \"%s\" is not implemented" % (self.CoulombModel))
           sys.exit(8)
           
 
@@ -905,7 +906,7 @@ class Jan01(Version):
     
         self.name = "Jan01"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  300
         self.Nmax             =  600
@@ -962,7 +963,7 @@ class Oct13(Version):
 
         self.name = "Oct13"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -990,7 +991,7 @@ class Oct13(Version):
         self.ions_long_names = {}
         file = os.path.join(os.path.dirname(__file__), 'ions.list')
         if not os.path.isfile(file):
-            print('Error: Could not find ion parameter file:',file)
+            pka_print('Error: Could not find ion parameter file:',file)
             exit(9)
 
         lines = open(file,'r').readlines()
@@ -1092,7 +1093,7 @@ class Jan15(Version):
 
         self.name = "Jan15"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  300
         self.Nmax             =  600
@@ -1150,7 +1151,7 @@ class May13(Version):
 
         self.name = "May13"
         self.coulomb_cutoff =   7.00
-        print("creating propka version \"%s\"" % (self.name))
+        pka_print("creating propka version \"%s\"" % (self.name))
 
 
     def checkExceptions(self, residue1, residue2):
@@ -1175,7 +1176,7 @@ class Dec18(Version):
 
         self.name = "Dec18"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  300
         self.Nmax             =  600
@@ -1199,7 +1200,7 @@ class Dec19(Version):
         
         self.name = "Dec19"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  300
         self.Nmax             =  600
@@ -1223,7 +1224,7 @@ class Aug24(Version):
 
         self.name = "Aug24"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -1247,7 +1248,7 @@ class Aug30(Version):
 
         self.name = "Aug30"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -1271,7 +1272,7 @@ class Aug31(Version):
 
         self.name = "Aug31"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -1295,7 +1296,7 @@ class Sep07(Version):
 
         self.name = "Sep07"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -1319,7 +1320,7 @@ class Sep08(Version):
 
         self.name = "Sep08"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -1341,7 +1342,7 @@ class Oct14(Version):
         """
         self.name = "Oct14"
         if verbose == True:
-          print("creating propka version \"%s\"" % (self.name))
+          pka_print("creating propka version \"%s\"" % (self.name))
 
         self.Nmin             =  280
         self.Nmax             =  560
@@ -1404,7 +1405,7 @@ class Jan01_old:
         """
         Checks if this Coulomb interaction should be done - a propka2.0 hack
         """
-        print("version = %s" % (self.name))
+        pka_print("version = %s" % (self.name))
 
 
     def checkCoulombPair(self, residue1, residue2, distance):
@@ -1511,7 +1512,7 @@ class Dec18_old():
         """
         Print out the properties of this version - more a test and debug feature.
         """
-        print("version = %s" % (self.name))
+        pka_print("version = %s" % (self.name))
 
 
     def checkCoulombPair(self, residue1, residue2, distance):

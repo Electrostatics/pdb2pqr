@@ -549,7 +549,7 @@ def mainCGI():
         #                printname = line
         #            print "<li><a href=%s>%s</a></li>" % (WEBSITE+TMPDIR+jobid+"/"+line,printname)
 
-        if calctype=="pdb2pqr" and apbs_input and HAVE_APBS!="":
+        if calctype=="pdb2pqr" and apbs_input and HAVE_APBS:
             print "</ul></p><hr><p><b><a href=%s>Click here</a> to run APBS with your results.</b></p>" % nexturl
         elif calctype=="apbs":
             print "</ul></p><hr><p><b><a href=%s>Click here</a> to visualize your results.</b></p>" % nexturl

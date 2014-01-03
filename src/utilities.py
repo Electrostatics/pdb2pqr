@@ -111,14 +111,14 @@ def getEventTrackingString(category, action, label, value=None):
 class ExtraOptions(object):
     pass
 
-def createPropkaOptions(pH, verbose=False):
+def createPropkaOptions(pH, verbose=False, reference='neutral'):
     """
     Create a propka options object for running propka.
     """
     #build propka options
     propkaOpts = ExtraOptions()
     propkaOpts.pH = pH
-    propkaOpts.reference = "neutral"
+    propkaOpts.reference = reference
     propkaOpts.chains = None
     propkaOpts.thermophiles = None
     propkaOpts.alignment = None
@@ -361,7 +361,7 @@ def getPDBFile(path):
             file:  File object containing PDB file (file object)
     """
 
-    import urllib
+    import os, urllib
 
     file = None
     if not os.path.isfile(path):

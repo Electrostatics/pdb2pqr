@@ -216,9 +216,9 @@ class Residue:
 
     def __str__(self):
         """
-            Basic string representation for debugging
+            Basic string representation
         """
-        text = "%s %s %i" % (self.name, self.chainID, self.resSeq)
+        text = "%s %s %i%s" % (self.name, self.chainID, self.resSeq, self.iCode)
         return text
     
     #TODO: Kill this in a fire.

@@ -50,6 +50,7 @@ __author__ = "Todd Dolinsky"
 
 import string
 from structures import *
+from src.errors import PDBInputError
 
 class Amino(Residue):
     """
@@ -265,7 +266,8 @@ class ASP(Amino):
            Set the name to use for the forcefield based on the current
            state.  
         """
-        if "ASH" in self.patches or self.name == "ASH": self.ffname = "ASH"
+        if "ASH" in self.patches or self.name == "ASH": 
+            self.ffname = "ASH"
         Amino.setState(self)
     
 class CYS(Amino):
@@ -297,10 +299,14 @@ class CYS(Amino):
             Set the state of the CYS object.  If SS-bonded, use CYX.  If
             negatively charged, use CYM.  If HG is not present, use CYX.
         """
-        if "CYX" in self.patches or self.name == "CYX": self.ffname = "CYX"
-        elif self.SSbonded: self.ffname = "CYX"
-        elif "CYM" in self.patches or self.name == "CYM": self.ffname = "CYM"
-        elif not self.hasAtom("HG"): self.ffname = "CYX"
+        if "CYX" in self.patches or self.name == "CYX": 
+            self.ffname = "CYX"
+        elif self.SSbonded: 
+            self.ffname = "CYX"
+        elif "CYM" in self.patches or self.name == "CYM": 
+            self.ffname = "CYM"
+        elif not self.hasAtom("HG"): 
+            self.ffname = "CYX"
         Amino.setState(self)
       
 class GLN(Amino):
@@ -421,11 +427,14 @@ class HIS(Amino):
             else: # Default to HID
                 if self.hasAtom("HE2"): self.removeAtom("HE2")    
 
-        if self.hasAtom("HD1") and self.hasAtom("HE2"): self.ffname = "HIP"
-        elif self.hasAtom("HD1"): self.ffname = "HID"
-        elif self.hasAtom("HE2"): self.ffname = "HIE"
+        if self.hasAtom("HD1") and self.hasAtom("HE2"): 
+            self.ffname = "HIP"
+        elif self.hasAtom("HD1"): 
+            self.ffname = "HID"
+        elif self.hasAtom("HE2"): 
+            self.ffname = "HIE"
         else:
-            raise ValueError, "Invalid type for %s!" % str(self)
+            raise PDBInputError("Invalid type for %s!" % str(self))
         Amino.setState(self)
 
 class ILE(Amino):

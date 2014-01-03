@@ -224,7 +224,7 @@ class Protein:
                 outfilename:  The name of the file to write (string)
         """
         from forcefield import Forcefield
-        from server import STYLESHEET
+        from aconf import STYLESHEET
 
         # Cache the initial atom numbers
         numcache = {}

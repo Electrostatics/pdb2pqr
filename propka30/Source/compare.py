@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 import  sys, math, string
-from lib import int2roman, convertResidueCode
+from lib import int2roman, convertResidueCode, pka_print
 
 
 def compareFoldingContributions(target=None, template=None, options=None):
@@ -56,7 +56,7 @@ def compareFoldingContributions(target=None, template=None, options=None):
     # reading alignment files
     alignment = readAlignmentFiles(filenames=options.alignment, mesophile=target.name, options=options)
     names = makeNameList(name=target.name, alignment=alignment, options=options)
-    print(names)
+    pka_print(names)
     printAlignment(names=names, alignment=alignment)
 
     # setup contribution differences
@@ -89,13 +89,13 @@ def checkDonePKA(target=None, template=None, alignment=None, options=None):
     check if pKa values have been calculated for target and template
     """
     if target.status['done pka'] == False:
-      print("please calculate pKa values for target %s before comparing" % (target.name))
+      pka_print("please calculate pKa values for target %s before comparing" % (target.name))
     if template.status['done pka'] == False:
-      print("please calculate pKa values for template %s before comparing" % (template.name))
+      pka_print("please calculate pKa values for template %s before comparing" % (template.name))
 
     if target.status['done pka'] == True and template.status['done pka'] == True:
       if False:
-        print("target = %s, template = %s : pKas done" % (target.name, template.name))
+        pka_print("target = %s, template = %s : pKas done" % (target.name, template.name))
     else:
       sys.exit(8)
 
@@ -114,7 +114,7 @@ sequence alignment:
                .........|.........|.........|.........|.........|.........|.........|.........|.........|.........|
 """
     str = str[:-1]
-    print(str)
+    pka_print(str)
     for key1 in alignment.keys():
       for key2 in alignment[key1].keys():
         str = "    %s 100 %s 0" % (key2, "%")
@@ -124,9 +124,9 @@ sequence alignment:
           if index%100 == 0:
             str += "\n               "
           str += "%s" % (code)
-        print(str)
+        pka_print(str)
 
-      #print(alignment[key])
+      #pka_print(alignment[key])
 
     return
 
@@ -159,8 +159,8 @@ def makeFoldingEnergyDifferences(target, template, alignment, names=None, option
           position[protein.name]['contribution'] = residue.calculateFoldingEnergy(options=options)
 
     # filling position differences
-    print("\n unsorted contributions to the folding energy: (kcal/mol)")
-    print("-"*64)
+    pka_print("\n unsorted contributions to the folding energy: (kcal/mol)")
+    pka_print("-"*64)
     i_position = 0
     for position in positions:
       str  = "%5d  " % (i_position)
@@ -169,7 +169,7 @@ def makeFoldingEnergyDifferences(target, template, alignment, names=None, option
         str += "  %s" % (position[name]['label'])
         str += " %6.2lf" % (position[name]['contribution'])
         str += "    "
-      print(str)
+      pka_print(str)
       i_position += 1
 
 
@@ -200,8 +200,8 @@ def printFoldingEnergyDifferences(positions, names=None, template=None, options=
     """
     making an array with folding energy differences and related information
     """
-    print("\n the most stabilizing differences: (kcal/mol)")
-    print("-"*64)
+    pka_print("\n the most stabilizing differences: (kcal/mol)")
+    pka_print("-"*64)
     sorted_positions = sortAccordingToMin(positions, key=names[1])
 
     i_position = 0
@@ -212,7 +212,7 @@ def printFoldingEnergyDifferences(positions, names=None, template=None, options=
       str  = "%5d    %s   ->   %s  %6.2lf   " % (i_position, target_label, template_label, difference)
       if difference < -0.50:
         str += suggestMutation(positions=positions, label=template_label, names=names, template=template, options=options)
-      print(str)
+      pka_print(str)
       i_position += 1
 
     return
@@ -252,8 +252,8 @@ def suggestMutations(positions, names=None, template=None, options=None):
     making an array with folding energy differences and related information
     """
 
-    print("\n suggesting mutations")
-    print("-"*64)
+    pka_print("\n suggesting mutations")
+    pka_print("-"*64)
     sorted_positions = sortAccordingToMin(positions, key=names[1])
 
     number = 0; weight = None
@@ -286,7 +286,7 @@ def suggestMutations(positions, names=None, template=None, options=None):
             residue = template.getResidue(label=determinant_label)
             weight += residue.buried
         weight = int( 100.*weight/(len(determinant_labels) + 1) )
-        print(" %-5s %3d%2s   %s" % (roman, weight, "%", mutation))
+        pka_print(" %-5s %3d%2s   %s" % (roman, weight, "%", mutation))
 
     return
 

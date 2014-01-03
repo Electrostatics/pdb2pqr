@@ -115,7 +115,7 @@ def loadOptions():
 
     # checking at early stage that there is at least one pdbfile to work with
     if len(args) == 0:
-      print("Warning: no pdbfile provided")
+      pka_print("Warning: no pdbfile provided")
       #sys.exit(9)
 
 
@@ -135,7 +135,14 @@ def loadOptions():
     # done!
     return  options, args
 
-
+proPKA_verbose = False
+def setVerbose(value):
+    global proPKA_verbose
+    proPKA_verbose = value
+    
+def pka_print(txt):
+    if proPKA_verbose:
+        print(txt)
 
 def checkPythonVersion():
     """
@@ -143,7 +150,7 @@ def checkPythonVersion():
     """
 
     if sys.hexversion < 0x02060000:
-      print("propka does not run under python %s, please use version 2.6 or later" % (sys.version.split()[0]))
+      pka_print("propka does not run under python %s, please use version 2.6 or later" % (sys.version.split()[0]))
       sys.exit(8)
 
     return
@@ -172,7 +179,7 @@ def interpretMutator(options):
         elif item[:3] == "rtm":
           property = "rtm"; value = item[4:]
         cmd = "myMutator.setProperty(%s=%s)" % (property, value)
-        print(cmd)
+        pka_print(cmd)
         exec(cmd)
 
     # resetting mutator
@@ -219,7 +226,7 @@ def interpretMutationsDictionary_old(options):
             code  = extractName(options.thermophiles[0])
             label = mutation
           else:
-            print("cannot assign pdbcode to mutation %s; specify pdbcode or use a different mutator" % (mutation))
+            pka_print("cannot assign pdbcode to mutation %s; specify pdbcode or use a different mutator" % (mutation))
             sys.exit(9)
         else:
           # not using alignment anyway
@@ -266,7 +273,7 @@ def interpretDictionaryMutations(options):
         label   = mutation_line[separator[-1]+1:]
       else:
         # too difficult to figure out what user want
-        print("cannot interpret mutation '%s'; specify as '2vuj:A:N25R/N181D'" % (mutation))
+        pka_print("cannot interpret mutation '%s'; specify as '2vuj:A:N25R/N181D'" % (mutation))
         sys.exit(9)
 
       mutation = {code: {chainID: label}}
@@ -274,9 +281,9 @@ def interpretDictionaryMutations(options):
       #if code != None and code not in options.thermophiles:
       #  options.thermophiles.append(code)
 
-    print("interpreted mutations as:")
+    pka_print("interpreted mutations as:")
     for mutation in mutations:
-      print(mutation)
+      pka_print(mutation)
 
     # resetting the content of 'options.mutations to new list
     options.mutations = mutations
@@ -312,7 +319,7 @@ def interpretMutationsList(options):
         label   = mutation[separator[-1]+1:]
       else:
         # too difficult to figure out what user want
-        print("cannot interpret mutation '%s'; specify as '2vuj:A:N25R/N181D'" % (mutation))
+        pka_print("cannot interpret mutation '%s'; specify as '2vuj:A:N25R/N181D'" % (mutation))
         sys.exit(9)
       mutations.append( [code, chainID, label] )
       if code != None and code not in options.thermophiles:
@@ -345,7 +352,7 @@ def residueList(name):
     elif name == "excluded":
         residue_list = ["H2O", "HOH", "SO4", "PO4", "HEM", "cu", "zn", "GTT", "PMS", "MYG"]
     else:
-        print('cannot understand \"%s\" residueList' % (name))
+        pka_print('cannot understand \"%s\" residueList' % (name))
         sys.exit(0)
 
     return residue_list
@@ -367,7 +374,7 @@ def residueInteractionList(grpName):
         #str = "ASP GLU SER THR ASN GLN TRP HIS CYS TYR LYS ARG 'C- ' "
         residue_list = ['ASP', 'GLU', 'SER', 'THR', 'ASN', 'GLN', 'TRP', 'HIS', 'CYS', 'TYR', 'LYS', 'ARG', 'C- ', 'N+ ']
     else:
-        print("Don't understand %s" % (grpName))
+        pka_print("Don't understand %s" % (grpName))
         sys.exit(0)
 
     if len(residue_list) == 0:
@@ -455,7 +462,7 @@ def atomList(resName):
     elif resName == "C- ":
         str = ""
     else:
-        print("Don't understand %s in atomList(resName)" % (resName))
+        pka_print("Don't understand %s in atomList(resName)" % (resName))
         sys.exit(0)
 
     atom_list = str.split()
@@ -625,7 +632,7 @@ def convertResidueCode(code=None, resName=None):
       if code == test1 or resName == test2:
         return test1, test2
 
-    print("could not figure out code=%s resName=%s" % (code, resName) )
+    pka_print("could not figure out code=%s resName=%s" % (code, resName) )
     sys.exit(9)
 
 
@@ -662,7 +669,7 @@ def readAlignments(filename, name):
         break
       if line[:4] == ">P1;":
         if name == line[4:].strip():
-          print( "%s=%s" % (name, line[4:].strip()) )
+          pka_print( "%s=%s" % (name, line[4:].strip()) )
           FOUND = True
           text.append(line)
           line = file.readline()
@@ -672,7 +679,7 @@ def readAlignments(filename, name):
 
     # getting the alignment data
     if FOUND == False:
-      print( "could not find alignment for %s" % (name) )
+      pka_print( "could not find alignment for %s" % (name) )
     else:
       for line in file.readlines():
         if line == "\n":
@@ -686,7 +693,7 @@ def readAlignments(filename, name):
       alignments.append(alignment)
 
     file.close()
-    print(alignments)
+    pka_print(alignments)
 
     return first, last, alignments
 

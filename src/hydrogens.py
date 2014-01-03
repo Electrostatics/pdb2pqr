@@ -2489,9 +2489,12 @@ class hydrogenRoutines:
                 atom2 = hbond.atom2
                 obj = self.resmap[atom.residue]
 
-                if atom.residue.fixed: continue
-                if atom.hdonor: obj.tryDonor(atom, atom2)
-                if atom.hacceptor: obj.tryAcceptor(atom, atom2)
+                if atom.residue.fixed: 
+                    continue
+                if atom.hdonor: 
+                    obj.tryDonor(atom, atom2)
+                if atom.hacceptor: 
+                    obj.tryAcceptor(atom, atom2)
               
             ### SECOND:  Non-dual water Optimizeable to Optimizeable
 

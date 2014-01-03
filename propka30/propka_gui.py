@@ -43,7 +43,7 @@ import Source.version as propka
 import Source.lib as lib
 from Source.protein import Protein
 from Source.mutate import makeCompositeAtomsDictionary
- 
+pka_print = lib.pka_print
 
 
 def main():
@@ -76,7 +76,7 @@ def main():
     if len(mutations) > 0:
       best_mutation = myProtein.optimizeMultipleMutations(mutations=mutations, atoms=atoms, version=version, options=options)
     else:
-      print("Could not find any mutation combination more stable than WT\n")
+      pka_print("Could not find any mutation combination more stable than WT\n")
       sys.exit(8)
 
 

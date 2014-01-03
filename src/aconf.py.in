@@ -46,12 +46,11 @@
 __date__   = "8 July 2008"
 __author__ = "Yong Huang"
 
+""" PDB2PQR version string"""
+PDB2PQR_VERSION = "@PDB2PQR_VERSION@"
 
 """ The maximum number atoms to be handled on the server"""
-MAXATOMS = "@MAXATOMS@"
-
-""" The package path for NumPy or Numeric"""
-PACKAGE_PATH = "@PACKAGE_PATH@"
+MAXATOMS = @MAXATOMS@
 
 """ The absolute path to root HTML directory"""
 SRCPATH = "@srcpath@/"
@@ -60,22 +59,22 @@ SRCPATH = "@srcpath@/"
 WEBSITE     = "@website@"
 
 """ The stylesheet to use """
-STYLESHEET  = "@website@" + "pdb2pqr.css"
+STYLESHEET  = WEBSITE + "pdb2pqr.css"
 
 """ The OPAL service URL """
 PDB2PQR_OPAL_URL = "@PDB2PQR_OPAL_URL@"
 
 """ The HAVE_PDB2PQR_OPAL flag """
-HAVE_PDB2PQR_OPAL = "@HAVE_PDB2PQR_OPAL@"
+HAVE_PDB2PQR_OPAL = PDB2PQR_OPAL_URL != ""
 
 """ The HAVE_APBS flag """
-HAVE_APBS = "@HAVE_APBS@"
+APBS_LOCATION = "@APBS_LOCATION@"
+
+""" The HAVE_APBS flag """
+HAVE_APBS = APBS_LOCATION != ""
 
 """ The APBS_OPAL_URL flag """
 APBS_OPAL_URL = "@APBS_OPAL_URL@"
-
-""" The DEFAULT_APBS_OPAL_URL flag """
-DEFAULT_APBS_OPAL_URL = "@DEFAULT_APBS_OPAL_URL@"
 
 """ The installation directory """
 INSTALLDIR = "@INSTALLDIR@"

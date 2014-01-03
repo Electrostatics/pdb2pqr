@@ -40,6 +40,7 @@
 
 
 import math, os, sys, random
+from lib import pka_print
 
 
 def generateCorrespondingAtoms():
@@ -167,8 +168,8 @@ def rotateAtom(R, atom):
     """
 
     new_position = [None, None, None]
-    #print("atom = ", atom)
-    #print("R    = ", R)
+    #pka_print("atom = ", atom)
+    #pka_print("R    = ", R)
 
     for xyz in range(3):
       new_position[xyz] = 0.00
@@ -372,7 +373,7 @@ def main():
     target.append(22.537-24.631)
     target.append(34.806-34.705)
     str = "   %8.3lf%8.3lf%8.3lf" % (target[0], target[1], target[2])
-    #print(str)
+    #pka_print(str)
     atom = []
     atom.append(31.038-27.682)
     atom.append(22.566-24.579)
@@ -384,7 +385,7 @@ def main():
     rmsd = math.sqrt(rmsd)
 
     str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (0, atom[0], atom[1], atom[2], rmsd)
-    print(str)
+    pka_print(str)
     axis = [1.0, 1.0, 1.0]
 
     for iter in range(1, 37):
@@ -392,14 +393,14 @@ def main():
       if False:
         # print out current
         str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (iter, atom[0], atom[1], atom[2], rmsd)
-        print(str)
+        pka_print(str)
       
         alpha = random.uniform(-0.10, 0.10)
         beta  = random.uniform(-0.10, 0.10)
         gamma = random.uniform(-0.10, 0.10)
 
         R_rot = generateRotationMatrix(alpha, beta, gamma)
-        #print(R_rot)
+        #pka_print(R_rot)
         new_position = rotateAtom(R_rot, atom)
       
         new_rmsd = 0.00
@@ -415,7 +416,7 @@ def main():
         R_rot = generalRotationMatrix(axis, math.pi*iter/18.)
         new_position = rotateAtom(R_rot, atom)
         str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (iter, new_position[0], new_position[1], new_position[2], rmsd)
-        print(str)
+        pka_print(str)
 
 
 if __name__ == '__main__': main()

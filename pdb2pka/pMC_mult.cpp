@@ -61,7 +61,7 @@ void MC::reformat_arrays() {
     //
     // Set natural log
     //
-    lnten=log(10);
+    lnten=log(10.0);
     return;
 }
 
@@ -77,8 +77,10 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
     //
     float max_pH=0.0;
     vector< vector<float> > charges;
+    vector<float> calced_charges;
     for (float pH=pH_start;pH<pH_end;pH=pH+pH_step) {
-        charges.push_back(calc_charge(pH));
+        calced_charges = calc_charge(pH);
+        charges.push_back(calced_charges);
         max_pH=pH;
     }
     printf("\n");

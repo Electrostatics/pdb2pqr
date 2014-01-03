@@ -16,7 +16,7 @@
 #  I          9.90     7.96     0.96    18.82
 #  S3        10.14     9.13     1.38    20.65
 
-
+#Never used?
 ground_states = {\
 				#      Eg     Ig
 'H' : (0.747, 13.595),
@@ -66,6 +66,9 @@ Chargeterms = {
 'P.3':  (10.13+0.5,   9.13,  1.38,  20.65),
 }
 
+#Add lower case keys to more lenient matching.
+ChargetermsLower = dict((key.lower(), value) for key, value in Chargeterms.items()) 
+Chargeterms.update(ChargetermsLower)
 
 def PEOE( atoms, damp=0.778, k=1.56):
     def calcchi(atom, q):
@@ -84,14 +87,15 @@ def PEOE( atoms, damp=0.778, k=1.56):
     abs_qges = 0.0
     counter = 0
     for a in atoms.atoms:
-        if not Chargeterms.has_key(a.sybylType):
+    	sybylType = a.sybylType.lower()
+        if not Chargeterms.has_key(sybylType):
             raise KeyError, 'PEOE Error: Atomtype <%s> not known, treating atom %s as dummy' % (a.sybylType, a.name)
         if a.sybylType == 'O.3':
             a.chi   = Chargeterms['O.OH'][0]
             a.abc   = Chargeterms['O.OH']
         else:
-            a.chi   = Chargeterms[a.sybylType][0]
-            a.abc   = Chargeterms[a.sybylType]
+            a.chi   = Chargeterms[sybylType][0]
+            a.abc   = Chargeterms[sybylType]
         if a.charge != 0.0:      
             a.formal_charge = a.charge*(1/k)
             abs_qges = abs_qges+abs(a.charge)

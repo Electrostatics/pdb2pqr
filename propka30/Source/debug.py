@@ -40,6 +40,8 @@ import string
 import lib
 import calculator as calculate
 
+from lib import pka_print
+
 
 def interactionMatrix(interaction):
     """
@@ -47,7 +49,7 @@ def interactionMatrix(interaction):
     """
     keys = ["COO", "CYS", "TYR", "HIS", "N+ ", "LYS", "ARG", "ROH", "AMD", "TRP"]
 
-    print("interaction matrix:")
+    pka_print("interaction matrix:")
     for key1 in keys:
       str = "%6s:" % (key1)
       for key2 in keys:
@@ -59,18 +61,18 @@ def interactionMatrix(interaction):
         else:
           str += "%3s" % ("-")
 
-      print(str)
+      pka_print(str)
 
 
 def printResInfo(resInfo):
     """
     printing out all information in resInfo
     """
-    print("in resInfo:")
+    pka_print("in resInfo:")
     for key1 in resInfo.keys():
-      print(" --- %s ---" % (key1))
+      pka_print(" --- %s ---" % (key1))
       for key2 in resInfo[key1].keys():
-        print(key2, resInfo[key1][key2])
+        pka_print(key2, resInfo[key1][key2])
 
 
 def printCooArgAtomDistances(residue_coo, residue_arg):
@@ -80,25 +82,25 @@ def printCooArgAtomDistances(residue_coo, residue_arg):
     for atom_coo in residue_coo.makeDeterminantAtomList(residue_arg.resName):
       for atom_arg in residue_arg.makeDeterminantAtomList(residue_coo.resName):
         distance = calculate.InterAtomDistance(atom_coo, atom_arg)
-        print("%3s %3s %6.2lf" % (atom_coo.name, atom_arg.name, distance))
+        pka_print("%3s %3s %6.2lf" % (atom_coo.name, atom_arg.name, distance))
 
 
 def printBackBoneAtoms(list):
     """
     Prints out determinant information for debugging
     """
-    print("  --- debug back-bone atom list --- ")
+    pka_print("  --- debug back-bone atom list --- ")
     for atoms in list:
         label1 = "%s%4d%2s" % (atoms[0].resName, atoms[0].resNumb, atoms[0].chainID)
         label2 = "%s%4d%2s" % (atoms[1].resName, atoms[1].resNumb, atoms[1].chainID)
-        print("%s - %s" % (label1, label2))
+        pka_print("%s - %s" % (label1, label2))
 
 
 def printResidues(residue_list):
     """
     Prints out determinant information for debugging
     """
-    print("  --- debug residue list --- ")
+    pka_print("  --- debug residue list --- ")
     for residue in residue_list:
         residue.printLabel()
 
@@ -109,8 +111,8 @@ def printIterativeDeterminants(all_determinants):
     """
 
     if True:
-      print(" --- Iterative determinants ---")
-      print("%28s%8s" % ("H-bond", "Coulomb") )
+      pka_print(" --- Iterative determinants ---")
+      pka_print("%28s%8s" % ("H-bond", "Coulomb") )
       for determinant in all_determinants:
         pair   =  determinant[0]
         values =  determinant[1]
@@ -120,13 +122,13 @@ def printIterativeDeterminants(all_determinants):
         str  = ""
         str += " %s %s" % (residue1.label, residue2.label)
         str += " %6.2lf %6.2lf" % (values[0], values[1])
-        print(str)
+        pka_print(str)
     else:
       # priting out ALL types of determinants - mainly debugging
-      print("  --- debug iterative determinants --- ")
-      print("len(sidechain_determinants) = %d" % (len(all_determinants[0])))
-      print("len(backbone_determinants)  = %d" % (len(all_determinants[1])))
-      print("len(coulomb_determinants)   = %d" % (len(all_determinants[2])))
+      pka_print("  --- debug iterative determinants --- ")
+      pka_print("len(sidechain_determinants) = %d" % (len(all_determinants[0])))
+      pka_print("len(backbone_determinants)  = %d" % (len(all_determinants[1])))
+      pka_print("len(coulomb_determinants)   = %d" % (len(all_determinants[2])))
     
       sidechain_determinants = all_determinants[0]
       backbone_determinants  = all_determinants[1]
@@ -136,11 +138,11 @@ def printIterativeDeterminants(all_determinants):
         for type in range(0,3):
           determinants = all_determinants[type]
           if   type == 0:
-            print("Iterative side-chain interactions:")
+            pka_print("Iterative side-chain interactions:")
           elif type == 1:
-            print("Iterative back-bone  interactions:")
+            pka_print("Iterative back-bone  interactions:")
           elif type == 2:
-            print("Iterative Coulomb    interactions:")
+            pka_print("Iterative Coulomb    interactions:")
           for determinant in determinants:
             pair   =  determinant[0]
             values =  determinant[1]
@@ -153,7 +155,7 @@ def printIterativeDeterminants(all_determinants):
             str += "'%s'  '%s'" % (residue1.label, residue2.label)
             str += "   "
             str += "%6.2lf  %6.2lf" % (value, value)
-            print(str)
+            pka_print(str)
 
 
 def printAlignment(alignment):
@@ -161,14 +163,14 @@ def printAlignment(alignment):
     Prints out alignment information for debugging
     """
     for key in alignment.keys():
-      print( " --- %s ---" % (key) )
+      pka_print( " --- %s ---" % (key) )
       for key2 in alignment[key].keys():
-        print("%s %5d%2s" % (alignment[key][key2]["name"], alignment[key][key2]["resNumb"], alignment[key][key2]["chainID"]))
-        print("%s\n" % (alignment[key][key2]["sequence"]))
+        pka_print("%s %5d%2s" % (alignment[key][key2]["name"], alignment[key][key2]["resNumb"], alignment[key][key2]["chainID"]))
+        pka_print("%s\n" % (alignment[key][key2]["sequence"]))
 
 
 def printAllAtoms(protein):
     """
     Prints out determinant information for debugging
     """
-    print("Not implemented yet")
+    pka_print("Not implemented yet")

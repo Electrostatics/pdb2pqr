@@ -37,6 +37,8 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 
+from lib import pka_print
+
 def resName2Type(resName=None):
     """
     definition of which parameter-group each residues belongs to
@@ -376,7 +378,7 @@ def getHydrogenBondParameters(type=None):
 
 
     else:
-      print("cannot determine what type of hydrogen-bonding interactions you want type=\"%s\" ['back-bone', 'side-chain']" % (label))
+      pka_print("cannot determine what type of hydrogen-bonding interactions you want type=\"%s\" ['back-bone', 'side-chain']" % (label))
       sys.exit(9)
 
     return parameters

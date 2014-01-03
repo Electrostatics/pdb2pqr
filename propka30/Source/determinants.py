@@ -40,6 +40,7 @@ import math, time
 
 import iterative
 import lib
+from lib import pka_print
 #import debug
 import calculator as calculate
 from   determinant import Determinant
@@ -132,7 +133,7 @@ def addSidechainDeterminants(residue1, residue2, version=None):
         #exception = False # circumventing exception
         if exception == True:
             """ do nothing, value should have been assigned """
-            #print(" exception for %s %s %6.2lf" % (residue1.label, residue2.label, value))
+            #pka_print(" exception for %s %s %6.2lf" % (residue1.label, residue2.label, value))
         else:
             value = version.calculateSideChainEnergy(distance, dpka_max, cutoff, weight, f_angle)
         if residue1.Q == residue2.Q:

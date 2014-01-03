@@ -50,6 +50,7 @@ __author__ = "Todd Dolinsky, Yong Huang"
 
 import string, sys
 import copy  ### PC
+from errors import PDBInputError, PDBInternalError
 
 lineParsers = {}
 
@@ -172,6 +173,27 @@ class CONECT:
             except ValueError:  self.serial9 = None
             try:  self.serial10 = int(string.strip(line[56:61]))
             except ValueError:  self.serial10 = None
+        else:  raise ValueError, record
+
+@RegisterLineParser
+class NUMMDL:
+    """ NUMMDL class
+
+        The NUMMDL record indicates total number of models in a PDB entry.
+    """
+
+    def __init__(self, line):
+        """
+            Initialize by parsing line
+
+            COLUMNS  TYPE      FIELD         DEFINITION                           
+            -----------------------------------------------------------              
+            11-14    int       modelNumber   Number of models.     
+        """
+        record = string.strip(line[0:6])
+        if record == "NUMMDL":
+            try: self.modelNumber = int(string.strip(line[10:14]))
+            except ValueError:  self.modelNumber = None
         else:  raise ValueError, record
 
 @RegisterLineParser
@@ -560,9 +582,9 @@ class MOL2MOLECULE:
         
         # Do some error checking
         if start == -1:
-            raise Exception, "Unable to find '@<TRIPOS>ATOM' in MOL2 file!"
+            raise PDBInputError("Unable to find '@<TRIPOS>ATOM' in MOL2 file!")
         elif stop == -1:
-            raise Exception, "Unable to find '@<TRIPOS>BOND' in MOL2 file!"
+            raise PDBInputError("Unable to find '@<TRIPOS>BOND' in MOL2 file!")
 
         atoms = data[start+14:stop-2].split("\n")
         # BOND section
@@ -571,7 +593,7 @@ class MOL2MOLECULE:
         
         # More error checking
         if stop == -1:
-            raise Exception, "Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!"
+            raise PDBInputError("Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!")
 
         bonds = data[start+14:stop-1].split("\n")
         self.parseAtoms(atoms)
@@ -591,7 +613,7 @@ class MOL2MOLECULE:
 
             # Error checking
             if len(SeparatedAtomLine) < 8:
-                raise Exception, "Bad atom entry in MOL2 file: %s" % AtomLine
+                raise PDBInputError("Bad atom entry in MOL2 file: %s" % AtomLine)
 
             fakeRecord = "HETATM"
             fakeChain = " L"
@@ -603,7 +625,7 @@ class MOL2MOLECULE:
                     float(SeparatedAtomLine[2]),float(SeparatedAtomLine[3]),
                     float(SeparatedAtomLine[4]))
             except ValueError:
-                raise Exception, "Bad atom entry in MOL2 file: %s" % AtomLine
+                raise PDBInputError("Bad atom entry in MOL2 file: %s" % AtomLine)
             thisAtom = HETATM(mol2pdb, SeparatedAtomLine[5],[],[])
             if len(SeparatedAtomLine)>8:
                 charge=SeparatedAtomLine[8]
@@ -625,7 +647,7 @@ class MOL2MOLECULE:
             if len(SeparatedBondLine) == 0:
                 continue
             if len(SeparatedBondLine) < 4:
-                raise Exception, "Bad bond entry in MOL2 file: %s" % BondLine
+                raise PDBInputError("Bad bond entry in MOL2 file: %s" % BondLine)
             try:
                 thisBond = MOL2BOND(
                     int(SeparatedBondLine[1]), # bond frm
@@ -634,7 +656,7 @@ class MOL2MOLECULE:
                     int(SeparatedBondLine[0])  # bond id
                     )
             except ValueError:
-                raise Exception, "Bad bond entry in MOL2 file: %s" % BondLine
+                raise PDBInputError("Bad bond entry in MOL2 file: %s" % BondLine)
             self.lBonds.append(thisBond)
 
     def createlBondedAtoms(self):
@@ -2526,7 +2548,8 @@ def readPDB(file):
 
     while 1: 
         line = string.strip(file.readline())
-        if line == '':  break
+        if line == '':  
+            break
 
         # We assume we have a method for each PDB record and can therefore
         # parse them automatically

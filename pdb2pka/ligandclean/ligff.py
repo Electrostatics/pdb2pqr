@@ -267,6 +267,10 @@ ParseRadiiDict = {"C": 1.70,
                    "P": 1.90,
                    "Cl": 1.75}
 
+#Add lower case keys to more lenient matching.
+ParseRadiiDictLower = dict((key.lower(), value) for key, value in ParseRadiiDict.items()) 
+ParseRadiiDict.update(ParseRadiiDictLower)
+
 class ligand_charge_handler(MOL2MOLECULE):
     """Make sure that we are up to date with respect to the charge calculation"""
 
@@ -277,10 +281,10 @@ class ligand_charge_handler(MOL2MOLECULE):
         #
         if not getattr(self,'ligand_props',None):
             self.recalc_charges(residue)
-            qqqgesges = 0.0
-            for aa in residue.atoms:
-                #print "newly_calced  %s  %1.4f " %(aa.name, aa.charge)
-                qqqgesges = qqqgesges +  aa.charge
+#            qqqgesges = 0.0
+#            for aa in residue.atoms:
+#                #print "newly_calced  %s  %1.4f " %(aa.name, aa.charge)
+#                qqqgesges = qqqgesges +  aa.charge
             #print "-------------------------------"
             #print "newly_calced - net charge %1.4f" %(qqqgesges)
             #print
@@ -296,10 +300,10 @@ class ligand_charge_handler(MOL2MOLECULE):
             #print "atoms_now ",atoms_now
             atoms_last_calc.sort()
             #
-            xxnetqxx = 0.0
-            for aa in residue.atoms:
-                #print "NOT recalced  %s  %1.4f  %1.4f " %(aa.name, aa.charge, aa.formalcharge)
-                xxnetqxx = xxnetqxx+aa.charge
+#            xxnetqxx = 0.0
+#            for aa in residue.atoms:
+#                #print "NOT recalced  %s  %1.4f  %1.4f " %(aa.name, aa.charge, aa.formalcharge)
+#                xxnetqxx = xxnetqxx+aa.charge
             #print "NOT recalced, net_q : %1.2f" %(xxnetqxx)
             #print "###########################"
             #

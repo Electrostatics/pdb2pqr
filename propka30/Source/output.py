@@ -38,7 +38,6 @@
 #-------------------------------------------------------------------------------------------------------
 import sys
 import lib
-
 revision = 182
 
 
@@ -63,7 +62,8 @@ def writePDB(protein, file=None, filename=None, hydrogens=False, options=None):
       if filename == None:
         filename = "%s.pdb" % (protein.name)
       file = open(filename, 'w')
-      print("writing pdbfile %s" % (filename))
+      if options.verbose:
+          print("writing pdbfile %s" % (filename))
       close_file = True
     else:
       # don't close the file, it was opened in a different place
@@ -147,11 +147,11 @@ def writePQR(protein, label=None, hydrogens=False, options=None):
     environment.close()
 
 
-def writePKA(protein, filename=None, reference="neutral", direction="folding", verbose=False, options=None):
+def writePKA(protein, filename=None, reference="neutral", direction="folding", options=None):
     """
     Write the pka-file based on the given protein
     """
-    verbose = True
+    verbose = options.verbose if options is not None else False
     if filename == None:
       filename = "%s.pka" % (protein.name)
     file = open(filename, 'w')
@@ -195,7 +195,8 @@ def printTmProfile(protein, reference="neutral", window=[0., 14., 1.], Tm=[0.,0.
       for (pH, Tm) in profile:
         if pH >= window[0] and pH <= window[1] and (pH%window[2] < 0.01 or pH%window[2] > 0.99*window[2]):
           str += "%6.2lf%10.2lf\n" % (pH, Tm)
-      print(str)
+      if verbose:
+          print(str)
 
 
 def printResult(protein, verbose=False):
@@ -211,10 +212,12 @@ def printPKASection(protein, verbose=False):
     """
     # geting the determinants section
     str = getDeterminantSection(protein)
-    print(str[:-1])
+    if verbose:
+        print(str[:-1])
 
     str = getSummarySection(protein)
-    print(str)
+    if verbose:
+        print(str)
 
 
 def getDeterminantSection(protein, verbose=False):

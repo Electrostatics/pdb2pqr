@@ -41,8 +41,6 @@ class phimap_class:
                         grid_data.append(value)
                         if not ret:
                             raise Exception('Grid point not found')
-
-#avg
         return grid_data
 
 
@@ -50,7 +48,10 @@ class phimap_class:
         """Write this map in dx format"""
         mydata=[]
         #count=0
-        
+        for k in range(map.nz):
+            for j in range(map.ny):
+                for i in range(map.nx):
+                    mydata.append(map.get_value(i,j,k))
         #
         # Create the grid
         #

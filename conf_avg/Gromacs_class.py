@@ -46,7 +46,7 @@ class GROMACS:
         # Filenames
         #
         self.files={}
-        return 
+        return
 
     #
     # ------
@@ -144,14 +144,14 @@ class GROMACS:
         #
         # Preprocessing
         #
-        status=os.system('grompp -v -f em.mdp -c '+self.files['laststructure']+' -o em.tpr -p topol.top')
+        status=os.system('grompp_d -v -f em.mdp -c '+self.files['laststructure']+' -o em.tpr -p topol.top')
         print 'grompp returned:',status
         #
         # Do minimisation
         #
         self.files['energytraj']='energy.ene'
         self.files['laststructure']='after_em.pdb'
-        status=os.system('mdrun -v -s em.tpr -o em.trr -c '+self.files['laststructure']+' -g emlog -e '+self.files['energytraj'])
+        status=os.system('mdrun_d -v -s em.tpr -o em.trr -c '+self.files['laststructure']+' -g emlog -e '+self.files['energytraj'])
         print 'mdrun returned:',status
         return
 

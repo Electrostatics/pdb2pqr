@@ -1,0 +1,12 @@
+Import('env')
+
+if env['REBUILD_SWIG']:
+    pyc = env.LoadableModule('_pMC_mult', ['pMC_mult.cpp', 'pMC_mult.i'])
+else:
+    pyc = env.LoadableModule('_pMC_mult', ['pMC_mult.cpp', 'pMC_mult_wrap.cpp'])
+    
+Default(pyc)
+    
+algorithms_module = SConscript('substruct/SConscript')
+
+Return('pyc algorithms_module')

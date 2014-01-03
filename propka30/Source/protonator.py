@@ -44,6 +44,8 @@ from vector_algebra import *
 import bonds as bonds
 import pdb as pdb
 
+from lib import pka_print
+
 
 def makeProtonator(scheme=None):
     """
@@ -92,7 +94,7 @@ class old_scheme:
               elif residue.resType == "ARG":
                 self.protonateARG(residue)
               elif residue.resName in self.protonate_residues:
-                print("no protocol to protonate '%s' in 'old-scheme'" % (residue.label))
+                pka_print("no protocol to protonate '%s' in 'old-scheme'" % (residue.label))
                 sys.exit(8)
 
         return
@@ -107,7 +109,7 @@ class old_scheme:
         if C == None and O == None:
           """ do nothing, first residue """
         elif N == None:
-          print( "could not find N atom in '%s' (protonateBackBone())" % (residue.label) ); sys.exit(9)
+          pka_print( "could not find N atom in '%s' (protonateBackBone())" % (residue.label) ); sys.exit(9)
         elif residue.resName == "PRO":
           """ do nothing, proline doesn't have a proton """
         else:
@@ -343,7 +345,7 @@ class new_scheme:
     def protonate_protein(self, protein):
         """ Will protonate all atoms in the protein """
 
-        #print('----- Protontion started -----')
+        #pka_print('----- Protontion started -----')
         # Remove all currently present hydrogen atoms
         #self.remove_all_hydrogen_atoms_from_protein(protein)
      
@@ -373,11 +375,11 @@ class new_scheme:
     def protonate_ligand(self, ligand):
         """ Will protonate all atoms in the ligand """
 
-        #print('----- Protonation started -----')
+        #pka_print('----- Protonation started -----')
         # Remove all currently present hydrogen atoms
         self.remove_all_hydrogen_atoms_from_ligand(ligand)
 
-        print(ligand)
+        pka_print(ligand)
 
         # make bonds
         self.my_bond_maker.find_bonds_for_ligand(ligand)
@@ -416,13 +418,13 @@ class new_scheme:
     def set_ligand_charges(self, ligand, standard_protonation_states = 1):
         if standard_protonation_states:
             for atom in ligand.atoms:
-                #print('Charge before', atom, atom.charge)
+                #pka_print('Charge before', atom, atom.charge)
                 if atom.name in list(self.sybyl_charges.keys()):
                     atom.charge = self.sybyl_charges[atom.name]
-                    #print('Charge', atom, atom.charge)
+                    #pka_print('Charge', atom, atom.charge)
 
         else:
-            print('Custom protonation state choosen - don\'t know what to do')
+            pka_print('Custom protonation state choosen - don\'t know what to do')
         
         return
 
@@ -436,7 +438,7 @@ class new_scheme:
                         key = '%3s-%s'%(atom.resName, atom.name)
                         if key in list(self.standard_charges.keys()):
                             atom.charge = self.standard_charges[key]
-                            #print('Charge', atom, atom.charge)
+                            #pka_print('Charge', atom, atom.charge)
 
             # set n-terminal charges
             for chain in protein.chains:
@@ -445,7 +447,7 @@ class new_scheme:
                         for atom in residue.atoms:
                             if atom.name == 'N':
                                 atom.charge = self.standard_charges['NTERM']
-                                #print('Charge', atom, atom.charge)
+                                #pka_print('Charge', atom, atom.charge)
 
             # set c-terminal charges
             for chain in protein.chains:
@@ -454,10 +456,10 @@ class new_scheme:
                         for atom in residue.atoms:
                             if atom.name in self.my_bond_maker.terminal_oxygen_names: 
                                 atom.charge = self.standard_charges['CTERM']
-                                #print('Charge', atom, atom.charge)
+                                #pka_print('Charge', atom, atom.charge)
 
         else:
-            print('Custom protonation state choosen - don\'t know what to do')
+            pka_print('Custom protonation state choosen - don\'t know what to do')
 
         return
 
@@ -494,28 +496,28 @@ class new_scheme:
 
 
     def set_number_of_protons_to_add(self, atom):
-        #print('*'*10)
-        #print('Setting number of protons to add for',atom)
+        #pka_print('*'*10)
+        #pka_print('Setting number of protons to add for',atom)
         atom.number_of_protons_to_add  = 8 
-        #print('                  %4d'%8)
+        #pka_print('                  %4d'%8)
         atom.number_of_protons_to_add -= self.valence_electrons[atom.get_element()]
-        #print('Valence eletrons: %4d'%-self.valence_electrons[atom.get_element()])
+        #pka_print('Valence eletrons: %4d'%-self.valence_electrons[atom.get_element()])
         atom.number_of_protons_to_add -= len(atom.bonded_atoms)
-        #print('Number of bonds:  %4d'%- len(atom.bonded_atoms))
+        #pka_print('Number of bonds:  %4d'%- len(atom.bonded_atoms))
         atom.number_of_protons_to_add -= atom.number_of_pi_electrons_in_double_and_triple_bonds
-        #print('Pi electrons:     %4d'%-atom.number_of_pi_electrons_in_double_and_triple_bonds)
+        #pka_print('Pi electrons:     %4d'%-atom.number_of_pi_electrons_in_double_and_triple_bonds)
         atom.number_of_protons_to_add += int(atom.charge)
-        #print('Charge:           %4.1f'%atom.charge)
+        #pka_print('Charge:           %4.1f'%atom.charge)
 
-        #print('-'*10)
-        #print(atom.number_of_protons_to_add)
+        #pka_print('-'*10)
+        #pka_print(atom.number_of_protons_to_add)
 
         return
 
 
     def set_steric_number_and_lone_pairs(self, atom):
-        #print('='*10)
-        #print('Setting steric number and lone pairs for',atom)
+        #pka_print('='*10)
+        #pka_print('Setting steric number and lone pairs for',atom)
 
         # costumly set the N backbone atoms up for peptide bond trigonal planer shape
         #if atom.name == 'N' and len(atom.bonded_atoms) == 2:
@@ -528,34 +530,34 @@ class new_scheme:
 
         atom.steric_number = 0
         
-        #print('%65s: %4d'%('Valence electrons',self.valence_electrons[atom.get_element()]))
+        #pka_print('%65s: %4d'%('Valence electrons',self.valence_electrons[atom.get_element()]))
         atom.steric_number += self.valence_electrons[atom.get_element()]
         
-        #print('%65s: %4d'%('Number of bonds',len(atom.bonded_atoms)))
+        #pka_print('%65s: %4d'%('Number of bonds',len(atom.bonded_atoms)))
         atom.steric_number += len(atom.bonded_atoms)
 
-        #print('%65s: %4d'%('Number of hydrogen atoms to add',atom.number_of_protons_to_add))
+        #pka_print('%65s: %4d'%('Number of hydrogen atoms to add',atom.number_of_protons_to_add))
         atom.steric_number += atom.number_of_protons_to_add
 
-        #print('%65s: %4d'%('Number of pi-electrons in double and triple bonds(-)',atom.number_of_pi_electrons_in_double_and_triple_bonds))
+        #pka_print('%65s: %4d'%('Number of pi-electrons in double and triple bonds(-)',atom.number_of_pi_electrons_in_double_and_triple_bonds))
         atom.steric_number -= atom.number_of_pi_electrons_in_double_and_triple_bonds
 
-        #print('%65s: %4d'%('Number of pi-electrons in conjugated double and triple bonds(-)',atom.number_of_pi_electrons_in_conjugate_double_and_triple_bonds))
+        #pka_print('%65s: %4d'%('Number of pi-electrons in conjugated double and triple bonds(-)',atom.number_of_pi_electrons_in_conjugate_double_and_triple_bonds))
         atom.steric_number -= atom.number_of_pi_electrons_in_conjugate_double_and_triple_bonds
 
-        #print('%65s: %4d'%('Number of donated co-ordinated bonds',0))
+        #pka_print('%65s: %4d'%('Number of donated co-ordinated bonds',0))
         atom.steric_number += 0
 
-        #print('%65s: %4.1f'%('Charge(-)',atom.charge))
+        #pka_print('%65s: %4.1f'%('Charge(-)',atom.charge))
         atom.steric_number -= atom.charge
         
         atom.steric_number = math.floor(atom.steric_number/2.0)
 
         atom.number_of_lone_pairs = atom.steric_number - len(atom.bonded_atoms) - atom.number_of_protons_to_add
 
-        #print('-'*70)
-        #print('%65s: %4d'%('Steric number',atom.steric_number))
-        #print('%65s: %4d'%('Number of lone pairs',atom.number_of_lone_pairs))
+        #pka_print('-'*70)
+        #pka_print('%65s: %4d'%('Steric number',atom.steric_number))
+        #pka_print('%65s: %4d'%('Number of lone pairs',atom.number_of_lone_pairs))
 
 
         return
@@ -563,17 +565,17 @@ class new_scheme:
 
     def add_protons(self, atom):
         # decide which method to use
-        #print('PROTONATING',atom)
+        #pka_print('PROTONATING',atom)
         if atom.steric_number in list(self.protonation_methods.keys()):
             self.protonation_methods[atom.steric_number](atom)
         else:
-            print('Warning: Do not have a method for protonating',atom,'(steric number: %d)'%atom.steric_number)
+            pka_print('Warning: Do not have a method for protonating',atom,'(steric number: %d)'%atom.steric_number)
 
         return
 
     
     def trigonal(self, atom):
-        #print('TRIGONAL - %d bonded atoms'%(len(atom.bonded_atoms))) 
+        #pka_print('TRIGONAL - %d bonded atoms'%(len(atom.bonded_atoms))) 
         rot_angle = math.radians(120.0)
 
         c = multi_vector(atom1 = atom)
@@ -623,7 +625,7 @@ class new_scheme:
 
 
     def tetrahedral(self, atom):
-        #print('TETRAHEDRAL - %d bonded atoms'%(len(atom.bonded_atoms))) 
+        #pka_print('TETRAHEDRAL - %d bonded atoms'%(len(atom.bonded_atoms))) 
         rot_angle = math.radians(109.5)
 
         # sanity check
@@ -674,7 +676,7 @@ class new_scheme:
 
     def add_proton(self, atom, position):
         residue = atom.residue
-        #print(residue)
+        #pka_print(residue)
         # Create the new proton
         new_H = pdb.Atom()
         new_H.setProperty(numb    = None, 
@@ -689,7 +691,7 @@ class new_scheme:
                           beta    = None,
                           element = 'H')
 
-        #print(position)
+        #pka_print(position)
         # set all the configurations
         for i in range(len(position.keys)):
             #print ('adding',position.keys[i],position.vectors[i])
@@ -708,7 +710,7 @@ class new_scheme:
         residue.atoms.append(new_H)
         atom.bonded_atoms.append(new_H)
         atom.number_of_protons_to_add -=1
-        #print('added',new_H, 'to',atom)
+        #pka_print('added',new_H, 'to',atom)
 
         return
 
@@ -718,7 +720,7 @@ class new_scheme:
         if element in list(self.bond_lengths.keys()):
             d = self.bond_lengths[element]
         else:
-            print('WARNING: Bond length for %s not found, using the standard value of %f'%(element, d))
+            pka_print('WARNING: Bond length for %s not found, using the standard value of %f'%(element, d))
 
         a = a.rescale(d)
 
@@ -729,12 +731,12 @@ if __name__ == '__main__':
     import protein, pdb, sys,os
     arguments = sys.argv
     if len(arguments) != 2:
-        print('Usage: protonate.py <pdb_file>')
+        pka_print('Usage: protonate.py <pdb_file>')
         sys.exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
-        print('Error: Could not find \"%s\"'%filename)
+        pka_print('Error: Could not find \"%s\"'%filename)
         sys.exit(1)
 
     

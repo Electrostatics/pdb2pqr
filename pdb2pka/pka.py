@@ -250,7 +250,8 @@ def pre_init(pdbfilename=None,ff=None,verbose=1,pdie=8.0,maps=None,xdiel=None,yd
     pdblist, errlist = readPDB(pdbfile)
     #
     if len(pdblist) == 0 and len(errlist) == 0:
-        print "Unable to find file %s!\n" % pdbfilename
+        print "Unable to find file %s!\n" % path
+        os.remove(path)
         sys.exit(2)
 
     if len(errlist) != 0 and verbose:
@@ -469,7 +470,7 @@ def pre_init(pdbfilename=None,ff=None,verbose=1,pdie=8.0,maps=None,xdiel=None,yd
                 print 'Net charge for ligand %s is: %5.3f' %(residue.name,net_charge)
         #
         # Temporary fix; if ligand was successful, pull all ligands from misslist
-        # Not sure if this is needed at all here ...? (Jens wrote this)
+       # Not sure if this is needed at all here ...? (Jens wrote this)
         #
         if ligsuccess:
             templist = misslist[:]
@@ -532,7 +533,7 @@ def pre_init(pdbfilename=None,ff=None,verbose=1,pdie=8.0,maps=None,xdiel=None,yd
         print 'Setting mobile ion-accessibility function map to: ',igen.kappa
         
         if sd:
-            xdiel_smooth, ydiel_smooth, zdiel_smooth = pka_routines.smooth(xdiel,ydiel,zdiel,sd)
+            xdiel_smooth, ydiel_smooth, zdiel_smooth = smooth(xdiel,ydiel,zdiel)
             igen.xdiel = xdiel_smooth
             igen.ydiel = ydiel_smooth
             igen.zdiel = zdiel_smooth
@@ -612,8 +613,8 @@ if __name__ == "__main__":
             pkas[name]['desolv']=0.0
             pkas[name]['backgr']=0.0
             pkas[name]['delec']=0.0
-        import pKaIO_compat
-        X=pKaIO_compat.pKaIO()
+        import pKaTool.pKaIO
+        X=pKaTool.pKaIO.pKaIO()
         X.write_pka('test.pdb.PKA.DAT',pkas)
         #
         # Get the charges

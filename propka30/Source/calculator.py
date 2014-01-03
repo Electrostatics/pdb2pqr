@@ -38,6 +38,8 @@
 #-------------------------------------------------------------------------------------------------------
 import math, random, string
 
+from lib import pka_print
+
 
 def InterAtomDistance(atom1, atom2):
     """
@@ -206,9 +208,9 @@ def radialVolumeDesolvation(residue, atoms, version, options=None):
     calculates the desolvation according to the ScaledRadialVolumeModel
     """
     if residue.label == "BKB  50 A":
-      print("found %s [%6.3lf%6.3lf%6.3lf]!" % (residue.label, residue.x, residue.y, residue.z))
-      print("buried_cutoff_sqr = %s!" % (version.buried_cutoff_sqr))
-      print("desolv_cutoff_sqr = %s!" % (version.desolv_cutoff_sqr))
+      pka_print("found %s [%6.3lf%6.3lf%6.3lf]!" % (residue.label, residue.x, residue.y, residue.z))
+      pka_print("buried_cutoff_sqr = %s!" % (version.buried_cutoff_sqr))
+      pka_print("desolv_cutoff_sqr = %s!" % (version.desolv_cutoff_sqr))
     scale_factor = 0.8527*1.36  # temporary weight for printing out contributions
     residue.Nlocl = 0
     residue.Nmass = 0
@@ -248,7 +250,7 @@ def radialVolumeDesolvation(residue, atoms, version, options=None):
                       str  = "%6.2lf %8.4lf" % (distance, residue.Q * version.desolvationPrefactor * max(0.00, dV_inc)*scale_factor)
                       str += " %s" % (atomtype)
                       #str += " %s" % (residue.label)
-                      print(str)
+                      pka_print(str)
                 if distance_sqr < version.buried_cutoff_sqr:
                   residue.Nmass += 1
                   residue.Vmass += dV
@@ -399,12 +401,12 @@ def TmProfile(protein, reference="neutral", grid=[0., 14., 0.1], Tm=None, Tms=No
           ave_diff += (Tm_calc - Tm)/number_of_Tms
           #Tm_ref -= (Tm_old+dTm - Tm)/(2*number_of_Tms)
         Tm_ref -= ave_diff
-        #print("%6.2lf %6.2lf %6.2lf" % (Tm_ref, ave_diff, Tm_ref - Tm_old))
+        #pka_print("%6.2lf %6.2lf %6.2lf" % (Tm_ref, ave_diff, Tm_ref - Tm_old))
     else:
       dTm_ref = -4.187*(dG_ref - ref[2])/dS
       Tm_ref = ref[1] + dTm_ref
 
-    print("ref = %6.2lf%6.2lf%6.2lf" % (pH_ref, Tm_ref, dG_ref))
+    pka_print("ref = %6.2lf%6.2lf%6.2lf" % (pH_ref, Tm_ref, dG_ref))
     profile = []
     pH, end, increment = grid
     while pH <= end:
@@ -441,7 +443,7 @@ def pI(protein, pI=7.0, options=None):
 
     while abs(Q1_pro) > 0.005 and abs(Q2_mod) > 0.005:
       if iter == 50:
-        print("pI iterations did not converge after %d iterations %s, switching to bracketing" % (iter, protein.name))
+        pka_print("pI iterations did not converge after %d iterations %s, switching to bracketing" % (iter, protein.name))
         pI_pro, pI_mod = bracketingPI(protein)
         break
       else:
@@ -464,9 +466,9 @@ def pI(protein, pI=7.0, options=None):
       if abs(shift) > 4.0:
         shift = shift/abs(shift)
       pI_mod += shift
-      #print("%4d%8.3lf%8.3lf" % (iter, pI_pro, pI_mod))
+      #pka_print("%4d%8.3lf%8.3lf" % (iter, pI_pro, pI_mod))
     #if options.verbose == True:
-    #  print("%10d pI iterations" % (iter))
+    #  pka_print("%10d pI iterations" % (iter))
 
     return pI_pro, pI_mod
 
@@ -508,7 +510,7 @@ def bracketingPI(protein, bracket=[0.0, 14.0]):
         elif Q[0][1] < 0.00 and Q[0][1] > Q_max[1]:
           pI_max[1] = pI[0]; Q_max[1] = Q[0][1]
       iter += 1
-      print("%4d protein = %6.2lf [%6.2lf%6.2lf] [%6.2lf%6.2lf]" % (iter, pI[0], Q_min[0], Q_max[0], pI_min[0], pI_max[0]))
+      pka_print("%4d protein = %6.2lf [%6.2lf%6.2lf] [%6.2lf%6.2lf]" % (iter, pI[0], Q_min[0], Q_max[0], pI_min[0], pI_max[0]))
       if Q_min[0] <  0.005 and Q_min[1] <  0.005 and \
          Q_max[0] > -0.005 and Q_max[1] > -0.005:
         break

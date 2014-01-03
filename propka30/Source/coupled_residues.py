@@ -38,6 +38,7 @@
 #-------------------------------------------------------------------------------------------------------
 
 import math
+from lib import pka_print
 
 max_intrinsic_pKa_diff = 2.0
 min_interaction_energy = 0.5
@@ -188,17 +189,17 @@ def identify_coupled_residues(protein, options=None):
     verbose=options.display_coupled_residues
     
     if True:
-        print('')
-        print(' Detecting coupled residues')
-        print('   Maximum pKa difference:     %4.2f pKa units'%max_intrinsic_pKa_diff)
-        print('   Minimum interaction energy: %4.2f pKa units'%min_interaction_energy)
-        print('   Maximum free energy diff.:  %4.2f pKa units'%max_free_energy_diff)
-        print('   Minimum swap pKa shift:     %4.2f pKa units'%min_swap_pka_shift)
-        print('   pH:                         %6s '%str(pH))
-        print('   Reference:                  %s'%reference)
-        print('   Min pKa:                    %4.2f'%min_pka)
-        print('   Max pKa:                    %4.2f'%max_pka)
-        print('')
+        pka_print('')
+        pka_print(' Detecting coupled residues')
+        pka_print('   Maximum pKa difference:     %4.2f pKa units'%max_intrinsic_pKa_diff)
+        pka_print('   Minimum interaction energy: %4.2f pKa units'%min_interaction_energy)
+        pka_print('   Maximum free energy diff.:  %4.2f pKa units'%max_free_energy_diff)
+        pka_print('   Minimum swap pKa shift:     %4.2f pKa units'%min_swap_pka_shift)
+        pka_print('   pH:                         %6s '%str(pH))
+        pka_print('   Reference:                  %s'%reference)
+        pka_print('   Min pKa:                    %4.2f'%min_pka)
+        pka_print('   Max pKa:                    %4.2f'%max_pka)
+        pka_print('')
 
     # make a single list of all residues in the protein
     all_residues = []
@@ -217,7 +218,7 @@ def identify_coupled_residues(protein, options=None):
                 (coupling_factor_intrinsic_pka, interaction_energy ) = is_coupled_intrinsic_pka(all_residues[i],all_residues[j])
                 if coupling_factor_intrinsic_pka>0.0: 
                     swap=1
-                    print(' %s and %s coupled (intrinsic pKa): %4.2f | intrinsic pkas: %5.2f - %5.2f = %5.2f | int. energy: %4.2f'%(all_residues[i],
+                    pka_print(' %s and %s coupled (intrinsic pKa): %4.2f | intrinsic pkas: %5.2f - %5.2f = %5.2f | int. energy: %4.2f'%(all_residues[i],
                                                                                                                                 all_residues[j],
                                                                                                                                 coupling_factor_intrinsic_pka,
                                                                                                                                 all_residues[i].intrinsic_pKa,
@@ -230,7 +231,7 @@ def identify_coupled_residues(protein, options=None):
                 (coupling_factor_pairwise, int_free_pka1, int_free_pka2, interaction_energy) = is_coupled_pairwise(all_residues[i],all_residues[j])
                 if coupling_factor_pairwise>0.0:
                     swap=1
-                    print(' %s and %s coupled (pair wise)    : %4.2f | int. free pkas: %5.2f - %5.2f = %5.2f | int. energy: %4.2f'%(all_residues[i],
+                    pka_print(' %s and %s coupled (pair wise)    : %4.2f | int. free pkas: %5.2f - %5.2f = %5.2f | int. energy: %4.2f'%(all_residues[i],
                                                                                                                                 all_residues[j],
                                                                                                                                 coupling_factor_pairwise,
                                                                                                                                 int_free_pka1, int_free_pka2,
@@ -245,11 +246,11 @@ def identify_coupled_residues(protein, options=None):
                     all_residues[j].coupled_residues.append(all_residues[i])
                     protein.coupled_residues = True
                     
-                    #print('Coupled residue of', all_residues[i],':', all_residues[j])
-                    #print('Coupled residue of', all_residues[j],':', all_residues[i])
+                    #pka_print('Coupled residue of', all_residues[i],':', all_residues[j])
+                    #pka_print('Coupled residue of', all_residues[j],':', all_residues[i])
 
                     if verbose:
-                        print(make_data_to_string(data,all_residues[i],all_residues[j]))
+                        pka_print(make_data_to_string(data,all_residues[i],all_residues[j]))
           
             if swap and verbose:
                 # swap...
@@ -293,7 +294,7 @@ def get_interaction(residue1, residue2, include_side_chain_hbs = True):
         if residue2.label == det.label:
             interaction_energy += det.value
 
-    print residue1, residue2, interaction_energy   
+    pka_print(' '.join((str(residue1), str(residue2), str(interaction_energy))))   
 
     return interaction_energy
 
@@ -304,9 +305,9 @@ def get_interaction(residue1, residue2, include_side_chain_hbs = True):
 def swap_interactions(residue1, residue2, include_side_chain_hbs = True, verbose=True):
 
     if verbose:
-        print(' '+'-'*113)
-        tagged_print(' Original|',residue1.getDeterminantString(), [residue1.label, residue2.label])
-        tagged_print(' Original|',residue2.getDeterminantString(), [residue1.label, residue2.label])
+        pka_print(' '+'-'*113)
+        tagged_pka_print(' Original|',residue1.getDeterminantString(), [residue1.label, residue2.label])
+        tagged_pka_print(' Original|',residue2.getDeterminantString(), [residue1.label, residue2.label])
 
     # swap the interactions!
     transfer_determinant(residue1.determinants[2], residue2.determinants[2], residue1.label, residue2.label)
@@ -318,10 +319,10 @@ def swap_interactions(residue1, residue2, include_side_chain_hbs = True, verbose
     residue2.calculateTotalPKA()
 
     if verbose:
-        tagged_print(' Swapped |',residue1.getDeterminantString(), [residue1.label, residue2.label])
-        tagged_print(' Swapped |',residue2.getDeterminantString(), [residue1.label, residue2.label])
-        print(' '+'='*113)
-        print()
+        tagged_pka_print(' Swapped |',residue1.getDeterminantString(), [residue1.label, residue2.label])
+        tagged_pka_print(' Swapped |',residue2.getDeterminantString(), [residue1.label, residue2.label])
+        pka_print(' '+'='*113)
+        pka_print('')
     return
 
 
@@ -352,12 +353,12 @@ def transfer_determinant(determinants1, determinants2, label1, label2):
 
 
 
-def tagged_print(tag, s, labels):
+def tagged_pka_print(tag, s, labels):
     s = "%s %s"%(tag,s)
     s = s.replace('\n','\n%s '%tag)
     for label in labels:
         s = s.replace(label, '\033[31m%s\033[30m'%label)
-    print(s)
+    pka_print(s)
     return
 
 

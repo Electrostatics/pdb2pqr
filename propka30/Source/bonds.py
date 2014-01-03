@@ -38,6 +38,8 @@
 #-------------------------------------------------------------------------------------------------------
 import pickle,sys,os,math
 
+from lib import pka_print
+
 
 class bondmaker:
     def __init__(self):
@@ -125,7 +127,7 @@ class bondmaker:
 
         self.terminal_oxygen_names = ['OXT','O\'\'']
 
-        #print((self.protein_bonds))
+        #pka_print((self.protein_bonds))
 
 
         return
@@ -135,14 +137,14 @@ class bondmaker:
         """ Finds bonds proteins based on the way atoms 
         normally bond in proteins"""
 
-        #print('++++ Side chains ++++')
+        #pka_print('++++ Side chains ++++')
         # side chains
         for chain in protein.chains:
             for residue in chain.residues: 
                 if residue.type == "amino-acid":
                     self.find_bonds_for_side_chain(residue.atoms)
 
-        #print('++++ Backbones ++++')
+        #pka_print('++++ Backbones ++++')
         # backbone
         last_residues = []
         for chain in protein.chains:
@@ -152,12 +154,12 @@ class bondmaker:
                         self.connect_backbone(chain.residues[i-1], chain.residues[i])
                         last_residues.append(chain.residues[i])
 
-        #print('++++ terminal oxygen ++++')
+        #pka_print('++++ terminal oxygen ++++')
         # terminal OXT
         for last_residue in last_residues:
             self.find_bonds_for_terminal_oxygen(last_residue)
 
-        #print('++++ cysteines ++++')
+        #pka_print('++++ cysteines ++++')
         # Cysteines
         for chain in protein.chains:
             for i in range(0,len(chain.residues)):
@@ -286,7 +288,7 @@ class bondmaker:
 
     def find_bonds_for_atoms(self, atoms):
         """ Finds all bonds for a list of atoms"""
-        #print('Found %d atoms' %(len(atoms)))
+        #pka_print('Found %d atoms' %(len(atoms)))
         for i in range(len(atoms)):
             for j in range(i+1,len(atoms)):
                 sq_dist = self.squared_distance(atoms[i], atoms[j])
@@ -295,7 +297,7 @@ class bondmaker:
                         self.make_bond(atoms[i],atoms[j])
                     elif atoms[i].get_element() == 'S' and \
                             atoms[j].get_element() == 'S':
-                        # print('Di-sulphide bond',atoms[i],atoms[j])
+                        # pka_print('Di-sulphide bond',atoms[i],atoms[j])
                         self.make_bond(atoms[i],atoms[j])
 
         return
@@ -303,7 +305,7 @@ class bondmaker:
 
     def find_bonds_for_atoms_using_boxes(self, atoms):
         """ Finds all bonds for a list of atoms"""
-        print('Found %d atoms' %(len(atoms)))
+        pka_print('Found %d atoms' %(len(atoms)))
         box_size = 2.5
 
         # find min and max coordinates
@@ -328,18 +330,18 @@ class bondmaker:
         ylen = ymax-ymin
         zlen = zmax-zmin
 
-        print('x range: [%6.2f;%6.2f] %6.2f'%(xmin,xmax,xlen))
-        print('y range: [%6.2f;%6.2f] %6.2f'%(ymin,ymax,ylen))
-        print('z range: [%6.2f;%6.2f] %6.2f'%(zmin,zmax,zlen))
+        pka_print('x range: [%6.2f;%6.2f] %6.2f'%(xmin,xmax,xlen))
+        pka_print('y range: [%6.2f;%6.2f] %6.2f'%(ymin,ymax,ylen))
+        pka_print('z range: [%6.2f;%6.2f] %6.2f'%(zmin,zmax,zlen))
         
         # how many boxes do we need in each dimension?
         self.no_box_x = math.ceil(xlen/box_size)
         self.no_box_y = math.ceil(ylen/box_size)
         self.no_box_z = math.ceil(zlen/box_size)
 
-        print('No. box x: %6.2f'%self.no_box_x)
-        print('No. box y: %6.2f'%self.no_box_y)
-        print('No. box z: %6.2f'%self.no_box_z)
+        pka_print('No. box x: %6.2f'%self.no_box_x)
+        pka_print('No. box y: %6.2f'%self.no_box_y)
+        pka_print('No. box z: %6.2f'%self.no_box_z)
 
         # initialize boxes
         self.boxes = {}
@@ -375,7 +377,7 @@ class bondmaker:
                     if key in self.boxes.keys():
                         self.boxes[key].append(atom)
 
-                        #print(atom,'->',key,':',len(self.boxes[key]))
+                        #pka_print(atom,'->',key,':',len(self.boxes[key]))
 
         return
 
@@ -402,7 +404,7 @@ class bondmaker:
             return
 
         if not atom1 in atom2.bonded_atoms:
-            #print(atom1,' - ',atom2)
+            #pka_print(atom1,' - ',atom2)
             atom2.bonded_atoms.append(atom1)
         if not atom2 in atom1.bonded_atoms:
             atom1.bonded_atoms.append(atom2)       
@@ -450,12 +452,12 @@ if __name__ == '__main__':
     import protein, pdb, sys,os
     arguments = sys.argv
     if len(arguments) != 2:
-        print('Usage: bonds.py <pdb_file>')
+        pka_print('Usage: bonds.py <pdb_file>')
         sys.exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
-        print('Error: Could not find \"%s\"'%filename)
+        pka_print('Error: Could not find \"%s\"'%filename)
         sys.exit(1)
    
     pdblist = pdb.readPDB(filename)

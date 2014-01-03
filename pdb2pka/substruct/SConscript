@@ -1,0 +1,12 @@
+import distutils
+import numpy
+Import('env')
+
+env.Append(CPPPATH=[distutils.sysconfig.get_python_inc(), numpy.get_include()])
+
+algorithms_pyc = env.LoadableModule('Algorithms', ['Algorithms.cpp'])
+
+Default(algorithms_pyc)
+
+Return('algorithms_pyc')
+

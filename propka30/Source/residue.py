@@ -42,6 +42,7 @@ import math
 import copy
 import lib
 from pdb import Atom
+pka_print = lib.pka_print
 
 class Residue:
     """
@@ -261,7 +262,7 @@ class Residue:
             CA = self.getAtom(name="CA")
             C  = self.getAtom(name="C")
             if O == None or CA == None or C == None:
-                print("ERROR: cannot create OXT atom - missing CA, C, or O atoms; please correct pdbfile"); sys.exit(8)
+                pka_print("ERROR: cannot create OXT atom - missing CA, C, or O atoms; please correct pdbfile"); sys.exit(8)
             dX = -((CA.x-C.x) + (O.x-C.x))
             dY = -((CA.y-C.y) + (O.y-C.y))
             dZ = -((CA.z-C.z) + (O.z-C.z))
@@ -271,7 +272,7 @@ class Residue:
             z = C.z + 1.23*dZ/distance
             OXT = C.makeCopy(name="OXT", x=x, y=y, z=z)
             self.atoms.append(OXT)
-            print("creating %s atom" % (OXT.name))
+            pka_print("creating %s atom" % (OXT.name))
 
         return [O, OXT]
 
@@ -321,7 +322,7 @@ class Residue:
         if self.resName in rename:
             newName = rename[self.resName]
             if options.verbose == True:
-                print("Warning: renaming %s to %s" % (self.resName, newName))
+                pka_print("Warning: renaming %s to %s" % (self.resName, newName))
             self.resName = newName
             for atom in self.atoms:
                 atom.resName = newName
@@ -335,16 +336,16 @@ class Residue:
         # Chresten's stuff
         elif self.type == "ion":
             outstr  = "%s%4d -  OK %s" % (self.resName, self.resNumb, self.type)
-            print(outstr)
+            pka_print(outstr)
         #elif self.resName in version.ions.keys():
         #    str  = "%-3s%4d - %s with charge %+d" % (self.resName, 
         #                                             self.resNumb, 
         #                                             version.ions_long_names[self.resName], 
         #                                             version.ions[self.resName])
-        #    print(str)            
+        #    pka_print(str)            
         else:
             outstr  = "%s%4d - unidentified residue" % (self.resName, self.resNumb)
-            print(outstr)
+            pka_print(outstr)
 
 
     def checkAtoms(self, options=None):
@@ -367,10 +368,10 @@ class Residue:
             self.checkConfigurations(verbose=False)
             outstr += " OK (%2d: %2d)" % (len(self.atoms), len(self.configurations))
             if options.verbose == True:
-                print(outstr)
+                pka_print(outstr)
         else:
             outstr += " missing"
-            print(outstr)
+            pka_print(outstr)
 
 
     def checkConfigurations(self, verbose=False):
@@ -388,7 +389,7 @@ class Residue:
         prints the residue ID
         """
         outstr = "%s%4d %s" % (self.resName, self.resNumb, self.chainID)
-        print(outstr)
+        pka_print(outstr)
 
 
     def __str__(self):
@@ -428,7 +429,7 @@ class Residue:
                 pair_type = 'acid'
 
         if self.resName not in version.atomInteractionList[pair_type]:
-            print("cannot find atomInteractionList for residue %s in residue.makeDeterminantAtomList()" % (self.resName))
+            pka_print("cannot find atomInteractionList for residue %s in residue.makeDeterminantAtomList()" % (self.resName))
             sys.exit(9)
             
         # Searching for determinant atom
@@ -624,8 +625,8 @@ class Residue:
         for atom in self.atoms:
             if atom.name in keep_atoms:
                 new_atoms.append(atom)
-        print(self.atoms)
-        print(new_atoms)
+        pka_print(self.atoms)
+        pka_print(new_atoms)
         self.cleanupResidue
         self.pKa_mod = pKa_mod(self.resName)
         self.pKa_pro = self.pKa_mod
@@ -775,12 +776,12 @@ class Residue:
                 else:
                     determinant = self.determinants[2][line_number-1]
                     outstr += "%8.2lf %s" % (determinant.value, determinant.label)
-                print('%s' % (outstr))
+                pka_print('%s' % (outstr))
         else:
             outstr  = "%s%4d%2s%4d%2d" % (self.resName, self.resNumb, self.chainID, number_of_lines, number_of_determinants)
-            print('%s' % (outstr))
+            pka_print('%s' % (outstr))
 
-        print('')
+        pka_print('')
 
 
     def translate(self, translation):

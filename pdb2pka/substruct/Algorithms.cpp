@@ -40,7 +40,7 @@
 #include "Python.h"
 #include "clique/bk.h"
 #include "clique/util.h"
-#include "arrayobject.h"
+#include "numpy/arrayobject.h"
 //#include "smiles.h"
 /*----------------------------------------------------------------------------*/
 using namespace std;
@@ -104,7 +104,7 @@ static PyObject *find_max_clique(PyObject *self, PyObject *args) {
   // Copying the adjacency matrix
   
   int n = array->dimensions[0];
-  char *connected[n];
+  char **connected = (char **) malloc(n * sizeof(char*));
   for(int i = 0; i < n; i++) {
     connected[i] = (char *) malloc(n * sizeof(char));
   }
@@ -138,6 +138,13 @@ static PyObject *find_max_clique(PyObject *self, PyObject *args) {
     cerr << cliq.vertex[i] << " ";
     PyList_Append(erg, PyInt_FromLong(cliq.vertex[i]));
   }
+  
+  for(int i = 0; i < n; i++) {
+    free(connected[i]);
+  }
+  
+  free(connected);
+  
 
   return erg;
   
@@ -197,7 +204,7 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
   // Copying the adjacency matrix
   
   int n = array->dimensions[0];
-  char *connected[n];
+  char **connected = (char **) malloc(n * sizeof(char*));
   for(int i = 0; i < n; i++) {
     connected[i] = (char *) malloc(n * sizeof(char));
   }
@@ -240,6 +247,13 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
 
     PyList_Append(result, cli);
   }
+  
+
+  for(int i = 0; i < n; i++) {
+    free(connected[i]);
+  }
+  
+  free(connected);
   
   return result;
   
@@ -300,7 +314,8 @@ extern "C" {
 /*----------------------------------------------------------------------------/
  *   cerr << "Discrete Algorithms Module " << VERSION
  *	 << " [Build "   << TIMESTAMP << "]" << endl 
- *	 << "Send complaints to: Nils Weskamp < weskamp@informatik.uni-marburg.de >" << endl;               *----------------------------------------------------------------------------*/
+ *	 << "Send complaints to: Nils Weskamp < weskamp@informatik.uni-marburg.de >" << endl;               
+ *----------------------------------------------------------------------------*/
  
   };
 }

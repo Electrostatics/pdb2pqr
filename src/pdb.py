@@ -58,10 +58,18 @@ def RegisterLineParser(klass):
     lineParsers[klass.__name__] = klass
     return klass
 
-
+class BaseRecord(object):
+    """
+    Base class for all records.
+    Verifies the received record type 
+    """
+    def __init__(self, line):
+        record = string.strip(line[0:6])
+        if record != self.__class__.__name__:
+            raise ValueError, record
 
 @RegisterLineParser
-class END:
+class END(BaseRecord):
     """ END class
 
         The END records are paired with MODEL records to group individual
@@ -72,10 +80,10 @@ class END:
         """ 
             Initialize by parsing line (nothing to do)
         """
-        pass
+        super(END, self).__init__(line)
 
 @RegisterLineParser
-class MASTER:
+class MASTER(BaseRecord):
     """ MASTER class
 
         The MASTER record is a control record for bookkeeping. It lists the
@@ -103,24 +111,22 @@ class MASTER:
             61-65    int    numConect Number of CONECT records
             66-70    int    numSeq    Number of SEQRES records
         """
-        record = string.strip(line[0:6])
-        if record == "MASTER":
-            self.numRemark = int(string.strip(line[10:15]))
-            self.numHet = int(string.strip(line[20:25]))
-            self.numHelix = int(string.strip(line[25:30]))
-            self.numSheet = int(string.strip(line[30:35]))
-            self.numTurn = int(string.strip(line[35:40]))
-            self.numSite = int(string.strip(line[40:45]))
-            self.numXform = int(string.strip(line[45:50]))
-            self.numCoord = int(string.strip(line[50:55]))
-            self.numTer = int(string.strip(line[55:60]))
-            self.numConect = int(string.strip(line[60:65]))
-            self.numSeq = int(string.strip(line[65:70]))
-        else:  raise ValueError, record
+        super(MASTER, self).__init__(line)
+        self.numRemark = int(string.strip(line[10:15]))
+        self.numHet = int(string.strip(line[20:25]))
+        self.numHelix = int(string.strip(line[25:30]))
+        self.numSheet = int(string.strip(line[30:35]))
+        self.numTurn = int(string.strip(line[35:40]))
+        self.numSite = int(string.strip(line[40:45]))
+        self.numXform = int(string.strip(line[45:50]))
+        self.numCoord = int(string.strip(line[50:55]))
+        self.numTer = int(string.strip(line[55:60]))
+        self.numConect = int(string.strip(line[60:65]))
+        self.numSeq = int(string.strip(line[65:70]))
 
 
 @RegisterLineParser
-class CONECT:
+class CONECT(BaseRecord):
     """ CONECT class
 
         The CONECT records specify connectivity between atoms for which
@@ -150,33 +156,31 @@ class CONECT:
             52-56    int    serial9  Serial number of hydrogen bonded atom    
             57-61    int    serial10 Serial number of salt bridged    atom    
         """
-        record = string.strip(line[0:6])
-        if record == "CONECT":
-            self.serial = int(string.strip(line[6:11]))
-            try:  self.serial1 = int(string.strip(line[11:16]))
-            except ValueError:  self.serial1 = None
-            try:  self.serial2 = int(string.strip(line[16:21]))
-            except ValueError:  self.serial2 = None
-            try:  self.serial3 = int(string.strip(line[21:26]))
-            except ValueError:  self.serial3 = None
-            try:  self.serial4 = int(string.strip(line[26:31]))
-            except ValueError:  self.serial4 = None
-            try:  self.serial5 = int(string.strip(line[31:36]))
-            except ValueError:  self.serial5 = None
-            try:  self.serial6 = int(string.strip(line[36:41]))
-            except ValueError:  self.serial6 = None
-            try:  self.serial7 = int(string.strip(line[41:46]))
-            except ValueError:  self.serial7 = None
-            try:  self.serial8 = int(string.strip(line[46:51]))
-            except ValueError:  self.serial8 = None
-            try:  self.serial9 = int(string.strip(line[51:56]))
-            except ValueError:  self.serial9 = None
-            try:  self.serial10 = int(string.strip(line[56:61]))
-            except ValueError:  self.serial10 = None
-        else:  raise ValueError, record
+        super(CONECT, self).__init__(line)
+        self.serial = int(string.strip(line[6:11]))
+        try:  self.serial1 = int(string.strip(line[11:16]))
+        except ValueError:  self.serial1 = None
+        try:  self.serial2 = int(string.strip(line[16:21]))
+        except ValueError:  self.serial2 = None
+        try:  self.serial3 = int(string.strip(line[21:26]))
+        except ValueError:  self.serial3 = None
+        try:  self.serial4 = int(string.strip(line[26:31]))
+        except ValueError:  self.serial4 = None
+        try:  self.serial5 = int(string.strip(line[31:36]))
+        except ValueError:  self.serial5 = None
+        try:  self.serial6 = int(string.strip(line[36:41]))
+        except ValueError:  self.serial6 = None
+        try:  self.serial7 = int(string.strip(line[41:46]))
+        except ValueError:  self.serial7 = None
+        try:  self.serial8 = int(string.strip(line[46:51]))
+        except ValueError:  self.serial8 = None
+        try:  self.serial9 = int(string.strip(line[51:56]))
+        except ValueError:  self.serial9 = None
+        try:  self.serial10 = int(string.strip(line[56:61]))
+        except ValueError:  self.serial10 = None
 
 @RegisterLineParser
-class NUMMDL:
+class NUMMDL(BaseRecord):
     """ NUMMDL class
 
         The NUMMDL record indicates total number of models in a PDB entry.
@@ -190,14 +194,14 @@ class NUMMDL:
             -----------------------------------------------------------              
             11-14    int       modelNumber   Number of models.     
         """
-        record = string.strip(line[0:6])
-        if record == "NUMMDL":
-            try: self.modelNumber = int(string.strip(line[10:14]))
-            except ValueError:  self.modelNumber = None
-        else:  raise ValueError, record
+        super(NUMMDL, self).__init__(line)
+        try: 
+            self.modelNumber = int(string.strip(line[10:14]))
+        except ValueError:  
+            self.modelNumber = None
 
 @RegisterLineParser
-class ENDMDL:
+class ENDMDL(BaseRecord):
     """ ENDMDL class
 
         The ENDMDL records are paired with MODEL records to group individual
@@ -208,10 +212,10 @@ class ENDMDL:
         """ 
             Initialize by parsing line (nothing to do)
         """
-        pass
+        super(ENDMDL, self).__init__(line)
 
 @RegisterLineParser
-class TER:
+class TER(BaseRecord):
     """ TER class
 
         The TER record indicates the end of a list of ATOM/HETATM records for a
@@ -229,24 +233,22 @@ class TER:
             23-26    int    resSeq  Residue sequence number.
             27       string iCode   Insertion code.
         """
-        record = string.strip(line[0:6])
-        if record == "TER":
-            try: # Not really needed
-                self.serial = int(string.strip(line[6:11]))
-                self.resName = string.strip(line[17:20])
-                self.chainID = string.strip(line[21])
-                self.resSeq = int(string.strip(line[22:26]))
-                self.iCode = string.strip(line[26])
-            except (IndexError, ValueError):
-                self.serial = None
-                self.resName = None
-                self.chainID = None
-                self.resSeq = None
-                self.iCode = None
-        else:  raise ValueError, record
+        super(TER, self).__init__(line)
+        try: # Not really needed
+            self.serial = int(string.strip(line[6:11]))
+            self.resName = string.strip(line[17:20])
+            self.chainID = string.strip(line[21])
+            self.resSeq = int(string.strip(line[22:26]))
+            self.iCode = string.strip(line[26])
+        except (IndexError, ValueError):
+            self.serial = None
+            self.resName = None
+            self.chainID = None
+            self.resSeq = None
+            self.iCode = None
 
 @RegisterLineParser
-class SIGUIJ:
+class SIGUIJ(BaseRecord):
     """ SIGUIJ class
 
         The SIGUIJ records present the anisotropic temperature factors. 
@@ -275,29 +277,28 @@ class SIGUIJ:
               77-78    string element Element symbol, right-justified.
               79-80    string charge  Charge on the atom.
         """
-        record = string.strip(line[0:6])
-        if record == "SIGUIJ":
-            self.serial = int(string.strip(line[6:11]))
-            self.name = string.strip(line[12:16])
-            self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
-            self.sig11 = int(string.strip(line[28:35]))
-            self.sig22 = int(string.strip(line[35:42]))
-            self.sig33 = int(string.strip(line[42:49]))
-            self.sig12 = int(string.strip(line[49:56]))
-            self.sig13 = int(string.strip(line[56:63]))
-            self.sig23 = int(string.strip(line[63:70]))
-            self.segID = string.strip(line[72:76])
-            self.element = string.strip(line[76:78])
-            self.charge = string.strip(line[78:80])
-        else: raise ValueError, record
+        super(SIGUIJ, self).__init__(line)
+
+        self.serial = int(string.strip(line[6:11]))
+        self.name = string.strip(line[12:16])
+        self.altLoc = string.strip(line[16])
+        self.resName = string.strip(line[17:20])
+        self.chainID = string.strip(line[21])
+        self.resSeq = int(string.strip(line[22:26]))
+        self.iCode = string.strip(line[26])
+        self.sig11 = int(string.strip(line[28:35]))
+        self.sig22 = int(string.strip(line[35:42]))
+        self.sig33 = int(string.strip(line[42:49]))
+        self.sig12 = int(string.strip(line[49:56]))
+        self.sig13 = int(string.strip(line[56:63]))
+        self.sig23 = int(string.strip(line[63:70]))
+        self.segID = string.strip(line[72:76])
+        self.element = string.strip(line[76:78])
+        self.charge = string.strip(line[78:80])
 
 
 @RegisterLineParser
-class ANISOU:
+class ANISOU(BaseRecord):
     """ ANISOU class
 
         The ANISOU records present the anisotropic temperature factors. 
@@ -326,28 +327,26 @@ class ANISOU:
               77-78    string element Element symbol, right-justified.
               79-80    string charge  Charge on the atom.
         """
-        record = string.strip(line[0:6])
-        if record == "ANISOU":
-            self.serial = int(string.strip(line[6:11]))
-            self.name = string.strip(line[12:16])
-            self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
-            self.u00 = int(string.strip(line[28:35]))
-            self.u11 = int(string.strip(line[35:42]))
-            self.u22 = int(string.strip(line[42:49]))
-            self.u01 = int(string.strip(line[49:56]))
-            self.u02 = int(string.strip(line[56:63]))
-            self.u12 = int(string.strip(line[63:70]))
-            self.segID = string.strip(line[72:76])
-            self.element = string.strip(line[76:78])
-            self.charge = string.strip(line[78:80])
-        else: raise ValueError, record
+        super(ANISOU, self).__init__(line)
+        self.serial = int(string.strip(line[6:11]))
+        self.name = string.strip(line[12:16])
+        self.altLoc = string.strip(line[16])
+        self.resName = string.strip(line[17:20])
+        self.chainID = string.strip(line[21])
+        self.resSeq = int(string.strip(line[22:26]))
+        self.iCode = string.strip(line[26])
+        self.u00 = int(string.strip(line[28:35]))
+        self.u11 = int(string.strip(line[35:42]))
+        self.u22 = int(string.strip(line[42:49]))
+        self.u01 = int(string.strip(line[49:56]))
+        self.u02 = int(string.strip(line[56:63]))
+        self.u12 = int(string.strip(line[63:70]))
+        self.segID = string.strip(line[72:76])
+        self.element = string.strip(line[76:78])
+        self.charge = string.strip(line[78:80])
 
 @RegisterLineParser
-class SIGATM:
+class SIGATM(BaseRecord):
     """ SIGATM class
 
         The SIGATM records present the standard deviation of atomic parameters
@@ -379,27 +378,25 @@ class SIGATM:
             77-78     string element Element symbol, right-justified.
             79-80     string charge  Charge on the atom.
         """
-        record = string.strip(line[0:6])
-        if record == "HETATM":
-            self.serial = int(string.strip(line[6:11]))
-            self.name = string.strip(line[12:16])
-            self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
-            self.sigX = float(string.strip(line[30:38]))
-            self.sigY = float(string.strip(line[38:46]))
-            self.sigZ = float(string.strip(line[46:54]))
-            self.sigOcc = float(string.strip(line[54:60]))
-            self.sigTemp = float(string.strip(line[60:66]))
-            self.segID = string.strip(line[72:76])
-            self.element = string.strip(line[76:78])
-            self.charge = string.strip(line[78:80])
-        else: raise ValueError, record
+        super(SIGATM, self).__init__(line)
+        self.serial = int(string.strip(line[6:11]))
+        self.name = string.strip(line[12:16])
+        self.altLoc = string.strip(line[16])
+        self.resName = string.strip(line[17:20])
+        self.chainID = string.strip(line[21])
+        self.resSeq = int(string.strip(line[22:26]))
+        self.iCode = string.strip(line[26])
+        self.sigX = float(string.strip(line[30:38]))
+        self.sigY = float(string.strip(line[38:46]))
+        self.sigZ = float(string.strip(line[46:54]))
+        self.sigOcc = float(string.strip(line[54:60]))
+        self.sigTemp = float(string.strip(line[60:66]))
+        self.segID = string.strip(line[72:76])
+        self.element = string.strip(line[76:78])
+        self.charge = string.strip(line[78:80])
 
 @RegisterLineParser
-class HETATM:
+class HETATM(BaseRecord):
     """ HETATM class
 
         The HETATM records present the atomic coordinate records for atoms
@@ -432,43 +429,41 @@ class HETATM:
             77-78     string element       Element symbol, right-justified.
             79-80     string charge        Charge on the atom.
         """
-        record = string.strip(line[0:6])
-        if record == "HETATM":
-            self.serial = int(string.strip(line[6:11]))
-            self.name = string.strip(line[12:16])
-            self.altLoc = string.strip(line[16])
-            try:
-                self.resName = string.strip(line[17:20])
-                self.chainID = string.strip(line[21])
-                self.resSeq = int(string.strip(line[22:26]))
-                self.iCode = string.strip(line[26])
-            except: 
-                raise ValueError, 'Residue name must be less than 4 characters!'
-            self.x = float(string.strip(line[30:38]))
-            self.y = float(string.strip(line[38:46]))
-            self.z = float(string.strip(line[46:54]))
-            ### PC
+        super(HETATM, self).__init__(line)
+        self.serial = int(string.strip(line[6:11]))
+        self.name = string.strip(line[12:16])
+        self.altLoc = string.strip(line[16])
+        try:
+            self.resName = string.strip(line[17:20])
+            self.chainID = string.strip(line[21])
+            self.resSeq = int(string.strip(line[22:26]))
+            self.iCode = string.strip(line[26])
+        except: 
+            raise ValueError, 'Residue name must be less than 4 characters!'
+        self.x = float(string.strip(line[30:38]))
+        self.y = float(string.strip(line[38:46]))
+        self.z = float(string.strip(line[46:54]))
+        ### PC
 #            self.lAtoms = lAtoms
-            self.sybylType = sybylType
-            self.lBondedAtoms = lBondedAtoms
-            self.lBonds = lBonds
-            self.radius = 1.0
-            self.isCterm=0
-            self.isNterm=0
-            ###
-            try:
-                self.occupancy = float(string.strip(line[54:60]))
-                self.tempFactor = float(string.strip(line[60:66]))
-                self.segID = string.strip(line[72:76])
-                self.element = string.strip(line[76:78])
-                self.charge = string.strip(line[78:80])
-            except (ValueError, IndexError):
-                self.occupancy = 0.00
-                self.tempFactor = 0.00
-                self.segID = ""
-                self.element = ""
-                self.charge = ""
-        else: raise ValueError, record
+        self.sybylType = sybylType
+        self.lBondedAtoms = lBondedAtoms
+        self.lBonds = lBonds
+        self.radius = 1.0
+        self.isCterm=0
+        self.isNterm=0
+        ###
+        try:
+            self.occupancy = float(string.strip(line[54:60]))
+            self.tempFactor = float(string.strip(line[60:66]))
+            self.segID = string.strip(line[72:76])
+            self.element = string.strip(line[76:78])
+            self.charge = string.strip(line[78:80])
+        except (ValueError, IndexError):
+            self.occupancy = 0.00
+            self.tempFactor = 0.00
+            self.segID = ""
+            self.element = ""
+            self.charge = ""
 
     def __str__(self):
         """
@@ -691,7 +686,7 @@ class MOL2MOLECULE:
 ### PC        
 
 @RegisterLineParser        
-class ATOM:
+class ATOM(BaseRecord):
     """ ATOM class
 
         The ATOM records present the atomic coordinates for standard residues.
@@ -726,32 +721,29 @@ class ATOM:
             77-78     string element       Element symbol, right-justified.
             79-80     string charge        Charge on the atom.
         """
-        record = string.strip(line[0:6])
-        if record == "ATOM":
-            self.serial = int(string.strip(line[6:11]))
-            self.name = string.strip(line[12:16])
-            self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
-            self.x = float(string.strip(line[30:38]))
-            self.y = float(string.strip(line[38:46]))
-            self.z = float(string.strip(line[46:54]))
-            try:
-                self.occupancy = float(string.strip(line[54:60]))
-                self.tempFactor = float(string.strip(line[60:66]))
-                self.segID = string.strip(line[72:76])
-                self.element = string.strip(line[76:78])
-                self.charge = string.strip(line[78:80])
-            except (ValueError, IndexError):
-                self.occupancy = 0.00
-                self.tempFactor = 0.00
-                self.segID = ""
-                self.element = ""
-                self.charge = ""
-        else:
-            raise ValueError, record
+        super(ATOM, self).__init__(line)
+        self.serial = int(string.strip(line[6:11]))
+        self.name = string.strip(line[12:16])
+        self.altLoc = string.strip(line[16])
+        self.resName = string.strip(line[17:20])
+        self.chainID = string.strip(line[21])
+        self.resSeq = int(string.strip(line[22:26]))
+        self.iCode = string.strip(line[26])
+        self.x = float(string.strip(line[30:38]))
+        self.y = float(string.strip(line[38:46]))
+        self.z = float(string.strip(line[46:54]))
+        try:
+            self.occupancy = float(string.strip(line[54:60]))
+            self.tempFactor = float(string.strip(line[60:66]))
+            self.segID = string.strip(line[72:76])
+            self.element = string.strip(line[76:78])
+            self.charge = string.strip(line[78:80])
+        except (ValueError, IndexError):
+            self.occupancy = 0.00
+            self.tempFactor = 0.00
+            self.segID = ""
+            self.element = ""
+            self.charge = ""
 
     def __str__(self):
         """
@@ -820,7 +812,7 @@ class ATOM:
         return str
 
 @RegisterLineParser        
-class MODEL:
+class MODEL(BaseRecord):
     """ MODEL class
 
         The MODEL record specifies the model serial number when multiple
@@ -836,13 +828,11 @@ class MODEL:
            -----------------------------------------------------
            11-14    int    serial Model serial number.
         """
-        record = string.strip(line[0:6])
-        if record == "MODEL":
-            self.serial = int(string.strip(line[10:14]))
-        else:  raise ValueError, record
+        super(MODEL, self).__init__(line)
+        self.serial = int(string.strip(line[10:14]))
 
 @RegisterLineParser
-class TVECT:
+class TVECT(BaseRecord):
     """ TVECT class
 
         The TVECT records present the translation vector for infinite
@@ -861,20 +851,18 @@ class TVECT:
             31-40    float  t2     Components of translation vector
             41-70    string text   Comments
         """
-        record = string.strip(line[0:6])
-        if record == "TVECT":
-            self.serial = int(string.strip(line[7:10]))
-            self.t1 = float(string.strip(line[10:20]))
-            self.t2 = float(string.strip(line[20:30]))
-            self.t3 = float(string.strip(line[30:40]))
-            self.text = string.strip(line[40:70])
-        else:  raise ValueError, record
+        super(TVECT, self).__init__(line)
+        self.serial = int(string.strip(line[7:10]))
+        self.t1 = float(string.strip(line[10:20]))
+        self.t2 = float(string.strip(line[20:30]))
+        self.t3 = float(string.strip(line[30:40]))
+        self.text = string.strip(line[40:70])
 
-@RegisterLineParser
-class MTRIX3:
-    """ MTRIX3 class
 
-        The MTRIX3 (n = 1, 2, or 3) records present transformations expressing
+class MTRIXn(BaseRecord):
+    """ MTRIXn baseclass
+
+        The MTRIXn (n = 1, 2, or 3) records present transformations expressing
         non-crystallographic symmetry.  
     """
 
@@ -894,88 +882,31 @@ class MTRIX3:
                             transformations of the molecule are contained in
                             the entry.  Otherwise, blank.  
         """
-        record = string.strip(line[0:6])
-        if record == "MTRIX3":
-            self.serial = int(string.strip(line[7:10]))
-            self.mn1 = float(string.strip(line[10:20]))
-            self.mn2 = float(string.strip(line[20:30]))
-            self.mn3 = float(string.strip(line[30:40]))
-            self.vn = float(string.strip(line[45:55]))
+        super(MTRIXn, self).__init__(line)
+        self.serial = int(string.strip(line[7:10]))
+        self.mn1 = float(string.strip(line[10:20]))
+        self.mn2 = float(string.strip(line[20:30]))
+        self.mn3 = float(string.strip(line[30:40]))
+        self.vn = float(string.strip(line[45:55]))
+        try:  
             self.iGiven = int(string.strip(line[59]))
-        else:  raise ValueError, record
+        except (ValueError, IndexError):  
+            self.iGiven = None
 
 @RegisterLineParser
-class MTRIX2:
-    """ MTRIX2 class
-
-        The MTRIXn (n = 1, 2, or 3) records present transformations expressing
-        non-crystallographic symmetry.  
-    """
-
-    def __init__(self, line):
-        """
-            Initialize by parsing line
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------
-             8-10    int    serial Serial number
-            11-20    float  mn1    M21
-            21-30    float  mn2    M22
-            31-40    float  mn3    M23
-            46-55    float  vn     V2
-            60       int    iGiven 1 if coordinates for the representations
-                            which are approximately related by the
-                            transformations of the molecule are contained in
-                            the entry.  Otherwise, blank.  
-        """
-        record = string.strip(line[0:6])
-        if record == "MTRIX2":
-            self.serial = int(string.strip(line[7:10]))
-            self.mn1 = float(string.strip(line[10:20]))
-            self.mn2 = float(string.strip(line[20:30]))
-            self.mn3 = float(string.strip(line[30:40]))
-            self.vn = float(string.strip(line[45:55]))
-            self.iGiven = int(string.strip(line[59]))
-        else:  raise ValueError, record
+class MTRIX3(MTRIXn):
+    pass
 
 @RegisterLineParser
-class MTRIX1:
-    """ MTRIX1 class
-
-        The MTRIXn (n = 1, 2, or 3) records present transformations expressing
-        non-crystallographic symmetry.  
-    """
-
-    def __init__(self, line):
-        """
-            Initialize by parsing line
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------
-             8-10    int    serial Serial number
-            11-20    float  mn1    M11
-            21-30    float  mn2    M12
-            31-40    float  mn3    M13
-            46-55    float  vn     V1
-            60       int    iGiven 1 if coordinates for the representations
-                            which are approximately related by the
-                            transformations of the molecule are contained in
-                            the entry.  Otherwise, blank.  
-        """
-        record = string.strip(line[0:6])
-        if record == "MTRIX1":
-            self.serial = int(string.strip(line[7:10]))
-            self.mn1 = float(string.strip(line[10:20]))
-            self.mn2 = float(string.strip(line[20:30]))
-            self.mn3 = float(string.strip(line[30:40]))
-            self.vn = float(string.strip(line[45:55]))
-            try:  self.iGiven = int(string.strip(line[45:55]))
-            except (ValueError, IndexError):  self.iGiven = None
-        else:  raise ValueError, record
+class MTRIX2(MTRIXn):
+    pass
 
 @RegisterLineParser
-class SCALE3:
-    """ SCALE3 class
+class MTRIX1(MTRIXn):
+    pass
+
+class SCALEn(BaseRecord):
+    """ SCALEn baseclass
 
         The SCALEn (n = 1, 2, or 3) records present the transformation from the
         orthogonal coordinates as contained in the entry to fractional
@@ -994,75 +925,25 @@ class SCALE3:
             31-40    float  sn3    S33
             46-55    float  un     U3
         """
-        record = string.strip(line[0:6])
-        if record == "SCALE3":
-            self.sn1 = float(string.strip(line[10:20]))
-            self.sn2 = float(string.strip(line[20:30]))
-            self.sn3 = float(string.strip(line[30:40]))
-            self.un = float(string.strip(line[45:55]))
-        else:  raise ValueError, record
+        super(SCALEn, self).__init__(line)
+        self.sn1 = float(string.strip(line[10:20]))
+        self.sn2 = float(string.strip(line[20:30]))
+        self.sn3 = float(string.strip(line[30:40]))
+        self.un = float(string.strip(line[45:55]))
 
 @RegisterLineParser
-class SCALE2:
-    """ SCALE2 class
-
-        The SCALEn (n = 1, 2, or 3) records present the transformation from the
-        orthogonal coordinates as contained in the entry to fractional
-        crystallographic coordinates. Non-standard coordinate systems should be
-        explained in the remarks.
-    """
-
-    def __init__(self, line):
-        """
-            Initialize by parsing line
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------
-            11-20    float  sn1    S21
-            21-30    float  sn2    S22
-            31-40    float  sn3    S23
-            46-55    float  un     U2
-        """
-        record = string.strip(line[0:6])
-        if record == "SCALE2":
-            self.sn1 = float(string.strip(line[10:20]))
-            self.sn2 = float(string.strip(line[20:30]))
-            self.sn3 = float(string.strip(line[30:40]))
-            self.un = float(string.strip(line[45:55]))
-        else:  raise ValueError, record
+class SCALE3(SCALEn):
+    pass
 
 @RegisterLineParser
-class SCALE1:
-    """ SCALE1 class
-
-        The SCALEn (n = 1, 2, or 3) records present the transformation from the
-        orthogonal coordinates as contained in the entry to fractional
-        crystallographic coordinates. Non-standard coordinate systems should be
-        explained in the remarks.
-    """
-
-    def __init__(self, line):
-        """
-            Initialize by parsing line
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------
-            11-20    float  sn1    S11
-            21-30    float  sn2    S12
-            31-40    float  sn3    S13
-            46-55    float  un     U1
-        """
-        record = string.strip(line[0:6])
-        if record == "SCALE1":
-            self.sn1 = float(string.strip(line[10:20]))
-            self.sn2 = float(string.strip(line[20:30]))
-            self.sn3 = float(string.strip(line[30:40]))
-            self.un = float(string.strip(line[45:55]))
-        else:  raise ValueError, record
-
+class SCALE2(SCALEn):
+    pass
 
 @RegisterLineParser
-class ORIGX2:
+class SCALE1(SCALEn):
+    pass
+
+class ORIGXn(BaseRecord):
     """ ORIGX2 class
 
         The ORIGXn (n = 1, 2, or 3) records present the transformation from the
@@ -1081,72 +962,26 @@ class ORIGX2:
             31-40    float  on3    O23
             46-55    float  tn     T2
         """
-        record = string.strip(line[0:6])
-        if record == "ORIGX2":
-            self.on1 = float(string.strip(line[10:20]))
-            self.on2 = float(string.strip(line[20:30]))
-            self.on3 = float(string.strip(line[30:40]))
-            self.tn = float(string.strip(line[45:55]))
-        else:  raise ValueError, record
+        super(ORIGXn, self).__init__(line)
+        self.on1 = float(string.strip(line[10:20]))
+        self.on2 = float(string.strip(line[20:30]))
+        self.on3 = float(string.strip(line[30:40]))
+        self.tn = float(string.strip(line[45:55]))
+        
+@RegisterLineParser
+class ORIGX2(ORIGXn):
+    pass
 
 @RegisterLineParser
-class ORIGX3:
-    """ ORIGX3 class
-
-        The ORIGXn (n = 1, 2, or 3) records present the transformation from the
-        orthogonal coordinates contained in the entry to the submitted
-        coordinates.
-    """
-
-    def __init__(self, line):
-        """
-            Initialize by parsing line
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------
-            11-20    float  on1    O31
-            21-30    float  on2    O32
-            31-40    float  on3    O33
-            46-55    float  tn     T3
-        """
-        record = string.strip(line[0:6])
-        if record == "ORIGX3":
-            self.on1 = float(string.strip(line[10:20]))
-            self.on2 = float(string.strip(line[20:30]))
-            self.on3 = float(string.strip(line[30:40]))
-            self.tn = float(string.strip(line[45:55]))
-        else:  raise ValueError, record
+class ORIGX3(ORIGXn):
+    pass
 
 @RegisterLineParser
-class ORIGX1:
-    """ ORIGX1 class
-
-        The ORIGXn (n = 1, 2, or 3) records present the transformation from the
-        orthogonal coordinates contained in the entry to the submitted
-        coordinates.
-    """
-
-    def __init__(self, line):
-        """
-            Initialize by parsing line
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------
-            11-20    float  on1    O11
-            21-30    float  on2    O12
-            31-40    float  on3    O13
-            46-55    float  tn     T1
-        """
-        record = string.strip(line[0:6])
-        if record == "ORIGX1":
-            self.on1 = float(string.strip(line[10:20]))
-            self.on2 = float(string.strip(line[20:30]))
-            self.on3 = float(string.strip(line[30:40]))
-            self.tn = float(string.strip(line[45:55]))
-        else:  raise ValueError, record
+class ORIGX1(ORIGXn):
+    pass
 
 @RegisterLineParser
-class CRYST1:
+class CRYST1(BaseRecord):
     """ CRYST1 class
 
         The CRYST1 record presents the unit cell parameters, space group, and Z
@@ -1169,21 +1004,19 @@ class CRYST1:
            56-66    string sGroup Space group.
            67-70    int    z      Z value.
         """
-        record = string.strip(line[0:6])
-        if record == "CRYST1":
-            self.a = float(string.strip(line[6:15]))
-            self.b = float(string.strip(line[15:24]))
-            self.c = float(string.strip(line[24:33]))
-            self.alpha = float(string.strip(line[33:40]))
-            self.beta = float(string.strip(line[40:47]))
-            self.gamma = float(string.strip(line[47:54]))
-            self.sGroup = string.strip(line[55:65])
-            self.z = int(string.strip(line[66:70]))
-        else:  raise ValueError, record
+        super(CRYST1, self).__init__(line)
+        self.a = float(string.strip(line[6:15]))
+        self.b = float(string.strip(line[15:24]))
+        self.c = float(string.strip(line[24:33]))
+        self.alpha = float(string.strip(line[33:40]))
+        self.beta = float(string.strip(line[40:47]))
+        self.gamma = float(string.strip(line[47:54]))
+        self.sGroup = string.strip(line[55:65])
+        self.z = int(string.strip(line[66:70]))
 
 
 @RegisterLineParser
-class SITE:
+class SITE(BaseRecord):
     """ SITE class
 
         The SITE records supply the identification of groups comprising
@@ -1232,31 +1065,32 @@ class SITE:
             61       string iCode4   Insertion code for fourth residue
                                      comprising site.
         """
-        record = string.strip(line[0:6])
-        if record == "SITE":
-            self.seqNum = int(string.strip(line[7:10]))
-            self.siteID = string.strip(line[11:14])
-            self.numRes = int(string.strip(line[15:17]))
-            self.resName1 = string.strip(line[18:21])
-            self.chainID1 = string.strip(line[22])
-            self.seq1 = int(string.strip(line[23:27]))
-            self.iCode1 = string.strip(line[27])
-            self.resName2 = string.strip(line[29:32])
-            self.chainID2 = string.strip(line[33])
-            self.seq2 = int(string.strip(line[34:38]))
-            self.iCode2 = string.strip(line[38])
-            self.resName3 = string.strip(line[40:43])
-            self.chainID3 = string.strip(line[44])
-            self.seq3 = int(string.strip(line[45:49]))
-            self.iCode3 = string.strip(line[49])
-            self.resName4 = string.strip(line[51:54])
-            self.chainID4 = string.strip(line[55])
-            self.seq4 = int(string.strip(line[56:60]))
-            try:  self.iCode4 = string.strip(line[60])
-            except IndexError:  self.iCode4 = None
-        else:  raise ValueError, record
+        super(SITE, self).__init__(line)
+        self.seqNum = int(string.strip(line[7:10]))
+        self.siteID = string.strip(line[11:14])
+        self.numRes = int(string.strip(line[15:17]))
+        self.resName1 = string.strip(line[18:21])
+        self.chainID1 = string.strip(line[22])
+        self.seq1 = int(string.strip(line[23:27]))
+        self.iCode1 = string.strip(line[27])
+        self.resName2 = string.strip(line[29:32])
+        self.chainID2 = string.strip(line[33])
+        self.seq2 = int(string.strip(line[34:38]))
+        self.iCode2 = string.strip(line[38])
+        self.resName3 = string.strip(line[40:43])
+        self.chainID3 = string.strip(line[44])
+        self.seq3 = int(string.strip(line[45:49]))
+        self.iCode3 = string.strip(line[49])
+        self.resName4 = string.strip(line[51:54])
+        self.chainID4 = string.strip(line[55])
+        self.seq4 = int(string.strip(line[56:60]))
+        try:  
+            self.iCode4 = string.strip(line[60])
+        except IndexError:  
+            self.iCode4 = None
 
-class CISPEP:
+@RegisterLineParser            
+class CISPEP(BaseRecord):
     """ CISPEP field
 
         CISPEP records specify the prolines and other peptides found to be in
@@ -1282,22 +1116,21 @@ class CISPEP:
             44-46    int    modNum   Identifies the specific model.
             54-59    float  measure  Measure of the angle in degrees.
         """
-        record = string.strip(line[0:6])
-        if record == "CISPEP":
-            self.serNum = int(string.strip(line[7:10]))
-            self.pep1 = string.strip(line[11:14])
-            self.chainID1 = string.strip(line[15])
-            self.seqNum1 = int(string.strip(line[17:21]))
-            self.icode1 = string.strip(line[21])
-            self.pep2 = string.strip(line[25:28])
-            self.chainID2 = string.strip(line[29])
-            self.seqNum2 = int(string.strip(line[31:35]))
-            self.icode2 = string.strip(line[35])
-            self.modNum = int(string.strip(line[43:46]))
-            self.measure = float(string.strip(line[53:59]))
-        else:  raise ValueError, record
+        super(CISPEP, self).__init__(line)
+        self.serNum = int(string.strip(line[7:10]))
+        self.pep1 = string.strip(line[11:14])
+        self.chainID1 = string.strip(line[15])
+        self.seqNum1 = int(string.strip(line[17:21]))
+        self.icode1 = string.strip(line[21])
+        self.pep2 = string.strip(line[25:28])
+        self.chainID2 = string.strip(line[29])
+        self.seqNum2 = int(string.strip(line[31:35]))
+        self.icode2 = string.strip(line[35])
+        self.modNum = int(string.strip(line[43:46]))
+        self.measure = float(string.strip(line[53:59]))
 
-class SLTBRG:
+@RegisterLineParser    
+class SLTBRG(BaseRecord):
     """ SLTBRG field
 
         The SLTBRG records specify salt bridges in the entry.
@@ -1325,25 +1158,24 @@ class SLTBRG:
             60-65    string sym1      Symmetry operator for 1st atom.
             67-72    string sym2      Symmetry operator for 2nd atom.
         """
-        record = string.strip(line[0:6])
-        if record == "SLTBRG":
-            self.name1 = string.strip(line[12:16])
-            self.altLoc1 = string.strip(line[16])
-            self.resName1 = string.strip(line[17:20])
-            self.chainID1 = string.strip(line[21])
-            self.resSeq1 = int(string.strip(line[22:26]))
-            self.iCode1 = string.strip(line[26])
-            self.name2 = string.strip(line[42:46])
-            self.altLoc2 = string.strip(line[46])
-            self.resName2 = string.strip(line[47:50])
-            self.chainID2 = string.strip(line[51])
-            self.resSeq2 = int(string.strip(line[52:56]))
-            self.iCode2 = string.strip(line[56])
-            self.sym1 = string.strip(line[59:65])
-            self.sym2 = string.strip(line[66:72])
-        else:  raise ValueError, record
+        super(SLTBRG, self).__init__(line)
+        self.name1 = string.strip(line[12:16])
+        self.altLoc1 = string.strip(line[16])
+        self.resName1 = string.strip(line[17:20])
+        self.chainID1 = string.strip(line[21])
+        self.resSeq1 = int(string.strip(line[22:26]))
+        self.iCode1 = string.strip(line[26])
+        self.name2 = string.strip(line[42:46])
+        self.altLoc2 = string.strip(line[46])
+        self.resName2 = string.strip(line[47:50])
+        self.chainID2 = string.strip(line[51])
+        self.resSeq2 = int(string.strip(line[52:56]))
+        self.iCode2 = string.strip(line[56])
+        self.sym1 = string.strip(line[59:65])
+        self.sym2 = string.strip(line[66:72])
 
-class HYDBND:
+@RegisterLineParser    
+class HYDBND(BaseRecord):
     """ HYDBND field
 
         The HYDBND records specify hydrogen bonds in the entry.
@@ -1377,31 +1209,29 @@ class HYDBND:
             67-72    string sym2           Symmetry operator for 2nd
                                               non-hydrogen atom.
         """
-        record = string.strip(line[0:6])
-        if record == "HYDBND":
-            self.name1 = string.strip(line[12:16])
-            self.altLoc1 = string.strip(line[16])
-            self.resName1 = string.strip(line[17:20])
-            self.Chain1 = string.strip(line[21])
-            self.resSeq1 = string.strip(line[22:27])
-            self.ICode1 = string.strip(line[27])
-            self.nameH = string.strip(line[29:33])
-            self.altLocH = string.strip(line[33])
-            self.ChainH = string.strip(line[35])
-            self.resSeqH = string.strip(line[36:41])
-            self.ICodeH = string.strip(line[41])
-            self.name2 = string.strip(line[43:47])
-            self.altLoc2 = string.strip(line[47])
-            self.resName2 = string.strip(line[48:51])
-            self.Chain2 = string.strip(line[52])
-            self.resSeq2 = string.strip(line[53:58])
-            self.ICode2 = string.strip(line[58])
-            self.sym1 = string.strip(line[59:65])
-            self.sym2 = string.strip(line[66:72])
-        else:  raise ValueError, record
-
+        super(HYDBND, self).__init__(line)
+        self.name1 = string.strip(line[12:16])
+        self.altLoc1 = string.strip(line[16])
+        self.resName1 = string.strip(line[17:20])
+        self.Chain1 = string.strip(line[21])
+        self.resSeq1 = string.strip(line[22:27])
+        self.ICode1 = string.strip(line[27])
+        self.nameH = string.strip(line[29:33])
+        self.altLocH = string.strip(line[33])
+        self.ChainH = string.strip(line[35])
+        self.resSeqH = string.strip(line[36:41])
+        self.ICodeH = string.strip(line[41])
+        self.name2 = string.strip(line[43:47])
+        self.altLoc2 = string.strip(line[47])
+        self.resName2 = string.strip(line[48:51])
+        self.Chain2 = string.strip(line[52])
+        self.resSeq2 = string.strip(line[53:58])
+        self.ICode2 = string.strip(line[58])
+        self.sym1 = string.strip(line[59:65])
+        self.sym2 = string.strip(line[66:72])
+        
 @RegisterLineParser
-class LINK:
+class LINK(BaseRecord):
     """ LINK field
 
         The LINK records specify connectivity between residues that is not
@@ -1431,27 +1261,25 @@ class LINK:
             60-65    string sym1      Symmetry operator for 1st atom.
             67-72    string sym2      Symmetry operator for 2nd atom.
         """
-        record = string.strip(line[0:6])
-        if record == "LINK":
-            self.name1 = string.strip(line[12:16])
-            self.altLoc1 = string.strip(line[16])
-            self.resName1 = string.strip(line[17:20])
-            self.chainID1 = string.strip(line[21])
-            self.resSeq1 = int(string.strip(line[22:26]))
-            self.iCode1 = string.strip(line[26])
-            self.name2 = string.strip(line[42:46])
-            self.altLoc2 = string.strip(line[46])
-            self.resName2 = string.strip(line[47:50])
-            self.chainID2 = string.strip(line[51])
-            self.resSeq2 = int(string.strip(line[52:56]))
-            self.iCode2 = string.strip(line[56])
-            self.sym1 = string.strip(line[59:65])
-            self.sym2 = string.strip(line[66:72])
-        else:  raise ValueError, record
+        super(LINK, self).__init__(line)
+        self.name1 = string.strip(line[12:16])
+        self.altLoc1 = string.strip(line[16])
+        self.resName1 = string.strip(line[17:20])
+        self.chainID1 = string.strip(line[21])
+        self.resSeq1 = int(string.strip(line[22:26]))
+        self.iCode1 = string.strip(line[26])
+        self.name2 = string.strip(line[42:46])
+        self.altLoc2 = string.strip(line[46])
+        self.resName2 = string.strip(line[47:50])
+        self.chainID2 = string.strip(line[51])
+        self.resSeq2 = int(string.strip(line[52:56]))
+        self.iCode2 = string.strip(line[56])
+        self.sym1 = string.strip(line[59:65])
+        self.sym2 = string.strip(line[66:72])
 
 
 @RegisterLineParser
-class SSBOND:
+class SSBOND(BaseRecord):
     """ SSBOND field
 
         The SSBOND record identifies each disulfide bond in protein and
@@ -1475,21 +1303,19 @@ class SSBOND:
             60 - 65  string sym1           Symmetry operator for 1st residue.
             67 - 72  string sym2           Symmetry operator for 2nd residue.
         """
-        record = string.strip(line[0:6])
-        if record == "SSBOND":
-            self.serNum = int(string.strip(line[7:10]))
-            self.chainID1 = string.strip(line[15])
-            self.seqNum1 = int(string.strip(line[17:21]))
-            self.icode1 = string.strip(line[21])
-            self.chainID2 = string.strip(line[29])
-            self.seqNum2 = int(string.strip(line[31:35]))
-            self.icode2 = string.strip(line[35])
-            self.sym1 = string.strip(line[59:65])
-            self.sym2 = string.strip(line[66:72])
-        else:  raise ValueError, record
+        super(SSBOND, self).__init__(line)
+        self.serNum = int(string.strip(line[7:10]))
+        self.chainID1 = string.strip(line[15])
+        self.seqNum1 = int(string.strip(line[17:21]))
+        self.icode1 = string.strip(line[21])
+        self.chainID2 = string.strip(line[29])
+        self.seqNum2 = int(string.strip(line[31:35]))
+        self.icode2 = string.strip(line[35])
+        self.sym1 = string.strip(line[59:65])
+        self.sym2 = string.strip(line[66:72])
 
 @RegisterLineParser
-class TURN:
+class TURN(BaseRecord):
     """ TURN field
 
         The TURN records identify turns and other short loop turns which
@@ -1523,23 +1349,21 @@ class TURN:
                                         turn.  
             41-70    string comment     Associated comment. 
         """
-        record = string.strip(line[0:6])
-        if record == "TURN":
-            self.seq = int(string.strip(line[7:10]))
-            self.turnId = string.strip(line[11:14])
-            self.initResName = string.strip(line[15:18])
-            self.initChainId = string.strip(line[19])
-            self.initSeqNum = int(string.strip(line[20:24]))
-            self.initICode = string.strip(line[24])
-            self.endResName = string.strip(line[26:29])
-            self.endChainId = string.strip(line[30])
-            self.endSeqNum = int(string.strip(line[31:35]))
-            self.endICode = string.strip(line[35])
-            self.comment = string.strip(line[40:70])
-        else:  raise ValueError, record
+        super(TURN, self).__init__(line)
+        self.seq = int(string.strip(line[7:10]))
+        self.turnId = string.strip(line[11:14])
+        self.initResName = string.strip(line[15:18])
+        self.initChainId = string.strip(line[19])
+        self.initSeqNum = int(string.strip(line[20:24]))
+        self.initICode = string.strip(line[24])
+        self.endResName = string.strip(line[26:29])
+        self.endChainId = string.strip(line[30])
+        self.endSeqNum = int(string.strip(line[31:35]))
+        self.endICode = string.strip(line[35])
+        self.comment = string.strip(line[40:70])
 
 @RegisterLineParser
-class SHEET:
+class SHEET(BaseRecord):
     """ SHEET field
 
         SHEET records are used to identify the position of sheets in the
@@ -1594,48 +1418,46 @@ class SHEET:
             70       string prevICode   Registration. Insertion code in
                                         previous strand.
         """
-        record = string.strip(line[0:6])
-        if record == "SHEET":
-            self.strand = int(string.strip(line[7:10]))
-            self.sheetID = string.strip(line[11:14])
-            self.numStrands = int(string.strip(line[14:16]))
-            self.initResName = string.strip(line[17:20])
-            self.initChainID = string.strip(line[21])
-            self.initSeqNum = int(string.strip(line[22:26]))
-            self.initICode = string.strip(line[26])
-            self.endResName = string.strip(line[28:31])
-            self.endChainID = string.strip(line[32])
-            self.endSeqNum = int(string.strip(line[33:37]))
-            self.endICode = string.strip(line[37])
-            self.sense = int(string.strip(line[38:40]))
-            try:
-                self.curAtom = string.strip(line[41:45])
-                self.curResName = string.strip(line[45:48])
-                self.curChainID = string.strip(line[49])
-                try:  self.curResSeq = int(string.strip(line[50:54]))
-                except ValueError:  self.curResSeq = None
-                self.curICode = string.strip(line[54])
-                self.prevAtom = string.strip(line[56:60])
-                self.prevResName = string.strip(line[60:63])
-                self.prevChainID = string.strip(line[64])
-                try:  self.prevResSeq = int(string.strip(line[65:69]))
-                except ValueError:  self.prevResSeq = None
-                self.prevICode = string.strip(line[69])
-            except IndexError:  
-                self.curAtom = None
-                self.curResName = None
-                self.curChainID = None
-                self.curResSeq = None
-                self.curICode = None
-                self.prevAtom = None
-                self.prevResName = None
-                self.prevChainID = None
-                self.prevResSeq = None
-                self.prevICode = None
-        else:  raise ValueError, record
+        super(SHEET, self).__init__(line)
+        self.strand = int(string.strip(line[7:10]))
+        self.sheetID = string.strip(line[11:14])
+        self.numStrands = int(string.strip(line[14:16]))
+        self.initResName = string.strip(line[17:20])
+        self.initChainID = string.strip(line[21])
+        self.initSeqNum = int(string.strip(line[22:26]))
+        self.initICode = string.strip(line[26])
+        self.endResName = string.strip(line[28:31])
+        self.endChainID = string.strip(line[32])
+        self.endSeqNum = int(string.strip(line[33:37]))
+        self.endICode = string.strip(line[37])
+        self.sense = int(string.strip(line[38:40]))
+        try:
+            self.curAtom = string.strip(line[41:45])
+            self.curResName = string.strip(line[45:48])
+            self.curChainID = string.strip(line[49])
+            try:  self.curResSeq = int(string.strip(line[50:54]))
+            except ValueError:  self.curResSeq = None
+            self.curICode = string.strip(line[54])
+            self.prevAtom = string.strip(line[56:60])
+            self.prevResName = string.strip(line[60:63])
+            self.prevChainID = string.strip(line[64])
+            try:  self.prevResSeq = int(string.strip(line[65:69]))
+            except ValueError:  self.prevResSeq = None
+            self.prevICode = string.strip(line[69])
+        except IndexError:  
+            self.curAtom = None
+            self.curResName = None
+            self.curChainID = None
+            self.curResSeq = None
+            self.curICode = None
+            self.prevAtom = None
+            self.prevResName = None
+            self.prevChainID = None
+            self.prevResSeq = None
+            self.prevICode = None
 
 @RegisterLineParser
-class HELIX:
+class HELIX(BaseRecord):
     """ HELIX field
 
         HELIX records are used to identify the position of helices in the
@@ -1670,27 +1492,25 @@ class HELIX:
             41-70    string comment     Comment about this helix.
             72-76    int    length      Length of this helix.
         """
-        record = string.strip(line[0:6])
-        if record == "HELIX":
-            self.serNum = int(string.strip(line[7:10]))
-            self.helixID = string.strip(line[11:14])
-            self.initResName = string.strip(line[15:18])
-            self.initChainID = string.strip(line[19])
-            self.initSeqNum = int(string.strip(line[21:25]))
-            self.initICode = string.strip(line[25])
-            self.endResName = string.strip(line[27:30])
-            self.endChainID = string.strip(line[31])
-            self.endSeqNum = int(string.strip(line[33:37]))
-            self.endICode = string.strip(line[37])
-            try:  self.helixClass = int(string.strip(line[38:40]))
-            except ValueError:  self.helixClass = None
-            self.comment = string.strip(line[40:70])
-            try:  self.length = int(string.strip(line[71:76]))
-            except ValueError:  self.length = None
-        else:  raise ValueError, record
+        super(HELIX, self).__init__(line)
+        self.serNum = int(string.strip(line[7:10]))
+        self.helixID = string.strip(line[11:14])
+        self.initResName = string.strip(line[15:18])
+        self.initChainID = string.strip(line[19])
+        self.initSeqNum = int(string.strip(line[21:25]))
+        self.initICode = string.strip(line[25])
+        self.endResName = string.strip(line[27:30])
+        self.endChainID = string.strip(line[31])
+        self.endSeqNum = int(string.strip(line[33:37]))
+        self.endICode = string.strip(line[37])
+        try:  self.helixClass = int(string.strip(line[38:40]))
+        except ValueError:  self.helixClass = None
+        self.comment = string.strip(line[40:70])
+        try:  self.length = int(string.strip(line[71:76]))
+        except ValueError:  self.length = None
 
 @RegisterLineParser
-class FORMUL:
+class FORMUL(BaseRecord):
     """ FORMUL field
 
         The FORMUL record presents the chemical formula and charge of a
@@ -1708,16 +1528,14 @@ class FORMUL:
             19       string asterisk * for water
             20-70    string text     Chemical formula
         """
-        record = string.strip(line[0:6])
-        if record == "FORMUL":
-            self.compNum = int(string.strip(line[8:10]))
-            self.hetID = string.strip(line[12:15])
-            self.asterisk = string.strip(line[19])
-            self.text = string.strip(line[19:70])
-        else:  raise ValueError, record
+        super(FORMUL, self).__init__(line)
+        self.compNum = int(string.strip(line[8:10]))
+        self.hetID = string.strip(line[12:15])
+        self.asterisk = string.strip(line[19])
+        self.text = string.strip(line[19:70])
 
 @RegisterLineParser
-class HETSYN:
+class HETSYN(BaseRecord):
     """ HETSYN field
 
         This record provides synonyms, if any, for the compound in the
@@ -1734,14 +1552,12 @@ class HETSYN:
             12-14    string hetID         Het identifier, right-justified.
             16-70    string hetSynonyms   List of synonyms
         """
-        record = string.strip(line[0:6])
-        if record == "HETSYN":
-            self.hetID = string.strip(line[11:14])
-            self.hetSynonyms = string.strip(line[15:70])
-        else:  raise ValueError, record
+        super(HETSYN, self).__init__(line)
+        self.hetID = string.strip(line[11:14])
+        self.hetSynonyms = string.strip(line[15:70])
 
 @RegisterLineParser
-class HETNAM:
+class HETNAM(BaseRecord):
     """ HETNAM field
 
         This record gives the chemical name of the compound with the given
@@ -1757,14 +1573,12 @@ class HETNAM:
             12-14    string hetID  Het identifier, right-justified.
             16-70    string text   Chemical name.
         """
-        record = string.strip(line[0:6])
-        if record == "HETNAM":
-            self.hetID = string.strip(line[11:14])
-            self.text = string.strip(line[15:70])
-        else:  raise ValueError, record
+        super(HETNAM, self).__init__(line)
+        self.hetID = string.strip(line[11:14])
+        self.text = string.strip(line[15:70])
 
 @RegisterLineParser
-class HET:
+class HET(BaseRecord):
     """ HET field
 
         HET records are used to describe non-standard residues, such as
@@ -1793,19 +1607,19 @@ class HET:
             21-25    int    numHetAtoms Number of HETATM records for the
             31-70    string text        Text describing Het group.
         """
-        record = string.strip(line[0:6])
-        if record == "HET":
-            self.hetID = string.strip(line[7:10])
-            self.chainID = string.strip(line[12])
-            try:  self.seqNum = int(string.strip(line[13]))
-            except ValueError:  self.seqNum = None
-            self.iCode = string.strip(line[17])
-            self.numHetAtoms = int(string.strip(line[20:25]))
-            self.text = string.strip(line[30:70])
-        else:  raise ValueError, record
+        super(HET, self).__init__(line)
+        self.hetID = string.strip(line[7:10])
+        self.chainID = string.strip(line[12])
+        try:  
+            self.seqNum = int(string.strip(line[13]))
+        except ValueError:  
+            self.seqNum = None
+        self.iCode = string.strip(line[17])
+        self.numHetAtoms = int(string.strip(line[20:25]))
+        self.text = string.strip(line[30:70])
 
 @RegisterLineParser
-class MODRES:
+class MODRES(BaseRecord):
     """ MODRES field
 
         The MODRES record provides descriptions of modifications (e.g.,
@@ -1828,19 +1642,17 @@ class MODRES:
             25-27    string stdRes  Standard residue name.
             30-70    string comment Description of the residue modification.
         """
-        record = string.strip(line[0:6])
-        if record == "MODRES":
-            string.idCode = string.strip(line[7:11])
-            string.resName = string.strip(line[12:15])
-            string.chainID = string.strip(line[16])
-            string.seqNum = int(string.strip(line[18:22]))
-            string.iCode = string.strip(line[22])
-            string.stdRes = string.strip(line[24:27])
-            string.comment = string.strip(line[29:70])
-        else:  raise ValueError, record
+        super(MODRES, self).__init__(line)
+        string.idCode = string.strip(line[7:11])
+        string.resName = string.strip(line[12:15])
+        string.chainID = string.strip(line[16])
+        string.seqNum = int(string.strip(line[18:22]))
+        string.iCode = string.strip(line[22])
+        string.stdRes = string.strip(line[24:27])
+        string.comment = string.strip(line[29:70])
 
 @RegisterLineParser
-class SEQRES:
+class SEQRES(BaseRecord):
     """ SEQRES field
        
         SEQRES records contain the amino acid or nucleic acid sequence of
@@ -1876,29 +1688,27 @@ class SEQRES:
             64-66    string resName Residue name.
             68-70    string resName Residue name.
         """
-        record = string.strip(line[0:6])
-        if record == "SEQRES":
-            self.serNum = int(string.strip(line[8:10]))
-            self.chainID = string.strip(line[11])
-            self.numRes = int(string.strip(line[13:17]))
-            self.resName = []
-            self.resName.append(string.strip(line[19:22]))
-            self.resName.append(string.strip(line[23:26]))
-            self.resName.append(string.strip(line[27:30]))
-            self.resName.append(string.strip(line[31:34]))
-            self.resName.append(string.strip(line[35:38]))
-            self.resName.append(string.strip(line[39:42]))
-            self.resName.append(string.strip(line[43:46]))
-            self.resName.append(string.strip(line[47:50]))
-            self.resName.append(string.strip(line[51:54]))
-            self.resName.append(string.strip(line[55:58]))
-            self.resName.append(string.strip(line[59:62]))
-            self.resName.append(string.strip(line[63:66]))
-            self.resName.append(string.strip(line[67:70]))
-        else:  raise ValueError, record
-
+        super(SEQRES, self).__init__(line)
+        self.serNum = int(string.strip(line[8:10]))
+        self.chainID = string.strip(line[11])
+        self.numRes = int(string.strip(line[13:17]))
+        self.resName = []
+        self.resName.append(string.strip(line[19:22]))
+        self.resName.append(string.strip(line[23:26]))
+        self.resName.append(string.strip(line[27:30]))
+        self.resName.append(string.strip(line[31:34]))
+        self.resName.append(string.strip(line[35:38]))
+        self.resName.append(string.strip(line[39:42]))
+        self.resName.append(string.strip(line[43:46]))
+        self.resName.append(string.strip(line[47:50]))
+        self.resName.append(string.strip(line[51:54]))
+        self.resName.append(string.strip(line[55:58]))
+        self.resName.append(string.strip(line[59:62]))
+        self.resName.append(string.strip(line[63:66]))
+        self.resName.append(string.strip(line[67:70]))
+        
 @RegisterLineParser
-class SEQADV:
+class SEQADV(BaseRecord):
     """ SEQADV field
 
         The SEQADV record identifies conflicts between sequence information in
@@ -1928,23 +1738,21 @@ class SEQADV:
             44-48    int    dbSeq    Sequence database sequence number.
             50-70    string conflict Conflict comment.
         """
-        record = string.strip(line[0:6])
-        if record == "SEQADV":
-            self.idCode = string.strip(line[7:11])
-            self.resName = string.strip(line[12:15])
-            self.chainID = string.strip(line[16])
-            try:  self.seqNum = int(string.strip(line[19:22]))
-            except ValueError:  self.seqNum = None
-            self.iCode = string.strip(line[22])
-            self.database = string.strip(line[24:28])
-            self.dbIdCode = string.strip(line[29:38])
-            self.dbRes = string.strip(line[39:42])
-            self.dbSeq = int(string.strip(line[43:48]))
-            self.conflict = string.strip(line[49:70])
-        else:  raise ValueError, record
+        super(SEQADV, self).__init__(line)
+        self.idCode = string.strip(line[7:11])
+        self.resName = string.strip(line[12:15])
+        self.chainID = string.strip(line[16])
+        try:  self.seqNum = int(string.strip(line[19:22]))
+        except ValueError:  self.seqNum = None
+        self.iCode = string.strip(line[22])
+        self.database = string.strip(line[24:28])
+        self.dbIdCode = string.strip(line[29:38])
+        self.dbRes = string.strip(line[39:42])
+        self.dbSeq = int(string.strip(line[43:48]))
+        self.conflict = string.strip(line[49:70])
 
 @RegisterLineParser
-class DBREF:
+class DBREF(BaseRecord):
     """ DBREF field
 
         The DBREF record provides cross-reference links between PDB sequences
@@ -1991,26 +1799,24 @@ class DBREF:
                                          residue of the segment, if PDB is
                                          the reference.
         """
-        record = string.strip(line[0:6])
-        if record == "DBREF":
-            self.idCode = string.strip(line[7:11]) 
-            self.chainID = string.strip(line[12]) 
-            self.seqBegin = int(string.strip(line[14:18]))
-            self.insertBegin = string.strip(line[18])
-            self.seqEnd = int(string.strip(line[20:24]))
-            self.insertEnd = string.strip(line[24])
-            self.database = string.strip(line[26:32])
-            self.dbAccession = string.strip(line[33:41])
-            self.dbIdCode = string.strip(line[42:54])
-            self.dbseqBegin = int(string.strip(line[55:60]))
-            self.dbinsBeg = string.strip(line[60])
-            self.dbseqEnd = int(string.strip(line[62:67]))
-            try:  self.dbinsEnd = string.strip(line[67])
-            except IndexError:  self.dbinsEnd = None
-        else:  raise ValueError, record
-
+        super(DBREF, self).__init__(line)
+        self.idCode = string.strip(line[7:11]) 
+        self.chainID = string.strip(line[12]) 
+        self.seqBegin = int(string.strip(line[14:18]))
+        self.insertBegin = string.strip(line[18])
+        self.seqEnd = int(string.strip(line[20:24]))
+        self.insertEnd = string.strip(line[24])
+        self.database = string.strip(line[26:32])
+        self.dbAccession = string.strip(line[33:41])
+        self.dbIdCode = string.strip(line[42:54])
+        self.dbseqBegin = int(string.strip(line[55:60]))
+        self.dbinsBeg = string.strip(line[60])
+        self.dbseqEnd = int(string.strip(line[62:67]))
+        try:  self.dbinsEnd = string.strip(line[67])
+        except IndexError:  self.dbinsEnd = None
+        
 @RegisterLineParser
-class REMARK:
+class REMARK(BaseRecord):
     """ REMARK field
 
         REMARK records present experimental details, annotations, comments, and
@@ -2025,41 +1831,40 @@ class REMARK:
         """
             Initialize by parsing line
         """
-        record = string.strip(line[0:6])
-        if record == "REMARK":
-            self.text = line.rstrip('\r\n')
-            self.remarkNum = int(string.strip(line[7:10]))
-            self.remarkDict = {}
-            remarkText = line[11:70]
-            if self.remarkNum == 1:
-                subfield = string.strip(line[11:20])
-                if subfield == "REFERENCE":
-                    self.remarkDict["refNum"] = int(string.strip(line[21:70]))
-                elif subfield == "AUTH":
-                    self.remarkDict["authorList"] = string.strip(line[19:70])
-                elif subfield == "TITL":
-                    self.remarkDict["title"] = string.strip(line[19:70])
-                elif subfield == "EDIT":
-                    self.remarkDict["editorList"] = string.strip(line[19:70])
-                elif subfield == "REF":
-                    self.remarkDict["ref"] = string.strip(line[19:66])
-                elif subfield == "PUBL":
-                    self.remarkDict["pub"] = string.strip(line[19:70])
-                elif subfield == "REFN":
-                    self.remarkDict["refn"] = string.strip(line[19:70])
-            elif self.remarkNum == 2:
-                restr = string.strip(line[22:27])
-                try:  self.remarkDict["resolution"] = float(restr)
-                except ValueError:  
-                    self.remarkDict["comment"] = string.strip(line[11:70])
-            else:
-                self.remarkDict["text"] = string.strip(line[11:70])
+        super(REMARK, self).__init__(line)
+        self.text = line.rstrip('\r\n')
+        self.remarkNum = int(string.strip(line[7:10]))
+        self.remarkDict = {}
+        
+        if self.remarkNum == 1:
+            subfield = string.strip(line[11:20])
+            if subfield == "REFERENCE":
+                self.remarkDict["refNum"] = int(string.strip(line[21:70]))
+            elif subfield == "AUTH":
+                self.remarkDict["authorList"] = string.strip(line[19:70])
+            elif subfield == "TITL":
+                self.remarkDict["title"] = string.strip(line[19:70])
+            elif subfield == "EDIT":
+                self.remarkDict["editorList"] = string.strip(line[19:70])
+            elif subfield == "REF":
+                self.remarkDict["ref"] = string.strip(line[19:66])
+            elif subfield == "PUBL":
+                self.remarkDict["pub"] = string.strip(line[19:70])
+            elif subfield == "REFN":
+                self.remarkDict["refn"] = string.strip(line[19:70])
+        elif self.remarkNum == 2:
+            restr = string.strip(line[22:27])
+            try:  self.remarkDict["resolution"] = float(restr)
+            except ValueError:  
+                self.remarkDict["comment"] = string.strip(line[11:70])
+        else:
+            self.remarkDict["text"] = string.strip(line[11:70])
  
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class JRNL:
+class JRNL(BaseRecord):
     """ JRNL field
 
         The JRNL record contains the primary literature citation that describes
@@ -2077,17 +1882,16 @@ class JRNL:
             -----------------------------------------------
             13-70    string text   See Details on web.
         """
-        record = string.strip(line[0:6])
-        if record == "JRNL":
-            self.text = string.strip(line[12:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(JRNL, self).__init__(line)
+        #TODO: What is this mess?
+        self.text = string.strip(line[12:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class SPRSDE:
+class SPRSDE(BaseRecord):
     """ SPRSDE field
 
         The SPRSDE records contain a list of the ID codes of entries that were
@@ -2114,27 +1918,25 @@ class SPRSDE:
             62-65    string sIdCode    ID code of a superseded entry.
             67-70    string sIdCode    ID code of a superseded entry.
         """
-        record = string.strip(line[0:6])
-        if record == "SPRSDE":
-            self.sprsdeDate = string.strip(line[11:20])
-            self.idCode = string.strip(line[21:25])
-            self.sIdCodes = []
-            self.sIdCodes.append(string.strip(line[31:35]))
-            self.sIdCodes.append(string.strip(line[36:40]))
-            self.sIdCodes.append(string.strip(line[41:45]))
-            self.sIdCodes.append(string.strip(line[46:50]))
-            self.sIdCodes.append(string.strip(line[51:55]))
-            self.sIdCodes.append(string.strip(line[56:60]))
-            self.sIdCodes.append(string.strip(line[61:65]))
-            self.sIdCodes.append(string.strip(line[66:70]))
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(SPRSDE, self).__init__(line)
+        self.sprsdeDate = string.strip(line[11:20])
+        self.idCode = string.strip(line[21:25])
+        self.sIdCodes = []
+        self.sIdCodes.append(string.strip(line[31:35]))
+        self.sIdCodes.append(string.strip(line[36:40]))
+        self.sIdCodes.append(string.strip(line[41:45]))
+        self.sIdCodes.append(string.strip(line[46:50]))
+        self.sIdCodes.append(string.strip(line[51:55]))
+        self.sIdCodes.append(string.strip(line[56:60]))
+        self.sIdCodes.append(string.strip(line[61:65]))
+        self.sIdCodes.append(string.strip(line[66:70]))
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class REVDAT:
+class REVDAT(BaseRecord):
     """ REVDAT field
 
         REVDAT records contain a history of the modifications made to an entry
@@ -2163,25 +1965,23 @@ class REVDAT:
             54-59    string record  Name of the modified record.
             61-66    string record  Name of the modified record.
         """
-        record = string.strip(line[0:6])
-        if record == "REVDAT":
-            self.modNum = int(string.strip(line[7:10]))
-            self.modDate = string.strip(line[13:22])
-            self.modId = string.strip(line[23:28])
-            self.modType = int(string.strip(line[31]))
-            self.records = []
-            self.records.append(string.strip(line[39:45]))
-            self.records.append(string.strip(line[46:52]))
-            self.records.append(string.strip(line[53:59]))
-            self.records.append(string.strip(line[60:66]))
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(REVDAT, self).__init__(line)
+        self.modNum = int(string.strip(line[7:10]))
+        self.modDate = string.strip(line[13:22])
+        self.modId = string.strip(line[23:28])
+        self.modType = int(string.strip(line[31]))
+        self.records = []
+        self.records.append(string.strip(line[39:45]))
+        self.records.append(string.strip(line[46:52]))
+        self.records.append(string.strip(line[53:59]))
+        self.records.append(string.strip(line[60:66]))
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class AUTHOR:
+class AUTHOR(BaseRecord):
     """ AUTHOR field
   
         The AUTHOR record contains the names of the people responsible for the
@@ -2197,17 +1997,15 @@ class AUTHOR:
             11-70    string authorList List of the author names, separated by
                                        commas
         """
-        record = string.strip(line[0:6])
-        if record == "AUTHOR":
-            self.authorList = string.strip(line[10:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(AUTHOR, self).__init__(line)
+        self.authorList = string.strip(line[10:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class EXPDTA:
+class EXPDTA(BaseRecord):
     """ EXPDTA field
   
         The EXPDTA record identifies the experimental technique used. This may
@@ -2233,17 +2031,15 @@ class EXPDTA:
                                       optional comment describing the sample 
                                       or experiment
         """
-        record = string.strip(line[0:6])
-        if record == "EXPDTA":
-            self.technique = string.strip(line[10:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(EXPDTA, self).__init__(line)
+        self.technique = string.strip(line[10:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class KEYWDS:
+class KEYWDS(BaseRecord):
     """ KEYWDS field
   
         The KEYWDS record contains a set of terms relevant to the entry. Terms
@@ -2263,17 +2059,15 @@ class KEYWDS:
             11-70    string keywds  Comma-separated list of keywords relevant
                                     to the entry
         """
-        record = string.strip(line[0:6])
-        if record == "KEYWDS":
-            self.keywds = string.strip(line[10:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(KEYWDS, self).__init__(line)
+        self.keywds = string.strip(line[10:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class SOURCE:
+class SOURCE(BaseRecord):
     """ SOURCE field
    
         The SOURCE record specifies the biological and/or chemical source of
@@ -2292,17 +2086,15 @@ class SOURCE:
             11-70    string source  Identifies the source of the macromolecule
                                     in a token: value format
         """
-        record = string.strip(line[0:6])
-        if record == "SOURCE":
-            self.source = string.strip(line[10:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(SOURCE, self).__init__(line)
+        self.source = string.strip(line[10:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class COMPND:
+class COMPND(BaseRecord):
     """ COMPND field
        
         The COMPND record describes the macromolecular contents of an entry.
@@ -2326,17 +2118,15 @@ class COMPND:
             11-70    string compound Description of the molecular list 
                                      components.
         """
-        record = string.strip(line[0:6])
-        if record == "COMPND":
-            self.compound = string.strip(line[10:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(COMPND, self).__init__(line)
+        self.compound = string.strip(line[10:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser
-class CAVEAT:
+class CAVEAT(BaseRecord):
     """ CAVEAT field
 
         CAVEAT warns of severe errors in an entry. Use caution when using an
@@ -2353,14 +2143,12 @@ class CAVEAT:
             20-70    string comment Free text giving the reason for the
                                     CAVEAT.
         """
-        record = string.strip(line[0:6])
-        if record == "CAVEAT":
-            self.idCode = string.strip(line[11:15])
-            self.comment = string.strip(line[19:70])
-        else:  raise ValueError, record
+        super(CAVEAT, self).__init__(line)
+        self.idCode = string.strip(line[11:15])
+        self.comment = string.strip(line[19:70])
 
 @RegisterLineParser
-class TITLE:
+class TITLE(BaseRecord):
     """ TITLE field
  
         The TITLE record contains a title for the experiment or analysis that
@@ -2376,17 +2164,15 @@ class TITLE:
             ---------------------------------------------
             11-70    string title  Title of the experiment
         """
-        record = string.strip(line[0:6])
-        if record == "TITLE":
-            self.title = string.strip(line[10:70])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(TITLE, self).__init__(line)
+        self.title = string.strip(line[10:70])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text
 
 @RegisterLineParser    
-class OBSLTE:
+class OBSLTE(BaseRecord):
     """ OBSLTE field
 
         This record acts as a flag in an entry which has been withdrawn from
@@ -2422,23 +2208,21 @@ class OBSLTE:
            67-70    string rIdCode  ID code of entry that replaced
                                     this one.
         """
-        record = string.strip(line[0:6])
-        if record == "OBSLTE":
-            self.repDate = string.strip(line[11:20])
-            self.idCode = string.strip(line[21:25])
-            self.rIdCodes = []
-            self.rIdCodes.append(string.strip(line[31:35]))
-            self.rIdCodes.append(string.strip(line[36:40]))
-            self.rIdCodes.append(string.strip(line[41:45]))
-            self.rIdCodes.append(string.strip(line[46:50]))
-            self.rIdCodes.append(string.strip(line[51:55]))
-            self.rIdCodes.append(string.strip(line[56:60]))
-            self.rIdCodes.append(string.strip(line[61:65]))
-            self.rIdCodes.append(string.strip(line[67:70]))
-        else:  raise ValueError, record
+        super(OBSLTE, self).__init__(line)
+        self.repDate = string.strip(line[11:20])
+        self.idCode = string.strip(line[21:25])
+        self.rIdCodes = []
+        self.rIdCodes.append(string.strip(line[31:35]))
+        self.rIdCodes.append(string.strip(line[36:40]))
+        self.rIdCodes.append(string.strip(line[41:45]))
+        self.rIdCodes.append(string.strip(line[46:50]))
+        self.rIdCodes.append(string.strip(line[51:55]))
+        self.rIdCodes.append(string.strip(line[56:60]))
+        self.rIdCodes.append(string.strip(line[61:65]))
+        self.rIdCodes.append(string.strip(line[67:70]))
 
 @RegisterLineParser
-class HEADER:
+class HEADER(BaseRecord):
     """ HEADER field 
 
         The HEADER record uniquely identifies a PDB entry through the idCode
@@ -2458,13 +2242,11 @@ class HEADER:
                                           the PDB
            63-66    string idCode         This identifier is unique within PDB
         """
-        record = string.strip(line[0:6])
-        if record == "HEADER":
-            self.classification = string.strip(line[10:50])
-            self.depDate = string.strip(line[50:59])
-            self.IDcode = string.strip(line[62:66])
-            self.text = line.rstrip('\r\n')
-        else:  raise ValueError, record
+        super(HEADER, self).__init__(line)
+        self.classification = string.strip(line[10:50])
+        self.depDate = string.strip(line[50:59])
+        self.IDcode = string.strip(line[62:66])
+        self.text = line.rstrip('\r\n')
         
     def __str__(self):
         return self.text

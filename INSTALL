@@ -46,6 +46,10 @@ http://docs.python.org/2/install/index.html#alternate-installation
 http://stackoverflow.com/questions/7465445/how-to-install-python-modules-without-root-access
 http://www.virtualenv.org
 
+A PyInstaller spec file is included if a standalone build (no python install required to run) is desired. PyInstaller 2.1 or newer installed as python library is required. On windows pywin32 is also required.
+
+To create standalone build run 'pyinstaller pdb2pqr.spec' in the root archive folder. The distributable program will be in the dist/pdb2pqr folder.
+
 Please see the main documentation at doc/userguide.html for a complete
 look at installation, compiler/architecture support, and a general FAQ.
 

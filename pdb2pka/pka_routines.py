@@ -364,8 +364,6 @@ class pKaRoutines:
         residue = pKa.residue
         pKaGroup = pKa.pKaGroup
         ambiguity = pKa.amb
-
-        import os
  
         #
         # Loop over each titration
@@ -407,7 +405,6 @@ class pKaRoutines:
                                                                 pKa.residue.resSeq,
                                                                 self.get_state_name(titration.name,state))
                 residue.stateboolean[self.get_state_name(titration.name, state)] = True
-                import os
                 if not os.path.isfile(intenename):
                     self.hbondOptimization()
                     self.zeroAllRadiiCharges()

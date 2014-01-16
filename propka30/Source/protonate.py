@@ -434,7 +434,7 @@ class Protonate:
         residue = atom.residue
         #pka_print(residue)
         # Create the new proton
-        new_H = pdb.ATOM()
+        new_H = pdb.Atom()
         new_H.setProperty(numb    = None, 
                           name    = 'H', 
                           resName = atom.resName, 

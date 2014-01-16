@@ -16,6 +16,8 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Command line used to generate a pqr is now duplicated in the comments of the output.
  * Added support for NUMMDL in parser.
  * Added complete commandline feature test. Use complete-test target.
+ * Added propka support for phosphorous sp3. - Thanks to Dr. Stefan Henrich
+ * Added a PyInstaller spec file. Standalone pdb2pqr builds are now possible.
  
 - BUG FIXES
  * Rolled back change that prevented plugins from interfering with each other. Large proteins would cause a stack overflow when trying to do a deep copy.
@@ -30,6 +32,8 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Fixed debumping failing to use best angle for a specific dihedral angle when no tested angles are without conflict.
  * Fixed debumping using asymmetrical cutoffs and too large cutoffs in many checks involving hydrogen.
  * Fixed debumping accumulating rounding error while checking angles.
+ * Fixed inconsistencies in pdb parsing. - Thanks to Dr. Stefan Henrich
+ * Fixed problems with propka handling of aromatic carbon/nitrogen. - Thanks to Dr. Stefan Henrich
  
 - CHANGES
  * Removed numpy from contrib. The user is expected to have numpy installed and available to python at configuration.

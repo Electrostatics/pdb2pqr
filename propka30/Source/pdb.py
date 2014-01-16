@@ -127,7 +127,7 @@ def getResNumb(line):
     if line == None:
       return 0
     else:
-      return int( line[23:26].strip() )
+      return int( line[22:26].strip() )
 
 
 def getResName(line):

@@ -252,94 +252,105 @@ class ligand:
 
 
     def assign_atom_names(self):
-        """Assigns sybyl names to ligand atoms based on elements and coordinates """
+        """
+        Assigns sybyl names to ligand atoms based on elements and coordinates
+        copied from propka/ligand.py
+        modified:
+        P -> P3
+        O.co2+ - > O.co2
+        """
         # find bonding atoms
         self.my_bond_maker = bonds.bondmaker()
         self.my_bond_maker.find_bonds_for_atoms(self.atoms)
-
         for atom in self.atoms:
             # check if we already have assigned a name to this atom
-            if hasattr(atom,'sybyl_assigned'):
-                pka_print(atom.name,'already assigned')
+            if hasattr(atom, 'sybyl_assigned'):
+                print(atom.resName, atom.numb, atom.name, 'alreadyassigned')
                 continue
 
             # find some properties of the atom
             ring_atoms = self.is_ring_member(atom)
-            aromatic   = self.is_aromatic_ring(ring_atoms)
-            planar     = self.is_planar(atom)
+            aromatic = self.is_aromatic_ring(ring_atoms)
+            planar = self.is_planar(atom)
             bonded_elements = {}
             for i in range(len(atom.bonded_atoms)):
-                bonded_elements[i]=atom.bonded_atoms[i].get_element()
+                bonded_elements[i] = atom.bonded_atoms[i].get_element()
 
             # Aromatic carbon/nitrogen
             if aromatic:
-                for ra in ring_atoms:
-                    if ra.get_element() in ['C','N']:
-                        self.set_type(ra, ra.get_element()+'.ar')
-                continue
+                #print "--- if aromatic",atom.resName, atom.numb, atom.name, atom.get_element()
+                #for ra in ring_atoms:
+                #    if ra.get_element() in ['C', 'N']:
+                #        self.set_type(ra, ra.get_element() + '.ar')
+                #continue
+                '''SH: In the original version, if a ring is planar (eg., 4FXF_D_FBP_606)
+                but contains other atoms than C or N the loop breaks without assigning these atoms
+                '''
+                if atom.get_element() in ['C', 'N']:
+                    self.set_type(atom, atom.get_element() + '.ar')
+                    continue
 
             # check for amide
-            if atom.get_element() in ['O','N']:
+            if atom.get_element() in ['O', 'N']:
                 amide = 0
                 for b in atom.bonded_atoms:
                     if b.element == 'C':
                         for bb in b.bonded_atoms:
-                            if (bb.get_element() =='N' and atom.get_element() == 'O'):
-                                self.set_type(bb,'N.am')
-                                self.set_type(b,'C.2')
-                                self.set_type(atom,'O.2')
-                                amide = 1                                
-                            if (bb.get_element() =='O' and atom.get_element() == 'N'):
-                                self.set_type(atom,'N.am')
-                                self.set_type(b,'C.2')
-                                self.set_type(bb,'O.2')                                
+                            if (bb.get_element() == 'N' and atom.get_element() == 'O'):
+                                self.set_type(bb, 'N.am')
+                                self.set_type(b, 'C.2')
+                                self.set_type(atom, 'O.2')
                                 amide = 1
-                if amide==1:
+                            if (bb.get_element() == 'O' and atom.get_element() == 'N'):
+                                self.set_type(atom, 'N.am')
+                                self.set_type(b, 'C.2')
+                                self.set_type(bb, 'O.2')
+                                amide = 1
+                if amide == 1:
                     continue
-                
 
-            if atom.get_element()=='C':
+
+            if atom.get_element() == 'C':
                 # check for amide
                 if 'O' in bonded_elements.values() and 'N' in bonded_elements.values():
-                    self.set_type(atom,'C.2')
+                    self.set_type(atom, 'C.2')
                     for b in atom.bonded_atoms:
-                        if b.get_element()=='N':
-                            self.set_type(b,'N.am')
-                        if b.get_element()=='O':
-                            self.set_type(b,'O.2')
+                        if b.get_element() == 'N':
+                            self.set_type(b, 'N.am')
+                        if b.get_element() == 'O':
+                            self.set_type(b, 'O.2')
                     continue
-                
+
                 # check for carboxyl
-                if len(atom.bonded_atoms)==3 and list(bonded_elements.values()).count('O')==2:
+                if len(atom.bonded_atoms) == 3 and list(bonded_elements.values()).count('O') == 2:
                     i1 = list(bonded_elements.values()).index('O')
-                    i2 = list(bonded_elements.values()).index('O',i1+1)
-                    if len(atom.bonded_atoms[i1].bonded_atoms)==1 and len(atom.bonded_atoms[i2].bonded_atoms)==1:
-                        self.set_type(atom.bonded_atoms[i1],'O.co2+')
-                        self.set_type(atom.bonded_atoms[i2],'O.co2')
-                        self.set_type(atom,'C.2')
+                    i2 = list(bonded_elements.values()).index('O', i1 + 1)
+                    if len(atom.bonded_atoms[i1].bonded_atoms) == 1 and len(atom.bonded_atoms[i2].bonded_atoms) == 1:
+                        #self.set_type(atom.bonded_atoms[i1], 'O.co2+')
+                        self.set_type(atom.bonded_atoms[i1], 'O.co2') #SH: problems in 1a3w
+                        self.set_type(atom.bonded_atoms[i2], 'O.co2')
+                        self.set_type(atom, 'C.2')
                         continue
 
-
-                
                 # sp carbon
-                if len(atom.bonded_atoms)<=2:
+                if len(atom.bonded_atoms) <= 2:
                     for b in atom.bonded_atoms:
                         if self.my_bond_maker.squared_distance(atom, b) < max_C_triple_bond_squared:
-                            self.set_type(atom,'C.1')
-                            self.set_type(b,b.get_element()+'.1')
-                    if hasattr(atom,'sybyl_assigned'):
+                            self.set_type(atom, 'C.1')
+                            self.set_type(b, b.get_element() + '.1')
+                    if hasattr(atom, 'sybyl_assigned'):
                         continue
 
                 # sp2 carbon
                 if planar:
-                    self.set_type(atom,'C.2')
+                    self.set_type(atom, 'C.2')
                     # check for N.pl3
                     for b in atom.bonded_atoms:
-                        if b.get_element()=='N':
-                            if len(b.bonded_atoms)<3 or self.is_planar(b):
-                                self.set_type(b,'N.pl3')
+                        if b.get_element() == 'N':
+                            if len(b.bonded_atoms) < 3 or self.is_planar(b):
+                                self.set_type(b, 'N.pl3')
                     continue
-        
+
                 # sp3 carbon
                 self.set_type(atom, 'C.3')
                 continue
@@ -347,59 +358,63 @@ class ligand:
             # Nitrogen
             if atom.get_element() == 'N':
                 # check for planar N
-                if len(atom.bonded_atoms)==1:
+                if len(atom.bonded_atoms) == 1:
                     if self.is_planar(atom.bonded_atoms[0]):
-                        self.set_type(atom,'N.pl3')
+                        self.set_type(atom, 'N.pl3')
                         continue
-                    
+
                 if planar:
-                    self.set_type(atom,'N.pl3')
+                    self.set_type(atom, 'N.pl3')
                     continue
-                
-                self.set_type(atom,'N.3')
+
+                self.set_type(atom, 'N.3')
                 continue
 
             # Oxygen
             if atom.get_element() == 'O':
-                self.set_type(atom,'O.3')
+                self.set_type(atom, 'O.3')
                 # check for X=O
                 if len(atom.bonded_atoms) == 1:
                     if self.my_bond_maker.squared_distance(atom, atom.bonded_atoms[0]) < max_C_double_bond_squared:
-                        self.set_type(atom,'O.2')
-                        if atom.bonded_atoms[0].get_element()=='C':
-                            self.set_type(atom.bonded_atoms[0],'C.2')
+                        self.set_type(atom, 'O.2')
+                        if atom.bonded_atoms[0].get_element() == 'C':
+                            self.set_type(atom.bonded_atoms[0], 'C.2')
                 continue
 
 
             # Sulphur
             if atom.get_element() == 'S':
                 #check for SO2
-                if list(bonded_elements.values()).count('O')==2:
+                if list(bonded_elements.values()).count('O') == 2:
                         i1 = list(bonded_elements.values()).index('O')
-                        i2 = list(bonded_elements.values()).index('O',i1+1)
-                        self.set_type(atom.bonded_atoms[i1],'O.2')
-                        self.set_type(atom.bonded_atoms[i2],'O.2')
-                        self.set_type(atom,'S.o2')
+                        i2 = list(bonded_elements.values()).index('O', i1 + 1)
+                        self.set_type(atom.bonded_atoms[i1], 'O.2')
+                        self.set_type(atom.bonded_atoms[i2], 'O.2')
+                        self.set_type(atom, 'S.o2')
                         continue
-                
+
                 # check for SO4
-                if list(bonded_elements.values()).count('O')==4:
+                if list(bonded_elements.values()).count('O') == 4:
                     no_O2 = 0
                     for i in range(len(atom.bonded_atoms)):
-                        if len(atom.bonded_atoms[i].bonded_atoms)==1 and no_O2<2:
-                            self.set_type(atom.bonded_atoms[i],'O.2')
-                            no_O2+=1
+                        if len(atom.bonded_atoms[i].bonded_atoms) == 1 and no_O2 < 2:
+                            self.set_type(atom.bonded_atoms[i], 'O.2')
+                            no_O2 += 1
                         else:
-                            self.set_type(atom.bonded_atoms[i],'O.3')
+                            self.set_type(atom.bonded_atoms[i], 'O.3')
 
-                self.set_type(atom,'S.3')
-
-
+                self.set_type(atom, 'S.3')
                 continue
 
+            # Phosphorous (phosphorous sp3)
+            #@attention: This was added and may not consider all types of phosphorous
+            if atom.get_element() == 'P':
+                self.set_type(atom, 'P.3')
+                continue
+            
 
             element = atom.get_element().capitalize()
-            self.set_type(atom,element)
+            self.set_type(atom, element)
             #pka_print('Using element as type for %s'%atom.get_element())
         return
 

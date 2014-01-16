@@ -11,8 +11,7 @@ import SCons.Errors
 import re
 from test_tools import ComparePQRAction, ComparePROPKAAction, CompareStringFunc
 
-# Taken from the SubstInFileBuilder on the SCons Wiki.  Slightly modified to
-# use @ around keys so it behaves like GNU autotools.
+# Taken from the SubstInFileBuilder on the SCons Wiki.  
 # See http://www.scons.org/wiki/AutoconfRecipes
 
 # Also changed to use string.replace as using re.sub was a dumb idea if

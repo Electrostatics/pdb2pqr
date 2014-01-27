@@ -2234,7 +2234,7 @@ class hydrogenRoutines:
                     residue.removeAtom("HE1")
             elif residue.name == "ASH" or "ASH" in residue.patches:
                 if residue.hasAtom("HD1") and residue.hasAtom("HD2"):
-                    residue.removeAtom("HD2")
+                    residue.removeAtom("HD1")
 
     def isOptimizeable(self, residue):
         """

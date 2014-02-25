@@ -24,19 +24,30 @@ var TEST_JOB = "12852665591" // Bob's private apbsjmol.htm uses this
 // CAPITALIZED words here will be replaced by the fixScripts() function
 
 var LOAD_SCRIPT = "load PATH/JOBID/JOBID.pqr;"
+var POT_PATH = "PATH/JOBID/JOBID-pot.dxGZIP"
+var ALT_POT_PATH = "PATH/JOBID/JOBID-pot-PE0.dxGZIP"
 var ISOSURFACE_SCRIPT = "set echo top left;echo loading surface data...; refresh; set solventProbeRadius 1.4;\
 		isosurface s1 " + (downSampleTest ? "downsample 4 " : "") 
-		+ "colorscheme \"SCHEME\" color absolute MIN MAX SURFACE map 'PATH/JOBID/JOBID-pot.dxGZIP';echo \"\";";
+		+ "colorscheme \"SCHEME\" color absolute MIN MAX SURFACE map 'POT_PATH';echo \"\";";
 
 ////// option state globals ///////
 
-var thisJobId, thisMin, thisMax, thisScheme, thisSurface, min0, max0, scheme0
+var thisJobId, thisMin, thisMax, thisScheme, thisSurface, min0, max0, scheme0, potPath
 
+function fixPotPath(s) {
+	s = s.replace(/PATH/g,FILE_PATH)
+		.replace(/JOBID/g,thisJobId)
+		.replace(/GZIP/, GZIP)
+	return s
+}
 
 function fixScript(s) {
-	s = s.replace(/PATH/g,FILE_PATH).replace(/JOBID/g,thisJobId).replace(/GZIP/, GZIP)
-		.replace(/SURFACE/, thisSurface).replace(/SCHEME/, thisScheme)
-		.replace(/MIN/, thisMin).replace(/MAX/, thisMax)
+	s = s.replace(/POT_PATH/, potPath)
+	s = fixPotPath(s)
+	s = s.replace(/SURFACE/, thisSurface)
+		.replace(/SCHEME/, thisScheme)
+		.replace(/MIN/, thisMin)
+		.replace(/MAX/, thisMax)
 	return s
 }
 
@@ -46,6 +57,19 @@ function init() {
 
   // not used; could be linked to via <body onload=init()>
 
+}
+
+function doesFileExist(urlToFile)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.open('HEAD', urlToFile, false);
+    xhr.send();
+     
+    if (xhr.status == "404") {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 function createVisualization(jobid, min, max) {
@@ -64,6 +88,9 @@ function createVisualization(jobid, min, max) {
 	thisMax = max0 = max
 	thisScheme = scheme0 = "bwr"
 	thisSurface = "sasurface"
+	
+	//Support for APBS compiled a certain way.
+	potPath = doesFileExist(fixPotPath(POT_PATH)) ? POT_PATH : ALT_POT_PATH
 
 	var script = LOAD_SCRIPT + ISOSURFACE_SCRIPT + "javascript \"createIsosurfaceOptions();createDisplayOptions()\""
 

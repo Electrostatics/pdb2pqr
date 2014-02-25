@@ -10,7 +10,9 @@ PDB2PQR will need to be configured and compiled in order to run:
 
   $ python scons/scons.py (see python scons/scons.py --help for more options)
   
-Configure parameters
+Compilation and installation can be configured by editing the build_config.py file. This is the preferred way to configure the program.  
+  
+Configure parameters (These will override any setting in build_config.py.)
   --prefix=DIR                Set install directory. Default is ~/pdb2pqr
   --with-url=URL              Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
   --with-apbs=APBS            Location of APBS install.

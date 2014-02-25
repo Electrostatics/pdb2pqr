@@ -22,6 +22,7 @@
 
 #APBS binary
 #Change this to specify the location of the APBS binary if installed.
+#This is used for the web interface to pdb2pqr. Provide an absolute path. Relative paths and ~ usually will not work correctly.
 
 #APBS=""
 

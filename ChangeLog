@@ -34,6 +34,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Fixed debumping accumulating rounding error while checking angles.
  * Fixed inconsistencies in pdb parsing. - Thanks to Dr. Stefan Henrich
  * Fixed problems with propka handling of aromatic carbon/nitrogen. - Thanks to Dr. Stefan Henrich
+ * Fixed case where certain apbs compile options would break web visualization. 
  
 - CHANGES
  * Removed numpy from contrib. The user is expected to have numpy installed and available to python at configuration.

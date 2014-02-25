@@ -56,8 +56,10 @@ for file_name in getAllFiles('propka30/'):
 
 #Whole directories
 for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/'):
-	dat = Dir(dir_name)
-	Alias('install', env.Install(env['PREFIX'], dat))
+    for file_name in getAllFiles(dir_name):
+        installFile(file_name)
+	#dat = Dir(dir_name)
+	#Alias('install', env.Install(env['PREFIX'], dat))
 
 #Compiled Targets
 for target in compile_targets:

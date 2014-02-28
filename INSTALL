@@ -13,15 +13,13 @@ PDB2PQR will need to be configured and compiled in order to run:
 Compilation and installation can be configured by editing the build_config.py file. This is the preferred way to configure the program.  
   
 Configure parameters (These will override any setting in build_config.py.)
-  --prefix=DIR                Set install directory. Default is ~/pdb2pqr
-  --with-url=URL              Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
-  --with-apbs=APBS            Location of APBS install.
-  --with-default-opal         Use default URL for Opal service -> http://nbcr-222.ucsd.edu/opal2/services/pdb2pqr_1.8
-  --with-opal=OPAL            Set URL for Opal service
-  --with-default-apbs-opal    Use default URL for APBS Opal service -> http://nbcr-222.ucsd.edu/opal2/services/apbs_1.3
-  --with-apbs-opal=APBS_OPAL  Set URL for APBS Opal service.
-  --with-max-atoms=MAX_ATOMS  Sets the maximum number of atoms in a protein for non-Opal job submission. Only affects web tools. Default is 10000
-  --disable-pdb2pka           Disable pkb2pka compilation. Needed if no C++ compiler is installed or numpy is not installed. pdb2pka is required for ligand support.
+  PREFIX=<DIR>                	Set install directory. Default is ~/pdb2pqr
+  URL=<URL>              		Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
+  APBS=<APBS_BINARY>            Location of APBS binary.
+  OPAL=<OPAL_URL>	            Set URL for Opal service
+  APBS_OPAL=<APBS_OPAL_URL>		Set URL for APBS Opal service.
+  MAX_ATOMS=<MAX_ATOMS>			Sets the maximum number of atoms in a protein for non-Opal job submission. Only affects web tools. Default is 10000
+  BUILD_PDB2PKA=False           Disable pkb2pka compilation. Needed if no C++ compiler is installed or numpy is not installed. pdb2pka is required for ligand support.
 
 This should configure pdb2pqr and compile the pdb2pka wrappers necessary to interface with PDB2PQR.
                                 
@@ -50,7 +48,7 @@ http://www.virtualenv.org
 
 A PyInstaller spec file is included if a standalone build (no python install required to run) is desired. PyInstaller 2.1 or newer installed as python library is required. On windows pywin32 is also required.
 
-To create standalone build run 'pyinstaller pdb2pqr.spec' in the root archive folder. The distributable program will be in the dist/pdb2pqr folder.
+To create standalone build, first build the application as normal then run 'pyinstaller pdb2pqr.spec' in the root archive folder. The distributable program will be in the dist/pdb2pqr folder.
 
 Please see the main documentation at doc/userguide.html for a complete
 look at installation, compiler/architecture support, and a general FAQ.

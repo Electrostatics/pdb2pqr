@@ -621,7 +621,7 @@ def handleNonOpal(weboptions):
 
     #TODO: Better error reporting.
     #Also, get forked job to properly write error status on failure.
-    except StandardError, details:
+    except StandardError as details:
         print details
         createError(name, details)
 

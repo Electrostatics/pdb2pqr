@@ -237,12 +237,7 @@ def runPDB2PQR(pdblist, ff,
     Lig = None
     atomcount = 0   # Count the number of ATOM records in pdb
     
-    period = string.rfind(outname,".")
-    
-    if period > 0: 
-        outroot = outname[0:period]
-    else: 
-        outroot = outname
+    outroot = utilities.getPQRBaseFileName(outname)
 
     if not ph is None:
         pka = True

@@ -66,6 +66,8 @@ __author__ = "Todd Dolinsky, Nathan Baker, Yong Huang"
 import string, sys
 import psize
 import pickle
+import os.path
+import utilities
 
 class Elec:
     """
@@ -215,8 +217,7 @@ class Input:
             elec2 = ""
         self.elecs = [elec1, elec2]
      
-        i = string.rfind(pqrpath, "/") + 1
-        self.pqrname = pqrpath[i:]
+        self.pqrname = os.path.basename(pqrpath)
 
         if not potdx:
             self.prints = ["print elecEnergy 2 - 1 end"]     
@@ -241,9 +242,9 @@ class Input:
         """
             Make the input file(s) associated with this object
         """
-        period = string.find(self.pqrpath,".")
+        base_pqr_name = utilities.getPQRBaseFileName(self.pqrpath)
         if self.asyncflag == 1:
-            outname = self.pqrpath[0:period] + "-para.in"
+            outname = base_pqr_name + "-para.in"
 
             # Temporarily disable async flag
             for elec in self.elecs:
@@ -257,7 +258,7 @@ class Input:
             
             nproc = elec.pdime[0] * elec.pdime[1] * elec.pdime[2]
             for i in range(int(nproc)):
-                outname = self.pqrpath[0:period] + "-PE%i.in" % i
+                outname = base_pqr_name + "-PE%i.in" % i
                 for elec in self.elecs:
                     elec.asyncflag = 1
                     elec.async = i
@@ -266,10 +267,7 @@ class Input:
                 file.close()
         
         else:
-            if period > 0:
-                outname = self.pqrpath[0:period] + ".in"
-            else:
-                outname = self.pqrpath + ".in"
+            outname = base_pqr_name + ".in"
             file = open(outname, "w")
             file.write(str(self))
             file.close()
@@ -278,11 +276,8 @@ class Input:
         """
             Make a Python pickle associated with the APBS input parameters
         """
-        period = string.find(self.pqrpath,".")
-        if period > 0:
-            outname = self.pqrpath[0:period] + "-input.p"
-        else:
-            outname = self.pqrpath + "-input.p"
+        base_pqr_name = utilities.getPQRBaseFileName(self.pqrpath)
+        outname = base_pqr_name + "-input.p"
         pfile = open(outname, "w")
         pickle.dump(self, pfile)
         pfile.close()
@@ -313,9 +308,9 @@ def splitInput(filename):
         sys.stderr.write("The inputgen script was unable to asynchronize this file!\n")
         sys.exit(2)
 
-    period = string.find(filename,".")
+    base_pqr_name = utilities.getPQRBaseFileName(filename)
     for i in range(nproc):
-        outname = filename[0:period] + "-PE%i.in" % i
+        outname = base_pqr_name + "-PE%i.in" % i
         outtext = string.replace(text, "mg-para\n","mg-para\n    async %i\n" % i)
         outfile = open(outname, "w")
         outfile.write(outtext)

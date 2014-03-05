@@ -51,6 +51,7 @@ DIHEDRAL = 57.2958
 
 import math
 import os
+from os.path import splitext 
 import sys
 from aconf import INSTALLDIR, TMPDIR
 
@@ -156,6 +157,12 @@ def createPropkaOptions(pH, verbose=False, reference='neutral'):
 #                                 delay=totalDelay)
 #    totalDelay+=500
 #    return result
+
+def getPQRBaseFileName(filename):
+    root, ext = splitext(filename)
+    if ext.lower() == '.pqr':
+        return root
+    return filename
 
 def sortDictByValue(inputdict):
     """

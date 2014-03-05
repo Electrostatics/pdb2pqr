@@ -35,7 +35,12 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history
  * Fixed inconsistencies in pdb parsing. - Thanks to Dr. Stefan Henrich
  * Fixed problems with propka handling of aromatic carbon/nitrogen. - Thanks to Dr. Stefan Henrich
  * Fixed case where certain apbs compile options would break web visualization. 
+ * Fixed improper handling of paths with a '.' or filenames with more than one '.' in them.
  
 - CHANGES
  * Removed numpy from contrib. The user is expected to have numpy installed and available to python at configuration.
  * Support for neumeric dropped. 
+ 
+- KNOWN BUGS
+ * If more than one extension is run from the command line and one of the extensions modifies the protein data structure it could affect the output of the other extension.
+   - The only included extensions that exhibit this problem are resinter and newresinter.

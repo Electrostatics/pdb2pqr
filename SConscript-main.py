@@ -76,7 +76,7 @@ Export('env')
 
 prefix = env['PREFIX']
 prefix = prefix.replace('\\', '/')
-if prefix[-1] != '/':
+if not prefix.endswith('/'):
     prefix+='/'
     
 env['PREFIX'] = prefix
@@ -92,7 +92,9 @@ Clean('pdb2pqr.py', '.variables.cache')
 url = env['URL']
 #Not sure if this is needed.
 if url is not None:
-    submitAction = url+'/pdb2pqr.cgi'
+    if not url.endswith('/'):
+        url += '/'
+    submitAction = url+'pdb2pqr.cgi'
 else:
     url = defaultURL
     #Can it always just be this?  

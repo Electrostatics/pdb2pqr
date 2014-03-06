@@ -19,6 +19,7 @@ Instructions and examples for each setting are included in the file.
   
 ### Configuration Command Line Parameters 
 These will override any setting in build_config.py.
+
 	PREFIX=<DIR>                	Set install directory. Default is ~/pdb2pqr
 	URL=<URL>              		Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
 	APBS=<APBS_BINARY>            Location of APBS binary.
@@ -67,7 +68,7 @@ in the root archive folder. The distributable program will be in the dist/pdb2pq
 Each supported platform has different needs when creating the binary build:
 
 ### Windows
-On windows pywin32 is also required.
+On windows pywin32 is required.
 
 ### Linux
 The built binaries will dynamically link against the system standard libs. 
@@ -75,11 +76,12 @@ For this reason the Linux binaries should be built on an older system to increas
 
 ### OSX
 On the Mac you must use homebrew and use the python that it installs with <code>brew python</code>. See http://brew.sh/ and https://github.com/Homebrew/homebrew/wiki/Homebrew-and-Python
-Once homebrew python is setup and configured correctly pyinstaller and numpy can be installed with pip.
+Once homebrew python is setup and configured correctly pyinstaller and numpy can be installed with <code>pip install numpy</code> and <code>pip install pyinstaller</code>.
 If the global python is used the binary will fail when the <code>--ligand</code> option is used. 
 Similar to Linux, this binary is dynamically linked against the system libraries. The binary will not work on OSX older than the version built on. 
 We officially support OSX 10.6 or newer.
 
+##Documentation
 Please see the main documentation at doc/userguide.html for a complete
 look at installation, compiler/architecture support, and a general FAQ.
 

@@ -74,11 +74,14 @@ After testing is complete, documentation updated, and another build is done it i
 
 Use the last git clone created.
 Tar and gzip with the following command from the repos base directory:
+
 	git archive --format=tar --prefix=pdb2pqr-<new version number>/ pdb2pqr-<new version number>:pdb2pqr/ | gzip >git-<new version number>.tar.gz
 
 Build the binaries on all supported targets.
 
-Rename the pdb2pqr folder to <code>pdb2pqr-<osx|linux|windows>-bin-<version></code>
+Rename the pdb2pqr folder to 
+
+	pdb2pqr-<osx|linux|windows>-bin-<version>
 
 From the dist folder create an archive like so:
 
@@ -88,7 +91,11 @@ From the dist folder create an archive like so:
 	
 #### Windows
 
-Compress the <code>pdb2pqr-windows-bin-<version></code> folder into a zip file.
+Compress the 
+
+	pdb2pqr-windows-bin-<version>
+	
+folder into a zip file.
 
 ### Release
 The tar and zip files should be uploaded to Source Forge and github.

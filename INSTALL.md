@@ -8,7 +8,7 @@ http://numpy.scipy.org/
 ## Configuration and Build
 PDB2PQR will need to be configured and compiled in order to run:
 
-  $ python scons/scons.py (see python scons/scons.py --help for more options)
+	$ python scons/scons.py (see python scons/scons.py --help for more options)
   
 This should configure pdb2pqr and compile the pdb2pka wrappers necessary to interface with PDB2PQR and ligand support.
   
@@ -19,26 +19,26 @@ Instructions and examples for each setting are included in the file.
   
 ### Configuration Command Line Parameters 
 These will override any setting in build_config.py.
-  PREFIX=<DIR>                	Set install directory. Default is ~/pdb2pqr
-  URL=<URL>              		Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
-  APBS=<APBS_BINARY>            Location of APBS binary.
-  OPAL=<OPAL_URL>	            Set URL for Opal service
-  APBS_OPAL=<APBS_OPAL_URL>		Set URL for APBS Opal service.
-  MAX_ATOMS=<MAX_ATOMS>			Sets the maximum number of atoms in a protein for non-Opal job submission. Only affects web tools. Default is 10000
-  BUILD_PDB2PKA=False           Disable pkb2pka compilation. Needed if no C++ compiler is installed or numpy is not installed. pdb2pka is required for ligand support.
+	PREFIX=<DIR>                	Set install directory. Default is ~/pdb2pqr
+	URL=<URL>              		Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
+	APBS=<APBS_BINARY>            Location of APBS binary.
+	OPAL=<OPAL_URL>	            Set URL for Opal service
+	APBS_OPAL=<APBS_OPAL_URL>		Set URL for APBS Opal service.
+	MAX_ATOMS=<MAX_ATOMS>			Sets the maximum number of atoms in a protein for non-Opal job submission. Only affects web tools. Default is 10000
+	BUILD_PDB2PKA=False           Disable pkb2pka compilation. Needed if no C++ compiler is installed or numpy is not installed. pdb2pka is required for ligand support.
 
 ## Installation
 Installing is only needed if you plan to set up the web service or to make the install available to all users.
 The installation location is specified by the <code>PREFIX</code> setting above.
  
-  $ python scons/scons.py install
+ 	$ python scons/scons.py install
 
 ##Using a different python.
 pdb2pqr will be configured to use whichever python was used to run the build script.  
 If you would like to use a different installed python to run pdb2pqr run the scons/scons.py script with that python. 
 For example:
 
-  $ /opt/python27/python scons/scons.py 
+ 	$ /opt/python27/python scons/scons.py 
   
 If ligand support is required Numpy must be installed on the python used to build pdb2pqr.
 
@@ -58,7 +58,11 @@ A PyInstaller spec file is included if a stand alone binary build (no python ins
 http://www.pyinstaller.org/
 
 PyInstaller 2.1 or newer installed as python library is required. 
-To create standalone build, first build the application as normal then run 'pyinstaller pdb2pqr.spec' in the root archive folder. The distributable program will be in the dist/pdb2pqr folder.
+To create standalone build, first build the application as normal then run 
+
+	pyinstaller pdb2pqr.spec
+	
+in the root archive folder. The distributable program will be in the dist/pdb2pqr folder.
 
 Each supported platform has different needs when creating the binary build:
 
@@ -70,7 +74,7 @@ The built binaries will dynamically link against the system standard libs.
 For this reason the Linux binaries should be built on an older system to increase compatibility if needed.
 
 ### OSX
-On the Mac you must use homebrew and use the python that it installs with 'brew python'. See http://brew.sh/ and https://github.com/Homebrew/homebrew/wiki/Homebrew-and-Python
+On the Mac you must use homebrew and use the python that it installs with <code>brew python</code>. See http://brew.sh/ and https://github.com/Homebrew/homebrew/wiki/Homebrew-and-Python
 Once homebrew python is setup and configured correctly pyinstaller and numpy can be installed with pip.
 If the global python is used the binary will fail when the <code>--ligand</code> option is used. 
 Similar to Linux, this binary is dynamically linked against the system libraries. The binary will not work on OSX older than the version built on. 

@@ -20,67 +20,87 @@ Currently those systems are Linux, Mac OSX 10.6 or newer, and Windows 7.
 Testing against the GNU compilers for pdb2pka is sufficient. 
 Remember, these tests should be done on a fresh checkout the branch.
 
-To configure and make a branch:
-* In the root directory of the branch run ‘./configure’
-* Run ‘make’. This step should complete with warnings but no errors.
-* Run ‘make install’ to create and install the website with the default settings.
+To configure and make branch:
+See INSTALL.md for how to build and install pdb2pqr.
 
+## Binary builds
+See INSTALL.md for how to create binary builds. Please note the specific needs of each platform.
+For release we build the OSX version on 10.6 and the Linux version on Ubuntu 12.04 LTS or RHL 6.
+
+On each supported platform the build should be tested with the following command from <code>pdb2pqr/dist/pdb2pqr</code>:
+
+	./pdb2pqr.exe --ff=parse --with-ph=7.0 --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1abf 1abf.pqr
+	
+If the program does not crash then we can release this binary build.
+ 
 ## Testing
 
 ### Automated Testing
 After a successful build automated tests should be run.
-Run ‘make test’ and ‘make adv-test’.
-This will test out the most basic case and a more complex case with a pH setting and ligand file.
-Both tests should run without issue unless changes were made that affect the output of the program (Version numbers and some atom ordering differences are ignored when comparing expected and actual results.).
-
-### Command Line Testing
-From the command line every option should be tested at least once.
-As there is little overlap in functionality between command line options, testing every combination is not needed.  
-To test --userff and --usernames, make copies of the amber.dat and amber.names files and use them to test those command line options; --ligand can be tested with a mol file in the examples directory.
-Also, most or all of the command line options will be exercised with a new testing make target.
+Run <code>python scons/scons.py test</code>, <code>python scons/scons.py advtest</code>, and <code>python scons/scons.py -j7 complete-test</code>. (Change the -j parameter according to the number of cores in the testing machine.)
+This will test out the most basic case, a more complex case with a pH setting and ligand file, and then test every option in various combinations.
+All three tests should run without issue unless changes were made that affect the output of the program (Version numbers and some atom ordering differences are ignored when comparing expected and actual results.).
 
 ### Web Site Testing
 Like command-line testing, every available option on the web front end should be tested.
 All options should also be tested with both opal and non-opal configurations.
-If we do not have opal set up on the Mac cluster and command line options have not changed the default opal service provided by NCBR may be used for opal testing.
-Opal is configured with --with-opal for the pdb2pqr service and --with-apbs-opal for the APBS service. 
-Opal and non Opal configuration testing should configure the use of APBS.
+Builds should be tested with APBS support turned on and off but every permutation of APBS support and Opal is not required.
+Edit <code>build_config.py</code> to configure Opal, Non-Opal, and APBS support builds. Instructions are included in the build_config.py file.
 A properly installed and compiled copy of APBS is needed for both Opal and non Opal tests.
-In both cases the directory of the installed APBS executable must be referenced with the --with-apbs option when running configure.
 Incompatible options and invalid files should be tried to ensure that errors are reported correctly by the web interface.
 
 ## Documentation
 
-Documentation should be rebuilt and the newly generated files checked in before creating the final tar ball.
-The documentation must be built only after ‘make clean’ has been run.
-Any extra files created by the configure script will cause extra documentation pages for standard python modules to be created (This already happens, but after configure it is worse.).
-Also it will create documentation pages for configuration py files such as aconf.py.
-This should be avoided.
+Documentation should be rebuilt and the newly generated files and checked in before creating the final tar ball.
+The documentation must be built only after <code>python scons/scons.py -c</code> (to clean up the codebase) has been run.
+Any extra files created by the build will cause extra documentation pages for standard python modules to be created. (This already happens, but after configure it is worse.)
+Also it will create documentation pages for configuration py files such as aconf.py. This should be avoided.
 Documentation is created by running the genpydoc.sh script in the doc directory.
 After generating the new documentation the updated files should be checked in to the branch.
 This should be the last thing done before packing up a tar ball so as to reflect any changes to the documentation made during testing.
 
 ## Build (Again)
-If testing revealed any needed code changes, a fresh checkout should be done with another build and automated tests.
-The main purpose of this is to ensure that you didn’t forget to check anything in and everything needed for deployment is in the branch.
+If testing revealed any needed code changes, a fresh clone should be made with another build and automated tests.
+The main purpose of this is to ensure that you did not forget to check anything in and everything needed for deployment is in the branch.
+Build and test the binary version. One platform should be sufficient.
 
 ## Deployment
 
 ### Tagging
-The branch should now be tagged under an appropriately named directory (PDB2PQR-<version>).
+The branch should now be tagged with an appropriate name. (pdb2pqr-<code>new version number</code>).
 
 ### Packaging
-After testing is complete and documentation updated another build is done it’s time to package it up.
+After testing is complete, documentation updated, and another build is done it is time to package it up.
 
-Checkout a clean copy of the tag. Use the SVN export command to make a copy without the SVN metadata. The files should live in a folder that properly reflects the version of the release. For example “pdb2pqr-1.7.1a"
-Tar and gzip with the following command:
-tar –zcvf pdb2pqr-1.7.1a.tar.gz pdb2pqr-1.7.1a
+Use the last git clone created.
+Tar and gzip with the following command from the repos base directory:
+	git archive --format=tar --prefix=pdb2pqr-<new version number>/ pdb2pqr-<new version number>:pdb2pqr/ | gzip >git-<new version number>.tar.gz
+
+Build the binaries on all supported targets.
+
+Rename the pdb2pqr folder to <code>pdb2pqr-<osx|linux|windows>-bin-<version></code>
+
+From the dist folder create an archive like so:
+
+#### Linux and OSX
+
+	tar zcvf pdb2pqr-<osx|linux>-bin-<version>.tar.gz pdb2pqr-<osx|linux>-bin-<version>
+	
+#### Windows
+
+Compress the <code>pdb2pqr-windows-bin-<version></code> folder into a zip file.
 
 ### Release
-The tar file should be uploaded to Source Forge.
+The tar and zip files should be uploaded to Source Forge and github.
+
+#### Source Forge
 A new folder should be created to reflect the version number.
 The new tar ball should be uploaded to that folder.
-A copy of ChangeLog (which you should be keeping up to date!) renamed to PDB2PQR-<version>-ReleaseNotes.txt (example PDB2PQR-1.7.1a-ReleasNotes.txt) should also be uploaded to the same folder. 
+A copy of ChangeLog.md (which you should be keeping up to date!) renamed to <code>PDB2PQR-<version>-ReleaseNotes.txt</code> (example PDB2PQR-1.7.1a-ReleasNotes.txt) should also be uploaded to the same folder. 
+
+#### Github
+Follow these direction to create a release on Github
+https://github.com/blog/1547-release-your-software
 
 ### Announcement
 New releases should be announced on pdb2pqr-announce@lists.sourceforge.net and http://www.poissonboltzmann.org/ with the ChangeLog text.

@@ -165,9 +165,17 @@ for target, source, chmod in subFiles:
 
 Default(env.Command('pdb2pqr.cgi', 'pdb2pqr.py', Copy('$TARGET', '$SOURCE')))
 
-
+#Check to see why we can't build pdb2pka.
+numpy_error = False
 if env['BUILD_PDB2PKA']:
-    compile_targets.extend(SConscript('pdb2pka/SConscript'))
+    try:
+        import numpy
+    except ImportError:
+        print 'WARNING: PDB2PKA build skipped, numpy not installed. Ligand support will not be available.'
+        numpy_error = True
+    
+    if not numpy_error:
+        compile_targets.extend(SConscript('pdb2pka/SConscript'))
     
 SConscript('tests/SConscript')
 
@@ -192,7 +200,12 @@ def print_default_message(target_list):
         print
         print 'Version:', productVersion
         print 'Install directory:', env['PREFIX']
-        print 'pdb2pka and ligand support:', env['BUILD_PDB2PKA']
+        if numpy_error:
+            print
+            print 'WARNING: PDB2PKA build skipped, numpy not installed. Ligand support will not be available.'
+            print
+        else: 
+            print 'pdb2pka and ligand support:', env['BUILD_PDB2PKA']
         print 'Path to the website directory:', url
         if env['OPAL'] == '':
             print 'PDB2PQR jobs run via the web interface will be forked on the server.'

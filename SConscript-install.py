@@ -94,13 +94,13 @@ for file_name in ('AppService_client.py',
 				  'AppService_services_types.py',
 				  'AppService_types.py',
 				  'AUTHORS',
-				  'ChangeLog',
+				  'ChangeLog.md',
 				  'COPYING',
 				  'main.py',
 				  'main_cgi.py',
 				  'NEWS',
 				  'pdb2pqr.css',
-				  'README'):
+				  'README.md'):
 	installFile(file_name)
 	
 Alias('install', env.Command(env['PREFIX']+'tmp', None,

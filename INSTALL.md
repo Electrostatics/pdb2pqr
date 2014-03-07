@@ -34,7 +34,7 @@ The installation location is specified by the <code>PREFIX</code> setting above.
  
  	$ python scons/scons.py install
 
-##Using a different python.
+## Using a different python.
 pdb2pqr will be configured to use whichever python was used to run the build script.  
 If you would like to use a different installed python to run pdb2pqr run the scons/scons.py script with that python. 
 For example:

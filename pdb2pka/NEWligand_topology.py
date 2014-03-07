@@ -603,8 +603,6 @@ class get_ligand_topology:
                     dict_of_matched_lig_fragments[dictCounter]['titratableatoms']=deposit_list
                     dict_of_matched_lig_fragments[dictCounter]['matching_atoms']=dict
                     dictCounter += 1
-        print
-        print
         
         #if len(AllCliqueList) == 0:
         #    print

@@ -465,8 +465,8 @@ def generateForm(file, initVars, pdb2pqrID, type):
     print "</table></div></ul>"
 
     print """           <div class=\"mg-para\"><ul>
-                <li>Amount of overlap to include between the individual processors' meshes <a href=\"http://apbs.wustl.edu/MediaWiki/index.php/ELEC_input_file_section#ofrac\" target=\"_blank\"><font title=\"frac\">(<span class=\"tooltip\">?</span>)</font></a>:"""
-    print "<input type=\"text\" name=\"frac\" size=\"10\" maxlength=\"20\""
+                <li>Amount of overlap to include between the individual processors' meshes <a href=\"http://apbs.wustl.edu/MediaWiki/index.php/ELEC_input_file_section#ofrac\" target=\"_blank\"><font title=\"ofrac\">(<span class=\"tooltip\">?</span>)</font></a>:"""
+    print "<input type=\"text\" name=\"ofrac\" size=\"10\" maxlength=\"20\""
     if initVars.has_key('processorMeshOverlap'):
         print "value=\"%f\"" % initVars['processorMeshOverlap']
     print "/></li><br />"
@@ -1281,6 +1281,12 @@ def fieldStorageToDict(form):
         apbsOptions['writeSmol'] = True
     else:
         apbsOptions['writeSmol'] = False
+        
+    if form.has_key("asyncflag") and form["asyncflag"].value == "on":
+        apbsOptions['async'] = locale.atoi(form["async"].value)
+        apbsOptions['asyncflag'] = True
+    else:
+        apbsOptions['asyncflag'] = False
 
     if form.has_key("writesspl") and form["writesspl"].value == "on":
         apbsOptions['writeCheck'] += 1
@@ -1359,7 +1365,9 @@ def fieldStorageToDict(form):
     apbsOptions['pqrFileName'] = form['pdb2pqrid'].value+'.pqr'
 
     #ELEC section variables
-    apbsOptions['calcType'] = form["type"].value  
+    apbsOptions['calcType'] = form["type"].value 
+    
+    apbsOptions['ofrac'] = locale.atof(form["ofrac"].value)
 
     apbsOptions['dimeNX'] = locale.atoi(form["dimenx"].value)
     apbsOptions['dimeNY'] = locale.atoi(form["dimeny"].value)
@@ -1376,6 +1384,10 @@ def fieldStorageToDict(form):
     apbsOptions['glenX'] = locale.atof(form["glenx"].value)
     apbsOptions['glenY'] = locale.atof(form["gleny"].value)
     apbsOptions['glenZ'] = locale.atof(form["glenz"].value)
+    
+    apbsOptions['pdimeNX'] = locale.atof(form["pdimex"].value)
+    apbsOptions['pdimeNY'] = locale.atof(form["pdimey"].value)
+    apbsOptions['pdimeNZ'] = locale.atof(form["pdimez"].value)
 
     if form["cgcent"].value == "mol":
         apbsOptions['coarseGridCenterMethod'] = "molecule"
@@ -1472,7 +1484,10 @@ def pqrFileCreator(apbsOptions):
     if apbsOptions['calcType']!="fe-manual":
         input.write('%sdime %d %d %d\n' % (apbsOptions['tab'], apbsOptions['dimeNX'], apbsOptions['dimeNY'], apbsOptions['dimeNZ']))
     if apbsOptions['calcType'] == "mg-para":
-        input.write('%sdime %d %d %d\n' % (apbsOptions['tab'], apbsOptions['pdime'][0], apbsOptions['pdime'][1], apbsOptions['pdime'][2]))
+        input.write('%spdime %d %d %d\n' % (apbsOptions['tab'], apbsOptions['pdimeNX'], apbsOptions['pdimeNY'], apbsOptions['pdimeNZ']))
+        input.write('%sofrac %g\n' % (apbsOptions['tab'], apbsOptions['ofrac']))
+        if apbsOptions['asyncflag']:
+            input.write('%sasync %d\n' % (apbsOptions['tab'], apbsOptions['async']))
 
     if apbsOptions['calcType'] == "mg-manual":
         input.write('%sglen %g %g %g\n' % (apbsOptions['tab'], apbsOptions['glenX'], apbsOptions['glenY'], apbsOptions['glenZ']))

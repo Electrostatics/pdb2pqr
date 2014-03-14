@@ -14,6 +14,8 @@ All testing should be done on a clean checkout of the branch.
 Fixes found during testing should be checked into the branch and merged into the trunk if appropriate.
 Merging fixes back into a tag is not required and probably not appropriate.  
 
+In the file <code>site_scons/defaults.py</code> change the value of <code>productVersion</code> to reflect the release version.
+
 ## Build
 The branch should be tested to see if it configures and compiles correctly on all the target operating systems.
 Currently those systems are Linux, Mac OSX 10.6 or newer, and Windows 7.

@@ -1,10 +1,17 @@
 # -*- mode: python -*-
 a = Analysis(['pdb2pqr.py'],
-             pathex=['C:\\MinGW\\msys\\1.0\\home\\D3Y382\\workspaces\\pdb2pqr\\branches\\monson-dev'],
+             pathex=None,
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)
 pyz = PYZ(a.pure)
+
+import os
+if os.name == 'nt':
+    exe_name = 'pdb2pqr.exe'
+else:
+    exe_name = 'pdb2pqr'
+    
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,

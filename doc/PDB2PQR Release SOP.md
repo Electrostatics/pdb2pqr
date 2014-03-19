@@ -27,13 +27,13 @@ See INSTALL.md for how to build and install pdb2pqr.
 
 ## Binary builds
 See INSTALL.md for how to create binary builds. Please note the specific needs of each platform.
-For release we build the OSX version on 10.6 and the Linux version on Ubuntu 12.04 LTS or RHL 6.
+For release we build the OSX version on 10.6 (64 bit only) and the Linux version on RHEL or CentOS 6 (32 and 64 bit) to ensure compatibility with RHEL and Unbuntu LTS. We do not support RHEL 5 or earlier.
 
 On each supported platform the build should be tested with the following command from <code>pdb2pqr/dist/pdb2pqr</code>:
 
 	./pdb2pqr.exe --ff=parse --with-ph=7.0 --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1abf 1abf.pqr
 	
-If the program does not crash then we can release this binary build.
+If the program does not crash then we can release this binary build. 
  
 ## Testing
 

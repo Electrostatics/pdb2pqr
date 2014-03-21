@@ -1,7 +1,7 @@
 <appConfig xmlns="http://nbcr.sdsc.edu/opal/types"
            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <metadata appName="PDB2PQR 1.8">
-    <usage><![CDATA[PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations, providing a platform-independent utility for converting protein files in PDB format to PQR format. Version 1.8.
+  <metadata appName="PDB2PQR 1.9.0">
+    <usage><![CDATA[PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations, providing a platform-independent utility for converting protein files in PDB format to PQR format. Version 1.9.0.
 <BR><A HREF=http://www.nbcr.net/ws_help/PDB2PQR/>
 Tutorial: http://www.nbcr.net/ws_help/PDB2PQR/
 </A>
@@ -9,7 +9,7 @@ Tutorial: http://www.nbcr.net/ws_help/PDB2PQR/
     <info xsd:type="xsd:string">
     <![CDATA[
 
-pdb2pqr  (Version 1.8)
+pdb2pqr  (Version 1.9.0)
 Usage: pdb2pqr.py [options] PDB_PATH PQR_OUTPUT_PATH
 
 This module takes a PDB file as input and performs optimizations before

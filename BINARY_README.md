@@ -12,4 +12,4 @@ Linux binaries require CentOS 6 or newer and have been tested on Ubuntu 12.04 LT
 
 Windows binaries are 32 bit and were built and tested on Windows 7 64-bit but should work on Windows XP, Vista, and 8 both 32 and 64-bit systems.
 
-Instructions on how to create a binary build from source are found in INSTALL.md.
+Instructions on how to create a binary build from source are found in INSTALL.md in the source tarball.

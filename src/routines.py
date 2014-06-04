@@ -890,14 +890,19 @@ class Routines:
                 # We might need other atoms to be rebuilt first
 
                 if len(coords) < 3:
-                    try: seenmap[atomname] += 1
-                    except KeyError: seenmap[atomname] = 1
+                    try: 
+                        seenmap[atomname] += 1
+                    except KeyError: 
+                        seenmap[atomname] = 1
+                        
+                    missing.append(atomname)
                     if seenmap[atomname] > nummissing:
                         text = "Too few atoms present to reconstruct or cap residue %s in structure!\n" % (residue)
                         text += "This error is generally caused by missing backbone atoms in this protein;\n"
-                        text += "you must use an external program to complete gaps in the protein backbone."
+                        text += "you must use an external program to complete gaps in the protein backbone.\n"
+                        text += "Heavy atoms missing from %s: " % (residue)
+                        text += ' '.join(missing)
                         raise PDBInputError(text)
-                    else: missing.append(atomname)
 
                 else: # Rebuild the atom
                     newcoords = findCoordinates(3, coords, refcoords, refatomcoords)

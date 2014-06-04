@@ -81,8 +81,8 @@ class Psize:
 
     def parseInput(self, filename):
         """ Parse input structure file in PDB or PQR format """
-        file = open(filename, 'rU')
-        self.parseLines(file.readlines())
+        with open(filename, 'rU') as f:
+            self.parseLines(f.readlines())
 
     def parseLines(self, lines):
         """ Parse the lines """
@@ -90,9 +90,9 @@ class Psize:
             if string.find(line,"ATOM") == 0:
                 subline = string.replace(line[30:], "-", " -")
                 words = string.split(subline)
-                if len(words) < 4:    
+                if len(words) < 5:    
                     continue
-                self.gotatom = self.gotatom + 1
+                self.gotatom += 1
                 self.q = self.q + float(words[3])
                 rad = float(words[4])
                 center = []
@@ -109,7 +109,7 @@ class Psize:
                 if self.gotatom == 0:
                     subline = string.replace(line[30:], "-", " -")
                     words = string.split(subline)
-                    if len(words) < 4:    
+                    if len(words) < 5:    
                         continue
                     self.q = self.q + float(words[3])
                     rad = float(words[4])

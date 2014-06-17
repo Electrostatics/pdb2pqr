@@ -400,12 +400,21 @@ class pKaRoutines:
                 # Here we switch the center group to a particular state
                 #
                 self.hydrogenRoutines.switchstate('pKa', ambiguity, self.get_state_name(titration.name,state)) 
-                intenename=self.pdbfile_name+'.intene_%s_%s_%s_%s' %(titration.name,
-                                                                pKa.residue.chainID,
-                                                                pKa.residue.resSeq,
-                                                                self.get_state_name(titration.name,state))
+                name='%s_%s_%s_%s' %(titration.name,
+                                     pKa.residue.chainID,
+                                     pKa.residue.resSeq,
+                                     self.get_state_name(titration.name,state)) 
+                intenename=self.pdbfile_name+'.intene_%s' % (name,)
                 residue.stateboolean[self.get_state_name(titration.name, state)] = True
                 if not os.path.isfile(intenename):
+                    with open(self.pdbfile_name+'.'+name+'_interaction_setup_input.pdb','w') as pdb_state_file:
+                        print 'dumping pdb to ', pdb_state_file.name
+                        
+                        for atom in self.protein.getAtoms():
+                            atomtxt = atom.getPDBString()
+                            pdb_state_file.write(atomtxt)
+                            pdb_state_file.write('\n')
+                            
                     self.hbondOptimization()
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
@@ -564,6 +573,14 @@ class pKaRoutines:
                     # We have to do a full Hbond optimization here to get the correct bumpscore
                     #
                     bump=False
+                    with open(self.pdbfile_name+'.'+name+'_interaction_input.pdb','w') as pdb_state_file:
+                        print 'dumping pdb to ', pdb_state_file.name
+                        
+                        for atom in self.protein.getAtoms():
+                            atomtxt = atom.getPDBString()
+                            pdb_state_file.write(atomtxt)
+                            pdb_state_file.write('\n')
+                            
                     self.hbondOptimization() # Optimize the hydrogens to actually put the hydrogen in the right position
                     if self.routines.getbumpscore(pKa_center.residue)>100:
                         bump=True
@@ -1162,9 +1179,10 @@ class pKaRoutines:
         # Setting up
         myRoutines = Routines(self.protein, True)
         myRoutines.updateResidueTypes()
-        myRoutines.updateSSbridges()
+        
         myRoutines.updateBonds()
-        myRoutines.updateInternalBonds()
+        #myRoutines.updateInternalBonds()
+        myRoutines.updateSSbridges()
 
         myRoutines.debumpProtein()
 
@@ -1275,6 +1293,14 @@ class pKaRoutines:
 
                     # Not allowing current protonation state to be explored during H-bond optimization
                     #residue.stateboolean[self.get_state_name(titration.name, state)] = False
+                    
+                    with open(self.pdbfile_name+'.'+name+'_background_input.pdb','w') as pdb_state_file:
+                        print 'dumping pdb to ', pdb_state_file.name
+                        
+                        for atom in self.protein.getAtoms():
+                            atomtxt = atom.getPDBString()
+                            pdb_state_file.write(atomtxt)
+                            pdb_state_file.write('\n')
 
                     self.hbondOptimization()
 
@@ -1479,7 +1505,15 @@ class pKaRoutines:
 
                     # Not allowing current protonation state to be explored during H-bond optimization
                     #residue.stateboolean[self.get_state_name(titration.name, state)] = False
-
+                    
+                    with open(self.pdbfile_name+'.'+name+'_desolve_input.pdb','w') as pdb_state_file:
+                        print 'dumping pdb to ', pdb_state_file.name
+                        
+                        for atom in self.protein.getAtoms():
+                            atomtxt = atom.getPDBString()
+                            pdb_state_file.write(atomtxt)
+                            pdb_state_file.write('\n')
+    
                     self.hbondOptimization()
 
                     # residue.stateboolean returns to default value (True)  
@@ -1658,6 +1692,7 @@ class pKaRoutines:
                         # Fixing done, now optimize and calculate
                         #
                         #
+                        
                         self.hbondOptimization()
                         self.zeroAllRadiiCharges()
                         self.setCharges(residue, atomnames)

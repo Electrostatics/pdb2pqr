@@ -2191,20 +2191,23 @@ class hydrogenRoutines:
                         atom.x = 1.874
                         atom.y = 0.862
                         atom.z = 1.306
-            for atom in conf.atoms:
-                atomname = atom.get("name")
-                resatom = residue.getAtom(atomname)
-                if atomname == hname:
-                    defatomcoords = atom.getCoords()
-                elif resatom != None:
-                    refcoords.append(resatom.getCoords())
-                    defcoords.append(atom.getCoords())
-                else:
-                    raise PDBInternalError("Could not find necessary atom!")
+                        
+            if not Routines.rebuildTetrahedral(residue, hname):
+                for atom in conf.atoms:
+                    atomname = atom.get("name")
+                    resatom = residue.getAtom(atomname)
+                    if atomname == hname:
+                        defatomcoords = atom.getCoords()
+                    elif resatom != None:
+                        refcoords.append(resatom.getCoords())
+                        defcoords.append(atom.getCoords())
+                    else:
+                        raise PDBInternalError("Could not find necessary atom!")
+    
+                newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
+                residue.createAtom(hname, newcoords)
 
-            newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
-            residue.createAtom(hname, newcoords)
             residue.getAtom(boundname).hacceptor = 0
             residue.getAtom(boundname).hdonor = 1
             residue.getAtom(hname).sybylType='H'    # Setting the SybylType for the newly built H

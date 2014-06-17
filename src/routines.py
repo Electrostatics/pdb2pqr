@@ -652,7 +652,9 @@ class Routines:
         hcount = 0
         nextatomname = None
 
-        atomref = residue.reference.map[atomname]
+        atomref = residue.reference.map.get(atomname)
+        if atomref is None:
+            return False
         bondname = atomref.bonds[0]
 
         # Return if the bonded atom does not exist

@@ -12,51 +12,18 @@
 debug=False
 import optparse
 import sys, os
-from pKa_base import *
 
-print __file__
-import os
-try:
-    file_name=__file__
-    if file_name[:2]=='./':
-        scriptpath=os.getcwd()
-    else:
-        scriptpath=os.path.join(os.getcwd(),os.path.split(file_name)[0])
-        if scriptpath[-1] == "/":
-            scriptpath=scriptpath[:-1]
-except:
-    scriptpath=os.path.split(sys.argv[0])[0]
-    if scriptpath=='.':
-        scriptpath=os.getcwd()
-#
-# Add to import path
-#
-pdb2pqr_path=os.path.split(scriptpath)[0]
-sys.path.append(pdb2pqr_path)
-#
-# Imports - these should be cleaned up
-#
-import string
-import math
-import string
-import getopt
-import time
-from src import pdb
-from src import utilities
-from src import structures
-from src import routines
-from src import protein
-from src import server
-from src.pdb import *
-from src.utilities import *
-from src.structures import *
-from src.definitions import *
-from src.forcefield import *  
-from src.routines import *
-from src.protein import *
-from src.server import *
-from StringIO import *
-from src.hydrogens import *
+from src.definitions import Definition
+from src.forcefield import Forcefield  
+from src.routines import Routines
+from src.protein import getPDBFile, readPDB, Protein, Amino, Nucleic
+from src.aa import LIG
+from pdb2pka import inputgen_pKa
+
+from pdb2pka.pka_routines import smooth
+from pdb2pka import pka_help
+import shutil
+
 
 
 def usage(x):
@@ -87,7 +54,6 @@ def startpKa():
     print 'PDB2PQR pKa calculations'
     print
     
-    import optparse
     parser = optparse.OptionParser()
 
     ##
@@ -230,14 +196,9 @@ def startpKa():
                     options=options),options
 
 
-
-#
-# ----
-#
-
-
 def pre_init(pdbfilename=None,
              output_dir=None,
+             clean_output=False,
              ff=None,
              verbose=1,
              pdie=8.0,
@@ -248,24 +209,46 @@ def pre_init(pdbfilename=None,
              kappa=None,
              sd=None,
              options=None):
-    """This function cleans the PDB and prepares the APBS input file"""
+    """This function cleans the PDB and prepares the APBS input file
+    
+    Prepares the output folder and cleans it if needed."""
+    
+    #prepare the output directory
+    
+    output_dir = os.path.abspath(output_dir)    
+    
+    if clean_output:
+        if os.path.isdir(output_dir):
+            shutil.rmtree(output_dir)
+        if os.path.isfile(output_dir):
+            raise ValueError('Target directory is a file! Aborting.')
+    
+    try:
+        os.makedirs(output_dir)
+    except OSError:
+        if not os.path.isdir(output_dir):
+            raise ValueError('Target directory is a file! Aborting.')
+    
+    apbs_workspace_dir = os.path.join(output_dir,'apbs_workspace')  
+        
+    try:
+        os.makedirs(apbs_workspace_dir)
+    except OSError:
+        if not os.path.isdir(output_dir):
+            raise ValueError('Target directory is a file! Aborting.')
+        
     #
     # remove hydrogen atoms
     #
-    import pka_help
-    pka_help.remove_hydrogens(pdbfilename)
+    
+    working_pdb_filename = os.path.join(apbs_workspace_dir,'working.pdb')
+    
+    pka_help.remove_hydrogens(pdbfilename, working_pdb_filename)
     #
     # Get the PDBfile
     #
-    global pdbfile_name
-    pdbfile_name=pdbfilename
-    pdbfile = getPDBFile(pdbfilename)
+    pdbfile = getPDBFile(working_pdb_filename)
     pdblist, errlist = readPDB(pdbfile)
-    #
-#     if len(pdblist) == 0 and len(errlist) == 0:
-#         print "Unable to find file %s!\n" % path
-#         os.remove(path)
-#         sys.exit(2)
 
     if len(errlist) != 0 and verbose:
         print "Warning: %s is a non-standard PDB file.\n" %pdbfilename
@@ -306,79 +289,8 @@ def pre_init(pdbfilename=None,
                 #
                 # Read the ligand into Paul's code
                 #
-                from ligandclean import ligff
+                from pdb2pka.ligandclean import ligff
                 myProtein, myDefinition, Lig = ligff.initialize(myDefinition, ligfd, pdblist, verbose)
-                #
-                # Create the ligand definition from the mol2 data
-                #
-                #import NEWligand_topology
-                #MOL2FLAG = True # somethign is rotten here
-                ##
-                #X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,MOL2FLAG)
-                #
-                # Add it to the 'official' definition
-                #
-                #ligresidue=myDefinition.parseDefinition(X.lines, 'LIG', 2)
-                #myDefinition.AAdef.addResidue(ligresidue)
-                #
-                # Look for titratable groups in the ligand
-                #
-                #print '==============================\n================================\n======================='
-                #ligand_titratable_groups=X.find_titratable_groups()
-                #print '==============================\n================================\n======================='
-                #print "ligand_titratable_groups", ligand_titratable_groups
-            #
-            # ------------------------------------------------------
-            # Creation of ligand definition and identification of ligand titgrps done
-            # Start loading everything into PDB2PQR
-            #
-            # Append the ligand data to the end of the PDB data
-            #
-            #newpdblist=[]
-            # First the protein
-            #for line in pdblist:
-            #    if isinstance(line, END) or isinstance(line,MASTER):
-            #        continue
-            #    newpdblist.append(line)
-            ## Now the ligand
-            #for e in Lig.lAtoms:
-            #    newpdblist.append(e)
-            #
-            # Add a TER and an END record for good measure
-            #
-            #newpdblist.append(TER)
-            #newpdblist.append(END)
-            #
-            # Let PDB2PQR parse the entire file
-            #
-            #myProtein = Protein(newpdblist)
-        #
-        # Post-Processing for adding sybylTypes to lig-atoms in myProtein
-        # Jens: that's the quick and easy solution
-        #
-        #for rrres in  myProtein.chainmap['L'].residues:
-        #    for aaat in rrres.atoms:
-        #        for ligatoms in Lig.lAtoms:
-        #            if ligatoms.name == aaat.name:
-        #                aaat.sybylType = ligatoms.sybylType
-        #                #
-        #                # setting the formal charges
-        #                if ligatoms.sybylType == "O.co2":
-        #                    aaat.formalcharge = -0.5
-        #                else: aaat.formalcharge = 0.0
-        #                xxxlll = []
-        #                for xxx in ligatoms.lBondedAtoms:
-        #                    xxxlll.append(xxx.name)
-        #                aaat.intrabonds = xxxlll
-        #                #
-        #                # charge initialisation must happen somewhere else
-        #                # but i don't know where...
-        #                aaat.charge = 0.0#
-
-
-
-
-        #
     #
     # =======================================================================
     #
@@ -488,7 +400,8 @@ def pre_init(pdbfilename=None,
         if ligsuccess:
             templist = misslist[:]
             for atom in templist:
-                if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
+                if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): 
+                    continue
                 misslist.remove(atom)                    
     
     if verbose:
@@ -504,8 +417,8 @@ def pre_init(pdbfilename=None,
     method=""
     async=0
     split=0
-    import inputgen_pKa
-    igen = inputgen_pKa.inputGen(pdbfilename)
+    
+    igen = inputgen_pKa.inputGen(working_pdb_filename)
     #
     # For convenience
     #
@@ -553,7 +466,7 @@ def pre_init(pdbfilename=None,
     #
     # Return all we need
     #
-    return myProtein, myRoutines, myForcefield,igen, ligand_titratable_groups, maps, sd
+    return output_dir, myProtein, myRoutines, myForcefield,igen, ligand_titratable_groups, maps, sd
 
 #
 # --------------
@@ -561,155 +474,11 @@ def pre_init(pdbfilename=None,
             
 if __name__ == "__main__":
     
-    (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
-    import pka_routines
-    mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd,
-                                             pdbfile_name,
+    (output_dir, protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
+    from pdb2pka import pka_routines
+    mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, output_dir, maps, sd,
                                              options=options)
-    #
-    # Debugging
-    #
-    #if debug:
-    #    CM.init_protein(mypkaRoutines)
-    #
-    # Deal with ligands
-    #
-    #if ligand_titratable_groups:
-    #    print "lig (before mypKaRoutines) ", ligand_titratable_groups['titratableatoms']
-    #    mypkaRoutines.insert_new_titratable_group(ligand_titratable_groups)
-    #
-    # What should we do?
-    #
+
     print 'Doing full pKa calculation'
     mypkaRoutines.runpKa()
 
-#     state=1
-#     if state==0:
-#         import pMC_mult
-#         #
-#         # System definition
-#         #
-#         groups=2
-#         acidbase=[-1,1] # 1 if group is a base, -1 if group is an acid
-#         intpkas=[3.4,0.0,0.0,0.0,0.0,
-#                  9.6,0.0,0.0,0.0,0.0] 
-#         is_charged_state=[1,0,0,0,0,
-#                           1,0,0,0,0]
-#         #
-#         # Automatic configuration from here on
-#         #
-#         states=len(intpkas)/groups #States per group
-#         state_counter=[]
-#         linear=[]
-#         names=[]
-#         for group in range(groups):
-#             #
-#             # Names
-#             #
-#             names.append('Group %d' %group)
-#             #
-#             # Add state_counter
-#             #
-#             state_counter.append(states)
-#             #
-#             # Matrix
-#             #
-#             for group2 in range(groups):
-#                 for state1 in range(states):
-#                     for state2 in range(states):
-#                         if state1==0 and state2==0 and group!=group2:
-#                             linear.append(-2.3)
-#                         else:
-#                             linear.append(0.0)
-#         mcsteps=50000
-#         phstart=2.0
-#         phend=14.0
-#         phstep=0.1
-#         #
-#         # Call our little C++ module
-#         #
-#         FAST=pMC_mult.MC(intpkas,linear,acidbase,state_counter,is_charged_state)
-#         FAST.set_MCsteps(int(mcsteps))
-#         print 'Starting to calculate pKa values'
-#         pKavals=FAST.calc_pKas(phstart,phend,phstep)
-#         count=0
-#         print '\n****************************'
-#         print 'Final pKa values'
-#         pkas={}
-#         for name in names:
-#             pkas[name]={'pKa':pKavals[count]}
-#             print '%s pKa: %5.2f ' %(name,pKavals[count])
-#             count=count+1
-#         #
-#         # Write the WHAT IF pKa file
-#         #
-#         for name in names:
-#             pkas[name]['modelpK']=0.0
-#             pkas[name]['desolv']=0.0
-#             pkas[name]['backgr']=0.0
-#             pkas[name]['delec']=0.0
-#         import pKaTool.pKaIO
-#         X=pKaTool.pKaIO.pKaIO()
-#         X.write_pka('test.pdb.PKA.DAT',pkas)
-#         #
-#         # Get the charges
-#         #
-#         charges={}
-#         pH_start=pKavals[count]
-#         pH_step=pKavals[count+1]
-#         num_pHs=pKavals[count+2]
-#         count=count+2
-#         for name in names:
-#             charges[name]={}
-#             for x in range(int(num_pHs)):
-#                 count=count+1
-#                 pH=pKavals[count]
-#                 count=count+1
-#                 charges[name][pH]=pKavals[count]
-#                 pH=pH+pH_step
-#             if pKavals[count+1]==999.0 and pKavals[count+2]==-999.0:
-#                 count=count+2
-#             else:
-#                 print 'Something is wrong'
-#                 print pKavals[count:count+30]
-#                 raise Exception('Incorrect data format from pMC_mult')
-#     elif state==1:
-#         #
-#         # Do a real pKa calculation
-#         #
-#         (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
-#         import pka_routines
-#         mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd,
-#                                                  pdbfile_name,
-#                                                  options=options)
-#         #
-#         # Debugging
-#         #
-#         #if debug:
-#         #    CM.init_protein(mypkaRoutines)
-#         #
-#         # Deal with ligands
-#         #
-#         #if ligand_titratable_groups:
-#         #    print "lig (before mypKaRoutines) ", ligand_titratable_groups['titratableatoms']
-#         #    mypkaRoutines.insert_new_titratable_group(ligand_titratable_groups)
-#         #
-#         # What should we do?
-#         #
-#         if options.desolvation_res:
-#             print 'Doing desolvation for single residues',options.desolvation_res
-#             mypkaRoutines.calculate_desolvation_for_residues(residues=options.desolvation_res)
-#         else:
-#             print 'Doing full pKa calculation'
-#             mypkaRoutines.runpKa()
-#     elif state==2:
-#         #
-#         # Just assign charges
-#         #
-#         (protein, routines, forcefield,apbs_setup, ligand_titratable_groups,maps,sd),options = startpKa()
-#         for chain in protein.getChains():
-#             for residue in chain.get("residues"):
-#                 for atom in residue.get("atoms"):
-#                     atomname = atom.get("name")
-#                     charge, radius = forcefield.getParams(residue, atomname)
-#                     print '%2s %4s %3d %4s %5.2f %5.2f' %(chain.chainID,residue.name,residue.resSeq,atomname,charge,radius)

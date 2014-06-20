@@ -2172,7 +2172,7 @@ class hydrogenRoutines:
         # Now build appropriate atoms
         #
         for stateID in new_stateID:
-            if stateID==0:
+            if stateID==0: 
                 #
                 # For state 0 we never build any hydrogens
                 #

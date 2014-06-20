@@ -3,6 +3,8 @@
 # $Id$
 #
 
+import os
+
 
 class inputGen:
     #
@@ -28,9 +30,10 @@ class inputGen:
         #
         # PQR file
         #
-        self.pqrfile=pqrpath
-        self.pqrname=pqrpath
+        
+        self.pqrname=os.path.basename(pqrpath)
         self.fullpath=pqrpath
+        
         self.type='not set'
         #
         center,extent=self.getCenter()
@@ -68,7 +71,7 @@ class inputGen:
         #
         import string
         coords=[]
-        fd=open(self.pqrfile)
+        fd=open(self.fullpath)
         line=fd.readline()
         while line:
             split=string.split(line)
@@ -315,15 +318,14 @@ class inputGen:
     #
     
     def printInput(self):
-        import string
-        period = string.find(self.fullpath,".")
-        if period > 0:
-            outname = self.fullpath[0:period] + ".in"
-        else:
-            outname = self.fullpath + ".in"
-        file = open(outname, "w")
-        file.write(self.getText())
-        file.close()
+        basepath = os.path.dirname(self.fullpath)
+        file_bits = self.pqrname.rsplit('.', 1)
+        outname = '.'.join([file_bits[0], '.in'])
+        outname = os.path.join(basepath, outname)
+        
+        with open(outname, "w") as fd:
+            fd.write(self.getText())
+            
         return outname
         
 def main():

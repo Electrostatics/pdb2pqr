@@ -320,7 +320,7 @@ class inputGen:
     def printInput(self):
         basepath = os.path.dirname(self.fullpath)
         file_bits = self.pqrname.rsplit('.', 1)
-        outname = '.'.join([file_bits[0], '.in'])
+        outname = '.'.join([file_bits[0], 'in'])
         outname = os.path.join(basepath, outname)
         
         with open(outname, "w") as fd:

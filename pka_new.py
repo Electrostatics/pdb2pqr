@@ -229,10 +229,10 @@ def pre_init(pdbfilename=None,
         if not os.path.isdir(output_dir):
             raise ValueError('Target directory is a file! Aborting.')
     
-    apbs_workspace_dir = os.path.join(output_dir,'apbs_workspace')  
+    workspace_dir = os.path.join(output_dir,'workspace')  
         
     try:
-        os.makedirs(apbs_workspace_dir)
+        os.makedirs(workspace_dir)
     except OSError:
         if not os.path.isdir(output_dir):
             raise ValueError('Target directory is a file! Aborting.')
@@ -241,7 +241,7 @@ def pre_init(pdbfilename=None,
     # remove hydrogen atoms
     #
     
-    working_pdb_filename = os.path.join(apbs_workspace_dir,'working.pdb')
+    working_pdb_filename = os.path.join(workspace_dir,'working.pdb')
     
     pka_help.remove_hydrogens(pdbfilename, working_pdb_filename)
     #

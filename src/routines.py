@@ -98,7 +98,7 @@ class Routines:
 
     def write(self, message, indent=0):
         """
-            Write a message to stderr for debugging if verbose
+            Write a message to stdout for debugging if verbose
 
             Parameters
                 message: The message to write (string)
@@ -1037,11 +1037,11 @@ class Routines:
             if dist < cutoff:
                 bumpscore = bumpscore + 1000.0
                 if pair_ignored:
-                    print 'This bump is a donor/acceptor pair.'
+                    self.write('This bump is a donor/acceptor pair.\n')
 #                if heavy_not_ignored:
 #                    print 'Bumped {0} against {1} within residue'.format(atom.name, closeatom.name)
                 #nearatoms[closeatom] = (dist-cutoff)**2
-        print 'BUMPSCORE', bumpscore
+        self.write('BUMPSCORE ' + str(bumpscore) + '\n')
         return bumpscore
 
 

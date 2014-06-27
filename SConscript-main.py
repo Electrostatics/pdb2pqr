@@ -38,6 +38,10 @@ vars.Add(BoolVariable('REBUILD_SWIG',
 					  'Set to True to rebuild the swig bindings. Requires swig on the the user path.',
 					  False))
 
+vars.Add(BoolVariable('DEBUG', 
+                      'Set to True to compiled components with debug headers.',
+                      False))
+
 #TODO: setup rebuilding of docs.
 # THIS SHOULD BE A TARGET!
 #AddOption('--rebuild-docs',
@@ -63,6 +67,9 @@ env = Environment(variables=vars,
 python_lib = 'python' + gcv('VERSION')
 env.Append(LIBS=[python_lib])
 env.Append(ENV={'PATH' : os.environ['PATH']})
+
+if env['DEBUG']:
+    env.MergeFlags('-g')
 
 if os.name == 'nt':
     python_root = sys.prefix    

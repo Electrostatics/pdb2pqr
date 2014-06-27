@@ -54,6 +54,12 @@
 
 #BUILD_PDB2PKA=False
 
+#DEBUG
+#Set to True to build compiled extentions with debug headers.
+#Defaults to False
+
+DEBUG=True
+
 
 #REBUILD_SWIG
 #Set to True to rebuild the swig bindings. 

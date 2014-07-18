@@ -488,7 +488,7 @@ def handleNonOpal(weboptions):
         text += "<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">" % STYLESHEET
         text += "</HEAD><BODY><H2>PDB2PQR Error</H2><P>"
         text += "Due to server limits, we are currently unable to optimize "
-        text += "proteins of greater than MAXATOMS atoms on the server (PDB2PQR "
+        text += "proteins of greater than %i atoms on the server (PDB2PQR " % MAXATOMS
         text += "found %s atoms in the selected PDB file).  If you " % dummyprot.numAtoms()
         text += "want to forgo optimization please try the server again.<P>"
         text += "Otherwise you may use the standalone version of PDB2PQR that "

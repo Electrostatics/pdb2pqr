@@ -11,15 +11,7 @@
 import sys
 #try:
 import os
-sys.path.append(os.getcwd())
-script=sys.argv[0]
-par_script=os.path.split(script)[0]
-par_script=os.path.split(par_script)[0]
-sys.path.append(par_script)
 
-thisscript_dir=os.path.split(__file__)[0]
-main_python_dir=os.path.split(thisscript_dir)[0]
-sys.path.append(main_python_dir)
 from pKa_utility_functions_compat import *
 
 class pKaIO:
@@ -83,7 +75,6 @@ class pKaIO:
         #
         # Do we have a completed pKa calculation for the PDB file?
         #
-        import os
         self.file_status={}
         self.calculation_completed=1
         for file in self.allfiles:
@@ -111,7 +102,7 @@ class pKaIO:
         #
         if not filename:
             filename=self.pkafile
-        import os, string
+        import string
         if not filename:
             print filename,'is not a filename'
             os._exit(0)
@@ -311,7 +302,7 @@ class pKaIO:
         #
         if not filename:
             filename=self.titcurvfile
-        import os, string
+        import string
         if not os.path.isfile(filename):
             raise 'File does not exist:',filename
         fd=open(filename)

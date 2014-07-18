@@ -190,7 +190,7 @@ class Protein:
             residue = Residue(residue)
         return residue
 
-    def printAtoms(self, atomlist, chainflag=False):
+    def printAtoms(self, atomlist, chainflag=False, pdbfile=False):
         """
             Get the text for the entire protein
             Parameters
@@ -210,7 +210,11 @@ class Protein:
             elif atom.chainID != currentchainID:
                 currentchainID = atom.chainID
                 text.append("TER\n")
-            text.append("%s\n" % atom.getPQRString(chainflag=chainflag))
+            
+            if pdbfile == True:
+                text.append("%s\n" % atom.getPDBString())
+            else:
+                text.append("%s\n" % atom.getPQRString(chainflag=chainflag))
         text.append("TER\nEND")
         return text
 

@@ -296,8 +296,9 @@ def runPDB2PQR(pdblist, ff,
         # Process the extensions
         for ext in selectedExtensions:
             module = extensions.extDict[ext]
-            tempRoutines = copy.deepcopy(myRoutines)
-            module.run_extension(tempRoutines, outroot, extensionOptions)
+            #TODO: figure out a way to do this without crashing...
+            #tempRoutines = copy.deepcopy(myRoutines)
+            module.run_extension(myRoutines, outroot, extensionOptions)
     
         if verbose:
             print "Total time taken: %.2f seconds\n" % (time.time() - start)
@@ -523,7 +524,7 @@ def mainCommand(argv):
     
     group.add_option('--include_header', dest='include_header', action='store_true', default=False,
                       help='Include pdb header in pqr file. '
-                           'WARNING: The resulting PQR file will not with APBS versions prior to 1.5')
+                           'WARNING: The resulting PQR file will not work with APBS versions prior to 1.5')
     parser.add_option_group(group)
     
     

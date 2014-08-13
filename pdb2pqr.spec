@@ -15,7 +15,7 @@ else:
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='pdb2pqr.exe',
+          name=exe_name,
           debug=False,
           strip=None,
           upx=True,

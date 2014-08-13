@@ -185,6 +185,7 @@ class Chain:
             key = "ION"
           else:
             pka_print("don't know what I have here %s (%s)" % (residue.type, residue.resName))
+            continue
 
           if residue.location != "BONDED":
             if key in residue_dictionary:

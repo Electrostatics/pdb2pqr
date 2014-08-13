@@ -395,11 +395,7 @@ class pKaIO:
         phstart=phvals[0]
         phstop=phvals[-2]
         phstep=phvals[1]-phstart
-        lastval=phstart
-        #
-        # Write the file
-        #
-        import os, string
+        
         fd=open(filename,'w')
         #
         # Write header

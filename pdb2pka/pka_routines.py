@@ -846,6 +846,9 @@ class pKaRoutines:
                     count=count+1
                     charges[name][pH]=pKavals[count]
                     pH=pH+pH_step
+                    
+                self.detect_non_Henderson_Hasselbalch(name, charges[name], pKaGroup.type != 'acid')
+                
                 if pKavals[count+1]==999.0 and pKavals[count+2]==-999.0:
                     count=count+2
                 else:
@@ -869,6 +872,39 @@ class pKaRoutines:
     #
     # ----
     #
+    
+    @staticmethod
+    def detect_non_Henderson_Hasselbalch(name, charges, is_base):
+        """
+        Detect and report non Henderson-Hasselbalch behavior in titration curves.
+        """
+        phs = charges.keys()
+        phs.sort()
+        
+        #Charge list ordered by pH
+        charge_list = [charges[ph] for ph in phs]
+        
+        if is_base:
+            #List of booleans of which side of -0.5 charges fell on.
+            charge_side = [x > -0.5 for x in charge_list]
+        else:
+            #List of booleans of which side of  0.5 charges fell on.
+            charge_side = [x >  0.5 for x in charge_list]
+        
+        #Check to see if we never cross 0.5 or -0.5 at all
+        if all(charge_side) or not any(charge_side):
+            print "WARNING: UNABLE TO CACLCULATE PKA FOR {name}".format(name=name)
+            return
+        
+        #Find all unique adjacent pairs of False and True 
+        side_pairs = set(zip(charge_side[:-1], charge_side[1:]))
+        
+        #We should always see (True, False) in perfect Henderson-Hasselbalch behavior
+        #(False, True) means we've crossed back over the line and therefore our PKA value is in question. 
+        if (True,False) in side_pairs and (False,True) in side_pairs:
+            print "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR".format(name=name)
+            pka_calc_point = '-0.5' if is_base else '0.5' 
+            print "WARNING: {name} TITRATION CURVE CROSSES {calc} AT LEAST TWICE".format(name=name, calc=pka_calc_point)
 
     def correct_matrix(self):
         """Correct the matrix so that all energies are correct, i.e.
@@ -2361,8 +2397,20 @@ def smooth(xdiel,ydiel,zdiel):
 # -----------------------------------------------
 #
 
-
-
+if __name__ == "__main__":
+    tau = math.pi * 2.0 #Cus screw pi.
+    
+    def frange(x, y, jump):
+        while x < y:
+            yield x
+            x += jump
+            
+    
+    all_zero_curve = dict((ph,0.0) for ph in frange(0.0, 20.01, 0.10))
+    pKaRoutines.detect_non_Henderson_Hasselbalch('All zero curve acid', all_zero_curve, False)
+    pKaRoutines.detect_non_Henderson_Hasselbalch('All zero curve base', all_zero_curve, True)
+            
+    
 
 
 

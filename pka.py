@@ -18,13 +18,11 @@ from src.forcefield import Forcefield
 from src.routines import Routines
 from src.protein import getPDBFile, readPDB, Protein, Amino, Nucleic
 from src.aa import LIG
+from src.errors import PDB2PKAError
 from pdb2pka import inputgen_pKa
 
 from pdb2pka.pka_routines import smooth
 from pdb2pka import pka_help
-import shutil
-
-
 
 def usage(x):
     #
@@ -88,11 +86,16 @@ def startpKa():
         help='<force field (amber, charmm, parse)>',
         )
     parser.add_option(
+        '--resume',
+        dest='resume',
+        action="store_true",
+        default=False,
+        help='resume run from saved state.',
+        )
+    parser.add_option(
         '--ligand',
         dest='ligand',
         type='str',
-        action='append',
-        default=[],
         help='<ligand in MOL2 format>',
         )
     parser.add_option(
@@ -160,68 +163,69 @@ def startpKa():
     ff = options.ff.lower()
     pdie = options.pdie
     verbose = options.verbose
+    sdie = options.sdie
     maps = options.maps
     xdiel = options.xdiel
     ydiel = options.ydiel
     zdiel = options.zdiel
     kappa = options.kappa
     sd = options.sd
-    if verbose == False:
-        verbose = 0
-    elif verbose == True:
-        verbose = 1
 
     #
     # Find the PDB file
     #
     if len(args) != 2:
-        sys.stderr.write("Usage: pka.py [options] <pdbfile> <output directory>\n")
-        sys.exit(0)
+        parser.error("Usage: pka.py [options] <pdbfile> <output directory>\n")
     input_path = args[0]
     output_path = args[1]
+    
+    ligand = None
+    if options.ligand is not None:
+        try:
+            ligand = open(options.ligand, 'rU')
+        except IOError:
+            print 'Unable to find ligand file %s! Skipping...' % options.ligand
 
     #
     # Call the pre_init function
     #
     return pre_init(pdbfilename=input_path,
                     output_dir=output_path,
+                    clean_output=not options.resume,
                     ff=ff,
+                    verbose=verbose,
                     pdie=pdie,
+                    sdie=sdie,
                     maps=maps,
                     xdiel=xdiel,
                     ydiel=ydiel,
                     zdiel=zdiel,
                     kappa=kappa,
                     sd=sd,
-                    options=options),options
+                    ligand=ligand),options
 
 
 def pre_init(pdbfilename=None,
              output_dir=None,
              clean_output=False,
              ff=None,
-             verbose=1,
+             verbose=False,
              pdie=8.0,
+             sdie=80,
              maps=None,
              xdiel=None,
              ydiel=None,
              zdiel=None,
              kappa=None,
              sd=None,
-             options=None):
+             ligand=None):
     """This function cleans the PDB and prepares the APBS input file
     
-    Prepares the output folder and cleans it if needed."""
+    Prepares the output folder."""
     
     #prepare the output directory
     
     output_dir = os.path.abspath(output_dir)    
-    
-    if clean_output:
-        if os.path.isdir(output_dir):
-            shutil.rmtree(output_dir)
-        if os.path.isfile(output_dir):
-            raise ValueError('Target directory is a file! Aborting.')
     
     try:
         os.makedirs(output_dir)
@@ -268,29 +272,11 @@ def pre_init(pdbfilename=None,
     # Add the ligand to the pdb2pqr arrays
     #
     Lig=None
-    MOL2FLAG = False 
-    if not options.ligand:
-        dummydef = Definition()
-        myProtein = Protein(pdblist, dummydef)
-    else:
-        #
-        # Mol2 ligands and PDB ligands are treated differently
-        #
-        if options.ligand!=[]:
-            for ligand in options.ligand:
-                #
-                # Open ligand mol2 file
-                #
-                if os.path.isfile(ligand):
-                    ligfd=open(ligand, 'rU')
-                else:
-                    print 'skipping ligand',ligand
-                    continue
-                #
-                # Read the ligand into Paul's code
-                #
-                from pdb2pka.ligandclean import ligff
-                myProtein, myDefinition, Lig = ligff.initialize(myDefinition, ligfd, pdblist, verbose)
+    if ligand is None:
+        myProtein = Protein(pdblist, myDefinition)
+    else:        
+        from pdb2pka.ligandclean import ligff          
+        myProtein, myDefinition, Lig = ligff.initialize(myDefinition, ligand, pdblist, verbose)
     #
     # =======================================================================
     #
@@ -395,7 +381,7 @@ def pre_init(pdbfilename=None,
                 print 'Net charge for ligand %s is: %5.3f' %(residue.name,net_charge)
         #
         # Temporary fix; if ligand was successful, pull all ligands from misslist
-       # Not sure if this is needed at all here ...? (Jens wrote this)
+        # Not sure if this is needed at all here ...? (Jens wrote this)
         #
         if ligsuccess:
             templist = misslist[:]
@@ -424,37 +410,29 @@ def pre_init(pdbfilename=None,
     #
     igen.pdie = pdie
     print 'Setting protein dielectric constant to ',igen.pdie
-    igen.sdie=options.sdie
+    igen.sdie=sdie
     igen.maps=maps
     if maps==1:
         print "Using dielectric and mobile ion-accessibility function maps in PBE"
         if xdiel:
             igen.xdiel = xdiel
         else:
-            sys.stderr.write ("X dielectric map is missing\n")
-            usage(2)
-            sys.exit(0)
+            raise PDB2PKAError('X dielectric map is missing')
         if ydiel:
             igen.ydiel = ydiel
         else:
-            sys.stderr.write ("Y dielectric map is missing\n")
-            usage(2)
-            sys.exit(0)
+            raise PDB2PKAError("Y dielectric map is missing\n")
         if zdiel:
             igen.zdiel = zdiel
         else:
-            sys.stderr.write ("Z dielectric map is missing\n")
-            usage(2)
-            sys.exit(0)
+            raise PDB2PKAError("Z dielectric map is missing\n")
         
         print 'Setting dielectric function maps: %s, %s, %s'%(igen.xdiel,igen.ydiel,igen.zdiel)
         
         if kappa:
             igen.kappa = kappa
         else:
-            sys.stderr.write ("Mobile ion-accessibility map is missing\n")
-            usage(2)
-            sys.exit(0)
+            raise PDB2PKAError("Mobile ion-accessibility map is missing\n")
             
         print 'Setting mobile ion-accessibility function map to: ',igen.kappa
         
@@ -477,7 +455,7 @@ if __name__ == "__main__":
     (output_dir, protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
     from pdb2pka import pka_routines
     mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, output_dir, maps, sd,
-                                             options=options)
+                                             restart=not options.resume, pairene=options.pairene)
 
     print 'Doing full pKa calculation'
     mypkaRoutines.runpKa()

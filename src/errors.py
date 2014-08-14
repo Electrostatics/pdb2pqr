@@ -66,6 +66,9 @@ class PDBInternalError(PDB2PQRError):
 class PDBInputError(PDB2PQRError):
     pass
 
+class PDB2PKAError(PDB2PQRError):
+    pass
+
 class PDBFileParseError(PDB2PQRError):
     def __init__(self, lineno, errorStr):
         self.lineno = lineno

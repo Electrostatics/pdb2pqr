@@ -62,15 +62,6 @@ class pKaIO:
     # --------------------
     #
 
-    def usenewnames(self):
-        """Deprecated function"""
-        print 'pKaIO.usenewnames: Deprecated. Please remove from your code'
-        return
-
-    #
-    # --------------------
-    #
-
     def assess_status(self):
         #
         # Do we have a completed pKa calculation for the PDB file?
@@ -119,7 +110,7 @@ class pKaIO:
         elif string.lower(string.strip(lines[0]))==string.lower('pdb2pka pKa File'):
             format='WHAT IF'
         else:
-            raise 'Unknown format'
+            raise ValueError('Unknown format')
         if string.lower(string.strip(lines[1]))!=string.lower('Format 1.0'):
             raise 'unknown format: ',lines[1]
         # Next line is text

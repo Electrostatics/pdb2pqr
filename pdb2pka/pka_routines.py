@@ -898,10 +898,10 @@ class pKaRoutines:
         
         if is_base:
             #List of booleans of which side of -0.5 charges fell on.
-            charge_side = [x > -0.5 for x in charge_list]
+            charge_side = [x > 0.5 for x in charge_list]
         else:
             #List of booleans of which side of  0.5 charges fell on.
-            charge_side = [x >  0.5 for x in charge_list]
+            charge_side = [x > -0.5 for x in charge_list]
         
         #Check to see if we never cross 0.5 or -0.5 at all
         if all(charge_side) or not any(charge_side):
@@ -915,8 +915,11 @@ class pKaRoutines:
         #(False, True) means we've crossed back over the line and therefore our PKA value is in question. 
         if (True,False) in side_pairs and (False,True) in side_pairs:
             print "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR".format(name=name)
-            pka_calc_point = '-0.5' if is_base else '0.5' 
+            pka_calc_point = '0.5' if is_base else '-0.5' 
             print "WARNING: {name} TITRATION CURVE CROSSES {calc} AT LEAST TWICE".format(name=name, calc=pka_calc_point)
+            return
+        
+        print "{name} exhibits Henderson-Hasselbalch behavior.".format(name=name)
 
     def correct_matrix(self):
         """Correct the matrix so that all energies are correct, i.e.
@@ -2405,17 +2408,51 @@ def smooth(xdiel,ydiel,zdiel):
 #
 
 if __name__ == "__main__":
-    tau = math.pi * 2.0 #Cus screw pi.
+    from pprint import pprint
     
     def frange(x, y, jump):
         while x < y:
             yield x
             x += jump
-            
+     
+    ph_list = list(frange(0.0, 20.01, 0.10))
+    ph_count = len(ph_list)
+
+    one_to_zero_list = list(frange(0.0, 1.0, 0.005))
+    one_to_zero_list.reverse()
+    one_to_zero = dict((ph,charge) for ph, charge in zip(ph_list, one_to_zero_list))
+                       
+    zero_to_neg_one_list = list(frange(-1.0, 0.0, 0.005))   
+    zero_to_neg_one_list.reverse()      
+    zero_to_neg_one = dict((ph,charge) for ph, charge in zip(ph_list, zero_to_neg_one_list))
     
-    all_zero_curve = dict((ph,0.0) for ph in frange(0.0, 20.01, 0.10))
+    print "These should pass without issue"
+    print "Run acid curve"
+    pKaRoutines.detect_non_Henderson_Hasselbalch('one_to_zero curve acid', zero_to_neg_one, False)
+    print "Run base curve"
+    pKaRoutines.detect_non_Henderson_Hasselbalch('zero_to_neg_one curve base', one_to_zero, True)       
+    
+    print "These should print warnings"
+    all_zero_curve = dict((ph,0.0) for ph in ph_list)
+    print "Run all zero curves"
     pKaRoutines.detect_non_Henderson_Hasselbalch('All zero curve acid', all_zero_curve, False)
     pKaRoutines.detect_non_Henderson_Hasselbalch('All zero curve base', all_zero_curve, True)
+    
+    
+    short_zero_to_one_list = list(frange(0.0, 1.0, 0.010))
+    short_one_to_zero_list = short_zero_to_one_list[:]
+    short_one_to_zero_list.reverse()
+    one_to_zero_and_back = short_one_to_zero_list + short_zero_to_one_list
+    one_to_zero_and_back = dict((ph,charge) for ph, charge in zip(ph_list, one_to_zero_and_back))
+    pKaRoutines.detect_non_Henderson_Hasselbalch('one_to_zero_and_back curve base', one_to_zero_and_back, True)
+    
+
+    zero_to_neg_one_and_back = dict((ph,charge-1.0) for ph, charge in zip(ph_list, one_to_zero_and_back))
+    pKaRoutines.detect_non_Henderson_Hasselbalch('zero_to_neg_one_and_back curve acid', zero_to_neg_one_and_back, False)
+    
+    
+    
+    
             
     
 

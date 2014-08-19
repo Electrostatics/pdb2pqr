@@ -299,9 +299,8 @@ static PyMethodDef ModuleMethods[] =   {
 };
 
 /*----------------------------------------------------------------------------*/
-extern "C" {
-  void MODULE_INIT()
-  {
+PyMODINIT_FUNC MODULE_INIT()
+{
     
     PyObject *ThisModule = Py_InitModule( MODULE_STR , ModuleMethods);
     PyObject *ModuleDict = PyModule_GetDict(ThisModule);  
@@ -317,7 +316,6 @@ extern "C" {
  *	 << "Send complaints to: Nils Weskamp < weskamp@informatik.uni-marburg.de >" << endl;               
  *----------------------------------------------------------------------------*/
  
-  };
-}
+};
 
 /*----------------------------------------------------------------------------*/

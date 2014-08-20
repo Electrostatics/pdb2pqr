@@ -58,7 +58,7 @@
 #Set to True to build compiled extentions with debug headers.
 #Defaults to False
 
-DEBUG=True
+#DEBUG=True
 
 
 #REBUILD_SWIG

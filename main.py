@@ -184,6 +184,7 @@ def runPDB2PQR(pdblist, ff,
                ligand = None,
                assign_only = False,
                chain = False,
+			   drop_water = False,
                debump = True,
                opt = True,
                typemap = False,
@@ -213,7 +214,8 @@ def runPDB2PQR(pdblist, ff,
             neutralc:      Make the C-terminus of this protein neutral
             ligand:        Calculate the parameters for the ligand in mol2 format at the given path.
             assign_only:   Only assign charges and radii - do not add atoms, debump, or optimize.
-            chain:     Keep the chain ID in the output PQR file
+            chain:         Keep the chain ID in the output PQR file
+            drop_water:    Remove water molecules from output
             debump:        When 1, debump heavy atoms (int)
             opt:           When 1, run hydrogen optimization (int)
             typemap:       Create Typemap output.
@@ -256,6 +258,17 @@ def runPDB2PQR(pdblist, ff,
     myDefinition = Definition()
     if verbose:
         print "Parsed Amino Acid definition file."   
+	
+    if drop_water:
+        # Remove the waters
+        pdblist_new = []
+        for record in pdblist:
+            if isinstance(record, (HETATM, ATOM, SIGATM, SEQADV)):
+                if record.resName in WAT.water_residue_names:
+                    continue
+            pdblist_new.append(record)
+		
+        pdblist = pdblist_new
 
     # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
 
@@ -267,7 +280,7 @@ def runPDB2PQR(pdblist, ff,
                 atomcount += 1
     else:
         myProtein = Protein(pdblist, myDefinition)
-
+		
     if verbose:
         print "Created protein object -"
         print "\tNumber of residues in protein: %s" % myProtein.numResidues()
@@ -520,6 +533,9 @@ def mainCommand(argv):
 
     group.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
                       help='Print information to stdout.')
+					  
+    group.add_option('--drop-water', dest='drop_water', action='store_true', default=False,
+                      help='Drop waters before processing protein. Currently recognized and deleted are the following water types:  %s' % ', '.join(WAT.water_residue_names))
     
     group.add_option('--include_header', dest='include_header', action='store_true', default=False,
                       help='Include pdb header in pqr file. '
@@ -658,6 +674,7 @@ Please cite your use of PDB2PQR as:
                                                   ligand = options.ligand,
                                                   assign_only = options.assign_only,
                                                   chain = options.chain,
+                                                  drop_water = options.drop_water,
                                                   debump = options.debump,
                                                   opt = options.opt,
                                                   typemap = options.typemap,

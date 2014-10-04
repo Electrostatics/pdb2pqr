@@ -102,6 +102,19 @@ def titrate_one_group(name,intpkas,is_charged,acidbase):
 # ----
 #
 
+def dump_protein_no_hydrogens(protein, pdb_out):
+    lines = protein.printAtoms(protein.getAtoms(), chainflag=True, pdbfile=True)
+    with open(pdb_out,'w') as fd:                       
+        for line in lines:
+            record = line[:6].strip()
+            if record in ['HETATM']:
+                continue
+            if record in ['ATOM','ANISOU','SIGUIJ','SIGATM',]:
+                element = line[76:78].strip()
+                if element == 'H':
+                    continue
+            fd.write(line)
+
 def remove_hydrogens(pdb_in, pdb_out):
     """Remove hydrogens from the PDB file"""
     with open(pdb_in,'r') as fd:

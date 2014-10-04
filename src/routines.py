@@ -72,7 +72,9 @@ from structures import *
 from protein import *
 from definitions import *
 from StringIO import StringIO
-from errors import PDBInputError, PDBInternalError
+from errors import PDBInputError, PDBInternalError, PDB2PKAError
+from pprint import pformat
+
 
 class Routines:
     def __init__(self, protein, verbose, definition=None):
@@ -1485,6 +1487,55 @@ class Routines:
         """
         for residue in self.protein.getResidues():
             residue.setDonorsAndAcceptors()
+            
+    def runPDB2PKA(self, ph, ff, protein, ligand, verbose, pdb2pka_params):
+        if ff.lower() != 'parse':
+            PDB2PKAError('PDB2PKA can only be run with the PARSE force field.')
+            
+        self.write("Running PDB2PKA and applying at pH %.2f... \n" % ph)
+        
+        import pka
+        from pdb2pka import pka_routines
+        init_params = pdb2pka_params.copy()
+        init_params.pop('pairene')
+        init_params.pop('clean_output')
+        results = pka.pre_init(protein=protein, 
+                               ff=ff, 
+                               verbose=verbose, 
+                               ligand=ligand,
+                               **init_params)
+        output_dir, protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd = results
+        
+        mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, output_dir, maps, sd,
+                                                 restart=pdb2pka_params.get('clean_output'), 
+                                                 pairene=pdb2pka_params.get('pairene'))
+    
+        print 'Doing full pKa calculation'
+        mypkaRoutines.runpKa()
+        
+        pdb2pka_warnings = mypkaRoutines.warnings[:]
+        
+        self.warnings.extend(pdb2pka_warnings)
+        
+        residue_ph = {}
+        for pka_residue_name, calc_ph in mypkaRoutines.ph_at_0_5.iteritems():
+            res_name, chain_id, number, tit_type = pka_residue_name.split('_')
+            
+            tit_type = tit_type.split(':')[1]
+            if tit_type == 'NTR':
+                res_name = 'N+'
+            elif tit_type == 'CTR':
+                res_name = 'C-'
+            
+            key = ' '.join([res_name, number, chain_id])
+            residue_ph[key] = calc_ph
+        
+        pformat(residue_ph)    
+        
+        self.apply_pka_values(ff, ph, residue_ph) 
+        
+        self.write('Finished running PDB2PKA.\n')      
+        
 
     def runPROPKA(self, ph, ff, rootname, outname, options):
         """
@@ -1496,7 +1547,7 @@ class Routines:
                ff:  The forcefield name to be used
                outname: The name of the PQR outfile
         """
-        self.write("Running propka and applying at pH %.2f... " % ph)
+        self.write("Running PROPKA and applying at pH %.2f... \n" % ph)
 
         from propka30.Source.protein import Protein as pkaProtein
         from propka30.Source.pdb import readPDB as pkaReadPDB
@@ -1507,9 +1558,7 @@ class Routines:
         # Initialize some variables
 
         linelen = 70
-        txt = ""
         pkadic = {}
-        warnings = []
 
         # Reorder the atoms in each residue to start with N
 
@@ -1548,7 +1597,7 @@ class Routines:
             for residue_type in residue_list:
                 for residue in chain.residues:
                     if residue.resName == residue_type:
-                        #String out the extra space after C- or N+ 
+                        #Strip out the extra space after C- or N+ 
                         key = string.strip('%s %s %s' % (string.strip(residue.resName),
                                                         residue.resNumb, residue.chainID))
                         pkadic[key] = residue.pKa_pro
@@ -1557,7 +1606,16 @@ class Routines:
             return
 
         # Now apply each pka to the appropriate residue
-
+        self.apply_pka_values(ff, ph, pkadic)
+        
+        self.write("Done.\n")
+        
+    def apply_pka_values(self, ff, ph, pkadic):
+        self.write('Applying pKa values at a pH of %.2f:\n' % ph)
+        formatted_pkadict = pformat(pkadic)
+        self.write(formatted_pkadict+'\n\n')
+           
+        warnings = []
         for residue in self.protein.getResidues():
             if not isinstance(residue, Amino):
                 continue
@@ -1599,6 +1657,12 @@ class Routines:
                 if resname == "ARG" and ph >= value:
                     if ff == "parse":
                         self.applyPatch("AR0", residue)
+                        txt = "WARNING: Neutral arginines are very rare. Please double\n"
+                        self.warnings.append(txt)
+                        self.write(txt)
+                        txt = "         check your system and caculation setup.\n"
+                        self.warnings.append(txt)
+                        self.write(txt)
                     else:
                         warn = (key, "neutral")
                         warnings.append(warn)
@@ -1648,31 +1712,43 @@ class Routines:
                         self.applyPatch("TYM", residue)
 
         if len(warnings) > 0:
-            init = "WARNING: Propka determined the following residues to be\n"
+            init = "WARNING: PDB2PKA determined the following residues to be\n"
             self.warnings.append(init)
+            self.write(init)
             init = "         in a protonation state not supported by the\n"
             self.warnings.append(init)
+            self.write(init)
             init = "         %s forcefield!\n" % ff
             self.warnings.append(init)
+            self.write(init)
             init = "         All were reset to their standard pH 7.0 state.\n"
             self.warnings.append(init)
+            self.write(init)
             self.warnings.append("\n")
+            self.write('\n')
             for warn in warnings:
                 text = "             %s (%s)\n" % (warn[0], warn[1])
                 self.warnings.append(text)
+                self.write(text)
             self.warnings.append("\n")
+            self.write('\n')
 
         if len(pkadic) > 0:
             warn = "         PDB2PQR could not identify the following residues\n"
             self.warnings.append(warn)
-            warn = "         and residue numbers as returned by propka:\n"
+            self.write(warn)
+            warn = "         and residue numbers as returned by PROPKA or PDB2PKA:\n"
             self.warnings.append(warn)
             self.warnings.append("\n")
+            self.write(warn)
+            self.write('\n')
             for item in pkadic:
                 text = "             %s\n" % item
                 self.warnings.append(text)
+                self.write(text)
             self.warnings.append("\n")
-        self.write("Done.\n")
+            self.write('\n')
+        
 
 class Cells:
     """

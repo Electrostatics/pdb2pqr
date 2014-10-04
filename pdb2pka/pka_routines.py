@@ -66,7 +66,7 @@ class pKaRoutines:
         Class for running all pKa related functions
     """
     def __init__(self, protein, routines, forcefield, apbs_setup, output_dir, maps = None, sd =None,
-                 restart=False, pairene=1.0):
+                 restart=False, pairene=1.0, test_mode=False):
         """
             Initialize the class using needed objects
 
@@ -97,46 +97,51 @@ class pKaRoutines:
         #
         # Set the phidir - where results of apbscalcs are stored
         #
-        self.phidir=os.path.join(self.output_dir,'phidir')
-        if not os.path.isdir(self.phidir):
-            os.mkdir(self.phidir)
+        if not test_mode:
+            self.phidir=os.path.join(self.output_dir,'phidir')
+            if not os.path.isdir(self.phidir):
+                os.mkdir(self.phidir)
+                
+            self.pdb_dumps_dir=os.path.join(self.output_dir,'pdb_dumps')
+            if not os.path.isdir(self.pdb_dumps_dir):
+                os.mkdir(self.pdb_dumps_dir)
+                
+            self.state_files=os.path.join(self.output_dir,'state_files')
+                
+            if restart:
+                if os.path.isdir(self.state_files):
+                    shutil.rmtree(self.state_files)
+                if os.path.isfile(self.state_files):
+                    raise ValueError('Target directory is a file! Aborting.')
+                
+                for output_file in self.output_files.values():
+                    if os.path.isfile(output_file):
+                        os.remove(output_file)
             
-        self.pdb_dumps_dir=os.path.join(self.output_dir,'pdb_dumps')
-        if not os.path.isdir(self.pdb_dumps_dir):
-            os.mkdir(self.pdb_dumps_dir)
-            
-        self.state_files=os.path.join(self.output_dir,'state_files')
-            
-        if restart:
-            if os.path.isdir(self.state_files):
-                shutil.rmtree(self.state_files)
-            if os.path.isfile(self.state_files):
-                raise ValueError('Target directory is a file! Aborting.')
-            
-            for output_file in self.output_files.values():
-                if os.path.isfile(output_file):
-                    os.remove(output_file)
-        
-        if not os.path.isdir(self.state_files):
-            os.mkdir(self.state_files)
+            if not os.path.isdir(self.state_files):
+                os.mkdir(self.state_files)
     
         
         self.pKagroups = self.readTitrationDefinition()
         
         self.pKas = []
 
-        myHydrogenRoutines = hydrogenRoutines(routines)
-        self.hydrogenRoutines = myHydrogenRoutines
+        if not test_mode:
+            myHydrogenRoutines = hydrogenRoutines(routines)
+            self.hydrogenRoutines = myHydrogenRoutines
         #
         # Not sure this is the best place for the interaction energies...
         #
         self.matrix={}
-        #
-        # Set the verbosity level
-        #
         self.maps=maps
         self.sd=sd
-        return
+        
+        #Holding spot for reported warnings.
+        self.warnings = []
+        
+        #Holding spot for ph values at 0.5 on titration curves.
+        self.ph_at_0_5 = {}
+        
     
     #
     # -----------------------------------------
@@ -862,12 +867,12 @@ class pKaRoutines:
                     charges[name][pH]=pKavals[count]
                     pH=pH+pH_step
                     
-                self.detect_non_Henderson_Hasselbalch(name, charges[name], pKaGroup.type != 'acid')
+                self.find_pH_at_0_5(name, charges[name], pKaGroup.type != 'acid')
                 
                 if pKavals[count+1]==999.0 and pKavals[count+2]==-999.0:
                     count=count+2
                 else:
-                    raise PDB2PKAError('Internal Error retrieving charges from MC sim.')
+                    raise PDB2PKAError('Internal Error retrieving charges from MC simulation.')
         #
         # Write a WHAT IF titration curve file
         #
@@ -885,41 +890,72 @@ class pKaRoutines:
     # ----
     #
     
-    @staticmethod
-    def detect_non_Henderson_Hasselbalch(name, charges, is_base):
+        
+    def find_pH_at_0_5(self, name, charges, is_base):
         """
         Detect and report non Henderson-Hasselbalch behavior in titration curves.
+        Also find ph when 0.5 (-0.5 for acid) is crossed on the curve.
         """
         phs = charges.keys()
         phs.sort()
         
-        #Charge list ordered by pH
-        charge_list = [charges[ph] for ph in phs]
+        bad_curve = False
         
-        if is_base:
-            #List of booleans of which side of -0.5 charges fell on.
-            charge_side = [x > 0.5 for x in charge_list]
-        else:
-            #List of booleans of which side of  0.5 charges fell on.
-            charge_side = [x > -0.5 for x in charge_list]
+        #Charge list ordered by pH
+        charge_list = [(charges[ph], ph) for ph in phs]
+        
+        curve_calc_point = 0.5 if is_base else -0.5
+         
+        #List of booleans of which side of curve_calc_point charges fell on.   
+        charge_side = [x[0] > curve_calc_point for x in charge_list]
         
         #Check to see if we never cross 0.5 or -0.5 at all
         if all(charge_side) or not any(charge_side):
-            print "WARNING: UNABLE TO CACLCULATE PKA FOR {name}".format(name=name)
+            warning = "WARNING: UNABLE TO CACLCULATE PKA FOR {name}\n".format(name=name)
+            print warning,
+            self.warnings.append(warning)
             return
+        
         
         #Find all unique adjacent pairs of False and True 
         side_pairs = set(zip(charge_side[:-1], charge_side[1:]))
         
+        if (True,False) not in side_pairs:
+            warning =  "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR\n".format(name=name)
+            print warning,
+            self.warnings.append(warning)
+            
+            warning = "WARNING: {name} TITRATION CURVE IS BACKWARDS\n".format(name=name, calc=curve_calc_point)
+            print warning,
+            self.warnings.append(warning)
+            cross_index = charge_side.index(True)
+            bad_curve = True
+        else:
+            cross_index = charge_side.index(False)
+        
         #We should always see (True, False) in perfect Henderson-Hasselbalch behavior
         #(False, True) means we've crossed back over the line and therefore our PKA value is in question. 
         if (True,False) in side_pairs and (False,True) in side_pairs:
-            print "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR".format(name=name)
-            pka_calc_point = '0.5' if is_base else '-0.5' 
-            print "WARNING: {name} TITRATION CURVE CROSSES {calc} AT LEAST TWICE".format(name=name, calc=pka_calc_point)
-            return
+            warning =  "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR\n".format(name=name)
+            print warning,
+            self.warnings.append(warning)
+            warning = "WARNING: {name} TITRATION CURVE CROSSES {calc} AT LEAST TWICE\n".format(name=name, calc=curve_calc_point)
+            print warning,
+            self.warnings.append(warning)
+            
+            bad_curve = True
+            
+        prevous_cross_index = cross_index - 1
         
-        print "{name} exhibits Henderson-Hasselbalch behavior.".format(name=name)
+        #linear interpolation
+        charge0, ph0 =  charge_list[prevous_cross_index]
+        charge1, ph1 =  charge_list[cross_index]
+        ph_at_0_5 = ph0 + ((ph1-ph0) * ((curve_calc_point-charge0)/(charge1-charge0)))
+        
+        self.ph_at_0_5[name] = ph_at_0_5
+        
+        if not bad_curve:
+            print "{name} exhibits Henderson-Hasselbalch behavior.".format(name=name)
 
     def correct_matrix(self):
         """Correct the matrix so that all energies are correct, i.e.
@@ -1897,7 +1933,7 @@ class pKaRoutines:
 
     def getmoreAPBSPotentials(self):
         if not self.APBS:
-            raise 'APBS instance killed'
+            PDB2PKAError( 'APBS instance killed')
         return self.APBS.get_potentials(self.protein)
 
     #
@@ -2398,9 +2434,9 @@ def smooth(xdiel,ydiel,zdiel):
     diel=[xdiel,ydiel,zdiel]
     for d in diel:
         os.system('%s/smooth --format=dx --input=%s --output=%s_smooth.dx --filter=gaussian --stddev=%d --bandwidth=3'%(scriptpath,d,d[:-3],sd))
-    xdiel_smooth='%s_smooth.dx' %xdiel[:-3]
-    ydiel_smooth='%s_smooth.dx' %ydiel[:-3]
-    zdiel_smooth='%s_smooth.dx' %zdiel[:-3]
+    xdiel_smooth='%s_smooth.dx' % xdiel[:-3]
+    ydiel_smooth='%s_smooth.dx' % ydiel[:-3]
+    zdiel_smooth='%s_smooth.dx' % zdiel[:-3]
     
     return xdiel_smooth, ydiel_smooth, zdiel_smooth
 #
@@ -2426,29 +2462,68 @@ if __name__ == "__main__":
     zero_to_neg_one_list.reverse()      
     zero_to_neg_one = dict((ph,charge) for ph, charge in zip(ph_list, zero_to_neg_one_list))
     
+    class Dummy(object):
+        def __init__(self):
+            self.warnings = []
+            self.ph_at_0_5 = {}
+            
+    
+    
     print "These should pass without issue"
     print "Run acid curve"
-    pKaRoutines.detect_non_Henderson_Hasselbalch('one_to_zero curve acid', zero_to_neg_one, False)
+    routines = pKaRoutines(None, None, None, None, '', maps = None, sd =None,
+                 restart=False, pairene=1.0, test_mode=True)
+    routines.find_pH_at_0_5('zero_to_neg_one curve base', zero_to_neg_one, False)
+    
     print "Run base curve"
-    pKaRoutines.detect_non_Henderson_Hasselbalch('zero_to_neg_one curve base', one_to_zero, True)       
+    routines.find_pH_at_0_5('one_to_zero curve acid', one_to_zero, True)       
     
     print "These should print warnings"
     all_zero_curve = dict((ph,0.0) for ph in ph_list)
     print "Run all zero curves"
-    pKaRoutines.detect_non_Henderson_Hasselbalch('All zero curve acid', all_zero_curve, False)
-    pKaRoutines.detect_non_Henderson_Hasselbalch('All zero curve base', all_zero_curve, True)
+    routines.find_pH_at_0_5('All zero curve acid', all_zero_curve, False)
+    routines.find_pH_at_0_5('All zero curve base', all_zero_curve, True)
     
     
     short_zero_to_one_list = list(frange(0.0, 1.0, 0.010))
     short_one_to_zero_list = short_zero_to_one_list[:]
     short_one_to_zero_list.reverse()
     one_to_zero_and_back = short_one_to_zero_list + short_zero_to_one_list
-    one_to_zero_and_back = dict((ph,charge) for ph, charge in zip(ph_list, one_to_zero_and_back))
-    pKaRoutines.detect_non_Henderson_Hasselbalch('one_to_zero_and_back curve base', one_to_zero_and_back, True)
+    one_to_zero_and_back_dict = dict((ph,charge) for ph, charge in zip(ph_list, one_to_zero_and_back))
+    routines.find_pH_at_0_5('one_to_zero_and_back curve base', one_to_zero_and_back_dict, True)
     
 
-    zero_to_neg_one_and_back = dict((ph,charge-1.0) for ph, charge in zip(ph_list, one_to_zero_and_back))
-    pKaRoutines.detect_non_Henderson_Hasselbalch('zero_to_neg_one_and_back curve acid', zero_to_neg_one_and_back, False)
+    zero_to_neg_one_and_back_dict = dict((ph,charge-1.0) for ph, charge in zip(ph_list, one_to_zero_and_back))
+    routines.find_pH_at_0_5('zero_to_neg_one_and_back curve acid', zero_to_neg_one_and_back_dict, False)
+    
+    positive_interpolation_curve = {0.0:1.0,
+                                    1.0:1.0,
+                                    2.0:1.0,
+                                    3.0:1.0,
+                                    4.0:0.6,
+                                    5.0:0.3,
+                                    6.0:0.1,
+                                    7.0:0.0,
+                                    8.0:0.0}
+    
+    routines.find_pH_at_0_5('positive_interpolation_curve base', positive_interpolation_curve, True)
+    
+    negative_interpolation_curve = {0.0:0.0,
+                                    1.0:0.0,
+                                    2.0:0.0,
+                                    3.0:0.0,
+                                    4.0:-0.1,
+                                    5.0:-0.3,
+                                    6.0:-0.7,
+                                    7.0:-1.0,
+                                    8.0:-1.0}
+    
+    routines.find_pH_at_0_5('negative_interpolation_curve acid', negative_interpolation_curve, False)
+    
+    print 'Accumulated warnings:'
+    pprint(routines.warnings)
+    print 'ph values:'
+    pprint(routines.ph_at_0_5)
     
     
     

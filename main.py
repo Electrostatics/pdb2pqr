@@ -177,7 +177,8 @@ def runPDB2PQR(pdblist, ff,
                verbose = False,
                selectedExtensions = [],
                extensionOptions = utilities.ExtraOptions(),
-               propkaOptions = None,
+               ph_calc_method = None,
+               ph_calc_options = None,
                clean = False,
                neutraln = False,
                neutralc = False,
@@ -223,6 +224,7 @@ def runPDB2PQR(pdblist, ff,
                            use the names from the given forcefield
             commandLine:   command line used (if any) to launch the program. Included in output header.
             include_old_header: Include most of the PDB header in output.
+            pdb2pka_params: parameters for running pdb2pka.
             
         Returns
             header:  The PQR file header (string)
@@ -232,24 +234,20 @@ def runPDB2PQR(pdblist, ff,
     """
     
     pkaname = ""
-    outroot = ""
     lines = []
     Lig = None
     atomcount = 0   # Count the number of ATOM records in pdb
     
     outroot = utilities.getPQRBaseFileName(outname)
 
-    if not ph is None:
-        pka = True
+    if ph_calc_method == 'propka':  
         pkaname = outroot + ".propka"
         #TODO: What? Shouldn't it be up to propka on how to handle this?
         if os.path.isfile(pkaname): 
             os.remove(pkaname)
-    else: 
-        pka = False
 
     start = time.time()
-
+    
     if verbose:
         print "Beginning PDB2PQR...\n"
 
@@ -323,8 +321,10 @@ def runPDB2PQR(pdblist, ff,
         if debump:
             myRoutines.debumpProtein()  
 
-        if pka:
-            myRoutines.runPROPKA(ph, ff, outroot, pkaname, propkaOptions)
+        if ph_calc_method == 'propka':
+            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options)
+        elif ph_calc_method == 'pdb2pka':
+            myRoutines.runPDB2PKA(ph, ff, myProtein, ligand, verbose, ph_calc_options)
 
         myRoutines.addHydrogens()
 
@@ -522,26 +522,69 @@ def mainCommand(argv):
     group.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
                       help='Print information to stdout.')
     
-    group.add_option('--include_header', dest='include_header', action='store_true', default=False,
+    group.add_option('--include-header', dest='include_header', action='store_true', default=False,
                       help='Include pdb header in pqr file. '
                            'WARNING: The resulting PQR file will not work with APBS versions prior to 1.5')
     parser.add_option_group(group)
     
+    pka_group = OptionGroup(parser,"pH options")
     
-    propkaroup = OptionGroup(parser,"proPKA options")
+    pka_group.add_option('--ph-calc-method', dest='ph_calc_method', metavar='PH_METHOD', choices=('propka', 'pdb2pka'),
+                      help='Method used to calculate ph values. If a pH calculation method is selected, for each' 
+                      ' titratable residue pH values will be calculated and the residue potentially modified'
+                      ' after comparison with the pH value supplied by --with_ph\n'
+                      'propka - Use PROPKA to calculate pH values. Actual PROPKA results will be output to <output-path>.propka.\n'
+                      'pdb2pka - Use PDB2PKA to calculate pH values. Requires the use of the PARSE force field.'
+                      ' Warning: Larger residues can take a very long time to run using this method. EXPERIMENTAL!')
     
-    propkaroup.add_option('--with-ph', dest='pH', action='store', type='float',
-                      help='Use propka to calculate pKas and apply them to the molecule given the pH value. ' +
-                           'Actual PropKa results will be output to <output-path>.propka.')
+    pka_group.add_option('--with-ph', dest='ph', action='store', type='float', default=7.0,
+                      help='pH values to use when applying the results of the selected pH calculation method.'
+                      ' Defaults to %default')
     
-    propkaroup.add_option("--reference", dest="reference", default="neutral", choices=('neutral','low-pH'), 
+    parser.add_option_group(pka_group)
+    
+    pdb2pka_group = OptionGroup(parser,"PDB2PKA method options")
+    
+    pdb2pka_group.add_option('--pdb2pka-out', dest='pdb2pka_out', action='store', default='pdb2pka_output',
+                             help='Output directory for PDB2PKA results. Defaults to %default')
+    pdb2pka_group.add_option('--pdb2pka-resume', dest='pdb2pka_resume', action="store_true", default=False,
+                             help='Resume run from state saved in output directory.')
+    
+    pdb2pka_group.add_option('--pdie', dest='pdb2pka_pdie', default=8,type='int',
+                             help='Protein dielectric constant. Defaults to %default')
+    pdb2pka_group.add_option('--sdie', dest='pdb2pka_sdie', default=80, type='int',
+                             help='Solvent dielectric constant. Defaults to %default')
+    
+#     pdb2pka_group.add_option('--maps', dest='maps', default=None, type='int',
+#                              help='<1 for using provided 3D maps; 2 for genereting new maps>')
+#     pdb2pka_group.add_option('--xdiel', dest='xdiel', default=None, type='str',
+#                              help='<xdiel maps>')
+#     pdb2pka_group.add_option('--ydiel', dest='ydiel', default=None, type='str',
+#                              help='<ydiel maps>')
+#     pdb2pka_group.add_option('--zdiel', dest='zdiel', default=None, type='str',
+#                              help='<zdiel maps>')
+#     pdb2pka_group.add_option('--kappa', dest='kappa', default=None, type='str',
+#                              help='<ion-accessibility map>')
+#     pdb2pka_group.add_option('--smooth', dest='sd', default=None, type='float',
+#                              help='<st.dev [A] of Gaussian smooting of 3D maps at the boundary, bandthwith=3 st.dev>')
+    #
+    # Cut off energy for calculating non-charged-charged interaction energies
+    #
+    pdb2pka_group.add_option('--pairene',dest='pdb2pka_pairene',type='float',default=1.0,
+                      help='Cutoff energy in kT for calculating non charged-charged interaction energies. Default: %default')
+    
+    parser.add_option_group(pdb2pka_group)
+    
+    propka_group = OptionGroup(parser,"PROPKA method options")
+    
+    propka_group.add_option("--propka-reference", dest="propka_reference", default="neutral", choices=('neutral','low-pH'), 
            help="Setting which reference to use for stability calculations. See PROPKA 3.0 documentation.")
     
-    propkaroup.add_option('--propka-verbose', dest='propka_verbose', action='store_true', default=False,
+    propka_group.add_option('--propka-verbose', dest='propka_verbose', action='store_true', default=False,
                       help='Print extra proPKA information to stdout. '
-                           'WARNING: This produces an incredible level of output.')
+                           'WARNING: This produces an incredible amount of output.')
     
-    parser.add_option_group(propkaroup)
+    parser.add_option_group(propka_group)
     
     
     extensions.setupExtensionsOptions(parser)
@@ -552,16 +595,6 @@ def mainCommand(argv):
     
     if len(args) != 2:
         parser.error('Incorrect number (%d) of arguments!\nargs: %s' % (len(args), args))   
-
-    propkaOpts = None 
-    if (not options.pH is None): 
-        if(options.pH < 0.0 or options.pH > 14.0):
-            parser.error('%i is not a valid pH!  Please choose a pH between 0.0 and 14.0.' % options.pH)
-        
-        #build propka options
-        propkaOpts = utilities.createPropkaOptions(options.pH, 
-                                                   verbose=options.propka_verbose, 
-                                                   reference=options.reference)
         
     if options.assign_only or options.clean:
         options.debump = options.optflag = False
@@ -592,8 +625,27 @@ def mainCommand(argv):
         
             if getFFfile(options.ff) == '':
                 parser.error('Unable to find parameter files for forcefield %s!' % options.ff)
+                
+    if options.ph < 0.0 or options.ph > 14.0:
+        parser.error('%i is not a valid pH!  Please choose a pH between 0.0 and 14.0.' % options.pH)
+        
+    ph_calc_options = None
+    if options.ph_calc_method == 'propka':
+        ph_calc_options = utilities.createPropkaOptions(options.ph, 
+                                                   verbose=options.propka_verbose, 
+                                                   reference=options.propka_reference)
+    
+   
+    if options.ph_calc_method == 'pdb2pka':
+        if options.ff.lower() != 'parse':
+            parser.error('PDB2PKA requires the PARSE force field.')
+        ph_calc_options = {'output_dir': options.pdb2pka_out,
+                          'clean_output': not options.pdb2pka_resume,
+                          'pdie': options.pdb2pka_pdie,
+                          'sdie': options.pdb2pka_sdie,
+                          'pairene': options.pdb2pka_pairene}
 
-    if not options.ligand is None:
+    if options.ligand is not None:
         try:
             options.ligand = open(options.ligand, 'rU')
         except IOError:
@@ -648,10 +700,11 @@ Please cite your use of PDB2PQR as:
         header, lines, missedligands = runPDB2PQR(pdblist, 
                                                   options.ff, 
                                                   outname = options.outname,
-                                                  ph = options.pH,
+                                                  ph = options.ph,
                                                   verbose = options.verbose,
                                                   selectedExtensions = options.active_extensions,
-                                                  propkaOptions = propkaOpts,
+                                                  ph_calc_method = options.ph_calc_method,
+                                                  ph_calc_options = ph_calc_options,
                                                   extensionOptions = extensionOpts,
                                                   clean = options.clean,
                                                   neutraln = options.neutraln,
@@ -669,7 +722,7 @@ Please cite your use of PDB2PQR as:
                                                   include_old_header = options.include_header)
     except PDB2PQRError as er:
         print er
-        sys.exit(1)
+        sys.exit(2)
     
     # Print the PQR file
     outfile = open(outpath,"w")

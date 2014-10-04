@@ -186,12 +186,36 @@ def startpKa():
         except IOError:
             print 'Unable to find ligand file %s! Skipping...' % options.ligand
 
+    #Set up the protien object
+    #In the standalone version of pdb2pka this is redundent but needed so we emulate the 
+    #interface needed by pdb2pqr
+    
+    pdbfile = getPDBFile(input_path)
+    pdblist, errlist = readPDB(pdbfile)
+    if len(errlist) != 0 and verbose:
+        print "Warning: %s is a non-standard PDB file.\n" %input_path
+        print errlist
+    #
+    # Read the definition file
+    #
+    myDefinition = Definition()
+    #
+    #
+    # Choose whether to include the ligand or not
+    #
+    # Add the ligand to the pdb2pqr arrays
+    #
+    if ligand is None:
+        myProtein = Protein(pdblist, myDefinition)
+    else:        
+        from pdb2pka.ligandclean import ligff          
+        myProtein, _, _ = ligff.initialize(myDefinition, ligand, pdblist, verbose)
+        
     #
     # Call the pre_init function
     #
-    return pre_init(pdbfilename=input_path,
+    return pre_init(protein=myProtein,
                     output_dir=output_path,
-                    clean_output=not options.resume,
                     ff=ff,
                     verbose=verbose,
                     pdie=pdie,
@@ -205,9 +229,8 @@ def startpKa():
                     ligand=ligand),options
 
 
-def pre_init(pdbfilename=None,
+def pre_init(protein=None,
              output_dir=None,
-             clean_output=False,
              ff=None,
              verbose=False,
              pdie=8.0,
@@ -247,16 +270,12 @@ def pre_init(pdbfilename=None,
     
     working_pdb_filename = os.path.join(workspace_dir,'working.pdb')
     
-    pka_help.remove_hydrogens(pdbfilename, working_pdb_filename)
+    pka_help.dump_protein_no_hydrogens(protein, working_pdb_filename)
     #
     # Get the PDBfile
     #
     pdbfile = getPDBFile(working_pdb_filename)
     pdblist, errlist = readPDB(pdbfile)
-
-    if len(errlist) != 0 and verbose:
-        print "Warning: %s is a non-standard PDB file.\n" %pdbfilename
-        print errlist
 
     if verbose:
         print "Beginning PDB2PQR...\n"

@@ -720,6 +720,8 @@ class Atom(ATOM):
         outstr += string.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.tempFactor
         outstr += string.rjust(tstr, 6)[:6]
+        #padding between temp factor and segID
+        outstr += ' ' * 7
         tstr = self.segID
         outstr += string.ljust(tstr, 4)[:4]
         tstr = self.element

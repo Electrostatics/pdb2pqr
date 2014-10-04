@@ -31,7 +31,7 @@ runTest = env.Command('test/test-output-user.pqr', None,
 validatePQRResult = env.Command('test/pqr.result', ['test/test-output-user.pqr', 'test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
 							
-aliasObj = setupTest('test', runTest, [validatePQRResult])
+aliasObj = setupTest('basic-test', runTest, [validatePQRResult])
 
 #Local Test
 
@@ -46,7 +46,7 @@ aliasObj = setupTest('local-test', runTest, [validatePQRResult])
 #Advanced Test
 
 runTest = env.Command('adv-test/test-output-user.pqr', 'adv-test/LIG_1HPX.mol2',
-                      commandLineStart + ' --with-ph=7.00 --ligand=$SOURCE --ff=AMBER 1HPX $TARGET')
+                      commandLineStart + ' --with-ph=7.00 --ph-calc-method=propka --ligand=$SOURCE --ff=AMBER 1HPX $TARGET')
 
 validatePQRResult = env.Command('adv-test/pqr.result', ['adv-test/test-output-user.pqr', 'adv-test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
@@ -56,7 +56,19 @@ validatePROPKAResult = env.Command('adv-test/propka.result', ['adv-test/test-out
 							
 env.Clean(runTest, 'adv-test/test-output-user.propka')
 
-aliasObj = setupTest('advtest', runTest, [validatePQRResult, validatePROPKAResult])
+aliasObj = setupTest('advanced-test', runTest, [validatePQRResult, validatePROPKAResult])
+
+#PDB2PKA Test
+
+runTest = env.Command(['pdb2pka-test/test-output-user.pqr', 'pdb2pka-test/pdb2pka-output'], 'pdb2pka-test/1a1p.pdb',
+                      commandLineStart + ' --with-ph=6.00 --ph-calc-method=pdb2pka --pdb2pka-out=${TARGETS[1]} --ff=PARSE $SOURCE ${TARGETS[0]}')
+
+validatePQRResult = env.Command('pdb2pka-test/pqr.result', ['pdb2pka-test/test-output-user.pqr', 'pdb2pka-test/test-output-correct.pqr'],
+                                ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
+                                
+env.Clean(runTest, 'pdb2pka-test/pdb2pka-output')
+														
+aliasObj = setupTest('pdb2pka-test', runTest, [validatePQRResult])
 
 SConscript('test-long/SConscript')
 SConscript('complete-test/SConscript')

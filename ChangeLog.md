@@ -5,10 +5,13 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history for the compl
 
 ## NEW FEATURES
 * Option to automatically drop water from pdb file before processing.
+* Intergration of PDB2PKA into PDB2PQR as an alternative to PROPKA.
  
 ## BUG FIXES
  
 ## CHANGES 
+* Command line interface to PROPKA changed to accommodate PDB2PKA. PROPKA is now used with --ph-calc-method=propka. --with-ph now defaults to 7.0 and is only required if a different pH value is required.
+* --ph-calc-method to select optional method to calculate pH values used to protonate titratable residues. Possible options are "propka" and "pdb2pka". 
  
 ## KNOWN BUGS
 * If more than one extension is run from the command line and one of the extensions modifies the protein data structure it could affect the output of the other extension. The only included extensions that exhibit this problem are resinter and newresinter.

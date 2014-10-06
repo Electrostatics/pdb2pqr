@@ -205,7 +205,8 @@ Available options:
 <input type="CHECKBOX" name="WHITESPACE"> Insert whitespaces between atom name and residue name, between x and y, and between y and z<BR>
 <input type="CHECKBOX" name="TYPEMAP"> Create Typemap output<BR>
 <input type="CHECKBOX" name="NEUTRALN" onClick="setneutraln()"> Make the protein's N-terminus neutral (requires PARSE forcefield)<BR>
-<input type="CHECKBOX" name="NEUTRALC" onClick="setneutralc()"> Make the protein's C-terminus neutral (requires PARSE forcefield)
+<input type="CHECKBOX" name="NEUTRALC" onClick="setneutralc()"> Make the protein's C-terminus neutral (requires PARSE forcefield)<BR>
+<input type="CHECKBOX" name="DROPWATER"> Remove the waters from the output file
 </blockquote>
 
 <input type="submit" value="Submit"><P>

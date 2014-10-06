@@ -59,7 +59,6 @@ if bit_str == '32bit':
     target_arch='x86'
 
 if os.name == 'nt':
-    #tool_chain = ['mingw']
     tool_chain = ['default', 'mssdk']
 else:
     tool_chain = ['default']
@@ -83,11 +82,11 @@ env.Append(LIBS=[python_lib])
 #To get swig to work on windows.
 #env.Append(ENV={'PATH' : os.environ['PATH']})
 
-if os.name == 'nt' and 'mingw' not in tool_chain:
+if os.name == 'nt' and 'icc' not in tool_chain:
     env.Append(CXXFLAGS = ['/EHsc'])
 
 if env['DEBUG']:
-    if os.name == 'nt' and 'mingw' not in tool_chain:
+    if os.name == 'nt' and 'icc' not in tool_chain:
         env.Append(CXXFLAGS = ['/DEBUG'])
     else:
         env.MergeFlags('-g')

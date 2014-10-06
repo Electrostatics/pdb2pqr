@@ -714,7 +714,8 @@ class WAT(Residue):
         This class gives data about the Water object, and inherits
         off the base residue class.
     """
-
+    water_residue_names = ['HOH', 'WAT']
+	
     def __init__(self, atoms, ref):
         """
             Initialize the class

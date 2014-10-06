@@ -250,6 +250,7 @@ class WebOptions(object):
         self.runoptions['typemap'] = form.has_key("TYPEMAP")
         self.runoptions['neutraln'] = form.has_key("NEUTRALN")
         self.runoptions['neutralc'] = form.has_key("NEUTRALC")
+        self.runoptions['drop_water'] = form.has_key("DROPWATER")
         
         if (self.runoptions['neutraln'] or self.runoptions['neutraln']) and \
             self.ff != 'parse':

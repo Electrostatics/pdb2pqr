@@ -211,9 +211,6 @@ SConscript('SConscript-install.py', exports='env compile_targets')
 
 SConscript('SConscript-error.py')
 
-with open('env64.txt', 'w') as f:
-    f.write(env.Dump())
-
 def print_default_message(target_list):
     target_list = map(str, target_list)
     if any('test' in x for x in target_list):

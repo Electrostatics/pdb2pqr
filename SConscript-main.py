@@ -50,13 +50,27 @@ vars.Add(BoolVariable('DEBUG',
 #        default=False,
 #        help='Rebuild pydocs.')
 
+#Windows: make sure we use correct target arch. 
+target_arch='x86_64'
+import platform
+arch = platform.architecture()
+bit_str = arch[0]
+if bit_str == '32bit':
+    target_arch='x86'
+
 if os.name == 'nt':
-    tool_chain = ['mingw']
+    #tool_chain = ['mingw']
+    tool_chain = ['default', 'mssdk']
 else:
     tool_chain = ['default']
     
+tool_chain.append('swig')
+    
 env = Environment(variables=vars,
-                  tools=tool_chain + ['swig'], 
+                  MSVC_VERSION='9.0',
+                  TARGET_ARCH=target_arch,
+                  MSSDK_VERSION='6.0A',
+                  tools=tool_chain, 
                   SWIGFLAGS=['-python', '-c++'], 
                   SHLIBPREFIX="", 
                   SHLIBSUFFIX=gcv('SO'),
@@ -66,10 +80,17 @@ env = Environment(variables=vars,
 
 python_lib = 'python' + gcv('VERSION')
 env.Append(LIBS=[python_lib])
-env.Append(ENV={'PATH' : os.environ['PATH']})
+#To get swig to work on windows.
+#env.Append(ENV={'PATH' : os.environ['PATH']})
+
+if os.name == 'nt' and 'mingw' not in tool_chain:
+    env.Append(CXXFLAGS = ['/EHsc'])
 
 if env['DEBUG']:
-    env.MergeFlags('-g')
+    if os.name == 'nt' and 'mingw' not in tool_chain:
+        env.Append(CXXFLAGS = ['/DEBUG'])
+    else:
+        env.MergeFlags('-g')
 
 if os.name == 'nt':
     python_root = sys.prefix    
@@ -189,6 +210,9 @@ SConscript('tests/SConscript')
 SConscript('SConscript-install.py', exports='env compile_targets')
 
 SConscript('SConscript-error.py')
+
+with open('env64.txt', 'w') as f:
+    f.write(env.Dump())
 
 def print_default_message(target_list):
     target_list = map(str, target_list)

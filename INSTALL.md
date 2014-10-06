@@ -44,9 +44,7 @@ For example:
 If ligand support is required Numpy must be installed on the python used to build pdb2pqr.
 
 ## Windows Support  
-Compilation of pdb2pka on Windows requires that mingw32 and msys be installed along with the gcc C++ compiler. Compilation with Visual Studio is not currently supported.
-Use MinGW-Get to install mingw. During installation select "C++ Compiler" and "MinGW Developer ToolKit"
-http://www.mingw.org/
+Compilation of pdb2pka on Windows requires that VS2008 or VS Express 2008 and Windows SDK 6.0A installed in the default location. MinGW is no longer supported.
 
 ## Numpy
 If numpy cannot be installed directly on the python used to run pdb2pqr you can either install numpy for your local user account or use virtualenv. Homebrew may be an option on OSX.

@@ -278,10 +278,20 @@ def set_sdk_by_directory(env, sdk_dir):
         if os.path.exists(atl_path):
             env_tuple_list.append(('INCLUDE', atl_path))
         env_tuple_list.append(('INCLUDE', include_path))
+        
+        if env['TARGET_ARCH'] == 'ia64':
+            lib_path = r'Lib\ia64'
+            bin_path = r'Bin\ia64'
+        elif '64' in env['TARGET_ARCH']:
+            lib_path = r'lib\x64'
+            bin_path = r'Bin\x64'
+        else:
+            lib_path = 'Lib'
+            bin_path = r'Bin'
 
-        env_tuple_list.append(('LIB', os.path.join(sdk_dir, 'lib')))
-        env_tuple_list.append(('LIBPATH', os.path.join(sdk_dir, 'lib')))
-        env_tuple_list.append(('PATH', os.path.join(sdk_dir, 'bin')))
+        env_tuple_list.append(('LIB', os.path.join(sdk_dir, lib_path)))
+        env_tuple_list.append(('LIBPATH', os.path.join(sdk_dir, lib_path)))
+        env_tuple_list.append(('PATH', os.path.join(sdk_dir, bin_path)))
 
     for variable, directory in env_tuple_list:
         env.PrependENVPath(variable, directory)

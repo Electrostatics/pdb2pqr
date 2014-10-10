@@ -324,6 +324,9 @@ class WebOptions(object):
             
         if 'ph' in self.runoptions:
             commandLine.append('--with-ph=%s' % self.runoptions['ph'])
+            
+        if self.runoptions['drop_water']:
+            commandLine.append('--drop-water')
         
         if self.otheroptions['apbs']:
             commandLine.append('--apbs-input')

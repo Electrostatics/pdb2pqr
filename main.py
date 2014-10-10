@@ -256,7 +256,7 @@ def runPDB2PQR(pdblist, ff,
     myDefinition = Definition()
     if verbose:
         print "Parsed Amino Acid definition file."   
-	
+        
     if drop_water:
         # Remove the waters
         pdblist_new = []
@@ -265,7 +265,7 @@ def runPDB2PQR(pdblist, ff,
                 if record.resName in WAT.water_residue_names:
                     continue
             pdblist_new.append(record)
-		
+            
         pdblist = pdblist_new
 
     # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
@@ -278,7 +278,7 @@ def runPDB2PQR(pdblist, ff,
                 atomcount += 1
     else:
         myProtein = Protein(pdblist, myDefinition)
-		
+        
     if verbose:
         print "Created protein object -"
         print "\tNumber of residues in protein: %s" % myProtein.numResidues()

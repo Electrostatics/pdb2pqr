@@ -256,8 +256,6 @@ if env['BUILD_PDB2PKA']:
                         variant = 'Debug|x64')
         
         Alias('msvs', pdb2pqr_sln)
-        
-        #compile_targets.extend(SConscript('pdb2pka/SConscript'))
     
 SConscript('tests/SConscript')
 
@@ -316,6 +314,10 @@ def print_default_message(target_list):
     
     print 
     print 'To setup a web service create a symbolic link to', env['PREFIX'], 'that enables you to view', env['URL'],'after running "scons/scons.py install"'
+    print
+    print 'Run "python scons/scons.py msvs" to build Visual Studio projects for the Algorithms and pMC_mult modules.'
+    print 'VS project generation is not well supported in scons. Resulting projects should build using NMAKE but cannot be used for debugging.'
+    print 'The resulting projects will need to modified to use VS natively to compile the code or debug.'
 
     
     if 'install' in target_list:

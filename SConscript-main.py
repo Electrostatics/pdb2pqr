@@ -202,7 +202,62 @@ if env['BUILD_PDB2PKA']:
         numpy_error = True
     
     if not numpy_error:
-        compile_targets.extend(SConscript('pdb2pka/SConscript'))
+        import distutils
+        
+        env.Append(CPPPATH=[distutils.sysconfig.get_python_inc(), numpy.get_include()])
+        
+        alg_srcs = ['pdb2pka/substruct/Algorithms.cpp']
+        
+        algorithms_pyc = env.LoadableModule('pdb2pka/substruct/Algorithms', ['pdb2pka/substruct/Algorithms.cpp'])
+        
+        Default(algorithms_pyc)
+        Alias('algorithms', algorithms_pyc)        
+        compile_targets.append(algorithms_pyc)
+        
+        alg_msvs_env = env.Clone(MSVSBUILDCOM='cd .. && '+pythonBin+' scons/scons.py algorithms DEBUG=True',
+                                 MSVSCLEANCOM='cd .. && '+pythonBin+' scons/scons.py -c algorithms',
+                                 MSVSREBUILDCOM='cd .. && '+pythonBin+' scons/scons.py -c algorithms && '+pythonBin+' scons/scons.py algorithms DEBUG=True')
+        
+        algorithms_project = alg_msvs_env.MSVSProject(target = 'msvs/Algorithms' + env['MSVSPROJECTSUFFIX'],
+                                                      auto_build_solution=0,
+                                                      srcs = ['../pdb2pka/substruct/Algorithms.cpp'],
+                                                      buildtarget = algorithms_pyc[0],
+                                                      variant = 'Debug|x64')
+        Alias('msvs', algorithms_project)
+        
+        pmc_srcs = ['pdb2pka/pMC_mult.cpp', 'pdb2pka/pMC_mult_wrap.cpp']
+        
+        if env['REBUILD_SWIG']:
+            pmc_pyc = env.LoadableModule('pdb2pka/_pMC_mult', ['pdb2pka/pMC_mult.cpp', 'pdb2pka/pMC_mult.i'])
+            build_swig = ' REBUILD_SWIG=True'
+        else:
+            pmc_pyc = env.LoadableModule('pdb2pka/_pMC_mult', ['pdb2pka/pMC_mult.cpp', 'pdb2pka/pMC_mult_wrap.cpp'])
+            build_swig = ' '
+            
+        Default(pmc_pyc)
+        Alias('pmc_mult', pmc_pyc)
+        compile_targets.append(pmc_pyc)
+        
+        pmc_msvs_env = env.Clone(MSVSBUILDCOM='cd .. && '+pythonBin+' scons/scons.py pmc_mult DEBUG=True'+build_swig,
+                                 MSVSCLEANCOM='cd .. && '+pythonBin+' scons/scons.py -c pmc_mult',
+                                 MSVSREBUILDCOM='cd .. && '+pythonBin+' scons/scons.py -c pmc_mult && '+pythonBin+' scons/scons.py pmc_mult DEBUG=True'+build_swig)
+        
+        pmc_mult_project = pmc_msvs_env.MSVSProject(target = 'msvs/pMC_mult' + env['MSVSPROJECTSUFFIX'],
+                                                    auto_build_solution=0,
+                                                    srcs = ['../pdb2pka/pMC_mult.cpp', '../pdb2pka/pMC_mult_wrap.cpp'],
+                                                    incs = ['../pdb2pka/pMC_mult.h'],
+                                                    resources = ['../pdb2pka/pMC_mult.i'],
+                                                    buildtarget = pmc_pyc[0],
+                                                    variant = 'Debug|x64')
+        Alias('msvs', pmc_mult_project)
+        
+        pdb2pqr_sln = env.MSVSSolution(target = 'msvs/pdb2pqr' + env['MSVSSOLUTIONSUFFIX'],
+                        projects = [pmc_mult_project, algorithms_project],
+                        variant = 'Debug|x64')
+        
+        Alias('msvs', pdb2pqr_sln)
+        
+        #compile_targets.extend(SConscript('pdb2pka/SConscript'))
     
 SConscript('tests/SConscript')
 

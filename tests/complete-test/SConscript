@@ -143,6 +143,14 @@ buildTest(['1AFS.pdb'],
 		  '--ff=AMBER --with-ph=7.0 --ph-calc-method=propka --propka-reference=low-pH --whitespace',
 		  'test-output-1AFS-ph-low-ph.propka',
 		  'test-output-1AFS-ph-low-ph-correct.propka')
+		  
+#Test drop water
+buildTest(['1AFS.pdb'],
+          'test-output-1AFS-drop-water.pqr', 
+		  'test-output-1AFS-drop-water-correct.pqr',
+		  'test-drop-water',
+		  '--ff=AMBER --drop-water')
+		  
 
 #Test user ff and names		  
 buildTest(['1AFS.pdb', 'AMBER.DAT', 'AMBER.names'],

@@ -1,3 +1,4 @@
+﻿/* Base - apbs pdb2pqr */
 
 * {
   box-sizing: border-box;
@@ -6,12 +7,13 @@
 }
 
 body {
+  display: block;
   font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 21px;
-  font-weight: normal;
+  font-weight: 300;
   color: #ddd;
-  background: #3a3a3a;
-  border-top: 15px solid #fc0;
+  background: #fff;
+  border-top: 5px solid #fc0;
   box-shadow: inset 0 3px 30px rgba(0,0,0,.3);
   text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
@@ -101,7 +103,7 @@ nav li {
   color: #fc0;
   text-align: center;
   text-transform: uppercase;
-  font-size: 14px; 
+  font-size: 14px;
   font-weight: 800;
   padding: 5px;
   border-radius: 5px;
@@ -122,7 +124,7 @@ nav li {
 
 @media (max-width: 768px){
   .main-nav ul {
-    text-align: right;
+    text-align: center;
   }
 }
 @media (max-width: 830px){
@@ -413,14 +415,17 @@ aside ul:first-child {
   margin-top: 0;
 }
 
+/*** see screen.css for edit on aside li ***/
 aside li {
   list-style-type: none;
 }
 
 aside li a {
   font-size: 16px;
-  position: relative
+  position: relative;
 }
+
+
 
 aside li.current a:before {
   content: "";
@@ -732,8 +737,8 @@ table {
 }
 
 thead {
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   color: #fff;
   background: #3a3a3a;
   background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzNhM2EzYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTFlMWUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
@@ -752,11 +757,11 @@ thead th {
 }
 
 thead th:first-child {
-  border-top-left-radius: 50px;
+  border-top-left-radius: 5px;
 }
 
 thead th:last-child {
-  border-top-right-radius: 50px;
+  border-top-right-radius: 5px;
 }
 
 td {

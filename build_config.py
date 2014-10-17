@@ -9,7 +9,7 @@
 #Sets the install location of pdb2pqr.
 #This defaults to ~/pdb2pqr
 
-#PREFIX="~/pdb2pqr"
+PREFIX="/Users/chun320/www/pdb2pqr"
 
 
 #Website URL
@@ -17,7 +17,7 @@
 #This defaults to http://<COMPUTER NAME>/pdb2pqr/
 # where <COMPUTER NAME> is the network name of the computer.
 
-#URL="http://<COMPUTER NAME>/pdb2pqr/"
+URL="http://PT24098/chun320/pdb2pqr/"
 
 
 #APBS binary

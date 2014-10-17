@@ -34,8 +34,11 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <head> 
 <title>PDB2PQR Server</title>
-<link rel="stylesheet" href="@website@/pdb2pqr.css"
-type="text/css">
+<link rel="stylesheet" href="@website@pdb2pqr.css"type="text/css">
+<link rel="stylesheet" href="@website@css/normalize.css"type="text/css">
+<link rel="stylesheet" href="@website@css/gridism.css"type="text/css">
+<link rel="stylesheet" href="@website@css/style.css"type="text/css">
+<link rel="stylesheet" href="@website@css/pygments.css"type="text/css">
 <SCRIPT LANGUAGE="JavaScript"><!--
 function check(val) {
 

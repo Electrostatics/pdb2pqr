@@ -396,11 +396,11 @@ def mainCGI():
 #     color = "ffcc00" if progress == "running"
 #     color = "FA3434" if progress != "complete" or "running"
     if progress == "complete":
-        image = "http://i61.tinypic.com/2w3yhhc.png" 
+        image = WEBSITE+"images/green_check.png" 
     elif progress == "running":
-        image = "http://i61.tinypic.com/2ccpct2.png"
+        image = WEBSITE+"images/yellow_exclamation.png" 
     else:
-        image = "http://i57.tinypic.com/1zgxria.png"
+        image = WEBSITE+"images/red_x.png" 
     print "<strong style=\"color:#%s;\">%s</strong>" % (color, progress)
     print "<img src=\"%s\"><br />" % image
     print "</h3>"

@@ -386,21 +386,17 @@ def mainCGI():
     print "<p></p>"
     print '<div id="content">'
     print "<h3>Status:"
+	
+	color = "FA3434"
+	image = WEBSITE+"images/red_x.png" 
+	
     if progress == "complete":
         color = "2CDE56" 
+		image = WEBSITE+"images/green_check.png"
     elif progress == "running":
         color = "ffcc00"
-    else:
-        color = "FA3434"
-#     color = "34A6E3" if progress == "complete"  
-#     color = "ffcc00" if progress == "running"
-#     color = "FA3434" if progress != "complete" or "running"
-    if progress == "complete":
-        image = WEBSITE+"images/green_check.png" 
-    elif progress == "running":
-        image = WEBSITE+"images/yellow_exclamation.png" 
-    else:
-        image = WEBSITE+"images/red_x.png" 
+		image = WEBSITE+"images/yellow_exclamation.png" 
+		
     print "<strong style=\"color:#%s;\">%s</strong>" % (color, progress)
     print "<img src=\"%s\"><br />" % image
     print "</h3>"

@@ -81,6 +81,8 @@ from src.aconf import (STYLESHEET,
                        MAXATOMS, 
                        PDB2PQR_VERSION)
 
+import traceback
+
 __version__ = PDB2PQR_VERSION
 
 
@@ -206,22 +208,32 @@ class WebOptions(object):
         else:
             raise WebOptionsError('You need to specify a pdb ID or upload a pdb file.')
             
-        if form.has_key("PROPKA"):
-            if not form.has_key('PH'):
-                raise WebOptionsError('Please provide a pH value.')
-            
-            phHelp = 'Please choose a pH between 0.0 and 14.0.'
-            try:
-                ph = float(form["PH"].value)
-            except ValueError:
-                raise WebOptionsError('The pH value provided must be a number!  ' + phHelp)
-            if ph < 0.0 or ph > 14.0: 
-                text = "The entered pH of %.2f is invalid!  " % ph
-                text += phHelp
-                raise WebOptionsError(text)
-            self.runoptions['ph'] = ph
-            #build propka options
-            self.runoptions['propkaOptions'] = utilities.createPropkaOptions(ph, True)
+        if form.has_key("PKACALCMETHOD"):
+            if form["PKACALCMETHOD"].value != 'none':
+                if not form.has_key('PH'):
+                    raise WebOptionsError('Please provide a pH value.')
+                
+                phHelp = 'Please choose a pH between 0.0 and 14.0.'
+                try:
+                    ph = float(form["PH"].value)
+                except ValueError:
+                    raise WebOptionsError('The pH value provided must be a number!  ' + phHelp)
+                if ph < 0.0 or ph > 14.0: 
+                    text = "The entered pH of %.2f is invalid!  " % ph
+                    text += phHelp
+                    raise WebOptionsError(text)
+                self.runoptions['ph'] = ph
+                #build propka and pdb2pka options
+                if form['PKACALCMETHOD'].value == 'propka':
+                    self.runoptions['ph_calc_method'] = 'propka'
+                    self.runoptions['ph_calc_options'] = utilities.createPropkaOptions(ph, False)
+                if form['PKACALCMETHOD'].value == 'pdb2pka':
+                    self.runoptions['ph_calc_method'] = 'pdb2pka'
+                    self.runoptions['ph_calc_options'] = {'output_dir': 'pdb2pka_output',
+                                                          'clean_output': True,
+                                                          'pdie': 8,
+                                                          'sdie': 80,
+                                                          'pairene': 1.0}
                  
         self.otheroptions['apbs'] = form.has_key("INPUT")
         self.otheroptions['whitespace'] = form.has_key("WHITESPACE")
@@ -299,8 +311,8 @@ class WebOptions(object):
         options['pdb'] = self.pdbfilename
         
         #propkaOptions is redundant.
-        if options.has_key('propkaOptions'):
-            del options['propkaOptions']
+        if options.has_key('ph_calc_options'):
+            del options['ph_calc_options']
         
         if options.has_key('ligand'):
             options['ligand'] = self.ligandfilename
@@ -324,6 +336,9 @@ class WebOptions(object):
             
         if 'ph' in self.runoptions:
             commandLine.append('--with-ph=%s' % self.runoptions['ph'])
+            
+        if 'ph_calc_method' in self.runoptions:
+            commandLine.append('--ph-calc-method=%s' % self.runoptions['ph_calc_method'])
             
         if self.runoptions['drop_water']:
             commandLine.append('--drop-water')
@@ -560,6 +575,11 @@ def handleNonOpal(weboptions):
             sys.stdout = open('%s%s%s/pdb2pqr_stdout.txt' % (INSTALLDIR, TMPDIR, name), 'w')
             sys.stderr = open('%s%s%s/pdb2pqr_stderr.txt' % (INSTALLDIR, TMPDIR, name), 'w')
             
+            run_arguements = weboptions.getRunArguments()
+            if weboptions.runoptions['ph_calc_method'] == 'pdb2pka':
+                run_arguements['ph_calc_options']['output_dir']='%s%s%s/pdb2pka_output' % (INSTALLDIR, TMPDIR, name)
+            
+            
             header, lines, missedligands = runPDB2PQR(pdblist, 
                                                       weboptions.ff,
                                                       outname = pqrpath,
@@ -625,8 +645,11 @@ def handleNonOpal(weboptions):
 
     #TODO: Better error reporting.
     #Also, get forked job to properly write error status on failure.
-    except StandardError as details:
-        print details
+    except StandardError, details:
+    #except StandardError as details:
+        print traceback.format_exc()
+        print sys.exc_info()[0]
+        #print details
         createError(name, details)
 
 def mainCGI():

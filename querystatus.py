@@ -470,7 +470,7 @@ def mainCGI():
                         outputfilelist.append('%s%s' % (jobid, extension))
                 for outputfile in outputfilelist:
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
-                    
+                
             logopts['queryPDB2PQR'] = '|'.join(queryString) 
 
                 #for extension in ["-typemap.html", ".pqr", ".in"]:
@@ -513,7 +513,19 @@ def mainCGI():
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfilezip), os.path.basename(outputfilezip))
                     
             logopts['queryAPBS'] = '|'.join(queryString) 
-
+        
+        if calctype=="pdb2pqr":   
+            print "</ul></li>"
+            print "<li>PDB2PKA files<ul>"                         
+            if have_opal:    
+                pass
+            else:
+                outputfilelist = glob.glob('%s%s%s/pdb2pka_output/*.DAT' % (INSTALLDIR, TMPDIR, jobid))
+                outputfilelist.extend(glob.glob('%s%s%s/pdb2pka_output/*.txt' % (INSTALLDIR, TMPDIR, jobid)))
+                outputfilelist = [os.path.basename(outputfile) for outputfile in outputfilelist]
+                for outputfile in outputfilelist:
+                    print "<li><a href=%s%s%s/pdb2pka_output/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
+   
         print "</ul></li>"
         print "<li>Runtime and debugging information<ul>"
 

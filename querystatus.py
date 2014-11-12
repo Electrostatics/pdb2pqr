@@ -514,18 +514,19 @@ def mainCGI():
                     
             logopts['queryAPBS'] = '|'.join(queryString) 
         
-        if calctype=="pdb2pqr":   
-            print "</ul></li>"
-            print "<li>PDB2PKA files<ul>"                         
+        if calctype=="pdb2pqr":                            
             if have_opal:    
                 pass
             else:
                 outputfilelist = glob.glob('%s%s%s/pdb2pka_output/*.DAT' % (INSTALLDIR, TMPDIR, jobid))
                 outputfilelist.extend(glob.glob('%s%s%s/pdb2pka_output/*.txt' % (INSTALLDIR, TMPDIR, jobid)))
                 outputfilelist = [os.path.basename(outputfile) for outputfile in outputfilelist]
-                for outputfile in outputfilelist:
-                    print "<li><a href=%s%s%s/pdb2pka_output/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
-   
+                if outputfilelist:
+                    print "</ul></li>"
+                    print "<li>PDB2PKA files<ul>"
+                    for outputfile in outputfilelist:
+                        print "<li><a href=%s%s%s/pdb2pka_output/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
+       
         print "</ul></li>"
         print "<li>Runtime and debugging information<ul>"
 

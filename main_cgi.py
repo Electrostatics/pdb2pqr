@@ -155,14 +155,16 @@ def redirector(name, weboptions):
             {trackingevents}
         </script>
         <meta http-equiv="Refresh" content="{wait}; url={redirectURL}"> 
+        <link rel="stylesheet" href="{website}pdb2pqr.css"type="text/css">
     </head>
     <body>
+    <center>
         You are being automatically redirected to a new location.<br />
         If your browser does not redirect you in {wait} seconds, or you do
-        not wish to wait, <a href="{redirectURL}">click here</a>. 
+        not wish to wait, <a href="{redirectURL}">click here</a></center>. 
     </body>
 </html>""".format(trackingscript=utilities.getTrackingScriptString(jobid=jobid), 
-                  trackingevents=eventsScriptString, redirectURL=redirectURL, wait=redirectWait)
+                  trackingevents=eventsScriptString, redirectURL=redirectURL, wait=redirectWait, website=WEBSITE)
     return string
 
 def sanitizeFileName(fileName):

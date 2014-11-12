@@ -21,6 +21,7 @@ def printheader(pagetitle,refresh=None,jobid=None):
     str = ""
     str+= "<html>\n"
     str+= "<HEAD>\n"
+    str+= '<img src="https://raw.githubusercontent.com/Electrostatics/apbs-pdb2pqr/master/apbs/doc/icons/APBS_128_v2.png" style="float:right; position:relative;right:200px; top: 2px;">'
     if refresh:
         str+= "\t<META HTTP-EQUIV=\"Refresh\" CONTENT=\"%s\">\n" % refresh
     str+= "\t<TITLE>%s</TITLE>\n" % pagetitle
@@ -382,9 +383,27 @@ def mainCGI():
         print printheader("%s Job Status Page" % calctype.upper(), refresh, jobid=form["jobid"].value)
 
     print "<BODY>\n<P>"
-    print "<h3>Status"
+    print "<p></p>"
+    print '<div id="content">'
+    print "<h3>Status:"
+    if progress == "complete":
+        color = "2CDE56" 
+    elif progress == "running":
+        color = "ffcc00"
+    else:
+        color = "FA3434"
+#     color = "34A6E3" if progress == "complete"  
+#     color = "ffcc00" if progress == "running"
+#     color = "FA3434" if progress != "complete" or "running"
+    if progress == "complete":
+        image = "http://i61.tinypic.com/2w3yhhc.png" 
+    elif progress == "running":
+        image = "http://i61.tinypic.com/2ccpct2.png"
+    else:
+        image = "http://i57.tinypic.com/1zgxria.png"
+    print "<strong style=\"color:#%s;\">%s</strong>" % (color, progress)
+    print "<img src=\"%s\"><br />" % image
     print "</h3>"
-    print "Message: %s<br />" % progress
     print "Run time: %s seconds<br />" % int(runtime)
     print "Current time: %s<br />" % time.asctime()
     print "</P>\n<HR>\n<P>"
@@ -590,6 +609,21 @@ def mainCGI():
     elif progress == "running":
         print "Page will refresh in %d seconds<br />" % refresh
         print "<HR>"
+        print "</ul></li>"
+        print "<li>Runtime and debugging information<ul>"
+        
+        if have_opal:    
+            resp = appServicePort.getOutputs(getOutputsRequest(jobid))
+            stdouturl = resp._stdOut
+            stderrurl = resp._stdErr
+        else:
+            stdouturl = "%s%s%s/%s_stdout.txt" % (WEBSITE, TMPDIR, jobid, calctype)
+            stderrurl = "%s%s%s/%s_stderr.txt" % (WEBSITE, TMPDIR, jobid, calctype)
+
+        print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
+        print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
+
+        print "</ul></li></ul>"
         print "<small>Your results will appear at <a href=%s>this page</a>. If you want, you can bookmark it and come back later (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
     elif progress == "version_mismatch":
         print "The versions of APBS on the local server and on the Opal server do not match, so the calculation could not be completed"
@@ -600,6 +634,7 @@ def mainCGI():
         print getEventTrackingString('queryData', key, logopts[key]),
         #print "_gaq.push(['_trackPageview', '/main_cgi/has_%s_%s.html']);" % (key, logopts[key])
     print "</script>"
+    print "</div> <!--end content div-->"
     print "</BODY>"
     print "</HTML>"
 

@@ -33,9 +33,18 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <head> 
-<title>PDB2PQR Server</title>
-<link rel="stylesheet" href="@website@/pdb2pqr.css"
-type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'>
+    <title>PDB2PQR Server </title>
+    <img src="https://raw.githubusercontent.com/Electrostatics/apbs-pdb2pqr/master/apbs/doc/icons/APBS_128_v2.png" style="float:right; position:relative;right: 200px; top: 20px;">
+    <style type=text/css> background: url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
+    background-size: cover; </style>
+    <link rel="stylesheet" href="@website@pdb2pqr.css"type="text/css">
+    
+    
+
 <SCRIPT LANGUAGE="JavaScript"><!--
 function check(val) {
 
@@ -177,7 +186,11 @@ document.getElementById("user").disabled=false;
 </head>
 
 <BODY>
-<h2>PDB2PQR Server</h2>
+<div id="cursor">
+
+<div id="content">
+
+<h1>PDB2PQR Server</h1>
 <P>
 <I>Currently using PDB2PQR Version @PDB2PQR_VERSION@</I>
 <P>
@@ -218,55 +231,55 @@ additional limitations, please see the <a
 
 Please enter either:
 <blockquote>
-<input type="RADIO" name="PDBSOURCE" value="ID" onClick="check(this.value)" CHECKED>a PDB ID</input>: <input type="text" name="PDBID" size=4 maxlength=6 value=""> <BR>
+<input type="RADIO" name="PDBSOURCE" value="ID" onClick="check(this.value)" CHECKED>a PDB ID</input>: <input type="text" name="PDBID" size=4 maxlength=6 value=""> <br />
 <input type="RADIO" name="PDBSOURCE" value="UPLOAD" onClick="check(this.value)">upload a PDB file</input>: <input type="file" name="PDB" size="25" maxlength=100 value="" DISABLED>
 </blockquote>
 <P>
 
 Pick a forcefield to use: 
 <blockquote>
-<input type="RADIO" name="FF" id = "amber" value="amber" onClick="setff(this.value)">AMBER</input><BR> 
-<input type="RADIO" name="FF" id = "charmm" value="charmm" onClick="setff(this.value)">CHARMM</input><BR>
-<input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)" CHECKED >PARSE</input><BR>
-<input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><BR>
-<input type="RADIO" name="FF" id = "swanson" value="swanson" onClick="setff(this.value)">SWANSON</input><BR> 
-<input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><BR>
-<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><BR>
-<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><BR>
-<label>&nbsp;&nbsp;* If you select user-defined forcefield, you also need to specify a user-defined .names file.</label><BR> 
+<input type="RADIO" name="FF" id = "amber" value="amber" onClick="setff(this.value)">AMBER</input><br /> 
+<input type="RADIO" name="FF" id = "charmm" value="charmm" onClick="setff(this.value)">CHARMM</input><br />
+<input type="RADIO" name="FF" id = "parse" value="parse" onClick="setff(this.value)" CHECKED >PARSE</input><br />
+<input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><br />
+<input type="RADIO" name="FF" id = "swanson" value="swanson" onClick="setff(this.value)">SWANSON</input><br /> 
+<input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><br />
+<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><br />
+<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><br />
+<label>&nbsp;&nbsp;* If you select user-defined forcefield, you also need to specify a user-defined .names file.</label><br /> 
 </blockquote>
 
 Pick an output naming scheme to use (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>):
 <blockquote>
-<input type="RADIO" name="FFOUT" value="internal" CHECKED>Internal naming scheme</input> (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">What's this?</a>)<BR>
-<input type="RADIO" name="FFOUT" value="amber">AMBER</input><BR>
-<input type="RADIO" name="FFOUT" value="charmm">CHARMM</input><BR>
-<input type="RADIO" name="FFOUT" value="parse">PARSE</input><BR>
-<input type="RADIO" name="FFOUT" value="peoepb">PEOEPB</input><BR>
-<input type="RADIO" name="FFOUT" value="swanson">SWANSON</input><BR>
+<input type="RADIO" name="FFOUT" value="internal" CHECKED>Internal naming scheme</input> (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">What's this?</a>)<br />
+<input type="RADIO" name="FFOUT" value="amber">AMBER</input><br />
+<input type="RADIO" name="FFOUT" value="charmm">CHARMM</input><br />
+<input type="RADIO" name="FFOUT" value="parse">PARSE</input><br />
+<input type="RADIO" name="FFOUT" value="peoepb">PEOEPB</input><br />
+<input type="RADIO" name="FFOUT" value="swanson">SWANSON</input><br />
 <input type="RADIO" name="FFOUT" value="tyl06">TYL06</input>
 
 </blockquote>
 
 Available options: 
 <blockquote>
-<input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<BR>
-<input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<BR>
-<input type="CHECKBOX" name="LIGANDCHECK" onClick="setligand()"> Assign charges to the ligand specified in a MOL2 file</input>: <input type="file" name="LIGAND" size="25" maxlength=100 value="" DISABLED><BR>
-<input type="CHECKBOX" name="INPUT" CHECKED> Create an <a href="http://www.poissonboltzmann.org/docs/calculating/"target="BLANK">APBS</a> input file <span style="font-size:60%">(this also enables the option to run APBS and visualize your results through the web interface, if it has been installed)</span><BR>
-<input type="CHECKBOX" name="CHAIN"> Add/keep chain IDs in the PQR file<BR>
-<input type="CHECKBOX" name="WHITESPACE"> Insert whitespaces between atom name and residue name, between x and y, and between y and z<BR>
-<input type="CHECKBOX" name="TYPEMAP"> Create Typemap output<BR>
-<input type="CHECKBOX" name="NEUTRALN" onClick="setneutraln()"> Make the protein's N-terminus neutral (requires PARSE forcefield)<BR>
-<input type="CHECKBOX" name="NEUTRALC" onClick="setneutralc()"> Make the protein's C-terminus neutral (requires PARSE forcefield)<BR>
+<input type="CHECKBOX" name="DEBUMP" CHECKED> Ensure that new atoms are not rebuilt too close to existing atoms<br />
+<input type="CHECKBOX" name="OPT" CHECKED onClick="setwatopt()"> Optimize the hydrogen bonding network<br />
+<input type="CHECKBOX" name="LIGANDCHECK" onClick="setligand()"> Assign charges to the ligand specified in a MOL2 file</input>: <input type="file" name="LIGAND" size="25" maxlength=100 value="" DISABLED><br />
+<input type="CHECKBOX" name="INPUT" CHECKED> Create an <a href="http://www.poissonboltzmann.org/docs/calculating/"target="BLANK">APBS</a> input file <span style="font-size:60%">(this also enables the option to run APBS and visualize your results through the web interface, if it has been installed)</span><br />
+<input type="CHECKBOX" name="CHAIN"> Add/keep chain IDs in the PQR file<br />
+<input type="CHECKBOX" name="WHITESPACE"> Insert whitespaces between atom name and residue name, between x and y, and between y and z<br />
+<input type="CHECKBOX" name="TYPEMAP"> Create Typemap output<br />
+<input type="CHECKBOX" name="NEUTRALN" onClick="setneutraln()"> Make the protein's N-terminus neutral (requires PARSE forcefield)<br />
+<input type="CHECKBOX" name="NEUTRALC" onClick="setneutralc()"> Make the protein's C-terminus neutral (requires PARSE forcefield)<br />
 <input type="CHECKBOX" name="DROPWATER"> Remove the waters from the output file
 </blockquote>
 
 pKa Options:
 <blockquote>
-Use pH<input type="text" name="PH" size=4 maxlength=6  value="7"></input><BR>
-<input type="RADIO" name="PKACALCMETHOD" value="none" onClick="setpkamethod(this.value)"> No pkA calculation</input><BR>
-<input type="RADIO" name="PKACALCMETHOD" value="propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><BR>
+Use pH<input type="text" name="PH" size=4 maxlength=6  value="7"></input><BR />
+<input type="RADIO" name="PKACALCMETHOD" value="none" onClick="setpkamethod(this.value)"> No pkA calculation</input><BR />
+<input type="RADIO" name="PKACALCMETHOD" value="propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><BR />
 <input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input>
 
 </blockquote>
@@ -276,15 +289,15 @@ Use pH<input type="text" name="PH" size=4 maxlength=6  value="7"></input><BR>
 <HR>
 The PDB2PQR application and web server was written by:
 <blockquote>
-Jens Erik Nielsen<BR>
+Jens Erik Nielsen<BR />
 Todd Dolinsky<BR>
-<a href="http://www.linkedin.com/in/nathanandrewbaker"target="BLANK">Nathan Baker</a><BR>
+<a href="http://www.linkedin.com/in/nathanandrewbaker"target="BLANK">Nathan Baker</a><BR />
 Kyle Monson<P>
 </blockquote>
-PDB2PQR <a href="http://nbcr-222.ucsd.edu/opal2/dashboard"target="BLANK">Opal </a>integration by: <BR>
+PDB2PQR <a href="http://nbcr-222.ucsd.edu/opal2/dashboard"target="BLANK">Opal </a>integration by: <BR />
 <blockquote>
 Wes Goodman<BR>
-Samir Unni<BR>
+Samir Unni<BR />
 Yong Huang<P>
 </blockquote>
 JMol visualization scripts and applets provided by:
@@ -295,14 +308,16 @@ JMol visualization scripts and applets provided by:
 PDB2PQR is supported by NIH grant GM069702-01 to NAB, the NPACI Alpha Project program, and the <a href="http://www.btrportal.org/centers/national-biomedical-computation-resource"target="BLANK"> National Biomedical Computation Resource</a>.<P>
 Before sending a bug report you may want to check the <a href="http://sourceforge.net/p/pdb2pqr/mailman/pdb2pqr-users/"target="BLANK">pdb2pqr-users mailing list archives</a> to make sure your question has not already been addressed.<P>
 For additional support, feature requests, and bug reports you may contact the <a href="https://lists.sourceforge.net/lists/listinfo/pdb2pqr-users"target="BLANK">pdb2pqr-users mailing list</a>.<P>
-<HR>
+<HR />
 		<center>
 			<small>
 				@WITHOUTOPAL@
-				<BR>
+				<BR />
 				<a href="http://nbcr-222.ucsd.edu/opal2/dashboard/"target="BLANK">Powered by Opal</a>
 				@WITHOUTOPAL@
 			</small>
 		</center>
 </BODY>
+</div> <!--end content div-->
+        </BODY>
 </HTML>

@@ -200,7 +200,7 @@ This server enables a user to convert <a href="http://www.rcsb.org/pdb/"target="
 
 pKa calculations are performed by <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a>.<P>
 
-For more information on PDB2PQR please see the:<br />
+For more information on PDB2PQR please see the:<BR>
 <ul>
 	<li> <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target="BLANK">Home Page</a> </li>
 	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">User Guide</a> </li>
@@ -277,9 +277,9 @@ Available options:
 
 pKa Options:
 <blockquote>
-Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="none" onClick="setpkamethod(this.value)"> No pkA calculation</input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><br />
+Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><BR />
+<input type="RADIO" name="PKACALCMETHOD" value="none" onClick="setpkamethod(this.value)"> No pkA calculation</input><BR />
+<input type="RADIO" name="PKACALCMETHOD" value="propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><BR />
 <input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input>
 
 </blockquote>
@@ -289,15 +289,15 @@ Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
 <HR>
 The PDB2PQR application and web server was written by:
 <blockquote>
-Jens Erik Nielsen<br />
-Todd Dolinsky<br />
-<a href="http://www.linkedin.com/in/nathanandrewbaker"target="BLANK">Nathan Baker</a><br />
+Jens Erik Nielsen<BR />
+Todd Dolinsky<BR>
+<a href="http://www.linkedin.com/in/nathanandrewbaker"target="BLANK">Nathan Baker</a><BR />
 Kyle Monson<P>
 </blockquote>
-PDB2PQR <a href="http://nbcr-222.ucsd.edu/opal2/dashboard"target="BLANK">Opal </a>integration by: <br />
+PDB2PQR <a href="http://nbcr-222.ucsd.edu/opal2/dashboard"target="BLANK">Opal </a>integration by: <BR />
 <blockquote>
-Wes Goodman<br />
-Samir Unni<br />
+Wes Goodman<BR>
+Samir Unni<BR />
 Yong Huang<P>
 </blockquote>
 JMol visualization scripts and applets provided by:
@@ -312,7 +312,7 @@ For additional support, feature requests, and bug reports you may contact the <a
 		<center>
 			<small>
 				@WITHOUTOPAL@
-				<br />
+				<BR />
 				<a href="http://nbcr-222.ucsd.edu/opal2/dashboard/"target="BLANK">Powered by Opal</a>
 				@WITHOUTOPAL@
 			</small>

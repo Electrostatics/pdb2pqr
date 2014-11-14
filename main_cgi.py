@@ -578,7 +578,7 @@ def handleNonOpal(weboptions):
             sys.stderr = open('%s%s%s/pdb2pqr_stderr.txt' % (INSTALLDIR, TMPDIR, name), 'w')
             
             run_arguements = weboptions.getRunArguments()
-            if weboptions.runoptions['ph_calc_method'] == 'pdb2pka':
+            if weboptions.runoptions.get('ph_calc_method', '') == 'pdb2pka':
                 run_arguements['ph_calc_options']['output_dir']='%s%s%s/pdb2pka_output' % (INSTALLDIR, TMPDIR, name)
             
             

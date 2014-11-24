@@ -10,6 +10,7 @@ import sys
 import cgi
 import cgitb
 import os,shutil,glob,string,time,urllib
+from datetime import timedelta
 from src.server import *
 from src.aconf import *
 from src.utilities import getTrackingScriptString, getEventTrackingString
@@ -347,11 +348,14 @@ def mainCGI():
         timefile = open('%s%s%s/%s_start_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
         starttime = float(timefile.read())
         timefile.close()
+
     if progress == "running" or (have_opal and progress not in ("version_mismatch", 
                                                                 "not_enough_memory",
                                                                 "error",
                                                                 "complete")):
         runtime = time.time()-starttime
+        runtime = int(runtime)
+
     elif progress == "complete":
         endTimeFileString = '%s%s%s/%s_end_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value)
         if have_opal and not os.path.isfile(endTimeFileString):
@@ -400,7 +404,7 @@ def mainCGI():
     print "<strong style=\"color:#%s;\">%s</strong>" % (color, progress)
     print "<img src=\"%s\"><br />" % image
     print "</h3>"
-    print "Run time: %s seconds<br />" % int(runtime)
+    print "Run time: " + str(timedelta(seconds=round(runtime))) + '<br />'
     print "Current time: %s<br />" % time.asctime()
     print "</P>\n<HR>\n<P>"
 

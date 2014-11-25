@@ -55,7 +55,7 @@ for file_name in getAllFiles('propka30/'):
 	installFile(file_name)
 
 #Whole directories
-for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/'):
+for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/'):
     for file_name in getAllFiles(dir_name):
         installFile(file_name)
 	#dat = Dir(dir_name)
@@ -77,8 +77,6 @@ for target in compile_targets:
 for file_name in getAllFiles('pdb2pka/'):
 	installFile(file_name)
 	
-Alias('install', env.Install(env['PREFIX']+'pdb2pka/', 'pdb2pka/pka.py'))
-	
 #Main Program
 for dir_name in ('src/',
                  'extensions/'):
@@ -99,6 +97,7 @@ for file_name in ('AppService_client.py',
 				  'main.py',
 				  'main_cgi.py',
 				  'NEWS',
+				  'pka.py',
 				  'pdb2pqr.css',
 				  'README.md'):
 	installFile(file_name)

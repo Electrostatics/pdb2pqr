@@ -1627,12 +1627,13 @@ def redirector(logTime):
         <script type="text/javascript">
             {trackingevents}
         </script>
+        <link rel="stylesheet" href="/chun320/pdb2pqr/pdb2pqr.css" type="text/css">
         <meta http-equiv="refresh" content="{wait};url={redirectURL}"/>
     </head>
     <body>
-        You are being automatically redirected to a new location.<br/>
+        <center> You are being automatically redirected to a new location.<br/>
         If your browser does not redirect you in {wait} seconds, or you do
-        not wish to wait, <a href="{redirectURL}">click here</a>. 
+        not wish to wait, <a href="{redirectURL}">click here</a> </center>. 
     </body>
 </html>""".format(trackingscript=getTrackingScriptString(jobid=logTime),
                   trackingevents = getEventTrackingString(category='apbs',
@@ -1687,6 +1688,7 @@ def mainInput() :
         pdb2pqrLocation = '../pdb2pqr/html/server.html'
         print '<html>'
         print '<head>'
+        print '<link rel="stylesheet" href="/chun320/pdb2pqr/pdb2pqr.css" type="text/css">'
         print '<meta http-equiv=\"refresh\" content=\"0;url=%s\"/>' % pdb2pqrLocation
         print '</head>'
         print '<body>'

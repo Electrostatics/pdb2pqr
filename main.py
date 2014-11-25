@@ -534,7 +534,7 @@ def mainCommand(argv):
 
     group.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
                       help='Print information to stdout.')
-					  
+
     group.add_option('--drop-water', dest='drop_water', action='store_true', default=False,
                       help='Drop waters before processing protein. Currently recognized and deleted are the following water types:  %s' % ', '.join(WAT.water_residue_names))
     

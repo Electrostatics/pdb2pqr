@@ -454,12 +454,10 @@ def mainCGI():
         if calctype=="pdb2pqr":                            
             if have_opal:
                 for i in range(0,len(filelist)):
-                    if filelist[i]._name.endswith((".propka", "-typemap.html", ".pqr", ".in")):
-#                        if filelist[i]._name[-4:]==".pqr":
-#                            # Getting pqr file length for PDB2PQR Opal run
-#                            f=urllib.urlopen(filelist[i]._url)
-#                            #pqrOpalFileLength = len(f.readlines())
-#                            f.close()
+                    if filelist[i]._name.endswith((".propka", "-typemap.html", ".in")):
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                        
+                    if filelist[i]._name.endswith(".pqr") and not filelist[i]._name.endswith("background_input.pqr"):
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
                         
                     #Get the first line of the summary file.
@@ -535,7 +533,9 @@ def mainCGI():
         
         if calctype=="pdb2pqr":                            
             if have_opal:    
-                pass
+                for i in range(0,len(filelist)):
+                    if filelist[i]._name.endswith((".DAT", ".txt")):
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
             else:
                 outputfilelist = glob.glob('%s%s%s/pdb2pka_output/*.DAT' % (INSTALLDIR, TMPDIR, jobid))
                 outputfilelist.extend(glob.glob('%s%s%s/pdb2pka_output/*.txt' % (INSTALLDIR, TMPDIR, jobid)))
@@ -609,21 +609,16 @@ def mainCGI():
     elif progress == "running":
         print "Page will refresh in %d seconds<br />" % refresh
         print "<HR>"
-        print "</ul></li>"
-        print "<li>Runtime and debugging information<ul>"
         
-        if have_opal:    
-            resp = appServicePort.getOutputs(getOutputsRequest(jobid))
-            stdouturl = resp._stdOut
-            stderrurl = resp._stdErr
-        else:
+        if not have_opal:
+            print "</ul></li>"
+            print "<li>Runtime and debugging information<ul>"
             stdouturl = "%s%s%s/%s_stdout.txt" % (WEBSITE, TMPDIR, jobid, calctype)
             stderrurl = "%s%s%s/%s_stderr.txt" % (WEBSITE, TMPDIR, jobid, calctype)
-
-        print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
-        print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
-
-        print "</ul></li></ul>"
+            print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
+            print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
+            print "</ul></li></ul>"
+            
         print "<small>Your results will appear at <a href=%s>this page</a>. If you want, you can bookmark it and come back later (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
     elif progress == "version_mismatch":
         print "The versions of APBS on the local server and on the Opal server do not match, so the calculation could not be completed"
@@ -662,11 +657,9 @@ if __name__ == "__main__" and os.environ.has_key("REQUEST_METHOD"):
         sys.exit(2)
 
 
-    if (form["calctype"].value=="pdb2pqr" and HAVE_PDB2PQR_OPAL=="1") or (form["calctype"].value=="apbs" and APBS_OPAL_URL!=""):
+    if (form["calctype"].value=="pdb2pqr" and HAVE_PDB2PQR_OPAL) or (form["calctype"].value=="apbs" and APBS_OPAL_URL!=""):
         have_opal = True
-        from AppService_client import AppServiceLocator, getAppMetadataRequest, launchJobRequest, launchJobBlockingRequest, getOutputAsBase64ByNameRequest, queryStatusRequest, getOutputsRequest
-        from AppService_types import ns0
-        from ZSI.TC import String
+        from AppService_client import AppServiceLocator, queryStatusRequest, getOutputsRequest
     else:
         have_opal = False
 

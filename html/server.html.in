@@ -85,6 +85,8 @@ document.getElementById("peoepb").disabled=false;
 document.getElementById("swanson").disabled=false;
 document.getElementById("tyl06").disabled=false;
 document.getElementById("user").disabled=false;
+document.thisform.LIGAND.disabled=false;
+document.thisform.LIGANDCHECK.disabled=false;
 }
 else if(val == "pdb2pka")
 {
@@ -96,6 +98,9 @@ document.getElementById("peoepb").disabled=true;
 document.getElementById("swanson").disabled=true;
 document.getElementById("tyl06").disabled=true;
 document.getElementById("user").disabled=true;
+document.thisform.LIGAND.disabled=true;
+document.thisform.LIGANDCHECK.disabled=true;
+document.thisform.LIGANDCHECK.checked=false;
 }
 else if(val == "none")
 {
@@ -106,6 +111,8 @@ document.getElementById("peoepb").disabled=false;
 document.getElementById("swanson").disabled=false;
 document.getElementById("tyl06").disabled=false;
 document.getElementById("user").disabled=false;
+document.thisform.LIGAND.disabled=false;
+document.thisform.LIGANDCHECK.disabled=false;
 }
 }
 

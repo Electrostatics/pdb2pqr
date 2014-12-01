@@ -399,9 +399,8 @@ def handleOpal(weboptions):
         Handle opal based run.
     '''
     # Opal-specific import statements
-    from AppService_client import AppServiceLocator, getAppMetadataRequest, launchJobRequest, launchJobBlockingRequest, getOutputAsBase64ByNameRequest
+    from AppService_client import AppServiceLocator, launchJobRequest
     from AppService_types import ns0
-    from ZSI.TC import String
 
     inputFiles = []
     
@@ -671,7 +670,7 @@ def mainCGI():
         print(error)
         sys.exit(2)
         
-    if HAVE_PDB2PQR_OPAL=="1":
+    if HAVE_PDB2PQR_OPAL:
         handleOpal(weboptions)
     else:
         handleNonOpal(weboptions)

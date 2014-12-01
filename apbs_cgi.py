@@ -1660,7 +1660,7 @@ def mainInput() :
 
     if form.has_key("jobid"): # means it's not the first run
         firstRun = False
-        if HAVE_PDB2PQR_OPAL=="1": 
+        if HAVE_PDB2PQR_OPAL: 
             pdb2pqrOpalJobIDFile = open('%s%s%s/pdb2pqr_opal_job_id' % (INSTALLDIR, TMPDIR, form["jobid"].value))
             pdb2pqrOpalJobID = pdb2pqrOpalJobIDFile.read()
             pdb2pqrOpalJobIDFile.close()
@@ -1749,7 +1749,7 @@ def mainInput() :
 if __name__ == "__main__" and os.environ.has_key("REQUEST_METHOD"):
     """ Determine if called from command line or CGI """
 
-    if APBS_OPAL_URL!="" or HAVE_PDB2PQR_OPAL=="1":
+    if APBS_OPAL_URL!="" or HAVE_PDB2PQR_OPAL:
         have_opal = True
         from AppService_client import queryStatusRequest
         from AppService_client import AppServiceLocator, queryStatusRequest, getOutputsRequest

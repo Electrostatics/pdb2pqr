@@ -45,21 +45,19 @@ def installFile(file_name, build_target='install'):
 		Alias(build_target, env.Install(env['PREFIX']+dirname(file_name), target))
 
 #Contrib
-for file_name in getAllFiles('contrib/ZSI-2.1-a1/ZSI'):
-	installFile(file_name)
-
-installFile('contrib/ZSI-2.1-a1/Copyright')
+# for file_name in getAllFiles('contrib/ZSI-2.1-a1/ZSI'):
+# 	installFile(file_name)
+# 
+# installFile('contrib/ZSI-2.1-a1/Copyright')
 	
 #ProPKA	
 for file_name in getAllFiles('propka30/'):
 	installFile(file_name)
 
 #Whole directories
-for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/'):
+for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/', 'ZSI/'):
     for file_name in getAllFiles(dir_name):
         installFile(file_name)
-	#dat = Dir(dir_name)
-	#Alias('install', env.Install(env['PREFIX'], dat))
 
 #Compiled Targets
 for target in compile_targets:

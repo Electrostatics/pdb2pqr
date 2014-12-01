@@ -24,6 +24,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history for the compl
 * Fixed psize error check.
 * Will now build properly without ligand support if numpy is not installed.
 * Removed old automake build files from all tests ported to scons.
+* Fixed broken opal backend.
  
 ## CHANGES 
 * Command line interface to PROPKA changed to accommodate PDB2PKA. PROPKA is now used with --ph-calc-method=propka. --with-ph now defaults to 7.0 and is only required if a different pH value is required.

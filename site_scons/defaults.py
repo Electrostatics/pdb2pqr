@@ -12,4 +12,4 @@ codePath = os.getcwd()
 pythonBin = sys.executable
 
 buildTime = datetime.today()
-productVersion = 'monson-dev BRANCH'# + buildTime.strftime('%Y%m%d%H%M')
+productVersion = '2.0.0'# + buildTime.strftime('%Y%m%d%H%M')

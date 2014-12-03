@@ -83,6 +83,8 @@ class pKaRoutines:
         
         self.output_dir=output_dir
         
+        self.APBS=None
+        
         #Output files
         self.output_files = {}
         self.output_files['pka_dat_file_path'] = os.path.join(self.output_dir, 'PKA.DAT') 
@@ -654,12 +656,9 @@ class pKaRoutines:
         #
         # Get rid of APBS instance
         #
-        #if getattr(self,'APBS',None):
-        #    try:
-        #        self.APBS.cleanup()
-        #        self.APBS=None
-        #    except:
-        #        pass
+        if self.APBS is not None:
+            self.APBS.cleanup()
+            self.APBS=None
         #
         # Dump a pickle file
         #

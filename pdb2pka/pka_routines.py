@@ -203,7 +203,7 @@ class pKaRoutines:
     def dump_protein_file(self, file_name, pdbfile=True):
         lines = self.protein.printAtoms(self.protein.getAtoms(), chainflag=True, pdbfile=pdbfile)
         with open(file_name,'w') as fd:
-            self.routines.write( 'dumping protein state to to '+ fd.name+'\n')                        
+            self.routines.write( 'dumping protein state to '+ fd.name+'\n')                        
             for line in lines:
                 fd.write(line)
 

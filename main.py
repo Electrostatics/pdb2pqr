@@ -95,7 +95,8 @@ def printPQRHeader(pdblist,
                    reslist, 
                    charge, 
                    ff, 
-                   warnings, 
+                   warnings,
+                   ph_calc_method, 
                    pH, 
                    ffout, 
                    cl_args, 
@@ -132,8 +133,8 @@ def printPQRHeader(pdblist,
         header = header + "REMARK   1 Naming Scheme Used: %s\n" % ffout
     header = header + "REMARK   1\n"
     
-    if not pH is None:
-        header = header + "REMARK   1 pKas calculated by propka and assigned using pH %.2f\n" % pH
+    if ph_calc_method is not None:
+        header = header + "REMARK   1 pKas calculated by %s and assigned using pH %.2f\n" % (ph_calc_method, pH)
         header = header + "REMARK   1\n"
 
     for warning in warnings:
@@ -428,7 +429,7 @@ def runPDB2PQR(pdblist, ff,
         myRoutines.applyNameScheme(myNameScheme)
 
     header = printPQRHeader(pdblist, misslist, reslist, charge, ff, 
-                            myRoutines.getWarnings(), ph, ffout, commandLine, 
+                            myRoutines.getWarnings(), ph_calc_method, ph, ffout, commandLine, 
                             include_old_header=include_old_header)
     lines = myProtein.printAtoms(hitlist, chain)
 

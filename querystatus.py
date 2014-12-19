@@ -425,8 +425,10 @@ def mainCGI():
             # this code should be cleaned up once local PDB2PQR runs output the PDB file with the .pdb extension
             if have_opal:
                 for i in range(0,len(filelist)):
-                    if len(filelist[i]._name) == 4:
+                    if ((len(filelist[i]._name) == 4 and '.' not in filelist[i]._name) or
+                        (filelist[i]._name.endswith(".pdb") and "pdb2pka_output" not in filelist[i]._name)):
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                        break                        
             else:
                 print "<li><a href=%s%s%s/%s.pdb>%s.pdb</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, jobid)
 

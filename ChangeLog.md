@@ -14,6 +14,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history for the compl
 * Can now specify output directory for PDB2PKA.
 * Improved error regarding backbone in some cases.
 * Changed time format on querystatus page
+* Improved error catching on web interface.
  
 ## BUG FIXES
 * Fixed executable name when creating binaries for Unix based operating systems.
@@ -32,6 +33,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history for the compl
 * Dropped support for compilation with mingw. Building on Windows now requires VS 2008 installed in the default location.
 * Updated included Scons to 2.3.3
 * PDB2PKA can now be run directly (not integrated in PDB2PQR) with pka.py. Arguments are <PDB file> and <Output directory>.
+* No longer providing 32-bit binary builds. PDB2PKA support is too memory intensive to make this practical in many cases.
  
 ## KNOWN BUGS
 * If more than one extension is run from the command line and one of the extensions modifies the protein data structure it could affect the output of the other extension. The only included extensions that exhibit this problem are resinter and newresinter.

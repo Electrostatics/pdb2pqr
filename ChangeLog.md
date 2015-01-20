@@ -14,6 +14,7 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history for the compl
 * Can now specify output directory for PDB2PKA.
 * Improved error regarding backbone in some cases.
 * Changed time format on querystatus page
+* Improved error catching on web interface.
  
 ## BUG FIXES
 * Fixed executable name when creating binaries for Unix based operating systems.
@@ -32,7 +33,9 @@ Please see http://www.poissonboltzmann.org/pdb2pqr/release-history for the compl
 * Dropped support for compilation with mingw. Building on Windows now requires VS 2008 installed in the default location.
 * Updated included Scons to 2.3.3
 * PDB2PKA can now be run directly (not integrated in PDB2PQR) with pka.py. Arguments are <PDB file> and <Output directory>.
+* No longer providing 32-bit binary builds. PDB2PKA support is too memory intensive to make this practical in many cases.
  
 ## KNOWN BUGS
 * If more than one extension is run from the command line and one of the extensions modifies the protein data structure it could affect the output of the other extension. The only included extensions that exhibit this problem are resinter and newresinter.
-* Running ligands and PDB2PKA at the same time is not currently supported
+* Running ligands and PDB2PKA at the same time is not currently supported.
+* PDB2PKA currently leaks memory slowly. Small jobs will use about twice the normally required RAM (ie ~14 titratable residues will use 140MB). Big jobs will use about 5 times the normally required RAM ( 60 titratable residues will use 480MB ). We are working to fix this.

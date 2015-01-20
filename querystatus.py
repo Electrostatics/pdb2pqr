@@ -425,8 +425,10 @@ def mainCGI():
             # this code should be cleaned up once local PDB2PQR runs output the PDB file with the .pdb extension
             if have_opal:
                 for i in range(0,len(filelist)):
-                    if len(filelist[i]._name) == 4:
+                    if ((len(filelist[i]._name) == 4 and '.' not in filelist[i]._name) or
+                        (filelist[i]._name.endswith(".pdb") and "pdb2pka_output" not in filelist[i]._name)):
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                        break                        
             else:
                 print "<li><a href=%s%s%s/%s.pdb>%s.pdb</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, jobid)
 
@@ -454,7 +456,10 @@ def mainCGI():
         if calctype=="pdb2pqr":                            
             if have_opal:
                 for i in range(0,len(filelist)):
-                    if filelist[i]._name.endswith((".propka", "-typemap.html", ".in")):
+                    if filelist[i]._name.endswith((".propka", "-typemap.html")):
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                        
+                    if filelist[i]._name.endswith(".in") and "pdb2pka_output" not in filelist[i]._name:
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
                         
                     if filelist[i]._name.endswith(".pqr") and not filelist[i]._name.endswith("background_input.pqr"):
@@ -532,10 +537,17 @@ def mainCGI():
             logopts['queryAPBS'] = '|'.join(queryString) 
         
         if calctype=="pdb2pqr":                            
-            if have_opal:    
+            if have_opal:
+                outputfilelist = []    
                 for i in range(0,len(filelist)):
                     if filelist[i]._name.endswith((".DAT", ".txt")):
-                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                        outputfilelist.append((filelist[i]._url, os.path.basename(filelist[i]._name)))
+                        #print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+                if outputfilelist:
+                    print "</ul></li>"
+                    print "<li>PDB2PKA files<ul>"
+                    for outputfile in outputfilelist:
+                        print "<li><a href=%s>%s</a></li>" % (outputfile[0], outputfile[1])
             else:
                 outputfilelist = glob.glob('%s%s%s/pdb2pka_output/*.DAT' % (INSTALLDIR, TMPDIR, jobid))
                 outputfilelist.extend(glob.glob('%s%s%s/pdb2pka_output/*.txt' % (INSTALLDIR, TMPDIR, jobid)))

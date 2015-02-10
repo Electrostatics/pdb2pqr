@@ -234,13 +234,13 @@ Return to <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target
 <hr> 	
 This server enables a user to convert <a href="http://www.rcsb.org/pdb/"target="BLANK">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
 
-pKa calculations are performed by <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a>.<P>
+pKa calculations are performed by <a href="https://github.com/jensengroup/propka-3.1"target="BLANK">PROPKA</a>.<P>
 
 For more information on PDB2PQR please see the:<br />
 <ul>
 	<li> <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target="BLANK">Home Page</a> </li>
 	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">User Guide</a> </li>
-	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-examples/"target="BLANK">Examples</a> </li>
+	<li> <a href="http://www.poissonboltzmann.org/examples/home/"target="BLANK">Examples</a> </li>
 </ul>
 
 If you use the PDB2PQR service in a publication, please cite:
@@ -315,8 +315,15 @@ pKa Options:
 <blockquote>
 Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
 <input type="RADIO" name="PKACALCMETHOD" value="none" id="pka_none" onClick="setpkamethod(this.value)"> No pkA calculation</input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="propka" id="pka_propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" id="pka_pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input>
+<input type="RADIO" name="PKACALCMETHOD" value="propka" id="pka_propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="https://github.com/jensengroup/propka-3.1"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><br />
+<input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" id="pka_pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input><br />
+
+@WITHOUTOPAL@
+<label>&nbsp;&nbsp;* Warning: PDB2PKA is currently experimental and the process can take a very long time.</label>
+@WITHOUTOPAL@
+@WITHOPAL@
+<label>&nbsp;&nbsp;* Warning: PDB2PKA is currently experimental and the process can take a very long time. The webserver will kill any jobs that last longer than one week. </label>
+@WITHOPAL@
 
 </blockquote>
 
@@ -347,10 +354,10 @@ For additional support, feature requests, and bug reports you may contact the <a
 <HR />
 		<center>
 			<small>
-				@WITHOUTOPAL@
+				@WITHOPAL@
 				<br />
 				<a href="http://nbcr-222.ucsd.edu/opal2/dashboard/"target="BLANK">Powered by Opal</a>
-				@WITHOUTOPAL@
+				@WITHOPAL@
 			</small>
 		</center>
 </BODY>

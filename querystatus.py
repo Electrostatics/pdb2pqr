@@ -570,6 +570,7 @@ def mainCGI():
 
         print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
         print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
+        
 
         print "</ul></li></ul>"
 
@@ -608,14 +609,21 @@ def mainCGI():
             resp = appServicePort.getOutputs(getOutputsRequest(jobid))
             stdouturl = resp._stdOut
             stderrurl = resp._stdErr
+            
         else:
             stdouturl = "%s%s%s/%s_stdout.txt" % (WEBSITE, TMPDIR, jobid, calctype)
             stderrurl = "%s%s%s/%s_stderr.txt" % (WEBSITE, TMPDIR, jobid, calctype)
 
         print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
         print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
-
+        
         print "</ul></li></ul>"
+
+        if have_opal: 
+            print " <br />If your job has been running for a prolonged period of time and failed with no reason listed in the standard out or standard error, then the job probably timed out and was terminated by the system.<br />"
+
+        print '<br />If you are having trouble running PDB2PQR on the webserver, please download the <a href="http://www.poissonboltzmann.org/docs/downloads/">command line version of PDB2PQR</a> and run the job from there.'
+
 
         
     elif progress == "running":

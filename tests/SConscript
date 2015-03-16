@@ -45,8 +45,8 @@ aliasObj = setupTest('local-test', runTest, [validatePQRResult])
 
 #Advanced Test
 
-runTest = env.Command('adv-test/test-output-user.pqr', 'adv-test/LIG_1HPX.mol2',
-                      commandLineStart + ' --with-ph=7.00 --ph-calc-method=propka --ligand=$SOURCE --ff=AMBER 1HPX $TARGET')
+runTest = env.Command(['adv-test/test-output-user.pqr', 'adv-test/test-output-user.propka'], 'adv-test/LIG_1HPX.mol2',
+                      commandLineStart + ' --with-ph=7.00 --ph-calc-method=propka --ligand=$SOURCE --ff=AMBER 1HPX ${TARGETS[0]}')
 
 validatePQRResult = env.Command('adv-test/pqr.result', ['adv-test/test-output-user.pqr', 'adv-test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))

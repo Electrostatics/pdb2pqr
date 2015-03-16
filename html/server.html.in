@@ -63,56 +63,79 @@ document.thisform.PDB.disabled=false;
 }
 
 function setff(val){
-if(val == "user")
-{
-document.thisform.USERFF.disabled=false;
-document.thisform.USERNAMES.disabled=false;
-}
-else
-{
-document.thisform.USERFF.disabled=true;
-document.thisform.USERNAMES.disabled=true;
-}
+	if(val == "parse")
+	{
+		document.getElementById("pka_pdb2pka").disabled=false;
+		document.thisform.NEUTRALN.disabled=false;
+		document.thisform.NEUTRALC.disabled=false;
+	}
+	else
+	{
+		document.getElementById("pka_pdb2pka").disabled=true;
+		document.thisform.NEUTRALN.disabled=true;
+		document.thisform.NEUTRALC.disabled=true;
+		document.thisform.NEUTRALN.checked=false;
+		document.thisform.NEUTRALC.checked=false;
+		if(document.getElementById("pka_pdb2pka").checked==true)
+		{
+			document.getElementById("pka_none").checked=true
+		}
+	}
+	
+	if(val == "user")
+	{
+		document.thisform.USERFF.disabled=false;
+		document.thisform.USERNAMES.disabled=false;
+	}
+	else
+	{
+		document.thisform.USERFF.disabled=true;
+		document.thisform.USERNAMES.disabled=true;
+	}
 }
 
+
 function setpkamethod(val){
-if(val == "propka")
+if(val == "propka" || val == "none")
 {
-document.thisform.PH.disabled=false;
-document.getElementById("amber").disabled=false;
-document.getElementById("charmm").disabled=false;
-document.getElementById("peoepb").disabled=false;
-document.getElementById("swanson").disabled=false;
-document.getElementById("tyl06").disabled=false;
-document.getElementById("user").disabled=false;
-document.thisform.LIGAND.disabled=false;
-document.thisform.LIGANDCHECK.disabled=false;
+	if (val == "none")
+	{
+		document.thisform.PH.disabled=true;
+	}
+	else
+	{
+		document.thisform.PH.disabled=false;
+	}
+	if (document.thisform.NEUTRALN.checked!=true && document.thisform.NEUTRALC.checked!=true)
+	{
+	document.getElementById("amber").disabled=false;
+	document.getElementById("charmm").disabled=false;
+	document.getElementById("peoepb").disabled=false;
+	document.getElementById("swanson").disabled=false;
+	document.getElementById("tyl06").disabled=false;
+	document.getElementById("user").disabled=false;
+	document.thisform.LIGAND.disabled=false;
+	document.thisform.LIGANDCHECK.disabled=false;
+	}
+	else
+	{
+	document.thisform.LIGAND.disabled=false;
+	document.thisform.LIGANDCHECK.disabled=false
+	}
 }
-else if(val == "pdb2pka")
+else if(document.getElementById("pka_pdb2pka").checked==true)
 {
-document.thisform.PH.disabled=false;
-document.getElementById("parse").checked=true;
-document.getElementById("amber").disabled=true;
-document.getElementById("charmm").disabled=true;
-document.getElementById("peoepb").disabled=true;
-document.getElementById("swanson").disabled=true;
-document.getElementById("tyl06").disabled=true;
-document.getElementById("user").disabled=true;
-document.thisform.LIGAND.disabled=true;
-document.thisform.LIGANDCHECK.disabled=true;
-document.thisform.LIGANDCHECK.checked=false;
-}
-else if(val == "none")
-{
-document.thisform.PH.disabled=true;
-document.getElementById("amber").disabled=false;
-document.getElementById("charmm").disabled=false;
-document.getElementById("peoepb").disabled=false;
-document.getElementById("swanson").disabled=false;
-document.getElementById("tyl06").disabled=false;
-document.getElementById("user").disabled=false;
-document.thisform.LIGAND.disabled=false;
-document.thisform.LIGANDCHECK.disabled=false;
+	document.thisform.PH.disabled=false;
+	document.getElementById("parse").checked=true;
+	document.getElementById("amber").disabled=true;
+	document.getElementById("charmm").disabled=true;
+	document.getElementById("peoepb").disabled=true;
+	document.getElementById("swanson").disabled=true;
+	document.getElementById("tyl06").disabled=true;
+	document.getElementById("user").disabled=true;
+	document.thisform.LIGAND.disabled=true;
+	document.thisform.LIGANDCHECK.disabled=true;
+	document.thisform.LIGANDCHECK.checked=false;
 }
 }
 
@@ -141,12 +164,15 @@ document.getElementById("user").disabled=true;
 }
 else
 {
-document.getElementById("amber").disabled=false;
-document.getElementById("charmm").disabled=false;
-document.getElementById("peoepb").disabled=false;
-document.getElementById("swanson").disabled=false;
-document.getElementById("tyl06").disabled=false;
-document.getElementById("user").disabled=false;
+	if(document.getElementById("pka_pdb2pka").checked!=true && document.thisform.NEUTRALC.checked!=true && document.thisform.NEUTRALN.checked!=true)
+	{
+	document.getElementById("amber").disabled=false;
+	document.getElementById("charmm").disabled=false;
+	document.getElementById("peoepb").disabled=false;
+	document.getElementById("swanson").disabled=false;
+	document.getElementById("tyl06").disabled=false;
+	document.getElementById("user").disabled=false;
+	}
 }
 }
 
@@ -163,12 +189,15 @@ document.getElementById("user").disabled=true;
 }
 else
 {
-document.getElementById("amber").disabled=false;
-document.getElementById("charmm").disabled=false;
-document.getElementById("peoepb").disabled=false;
-document.getElementById("swanson").disabled=false;
-document.getElementById("tyl06").disabled=false;
-document.getElementById("user").disabled=false;
+	if(document.getElementById("pka_pdb2pka").checked!=true && document.thisform.NEUTRALC.checked!=true && document.thisform.NEUTRALN.checked!=true)
+	{
+	document.getElementById("amber").disabled=false;
+	document.getElementById("charmm").disabled=false;
+	document.getElementById("peoepb").disabled=false;
+	document.getElementById("swanson").disabled=false;
+	document.getElementById("tyl06").disabled=false;
+	document.getElementById("user").disabled=false;
+	}
 }
 }
 
@@ -205,13 +234,13 @@ Return to <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target
 <hr> 	
 This server enables a user to convert <a href="http://www.rcsb.org/pdb/"target="BLANK">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
 
-pKa calculations are performed by <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a>.<P>
+pKa calculations are performed by <a href="https://github.com/jensengroup/propka-3.1"target="BLANK">PROPKA</a>.<P>
 
 For more information on PDB2PQR please see the:<br />
 <ul>
 	<li> <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target="BLANK">Home Page</a> </li>
 	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">User Guide</a> </li>
-	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-examples/"target="BLANK">Examples</a> </li>
+	<li> <a href="http://www.poissonboltzmann.org/examples/home/"target="BLANK">Examples</a> </li>
 </ul>
 
 If you use the PDB2PQR service in a publication, please cite:
@@ -285,9 +314,16 @@ Available options:
 pKa Options:
 <blockquote>
 Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="none" onClick="setpkamethod(this.value)"> No pkA calculation</input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="http://propka.ki.ku.dk"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input>
+<input type="RADIO" name="PKACALCMETHOD" value="none" id="pka_none" onClick="setpkamethod(this.value)"> No pkA calculation</input><br />
+<input type="RADIO" name="PKACALCMETHOD" value="propka" id="pka_propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="https://github.com/jensengroup/propka-3.1"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><br />
+<input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" id="pka_pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input><br />
+
+@WITHOUTOPAL@
+<label>&nbsp;&nbsp;* Warning: PDB2PKA is currently experimental and the process can take a very long time.</label>
+@WITHOUTOPAL@
+@WITHOPAL@
+<label>&nbsp;&nbsp;* Warning: PDB2PKA is currently experimental and the process can take a very long time. The webserver will kill any jobs that last longer than one week. </label>
+@WITHOPAL@
 
 </blockquote>
 
@@ -318,10 +354,10 @@ For additional support, feature requests, and bug reports you may contact the <a
 <HR />
 		<center>
 			<small>
-				@WITHOUTOPAL@
+				@WITHOPAL@
 				<br />
 				<a href="http://nbcr-222.ucsd.edu/opal2/dashboard/"target="BLANK">Powered by Opal</a>
-				@WITHOUTOPAL@
+				@WITHOPAL@
 			</small>
 		</center>
 </BODY>

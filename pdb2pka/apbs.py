@@ -341,8 +341,6 @@ class runAPBS:
         radlist = self.rad[-1*(self.protsize):]
 
         Valist_load(self.myAlist, self.protsize, xlist, ylist, zlist, chglist, radlist)
-
-        potentials=[]
         potentials = getPotentials(self.nosh,self.pbeparm,self.thispmg,self.myAlist)
 
         protein = copy.copy(proteincopy)

@@ -83,6 +83,8 @@ class pKaRoutines:
         
         self.output_dir=output_dir
         
+        self.APBS=None
+        
         #Output files
         self.output_files = {}
         self.output_files['pka_dat_file_path'] = os.path.join(self.output_dir, 'PKA.DAT') 
@@ -201,7 +203,7 @@ class pKaRoutines:
     def dump_protein_file(self, file_name, pdbfile=True):
         lines = self.protein.printAtoms(self.protein.getAtoms(), chainflag=True, pdbfile=pdbfile)
         with open(file_name,'w') as fd:
-            self.routines.write( 'dumping protein state to to '+ fd.name+'\n')                        
+            self.routines.write( 'dumping protein state to '+ fd.name+'\n')                        
             for line in lines:
                 fd.write(line)
 
@@ -654,12 +656,9 @@ class pKaRoutines:
         #
         # Get rid of APBS instance
         #
-        #if getattr(self,'APBS',None):
-        #    try:
-        #        self.APBS.cleanup()
-        #        self.APBS=None
-        #    except:
-        #        pass
+        if self.APBS is not None:
+            self.APBS.cleanup()
+            self.APBS=None
         #
         # Dump a pickle file
         #

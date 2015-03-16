@@ -1,6 +1,6 @@
 <appConfig xmlns="http://nbcr.sdsc.edu/opal/types"
            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <metadata appName="PDB2PQR 1.9.0">
+  <metadata appName="PDB2PQR 2.0.0">
     <usage><![CDATA[PDB2PQR is a Python software package that automates many of the common tasks of preparing structures for continuum electrostatics calculations, providing a platform-independent utility for converting protein files in PDB format to PQR format. Version 1.9.0.
 <BR><A HREF=http://www.nbcr.net/ws_help/PDB2PQR/>
 Tutorial: http://www.nbcr.net/ws_help/PDB2PQR/
@@ -9,7 +9,7 @@ Tutorial: http://www.nbcr.net/ws_help/PDB2PQR/
     <info xsd:type="xsd:string">
     <![CDATA[
 
-pdb2pqr  (Version 1.9.0)
+pdb2pqr  (Version 2.0.0)
 Usage: pdb2pqr.py [options] PDB_PATH PQR_OUTPUT_PATH
 
 This module takes a PDB file as input and performs optimizations before
@@ -20,11 +20,11 @@ Options:
   --version             show program's version number and exit
   -h, --help            show this help message and exit
 
-  Mandatory options:
+  Manditory options:
     One of the following options must be used.
 
-    --ff=FIELD_NAME     The forcefield to use - currently AMBER, CHARMM,
-                        PARSE, TYL06, PEOEPB and SWANSON are supported.
+    --ff=FIELD_NAME     The forcefield to use - currently amber, charmm,
+                        parse, tyl06, peoepb and swanson are supported.
     --userff=USER_FIELD_FILE
                         The user created forcefield file to use. Requires
                         --usernames overrides --ff
@@ -40,8 +40,8 @@ Options:
                         debump, or optimize.
     --ffout=FIELD_NAME  Instead of using the standard canonical naming scheme
                         for residue and atom names, use the names from the
-                        given forcefield - currently AMBER, CHARMM, PARSE,
-                        TYL06, PEOEPB and SWANSON are supported.
+                        given forcefield - currently amber, charmm, parse,
+                        tyl06, peoepb and swanson are supported.
     --usernames=USER_NAME_FILE
                         The user created names file to use. Required if using
                         --userff
@@ -58,14 +58,26 @@ Options:
     --neutralc          Make the C-terminus of this protein neutral (default
                         is charged). Requires PARSE force field.
     -v, --verbose       Print information to stdout.
+    --drop-water        Drop waters before processing protein. Currently
+                        recognized and deleted are the following water types:
+                        HOH, WAT
+    --include-header    Include pdb header in pqr file. WARNING: The resulting
+                        PQR file will not work with APBS versions prior to 1.5
 
-  Propka options:
-    --with-ph=PH        Use propka to calculate pKas and apply them to the
-                        molecule given the pH value. Actual PropKa results
-                        will be output to <output-path>.propka.
-    --reference=REFERENCE
-                        setting which reference to use for stability
-                        calculations [neutral/low-pH]
+  pH options:
+    --ph-calc-method=PH_METHOD
+                        Method used to calculate ph values. If a pH
+                        calculation method is selected, for each titratable
+                        residue pH values will be calculated and the residue
+                        potentially modified after comparison with the pH
+                        value supplied by --with_ph propka - Use PROPKA to
+                        calculate pH values. Actual PROPKA results will be
+                        output to <output-path>.propka. pdb2pka - Use PDB2PKA
+                        to calculate pH values. Requires the use of the PARSE
+                        force field. Warning: Larger residues can take a very
+                        long time to run using this method. EXPERIMENTAL!
+    --with-ph=PH        pH values to use when applying the results of the
+                        selected pH calculation method. Defaults to 7.0
 
   Extension options:
     --chi               Print the per-residue backbone chi angle to {output-
@@ -73,6 +85,8 @@ Options:
     --summary           Print protein summary information to {output-
                         path}.summary.
     --contact           Print a list of contacts to {output-path}.con
+    --newresinter       Print interaction energy between each residue pair in
+                        the protein to {output-path}.newresinter.
     --salt              Print a list of salt bridges to {output-path}.salt
 
   Hbond extension options:
@@ -119,6 +133,7 @@ Options:
                         {output-path}.phi
     --psi_only          Only include psi angles in output. Rename output file
                         {output-path}.psi
+
     ]]>
     </info>
 
@@ -316,12 +331,32 @@ Options:
                 <value>TYL06</value>                
                 <textDesc>Instead of using the standard canonical naming scheme for residue and atom, use names from the given forcefield:</textDesc>
             </param>
+			<param>
+                <id>ph-calc-method</id>
+                <tag>--ph-calc-method</tag>
+                <paramType>STRING</paramType>
+				<value>PROPKA</value>
+                <value>PDB2PKA</value>
+				<required>false</required> 
+                <textDesc>Method used to calculate ph values, if any. If a pH
+                        calculation method is selected, for each titratable
+                        residue pH values will be calculated and the residue
+                        potentially modified after comparison with the pH
+                        value supplied by --with_ph propka - Use PROPKA to
+                        calculate pH values. Actual PROPKA results will be
+                        output to output-path.propka. pdb2pka - Use PDB2PKA
+                        to calculate pH values. Requires the use of the PARSE
+                        force field. Warning: Larger residues can take a very
+                        long time to run using this method. EXPERIMENTAL!</textDesc>
+            </param>
             <param>
                 <id>with-ph</id>
                 <tag>--with-ph</tag>
                 <paramType>FLOAT</paramType>
-                <textDesc>Use PROPKA to calculate pKas and apply them to the molecule given the pH value [0.0-14.0]
-                          Actual PropKa results will be output to {output-path}.propka</textDesc>
+				<required>false</required> 
+				<default>7.0</default>
+                <textDesc>pH values to use when applying the results of the
+                        selected pH calculation method. Defaults to 7.0</textDesc>
             </param>
             <param>
                 <id>ligand</id>
@@ -404,7 +439,7 @@ Options:
           </group>
           <group>
             <name>AvailableOptionsGroup</name>
-            <elements>clean nodebump noopt chain assign-only with-ph apbs-input 
+            <elements>clean nodebump noopt chain assign-only ph-calc-method with-ph apbs-input 
                       ligand whitespace typemap neutraln neutralc verbose </elements>
             <required>false</required>
             <textDesc>Available options </textDesc>

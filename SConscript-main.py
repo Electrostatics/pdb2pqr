@@ -150,12 +150,15 @@ settingsValues = env.Value(replacementDict)
 #Set up regex to alternately clear tags or wipe sections
 if env['OPAL'] == '':
     #Not using opal for pdb2pqr.
-    withOpalRegex = '@WITHOPAL@'
-    withoutOpalRegex = r'@WITHOUTOPAL@.*?@WITHOUTOPAL@'
-else:
-    #Using opal for pdb2pqr.
+    print "not using opal", env['OPAL']
     withOpalRegex = r'@WITHOPAL@.*?@WITHOPAL@'
     withoutOpalRegex = '@WITHOUTOPAL@'
+
+else:
+    #Using opal for pdb2pqr.
+    print "using opal", env['OPAL']
+    withOpalRegex = '@WITHOPAL@'
+    withoutOpalRegex = r'@WITHOUTOPAL@.*?@WITHOUTOPAL@'
 
     
 serverHtmlDict = {'@website@':url,

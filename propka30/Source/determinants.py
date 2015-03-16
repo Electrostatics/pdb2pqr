@@ -60,10 +60,13 @@ def setDeterminants(propka_residues, version=None, options=None):
                 break
 
             distance = calculate.InterResidueDistance(residue1, residue2)
-   
+
             if distance < version.sidechain_cutoff or distance < version.coulomb_cutoff[1]:
-                do_pair, iterative_interaction = version.interaction[residue1.resType][residue2.resType]
-             
+                try:
+                    do_pair, iterative_interaction = version.interaction[residue1.resType][residue2.resType]
+                except KeyError as e:
+                    do_pair = False
+
                 if do_pair == True:
                     if iterative_interaction == True:
                         iterative.addtoDeterminantList(residue1, residue2, distance, iterative_interactions, version=version)
@@ -280,8 +283,8 @@ def setBackBoneAcidDeterminants(data_clump, version=None):
                     value = residue.Q * calculate.HydrogenBondEnergy(distance, dpKa_max, cutoff, f_angle)
                     newDeterminant = Determinant(label, value)
                     residue.determinants[1].append(newDeterminant)
-            
-        
+
+
 def setBackBoneBaseDeterminants(data_clump, version=None):
     """
     adding back-bone determinants/perturbations for bases:
@@ -313,4 +316,4 @@ def setBackBoneBaseDeterminants(data_clump, version=None):
                         value = residue.Q * calculate.HydrogenBondEnergy(distance, dpKa_max, cutoff, f_angle)
                         newDeterminant = Determinant(label, value)
                         residue.determinants[1].append(newDeterminant)
-              
+

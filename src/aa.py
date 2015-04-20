@@ -5,40 +5,40 @@
     pdb2pqr.
 
     ----------------------------
-   
+
     PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
     Poisson-Boltzmann electrostatics calculations
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
+    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
+    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
+    Northwest National Laboratory, operated by Battelle Memorial Institute,
+    Pacific Northwest Division for the U.S. Department Energy.;
     Paul Czodrowski & Gerhard Klebe, University of Marburg.
 
 	All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without modification, 
+	Redistribution and use in source and binary forms, with or without modification,
 	are permitted provided that the following conditions are met:
 
-		* Redistributions of source code must retain the above copyright notice, 
+		* Redistributions of source code must retain the above copyright notice,
 		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
 		  and/or other materials provided with the distribution.
         * Neither the names of University College Dublin, Battelle Memorial Institute,
           Pacific Northwest National Laboratory, US Department of Energy, or University
           of Marburg nor the names of its contributors may be used to endorse or promote
           products derived from this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 	OF THE POSSIBILITY OF SUCH DAMAGE.
 
     ----------------------------
@@ -68,7 +68,7 @@ class Amino(Residue):
     """
     def __init__(self, atoms, ref):
         sampleAtom = atoms[-1]
-        
+
         self.atoms = []
         self.name = sampleAtom.resName
         self.chainID = sampleAtom.chainID
@@ -89,7 +89,7 @@ class Amino(Residue):
         self.reference = ref
         self.fixed = 0
         self.stateboolean = {}
-        
+
         # Create each atom
 
         for a in atoms:
@@ -118,7 +118,7 @@ class Amino(Residue):
         newatom.set("occupancy",1.00)
         newatom.set("tempFactor",0.00)
         newatom.added = 1
-        self.addAtom(newatom) 
+        self.addAtom(newatom)
 
     def addAtom(self, atom):
         """
@@ -183,7 +183,7 @@ class ALA(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'A'
 
@@ -205,14 +205,14 @@ class ARG(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'R'
 
     def setState(self):
         """
            Set the name to use for the forcefield based on the current
-           state.  
+           state.
         """
         if "AR0" in self.patches or self.name == "AR0": self.ffname = "AR0"
         Amino.setState(self)
@@ -235,7 +235,7 @@ class ASN(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'N'
 
@@ -257,19 +257,19 @@ class ASP(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'D'
 
     def setState(self):
         """
            Set the name to use for the forcefield based on the current
-           state.  
+           state.
         """
-        if "ASH" in self.patches or self.name == "ASH": 
+        if "ASH" in self.patches or self.name == "ASH":
             self.ffname = "ASH"
         Amino.setState(self)
-    
+
 class CYS(Amino):
     """
         Cysteine class
@@ -290,7 +290,7 @@ class CYS(Amino):
         self.reference = ref
         self.SSbonded = 0
         self.SSbondedpartner = None
-        
+
     def letterCode(self):
         return 'C'
 
@@ -299,16 +299,16 @@ class CYS(Amino):
             Set the state of the CYS object.  If SS-bonded, use CYX.  If
             negatively charged, use CYM.  If HG is not present, use CYX.
         """
-        if "CYX" in self.patches or self.name == "CYX": 
+        if "CYX" in self.patches or self.name == "CYX":
             self.ffname = "CYX"
-        elif self.SSbonded: 
+        elif self.SSbonded:
             self.ffname = "CYX"
-        elif "CYM" in self.patches or self.name == "CYM": 
+        elif "CYM" in self.patches or self.name == "CYM":
             self.ffname = "CYM"
-        elif not self.hasAtom("HG"): 
+        elif not self.hasAtom("HG"):
             self.ffname = "CYX"
         Amino.setState(self)
-      
+
 class GLN(Amino):
     """
         Glutamine class
@@ -327,7 +327,7 @@ class GLN(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'Q'
 
@@ -349,19 +349,19 @@ class GLU(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'E'
 
     def setState(self):
         """
            Set the name to use for the forcefield based on the current
-           state. 
+           state.
         """
         if "GLH" in self.patches or self.name == "GLH": self.ffname = "GLH"
         Amino.setState(self)
 
-    
+
 class GLY(Amino):
     """
         Glycine class
@@ -380,7 +380,7 @@ class GLY(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'G'
 
@@ -402,7 +402,7 @@ class HIS(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'H'
 
@@ -413,7 +413,7 @@ class HIS(Amino):
             positive incarnations of HIS to neutral HIS by
             checking to see if optimization removed hacceptor or
             hdonor flags.  Otherwise HID is used as the default.
-        """ 
+        """
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
             if self.getAtom("ND1").hdonor and not \
                    self.getAtom("ND1").hacceptor:
@@ -425,16 +425,19 @@ class HIS(Amino):
                      self.getAtom("ND1").hdonor:
                 if self.hasAtom("HD1"): self.removeAtom("HD1")
             else: # Default to HID
-                if self.hasAtom("HE2"): self.removeAtom("HE2")    
+                if self.hasAtom("HE2"): self.removeAtom("HE2")
 
-        if self.hasAtom("HD1") and self.hasAtom("HE2"): 
+        if self.hasAtom("HD1") and self.hasAtom("HE2"):
             self.ffname = "HIP"
-        elif self.hasAtom("HD1"): 
+        elif self.hasAtom("HD1"):
             self.ffname = "HID"
-        elif self.hasAtom("HE2"): 
+        elif self.hasAtom("HE2"):
             self.ffname = "HIE"
         else:
-            raise PDBInputError("Invalid type for %s!" % str(self))
+            raise PDBInputError("Invalid type for %s! Missing both HD1 and HE2 atoms."
+                                " If you receive this error while using the --assign-only"
+                                " option you can only resolve it by adding HD1, HE2 or both to"
+                                " this residue." % str(self))
         Amino.setState(self)
 
 class ILE(Amino):
@@ -455,7 +458,7 @@ class ILE(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'I'
 
@@ -475,9 +478,9 @@ class LEU(Amino):
                 atoms:      A list of Atom objects to be stored in this class
                             (list)
         """
-        Amino.__init__(self, atoms, ref)        
+        Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'L'
 
@@ -499,7 +502,7 @@ class LYS(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'K'
 
@@ -509,7 +512,7 @@ class LYS(Amino):
         """
         if "LYN" in self.patches or self.name == "LYN": self.ffname = "LYN"
         Amino.setState(self)
-  
+
 class MET(Amino):
     """
         Methionine class
@@ -528,7 +531,7 @@ class MET(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'M'
 
@@ -550,7 +553,7 @@ class PHE(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'F'
 
@@ -572,7 +575,7 @@ class PRO(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'P'
 
@@ -588,7 +591,7 @@ class PRO(Amino):
                 self.ffname = "NEUTRAL-C%s" % self.ffname
             else:
                 self.ffname = "C%s" % self.ffname
-    
+
 class SER(Amino):
     """
         Serine class
@@ -607,7 +610,7 @@ class SER(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'S'
 
@@ -629,7 +632,7 @@ class THR(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'T'
 
@@ -651,7 +654,7 @@ class TRP(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'W'
 
@@ -673,7 +676,7 @@ class TYR(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'Y'
 
@@ -702,7 +705,7 @@ class VAL(Amino):
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
-        
+
     def letterCode(self):
         return 'V'
 
@@ -715,7 +718,7 @@ class WAT(Residue):
         off the base residue class.
     """
     water_residue_names = ['HOH', 'WAT']
-	
+
     def __init__(self, atoms, ref):
         """
             Initialize the class
@@ -724,9 +727,9 @@ class WAT(Residue):
                 atoms:      A list of Atom objects to be stored in this class
                             (list)
         """
-        
+
         sampleAtom = atoms[-1]
-        
+
         self.atoms = []
         self.name = sampleAtom.resName
         self.chainID = sampleAtom.chainID
@@ -737,18 +740,18 @@ class WAT(Residue):
         self.ffname = "WAT"
         self.map = {}
         self.reference = ref
-        
+
         # Create each atom
 
         for a in atoms:
             if a.name in ref.altnames: # Rename atoms
                 a.name = ref.altnames[a.name]
-           
+
             atom = Atom(a, "HETATM", self)
             atomname = atom.get("name")
             if atomname not in self.map:
                 self.addAtom(atom)
-            else: # Don't add duplicate atom with altLoc field           
+            else: # Don't add duplicate atom with altLoc field
                 oldatom = self.getAtom(atomname)
                 oldatom.set("altLoc","")
 
@@ -769,7 +772,7 @@ class WAT(Residue):
         newatom.set("occupancy",1.00)
         newatom.set("tempFactor",0.00)
         newatom.added = 1
-        self.addAtom(newatom) 
+        self.addAtom(newatom)
 
     def addAtom(self, atom):
         """
@@ -805,9 +808,9 @@ class LIG(Residue):
                 atoms:      A list of Atom objects to be stored in this class
                             (list)
         """
-        
+
         sampleAtom = atoms[-1]
-        
+
         self.atoms = []
         self.name = sampleAtom.resName
         self.chainID = sampleAtom.chainID
@@ -821,18 +824,18 @@ class LIG(Residue):
 
         self.isNterm = 0
         self.isCterm = 0
-        
+
         # Create each atom
 
         for a in atoms:
             if a.name in ref.altnames: # Rename atoms
                 a.name = ref.altnames[a.name]
-           
+
             atom = Atom(a, "HETATM", self)
             atomname = atom.get("name")
             if atomname not in self.map:
                 self.addAtom(atom)
-            else: # Don't add duplicate atom with altLoc field           
+            else: # Don't add duplicate atom with altLoc field
                 oldatom = self.getAtom(atomname)
                 oldatom.set("altLoc","")
 
@@ -853,7 +856,7 @@ class LIG(Residue):
         newatom.set("occupancy",1.00)
         newatom.set("tempFactor",0.00)
         newatom.added = 1
-        self.addAtom(newatom) 
+        self.addAtom(newatom)
 
     def addAtom(self, atom):
         """

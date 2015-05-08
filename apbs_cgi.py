@@ -1624,6 +1624,7 @@ def redirector(logTime):
 <html> 
     <head>
         {trackingscript}
+		<link rel="stylesheet" href="css/foundation.css">
         <script type="text/javascript">
             {trackingevents}
         </script>

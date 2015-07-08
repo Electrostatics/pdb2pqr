@@ -1,5 +1,5 @@
-function build_page(){
-	jobid = 1234;
+function build_page(jobid){
+	//jobid = 1234;
 	document.title = "3Dmol Visualization " + jobid
 
 	var a = 

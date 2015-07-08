@@ -73,9 +73,10 @@ def main(apbsOptions):
         <script type="text/JavaScript" src="jmol/Jmol.js"></script>
         <script type="text/JavaScript">APPLET_PATH="jmol/";GZIP=""</script>
         <script type="text/JavaScript" src="jmol/apbsjmol.js"></script>
+        <script type="text/JavaScript" src="3dmol/visualize_html.js"></script>
     </head>
     <body onload="init()">
-        <script type="text/javascript">createVisualization({jobid}, -5.0, 5.0)</script>
+        <script type="text/javascript">build_page({jobid})</script>
     </body>
 </html>""".format(jobid=jobid,
                   trackingevents=getEventTrackingString(category='apbs',

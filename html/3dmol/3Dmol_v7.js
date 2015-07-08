@@ -292,7 +292,7 @@
         function getpqr(jobid){
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
-            url = "http://pt24098/lile647/pdb2pqr/"+jobid+".pqr";
+            url = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -311,7 +311,7 @@
 
         function getcube(){
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/cubefile.cube");
+            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/tmp/cubefile.cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {

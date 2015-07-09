@@ -69,15 +69,15 @@ def main(apbsOptions):
             {trackingevents}
         </script>
         <title>Visualization</title>
-        <link rel="stylesheet" href="html/css/pdb2pqr_3dmol.css" type="text/css">
-        <link rel="stylesheet" href="html/css/foundation.css">
-        <link rel="stylesheet" type="text/css" href="html/css/pure-min.css" media="screen" />
+        <link rel="stylesheet" href="3dmol/css/pdb2pqr_3dmol.css" type="text/css">
+        <link rel="stylesheet" href="3dmol/css/foundation.css">
+        <link rel="stylesheet" type="text/css" href="3dmol/css/pure-min.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="pdb2pqr.css" media="screen" />
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="http://3dmol.csb.pitt.edu/build/3Dmol.js"></script>
-        <script type="text/JavaScript" src="html/3dmol/visualize_html.js"></script>
-        <script type="text/JavaScript" src="html/3dmol/3Dmol_v7.js"></script>
+        <script type="text/JavaScript" src="3dmol/visualize_html.js"></script>
+        <script type="text/JavaScript" src="3dmol/3Dmol.js"></script>
     </head>
     <body>
         <script type="text/javascript">build_page({jobid})</script>

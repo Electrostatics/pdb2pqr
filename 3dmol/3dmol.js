@@ -311,7 +311,7 @@
 
         function getcube(){
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/tmp/cubefile.cube");
+            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {

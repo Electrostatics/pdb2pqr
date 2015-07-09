@@ -13,9 +13,9 @@ function build_page(jobid){
     var b = 
     "<font style='color: black; font-size: 8pt; font-style: italic'>Click to change</font><br>" +
 "    <select class='styled-select' id='selected_surface' onchange='update_surface(1)' >" +
-"       <option style='color: black;' value='SAS'>Solvent Accessible Surface</option>" +
-"<option style='color: black;' value='SES'>Solvent Excluded Surface </option>" +
-"<option style='color: black;' value='VDW'>Van Der Waals </option>" +
+"       <option style='color: black;' value='SAS'>Solvent Accessible</option>" +
+"<option style='color: black;' value='SES'>Solvent Excluded</option>" +
+"<option style='color: black;' value='VDW'>Van Der Waals</option>" +
 "</select>" +
 "    <br><br>" 
 
@@ -38,7 +38,7 @@ var d =
 //change max isoval
 var e =
 " <table><tr><td style='color: white; font-size: 18px'>Maximum: &nbsp;</td> " +
-"<td><input type='text' id='max_isoval2' value='-5' style='text-align:right; width: 50px; height: 30px; background: transparent; border:0; color: white; font-size: 18px'> </td>" +
+"<td><input type='text' id='max_isoval2' value='5' style='text-align:right; width: 50px; height: 30px; background: transparent; border:0; color: white; font-size: 18px'> </td>" +
 "<td style='color: white; font-size: 18px'>kT/e &nbsp;&nbsp;</td>" +
 "<td valign='top'><br><input type=range min=-50 max=50 value=5 id='max_isoval2' step=1 onmouseup='set_max_isoval2(value)'> </td></tr></table>"
 

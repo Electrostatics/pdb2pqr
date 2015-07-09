@@ -77,7 +77,7 @@ def main(apbsOptions):
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="http://3dmol.csb.pitt.edu/build/3Dmol.js"></script>
         <script type="text/JavaScript" src="3dmol/visualize_html.js"></script>
-        <script type="text/JavaScript" src="3dmol/3Dmol.js"></script>
+        <script type="text/JavaScript" src="3dmol/3dmol.js"></script>
     </head>
     <body>
         <script type="text/javascript">build_page({jobid})</script>

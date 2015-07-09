@@ -306,10 +306,10 @@
               
             };
             xhr.send(null);
-            getcube();
+            getcube(jobid);
         }
 
-        function getcube(){
+        function getcube(jobid){
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".cube");
             //xhr.responseType = 'blob';

@@ -20,7 +20,7 @@ body {
   height: 100%
 }
 
-table, tr, td {
+table.main{
   border: none;
   font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background: transparent;
@@ -28,7 +28,7 @@ table, tr, td {
   color: #FFFFFF;
 }
 
-td.test { style="font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif; color: white; font-size: 18px;"}
+
 
 #pdbid {
 	 color: #929292;

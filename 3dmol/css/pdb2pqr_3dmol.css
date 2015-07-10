@@ -23,6 +23,7 @@ body {
 table.main{
   border: none;
   font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  width: 80%;
   background: transparent;
   font-size: 18px;
   color: #FFFFFF;

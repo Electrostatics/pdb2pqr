@@ -30,14 +30,14 @@ function build_page(jobid){
 
 //change min isoval
 var d =
-" <table><tr><td style='color: white; font-size: 18px'>Minimum: &nbsp;</td> " +
+" <table class='main'><tr><td style='color: white; font-size: 18px'>Minimum: &nbsp;</td> " +
 "<td><br><input type='text' id='min_isoval2' value='-5' style='text-align:right; width: 50px; height: 30px; background: transparent; border:0; color: white; font-size: 18px'> </td>" +
 "<td style='color: white; font-size: 18px'>kT/e &nbsp;&nbsp;</td>" +
 "<td valign='top'><br><br><input type=range min=-50 max=50 value=-5 id='min_isoval2' step=1 onmouseup='set_min_isoval2(value)'> </td></tr></table>"
 
 //change max isoval
 var e =
-" <table><tr><td style='color: white; font-size: 18px'>Maximum: &nbsp;</td> " +
+" <table class='main'><tr><td style='color: white; font-size: 18px'>Maximum: &nbsp;</td> " +
 "<td><input type='text' id='max_isoval2' value='5' style='text-align:right; width: 50px; height: 30px; background: transparent; border:0; color: white; font-size: 18px'> </td>" +
 "<td style='color: white; font-size: 18px'>kT/e &nbsp;&nbsp;</td>" +
 "<td valign='top'><br><input type=range min=-50 max=50 value=5 id='max_isoval2' step=1 onmouseup='set_max_isoval2(value)'> </td></tr></table>"

@@ -34,9 +34,7 @@ def printheader(pagetitle,refresh=None,jobid=None):
 def createcube():
     dx_input = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+"-pot.dx"
     output = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".pqr"
-    pqr_input = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".cube";
-
-    print dx_output
+    pqr_input = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".cube"
 
     with open(dx_input, 'r') as in_f, open(output, 'w') as out_f, open(pqr_input, 'r') as in_pqr:
         out_f.write("CPMD CUBE FILE.\n"
@@ -142,7 +140,6 @@ def createcube():
         if group:
             group_strs = ["{:< 13.5E}".format(item) for item in group]
             out_f.write(' '.join(group_strs))
-
 
 def checkprogress(jobid=None,appServicePort=None,calctype=None):
     """

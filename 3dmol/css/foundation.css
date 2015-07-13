@@ -5216,9 +5216,9 @@ ul.off-canvas-list {
       left: 0 !important; }
 
 table {
-  background: #FFFFFF;
+  //background: #FFFFFF;
   margin-bottom: 1.25rem;
-  border: solid 1px #DDDDDD;
+  //element.styleborder: solid 1px #DDDDDD;
   table-layout: auto; }
   table caption {
     background: transparent;

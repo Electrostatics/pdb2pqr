@@ -22,8 +22,10 @@ body {
 
 table.main{
   border: none;
+  width: 60%;
   font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  width: 80%;
+  padding: 0px;
+  border-spacing: 0px;
   background: transparent;
   font-size: 18px;
   color: #FFFFFF;
@@ -63,13 +65,13 @@ input[type=range] {
     -webkit-appearance: none;
 	border-radius: 10px;
     background-color: white;
-    width: 200px;
+    //width: 200px;
     height:5px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
      -webkit-appearance: none;
-    background-color: white;
+    background-color: rgb(178, 176, 168);
     opacity: 0.7;
     width: 10px;
     height: 26px;
@@ -109,24 +111,24 @@ input[type=range]::-ms-thumb {
 
 .styled-select{
    height: 40px;
-   width: 300px;
+   width: 290px;
    padding: 0px;
    background: rgb(178, 176, 168);
    border: none;
    border-radius: 1000px;
    font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
-   font-size: 16px;
+   font-size: 14px;
    font-weight: normal;
    line-height: normal;
    text-align: center;
    text-decoration: none;
-   color: white;
+   color: black; //white;
 
    -webkit-appearance: none;
 }
 
 select:active, select:hover {
-   background-color: rgb(160,158,151);
+   background-color: white; //rgb(160,158,151);
 }
 
 
@@ -176,6 +178,7 @@ div#content {
 #outer
 {
   width: 26em;
+  //background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
 	right: 0px;
 	top: 0;
 	height: 100%;
@@ -384,7 +387,7 @@ body > header h1 span {
  .button-labela  {
 			padding-left: 0em;
 			padding-right: 0em;
-			font-size: 15px;
+			font-size: 12px;
              background: rgb(178, 176, 168); /* this is a light grey */
         }
 		
@@ -392,7 +395,7 @@ body > header h1 span {
 			padding-left: 0em;
 			padding-right: 0em;
 			text-align: center;
-			font-size: 15px;
+			font-size: 12px;
             background: rgb(178, 176, 168); /* this is a light grey */
         }
 		

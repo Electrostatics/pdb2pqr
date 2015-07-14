@@ -31,11 +31,8 @@ def printheader(pagetitle,refresh=None,jobid=None):
     str+= "</HEAD>\n"
     return str
 
-def createcube():
-    dx_input = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+"-pot.dx"
-    output = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".pqr"
-    pqr_input = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".cube"
-
+def createcube(dx_input, pqr_input, output):
+    
     with open(dx_input, 'r') as in_f, open(output, 'w') as out_f, open(pqr_input, 'r') as in_pqr:
         out_f.write("CPMD CUBE FILE.\n"
                     "OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z\n")
@@ -45,8 +42,7 @@ def createcube():
         newline = in_pqr.readline()
         while line.startswith('#'):
             line = in_f.readline()
-        while newline.startswith('REMARK'):
-            newline = in_pqr.readline()
+        
         
         split_line = line.split()        
         grid_sizes = [int(x)*-1 for x in split_line[-3:]]
@@ -56,10 +52,14 @@ def createcube():
         origin = [float(x) for x in split_line[-3:]]
         
         parameter_fmt = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f}\n"
+        atom_num = 0
+        while newline.startswith('REMARK'):
+            newline = in_pqr.readline()
+
         try:    
-            while newline.startswith('ATOM'):
-                pqr_line =  in_pqr.readline()
-                new_split_line = pqr_line.split()
+            while newline.startswith('ATOM') or newline.startswith('HETATM'):
+                newline =  in_pqr.readline()
+                new_split_line = newline.split()
                 atom_num = new_split_line[1]
         except IndexError:
             pass
@@ -85,28 +85,24 @@ def createcube():
         yreal_center = []
         zreal_center = []
         try:
-            while a == True:
-                if not newline.startswith('TER'):
-                    new_split_line = newline.split()
-                    radius = new_split_line[-1]
-                    xyz = new_split_line[-5:-2]
-                    line_atom_num = new_split_line[1]
-                    atom_radius = new_split_line[-1]
-                    pqr_lin = atoms_parameter_fmt.format(int(line_atom_num), float(new_split_line[-2]), float(xyz[0]), float(xyz[1]), float(xyz[2]))
-                    out_f.write(pqr_lin)
-                    newline = in_pqr.readline()
-                    xreal_center.append(float(xyz[0]))
-                    yreal_center.append(float(xyz[1]))
-                    zreal_center.append(float(xyz[2]))                    
-                else:
-                    a = False
+            while newline.startswith('ATOM') or newline.startswith('HETATM'):
+                new_split_line = newline.split()
+                radius = new_split_line[-1]
+                xyz = new_split_line[-5:-2]
+                line_atom_num = new_split_line[1]
+                atom_radius = new_split_line[-1]
+                pqr_lin = atoms_parameter_fmt.format(int(line_atom_num), float(new_split_line[-2]), float(xyz[0]), float(xyz[1]), float(xyz[2]))
+                out_f.write(pqr_lin)
+                newline = in_pqr.readline()
+                xreal_center.append(float(xyz[0]))
+                yreal_center.append(float(xyz[1]))
+                zreal_center.append(float(xyz[2]))    
         except IndexError:
             pass
             
         x_avg = sum(xreal_center)/float(atom_num)
         y_avg = sum(yreal_center)/float(atom_num)
-        z_avg = sum(zreal_center)/float(atom_num)       
-        print x_avg, y_avg, z_avg
+        z_avg = sum(zreal_center)/float(atom_num)  
             
         #print origin
         #new_origin = []
@@ -124,7 +120,6 @@ def createcube():
         
         value_format = ["{:< 13.5E}"]
         value_format = ' '.join(value_format * 6) + '\n'
-        print value_format 
         group = []
         line = in_f.readline()
         while not line.startswith('attribute'):
@@ -414,7 +409,8 @@ def mainCGI():
                         # compressing APBS OpenDX output files
                         currentpath = os.getcwd()
                         zipjobid = filelist[i]._name.split("-")[0]
-                        urllib.urlretrieve(filelist[i]._url, '%s%s%s/%s' % (INSTALLDIR, TMPDIR, zipjobid, filelist[i]._name))
+                        dxfilename = '%s%s%s/%s' % (INSTALLDIR, TMPDIR, zipjobid, filelist[i]._name)
+                        urllib.urlretrieve(filelist[i]._url, dxfilename)
                         os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, zipjobid))
                         # making both the dx file and the compressed file (.gz) available in the directory  
                         syscommand = 'cp %s dxbkupfile' % (filelist[i]._name)
@@ -425,26 +421,37 @@ def mainCGI():
                         os.system(syscommand)
                         os.chdir(currentpath)
                         outputfilezip = filelist[i]._name + '.gz'
-                        createcube()
+
+                        pqrfilename = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, zipjobid, zipjobid)
+                        cubefilename = '%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, zipjobid, zipjobid)
+                        
+                        # making both the cube file and the compressed file (.gz) available in the directory 
+                        createcube(dxfilename, pqrfilename, cubefilename) 
+
                         print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputfilezip, outputfilezip)
+                        
             else:
                 outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))
-                for outputfile in outputfilelist:
+                for dxfile in outputfilelist:
                     # compressing APBS OpenDX output files
                     currentpath = os.getcwd()
-                    workingpath = os.path.dirname(outputfile)
+                    workingpath = os.path.dirname(dxfile)
                     os.chdir(workingpath)
                     # making both the dx file and the compressed file (.gz) available in the directory  
-                    syscommand = 'cp %s dxbkupfile' % (os.path.basename(outputfile))
+                    syscommand = 'cp %s dxbkupfile' % (os.path.basename(dxfile))
                     os.system(syscommand)
-                    syscommand = 'gzip -9 ' + os.path.basename(outputfile)
+                    syscommand = 'gzip -9 ' + os.path.basename(dxfile)
                     os.system(syscommand)
-                    syscommand = 'mv dxbkupfile %s' % (os.path.basename(outputfile))
+                    syscommand = 'mv dxbkupfile %s' % (os.path.basename(dxfile))
                     os.system(syscommand)
                     os.chdir(currentpath) 
-                    outputfilezip = outputfile+".gz"
+                    outputfilezip = dxfile+".gz"
+                    cubefilename = '%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, jobid, jobid)
+                    pqrfilename = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, jobid, jobid)
+                    createcube(dxfile, pqrfilename, cubefilename)
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfilezip), os.path.basename(outputfilezip))
-                    
+                    print cubefilename
+
             logopts['queryAPBS'] = '|'.join(queryString) 
         
         if calctype=="pdb2pqr":                            

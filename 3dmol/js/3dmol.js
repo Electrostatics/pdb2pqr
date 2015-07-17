@@ -9,14 +9,14 @@
         opacity: 1,
         min_isoval: -5,
         max_isoval: 5,
-        colorScheme: "RWB"
+        colorScheme: "RWB",
+        volumedata: null
     };
 
     var volumedata = null;
     var glviewer = null;
     var labels = [];
-
-    
+   
 
     var addLabels = function() {
         var atoms = glviewer.getModel().selectedAtoms({
@@ -124,6 +124,7 @@
         
         
     var addcube = function (volumedata){
+        //protein.volumedata = volumedata;
         window.volumedata = new $3Dmol.VolumeData(volumedata, "cube");
         //volumedata = $("#volumetric_data").val();
         //glviewer.addIsosurface(volumedata, {isoval: -5, color:"red", smoothness: 10})
@@ -131,6 +132,7 @@
         
         
         glviewer.render();
+        create_surface();
         };
     
     var backbone = function (){
@@ -147,11 +149,6 @@
         }
     }
    
-   function carts(){
-    surf = glviewer.addSurface(protein.surface, {color: 'red',opacity:0, voldata: volumedata, volscheme: new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval)});
-   }
-
-
     var readText = function(input,func) {
         
         if(input.length > 0) {
@@ -246,7 +243,8 @@
         
         //starts program with SAS surface
         function create_surface(){
-            surf = glviewer.addSurface(protein.surface, {ColorSpec: 0xFFFFFF, opacity:protein.opacity, voldata: volumedata, volscheme: new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval)});
+            volscheme_to_use = new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval);
+            surf = glviewer.addSurface(protein.surface, {opacity:protein.opacity, voldata: volumedata, volscheme: volscheme_to_use});
         }
 
         //Turn on the surface for the current selected surface
@@ -304,7 +302,7 @@
         function getpqr(jobid){
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
-            url = "http://pt24098/lile647/pdb2pqr/"+jobid+".pqr";
+            url = "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -318,12 +316,12 @@
               
             };
             xhr.send(null);
-            getcube();
+            
         }
 
-        function getcube(){
+        function getcube(jobid){
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/cubefile.cube");
+            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/tmp/"+jobid+"/"+jobid+".cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {
@@ -336,6 +334,6 @@
               
             };
             xhr.send(null);
-
+            
         }
 

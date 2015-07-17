@@ -317,7 +317,9 @@ def mainCGI():
         if calctype=="pdb2pqr":
             nexturl = 'apbs_cgi.cgi?jobid=%s' % form["jobid"].value
         else:
-            nexturl = 'visualize.cgi?jobid=%s' % form["jobid"].value
+            nexturl = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_3dmol')
+            nexturl2 = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_jmol')
+            
 
         if have_opal:    
             resp = appServicePort.getOutputs(getOutputsRequest(jobid))
@@ -446,11 +448,33 @@ def mainCGI():
                     os.system(syscommand)
                     os.chdir(currentpath) 
                     outputfilezip = dxfile+".gz"
+
+                    
+
                     cubefilename = '%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, jobid, jobid)
                     pqrfilename = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, jobid, jobid)
+
+                    
                     createcube(dxfile, pqrfilename, cubefilename)
+                    
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfilezip), os.path.basename(outputfilezip))
-                    print cubefilename
+                   
+                outputcubefilelist = glob.glob('%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, jobid, jobid))   
+                for cubefile in outputcubefilelist:
+                    # compressing cube output file
+                    currentpath = os.getcwd()
+                    os.chdir(workingpath)
+                    # making both the cube file and the compressed file (.gz) available in the directory 
+                    syscommand = 'cp %s cubebkupfile' % (os.path.basename(cubefile))
+                    os.system(syscommand)
+                    syscommand = 'gzip -9 ' + os.path.basename(cubefile)
+                    os.system(syscommand)
+                    syscommand = 'mv cubebkupfile %s' % (os.path.basename(cubefile))
+                    os.system(syscommand)
+                    os.chdir(currentpath) 
+                    outputcubefilezip = cubefile+".gz"
+
+                    print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputcubefilezip), os.path.basename(outputcubefilezip))
 
             logopts['queryAPBS'] = '|'.join(queryString) 
         
@@ -515,7 +539,8 @@ def mainCGI():
         if calctype=="pdb2pqr" and apbs_input and HAVE_APBS:
             print "</ul></p><hr><p><b><a href=%s>Click here</a> to run APBS with your results.</b></p>" % nexturl
         elif calctype=="apbs":
-            print "</ul></p><hr><p><b><a href=%s>Click here</a> to visualize your results.</b></p>" % nexturl
+            #print "</ul></p><hr><p><b><a href=%s>Click here</a> to visualize your results in Jmol.</b></p>" % nexturl
+            print "</ul></p><hr><p><b>Visualize your results in <a href=%s>3Dmol</a> <i>(alpha version)</i> or <a href=%s>Jmol</a>.</b></p>" % (nexturl, nexturl2)
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."

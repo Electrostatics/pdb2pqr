@@ -64,7 +64,7 @@ table.main{
 input[type=range] {
     -webkit-appearance: none;
 	border-radius: 10px;
-    background-color: white;
+    //background-color: red;
     //width: 200px;
     height:5px;
 }
@@ -111,7 +111,7 @@ input[type=range]::-ms-thumb {
 
 .styled-select{
    height: 40px;
-   width: 290px;
+   width: 250px;
    padding: 0px;
    background: rgb(178, 176, 168);
    border: none;

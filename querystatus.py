@@ -317,8 +317,8 @@ def mainCGI():
         if calctype=="pdb2pqr":
             nexturl = 'apbs_cgi.cgi?jobid=%s' % form["jobid"].value
         else:
-            nexturl = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_3dmol')
-            nexturl2 = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_jmol')
+            url_3dmol = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_3dmol')
+            url_jmol = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_jmol')
             
 
         if have_opal:    
@@ -540,7 +540,7 @@ def mainCGI():
             print "</ul></p><hr><p><b><a href=%s>Click here</a> to run APBS with your results.</b></p>" % nexturl
         elif calctype=="apbs":
             #print "</ul></p><hr><p><b><a href=%s>Click here</a> to visualize your results in Jmol.</b></p>" % nexturl
-            print "</ul></p><hr><p><b>Visualize your results in <a href=%s>3Dmol</a> <i>(alpha version)</i> or <a href=%s>Jmol</a>.</b></p>" % (nexturl, nexturl2)
+            print "</ul></p><hr><p><b>Visualize your results in <a href=%s>Jmol</a> <i>(alpha version)</i> or <a href=%s>3Dmol</a>.</b></p>" % (url_jmol, url_3dmol)
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."

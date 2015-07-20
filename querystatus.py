@@ -421,7 +421,6 @@ def mainCGI():
                         os.system(syscommand)
                         syscommand = 'mv dxbkupfile %s' % (filelist[i]._name)
                         os.system(syscommand)
-                        os.chdir(currentpath)
                         outputfilezip = filelist[i]._name + '.gz'
 
                         pqrfilename = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, zipjobid, zipjobid)
@@ -429,8 +428,19 @@ def mainCGI():
                         
                         # making both the cube file and the compressed file (.gz) available in the directory 
                         createcube(dxfilename, pqrfilename, cubefilename) 
+                        cubefilebasename = os.path.basename(cubefilename)
+
+                        syscommand = 'cp %s cubebkupfile' % cubefilebasename
+                        os.system(syscommand)
+                        syscommand = 'gzip -9 ' + cubefilebasename
+                        os.system(syscommand)
+                        syscommand = 'mv cubebkupfile %s' % cubefilebasename
+                        os.system(syscommand)
+                        os.chdir(currentpath) 
+                        outputcubefilezip = cubefilebasename+".gz"
 
                         print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputfilezip, outputfilezip)
+                        print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputcubefilezip, outputcubefilezip)
                         
             else:
                 outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))

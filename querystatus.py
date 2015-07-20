@@ -550,7 +550,7 @@ def mainCGI():
             print "</ul></p><hr><p><b><a href=%s>Click here</a> to run APBS with your results.</b></p>" % nexturl
         elif calctype=="apbs":
             #print "</ul></p><hr><p><b><a href=%s>Click here</a> to visualize your results in Jmol.</b></p>" % nexturl
-            print "</ul></p><hr><p><b>Visualize your results in <a href=%s>Jmol</a> <i>(alpha version)</i> or <a href=%s>3Dmol</a>.</b></p>" % (url_jmol, url_3dmol)
+            print "</ul></p><hr><p><b>Visualize your results in <a href=%s>Jmol</a> or <a href=%s>3Dmol</a> <i>(alpha version)</i>.</b></p>" % (url_jmol, url_3dmol)
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."

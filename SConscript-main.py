@@ -177,7 +177,8 @@ subFiles = [('pdb2pqr.py', 'pdb2pqr.py.in', True),
             ('visualize.cgi', 'visualize.py', True),
             ('querystatus.cgi', 'querystatus.py', True),
             ('src/aconf.py', 'src/aconf.py.in', False),
-            ('html/server.html', 'html/server.html.in', False)]
+            ('html/server.html', 'html/server.html.in', False),
+            ('3dmol/js/3dmol.js', '3dmol/js/3dmol.js.in', False)]
 
 compile_targets = []
 

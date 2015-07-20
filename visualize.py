@@ -52,6 +52,19 @@ def initVars():
 
         return apbsOptions
 
+redirectString = """
+<html>
+    <head>
+        <meta http-equiv="Refresh" content="url={redirectURL}"> 
+        <link rel="stylesheet" href="{website}pdb2pqr.css"type="text/css">
+    </head>
+    <body>
+    <center>
+        You are being automatically redirected to a new location.<br />
+        If your browser does not redirect you in automatically, 
+        <a href="{redirectURL}">click here</a></center>. 
+    </body>
+</html>""".format(redirectURL=WEBSITE, website=WEBSITE)
 
 def main(apbsOptions):
     cgiFile = "jmol.cgi"
@@ -59,8 +72,12 @@ def main(apbsOptions):
     defaultVisType = "jmol"
     checkJmolType = True
     cssFile = 'pdb2pqr.css'
-    jobid = form['jobid'].value
-    tool = form['tool'].value #run 3dmol or jmol
+    try:
+        jobid = form['jobid'].value
+        tool = form['tool'].value #run 3dmol or jmol
+    except KeyError:
+        print redirectString
+        return
 
     string_3dmol =  """
 <!DOCTYPE html>

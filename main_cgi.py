@@ -604,10 +604,10 @@ def handleNonOpal(weboptions):
                 # Adding whitespaces if --whitespace is in the weboptions
                 if whitespace: 
                     if line[0:4] == 'ATOM':
-                        newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                        newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                         pqrfile.write("%s\n" % string.strip(newline))
                     elif line[0:6] == 'HETATM':
-                        newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                        newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                         pqrfile.write("%s\n" % string.strip(newline))
                 else: 
                     pqrfile.write("%s\n" % string.strip(line))

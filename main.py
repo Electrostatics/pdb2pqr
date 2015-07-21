@@ -749,10 +749,10 @@ Please cite your use of PDB2PQR as:
     for line in lines:
         if options.whitespace: 
             if line[0:4] == 'ATOM':
-                newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                 outfile.write(newline)
             elif line[0:6] == 'HETATM':
-                newline = line[0:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                 outfile.write(newline)
         else: 
             outfile.write(line)

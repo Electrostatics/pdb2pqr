@@ -1,0 +1,550 @@
+/* Base - Viewer */
+
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+body {
+  display: block;
+  display: block;
+  font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0 auto;
+  color: #ddd; 
+  background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
+  background-size: cover;
+  padding: 20px;
+  height: 100%
+}
+
+table.main{
+  border: none;
+  width: 60%;
+  font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding: 0px;
+  border-spacing: 0px;
+  background: transparent;
+  font-size: 18px;
+  color: #FFFFFF;
+}
+
+
+
+#pdbid {
+	 color: #929292;
+}
+
+#gldiv {
+  position: fixed;
+  height: 100%;
+  right: 26em; 
+  left: 0em; 
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+
+}
+
+#leftbutton {
+	float:left; 
+	width:200px; 
+	margin-top:9px;
+}
+
+#rightbutton {
+	float:left;
+	width:200px;
+}
+
+
+
+input[type=range] {
+    -webkit-appearance: none;
+	border-radius: 10px;
+    //background-color: red;
+    //width: 200px;
+    height:5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+     -webkit-appearance: none;
+    background-color: rgb(178, 176, 168);
+    opacity: 0.7;
+    width: 10px;
+    height: 26px;
+}
+/*For Firefox*/
+input[type=range]::-moz-range-track {
+    -webkit-appearance: none;
+	border-radius: 10px;
+    background-color: white;
+    width: 200px;
+    height:5px;
+}
+
+input[type=range]::-moz-range-thumb {
+     -webkit-appearance: none;
+    background-color: white;
+    opacity: 0.7;
+    width: 10px;
+    height: 26px;
+}
+/*For IE10 and above*/
+input[type=range]::-ms-track {
+    -webkit-appearance: none;
+	border-radius: 10px;
+    background-color: white;
+    width: 200px;
+    height:5px;
+}
+
+input[type=range]::-ms-thumb {
+     -webkit-appearance: none;
+    background-color: white;
+    opacity: 0.7;
+    width: 10px;
+    height: 26px;
+}
+
+.styled-select{
+   height: 40px;
+   width: 250px;
+   padding: 0px;
+   background: rgb(178, 176, 168);
+   border: none;
+   border-radius: 1000px;
+   font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
+   font-size: 14px;
+   font-weight: normal;
+   line-height: normal;
+   text-align: center;
+   text-decoration: none;
+   color: black; //white;
+
+   -webkit-appearance: none;
+}
+
+select:active, select:hover {
+   background-color: white; //rgb(160,158,151);
+}
+
+
+.range-value {
+	width: 3em;
+	display: inline-block;
+}
+
+.disclaimer {
+    position:relative;
+}
+
+.disclaimer.space {
+    position:absolute;
+    bottom:0;
+    right:0;	
+	display: inline-block;
+	font: 6px;
+	
+}
+
+div#content {
+  width: 80%;
+  padding:25px;
+  border-radius: 10px;
+  border-color: #444; 
+  background-color:#444;
+  margin: 0 auto;
+  box-shadow: inset 0 3px 30px rgba(0,0,0,.3);
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+
+#visualbutton {
+	height: 40px;
+	width: 200px; 
+	padding: 0px; 
+	background: rgb(178, 176, 168); /* this is a light grey */
+}
+
+#surfacebutton {
+	height: 40px;
+	width: 200px; 
+	padding: 0px; 
+	background: rgb(178, 176, 168); /* this is a light grey */
+}
+
+#outer
+{
+  width: 26em;
+  //background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
+	right: 0px;
+	top: 0;
+	height: 100%;
+	position: fixed; 
+  text-align: center;
+  overflow: auto;
+	padding-top: 2em;
+}
+
+.inner
+{
+  display: inline-block;
+	margin-bottom: 2em;
+	/*float:left;*/
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.text
+{
+  display: block;
+	margin-bottom: 0;
+	float:left;
+	right: 3em; 
+	left: 0em; 
+}
+
+
+.inner .button {
+	margin: 0;
+	right: 0em;
+	float: left;
+}
+
+#lastbutton{
+    display: block;
+	margin-bottom: 2em;
+	float:left;
+	right: 3em; 
+	left: 0em; 
+}
+
+div#color {
+  color: blue;
+}
+
+
+#page-wrap {
+                  width: 800px;
+                  margin: 0 auto;
+}
+
+
+.clear {
+  display: block;
+}
+
+.clear:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+/* Sections */
+
+body > header, body > section, body > footer {
+  float: left;
+  width: 100%;
+  clear: both;
+}
+
+/* Header */
+
+body > header h1, body > header nav {
+  display: inline-block;
+}
+
+body > header h1 span {
+  display: none;
+}
+
+
+.main-nav {
+  margin-top: 52px;
+}
+
+.main-nav li {
+  margin-right: 10px;
+}
+
+.main-nav li a {
+  border-radius: 5px;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 0.5em 1em;
+  text-shadow: none;
+  text-transform: uppercase;
+  transition: all .25s;
+   -moz-transition: all .25s;
+   -webkit-transition: all .25s;
+}
+
+.main-nav li a:hover {
+  background: #252525;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.1);
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+
+.main-nav li.current a {
+  background: #fc0;
+  color: #222;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 5px rgba(0,0,0,.5);
+  text-shadow: 0 1px 0 rgba(255,255,255,.3);
+}
+
+.mobile-nav ul {
+  overflow: hidden;
+  width: 100%;
+  display: table;
+}
+
+.mobile-nav a {
+  float: left;
+  width: 100%;
+  background: #333;
+  color: #fc0;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.mobile-nav .current a {
+  background: #fc0;
+  color: #222;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 5px rgba(0,0,0,.5);
+  text-shadow: 0 1px 0 rgba(255,255,255,.3);
+}
+
+.mobile-nav li {
+  display: table-cell;
+  width: 25%;
+  padding: 8px;
+}
+
+@media (max-width: 768px){
+  .main-nav ul {
+    text-align: center;
+  }
+}
+@media (max-width: 830px){
+  .main-nav .show-on-mobiles {
+    display: inline;
+  }
+  .main-nav .hide-on-mobiles {
+    display: none;
+  }
+}
+
+
+.button-stick,
+.button-line,
+.button-cross,
+.button-cartoon,
+.button-sphere,
+.button-labela,
+.button-surface1,
+.button-surface2,
+.button-rmsurface1,
+.button-rmsurface2,
+.button-recenter,
+.button-unlabela,
+.button-load ,
+.button-distance,
+.button-backbone,
+.button-secondary {
+	color: white;
+	border-radius: 4px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+	
+}
+ .button-stick{
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-line {
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-cross {
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-sphere {
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-cartoon {
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-labela  {
+			padding-left: 0em;
+			padding-right: 0em;
+			font-size: 12px;
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-unlabela {
+			padding-left: 0em;
+			padding-right: 0em;
+			text-align: center;
+			font-size: 12px;
+            background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-surface1  {
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-surface2 {
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-rmsurface1 {
+			padding-left: 0em;
+			padding-right: 0em;
+			font-size: 15px;
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-rmsurface2 {
+			padding-left: 0em;
+			padding-right: 0em;
+			font-size: 15px;
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-recenter {
+			padding-left: 0em;
+			padding-right: 0em;
+            background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-load {
+            background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-distance{
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+ .button-backbone{
+             background: rgb(178, 176, 168); /* this is a light grey */
+        }
+		
+		
+/*This is for rounded corners, from foundation.css vis http://foundation.zurb.com/*/		
+/*.button-group.round > * {
+    margin: 0 -2px;
+    display: inline-block; }
+    .button-group.round > * > button, .button-group.round > * .button {
+      border-left: 1px solid;
+      border-color: rgba(255, 255, 255, 0.5); }
+    .button-group.round > *:first-child button, .button-group.round > *:first-child .button {
+      border-left: 0; }
+    .button-group.round > *, .button-group.round > * > a, .button-group.round > * > button, .button-group.round > * > .button {
+      border-radius: 0; }
+    .button-group.round > *:first-child, .button-group.round > *:first-child > a, .button-group.round > *:first-child > button, .button-group.round > *:first-child > .button {
+      -webkit-border-bottom-left-radius: 1000px;
+      -webkit-border-top-left-radius: 1000px;
+      border-bottom-left-radius: 1000px;
+      border-top-left-radius: 1000px; }
+    .button-group.round > *:last-child, .button-group.round > *:last-child > a, .button-group.round > *:last-child > button, .button-group.round > *:last-child > .button {
+      -webkit-border-bottom-right-radius: 1000px;
+      -webkit-border-top-right-radius: 1000px;
+      border-bottom-right-radius: 1000px;
+      border-top-right-radius: 1000px; }
+  .button-group.round.stack > * {
+    margin: 0 -2px;
+    display: inline-block;
+    display: block;
+    margin: 0; }
+    .button-group.round.stack > * > button, .button-group.round.stack > * .button {
+      border-left: 1px solid;
+      border-color: rgba(255, 255, 255, 0.5); }
+    .button-group.round.stack > *:first-child button, .button-group.round.stack > *:first-child .button {
+      border-left: 0; }
+    .button-group.round.stack > * > button, .button-group.round.stack > * .button {
+      border-top: 1px solid;
+      border-color: rgba(255, 255, 255, 0.5);
+      border-left-width: 0;
+      margin: 0;
+      display: block; }
+    .button-group.round.stack > * > button {
+      width: 100%; }
+    .button-group.round.stack > *:first-child button, .button-group.round.stack > *:first-child .button {
+      border-top: 0; }
+    .button-group.round.stack > *, .button-group.round.stack > * > a, .button-group.round.stack > * > button, .button-group.round.stack > * > .button {
+      border-radius: 0; }
+    .button-group.round.stack > *:first-child, .button-group.round.stack > *:first-child > a, .button-group.round.stack > *:first-child > button, .button-group.round.stack > *:first-child > .button {
+      -webkit-top-left-radius: 1rem;
+      -webkit-top-right-radius: 1rem;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem; }
+    .button-group.round.stack > *:last-child, .button-group.round.stack > *:last-child > a, .button-group.round.stack > *:last-child > button, .button-group.round.stack > *:last-child > .button {
+      -webkit-bottom-left-radius: 1rem;
+      -webkit-bottom-right-radius: 1rem;
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem; }
+  @media only screen and (min-width: 40.063em) {
+    .button-group.round.stack-for-small > * {
+      margin: 0 -2px;
+      display: inline-block; }
+      .button-group.round.stack-for-small > * > button, .button-group.round.stack-for-small > * .button {
+        border-left: 1px solid;
+        border-color: rgba(255, 255, 255, 0.5); }
+      .button-group.round.stack-for-small > *:first-child button, .button-group.round.stack-for-small > *:first-child .button {
+        border-left: 0; }
+      .button-group.round.stack-for-small > *, .button-group.round.stack-for-small > * > a, .button-group.round.stack-for-small > * > button, .button-group.round.stack-for-small > * > .button {
+        border-radius: 0; }
+      .button-group.round.stack-for-small > *:first-child, .button-group.round.stack-for-small > *:first-child > a, .button-group.round.stack-for-small > *:first-child > button, .button-group.round.stack-for-small > *:first-child > .button {
+        -webkit-border-bottom-left-radius: 1000px;
+        -webkit-border-top-left-radius: 1000px;
+        border-bottom-left-radius: 1000px;
+        border-top-left-radius: 1000px; }
+      .button-group.round.stack-for-small > *:last-child, .button-group.round.stack-for-small > *:last-child > a, .button-group.round.stack-for-small > *:last-child > button, .button-group.round.stack-for-small > *:last-child > .button {
+        -webkit-border-bottom-right-radius: 1000px;
+        -webkit-border-top-right-radius: 1000px;
+        border-bottom-right-radius: 1000px;
+        border-top-right-radius: 1000px; } }
+  @media only screen and (max-width: 40em) {
+    .button-group.round.stack-for-small > * {
+      margin: 0 -2px;
+      display: inline-block;
+      display: block;
+      margin: 0; }
+      .button-group.round.stack-for-small > * > button, .button-group.round.stack-for-small > * .button {
+        border-left: 1px solid;
+        border-color: rgba(255, 255, 255, 0.5); }
+      .button-group.round.stack-for-small > *:first-child button, .button-group.round.stack-for-small > *:first-child .button {
+        border-left: 0; }
+      .button-group.round.stack-for-small > * > button, .button-group.round.stack-for-small > * .button {
+        border-top: 1px solid;
+        border-color: rgba(255, 255, 255, 0.5);
+        border-left-width: 0;
+        margin: 0;
+        display: block; }
+      .button-group.round.stack-for-small > * > button {
+        width: 100%; }
+      .button-group.round.stack-for-small > *:first-child button, .button-group.round.stack-for-small > *:first-child .button {
+        border-top: 0; }
+      .button-group.round.stack-for-small > *, .button-group.round.stack-for-small > * > a, .button-group.round.stack-for-small > * > button, .button-group.round.stack-for-small > * > .button {
+        border-radius: 0; }
+      .button-group.round.stack-for-small > *:first-child, .button-group.round.stack-for-small > *:first-child > a, .button-group.round.stack-for-small > *:first-child > button, .button-group.round.stack-for-small > *:first-child > .button {
+        -webkit-top-left-radius: 1rem;
+        -webkit-top-right-radius: 1rem;
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem; }
+      .button-group.round.stack-for-small > *:last-child, .button-group.round.stack-for-small > *:last-child > a, .button-group.round.stack-for-small > *:last-child > button, .button-group.round.stack-for-small > *:last-child > .button {
+        -webkit-bottom-left-radius: 1rem;
+        -webkit-bottom-right-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem; } }*/
+

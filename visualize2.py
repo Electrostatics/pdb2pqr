@@ -52,19 +52,6 @@ def initVars():
 
         return apbsOptions
 
-redirectString = """
-<html>
-    <head>
-        <meta http-equiv="Refresh" content="url={redirectURL}"> 
-        <link rel="stylesheet" href="{website}pdb2pqr.css"type="text/css">
-    </head>
-    <body>
-    <center>
-        You are being automatically redirected to a new location.<br />
-        If your browser does not redirect you in automatically, 
-        <a href="{redirectURL}">click here</a></center>. 
-    </body>
-</html>""".format(redirectURL=WEBSITE, website=WEBSITE)
 
 def main(apbsOptions):
     cgiFile = "jmol.cgi"
@@ -72,14 +59,9 @@ def main(apbsOptions):
     defaultVisType = "jmol"
     checkJmolType = True
     cssFile = 'pdb2pqr.css'
-    try:
-        jobid = form['jobid'].value
-        tool = form['tool'].value #run 3dmol or jmol
-    except KeyError:
-        print redirectString
-        return
+    jobid = form['jobid'].value
 
-    string_3dmol =  """
+    string =  """
 <!DOCTYPE html>
     <head>
         {trackingscript}
@@ -100,7 +82,7 @@ def main(apbsOptions):
     <body>
         <script type="text/javascript">build_page({jobid})</script>
         <script type="text/javascript">getpqr({jobid})</script>
-        <script type="text/javascript">getcube({jobid})</script>
+       
     </body>
 </html>""".format(jobid=jobid,
                   trackingevents=getEventTrackingString(category='apbs',
@@ -108,32 +90,7 @@ def main(apbsOptions):
                                                         label=str(os.environ["REMOTE_ADDR"])),
                   trackingscript=getTrackingScriptString(jobid=jobid))
 
+    print string
 
-    string_jmol =  """
-<!DOCTYPE html>
-    <head>
-        {trackingscript}
-        <script type="text/javascript">
-            {trackingevents}
-        </script>
-        <title>Visualization</title>
-        <link rel="stylesheet" href="pdb2pqr.css" type="text/css">
-        <script type="text/JavaScript" src="jmol/Jmol.js"></script>
-        <script type="text/JavaScript">APPLET_PATH="jmol/";GZIP=""</script>
-        <script type="text/JavaScript" src="jmol/apbsjmol.js"></script>
-    </head>
-    <body onload="init()">
-        <script type="text/javascript">createVisualization({jobid}, -5.0, 5.0)</script>
-    </body>
-</html>""".format(jobid=jobid,
-                  trackingevents=getEventTrackingString(category='apbs',
-                                                        action='visualize', 
-                                                        label=str(os.environ["REMOTE_ADDR"])),
-                  trackingscript=getTrackingScriptString(jobid=jobid))
-
-    if(tool == 'tool_3dmol'):
-        print string_3dmol
-    if(tool == 'tool_jmol'):
-        print string_jmol 
 
 main(initVars())

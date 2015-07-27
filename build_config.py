@@ -28,14 +28,14 @@
 
 
 #OPAL service URL
-#Set this value to use an opal service for processing 
+#Set this value to use an opal service for processing
 # pdb2pqr jobs for the web front end.
 
 #OPAL="http://nbcr-222.ucsd.edu/opal2/services/pdb2pqr_1.8"
 
 
 #APBS_OPAL service URL
-#Set this value to use an opal service for processing 
+#Set this value to use an opal service for processing
 # apbs jobs for the web front end.
 
 #APBS_OPAL="http://nbcr-222.ucsd.edu/opal2/services/apbs_1.3"
@@ -60,9 +60,21 @@
 
 #DEBUG=True
 
+#CXXFLAGS
+#Set to add extra CXX flags to the build.
+#Defaults to ""
+
+#EXTRA_CXXFLAGS="-fPIC"
+
+#EXTRA_LINKFLAGS
+#Set to add extra CXX flags to the build.
+#Defaults to ""
+
+#EXTRA_LINKFLAGS=""
+
 
 #REBUILD_SWIG
-#Set to True to rebuild the swig bindings. 
+#Set to True to rebuild the swig bindings.
 # Requires swig on the the user path.
 # Defaults to False
 

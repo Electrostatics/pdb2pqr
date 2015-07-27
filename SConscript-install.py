@@ -55,7 +55,7 @@ for file_name in getAllFiles('propka30/'):
 	installFile(file_name)
 
 #Whole directories
-for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/', 'ZSI/'):
+for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/', 'ZSI/', '3dmol/'):
     for file_name in getAllFiles(dir_name):
         installFile(file_name)
 

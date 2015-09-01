@@ -3,7 +3,7 @@
 #
 # Helper classes for all the pKa stuff. I need to reorganise these into something
 # more logic at some point
-# 
+#
 #
 class pKa:
     """
@@ -35,10 +35,13 @@ class pKa:
         self.uniqueid='%s_%s_%d_TITTYPE:%s' %(residue.name,residue.chainID,residue.resSeq,group.name)
         return
 
+    def __repr__(self):
+        return self.uniqueid
+
 #
 # -------------------------------------------
 #
-        
+
 class pKaGroup:
     #
     # pKaGroup holds the defintion on a single titratable entity. In most cases we will
@@ -49,7 +52,7 @@ class pKaGroup:
     # them here to get something working before we do complicated things...
     #
 
-    
+
     def __init__(self, name, resname, type, DefTitrations):
         #
         #    Initialize the pKaGroup object
@@ -70,7 +73,7 @@ class pKaGroup:
     #
     # ------------------------
     #
-       
+
     def __str__(self):
         """
             Print the pKa group object for debugging purposes
@@ -100,7 +103,7 @@ class DefTitration:
     # A single group can have several transitions depending on the
     # number of startstates and endstates
     #
-    
+
     def __init__(self, startstates, endstates, modelpKa,name):
         #
         #    Initialize the pKaTransition object

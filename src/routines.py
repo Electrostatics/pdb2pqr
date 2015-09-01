@@ -3,42 +3,42 @@
 
     This module contains the protein object used in PDB2PQR and methods
     used to correct, analyze, and optimize that protein.
-   
+
     ----------------------------
-   
+
     PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
     Poisson-Boltzmann electrostatics calculations
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
+    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
+    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
+    Northwest National Laboratory, operated by Battelle Memorial Institute,
+    Pacific Northwest Division for the U.S. Department Energy.;
     Paul Czodrowski & Gerhard Klebe, University of Marburg.
 
 	All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without modification, 
+	Redistribution and use in source and binary forms, with or without modification,
 	are permitted provided that the following conditions are met:
 
-		* Redistributions of source code must retain the above copyright notice, 
+		* Redistributions of source code must retain the above copyright notice,
 		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
 		  and/or other materials provided with the distribution.
         * Neither the names of University College Dublin, Battelle Memorial Institute,
           Pacific Northwest National Laboratory, US Department of Energy, or University
           of Marburg nor the names of its contributors may be used to endorse or promote
           products derived from this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 	OF THE POSSIBILITY OF SUCH DAMAGE.
 
     ----------------------------
@@ -126,7 +126,7 @@ class Routines:
 
             Parameters
                 forcefield: The forcefield object (forcefield)
-           
+
         """
         self.write("Applying the naming scheme to the protein...")
         for residue in self.protein.getResidues():
@@ -167,7 +167,7 @@ class Routines:
         for residue in self.protein.getResidues():
             if isinstance(residue, (Amino, WAT, Nucleic)):
                 resname = residue.ffname
-            else: 
+            else:
                 resname = residue.name
 
             # Apply the parameters
@@ -330,7 +330,7 @@ class Routines:
         """
         if patchname not in self.protein.patchmap:
             raise PDBInternalError("Unable to find patch %s!" % patchname)
-        
+
         self.write('PATCH INFO: %s patched with %s\n' % (residue,patchname),1)
 
         # Make a copy of the reference, i.e. a new reference for
@@ -857,7 +857,7 @@ class Routines:
         """
         self.write("Rebuilding missing heavy atoms... \n")
         for residue in self.protein.getResidues():
-            if not isinstance(residue, (Amino, Nucleic)): 
+            if not isinstance(residue, (Amino, Nucleic)):
                 continue
             missing = residue.get("missing")
             if missing == []: continue
@@ -894,11 +894,11 @@ class Routines:
                 # We might need other atoms to be rebuilt first
 
                 if len(coords) < 3:
-                    try: 
+                    try:
                         seenmap[atomname] += 1
-                    except KeyError: 
+                    except KeyError:
                         seenmap[atomname] = 1
-                        
+
                     missing.append(atomname)
                     if seenmap[atomname] > nummissing:
                         text = "Too few atoms present to reconstruct or cap residue %s in structure!\n" % (residue)
@@ -1025,7 +1025,7 @@ class Routines:
             # Also ignore if this is a donor/acceptor pair
             pair_ignored = False
             if atom.isHydrogen() and len(atom.bonds) != 0 and atom.bonds[0].hdonor \
-               and closeatom.hacceptor: 
+               and closeatom.hacceptor:
                 #pair_ignored = True
                 continue
             if closeatom.isHydrogen() and len(closeatom.bonds) != 0 and closeatom.bonds[0].hdonor \
@@ -1075,15 +1075,15 @@ class Routines:
 
             conflictnames = self.findResidueConflicts(residue, True)
 
-            if not conflictnames: 
+            if not conflictnames:
                 continue
 
             # Otherwise debump the residue
 
             self.write("Starting to debump %s...\n" % residue, 1)
-            self.write("Debumping cutoffs: %2.1f for heavy-heavy, %2.1f for hydrogen-heavy, and %2.1f for hydrogen-hydrogen.\n" % 
-                       (BUMP_HEAVY_SIZE*2, 
-                        BUMP_HYDROGEN_SIZE+BUMP_HEAVY_SIZE, 
+            self.write("Debumping cutoffs: %2.1f for heavy-heavy, %2.1f for hydrogen-heavy, and %2.1f for hydrogen-hydrogen.\n" %
+                       (BUMP_HEAVY_SIZE*2,
+                        BUMP_HYDROGEN_SIZE+BUMP_HEAVY_SIZE,
                         BUMP_HYDROGEN_SIZE*2), 1)
             if self.debumpResidue(residue, conflictnames):
                 self.write("Debumping Successful!\n\n", 1)
@@ -1093,7 +1093,7 @@ class Routines:
                 self.warnings.append(text)
 
         self.write("Done.\n")
-        
+
     def findResidueConflicts(self, residue, writeConflictInfo=False):
         conflictnames = []
         for atom in residue.getAtoms():
@@ -1112,9 +1112,9 @@ class Routines:
                     for repatom in nearatoms:
                         self.write("%s %s is too close to %s %s\n" % \
                                    (residue, atomname, repatom.residue, repatom.name), 1)
-                    
+
         return conflictnames
-    
+
     def scoreDihedralAngle(self, residue, anglenum):
         score = 0
         atomnames = residue.reference.dihedrals[anglenum].split()
@@ -1124,10 +1124,10 @@ class Routines:
             nearatoms = self.findNearbyAtoms(residue.getAtom(name))
             for v in nearatoms.values():
                 score += v
-                
+
         return score
-    
-    
+
+
     def debumpResidue(self, residue, conflictnames):
         """
             Debump a specific residue.  Only should be called
@@ -1144,14 +1144,14 @@ class Routines:
         """
 
         # Initialize some variables
-        
+
         ANGLE_STEPS = 72
         ANGLE_STEP_SIZE = float(360 // ANGLE_STEPS)
-        
+
         ANGLE_TEST_COUNT = 10
 
         anglenum = -1
-        currentConflictNames = conflictnames        
+        currentConflictNames = conflictnames
 
         # Try (up to 10 times) to find a workable solution
 
@@ -1162,10 +1162,10 @@ class Routines:
             if anglenum == -1: return False
 
             self.write("Using dihedral angle number %i to debump the residue.\n" % anglenum, 1)
-            
+
             bestscore = self.scoreDihedralAngle(residue, anglenum)
             foundImprovement = False
-            bestangle = originalAngle = residue.dihedrals[anglenum] 
+            bestangle = originalAngle = residue.dihedrals[anglenum]
 
             #Skip the first angle as it's already known.
             for i in xrange(1, ANGLE_STEPS):
@@ -1176,7 +1176,7 @@ class Routines:
 
                 score = self.scoreDihedralAngle(residue, anglenum)
 
-                if score == 0:                    
+                if score == 0:
                     if not self.findResidueConflicts(residue):
                         self.write("No conflicts found at angle %.2f.\n" % newangle, 1)
                         return True
@@ -1191,11 +1191,11 @@ class Routines:
                     bestscore = score
                     bestangle = newangle
                     foundImprovement = True
-        
+
             self.setDihedralAngle(residue, anglenum, bestangle)
             currentConflictNames = self.findResidueConflicts(residue)
-                        
-            if foundImprovement:   
+
+            if foundImprovement:
                 self.write("Best score of %.2f at angle %.2f. New conflict set: " % (bestscore, bestangle), 1)
                 self.write(str(currentConflictNames)+"\n", 1)
             else:
@@ -1268,9 +1268,9 @@ class Routines:
             if closeatom.isHydrogen() and closeatom.bonds[0].hdonor \
                    and atom.hacceptor:
                 continue
-            
+
             dist = distance(atom.getCoords(), closeatom.getCoords())
-            
+
             if isinstance(closeresidue, WAT):
                 if dist < bestwatdist:
                     bestwatdist = dist
@@ -1279,9 +1279,9 @@ class Routines:
                 if dist < bestdist:
                     bestdist = dist
                     bestatom = closeatom
-                    
+
         if bestdist > bestwatdist:
-            txt = "Warning: %s in %s skipped when optimizing %s in %s\n" % (bestwatatom.name, 
+            txt = "Warning: %s in %s skipped when optimizing %s in %s\n" % (bestwatatom.name,
                                                                            bestwatatom.residue,
                                                                            atom.name, residue)
             if txt not in self.warnings:
@@ -1319,19 +1319,19 @@ class Routines:
             closeresidue = closeatom.residue
             if closeresidue == residue and (closeatom in atom.bonds or atom in closeatom.bonds):
                 continue
-                
-            if not isinstance(closeresidue, (Amino, WAT)): 
+
+            if not isinstance(closeresidue, (Amino, WAT)):
                 continue
-            if isinstance(residue, CYS) and residue.SSbondedpartner == closeatom: 
+            if isinstance(residue, CYS) and residue.SSbondedpartner == closeatom:
                 continue
 
             # Also ignore if this is a donor/acceptor pair
 
-            if (atom.isHydrogen() and len(atom.bonds) != 0 and 
-                atom.bonds[0].hdonor and closeatom.hacceptor): 
+            if (atom.isHydrogen() and len(atom.bonds) != 0 and
+                atom.bonds[0].hdonor and closeatom.hacceptor):
                 continue
-            
-            if (closeatom.isHydrogen() and len(closeatom.bonds) != 0 and 
+
+            if (closeatom.isHydrogen() and len(closeatom.bonds) != 0 and
                 closeatom.bonds[0].hdonor and atom.hacceptor):
                 continue
 
@@ -1345,7 +1345,7 @@ class Routines:
 
 
     def pickDihedralAngle(self, residue, conflictnames, oldnum=None):
-        """ 
+        """
             Choose an angle number to use in debumping
 
             Algorithm
@@ -1366,7 +1366,7 @@ class Routines:
         """
         bestnum = -1
         best = 0
-        
+
         iList = range(len(residue.dihedrals))
         #Make sure our testing is done round robin.
         if oldnum is not None and oldnum >= 0 and len(iList) > 0:
@@ -1374,7 +1374,7 @@ class Routines:
             testDihedralIndecies = iList[oldnum:] + iList[:oldnum]
         else:
             testDihedralIndecies = iList
-                                     
+
         for i in testDihedralIndecies:
             if i == oldnum: continue
             if residue.dihedrals[i] is None: continue
@@ -1412,7 +1412,7 @@ class Routines:
                 anglenum:  The number of the angle to rotate as
                            listed in residue.dihedrals
                 angle:     The desired angle.
-                          
+
         """
         coordlist = []
         initcoords = []
@@ -1487,61 +1487,60 @@ class Routines:
         """
         for residue in self.protein.getResidues():
             residue.setDonorsAndAcceptors()
-            
+
     def runPDB2PKA(self, ph, ff, protein, ligand, verbose, pdb2pka_params):
         if ff.lower() != 'parse':
             PDB2PKAError('PDB2PKA can only be run with the PARSE force field.')
-            
+
         self.write("Running PDB2PKA and applying at pH %.2f... \n" % ph)
-        
+
         import pka
         from pdb2pka import pka_routines
         init_params = pdb2pka_params.copy()
         init_params.pop('pairene')
         init_params.pop('clean_output')
-        results = pka.pre_init(protein=protein, 
-                               ff=ff, 
-                               verbose=verbose, 
+        results = pka.pre_init(protein=protein,
+                               ff=ff,
+                               verbose=verbose,
                                ligand=ligand,
                                **init_params)
         output_dir, protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd = results
-        
+
         mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, output_dir, maps, sd,
-                                                 restart=pdb2pka_params.get('clean_output'), 
+                                                 restart=pdb2pka_params.get('clean_output'),
                                                  pairene=pdb2pka_params.get('pairene'))
-    
+
         print 'Doing full pKa calculation'
         mypkaRoutines.runpKa()
-        
+
         pdb2pka_warnings = mypkaRoutines.warnings[:]
-        
+
         self.warnings.extend(pdb2pka_warnings)
-        
+
         residue_ph = {}
-        for pka_residue_name, calc_ph in mypkaRoutines.ph_at_0_5.iteritems():
-            res_name, chain_id, number, tit_type = pka_residue_name.split('_')
-            
-            tit_type = tit_type.split(':')[1]
+        for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.iteritems():
+            tit_type, chain_id, number_str = pka_residue_tuple
+
             if tit_type == 'NTR':
-                res_name = 'N+'
+                tit_type = 'N+'
             elif tit_type == 'CTR':
-                res_name = 'C-'
-            
-            key = ' '.join([res_name, number, chain_id])
+                tit_type = 'C-'
+
+            key = ' '.join([tit_type, number_str, chain_id])
             residue_ph[key] = calc_ph
-        
-        pformat(residue_ph)    
-        
-        self.apply_pka_values(ff, ph, residue_ph) 
-        
-        self.write('Finished running PDB2PKA.\n')      
-        
+
+        pformat(residue_ph)
+
+        self.apply_pka_values(ff, ph, residue_ph)
+
+        self.write('Finished running PDB2PKA.\n')
+
 
     def runPROPKA(self, ph, ff, rootname, outname, options):
         """
             Run PROPKA on the current protein, setting protonation states to
             the correct values
-            
+
             Parameters
                ph:  The desired pH of the system
                ff:  The forcefield name to be used
@@ -1552,7 +1551,7 @@ class Routines:
         from propka30.Source.protein import Protein as pkaProtein
         from propka30.Source.pdb import readPDB as pkaReadPDB
         from propka30.Source.lib import residueList, setVerbose
-        
+
         setVerbose(options.verbose)
 
         # Initialize some variables
@@ -1597,7 +1596,7 @@ class Routines:
             for residue_type in residue_list:
                 for residue in chain.residues:
                     if residue.resName == residue_type:
-                        #Strip out the extra space after C- or N+ 
+                        #Strip out the extra space after C- or N+
                         key = string.strip('%s %s %s' % (string.strip(residue.resName),
                                                         residue.resNumb, residue.chainID))
                         pkadic[key] = residue.pKa_pro
@@ -1607,14 +1606,14 @@ class Routines:
 
         # Now apply each pka to the appropriate residue
         self.apply_pka_values(ff, ph, pkadic)
-        
+
         self.write("Done.\n")
-        
+
     def apply_pka_values(self, ff, ph, pkadic):
         self.write('Applying pKa values at a pH of %.2f:\n' % ph)
         formatted_pkadict = pformat(pkadic)
         self.write(formatted_pkadict+'\n\n')
-           
+
         warnings = []
         for residue in self.protein.getResidues():
             if not isinstance(residue, Amino):
@@ -1748,7 +1747,7 @@ class Routines:
                 self.write(text)
             self.warnings.append("\n")
             self.write('\n')
-        
+
 
 class Cells:
     """
@@ -1789,25 +1788,25 @@ class Cells:
                 atom:  The atom to add (atom)
         """
         size = self.cellsize
-        
+
         x = atom.get("x")
-        if x < 0: 
+        if x < 0:
             x = (int(x) - 1) / size * size
-        else: 
+        else:
             x = int(x) / size * size
-            
+
         y = atom.get("y")
-        if y < 0: 
+        if y < 0:
             y = (int(y) - 1) / size * size
-        else: 
+        else:
             y = int(y) / size * size
-            
+
         z = atom.get("z")
-        if z < 0: 
+        if z < 0:
             z = (int(z) - 1) / size * size
-        else: 
+        else:
             z = int(z) / size * size
-            
+
         key = (x, y, z)
         try:
             self.cellmap[key].append(atom)

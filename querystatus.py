@@ -32,31 +32,31 @@ def printheader(pagetitle,refresh=None,jobid=None):
     return str
 
 def createcube(dx_input, pqr_input, output):
-    
+
     with open(dx_input, 'r') as in_f, open(output, 'w') as out_f, open(pqr_input, 'r') as in_pqr:
         out_f.write("CPMD CUBE FILE.\n"
                     "OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z\n")
-        
+
         #Discard comments at top of file.
         line = in_f.readline()
         newline = in_pqr.readline()
         while line.startswith('#'):
             line = in_f.readline()
-        
-        
-        split_line = line.split()        
+
+
+        split_line = line.split()
         grid_sizes = [int(x)*-1 for x in split_line[-3:]]
-                    
+
         split_line = in_f.readline().split()
-        
+
         origin = [float(x) for x in split_line[-3:]]
-        
+
         parameter_fmt = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f}\n"
         atom_num = 0
         while newline.startswith('REMARK'):
             newline = in_pqr.readline()
 
-        try:    
+        try:
             while newline.startswith('ATOM') or newline.startswith('HETATM'):
                 newline =  in_pqr.readline()
                 new_split_line = newline.split()
@@ -67,18 +67,18 @@ def createcube(dx_input, pqr_input, output):
         newline = in_pqr.readline()
         while newline.startswith('REMARK'):
             newline = in_pqr.readline()
-        
+
         origin_line = parameter_fmt.format(atom_num, *origin)
         out_f.write(origin_line)
-        
-        
+
+
         for x in xrange(3):
             split_line = in_f.readline().split()
             grid_dims = [float(item) for item in split_line[-3:]]
-            
+
             dim_lin = parameter_fmt.format(grid_sizes[x], *grid_dims)
             out_f.write(dim_lin)
-            
+
         atoms_parameter_fmt = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f} {:>11.6f}\n"
         a = True
         xreal_center = []
@@ -96,14 +96,14 @@ def createcube(dx_input, pqr_input, output):
                 newline = in_pqr.readline()
                 xreal_center.append(float(xyz[0]))
                 yreal_center.append(float(xyz[1]))
-                zreal_center.append(float(xyz[2]))    
+                zreal_center.append(float(xyz[2]))
         except IndexError:
             pass
-            
+
         x_avg = sum(xreal_center)/float(atom_num)
         y_avg = sum(yreal_center)/float(atom_num)
-        z_avg = sum(zreal_center)/float(atom_num)  
-            
+        z_avg = sum(zreal_center)/float(atom_num)
+
         #print origin
         #new_origin = []
         #for item in origin:
@@ -115,9 +115,9 @@ def createcube(dx_input, pqr_input, output):
         #Consume unneeded object lines.
         in_f.readline()
         in_f.readline()
-        
+
         ##TODO: put atoms here
-        
+
         value_format = ["{:< 13.5E}"]
         value_format = ' '.join(value_format * 6) + '\n'
         group = []
@@ -125,13 +125,13 @@ def createcube(dx_input, pqr_input, output):
         while not line.startswith('attribute'):
             values = [float(item) for item in line.split()]
             group.extend(values)
-            
+
             if len(group) >= 6:
                 out_f.write(value_format.format(*group))
                 group = []
-                
+
             line = in_f.readline()
-            
+
         if group:
             group_strs = ["{:< 13.5E}".format(item) for item in group]
             out_f.write(' '.join(group_strs))
@@ -140,9 +140,9 @@ def checkprogress(jobid=None,appServicePort=None,calctype=None):
     """
         Finds out if the job has been completed
     """
-     
+
     if have_opal:
-        
+
         # construct soap request
         try:
             status=appServicePort.queryStatus(queryStatusRequest(jobid))
@@ -184,7 +184,7 @@ def mainCGI():
         runtime = 0
     else:
         progress = None
-        
+
     #Check for error html
     errorpath = '%s%s%s.html' % (INSTALLDIR, TMPDIR, form["jobid"].value)
     if os.path.isfile(errorpath):
@@ -209,7 +209,7 @@ def mainCGI():
         appServicePort = None
 
     # if PDB2PQR, determines if link to APBS calculation should be shown
-    if calctype=="pdb2pqr":    
+    if calctype=="pdb2pqr":
         #if(form["apbsinput"].value=="True"): # change to use a file
         #    apbs_input = True
         #else:
@@ -245,16 +245,16 @@ def mainCGI():
     if progress == None:
         cp = checkprogress(jobid,appServicePort,calctype) # finds out status of job
         progress = cp[0]
-    
+
     #initialize with bogus value just in case
     starttime = time.time()
-    
+
     if progress == "running" or progress == "complete":
         timefile = open('%s%s%s/%s_start_time' % (INSTALLDIR, TMPDIR, form["jobid"].value, form["calctype"].value))
         starttime = float(timefile.read())
         timefile.close()
 
-    if progress == "running" or (have_opal and progress not in ("version_mismatch", 
+    if progress == "running" or (have_opal and progress not in ("version_mismatch",
                                                                 "not_enough_memory",
                                                                 "error",
                                                                 "complete")):
@@ -272,7 +272,7 @@ def mainCGI():
                 runtime = float(endTimeFile.read())-starttime
     else:
         runtime = -1
-        
+
     if progress == "running":
         #if have_opal:
         #    resultsurl = cp[1]._baseURL
@@ -297,14 +297,14 @@ def mainCGI():
     print "<h3>Status:"
 
     color = "FA3434"
-    image = WEBSITE+"images/red_x.png" 
+    image = WEBSITE+"images/red_x.png"
 
     if progress == "complete":
-        color = "2CDE56" 
+        color = "2CDE56"
         image = WEBSITE+"images/green_check.png"
     elif progress == "running":
         color = "ffcc00"
-        image = WEBSITE+"images/yellow_exclamation.png" 
+        image = WEBSITE+"images/yellow_exclamation.png"
 
     print "<strong style=\"color:#%s;\">%s</strong>" % (color, progress)
     print "<img src=\"%s\"><br />" % image
@@ -319,9 +319,9 @@ def mainCGI():
         else:
             url_3dmol = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_3dmol')
             url_jmol = 'visualize.cgi?jobid=%s&tool=%s' % (form["jobid"].value,'tool_jmol')
-            
 
-        if have_opal:    
+
+        if have_opal:
             resp = appServicePort.getOutputs(getOutputsRequest(jobid))
             filelist = resp._outputFile
 
@@ -332,10 +332,15 @@ def mainCGI():
             # this code should be cleaned up once local PDB2PQR runs output the PDB file with the .pdb extension
             if have_opal:
                 for i in range(0,len(filelist)):
-                    if ((len(filelist[i]._name) == 4 and '.' not in filelist[i]._name) or
-                        (filelist[i]._name.endswith(".pdb") and "pdb2pka_output" not in filelist[i]._name)):
+                    file_name = filelist[i]._name
+                    if ((len(file_name) == 4 and '.' not in file_name) or
+                        (file_name.lower().endswith(".pdb") and "pdb2pka_output" not in file_name)):
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
-                        break                        
+
+                    if file_name.lower().endswith((".mol", ".mol2", ".names", ".dat")) and "pdb2pka_output" not in file_name:
+                        print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
+
+
             else:
                 print "<li><a href=%s%s%s/%s.pdb>%s.pdb</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, jobid)
 
@@ -350,7 +355,7 @@ def mainCGI():
 
         print "</ul></li>"
         print "<li>Output files<ul>"
-        
+
         queryString = [str(os.environ["REMOTE_ADDR"])]
         # Getting PDB2PQR run log info
         if os.path.isfile('%s%s%s/pdb2pqr_log' % (INSTALLDIR, TMPDIR, jobid)):
@@ -359,19 +364,19 @@ def mainCGI():
             templogopts = eval(logstr[0])
             pdb2pqrLogFile.close()
             queryString.insert(0, templogopts.get('pdb',''))
-        
-        if calctype=="pdb2pqr":                            
+
+        if calctype=="pdb2pqr":
             if have_opal:
                 for i in range(0,len(filelist)):
                     if filelist[i]._name.endswith((".propka", "-typemap.html")):
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
-                        
+
                     if filelist[i]._name.endswith(".in") and "pdb2pka_output" not in filelist[i]._name:
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
-                        
+
                     if filelist[i]._name.endswith(".pqr") and not filelist[i]._name.endswith("background_input.pqr"):
                         print "<li><a href=%s>%s</a></li>" % (filelist[i]._url, filelist[i]._name)
-                        
+
                     #Get the first line of the summary file.
                     if filelist[i]._name.endswith(".summary"):
                         f=urllib.urlopen(filelist[i]._url)
@@ -388,19 +393,19 @@ def mainCGI():
                         summaryLine = f.readline().strip()
                         #logopts["pdb"]=logopts.get("pdb", "") + "|" + summaryLine
                         queryString.append(summaryLine)
-                    
+
                 outputfilelist = glob.glob('%s%s%s/*.propka' % (INSTALLDIR, TMPDIR, jobid))
                 for i in range(0,len(outputfilelist)):
                     outputfilelist[i] = os.path.basename(outputfilelist[i])
                 for extension in ["-typemap.html", ".pqr", ".in"]:
                     if extension != ".in" or apbs_input != False:
-                        if extension == "-typemap.html" and typemap == False: 
+                        if extension == "-typemap.html" and typemap == False:
                             continue
                         outputfilelist.append('%s%s' % (jobid, extension))
                 for outputfile in outputfilelist:
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
-                
-            logopts['queryPDB2PQR'] = '|'.join(queryString) 
+
+            logopts['queryPDB2PQR'] = '|'.join(queryString)
 
                 #for extension in ["-typemap.html", ".pqr", ".in"]:
                 #    print "<li><a href=%s%s%s/%s%s>%s%s</a></li>" % (WEBSITE, TMPDIR, jobid, jobid, extension, jobid, extension)
@@ -414,7 +419,7 @@ def mainCGI():
                         dxfilename = '%s%s%s/%s' % (INSTALLDIR, TMPDIR, zipjobid, filelist[i]._name)
                         urllib.urlretrieve(filelist[i]._url, dxfilename)
                         os.chdir('%s%s%s' % (INSTALLDIR, TMPDIR, zipjobid))
-                        # making both the dx file and the compressed file (.gz) available in the directory  
+                        # making both the dx file and the compressed file (.gz) available in the directory
                         syscommand = 'cp %s dxbkupfile' % (filelist[i]._name)
                         os.system(syscommand)
                         syscommand = 'gzip -9 ' + filelist[i]._name
@@ -425,9 +430,9 @@ def mainCGI():
 
                         pqrfilename = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, zipjobid, zipjobid)
                         cubefilename = '%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, zipjobid, zipjobid)
-                        
-                        # making both the cube file and the compressed file (.gz) available in the directory 
-                        createcube(dxfilename, pqrfilename, cubefilename) 
+
+                        # making both the cube file and the compressed file (.gz) available in the directory
+                        createcube(dxfilename, pqrfilename, cubefilename)
                         cubefilebasename = os.path.basename(cubefilename)
 
                         syscommand = 'cp %s cubebkupfile' % cubefilebasename
@@ -436,12 +441,12 @@ def mainCGI():
                         os.system(syscommand)
                         syscommand = 'mv cubebkupfile %s' % cubefilebasename
                         os.system(syscommand)
-                        os.chdir(currentpath) 
+                        os.chdir(currentpath)
                         outputcubefilezip = cubefilebasename+".gz"
 
                         print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputfilezip, outputfilezip)
                         print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, zipjobid, outputcubefilezip, outputcubefilezip)
-                        
+
             else:
                 outputfilelist = glob.glob('%s%s%s/%s-*.dx' % (INSTALLDIR, TMPDIR, jobid, jobid))
                 for dxfile in outputfilelist:
@@ -449,48 +454,48 @@ def mainCGI():
                     currentpath = os.getcwd()
                     workingpath = os.path.dirname(dxfile)
                     os.chdir(workingpath)
-                    # making both the dx file and the compressed file (.gz) available in the directory  
+                    # making both the dx file and the compressed file (.gz) available in the directory
                     syscommand = 'cp %s dxbkupfile' % (os.path.basename(dxfile))
                     os.system(syscommand)
                     syscommand = 'gzip -9 ' + os.path.basename(dxfile)
                     os.system(syscommand)
                     syscommand = 'mv dxbkupfile %s' % (os.path.basename(dxfile))
                     os.system(syscommand)
-                    os.chdir(currentpath) 
+                    os.chdir(currentpath)
                     outputfilezip = dxfile+".gz"
 
-                    
+
 
                     cubefilename = '%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, jobid, jobid)
                     pqrfilename = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, jobid, jobid)
 
-                    
+
                     createcube(dxfile, pqrfilename, cubefilename)
-                    
+
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputfilezip), os.path.basename(outputfilezip))
-                   
-                outputcubefilelist = glob.glob('%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, jobid, jobid))   
+
+                outputcubefilelist = glob.glob('%s%s%s/%s.cube' % (INSTALLDIR, TMPDIR, jobid, jobid))
                 for cubefile in outputcubefilelist:
                     # compressing cube output file
                     currentpath = os.getcwd()
                     os.chdir(workingpath)
-                    # making both the cube file and the compressed file (.gz) available in the directory 
+                    # making both the cube file and the compressed file (.gz) available in the directory
                     syscommand = 'cp %s cubebkupfile' % (os.path.basename(cubefile))
                     os.system(syscommand)
                     syscommand = 'gzip -9 ' + os.path.basename(cubefile)
                     os.system(syscommand)
                     syscommand = 'mv cubebkupfile %s' % (os.path.basename(cubefile))
                     os.system(syscommand)
-                    os.chdir(currentpath) 
+                    os.chdir(currentpath)
                     outputcubefilezip = cubefile+".gz"
 
                     print "<li><a href=%s%s%s/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, os.path.basename(outputcubefilezip), os.path.basename(outputcubefilezip))
 
-            logopts['queryAPBS'] = '|'.join(queryString) 
-        
-        if calctype=="pdb2pqr":                            
+            logopts['queryAPBS'] = '|'.join(queryString)
+
+        if calctype=="pdb2pqr":
             if have_opal:
-                outputfilelist = []    
+                outputfilelist = []
                 for i in range(0,len(filelist)):
                     if filelist[i]._name.endswith((".DAT", ".txt")):
                         outputfilelist.append((filelist[i]._url, os.path.basename(filelist[i]._name)))
@@ -509,7 +514,7 @@ def mainCGI():
                     print "<li>PDB2PKA files<ul>"
                     for outputfile in outputfilelist:
                         print "<li><a href=%s%s%s/pdb2pka_output/%s>%s</a></li>" % (WEBSITE, TMPDIR, jobid, outputfile, outputfile)
-       
+
         print "</ul></li>"
         print "<li>Runtime and debugging information<ul>"
 
@@ -522,7 +527,7 @@ def mainCGI():
 
         print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
         print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
-        
+
 
         print "</ul></li></ul>"
 
@@ -554,35 +559,35 @@ def mainCGI():
 
     elif progress == "error":
         print "There was an error with your query request. This page will not refresh."
-        
+
         print "</ul></li>"
         print "<li>Runtime and debugging information<ul>"
-        
-        if have_opal:    
+
+        if have_opal:
             resp = appServicePort.getOutputs(getOutputsRequest(jobid))
             stdouturl = resp._stdOut
             stderrurl = resp._stdErr
-            
+
         else:
             stdouturl = "%s%s%s/%s_stdout.txt" % (WEBSITE, TMPDIR, jobid, calctype)
             stderrurl = "%s%s%s/%s_stderr.txt" % (WEBSITE, TMPDIR, jobid, calctype)
 
         print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
         print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
-        
+
         print "</ul></li></ul>"
 
-        if have_opal: 
+        if have_opal:
             print " <br />If your job has been running for a prolonged period of time and failed with no reason listed in the standard out or standard error, then the job probably timed out and was terminated by the system.<br />"
 
         print '<br />If you are having trouble running PDB2PQR on the webserver, please download the <a href="http://www.poissonboltzmann.org/docs/downloads/">command line version of PDB2PQR</a> and run the job from there.'
 
 
-        
+
     elif progress == "running":
         print "Page will refresh in %d seconds<br />" % refresh
         print "<HR>"
-        
+
         if not have_opal:
             print "</ul></li>"
             print "<li>Runtime and debugging information<ul>"
@@ -591,13 +596,13 @@ def mainCGI():
             print "<li><a href=%s>Program output (stdout)</a></li>" % stdouturl
             print "<li><a href=%s>Program errors and warnings (stderr)</a></li>" % stderrurl
             print "</ul></li></ul>"
-            
+
         print "<small>Your results will appear at <a href=%s>this page</a>. If you want, you can bookmark it and come back later (note: results are only stored for approximately 12-24 hours).</small>" % resultsurl
     elif progress == "version_mismatch":
         print "The versions of APBS on the local server and on the Opal server do not match, so the calculation could not be completed"
-        
+
     print "</P>"
-    print "<script type=\"text/javascript\">"    
+    print "<script type=\"text/javascript\">"
     for key in logopts:
         print getEventTrackingString('queryData', key, logopts[key]),
         #print "_gaq.push(['_trackPageview', '/main_cgi/has_%s_%s.html']);" % (key, logopts[key])

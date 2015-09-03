@@ -2004,7 +2004,7 @@ class pKaRoutines:
             if charge is None:
                 print atomname,charge
                 print residue.isCterm
-                PDB2PKAError('Charge on atom is None')
+                raise PDB2PKAError('Charge on atom is None')
             sum+=charge
         if abs(sum)<0.001:
             neutral_state=start_state

@@ -11,7 +11,7 @@ def _add_state_pair(pc, inter_avg,
         instance1 = pc.get_instance(group1_type, group1_chain, group1_loc, group1_state)
         instance2 = pc.get_instance(group2_type, group2_chain, group2_loc, group2_state)
 
-        pc.interaction_energies[instance1, instance2] = round(inter_avg,3)
+        pc.interaction_energies[instance1, instance2] = inter_avg
 
         flipped_inter_avg = pc.interaction_energies.get((instance2, instance1))
         if flipped_inter_avg is not None:
@@ -50,9 +50,9 @@ def process_desolv_and_background(protein_complex, pKa):
     for state, energy in pKa.desolvation.iteritems():
         _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
 
-    for state, energy in pKa.desolvation.iteritems():
+    for state, energy in pKa.background.iteritems():
         _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
 
 def _process_desolv_or_background_line(protein_complex, res_type, chain, location, state_name, energy):
     instance = protein_complex.get_instance(res_type, chain, location, state_name)
-    instance.energy += round(energy,13)
+    instance.energy += energy

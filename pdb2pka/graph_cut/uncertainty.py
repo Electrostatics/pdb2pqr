@@ -4,7 +4,7 @@ import random
 random.seed("Mmmmm, sandwiches...")
 
 
-def resolve_uncertainty(protein_complex, labeling, uncertain, brute_force_limit=12):
+def resolve_uncertainty(protein_complex, labeling, uncertain, brute_force_limit=20):
 
     final_labeling = labeling.copy()
 

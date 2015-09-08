@@ -594,27 +594,27 @@ class ProteinComplex(object):
                 self.normalized_interaction_energies[v_prot, w_prot] -= 2.0*pH
                 self.normalized_interaction_energies[w_prot, v_prot] -= 2.0*pH
 
-#         for v, w in permutations(self.residue_variables.iteritems(), 2):
-#             v_key, v_residue = v
-#             w_key, w_residue = w
-#
-#             for v_instance in v_residue.instances.itervalues():
-#                 w_instances = w_residue.instances.values()
-#                 min_energy = min(self.normalized_interaction_energies[v_instance, w_instance]
-#                                  for w_instance in w_instances)
-#                 v_instance.energyNF += min_energy
-#
-#                 if min_energy != sys.float_info.max:
-#                     for w_instance in w_instances:
-#                         self.normalized_interaction_energies[v_instance, w_instance] -= min_energy
-#                         self.normalized_interaction_energies[w_instance, v_instance] -= min_energy
-#
-#         for residue in self.residue_variables.itervalues():
-#             min_energy = min(instance.energyNF for instance in residue.instances.itervalues())
-#             self.normalized_constant_energy += min_energy
-#             if min_energy != sys.float_info.max:
-#                 for instance in residue.instances.itervalues():
-#                     instance.energyNF -= min_energy
+        for v, w in permutations(self.residue_variables.iteritems(), 2):
+            v_key, v_residue = v
+            w_key, w_residue = w
+
+            for v_instance in v_residue.instances.itervalues():
+                w_instances = w_residue.instances.values()
+                min_energy = min(self.normalized_interaction_energies[v_instance, w_instance]
+                                 for w_instance in w_instances)
+                v_instance.energyNF += min_energy
+
+                if min_energy != sys.float_info.max:
+                    for w_instance in w_instances:
+                        self.normalized_interaction_energies[v_instance, w_instance] -= min_energy
+                        self.normalized_interaction_energies[w_instance, v_instance] -= min_energy
+
+        for residue in self.residue_variables.itervalues():
+            min_energy = min(instance.energyNF for instance in residue.instances.itervalues())
+            self.normalized_constant_energy += min_energy
+            if min_energy != sys.float_info.max:
+                for instance in residue.instances.itervalues():
+                    instance.energyNF -= min_energy
 
 
 #         pprint(self.normalized_interaction_energies)

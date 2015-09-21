@@ -618,14 +618,16 @@ class Routines:
                     self.write("Deleted this atom.\n")
 
         if heavycount == 0:
-            raise PDBInputError("No heavy atoms found!")
+            raise PDBInputError("No heavy atoms found. " +
+                                "You may also see this message if PDB2PQR does not have parameters for any residue in your protein.")
 
         misspct = 100.0 * float(misscount) / heavycount
         if misspct > REPAIR_LIMIT:
             error = "This PDB file is missing too many (%i out of " % misscount
             error += "%i, %.2f%%) heavy atoms to accurately repair the file.  " % \
                      (heavycount, misspct)
-            error += "The current repair limit is set at %i%%." % REPAIR_LIMIT
+            error += "The current repair limit is set at %i%%. " % REPAIR_LIMIT
+            error += "You may also see this message if PDB2PQR does not have parameters for enough residues in your protein."
             raise PDBInputError(error)
         elif misscount > 0:
             self.write("Missing %i out of %i heavy atoms (%.2f percent) - " % \

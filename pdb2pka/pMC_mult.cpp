@@ -211,6 +211,26 @@ double MC::calc_pKa(vector<float> charges,vector<double> pHs,double acid_base) {
 // ---------------------
 //
 
+// A brief explanation of how the MC code works:
+
+//For each pH step
+//    Randomly select a residue state and evaluate the total energy of that state.
+//    For each step in the Monte Carlo
+//        Randomly change one residue to a different state and evaluate the total energy of that state.
+//        If the new total energy is lower than the previous energy
+//            Keep the new state and discard the old.
+//        Otherwise if the difference (d for our purposes) is between the new and old state is less than 20.0. (No clue what the units are here.)
+//            Choose a random real number [0.0, 1.0) (x for our purposes, the code calls it “tilf”)
+//            If x < e^(-d)
+//                Keep the new state and discard the old.
+//        Otherwise keep the old state.
+//
+//        After 10% of the steps have been processed 
+//            We assume that we have equilibrated
+//            We save each resulting state after each Monte Carlo step
+//    For each residue from the saved states find the probability that the residue was charged at that pH.
+
+
 vector<float> MC::calc_charge(float pH) {
     //
     // Calculate the fractional charges at this pH

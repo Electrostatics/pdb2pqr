@@ -1,4 +1,5 @@
 from pdb2pka.graph_cut.protein_complex import ProteinComplex
+from pdb2pka.graph_cut.titration_curve import get_titration_curves
 
 def _add_state_pair(pc, inter_avg,
                     group1_type, group1_chain, group1_loc, group1_state,
@@ -24,6 +25,7 @@ def _add_state_pair(pc, inter_avg,
 
 
 def create_protein_complex_from_matrix(correct_matrix):
+    """Builds a protein complex from a matrix returned from pKaRoutines.correct_matrix"""
     protein_complex = ProteinComplex()
 
     for pKa1 in correct_matrix:
@@ -44,6 +46,7 @@ def create_protein_complex_from_matrix(correct_matrix):
     return protein_complex
 
 def process_desolv_and_background(protein_complex, pKa):
+    """Applies the background and desolvation energies from a pKa to a protein complex"""
     res_type = pKa.pKaGroup.name
     chain = pKa.residue.chainID
     location = str(pKa.residue.resSeq)
@@ -56,3 +59,39 @@ def process_desolv_and_background(protein_complex, pKa):
 def _process_desolv_or_background_line(protein_complex, res_type, chain, location, state_name, energy):
     instance = protein_complex.get_instance(res_type, chain, location, state_name)
     instance.energy += energy
+
+def _create_protein_complex_from_pKa(pKa):
+    protein_complex = ProteinComplex()
+    res = pKa.residue
+    group = pKa.pKaGroup
+
+    #Grab all of the states
+    states = []
+
+    for titration1 in group.DefTitrations:
+        states.extend(titration1.allstates)
+
+    states.sort()
+
+    for state1 in states:
+        for state2 in states:
+            _add_state_pair(protein_complex, 0.0,
+                            group.name, res.chainID, str(res.resSeq), state1,
+                            group.name, res.chainID, str(res.resSeq), state2)
+
+    return protein_complex
+
+def curve_for_one_group(pKa):
+    """Roughly equivalent to pka_help.titrate_one_group
+       Titrate a single group and return the titration curve for it.
+       """
+    protein_complex = _create_protein_complex_from_pKa(pKa)
+    process_desolv_and_background(protein_complex, pKa)
+
+    protein_complex.simplify()
+
+    curve = get_titration_curves(protein_complex)
+
+    return curve
+
+

@@ -707,7 +707,6 @@ class pKaRoutines:
         pka_values, pH_values = self.find_pka_and_pH(curves)
         print pka_values
         print pH_values
-        pka_values, pH_values = self.find_pka_and_pH(curves)
         self.ph_at_0_5 = pH_values
 
         ln10=math.log(10)
@@ -878,13 +877,13 @@ class pKaRoutines:
             if not bad_curve:
                 print "{name} exhibits Henderson-Hasselbalch behavior.".format(name=name)
 
-                #Calc pKa value
-                start = max(0, prevous_cross_index-adjacent_data_points)
-                end = cross_index + adjacent_data_points
-                pka_pairs = curve[start:end]
+            #Calc pKa value
+            start = max(0, prevous_cross_index-adjacent_data_points)
+            end = cross_index + adjacent_data_points
+            pka_pairs = curve[start:end]
 
-                pkas = [pH-math.log10(abs(v)/(1.0-abs(v))) for pH, v in pka_pairs]
-                pKa_value = sum(pkas)/float(len(pkas))
+            pkas = [pH-math.log10(abs(v)/(1.0-abs(v))) for pH, v in pka_pairs]
+            pKa_value = sum(pkas)/float(len(pkas))
 
 
             pKa_results[name] = pKa_value

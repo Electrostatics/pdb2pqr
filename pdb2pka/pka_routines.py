@@ -18,7 +18,7 @@ import math
 import copy
 import string
 
-from graph_cut.utils import create_protein_complex_from_matrix, process_desolv_and_background
+from graph_cut.utils import create_protein_complex_from_matrix, process_desolv_and_background, curve_for_one_group
 from graph_cut.titration_curve import get_titration_curves
 from graph_cut.create_titration_output import create_output
 
@@ -1129,34 +1129,37 @@ class pKaRoutines:
             # -----------------------------------------------------------------
             # Get the intrinsic pKa with a small MC calculation
             #
-            acidbase=[]
-            is_charged=[]
-            intpKas=[]
-            for titration in pKaGroup.DefTitrations:
-                #
-                # Acid/Base
-                #
-                if pKaGroup.type=='acid':
-                    acidbase.append(-1)
-                else:
-                    acidbase.append(1)
-                #
-                #
-                #
-                possiblestates = titration.allstates
-                #
-                # Record the number of states for each titratable group
-                #
-                pos_states=possiblestates
-                pos_states.sort()
-                for state in pos_states:
-                    #
-                    # Is this a charged state?
-                    #
-                    crg=self.is_charged(pKa,titration,state)
-                    is_charged.append(crg)
-                    intpKas.append(pKa.intrinsic_pKa[state])
-            intpka=titrate_one_group(name='%s' %(pKa.residue),intpkas=intpKas,is_charged=is_charged,acidbase=acidbase)
+#             acidbase=[]
+#             is_charged=[]
+#             intpKas=[]
+#             for titration in pKaGroup.DefTitrations:
+#                 #
+#                 # Acid/Base
+#                 #
+#                 if pKaGroup.type=='acid':
+#                     acidbase.append(-1)
+#                 else:
+#                     acidbase.append(1)
+#                 #
+#                 #
+#                 #
+#                 possiblestates = titration.allstates
+#                 #
+#                 # Record the number of states for each titratable group
+#                 #
+#                 pos_states=possiblestates
+#                 pos_states.sort()
+#                 for state in pos_states:
+#                     #
+#                     # Is this a charged state?
+#                     #
+#                     crg=self.is_charged(pKa,titration,state)
+#                     is_charged.append(crg)
+#                     intpKas.append(pKa.intrinsic_pKa[state])
+#             intpka=titrate_one_group(name='%s' %(pKa.residue),intpkas=intpKas,is_charged=is_charged,acidbase=acidbase)
+            curve = curve_for_one_group(pKa)
+            pka_values, _ = self.find_pka_and_pH(curve)
+            intpka = pka_values.values()[0]
             pKa.simulated_intrinsic_pKa=intpka
         return
 

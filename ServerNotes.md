@@ -12,7 +12,7 @@
 
 ## On you local machine
 
-1. in your browser, go to <remote ip>/<user-name>/
+1. in your browser, go to remote_ip/user-name/
   * should work: list a directory
 
 2. clone apbs-pdb2pqr

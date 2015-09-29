@@ -3,7 +3,7 @@ import tarfile
 import os
 import zipfile
 
-env.hosts = ['yourhost.blah.org']
+env.hosts = ['PT24098.pnl.gov']
 
 import sys, os
 sys.path.append("site_scons")

@@ -2,7 +2,7 @@
 
 ## On your remote host:
 
-1. Get access to Kyle's machine: pt24098
+1. Get access to your remote machine
   * create public www directory
 
 2. edit /etc/apache2/httpd.conf
@@ -12,7 +12,7 @@
 
 ## On you local machine
 
-1. in your browser, go to pt24098/d3k084/
+1. in your browser, go to <remote ip>/<user-name>/
   * should work: list a directory
 
 2. clone apbs-pdb2pqr
@@ -25,7 +25,7 @@
 5. edit the fabric script (fabfile.py) in the pdb2pqr folder to find your
 files on the remote machine.
   * pack command in script makes tar 
-  * deploy command logs into remote machine (pt24098)
+  * deploy command logs into remote machine 
   * install command pushes into the www directory on remote machine
 
 ## Deploy the site for testing

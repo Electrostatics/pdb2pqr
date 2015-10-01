@@ -7,15 +7,17 @@ These directions are taylored for installation on OSX. Adjustments will have to 
 1. Create www directory to install pdb2pqr in. (We will use /Users/kyle/www for all examples)
 
 2. Create a link to this directory from /Library/WebServer/Documents
-  * sudo ln -s /Users/kyle/www/ /Library/WebServer/Documents/kyle  
+  
+    sudo ln -s /Users/kyle/www/ /Library/WebServer/Documents/kyle  
  
 
 2. edit /etc/apache2/httpd.conf to allow cgi scipts to execute in the installation directory.
-  a. add paths for links in the /Library directory in the <IfModule alias_module> section 
+
+  * add paths for links in the /Library directory in the <IfModule alias_module> section 
     
     ScriptAliasMatch ^/cgi-bin/((?!(?i:webobjects)).*$) "/Library/WebServer/Documents/kyle/pdb2pqr/$1"
 	
-  b. add a Directory section
+  * add a Directory section
   
     <Directory "/Library/WebServer/Documents/kyle/pdb2pqr">
       AllowOverride None

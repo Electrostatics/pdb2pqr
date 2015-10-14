@@ -281,28 +281,32 @@
         function reset_vals() {
             set_min_isoval2(-5);
             set_max_isoval2(5);
+            document.getElementById("min").value = "-5";
+            document.getElementById("max").value = "5";
             update_surface(0);
             return false;
         }
         
  //change output for min_isoval range, not perfect
         function set_min_isoval2(min_val) {
-            document.querySelector('#min_isoval2').value = min_val;
-            protein.min_isoval = min_val;
+            //document.querySelector('#min_isoval2').value = min_val;
+            protein.min_isoval = Number(min_val);
+            //console.log(protein.min_isoval);
             update_surface(0);
         }
 
         //change output for max_isoval range, not perfect
         function set_max_isoval2(max_val) {
-            document.querySelector('#max_isoval2').value = max_val;
-            protein.max_isoval = max_val;
+            //document.querySelector('#max_isoval2').value = max_val;
+            protein.max_isoval = Number(max_val);
             update_surface(0);
         }
 
         function getpqr(jobid){
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
-            url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
+            //url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
+            url = "tmp/"+jobid+"/"+jobid+".pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -321,7 +325,8 @@
 
         function getcube(jobid){
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
+            //xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
+            xhr.open("GET", "tmp/"+jobid+"/"+jobid+".cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {
@@ -336,4 +341,42 @@
             xhr.send(null);
             
         }
+
+var surfaceOn = true
+function toggleSurface(){
+    if(surfaceOn){
+        surfaceOn = false
+        on_surface()
+    }
+    else{
+        surfaceOn = true
+        glviewer.removeSurface(surf)
+    }
+}
+
+var surfaceOpacity = true
+function toggleOpacity(){
+    if(surfaceOpacity){
+        update_surface(3)
+        surfaceOpacity = false
+    }
+    else{
+        update_surface(2)
+        surfaceOpacity = true
+    }
+}
+
+var modelLabels = false
+function toggleLabels(){
+    if(modelLabels){
+        removetheLabels(glviewer);
+        glviewer.render();
+        modelLabels = false
+    }
+    else{
+        addLabels(glviewer);
+        glviewer.render();
+        modelLabels = true
+    }
+}
 

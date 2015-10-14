@@ -9,14 +9,14 @@
         opacity: 1,
         min_isoval: -5,
         max_isoval: 5,
-        colorScheme: "RWB"
+        colorScheme: "RWB",
+        volumedata: null
     };
 
     var volumedata = null;
     var glviewer = null;
     var labels = [];
-
-    
+   
 
     var addLabels = function() {
         var atoms = glviewer.getModel().selectedAtoms({
@@ -124,6 +124,7 @@
         
         
     var addcube = function (volumedata){
+        //protein.volumedata = volumedata;
         window.volumedata = new $3Dmol.VolumeData(volumedata, "cube");
         //volumedata = $("#volumetric_data").val();
         //glviewer.addIsosurface(volumedata, {isoval: -5, color:"red", smoothness: 10})
@@ -131,6 +132,7 @@
         
         
         glviewer.render();
+        create_surface();
         };
     
     var backbone = function (){
@@ -147,11 +149,6 @@
         }
     }
    
-   function carts(){
-    surf = glviewer.addSurface(protein.surface, {color: 'red',opacity:0, voldata: volumedata, volscheme: new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval)});
-   }
-
-
     var readText = function(input,func) {
         
         if(input.length > 0) {
@@ -215,6 +212,18 @@
             set_color();
         }
 
+        function set_vis(){
+            var f = document.getElementById("selected_vis");
+            var y = f.options[f.selectedIndex].value;
+            vis=y;
+
+            if(y=="stick"){ glviewer.setStyle({},{stick:{}}); glviewer.render();}
+            if(y=="line"){glviewer.setStyle({},{line:{}}); glviewer.render();}
+            if(y=="cross"){glviewer.setStyle({},{cross:{linewidth:5}}); glviewer.render();}
+            if(y=="sphere"){glviewer.setStyle({},{sphere:{}}); glviewer.render();}
+            if(y=="cartoon"){glviewer.setStyle({hetflag:false},{cartoon:{color: 'spectrum'}}); glviewer.render();}
+        }
+
         function set_color(){
         //inefficient -- need to fix!
         //want to set as protein attribute
@@ -234,7 +243,8 @@
         
         //starts program with SAS surface
         function create_surface(){
-            surf = glviewer.addSurface(protein.surface, {ColorSpec: 0xFFFFFF, opacity:protein.opacity, voldata: volumedata, volscheme: new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval)});
+            volscheme_to_use = new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval);
+            surf = glviewer.addSurface(protein.surface, {opacity:protein.opacity, voldata: volumedata, volscheme: volscheme_to_use});
         }
 
         //Turn on the surface for the current selected surface
@@ -271,28 +281,32 @@
         function reset_vals() {
             set_min_isoval2(-5);
             set_max_isoval2(5);
+            document.getElementById("min").value = "-5";
+            document.getElementById("max").value = "5";
             update_surface(0);
             return false;
         }
         
  //change output for min_isoval range, not perfect
         function set_min_isoval2(min_val) {
-            document.querySelector('#min_isoval2').value = min_val;
-            protein.min_isoval = min_val;
+            //document.querySelector('#min_isoval2').value = min_val;
+            protein.min_isoval = Number(min_val);
+            //console.log(protein.min_isoval);
             update_surface(0);
         }
 
         //change output for max_isoval range, not perfect
         function set_max_isoval2(max_val) {
-            document.querySelector('#max_isoval2').value = max_val;
-            protein.max_isoval = max_val;
+            //document.querySelector('#max_isoval2').value = max_val;
+            protein.max_isoval = Number(max_val);
             update_surface(0);
         }
 
         function getpqr(jobid){
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
-            url = "http://pt24098/lile647/pdb2pqr/"+jobid+".pqr";
+            //url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
+            url = "tmp/"+jobid+"/"+jobid+".pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -306,12 +320,13 @@
               
             };
             xhr.send(null);
-            getcube();
+            
         }
 
-        function getcube(){
+        function getcube(jobid){
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://pt24098/lile647/pdb2pqr/cubefile.cube");
+            //xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
+            xhr.open("GET", "tmp/"+jobid+"/"+jobid+".cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {
@@ -324,6 +339,44 @@
               
             };
             xhr.send(null);
-
+            
         }
+
+var surfaceOn = true
+function toggleSurface(){
+    if(surfaceOn){
+        surfaceOn = false
+        on_surface()
+    }
+    else{
+        surfaceOn = true
+        glviewer.removeSurface(surf)
+    }
+}
+
+var surfaceOpacity = true
+function toggleOpacity(){
+    if(surfaceOpacity){
+        update_surface(3)
+        surfaceOpacity = false
+    }
+    else{
+        update_surface(2)
+        surfaceOpacity = true
+    }
+}
+
+var modelLabels = false
+function toggleLabels(){
+    if(modelLabels){
+        removetheLabels(glviewer);
+        glviewer.render();
+        modelLabels = false
+    }
+    else{
+        addLabels(glviewer);
+        glviewer.render();
+        modelLabels = true
+    }
+}
 

@@ -281,8 +281,21 @@
         function reset_vals() {
             set_min_isoval2(-5);
             set_max_isoval2(5);
-            document.getElementById("min").value = "-5";
-            document.getElementById("max").value = "5";
+            
+            //update min isoval
+            document.getElementById("min_isoval").innerHTML = -5;
+            //value of slider
+            var x = document.getElementById("min_isoval").innerHTML;
+            //value in span
+            document.getElementById("min_isoval2").value = x;
+            
+            //update max isoval
+            document.getElementById("max_isoval").innerHTML = 5;
+            //value of slider
+            var y = document.getElementById("max_isoval").innerHTML;
+            //value in span
+            document.getElementById("max_isoval2").value = y;
+
             update_surface(0);
             return false;
         }
@@ -292,6 +305,10 @@
             //document.querySelector('#min_isoval2').value = min_val;
             protein.min_isoval = Number(min_val);
             //console.log(protein.min_isoval);
+
+            var x = document.getElementById("min_isoval2").value;
+            document.getElementById("min_isoval").innerHTML = x;
+
             update_surface(0);
         }
 
@@ -299,6 +316,10 @@
         function set_max_isoval2(max_val) {
             //document.querySelector('#max_isoval2').value = max_val;
             protein.max_isoval = Number(max_val);
+
+            var x = document.getElementById("max_isoval2").value;
+            document.getElementById("max_isoval").innerHTML = x;
+
             update_surface(0);
         }
 

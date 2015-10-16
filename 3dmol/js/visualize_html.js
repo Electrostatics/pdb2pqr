@@ -29,17 +29,14 @@ function build_page(jobid){
 "<font style='color:white; font-size:12pt'>Isosurface</font><hr width='75%'>" +
 
 //change min isoval
-" <table class='main' width='70%' border='0'><tr><td style='color: white; font-size: 12pt'><br>Min: </td> " +
-"<td><br><input type='text' id='min_isoval2' value='-5' style='text-align:right; width: 50px; height: 30px; background: transparent; border:0; color: white; font-size: 18px'> </td>" +
-"<td style='color: white; font-size: 18px'><br>kT/e &nbsp;&nbsp;</td>" +
-"<td valign='top'><br><br><input type=range min=-50 max=50 value=-5 id='min_isoval2' step=1 onmouseup='set_min_isoval2(value)'> </td></tr></table>" +
+" <p style='color:white; font-size: 16px'> Minimum kT/e <input type=range min=-50 max=50 value=-5 id='min_isoval2' step=1 onmouseup='set_min_isoval2(value)'>&nbsp;&nbsp;&nbsp;&nbsp;<span id='min_isoval'>-5 </span> </p>  " +
 
 //change max isoval
-" <table class='main' width='70%' border='0'><tr><td style='color: white; font-size: 12pt'>Max: </td> " +
-"<td><input type='text' id='max_isoval2' value='5' style='text-align:right; width: 50px; height: 30px; background: transparent; border:0; color: white; font-size: 18px'> </td>" +
-"<td style='color: white; font-size: 18px'>kT/e &nbsp;&nbsp;</td>" +
-"<td valign='top' ><br><input type=range min=-50 max=50 value=5 id='max_isoval2' step=1 onmouseup='set_max_isoval2(value)'> </td></tr></table>" +
+" <p style='color:white; font-size: 16px'> Maximum kT/e <input type=range min=-50 max=50 value=5 id='max_isoval2' step=1 onmouseup='set_max_isoval2(value)'>&nbsp;&nbsp;&nbsp;&nbsp;<span id='max_isoval'>5 </span> </p>  " +
 
+//reset button
+"<div class='inner'><ul class='button-group round'></input>" +
+"    <input type='button' button class='button-backbone pure-button' style='width: 85px; height: 30px; color: black' input type='button' value='Reset' onclick='reset_vals()'></button></input></ul></div><br><br>" +
 "<font style='color:white; font-size:12pt'>Model</font><hr width='75%'>" +
 
 "<select class='styled-select' id='selected_vis' onchange='set_vis()' style='max-width:50%;'>"+
@@ -56,38 +53,16 @@ function build_page(jobid){
 "<font style='color:white; font-size:12pt'>Scheme </font><hr width='75%'><select class='styled-select' id='selected_scheme' onchange='update_surface(0)' style='max-width:50%;'>" +
 "        <option style='color: black;' value='RWB'>Red-White-Blue </option>" +
 "        <option style='color: black;' value='ROYGB'>Red-Green-Blue </option>" +
-"        <option style='color: black;' value='BWR'>Blue-White-Red </option>" +
-"    </select></td></tr></table>" 
-
-
-
-
-
-//buttons
-var f =
-"<div class='inner'><ul class='button-group round'></input>" +
-"    <input type='button' button class='button-backbone pure-button' style='width: 100px; height: 40px; color: black' input type='button' value='Reset' onclick='reset_vals()'></button></input></ul></div>" +
-"    <br>" 
-
-var g =
-"  <div class='inner'><button id='visualbutton' id='leftbutton' data-dropdown='visualdrop' aria-controls='drop' aria-expanded='false' class='round button dropdown'>Visualization</button><br>" +
-"<ul id='visualdrop' data-dropdown-content class='f-dropdown' role='menu' aria-hidden='false' tabindex='-1'>" +
-"  <li><a onclick='glviewer.setStyle({},{stick:{}}); glviewer.render();'>Stick</a></li>" +
-"  <li><a onclick='glviewer.setStyle({},{line:{}}); glviewer.render();'>Line</a></li>" +
-"  <li><a onclick='glviewer.setStyle({},{cross:{linewidth:5}}); glviewer.render();'>Cross</a></li>" +
-"  <li><a onclick='glviewer.setStyle({},{sphere:{}}); glviewer.render();'>Sphere</a></li>" +
-"  <li><a onclick='glviewer.setStyle({hetflag:false},{cartoon:{color: 'spectrum'}}); glviewer.render();'>Cartoon</a></li>" +
-"</ul></div>" +
-"    <br>"
+"        <!--<option style='color: black;' value='BWR'>Blue-White-Red </option>-->" +
+"    </select><br><br>" 
 
 var h =
 
-"    <div class='inner'><ul class='button-group round'><input type='button' button class='button-labela pure-button' style='width: 100px; height: 40px; color: black' value='Add labels'" +
+"    <div class='inner'><ul class='button-group round'><input type='button' button class='button-labela pure-button' style='width: 85px; height: 30px; color: black' value='Add labels'" +
 "        onclick='addLabels(glviewer); glviewer.render();'></button></input>" +
-"    <input type='button' button class='button-unlabela pure-button' style='width: 100px; height: 40px; color: black' value='Remove labels'" +
-"        onclick='removetheLabels(glviewer); glviewer.render();'></button></input></ul></div>" + "<div class='inner'><ul class='button-group round'><input type='button' button class='button-distance pure-button' style='width: 100px; height: 40px; color: black' value='' onclick=''>" +
-"    </button></input>" +
-"   <input type='button' button class='button-recenter pure-button' style='width: 100px; height: 40px; color: black' value='Recenter' onclick='glviewer.zoomTo();'></button> </input></ul></div>" +
+"    <input type='button' button class='button-unlabela pure-button' style='width: 85px; height: 30px; color: black' value='Remove labels'" +
+"        onclick='removetheLabels(glviewer); glviewer.render();'></button></input></ul></div>"  +
+"<div class='inner'><ul class='button-group round'><input type='button' button class='button-backbone pure-button' style='width: 85px; height: 30px; color: black' input type='button' value='Recenter' onclick='glviewer.zoomTo();'></button></input></ul></div>" +
 "<br></div></div>" 
 
 
@@ -97,11 +72,10 @@ var h =
 document.write(a)
 document.write(b)
 document.write(c)
-//document.write(i)
-document.write(d)
-document.write(e)
-document.write(f)
-//document.write(g)
+
+
+
+
 document.write(h)
 
 }

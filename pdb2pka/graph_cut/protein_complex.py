@@ -1,7 +1,8 @@
 
 from itertools import combinations, product, permutations
 
-from pprint import pprint, pformat
+from collections import OrderedDict
+
 import sys
 
 titratable_residue_data = {
@@ -11,7 +12,7 @@ titratable_residue_data = {
                            "LYS": {"model_pka":10.4, "ionizable": 1, "tautomers":{"protonated":("1",), "deprotonated":("0",)}},
                            "TYR": {"model_pka": 9.6, "ionizable": 1, "tautomers":{"protonated":("1",), "deprotonated":("0",)}},
                            "CTR": {"model_pka": 3.2, "ionizable":-1, "tautomers":{"protonated":("1", "2", "3", "4"), "deprotonated":("0",)}},
-                           "NTR": {"model_pka": 8.3, "ionizable": 1, "tautomers":{"protonated":("1", "2"), "deprotonated":("1+2",)}},
+                           "NTR": {"model_pka": 8.3, "ionizable": 1, "tautomers":{"deprotonated":("1", "2"), "protonated":("1+2",)}},
                            "HIS": {"model_pka": 6.6, "ionizable": 1, "tautomers":{"protonated":("1", "2"), "deprotonated":("1+2",)}},
                           }
 
@@ -40,16 +41,19 @@ for state in ("HSP", "H3+H2"):
     state_to_tautomer[state] = "1+2"
 
 class ResidueInstance(object):
+    """Storage class for information about a particular residue state."""
     def __init__(self, protonated, name, energy = 0.0):
         self.name = name
         self.protonated = protonated
         self.energy = energy
         self.energyNF = None
+        self.energy_with_ph = None
 
     def __repr__(self):
         return self.name
         #return "{}: {}, {}, {}".format(self.name, self.protonated, self.energy, self.energyNF)
 
+    #For sorting state output if we use pretty print.
     def __eq__(self, other):
         return self._get_self_comp_tuple() == other._get_self_comp_tuple()
     def __ne__(self, other):
@@ -68,11 +72,16 @@ class ResidueInstance(object):
 
 
 class ResidueVariable(object):
+    """Storage class all information about a particular residue
+       including all possible states."""
     def __init__(self, name):
         self.name = name
-        self.instances = {}
+        self.instances = OrderedDict()
 
     def get_instance(self, state):
+        """Returns a specific ResidueInstance from the state name.
+           After the protein complex is simplified this will always return None
+           as the non-consolidated Instances are removed."""
         if state not in all_tautomers:
             state = state_to_tautomer.get(state)
         return self.instances.get(state)
@@ -87,6 +96,7 @@ class ResidueVariable(object):
     def __repr__(self):
         return self.name
 
+    #For sorting state output if we use pretty print.
     def __eq__(self, other):
         return self.name == other.name
     def __ne__(self, other):
@@ -105,8 +115,8 @@ class ProteinComplex(object):
     def __init__(self, T=300):
         self.T = T
         self.normalized_constant_energy = 0.0
-        self.residue_variables = {}
-        self.interaction_energies = {}
+        self.residue_variables = OrderedDict()
+        self.interaction_energies = OrderedDict()
         self.normalized_interaction_energies = None
 
     def add_residue(self, residue_type, chain, location):
@@ -135,35 +145,40 @@ class ProteinComplex(object):
             if residue_type != "HIS":
                 #Placeholder instances for later consolidation
                 #HIS is split later so we don't add these as they are not needed.
-                instance = ResidueInstance(False, base_name+"DEPROTONATED")
-                #instance.energy = 0
-                res_var.instances["DEPROTONATED"] = instance
+
                 instance = ResidueInstance(True, base_name+"PROTONATED")
-                #instance.energy = -model_pka
                 res_var.instances["PROTONATED"] = instance
+
+                instance = ResidueInstance(False, base_name+"DEPROTONATED")
+                res_var.instances["DEPROTONATED"] = instance
 
             self.residue_variables[residue_tuple] = res_var
 
 
     def get_residue(self, name, chain, location):
+        "Returns the residue for this specific name, chain, and location."
         return self.residue_variables.get((name, chain, location))
 
     def get_instance(self, residue_type, chain, location, state):
+        "Returns the instance for this specific name, chain, and location and state name."
         res_var = self.residue_variables.get((residue_type, chain, location))
         if res_var is None:
             return None
         return res_var.get_instance(state)
 
     def drop_interaction_pairs(self, pair_list):
+        "Drop each pair of interaction energies in the pair_list"
         for instance1, instance2 in pair_list:
             del self.interaction_energies[instance1, instance2]
             del self.interaction_energies[instance2, instance1]
 
     def get_interaction_combinations(self, pair1, pair2):
+        "Get a list of all pairwise combinations from lists pair1 and pair2."
         product_list = [(x,y) for x,y in product(pair1, pair2)]
         return product_list
 
     def add_interaction_energy_pair(self, instance1, instance2, energy, normalized=False):
+        "Insert interaction energy pair."
         ie = self.normalized_interaction_energies if normalized else self.interaction_energies
         ie[instance1, instance2] = energy
         ie[instance2, instance1] = energy
@@ -177,7 +192,7 @@ class ProteinComplex(object):
 
         self.divide_his()
 
-        #pprint(self.interaction_energies)
+
 
     def update_special_instance_energies(self):
         """After we have loaded the backgroind and desolvation files we need to
@@ -212,6 +227,7 @@ class ProteinComplex(object):
 
         handled_interaction_pairs = set()
 
+        #See https://docs.python.org/2/library/itertools.html#itertools.combinations
         for v, w in combinations(self.residue_variables.iteritems(),2):
             v_key, v_residue = v
             w_key, w_residue = w
@@ -250,7 +266,9 @@ class ProteinComplex(object):
                 min_energy = min(energies)
 
                 self.add_interaction_energy_pair(v_consolidated, w_consolidated, min_energy)
+
         #Now handle HIS.
+        #See https://docs.python.org/2/library/itertools.html#itertools.permutations
         for v, w in permutations(self.residue_variables.iteritems(),2):
             his_key, his_residue = v
             other_key, other_residue = w
@@ -274,6 +292,7 @@ class ProteinComplex(object):
 
             #For every pairing of a HIS instance and another non HIS residue find the
             # minimum interaction energy and update the interaction map accordingly.
+            #See https://docs.python.org/2/library/itertools.html#itertools.product
             for his_instance, other_product in product(his_stuff, other_stuff):
                 other_instances, other_consolidated = other_product
 
@@ -296,7 +315,7 @@ class ProteinComplex(object):
             if name == 'HIS':
                 continue
 
-            residue.instances = dict((k,v) for k,v in residue.instances.iteritems() if "PROTONATED" in k)
+            residue.instances = OrderedDict((k,v) for k,v in residue.instances.iteritems() if "PROTONATED" in k)
 
 
     def divide_his(self):
@@ -310,6 +329,7 @@ class ProteinComplex(object):
 
         items = list(self.residue_variables.iteritems())
 
+        #Find all HIS and split them.
         for key, residue in items:
             name = key[0]
             if name != 'HIS':
@@ -326,9 +346,11 @@ class ProteinComplex(object):
             name = "HId"+base_name+"PROTONATED"
             hid_prot = ResidueInstance(True, name, energy=old_instance_1.energy)
             name = "HId"+base_name+"DEPROTONATED"
-            hid_deprot = ResidueInstance(True, name)
+            hid_deprot = ResidueInstance(False, name)
+
             hid.instances["PROTONATED"] = hid_prot
             hid.instances["DEPROTONATED"] = hid_deprot
+
 
             res_tuple = ("HId",)+key[-2:]
             self.residue_variables[res_tuple] = hid
@@ -339,21 +361,26 @@ class ProteinComplex(object):
             name = "HIe"+base_name+"PROTONATED"
             hie_prot = ResidueInstance( True, name, energy=old_instance_2.energy)
             name = "HIe"+base_name+"DEPROTONATED"
-            hie_deprot = ResidueInstance(True, name)
+            hie_deprot = ResidueInstance(False, name)
+
             hie.instances["PROTONATED"] = hie_prot
             hie.instances["DEPROTONATED"] = hie_deprot
 
             res_tuple = ("HIe",)+key[-2:]
             self.residue_variables[res_tuple] = hie
 
+            #Keep a mapping to the original residue object so we can look up
+            # interaction energies in the HIS/HIS interactions loop below.
             new_to_old_his[hie] = residue
 
+            #Create interaction energies between newly created residues.
             energy = old_instance_12.energy - old_instance_1.energy - old_instance_2.energy
             self.add_interaction_energy_pair(hid_prot, hie_prot, energy)
             self.add_interaction_energy_pair(hid_prot, hie_deprot, 0.0)
             self.add_interaction_energy_pair(hid_deprot, hie_prot, 0.0)
             self.add_interaction_energy_pair(hid_deprot, hie_deprot, sys.float_info.max)
 
+        #Delete residue variables from main map.
         for key in to_drop_his:
             del self.residue_variables[key]
 
@@ -362,6 +389,8 @@ class ProteinComplex(object):
         #and why we compare chain locations.
         # (In case you were wondering why HIe <-> HId is not the same as
         #  HId <-> HIe.)
+
+        #See https://docs.python.org/2/library/itertools.html#itertools.product
         for v, w in product(self.residue_variables.iteritems(), repeat=2):
             his_key, his_residue = v
             other_key, other_residue = w
@@ -386,7 +415,9 @@ class ProteinComplex(object):
             other_deprot = other_residue.instances["DEPROTONATED"]
 
 
+            #Handle create interaction with HId
             if other_name == 'HId':
+                # HIS/HIS is order dependent.
                 if his_chain > other_chain or his_location >= other_location:
                     continue
 
@@ -428,7 +459,9 @@ class ProteinComplex(object):
 
                 handled_interaction_pairs.update(combinations)
 
+            #Handle create interaction with HIe
             elif other_name == 'HIe':
+                # HIS/HIS is order dependent.
                 if his_chain > other_chain or his_location >= other_location:
                     continue
 
@@ -467,8 +500,8 @@ class ProteinComplex(object):
 
                 handled_interaction_pairs.update(combinations)
 
+            #Handle create interaction with non-HIS
             else:
-
                 if his_name == 'HIe':
                     energy = (self.interaction_energies[old_his_instance_12, other_prot] -
                               self.interaction_energies[old_his_instance_1, other_prot])
@@ -507,8 +540,27 @@ class ProteinComplex(object):
         self.drop_interaction_pairs(handled_interaction_pairs)
 
 
-    def evaluate_energy(self, labeling, normal_form = False):
+    def evaluate_energy(self, labeling, normal_form = True, pH=0.0):
+        """Get the total energy for the residue in the state specified by labeling.
+
+           normal_form and pH are used for testing."""
         energy = 0.0
+        if not normal_form:
+            ph_multiplier = 0.0
+            for instance in labeling.values():
+                if instance.protonated:
+                    ph_multiplier += 1.0
+
+            #See https://docs.python.org/2/library/itertools.html#itertools.combinations
+            for v, w in combinations(self.residue_variables.iteritems(), 2):
+                v_key, v_residue = v
+                w_key, w_residue = w
+                is_same_his = (v_key[1:] == w_key[1:] and v_key[0] in ("HId", "HIe") and w_key[0] in ("HId", "HIe"))
+
+                if is_same_his:
+                    if labeling[v_residue].protonated and labeling[w_residue].protonated:
+                        ph_multiplier -= 2.0
+
         for v in self.residue_variables.itervalues():
             v_instance = labeling[v]
             energy += v_instance.energyNF if normal_form else v_instance.energy
@@ -521,6 +573,9 @@ class ProteinComplex(object):
 
         if normal_form:
             energy += self.normalized_constant_energy
+        else:
+            energy += pH*ph_multiplier
+
         return energy
 
     def instance_interaction_energy(self, instance, labeling, interaction_energy):
@@ -545,10 +600,47 @@ class ProteinComplex(object):
 
     def evaluate_energy_diff_his(self, hie_residue, hid_residue, labeling, normal_form = False):
         """Returns the total energy differences between
-             1. HSE total energy and HSP total energy (HSE total energy - HSP total energy)
-             2. HSD total energy and HSP total energy (HSD total energy - HSP total energy)
+             1. HSE total energy and HSP total energy (HSP total energy - HSE total energy)
+             2. HSD total energy and HSP total energy (HSP total energy - HSD total energy)
             in a tuple."""
 
+        # With both HIE and HID in protonated states:
+        # HSP energy adds:
+        #    unary energy of all not-this-HIS residues in current state
+        #    unary energy of HSE_protonated
+        #    unary energy of HSD_protonated
+        #    binary energy of all not-this-HIS residues in current state
+        #    binary energy of all not-this-HIS (current state) with HSE_protonated
+        #    binary energy of all not-this-HIS (current state) with HSD_protonated
+        #
+        # HSE energy adds:
+        #    unary energy of all not-this-HIS residues in current state
+        #    unary energy of HSE_protonated
+        #    unary energy of HSD_deprotonated
+        #    binary energy of all not-this-HIS residues in current state
+        #    binary energy of all not-this-HIS (current state) with HSE_protonated
+        #    binary energy of all not-this-HIS (current state) with HSD_deprotonated
+        #
+        # HSD energy adds:
+        #    unary energy of all not-this-HIS residues in current state
+        #    unary energy of HSE_deprotonated
+        #    unary energy of HSD_protonated
+        #    binary energy of all not-this-HIS residues in current state
+        #    binary energy of all not-this-HIS (current state) with HSE_deprotonated
+        #    binary energy of all not-this-HIS (current state) with HSD_protonated
+        #
+        # HSP-HSE has
+        #    unary energy of HSD_protonated (EHd1) minus 
+        #        unary energy of HSD_deprotonated (EHd0)
+        #    binary energy of all not-this-HIS (current state) with HSD_protonated (sum_ErHd_a1) minus
+        #        binary energy of all not-this-HIS (current state) with HSD_deprotonated (sum_ErHd_a0)
+        #
+        # HSP-HSD has
+        #    unary energy of HSE_protonated (EHe1) minus
+        #        unary energy of HSE_deprotonated (EHe0)
+        #    binary energy of all not-this-HIS (current state) with HSE_protonated (sum_ErHe_a1) minus
+        #        binary energy of all not-this-HIS (current state) with HSE_deprotonated (sum_ErHe_a0)
+        
         labeling_copy = labeling.copy()
         ie = self.normalized_interaction_energies if normal_form else self.interaction_energies
 
@@ -557,35 +649,55 @@ class ProteinComplex(object):
         hid_prot_instance = hid_residue.instances["PROTONATED"]
         hid_deprot_instance = hid_residue.instances["DEPROTONATED"]
 
-
-        labeling_copy[hid_residue] = hid_deprot_instance
-        e_energy = sum(ie.get((hie_prot_instance, labeling_copy[x]),0) for x in self.residue_variables.itervalues())
         labeling_copy[hid_residue] = hid_prot_instance
-        p_energy = sum(ie.get((hie_prot_instance, labeling_copy[x]),0) for x in self.residue_variables.itervalues())
-
-        hsp_hse_diff = p_energy - e_energy
-
-        labeling_copy[hie_residue] = hie_deprot_instance
-        d_energy = sum(ie.get((hid_prot_instance, labeling_copy[x]),0) for x in self.residue_variables.itervalues())
         labeling_copy[hie_residue] = hie_prot_instance
-        p_energy = sum(ie.get((hid_prot_instance, labeling_copy[x]),0) for x in self.residue_variables.itervalues())
+        
+        if normal_form:
+            EHd1 = hid_prot_instance.energyNF
+            EHd0 = hid_deprot_instance.energyNF
+        else:
+            EHd1 = hid_prot_instance.energy
+            EHd0 = hid_deprot_instance.energy
+            
+        sum_ErHd_a1 = sum(ie.get((labeling_copy[x], hid_prot_instance), 0) for x in self.residue_variables.itervalues())
+        sum_ErHd_a0 = sum(ie.get((labeling_copy[x], hid_deprot_instance), 0) for x in self.residue_variables.itervalues())
+        
+        if normal_form:
+            EHe1 = hie_prot_instance.energyNF
+            EHe0 = hie_deprot_instance.energyNF
+        else:
+            EHe1 = hie_prot_instance.energy
+            EHe0 = hie_deprot_instance.energy
+            
+        sum_ErHe_a1 = sum(ie.get((labeling_copy[x], hie_prot_instance), 0) for x in self.residue_variables.itervalues())
+        sum_ErHe_a0 = sum(ie.get((labeling_copy[x], hie_deprot_instance), 0) for x in self.residue_variables.itervalues())
+        
+        hsp_hse = EHd1 - EHd0 + sum_ErHd_a1 - sum_ErHd_a0
+        hsp_hsd = EHe1 - EHe0 + sum_ErHe_a1 - sum_ErHe_a0
 
-        hsp_hsd_diff = p_energy - d_energy
-
-        return hsp_hse_diff, hsp_hsd_diff
+        return hsp_hse, hsp_hsd
 
     def normalize(self, pH):
+        """Finds and stores the normal form of all instance and interaction energies at the supplied pH value.
+           Instance energies are saved in instance.energyNF and interaction energies
+           are stored in self.interaction_energies"""
         self.normalized_interaction_energies = self.interaction_energies.copy()
         self.normalized_constant_energy = 0.0
 
+        #Add the pH to the instances.
         for residue in self.residue_variables.itervalues():
             residue.instances["DEPROTONATED"].energyNF = residue.instances["DEPROTONATED"].energy
             residue.instances["PROTONATED"].energyNF = residue.instances["PROTONATED"].energy + pH
 
 
-        for v, w in combinations(self.residue_variables.iteritems(), 2):
-            v_key, v_residue = v
-            w_key, w_residue = w
+        rv = self.residue_variables
+        keys = rv.keys()
+
+        #Add the pH values to the HIS self interactions.
+        for v_key, w_key in combinations(keys, 2):
+            v_residue = rv[v_key]
+            w_residue = rv[w_key]
+
             is_same_his = (v_key[1:] == w_key[1:] and v_key[0] in ("HId", "HIe") and w_key[0] in ("HId", "HIe"))
 
             if is_same_his:
@@ -594,9 +706,11 @@ class ProteinComplex(object):
                 self.normalized_interaction_energies[v_prot, w_prot] -= 2.0*pH
                 self.normalized_interaction_energies[w_prot, v_prot] -= 2.0*pH
 
-        for v, w in permutations(self.residue_variables.iteritems(), 2):
-            v_key, v_residue = v
-            w_key, w_residue = w
+
+        #Normalize the interaction energies.
+        for v_key, w_key in permutations(keys, 2):
+            v_residue = rv[v_key]
+            w_residue = rv[w_key]
 
             for v_instance in v_residue.instances.itervalues():
                 w_instances = w_residue.instances.values()
@@ -609,6 +723,7 @@ class ProteinComplex(object):
                         self.normalized_interaction_energies[v_instance, w_instance] -= min_energy
                         self.normalized_interaction_energies[w_instance, v_instance] -= min_energy
 
+        #Normalize the instance energies.
         for residue in self.residue_variables.itervalues():
             min_energy = min(instance.energyNF for instance in residue.instances.itervalues())
             self.normalized_constant_energy += min_energy
@@ -617,9 +732,25 @@ class ProteinComplex(object):
                     instance.energyNF -= min_energy
 
 
-#         pprint(self.normalized_interaction_energies)
-#         assert False
-        #print "Normalized constant energy", self.normalized_constant_energy
+    def energy_at_pH(self, pH):
+        """Create a representation of the protein energy at the specified pH
+        Used primarily for testing."""
+        self.interaction_energies_for_ph = self.interaction_energies.copy()
 
+        for residue in self.residue_variables.itervalues():
+            residue.instances["DEPROTONATED"].energy_with_ph = residue.instances["DEPROTONATED"].energy
+            residue.instances["PROTONATED"].energy_with_ph = residue.instances["PROTONATED"].energy + pH
+
+
+        for v, w in combinations(self.residue_variables.iteritems(), 2):
+            v_key, v_residue = v
+            w_key, w_residue = w
+            is_same_his = (v_key[1:] == w_key[1:] and v_key[0] in ("HId", "HIe") and w_key[0] in ("HId", "HIe"))
+
+            if is_same_his:
+                v_prot = v_residue.instances["PROTONATED"]
+                w_prot = w_residue.instances["PROTONATED"]
+                self.interaction_energies_for_ph[v_prot, w_prot] -= 2.0*pH
+                self.interaction_energies_for_ph[w_prot, v_prot] -= 2.0*pH
 
 

@@ -1,43 +1,7 @@
 #
 # Various functions that cluttered pka.py
 #
-
-# def get_res_energies(pdbfile,mol2file,residue,fix_states={}):
-#     """Get desolvation energies and interaction energies for a residue in a protein-ligand complex"""
-#     ##
-#     ## parse optparse options
-#     ##
-#     ff = 'parse'
-#     pdie = 8
-#     verbose = False
-#     maps = False
-#     xdiel = None
-#     ydiel = None
-#     zdiel = None
-#     kappa = None
-#     sd = None
-#     if verbose == False:
-#         verbose = 0
-#     elif verbose == True:
-#         verbose = 1
-#     class junkclass:
-# 
-#         def __init__(self):
-#             self.sdie=80
-#             self.ligand=[mol2file]
-#     junkclass_instance=junkclass()
-#     #
-#     # Call the pre_init function
-#     #
-#     (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd)=pre_init(pdbfilename=pdbfile,ff=ff,pdie=pdie,maps=maps,xdiel=xdiel,ydiel=ydiel,zdiel=zdiel,kappa=kappa,sd=sd,options=junkclass_instance)
-#     mypkaRoutines = pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd)
-#     if debug:
-#         CM.init_protein(mypkaRoutines)
-#     print 'Doing desolvation for single residue',residue
-#     x=mypkaRoutines.calculate_desolvation_for_residues(residues=[residue],fix_states=fix_states)
-#     if debug:
-#         CM.mainloop()
-#     return x
+from src.pdb import HETATM, ATOM, ANISOU, SIGUIJ, SIGATM
 
 
 #
@@ -102,24 +66,22 @@ def titrate_one_group(name,intpkas,is_charged,acidbase):
 # ----
 #
 
-def dump_protein_no_hydrogens(protein, pdb_out):
-    lines = protein.printAtoms(protein.getAtoms(), chainflag=True, pdbfile=True)
-    with open(pdb_out,'w') as fd:                       
-        for line in lines:
-            record = line[:6].strip()
-            if record in ['HETATM']:
+def dump_protein_no_hydrogens(pdb_list, pdb_out):
+    with open(pdb_out,'w') as fd:
+        for record in pdb_list:
+            if isinstance(record, HETATM):
                 continue
-            if record in ['ATOM','ANISOU','SIGUIJ','SIGATM',]:
-                element = line[76:78].strip()
-                if element == 'H':
+            if isinstance(record, (ATOM, ANISOU, SIGUIJ, SIGATM)):
+                if record.element == 'H':
                     continue
-            fd.write(line)
+            fd.write(str(record))
+            fd.write('\n')
 
 def remove_hydrogens(pdb_in, pdb_out):
     """Remove hydrogens from the PDB file"""
     with open(pdb_in,'r') as fd:
         l_lines_i = fd.readlines()
-    
+
     l_lines_o = []
     for s_line in l_lines_i:
         record = s_line[:6].strip()

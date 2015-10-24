@@ -14,7 +14,7 @@ import optparse
 import sys, os
 
 from src.definitions import Definition
-from src.forcefield import Forcefield  
+from src.forcefield import Forcefield
 from src.routines import Routines
 from src.protein import getPDBFile, readPDB, Protein, Amino, Nucleic
 from src.aa import LIG
@@ -51,7 +51,7 @@ def startpKa():
     print
     print 'PDB2PQR pKa calculations'
     print
-    
+
     parser = optparse.OptionParser()
 
     ##
@@ -178,7 +178,7 @@ def startpKa():
         parser.error("Usage: pka.py [options] <pdbfile> <output directory>\n")
     input_path = args[0]
     output_path = args[1]
-    
+
     ligand = None
     if options.ligand is not None:
         try:
@@ -187,9 +187,9 @@ def startpKa():
             print 'Unable to find ligand file %s! Skipping...' % options.ligand
 
     #Set up the protien object
-    #In the standalone version of pdb2pka this is redundent but needed so we emulate the 
+    #In the standalone version of pdb2pka this is redundent but needed so we emulate the
     #interface needed by pdb2pqr
-    
+
     pdbfile = getPDBFile(input_path)
     pdblist, errlist = readPDB(pdbfile)
     if len(errlist) != 0 and verbose:
@@ -207,10 +207,10 @@ def startpKa():
     #
     if ligand is None:
         myProtein = Protein(pdblist, myDefinition)
-    else:        
-        from pdb2pka.ligandclean import ligff          
+    else:
+        from pdb2pka.ligandclean import ligff
         myProtein, _, _ = ligff.initialize(myDefinition, ligand, pdblist, verbose)
-        
+
     #
     # Call the pre_init function
     #
@@ -229,7 +229,7 @@ def startpKa():
                     ligand=ligand),options
 
 
-def pre_init(protein=None,
+def pre_init(original_pdb_list=None,
              output_dir=None,
              ff=None,
              verbose=False,
@@ -243,34 +243,34 @@ def pre_init(protein=None,
              sd=None,
              ligand=None):
     """This function cleans the PDB and prepares the APBS input file
-    
+
     Prepares the output folder."""
-    
+
     #prepare the output directory
-    
-    output_dir = os.path.abspath(output_dir)    
-    
+
+    output_dir = os.path.abspath(output_dir)
+
     try:
         os.makedirs(output_dir)
     except OSError:
         if not os.path.isdir(output_dir):
             raise ValueError('Target directory is a file! Aborting.')
-    
-    workspace_dir = os.path.join(output_dir,'workspace')  
-        
+
+    workspace_dir = os.path.join(output_dir,'workspace')
+
     try:
         os.makedirs(workspace_dir)
     except OSError:
         if not os.path.isdir(output_dir):
             raise ValueError('Target directory is a file! Aborting.')
-        
+
     #
     # remove hydrogen atoms
     #
-    
+
     working_pdb_filename = os.path.join(workspace_dir,'working.pdb')
-    
-    pka_help.dump_protein_no_hydrogens(protein, working_pdb_filename)
+
+    pka_help.dump_protein_no_hydrogens(original_pdb_list, working_pdb_filename)
     #
     # Get the PDBfile
     #
@@ -278,7 +278,7 @@ def pre_init(protein=None,
     pdblist, errlist = readPDB(pdbfile)
 
     if verbose:
-        print "Beginning PDB2PQR...\n"
+        print "Beginning PDB2PKA...\n"
     #
     # Read the definition file
     #
@@ -293,8 +293,8 @@ def pre_init(protein=None,
     Lig=None
     if ligand is None:
         myProtein = Protein(pdblist, myDefinition)
-    else:        
-        from pdb2pka.ligandclean import ligff          
+    else:
+        from pdb2pka.ligandclean import ligff
         myProtein, myDefinition, Lig = ligff.initialize(myDefinition, ligand, pdblist, verbose)
     #
     # =======================================================================
@@ -384,7 +384,7 @@ def pre_init(protein=None,
                     atom.secret_charge=atom.ffcharge
                     #
                     #
-                    
+
                 charge = residue.getCharge()
                 if abs(charge - round(charge)) > 0.01:
                     # Ligand parameterization failed
@@ -405,10 +405,10 @@ def pre_init(protein=None,
         if ligsuccess:
             templist = misslist[:]
             for atom in templist:
-                if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): 
+                if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic):
                     continue
-                misslist.remove(atom)                    
-    
+                misslist.remove(atom)
+
     if verbose:
         print "Created protein object (after processing myRoutines) -"
         print "\tNumber of residues in protein: %s" % myProtein.numResidues()
@@ -422,7 +422,7 @@ def pre_init(protein=None,
     method=""
     async=0
     split=0
-    
+
     igen = inputgen_pKa.inputGen(working_pdb_filename)
     #
     # For convenience
@@ -445,16 +445,16 @@ def pre_init(protein=None,
             igen.zdiel = zdiel
         else:
             raise PDB2PKAError("Z dielectric map is missing\n")
-        
+
         print 'Setting dielectric function maps: %s, %s, %s'%(igen.xdiel,igen.ydiel,igen.zdiel)
-        
+
         if kappa:
             igen.kappa = kappa
         else:
             raise PDB2PKAError("Mobile ion-accessibility map is missing\n")
-            
+
         print 'Setting mobile ion-accessibility function map to: ',igen.kappa
-        
+
         if sd:
             xdiel_smooth, ydiel_smooth, zdiel_smooth = smooth(xdiel,ydiel,zdiel)
             igen.xdiel = xdiel_smooth
@@ -468,9 +468,9 @@ def pre_init(protein=None,
 #
 # --------------
 #
-            
+
 if __name__ == "__main__":
-    
+
     (output_dir, protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
     from pdb2pka import pka_routines
     mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, output_dir, maps, sd,

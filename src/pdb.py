@@ -1,45 +1,45 @@
 """ PDB parsing class
-    
+
     This module parses PDBs in accordance to PDB Format Description Version 2.2
     (1996); it is not very forgiving.   Each class in this module corresponds
     to a record in the PDB Format Description.  Much of the documentation for
     the classes is taken directly from the above PDB Format Description.
-    
+
     ----------------------------
-   
+
     PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
     Poisson-Boltzmann electrostatics calculations
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
+    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
+    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
+    Northwest National Laboratory, operated by Battelle Memorial Institute,
+    Pacific Northwest Division for the U.S. Department Energy.;
     Paul Czodrowski & Gerhard Klebe, University of Marburg.
 
 	All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without modification, 
+	Redistribution and use in source and binary forms, with or without modification,
 	are permitted provided that the following conditions are met:
 
-		* Redistributions of source code must retain the above copyright notice, 
+		* Redistributions of source code must retain the above copyright notice,
 		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
 		  and/or other materials provided with the distribution.
         * Neither the names of University College Dublin, Battelle Memorial Institute,
           Pacific Northwest National Laboratory, US Department of Energy, or University
           of Marburg nor the names of its contributors may be used to endorse or promote
           products derived from this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 	OF THE POSSIBILITY OF SUCH DAMAGE.
 
     ----------------------------
@@ -61,23 +61,28 @@ def RegisterLineParser(klass):
 class BaseRecord(object):
     """
     Base class for all records.
-    Verifies the received record type 
+    Verifies the received record type
     """
     def __init__(self, line):
         record = string.strip(line[0:6])
         if record != self.__class__.__name__:
             raise ValueError, record
 
+        self.original_text = line.rstrip('\r\n')
+
+    def __str__(self):
+        return self.original_text
+
 @RegisterLineParser
 class END(BaseRecord):
     """ END class
 
         The END records are paired with MODEL records to group individual
-        structures found in a coordinate entry. 
+        structures found in a coordinate entry.
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line (nothing to do)
         """
         super(END, self).__init__(line)
@@ -88,9 +93,9 @@ class MASTER(BaseRecord):
 
         The MASTER record is a control record for bookkeeping. It lists the
         number of lines in the coordinate entry or file for selected record
-        types. 
+        types.
     """
-     
+
     def __init__(self, line):
         """
             Initialize by parsing line
@@ -135,7 +140,7 @@ class CONECT(BaseRecord):
         HET groups (excluding water) and for other bonds not specified in the
         standard residue connectivity table which involve atoms in standard
         residues (see Appendix 4 for the list of standard residues). These
-        records are generated by the PDB. 
+        records are generated by the PDB.
     """
 
     def __init__(self, line):
@@ -144,17 +149,17 @@ class CONECT(BaseRecord):
 
             COLUMNS  TYPE   FIELD    DEFINITION
             --------------------------------------------
-             7-11    int    serial   Atom serial number              
-            12-16    int    serial1  Serial number of bonded atom    
-            17-21    int    serial2  Serial number of bonded atom    
-            22-26    int    serial3  Serial number of bonded atom    
-            27-31    int    serial4  Serial number of bonded atom    
-            32-36    int    serial5  Serial number of hydrogen bonded atom    
-            37-41    int    serial6  Serial number of hydrogen bonded atom    
-            42-46    int    serial7  Serial number of salt bridged    atom    
-            47-51    int    serial8  Serial number of hydrogen bonded atom    
-            52-56    int    serial9  Serial number of hydrogen bonded atom    
-            57-61    int    serial10 Serial number of salt bridged    atom    
+             7-11    int    serial   Atom serial number
+            12-16    int    serial1  Serial number of bonded atom
+            17-21    int    serial2  Serial number of bonded atom
+            22-26    int    serial3  Serial number of bonded atom
+            27-31    int    serial4  Serial number of bonded atom
+            32-36    int    serial5  Serial number of hydrogen bonded atom
+            37-41    int    serial6  Serial number of hydrogen bonded atom
+            42-46    int    serial7  Serial number of salt bridged    atom
+            47-51    int    serial8  Serial number of hydrogen bonded atom
+            52-56    int    serial9  Serial number of hydrogen bonded atom
+            57-61    int    serial10 Serial number of salt bridged    atom
         """
         super(CONECT, self).__init__(line)
         self.serial = int(string.strip(line[6:11]))
@@ -190,14 +195,14 @@ class NUMMDL(BaseRecord):
         """
             Initialize by parsing line
 
-            COLUMNS  TYPE      FIELD         DEFINITION                           
-            -----------------------------------------------------------              
-            11-14    int       modelNumber   Number of models.     
+            COLUMNS  TYPE      FIELD         DEFINITION
+            -----------------------------------------------------------
+            11-14    int       modelNumber   Number of models.
         """
         super(NUMMDL, self).__init__(line)
-        try: 
+        try:
             self.modelNumber = int(string.strip(line[10:14]))
-        except ValueError:  
+        except ValueError:
             self.modelNumber = None
 
 @RegisterLineParser
@@ -205,11 +210,11 @@ class ENDMDL(BaseRecord):
     """ ENDMDL class
 
         The ENDMDL records are paired with MODEL records to group individual
-        structures found in a coordinate entry. 
+        structures found in a coordinate entry.
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line (nothing to do)
         """
         super(ENDMDL, self).__init__(line)
@@ -221,7 +226,7 @@ class TER(BaseRecord):
         The TER record indicates the end of a list of ATOM/HETATM records for a
         chain.
     """
- 
+
     def __init__(self, line):
         """ Initialize by parsing line:
 
@@ -251,7 +256,7 @@ class TER(BaseRecord):
 class SIGUIJ(BaseRecord):
     """ SIGUIJ class
 
-        The SIGUIJ records present the anisotropic temperature factors. 
+        The SIGUIJ records present the anisotropic temperature factors.
     """
 
     def __init__(self, line):
@@ -301,7 +306,7 @@ class SIGUIJ(BaseRecord):
 class ANISOU(BaseRecord):
     """ ANISOU class
 
-        The ANISOU records present the anisotropic temperature factors. 
+        The ANISOU records present the anisotropic temperature factors.
     """
 
     def __init__(self, line):
@@ -353,7 +358,7 @@ class SIGATM(BaseRecord):
         as they appear in ATOM and HETATM records.
     """
 
-    def __init__(self, line): 
+    def __init__(self, line):
         """
             Initialize by parsing line
 
@@ -403,7 +408,7 @@ class HETATM(BaseRecord):
         within "non-standard" groups. These records are used for water
         molecules and atoms presented in HET groups.
     """
-   
+
     def __init__(self,line,sybylType="A.aaa",lBonds=[],lBondedAtoms=[]): ### PC
         """
             Initialize by parsing line
@@ -438,7 +443,7 @@ class HETATM(BaseRecord):
             self.chainID = string.strip(line[21])
             self.resSeq = int(string.strip(line[22:26]))
             self.iCode = string.strip(line[26])
-        except: 
+        except:
             raise ValueError, 'Residue name must be less than 4 characters!'
         self.x = float(string.strip(line[30:38]))
         self.y = float(string.strip(line[38:46]))
@@ -465,71 +470,71 @@ class HETATM(BaseRecord):
             self.element = ""
             self.charge = ""
 
-    def __str__(self):
-        """
-            Print object as string
-
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------------------
-            7-11      int   serial        Atom serial number.
-            13-16     string name          Atom name.
-            17        string altLoc        Alternate location indicator.
-            18-20     string resName       Residue name.
-            22        string chainID       Chain identifier.
-            23-26     int    resSeq        Residue sequence number.
-            27        string iCode         Code for insertion of residues.
-            31-38     float  x             Orthogonal coordinates for X in
-                                           Angstroms.
-            39-46     float  y             Orthogonal coordinates for Y in
-                                           Angstroms.
-            47-54     float  z             Orthogonal coordinates for Z in
-                                           Angstroms.
-            55-60     float  occupancy     Occupancy.
-            61-66     float  tempFactor    Temperature factor.
-            73-76     string segID         Segment identifier, left-justified.
-            77-78     string element       Element symbol, right-justified.
-            79-80     string charge        Charge on the atom.
-        """
-        str = ""
-        tstr = "HETATM"
-        str = str + string.ljust(tstr, 6)[:6]
-        tstr = "%d" % self.serial
-        str = str + string.rjust(tstr, 5)[:5]
-        str = str + " "
-        tstr = self.name
-        if len(tstr) == 4:
-            str = str + string.ljust(tstr, 4)[:4]
-        else:
-            str = str + " " + string.ljust(tstr, 3)[:3]
-        tstr = self.altLoc
-        str = str + string.ljust(tstr, 1)[:1]
-        tstr = self.resName
-        str = str + string.ljust(tstr, 3)[:3]
-        str = str + " "
-        tstr = self.chainID
-        str = str + string.ljust(tstr, 1)[:1]
-        tstr = "%d" % self.resSeq
-        str = str + string.rjust(tstr, 4)[:4]
-        tstr = self.iCode
-        str = str + string.ljust(tstr, 1)[:1]
-        str = str + "   "
-        tstr = "%8.3f" % self.x
-        str = str + string.ljust(tstr, 8)[:8]
-        tstr = "%8.3f" % self.y
-        str = str + string.ljust(tstr, 8)[:8]
-        tstr = "%8.3f" % self.z
-        str = str + string.ljust(tstr, 8)[:8]
-        tstr = "%6.2f" % self.occupancy
-        str = str + string.ljust(tstr, 6)[:6]
-        tstr = "%6.2f" % self.tempFactor
-        str = str + string.rjust(tstr, 6)[:6]
-        tstr = self.segID
-        str = str + string.ljust(tstr, 4)[:4]
-        tstr = self.element
-        str = str + string.ljust(tstr, 2)[:2]
-        tstr = self.charge
-        str = str + string.ljust(tstr, 2)[:2]
-        return str
+#     def __str__(self):
+#         """
+#             Print object as string
+#
+#             COLUMNS  TYPE   FIELD  DEFINITION
+#             ---------------------------------------------
+#             7-11      int   serial        Atom serial number.
+#             13-16     string name          Atom name.
+#             17        string altLoc        Alternate location indicator.
+#             18-20     string resName       Residue name.
+#             22        string chainID       Chain identifier.
+#             23-26     int    resSeq        Residue sequence number.
+#             27        string iCode         Code for insertion of residues.
+#             31-38     float  x             Orthogonal coordinates for X in
+#                                            Angstroms.
+#             39-46     float  y             Orthogonal coordinates for Y in
+#                                            Angstroms.
+#             47-54     float  z             Orthogonal coordinates for Z in
+#                                            Angstroms.
+#             55-60     float  occupancy     Occupancy.
+#             61-66     float  tempFactor    Temperature factor.
+#             73-76     string segID         Segment identifier, left-justified.
+#             77-78     string element       Element symbol, right-justified.
+#             79-80     string charge        Charge on the atom.
+#         """
+#         str = ""
+#         tstr = "HETATM"
+#         str = str + string.ljust(tstr, 6)[:6]
+#         tstr = "%d" % self.serial
+#         str = str + string.rjust(tstr, 5)[:5]
+#         str = str + " "
+#         tstr = self.name
+#         if len(tstr) == 4:
+#             str = str + string.ljust(tstr, 4)[:4]
+#         else:
+#             str = str + " " + string.ljust(tstr, 3)[:3]
+#         tstr = self.altLoc
+#         str = str + string.ljust(tstr, 1)[:1]
+#         tstr = self.resName
+#         str = str + string.ljust(tstr, 3)[:3]
+#         str = str + " "
+#         tstr = self.chainID
+#         str = str + string.ljust(tstr, 1)[:1]
+#         tstr = "%d" % self.resSeq
+#         str = str + string.rjust(tstr, 4)[:4]
+#         tstr = self.iCode
+#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + "   "
+#         tstr = "%8.3f" % self.x
+#         str = str + string.ljust(tstr, 8)[:8]
+#         tstr = "%8.3f" % self.y
+#         str = str + string.ljust(tstr, 8)[:8]
+#         tstr = "%8.3f" % self.z
+#         str = str + string.ljust(tstr, 8)[:8]
+#         tstr = "%6.2f" % self.occupancy
+#         str = str + string.ljust(tstr, 6)[:6]
+#         tstr = "%6.2f" % self.tempFactor
+#         str = str + string.rjust(tstr, 6)[:6]
+#         tstr = self.segID
+#         str = str + string.ljust(tstr, 4)[:4]
+#         tstr = self.element
+#         str = str + string.ljust(tstr, 2)[:2]
+#         tstr = self.charge
+#         str = str + string.ljust(tstr, 2)[:2]
+#         return str
 
 ### PC
 # to do:  - parse SUBSTRUCTURE
@@ -546,7 +551,7 @@ class MOL2BOND:
     def __init__(self, frm, to, type, id=0):
         self.to   = to     # bond to this atom
         self.frm  = frm    # bond from atom
-        self.type = type   # 1=single, 2=double, ar=aromatic 
+        self.type = type   # 1=single, 2=double, ar=aromatic
         self.id   = id     # bond_id
 
 class MOL2MOLECULE:
@@ -566,15 +571,15 @@ class MOL2MOLECULE:
         """
         #self.filename = filename
         #data = open(self.filename).read()
-       
+
         data = file.read()
         data = data.replace("\r\n", "\n")
         data = data.replace("\r", "\n")
- 
+
         # ATOM section
         start = data.find("@<TRIPOS>ATOM")
         stop = data.find("@<TRIPOS>BOND")
-        
+
         # Do some error checking
         if start == -1:
             raise PDBInputError("Unable to find '@<TRIPOS>ATOM' in MOL2 file!")
@@ -585,7 +590,7 @@ class MOL2MOLECULE:
         # BOND section
         start = data.find("@<TRIPOS>BOND")
         stop = data.find("@<TRIPOS>SUBSTRUCTURE")
-        
+
         # More error checking
         if stop == -1:
             raise PDBInputError("Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!")
@@ -631,7 +636,7 @@ class MOL2MOLECULE:
                     thisAtom.mol2charge=None
             self.lPDBAtoms.append(mol2pdb)
             self.lAtoms.append(thisAtom)
-        
+
     def parseBonds(self,BondList):
         """
         for parsing @<TRIPOS>BOND
@@ -657,7 +662,7 @@ class MOL2MOLECULE:
     def createlBondedAtoms(self):
         """
         Creates for each atom a list of the bonded Atoms
-        
+
         This becomes one attribute of MOL2ATOM!
         """
         for bond in self.lBonds:
@@ -676,16 +681,16 @@ class MOL2MOLECULE:
             self.lAtoms[bond.to-1].lBonds.append(atbond)
         return
 
-    
+
     def createPDBlineFromMOL2(self):
         FakeType = "HETATM"
         return ('%s%5i%5s%4s%2s%5s   %8.3f%8.3f%8.3f\n' %
                 (FakeType,            self.serial,   self.name,
-                 self.resName, ' L',          self.resSeq, 
-                 self.x,self.y, self.z)) 
-### PC        
+                 self.resName, ' L',          self.resSeq,
+                 self.x,self.y, self.z))
+### PC
 
-@RegisterLineParser        
+@RegisterLineParser
 class ATOM(BaseRecord):
     """ ATOM class
 
@@ -695,8 +700,8 @@ class ATOM(BaseRecord):
         always present on each ATOM record; segment identifier and charge are
         optional.
     """
-   
-    def __init__(self, line): 
+
+    def __init__(self, line):
         """
             Initialize by parsing line
 
@@ -745,73 +750,73 @@ class ATOM(BaseRecord):
             self.element = ""
             self.charge = ""
 
-    def __str__(self):
-        """
-            Print object as string
+#     def __str__(self):
+#         """
+#             Print object as string
+#
+#             COLUMNS  TYPE   FIELD  DEFINITION
+#             ---------------------------------------------
+#             7-11      int   serial        Atom serial number.
+#             13-16     string name          Atom name.
+#             17        string altLoc        Alternate location indicator.
+#             18-20     string resName       Residue name.
+#             22        string chainID       Chain identifier.
+#             23-26     int    resSeq        Residue sequence number.
+#             27        string iCode         Code for insertion of residues.
+#             31-38     float  x             Orthogonal coordinates for X in
+#                                            Angstroms.
+#             39-46     float  y             Orthogonal coordinates for Y in
+#                                            Angstroms.
+#             47-54     float  z             Orthogonal coordinates for Z in
+#                                            Angstroms.
+#             55-60     float  occupancy     Occupancy.
+#             61-66     float  tempFactor    Temperature factor.
+#             73-76     string segID         Segment identifier, left-justified.
+#             77-78     string element       Element symbol, right-justified.
+#             79-80     string charge        Charge on the atom.
+#         """
+#         str = ""
+#         tstr = "ATOM"
+#         str = str + string.ljust(tstr, 6)[:6]
+#         tstr = "%d" % self.serial
+#         str = str + string.rjust(tstr, 5)[:5]
+#         str = str + " "
+#         tstr = self.name
+#         if len(tstr) == 4:
+#             str = str + string.ljust(tstr, 4)[:4]
+#         else:
+#             str = str + " " + string.ljust(tstr, 3)[:3]
+#         tstr = self.altLoc
+#         str = str + string.ljust(tstr, 1)[:1]
+#         tstr = self.resName
+#         str = str + string.ljust(tstr, 3)[:3]
+#         str = str + " "
+#         tstr = self.chainID
+#         str = str + string.ljust(tstr, 1)[:1]
+#         tstr = "%d" % self.resSeq
+#         str = str + string.rjust(tstr, 4)[:4]
+#         tstr = self.iCode
+#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + "   "
+#         tstr = "%8.3f" % self.x
+#         str = str + string.ljust(tstr, 8)[:8]
+#         tstr = "%8.3f" % self.y
+#         str = str + string.ljust(tstr, 8)[:8]
+#         tstr = "%8.3f" % self.z
+#         str = str + string.ljust(tstr, 8)[:8]
+#         tstr = "%6.2f" % self.occupancy
+#         str = str + string.ljust(tstr, 6)[:6]
+#         tstr = "%6.2f" % self.tempFactor
+#         str = str + string.ljust(tstr, 6)[:6]
+#         tstr = self.segID
+#         str = str + string.ljust(tstr, 4)[:4]
+#         tstr = self.element
+#         str = str + string.ljust(tstr, 2)[:2]
+#         tstr = self.charge
+#         str = str + string.ljust(tstr, 2)[:2]
+#         return str
 
-            COLUMNS  TYPE   FIELD  DEFINITION
-            ---------------------------------------------
-            7-11      int   serial        Atom serial number.
-            13-16     string name          Atom name.
-            17        string altLoc        Alternate location indicator.
-            18-20     string resName       Residue name.
-            22        string chainID       Chain identifier.
-            23-26     int    resSeq        Residue sequence number.
-            27        string iCode         Code for insertion of residues.
-            31-38     float  x             Orthogonal coordinates for X in
-                                           Angstroms.
-            39-46     float  y             Orthogonal coordinates for Y in
-                                           Angstroms.
-            47-54     float  z             Orthogonal coordinates for Z in
-                                           Angstroms.
-            55-60     float  occupancy     Occupancy.
-            61-66     float  tempFactor    Temperature factor.
-            73-76     string segID         Segment identifier, left-justified.
-            77-78     string element       Element symbol, right-justified.
-            79-80     string charge        Charge on the atom.
-        """
-        str = ""
-        tstr = "ATOM"
-        str = str + string.ljust(tstr, 6)[:6]
-        tstr = "%d" % self.serial
-        str = str + string.rjust(tstr, 5)[:5]
-        str = str + " "
-        tstr = self.name
-        if len(tstr) == 4:
-            str = str + string.ljust(tstr, 4)[:4]
-        else:
-            str = str + " " + string.ljust(tstr, 3)[:3]
-        tstr = self.altLoc
-        str = str + string.ljust(tstr, 1)[:1]
-        tstr = self.resName
-        str = str + string.ljust(tstr, 3)[:3]
-        str = str + " "
-        tstr = self.chainID
-        str = str + string.ljust(tstr, 1)[:1]
-        tstr = "%d" % self.resSeq
-        str = str + string.rjust(tstr, 4)[:4]
-        tstr = self.iCode
-        str = str + string.ljust(tstr, 1)[:1]
-        str = str + "   "
-        tstr = "%8.3f" % self.x
-        str = str + string.ljust(tstr, 8)[:8]
-        tstr = "%8.3f" % self.y
-        str = str + string.ljust(tstr, 8)[:8]
-        tstr = "%8.3f" % self.z
-        str = str + string.ljust(tstr, 8)[:8]
-        tstr = "%6.2f" % self.occupancy
-        str = str + string.ljust(tstr, 6)[:6]
-        tstr = "%6.2f" % self.tempFactor
-        str = str + string.ljust(tstr, 6)[:6]
-        tstr = self.segID
-        str = str + string.ljust(tstr, 4)[:4]
-        tstr = self.element
-        str = str + string.ljust(tstr, 2)[:2]
-        tstr = self.charge
-        str = str + string.ljust(tstr, 2)[:2]
-        return str
-
-@RegisterLineParser        
+@RegisterLineParser
 class MODEL(BaseRecord):
     """ MODEL class
 
@@ -863,7 +868,7 @@ class MTRIXn(BaseRecord):
     """ MTRIXn baseclass
 
         The MTRIXn (n = 1, 2, or 3) records present transformations expressing
-        non-crystallographic symmetry.  
+        non-crystallographic symmetry.
     """
 
     def __init__(self, line):
@@ -880,7 +885,7 @@ class MTRIXn(BaseRecord):
             60       int    iGiven 1 if coordinates for the representations
                             which are approximately related by the
                             transformations of the molecule are contained in
-                            the entry.  Otherwise, blank.  
+                            the entry.  Otherwise, blank.
         """
         super(MTRIXn, self).__init__(line)
         self.serial = int(string.strip(line[7:10]))
@@ -888,9 +893,9 @@ class MTRIXn(BaseRecord):
         self.mn2 = float(string.strip(line[20:30]))
         self.mn3 = float(string.strip(line[30:40]))
         self.vn = float(string.strip(line[45:55]))
-        try:  
+        try:
             self.iGiven = int(string.strip(line[59]))
-        except (ValueError, IndexError):  
+        except (ValueError, IndexError):
             self.iGiven = None
 
 @RegisterLineParser
@@ -950,7 +955,7 @@ class ORIGXn(BaseRecord):
         orthogonal coordinates contained in the entry to the submitted
         coordinates.
     """
-    
+
     def __init__(self, line):
         """
             Initialize by parsing line
@@ -967,7 +972,7 @@ class ORIGXn(BaseRecord):
         self.on2 = float(string.strip(line[20:30]))
         self.on3 = float(string.strip(line[30:40]))
         self.tn = float(string.strip(line[45:55]))
-        
+
 @RegisterLineParser
 class ORIGX2(ORIGXn):
     pass
@@ -1084,12 +1089,12 @@ class SITE(BaseRecord):
         self.resName4 = string.strip(line[51:54])
         self.chainID4 = string.strip(line[55])
         self.seq4 = int(string.strip(line[56:60]))
-        try:  
+        try:
             self.iCode4 = string.strip(line[60])
-        except IndexError:  
+        except IndexError:
             self.iCode4 = None
 
-@RegisterLineParser            
+@RegisterLineParser
 class CISPEP(BaseRecord):
     """ CISPEP field
 
@@ -1099,7 +1104,7 @@ class CISPEP(BaseRecord):
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line
 
             COLUMNS  TYPE   FIELD    DEFINITION
@@ -1129,7 +1134,7 @@ class CISPEP(BaseRecord):
         self.modNum = int(string.strip(line[43:46]))
         self.measure = float(string.strip(line[53:59]))
 
-@RegisterLineParser    
+@RegisterLineParser
 class SLTBRG(BaseRecord):
     """ SLTBRG field
 
@@ -1138,7 +1143,7 @@ class SLTBRG(BaseRecord):
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line
 
             COLUMNS  TYPE   FIELD     DEFINITION
@@ -1174,7 +1179,7 @@ class SLTBRG(BaseRecord):
         self.sym1 = string.strip(line[59:65])
         self.sym2 = string.strip(line[66:72])
 
-@RegisterLineParser    
+@RegisterLineParser
 class HYDBND(BaseRecord):
     """ HYDBND field
 
@@ -1229,7 +1234,7 @@ class HYDBND(BaseRecord):
         self.ICode2 = string.strip(line[58])
         self.sym1 = string.strip(line[59:65])
         self.sym2 = string.strip(line[66:72])
-        
+
 @RegisterLineParser
 class LINK(BaseRecord):
     """ LINK field
@@ -1241,7 +1246,7 @@ class LINK(BaseRecord):
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line
 
             COLUMNS  TYPE   FIELD     DEFINITION
@@ -1324,30 +1329,30 @@ class TURN(BaseRecord):
 
     def __init__(self, line):
         """
-            Initialize by parsing line 
+            Initialize by parsing line
 
             COLUMNS  TYPE   FIELD       DEFINITION
             ---------------------------------------------------------
             8-10     int    seq         Turn number; starts with 1 and
-                                        increments by one.  
-            12-14    string turnId      Turn identifier 
+                                        increments by one.
+            12-14    string turnId      Turn identifier
             16-18    string initResName Residue name of initial residue in
-                                        turn.  
+                                        turn.
             20       string initChainId Chain identifier for the chain
-                                        containing this turn.  
+                                        containing this turn.
             21-24    int    initSeqNum  Sequence number of initial residue in
-                                        turn.  
+                                        turn.
             25       string initICode   Insertion code of initial residue in
-                                        turn.  
+                                        turn.
             27-29    string endResName  Residue name of terminal residue of
-                                        turn.  
+                                        turn.
             31       string endChainId  Chain identifier for the chain
-                                        containing this turn.  
+                                        containing this turn.
             32-35    int    endSeqNum   Sequence number of terminal residue of
-                                        turn.  
+                                        turn.
             36       string endICode    Insertion code of terminal residue of
-                                        turn.  
-            41-70    string comment     Associated comment. 
+                                        turn.
+            41-70    string comment     Associated comment.
         """
         super(TURN, self).__init__(line)
         self.seq = int(string.strip(line[7:10]))
@@ -1368,11 +1373,11 @@ class SHEET(BaseRecord):
 
         SHEET records are used to identify the position of sheets in the
         molecule. Sheets are both named and numbered. The residues where the
-        sheet begins and ends are noted. 
+        sheet begins and ends are noted.
     """
-   
+
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line
 
             COLUMNS  TYPE   FIELD       DEFINITION
@@ -1384,37 +1389,37 @@ class SHEET(BaseRecord):
             15 - 16  int    numStrands  Number of strands in sheet.
             18 - 20  string initResName Residue name of initial residue.
             22       string initChainID Chain identifier of initial residue in
-                                        strand.  
+                                        strand.
             23 - 26  int    initSeqNum  Sequence number of initial residue in
-                                        strand.  
+                                        strand.
             27       string initICode   Insertion code of initial residue in
-                                        strand.  
-            29 - 31  string endResName  Residue name of terminal residue.  
-            33       string endChainID  Chain identifier of terminal residue.  
-            34 - 37  int    endSeqNum   Sequence number of terminal residue.  
-            38       string endICode    Insertion code of terminal residue.  
+                                        strand.
+            29 - 31  string endResName  Residue name of terminal residue.
+            33       string endChainID  Chain identifier of terminal residue.
+            34 - 37  int    endSeqNum   Sequence number of terminal residue.
+            38       string endICode    Insertion code of terminal residue.
             39 - 40  int    sense       Sense of strand with respect to
                                         previous strand in the sheet. 0 if
                                         first strand, 1 if parallel, -1 if
-                                        anti-parallel.  
+                                        anti-parallel.
             42 - 45  string curAtom     Registration. Atom name in current
-                                        strand.  
+                                        strand.
             46 - 48  string curResName  Registration. Residue name in current
-                                        strand.  
+                                        strand.
             50       string curChainId  Registration. Chain identifier in
-                                        current strand.  
+                                        current strand.
             51 - 54  int    curResSeq   Registration. Residue sequence number
-                                        in current strand.  
+                                        in current strand.
             55       string curICode    Registration. Insertion code in current
-                                        strand.  
+                                        strand.
             57 - 60  string prevAtom    Registration. Atom name in previous
-                                        strand.  
+                                        strand.
             61 - 63  string prevResName Registration. Residue name in previous
-                                        strand.  
+                                        strand.
             65       string prevChainId Registration. Chain identifier in
-                                        previous strand.  
+                                        previous strand.
             66 - 69  int    prevResSeq  Registration. Residue sequence number
-                                        in previous strand.  
+                                        in previous strand.
             70       string prevICode   Registration. Insertion code in
                                         previous strand.
         """
@@ -1444,7 +1449,7 @@ class SHEET(BaseRecord):
             try:  self.prevResSeq = int(string.strip(line[65:69]))
             except ValueError:  self.prevResSeq = None
             self.prevICode = string.strip(line[69])
-        except IndexError:  
+        except IndexError:
             self.curAtom = None
             self.curResName = None
             self.curChainID = None
@@ -1514,13 +1519,13 @@ class FORMUL(BaseRecord):
     """ FORMUL field
 
         The FORMUL record presents the chemical formula and charge of a
-        non-standard group.  
+        non-standard group.
     """
 
     def __init__(self, line):
         """
             Initialize by parsing line
- 
+
             COLUMNS  TYPE   FIELD    DEFINITION
             -----------------------------------------------------
             9-10     int    compNum  Component number
@@ -1540,13 +1545,13 @@ class HETSYN(BaseRecord):
 
         This record provides synonyms, if any, for the compound in the
         corresponding (i.e., same hetID) HETNAM record. This is to allow
-        greater flexibility in searching for HET groups.  
+        greater flexibility in searching for HET groups.
     """
 
     def __init__(self, line):
         """
             Initialize by parsing line
- 
+
             COLUMNS  TYPE   FIELD         DEFINITION
             -----------------------------------------------------
             12-14    string hetID         Het identifier, right-justified.
@@ -1567,7 +1572,7 @@ class HETNAM(BaseRecord):
     def __init__(self, line):
         """
             Initialize by parsing line
- 
+
             COLUMNS  TYPE   FIELD  DEFINITION
             -----------------------------------------------------
             12-14    string hetID  Het identifier, right-justified.
@@ -1584,14 +1589,14 @@ class HET(BaseRecord):
         HET records are used to describe non-standard residues, such as
         prosthetic groups, inhibitors, solvent molecules, and ions for which
         coordinates are supplied. Groups are considered HET if they are:
-         - not one of the standard amino acids, and 
-         - not one of the nucleic acids (C, G, A, T, U, and I), and 
+         - not one of the standard amino acids, and
+         - not one of the nucleic acids (C, G, A, T, U, and I), and
          - not one of the modified versions of nucleic acids (+C, +G, +A, +T,
-           +U, and +I), and 
+           +U, and +I), and
          - not an unknown amino acid or nucleic acid where UNK is used to
-           indicate the unknown residue name. 
+           indicate the unknown residue name.
         Het records also describe heterogens for which the chemical identity is
-        unknown, in which case the group is assigned the hetID UNK. 
+        unknown, in which case the group is assigned the hetID UNK.
     """
 
     def __init__(self, line):
@@ -1610,9 +1615,9 @@ class HET(BaseRecord):
         super(HET, self).__init__(line)
         self.hetID = string.strip(line[7:10])
         self.chainID = string.strip(line[12])
-        try:  
+        try:
             self.seqNum = int(string.strip(line[13]))
-        except ValueError:  
+        except ValueError:
             self.seqNum = None
         self.iCode = string.strip(line[17])
         self.numHetAtoms = int(string.strip(line[20:25]))
@@ -1654,7 +1659,7 @@ class MODRES(BaseRecord):
 @RegisterLineParser
 class SEQRES(BaseRecord):
     """ SEQRES field
-       
+
         SEQRES records contain the amino acid or nucleic acid sequence of
         residues in each chain of the macromolecule that was studied.
     """
@@ -1706,7 +1711,7 @@ class SEQRES(BaseRecord):
         self.resName.append(string.strip(line[59:62]))
         self.resName.append(string.strip(line[63:66]))
         self.resName.append(string.strip(line[67:70]))
-        
+
 @RegisterLineParser
 class SEQADV(BaseRecord):
     """ SEQADV field
@@ -1721,7 +1726,7 @@ class SEQADV(BaseRecord):
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line
 
             COLUMNS  TYPE   FIELD    DEFINITION
@@ -1766,7 +1771,7 @@ class DBREF(BaseRecord):
     def __init__(self, line):
         """
              Initialize by parsing a line.
-    
+
              COLUMNS  TYPE   FIELD       DEFINITION
              ------------------------------------------------------
              8-11     string idCode      ID code of this entry.
@@ -1800,8 +1805,8 @@ class DBREF(BaseRecord):
                                          the reference.
         """
         super(DBREF, self).__init__(line)
-        self.idCode = string.strip(line[7:11]) 
-        self.chainID = string.strip(line[12]) 
+        self.idCode = string.strip(line[7:11])
+        self.chainID = string.strip(line[12])
         self.seqBegin = int(string.strip(line[14:18]))
         self.insertBegin = string.strip(line[18])
         self.seqEnd = int(string.strip(line[20:24]))
@@ -1814,7 +1819,7 @@ class DBREF(BaseRecord):
         self.dbseqEnd = int(string.strip(line[62:67]))
         try:  self.dbinsEnd = string.strip(line[67])
         except IndexError:  self.dbinsEnd = None
-        
+
 @RegisterLineParser
 class REMARK(BaseRecord):
     """ REMARK field
@@ -1832,10 +1837,9 @@ class REMARK(BaseRecord):
             Initialize by parsing line
         """
         super(REMARK, self).__init__(line)
-        self.text = line.rstrip('\r\n')
         self.remarkNum = int(string.strip(line[7:10]))
         self.remarkDict = {}
-        
+
         if self.remarkNum == 1:
             subfield = string.strip(line[11:20])
             if subfield == "REFERENCE":
@@ -1855,13 +1859,12 @@ class REMARK(BaseRecord):
         elif self.remarkNum == 2:
             restr = string.strip(line[22:27])
             try:  self.remarkDict["resolution"] = float(restr)
-            except ValueError:  
+            except ValueError:
                 self.remarkDict["comment"] = string.strip(line[11:70])
         else:
             self.remarkDict["text"] = string.strip(line[11:70])
- 
-    def __str__(self):
-        return self.text
+
+
 
 @RegisterLineParser
 class JRNL(BaseRecord):
@@ -1877,7 +1880,7 @@ class JRNL(BaseRecord):
     def __init__(self, line):
         """
             Initialize by parsing line
- 
+
             COLUMNS  TYPE   FIELD  DEFINITION
             -----------------------------------------------
             13-70    string text   See Details on web.
@@ -1885,10 +1888,6 @@ class JRNL(BaseRecord):
         super(JRNL, self).__init__(line)
         #TODO: What is this mess?
         self.text = string.strip(line[12:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class SPRSDE(BaseRecord):
@@ -1903,12 +1902,12 @@ class SPRSDE(BaseRecord):
     def __init__(self, line):
         """
             Initialize by parsing line
- 
+
             COLUMNS  TYPE   FIELD      DEFINITION
             -----------------------------------------------
             12-20    string sprsdeDate Date this entry superseded the
-                                       listed entries. 
-            22-25    string idCode     ID code of this entry. 
+                                       listed entries.
+            22-25    string idCode     ID code of this entry.
             32-35    string sIdCode    ID code of a superseded entry.
             37-40    string sIdCode    ID code of a superseded entry.
             42-45    string sIdCode    ID code of a superseded entry.
@@ -1930,10 +1929,6 @@ class SPRSDE(BaseRecord):
         self.sIdCodes.append(string.strip(line[56:60]))
         self.sIdCodes.append(string.strip(line[61:65]))
         self.sIdCodes.append(string.strip(line[66:70]))
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class REVDAT(BaseRecord):
@@ -1942,16 +1937,16 @@ class REVDAT(BaseRecord):
         REVDAT records contain a history of the modifications made to an entry
         since its release.
     """
-  
+
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing a line.
 
             COLUMNS  TYPE   FIELD  DEFINITION
             -------------------------------------------------------
             8-10     int    modNum  Modification number.
             14-22    string modDate Date of modification (or release for
-                                    new entries).  
+                                    new entries).
             24-28    string modId   Identifies this particular modification.
                                     It links to the archive used internally by
                                     PDB.
@@ -1975,17 +1970,13 @@ class REVDAT(BaseRecord):
         self.records.append(string.strip(line[46:52]))
         self.records.append(string.strip(line[53:59]))
         self.records.append(string.strip(line[60:66]))
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class AUTHOR(BaseRecord):
     """ AUTHOR field
-  
+
         The AUTHOR record contains the names of the people responsible for the
-        contents of the entry.  
+        contents of the entry.
     """
 
     def __init__(self, line):
@@ -1999,15 +1990,11 @@ class AUTHOR(BaseRecord):
         """
         super(AUTHOR, self).__init__(line)
         self.authorList = string.strip(line[10:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class EXPDTA(BaseRecord):
     """ EXPDTA field
-  
+
         The EXPDTA record identifies the experimental technique used. This may
         refer to the type of radiation and sample, or include the spectroscopic
         or modeling technique. Permitted values include:
@@ -2018,7 +2005,7 @@ class EXPDTA(BaseRecord):
         NEUTRON DIFFRACTION
         NMR
         THEORETICAL MODEL
-        X-RAY DIFFRACTION 
+        X-RAY DIFFRACTION
     """
 
     def __init__(self, line):
@@ -2028,26 +2015,22 @@ class EXPDTA(BaseRecord):
             COLUMNS  TYPE   FIELD     DEFINITION
             --------------------------------------------------
             11-70    string technique The experimental technique(s) with
-                                      optional comment describing the sample 
+                                      optional comment describing the sample
                                       or experiment
         """
         super(EXPDTA, self).__init__(line)
         self.technique = string.strip(line[10:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class KEYWDS(BaseRecord):
     """ KEYWDS field
-  
+
         The KEYWDS record contains a set of terms relevant to the entry. Terms
         in the KEYWDS record provide a simple means of categorizing entries and
         may be used to generate index files. This record addresses some of the
         limitations found in the classification field of the HEADER record. It
         provides the opportunity to add further annotation to the entry in a
-        concise and computer-searchable fashion.  
+        concise and computer-searchable fashion.
     """
 
     def __init__(self, line):
@@ -2061,20 +2044,16 @@ class KEYWDS(BaseRecord):
         """
         super(KEYWDS, self).__init__(line)
         self.keywds = string.strip(line[10:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class SOURCE(BaseRecord):
     """ SOURCE field
-   
+
         The SOURCE record specifies the biological and/or chemical source of
         each biological molecule in the entry. Sources are described by both
         the common name and the scientific name, e.g., genus and species.
         Strain and/or cell-line for immortalized cells are given when they help
-        to uniquely identify the biological entity studied.    
+        to uniquely identify the biological entity studied.
     """
 
     def __init__(self, line):
@@ -2088,15 +2067,11 @@ class SOURCE(BaseRecord):
         """
         super(SOURCE, self).__init__(line)
         self.source = string.strip(line[10:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class COMPND(BaseRecord):
     """ COMPND field
-       
+
         The COMPND record describes the macromolecular contents of an entry.
         Each macromolecule found in the entry is described by a set of token:
         value pairs, and is referred to as a COMPND record component. Since the
@@ -2106,7 +2081,7 @@ class COMPND(BaseRecord):
 
         For each macromolecular component, the molecule name, synonyms, number
         assigned by the Enzyme Commission (EC), and other relevant details are
-        specified. 
+        specified.
     """
 
     def __init__(self, line):
@@ -2115,15 +2090,11 @@ class COMPND(BaseRecord):
 
             COLUMNS  TYPE   FIELD    DEFINITION
             --------------------------------------------------
-            11-70    string compound Description of the molecular list 
+            11-70    string compound Description of the molecular list
                                      components.
         """
         super(COMPND, self).__init__(line)
         self.compound = string.strip(line[10:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 @RegisterLineParser
 class CAVEAT(BaseRecord):
@@ -2134,7 +2105,7 @@ class CAVEAT(BaseRecord):
     """
 
     def __init__(self, line):
-        """ 
+        """
             Initialize by parsing line.
 
             COLUMNS  TYPE   FIELD   DEFINITION
@@ -2150,7 +2121,7 @@ class CAVEAT(BaseRecord):
 @RegisterLineParser
 class TITLE(BaseRecord):
     """ TITLE field
- 
+
         The TITLE record contains a title for the experiment or analysis that
         is represented in the entry. It should identify an entry in the PDB in
         the same way that a title identifies a paper.
@@ -2159,19 +2130,15 @@ class TITLE(BaseRecord):
     def __init__(self, line):
         """
             Initialize by parsing a line.
-    
+
             COLUMNS  TYPE   FIELD  DEFINITION
             ---------------------------------------------
             11-70    string title  Title of the experiment
         """
         super(TITLE, self).__init__(line)
         self.title = string.strip(line[10:70])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
-@RegisterLineParser    
+@RegisterLineParser
 class OBSLTE(BaseRecord):
     """ OBSLTE field
 
@@ -2180,12 +2147,12 @@ class OBSLTE(BaseRecord):
         replaced the withdrawn entry.
 
         The format allows for the case of multiple new entries replacing one
-        existing entry. 
+        existing entry.
     """
 
     def __init__(self, line):
-        """ 
-           Initialize by parsing a line.  
+        """
+           Initialize by parsing a line.
 
            COLUMNS  TYPE   FIELD    DEFINITION
            -----------------------------------------------
@@ -2223,7 +2190,7 @@ class OBSLTE(BaseRecord):
 
 @RegisterLineParser
 class HEADER(BaseRecord):
-    """ HEADER field 
+    """ HEADER field
 
         The HEADER record uniquely identifies a PDB entry through the idCode
         field. This record also provides a classification for the entry.
@@ -2231,8 +2198,8 @@ class HEADER(BaseRecord):
         PDB. """
 
     def __init__(self, line):
-        """ 
-           Initialize by parsing a line.  
+        """
+           Initialize by parsing a line.
 
            COLUMNS  TYPE   FIELD          DEFINITION
            ---------------------------------------------------------
@@ -2246,10 +2213,6 @@ class HEADER(BaseRecord):
         self.classification = string.strip(line[10:50])
         self.depDate = string.strip(line[50:59])
         self.IDcode = string.strip(line[62:66])
-        self.text = line.rstrip('\r\n')
-        
-    def __str__(self):
-        return self.text
 
 def readAtom(line):
     """
@@ -2294,8 +2257,8 @@ def readAtom(line):
         try:
             val = float(entry)
             consec = consec + 1
-            if consec == 5:      
-                break                
+            if consec == 5:
+                break
         except ValueError:
             consec = 0
 
@@ -2315,22 +2278,22 @@ def readAtom(line):
 def readPDB(file):
     """ Parse PDB-format data into array of Atom objects.
         Parameters
-          file:  open file object 
+          file:  open file object
         Returns (dict, errlist)
-          dict:  a dictionary indexed by PDB record names 
-          errlist:  a list of record names that couldn't be parsed 
+          dict:  a dictionary indexed by PDB record names
+          errlist:  a list of record names that couldn't be parsed
     """
 
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of records we can't parse
-    
+
     #We can come up with nothing if can't get our file off the web.
     if file is None:
         return pdblist, errlist
 
-    while 1: 
+    while 1:
         line = string.strip(file.readline())
-        if line == '':  
+        if line == '':
             break
 
         # We assume we have a method for each PDB record and can therefore
@@ -2363,7 +2326,7 @@ def readPDB(file):
                 sys.stderr.write("Error parsing line: %s\n" % details)
                 sys.stderr.write("<%s>\n" % string.strip(line))
 
-    return pdblist, errlist    
+    return pdblist, errlist
 
 def getRandom():
     """ Download a random PDB and return the path name.

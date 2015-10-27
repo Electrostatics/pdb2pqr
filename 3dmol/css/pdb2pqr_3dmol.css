@@ -6,72 +6,83 @@
   -moz-box-sizing: border-box;
 }
 
+head, body {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  max-height: 100vh
+}
+
 body {
   display: block;
   display: block;
   font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 18px;
+  //font-size: 18px;
   font-weight: 300;
-  margin: 0 auto;
-  color: #ddd; 
+  color: #fff; 
   background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
   background-size: cover;
-  padding: 20px;
   height: 100%
 }
 
-table.main{
-  border: none;
-  width: 60%;
-  font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  padding: 0px;
-  border-spacing: 0px;
-  background: transparent;
-  font-size: 18px;
-  color: #FFFFFF;
-}
-
-
-
 #pdbid {
-	 color: #929292;
+   color: #929292;
 }
 
 #gldiv {
   position: fixed;
   height: 100%;
+  width: 70%;
   right: 26em; 
   left: 0em; 
   margin: 0px;
   padding: 0px;
   border: 0px;
+}
 
+
+
+/* Custom indentations are needed because the length of custom labels differs from
+   the length of the standard labels */
+.ui-flipswitch .ui-btn.ui-flipswitch-on {
+    text-indent: -4em;
+}
+.custom-size-flipswitch.ui-flipswitch .ui-flipswitch-off {
+    text-indent: 2em;
+}
+
+/* Custom widths are needed because the length of custom labels differs from
+   the length of the standard labels */
+.custom-size-flipswitch.ui-flipswitch {
+    width: 10em; 
+}
+.custom-size-flipswitch.ui-flipswitch.ui-flipswitch-active {
+    padding-left: 5em;
+    width: 1.875em;
 }
 
 #leftbutton {
-	float:left; 
-	width:200px; 
-	margin-top:9px;
+  float:left; 
+  width:200px; 
+  margin-top:9px;
 }
 
 #rightbutton {
-	float:left;
-	width:200px;
+  float:left;
+  width:200px;
 }
-
-
 
 input[type=range] {
     -webkit-appearance: none;
-	border-radius: 10px;
-    //background-color: red;
-    //width: 200px;
+  border-radius: 10px;
+    background-color: white;
+    width: 200px;
     height:5px;
 }
 
 input[type="range"]::-webkit-slider-thumb {
      -webkit-appearance: none;
-    background-color: rgb(178, 176, 168);
+    background-color: white;
     opacity: 0.7;
     width: 10px;
     height: 26px;
@@ -79,7 +90,7 @@ input[type="range"]::-webkit-slider-thumb {
 /*For Firefox*/
 input[type=range]::-moz-range-track {
     -webkit-appearance: none;
-	border-radius: 10px;
+  border-radius: 10px;
     background-color: white;
     width: 200px;
     height:5px;
@@ -95,7 +106,7 @@ input[type=range]::-moz-range-thumb {
 /*For IE10 and above*/
 input[type=range]::-ms-track {
     -webkit-appearance: none;
-	border-radius: 10px;
+  border-radius: 10px;
     background-color: white;
     width: 200px;
     height:5px;
@@ -109,32 +120,9 @@ input[type=range]::-ms-thumb {
     height: 26px;
 }
 
-.styled-select{
-   height: 40px;
-   width: 250px;
-   padding: 0px;
-   background: rgb(178, 176, 168);
-   border: none;
-   border-radius: 1000px;
-   font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
-   font-size: 14px;
-   font-weight: normal;
-   line-height: normal;
-   text-align: center;
-   text-decoration: none;
-   color: black; //white;
-
-   -webkit-appearance: none;
-}
-
-select:active, select:hover {
-   background-color: white; //rgb(160,158,151);
-}
-
-
 .range-value {
-	width: 3em;
-	display: inline-block;
+  width: 3em;
+  display: inline-block;
 }
 
 .disclaimer {
@@ -144,10 +132,10 @@ select:active, select:hover {
 .disclaimer.space {
     position:absolute;
     bottom:0;
-    right:0;	
-	display: inline-block;
-	font: 6px;
-	
+    right:0;  
+  display: inline-block;
+  font: 6px;
+  
 }
 
 div#content {
@@ -162,63 +150,62 @@ div#content {
 }
 
 #visualbutton {
-	height: 40px;
-	width: 200px; 
-	padding: 0px; 
-	background: rgb(178, 176, 168); /* this is a light grey */
+  height: 40px;
+  width: 200px; 
+  padding: 0px; 
+  background: rgb(178, 176, 168); /* this is a light grey */
 }
 
 #surfacebutton {
-	height: 40px;
-	width: 200px; 
-	padding: 0px; 
-	background: rgb(178, 176, 168); /* this is a light grey */
+  height: 40px;
+  width: 200px; 
+  padding: 0px; 
+  background: rgb(178, 176, 168); /* this is a light grey */
 }
 
 #outer
 {
-  width: 26em;
-  //background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
-	right: 0px;
-	top: 0;
-	height: 100%;
-	position: fixed; 
-  text-align: center;
+  /*width: 26em;*/
+  width: 30%;
+  right: 0px;
+  top: 0;
+  height: 100%;
+  position: fixed; 
   overflow: auto;
-	padding-top: 2em;
+  //padding-top: 2em;
 }
 
 .inner
 {
-  display: inline-block;
-	margin-bottom: 2em;
-	/*float:left;*/
-	margin-left: 5px;
-	margin-right: 5px;
+    display: inline-block;
+  margin-bottom: 2em;
+  /*float:left;*/
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .text
 {
-  display: block;
-	margin-bottom: 0;
-	float:left;
-	right: 3em; 
-	left: 0em; 
+    display: block;
+  margin-bottom: 0;
+  float:left;
+  right: 3em; 
+  left: 0em; 
 }
 
 
 .inner .button {
-	margin: 0;
-	right: 0em;
-	float: left;
+  margin: 0;
+  right: 0em;
+  float: left;
 }
 
 #lastbutton{
     display: block;
-	margin-bottom: 2em;
-	float:left;
-	right: 3em; 
-	left: 0em; 
+  margin-bottom: 2em;
+  float:left;
+  right: 3em; 
+  left: 0em; 
 }
 
 div#color {
@@ -359,88 +346,88 @@ body > header h1 span {
 .button-distance,
 .button-backbone,
 .button-secondary {
-	color: white;
-	border-radius: 4px;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-	
+  color: white;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  
 }
  .button-stick{
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-line {
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-cross {
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-sphere {
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-cartoon {
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-labela  {
-			padding-left: 0em;
-			padding-right: 0em;
-			font-size: 12px;
+      padding-left: 0em;
+      padding-right: 0em;
+      font-size: 15px;
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-unlabela {
-			padding-left: 0em;
-			padding-right: 0em;
-			text-align: center;
-			font-size: 12px;
+      padding-left: 0em;
+      padding-right: 0em;
+      text-align: center;
+      font-size: 15px;
             background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-surface1  {
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-surface2 {
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-rmsurface1 {
-			padding-left: 0em;
-			padding-right: 0em;
-			font-size: 15px;
+      padding-left: 0em;
+      padding-right: 0em;
+      font-size: 15px;
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-rmsurface2 {
-			padding-left: 0em;
-			padding-right: 0em;
-			font-size: 15px;
+      padding-left: 0em;
+      padding-right: 0em;
+      font-size: 15px;
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-recenter {
-			padding-left: 0em;
-			padding-right: 0em;
+      padding-left: 0em;
+      padding-right: 0em;
             background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-load {
             background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-distance{
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
+    
  .button-backbone{
              background: rgb(178, 176, 168); /* this is a light grey */
         }
-		
-		
-/*This is for rounded corners, from foundation.css vis http://foundation.zurb.com/*/		
+    
+    
+/*This is for rounded corners, from foundation.css vis http://foundation.zurb.com/*/    
 /*.button-group.round > * {
     margin: 0 -2px;
     display: inline-block; }

@@ -174,31 +174,35 @@ def get_curve_values(protein_complex, labeling, pH):
             dge *= kln10_T
             dgd *= kln10_T
 
-            dpkad = -math.log10(math.exp(dgd/RT_gas))
-            dpkae = -math.log10(math.exp(dge/RT_gas))
+            try:
+                dpkad = -math.log10(math.exp(dgd/RT_gas))
+                dpkae = -math.log10(math.exp(dge/RT_gas))
 
-            pkad = modPkaHIP + dpkad
-            pkae = modPkaHIP + dpkae
+                pkad = modPkaHIP + dpkad
+                pkae = modPkaHIP + dpkae
 
-            Gd = -math.log(math.pow(10, pkad))
-            Ge = -math.log(math.pow(10, pkae))
+                Gd = -math.log(math.pow(10, pkad))
+                Ge = -math.log(math.pow(10, pkae))
 
-            ThetaPEnerNumer = sys.float_info.min
-            ThetaPEnerDenom = sys.float_info.min
+                ThetaPEnerNumer = sys.float_info.min
+                ThetaPEnerDenom = sys.float_info.min
 
-            Gdeavg = (Gd+Ge)/2.0
+                Gdeavg = (Gd+Ge)/2.0
 
-            if not labeling[hie_residue].protonated and labeling[hid_residue].protonated:
-                ThetaPEnerNumer = math.exp(-Ge)*aH
-                ThetaPEnerDenom = 1.0+math.exp(-(Gd-Ge))+math.exp(-Ge)*aH
-            elif labeling[hie_residue].protonated and not labeling[hid_residue].protonated:
-                ThetaPEnerNumer = math.exp(-Gd)*aH
-                ThetaPEnerDenom = 1.0+math.exp(-(Gd-Ge))+math.exp(-Gd)*aH
-            elif labeling[hie_residue].protonated and labeling[hid_residue].protonated:
-                ThetaPEnerNumer = math.exp(-Gdeavg)*aH
-                ThetaPEnerDenom = 1.0+math.exp(-(Gd-Ge))+math.exp(-Gdeavg)*aH
+                if not labeling[hie_residue].protonated and labeling[hid_residue].protonated:
+                    ThetaPEnerNumer = math.exp(-Ge)*aH
+                    ThetaPEnerDenom = 1.0+math.exp(-(Gd-Ge))+math.exp(-Ge)*aH
+                elif labeling[hie_residue].protonated and not labeling[hid_residue].protonated:
+                    ThetaPEnerNumer = math.exp(-Gd)*aH
+                    ThetaPEnerDenom = 1.0+math.exp(-(Gd-Ge))+math.exp(-Gd)*aH
+                elif labeling[hie_residue].protonated and labeling[hid_residue].protonated:
+                    ThetaPEnerNumer = math.exp(-Gdeavg)*aH
+                    ThetaPEnerDenom = 1.0+math.exp(-(Gd-Ge))+math.exp(-Gdeavg)*aH
 
-            titration_value = ThetaPEnerNumer/ThetaPEnerDenom
+                titration_value = ThetaPEnerNumer/ThetaPEnerDenom
+            except OverflowError:
+                titration_value = 1.0
+
             results["HIS", chain, location] = titration_value
 
         else:
@@ -207,13 +211,12 @@ def get_curve_values(protein_complex, labeling, pH):
             energy_diff = protein_complex.evaluate_energy_diff(residue, labeling, normal_form=True)
 
             exp = -(energy_diff*kln10_T)/RT
-            titration_value = 1.0
             #Handle case where there is an unresolved bump.
             try:
                 e_exp = math.exp(exp)
                 titration_value = e_exp/(1.0+e_exp)
             except OverflowError:
-                pass
+                titration_value = 1.0
             results[key] = titration_value
 
     return results

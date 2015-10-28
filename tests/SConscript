@@ -58,20 +58,6 @@ env.Clean(runTest, 'adv-test/test-output-user.propka')
 
 aliasObj = setupTest('advanced-test', runTest, [validatePQRResult, validatePROPKAResult])
 
-#PDB2PKA Test
-
-runTest = env.Command(['pdb2pka-test/pdb2pka-output-user', 'pdb2pka-test/test-output-user.pqr'], 'pdb2pka-test/1a1p.pdb',
-                      commandLineStart + ' --with-ph=7.00 --ph-calc-method=pdb2pka --pdb2pka-out=${TARGETS[0]} --ff=PARSE $SOURCE ${TARGETS[1]}')
-
-validateTitrationCurveResult = env.Command('pdb2pka-test/titcurve.result', ['pdb2pka-test/pdb2pka-output-user', 'pdb2pka-test/pdb2pka-output-correct'],
-                                			CompareTitCurves('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-
-validatePQRResult = env.Command('pdb2pka-test/pqr.result', ['pdb2pka-test/test-output-user.pqr', 'pdb2pka-test/test-output-correct.pqr'],
-                                ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-
-env.Clean(runTest, 'pdb2pka-test/pdb2pka-output')
-
-aliasObj = setupTest('pdb2pka-test', runTest, [validateTitrationCurveResult, validatePQRResult])
-
 SConscript('test-long/SConscript')
 SConscript('complete-test/SConscript')
+SConscript('pdb2pka-test/SConscript')

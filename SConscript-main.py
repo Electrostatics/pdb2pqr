@@ -101,7 +101,11 @@ if env['EXTRA_LINKFLAGS']:
     env.Append(LINKFLAGS = [env['EXTRA_LINKFLAGS']])
 
 if os.name == 'nt':
-    python_root = sys.prefix
+    #Check to see if we are running in a virtualenv
+    if hasattr(sys, 'real_prefix'):
+        python_root = sys.real_prefix
+    else:
+        python_root = sys.prefix
     python_include = os.path.join(python_root, 'include')
     python_libs = os.path.join(python_root, 'libs')
     env.Append(LIBPATH=[python_libs])

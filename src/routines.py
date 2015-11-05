@@ -1180,7 +1180,7 @@ class Routines:
 
                 if score == 0:
                     if not self.findResidueConflicts(residue):
-                        self.write("No conflicts found at angle %.2f.\n" % newangle, 1)
+                        self.write("No conflicts found at angle "+repr(newangle)+"\n", 1)
                         return True
                     else:
                         bestangle = newangle
@@ -1198,7 +1198,7 @@ class Routines:
             currentConflictNames = self.findResidueConflicts(residue)
 
             if foundImprovement:
-                self.write("Best score of %.2f at angle %.2f. New conflict set: " % (bestscore, bestangle), 1)
+                self.write("Best score of "+repr(bestscore)+" at angle "+repr(bestangle)+". New conflict set: ", 1)
                 self.write(str(currentConflictNames)+"\n", 1)
             else:
                 self.write("No improvement found for this dihedral angle.\n", 1)
@@ -1490,7 +1490,7 @@ class Routines:
         for residue in self.protein.getResidues():
             residue.setDonorsAndAcceptors()
 
-    def runPDB2PKA(self, ph, ff, protein, ligand, verbose, pdb2pka_params):
+    def runPDB2PKA(self, ph, ff, pdblist, ligand, verbose, pdb2pka_params):
         if ff.lower() != 'parse':
             PDB2PKAError('PDB2PKA can only be run with the PARSE force field.')
 
@@ -1501,7 +1501,8 @@ class Routines:
         init_params = pdb2pka_params.copy()
         init_params.pop('pairene')
         init_params.pop('clean_output')
-        results = pka.pre_init(protein=protein,
+
+        results = pka.pre_init(original_pdb_list=pdblist,
                                ff=ff,
                                verbose=verbose,
                                ligand=ligand,
@@ -1522,7 +1523,6 @@ class Routines:
         residue_ph = {}
         for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.iteritems():
             tit_type, chain_id, number_str = pka_residue_tuple
-
             if tit_type == 'NTR':
                 tit_type = 'N+'
             elif tit_type == 'CTR':

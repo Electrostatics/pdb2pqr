@@ -11,14 +11,14 @@ def setupTest(testName, testRunBuilder, valRunBuilders):
 	    Depends(testRunBuilder, DEFAULT_TARGETS)
 	    for vb in valRunBuilders:
 		    Depends(vb, testRunBuilder)
-	   
+
 	testAliasObj = Alias(testName, [testRunBuilder] + valRunBuilders )
 	AlwaysBuild(testRunBuilder)
 	for vb in valRunBuilders:
 		AlwaysBuild(vb)
-		
+
 	return testAliasObj
-	
+
 commandLineStart = sys.executable + ' ' + str(pdb2pqr[0])
 
 Export('setupTest')
@@ -30,7 +30,7 @@ runTest = env.Command('test/test-output-user.pqr', None,
 
 validatePQRResult = env.Command('test/pqr.result', ['test/test-output-user.pqr', 'test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-							
+
 aliasObj = setupTest('basic-test', runTest, [validatePQRResult])
 
 #Local Test
@@ -40,7 +40,7 @@ runTest = env.Command('local-test/test-output-user.pqr', 'local-test/1AFS.pdb',
 
 validatePQRResult = env.Command('local-test/pqr.result', ['local-test/test-output-user.pqr', 'local-test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-							
+
 aliasObj = setupTest('local-test', runTest, [validatePQRResult])
 
 #Advanced Test
@@ -50,25 +50,14 @@ runTest = env.Command(['adv-test/test-output-user.pqr', 'adv-test/test-output-us
 
 validatePQRResult = env.Command('adv-test/pqr.result', ['adv-test/test-output-user.pqr', 'adv-test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-							
+
 validatePROPKAResult = env.Command('adv-test/propka.result', ['adv-test/test-output-user.propka', 'adv-test/test-output-correct.propka'],
                                    ComparePROPKA('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-							
+
 env.Clean(runTest, 'adv-test/test-output-user.propka')
 
 aliasObj = setupTest('advanced-test', runTest, [validatePQRResult, validatePROPKAResult])
 
-#PDB2PKA Test
-
-runTest = env.Command(['pdb2pka-test/test-output-user.pqr', 'pdb2pka-test/pdb2pka-output'], 'pdb2pka-test/1a1p.pdb',
-                      commandLineStart + ' --with-ph=6.00 --ph-calc-method=pdb2pka --pdb2pka-out=${TARGETS[1]} --ff=PARSE $SOURCE ${TARGETS[0]}')
-
-validatePQRResult = env.Command('pdb2pka-test/pqr.result', ['pdb2pka-test/test-output-user.pqr', 'pdb2pka-test/test-output-correct.pqr'],
-                                ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))
-                                
-env.Clean(runTest, 'pdb2pka-test/pdb2pka-output')
-														
-aliasObj = setupTest('pdb2pka-test', runTest, [validatePQRResult])
-
 SConscript('test-long/SConscript')
 SConscript('complete-test/SConscript')
+SConscript('pdb2pka-test/SConscript')

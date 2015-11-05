@@ -56,13 +56,17 @@ function build_page(jobid){
 "<tr><td valign='top'>" +
  //change color scheme 
 "<font style='color:white; font-size:12pt'>Scheme: </font>" +
+
+
  "</td><td>" +
 "<select class='styled-select' id='selected_scheme' onchange='update_surface(0)' style='max-width:50%;'>" +
 
 "        <option style='color: black;' value='RWB'>Red-White-Blue </option>" +
 "        <option style='color: black;' value='ROYGB'>Red-Green-Blue </option>" +
 "        <!--<option style='color: black;' value='BWR'>Blue-White-Red </option>-->" +
-"    </select><br><br>" +
+"    </select><br>" +
+"<br>RWB<img src='3dmol/images/rwb.png' width='250'>" +
+"<br>RGB<img src='3dmol/images/rgb.png' width='250'>" +
 "</td></tr>" +
 "<tr><td valign='top'>" + "</td>" +
 "<td>" +

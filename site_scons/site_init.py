@@ -9,9 +9,13 @@
 from SCons.Script import *
 import SCons.Errors
 import re
-from test_tools import ComparePQRAction, ComparePROPKAAction, CompareStringFunc
+from test_tools import (ComparePQRAction,
+                        ComparePROPKAAction,
+                        CompareTitCurvesAction,
+                        CompareStringFunc,
+                        CompareDirectoryFunc)
 
-# Taken from the SubstInFileBuilder on the SCons Wiki.  
+# Taken from the SubstInFileBuilder on the SCons Wiki.
 # See http://www.scons.org/wiki/AutoconfRecipes
 
 # Also changed to use string.replace as using re.sub was a dumb idea if
@@ -96,7 +100,7 @@ def TOOL_SUBST(env):
 
     subst_action=SCons.Action.Action(subst_in_file, subst_in_file_string)
     env['BUILDERS']['SubstInFile'] = Builder(action=subst_action, emitter=subst_emitter)
-    
+
 def CopySubAction(targetfile, sourcefile, dict, useRegex=False):
     """Replace all instances of the keys of dict with their values.
     For example, if dict is {'VERSION': '1.2345', 'BASE': 'MyProg'},
@@ -135,13 +139,13 @@ def CompilePythonAction(targetfile, sourcefile):
         import py_compile
     except ImportError:
         raise SCons.Errors.InternalError, "Couldn't import py_compile module"
-    
+
     try:
         py_compile.compile(sourcefile, targetfile, doraise=True)
     except py_compile.PyCompileError:
         raise SCons.Errors.InternalError, "Couldn't compile {0}".format(sourcefile)
-    
-    
+
+
 
 def CompilePythonActionStringFunc(targetfile, sourcefile):
     return 'Compiling python to bytecode ("%s", "%s")' % (targetfile, sourcefile)
@@ -150,6 +154,7 @@ CopySub = SCons.Action.ActionFactory( CopySubAction, CopySubActionStringFunc )
 
 ComparePQR = SCons.Action.ActionFactory( ComparePQRAction, CompareStringFunc )
 ComparePROPKA = SCons.Action.ActionFactory( ComparePROPKAAction, CompareStringFunc )
+CompareTitCurves = SCons.Action.ActionFactory( CompareTitCurvesAction, CompareDirectoryFunc )
 
 CompilePython = SCons.Action.ActionFactory( CompilePythonAction, CompilePythonActionStringFunc )
 

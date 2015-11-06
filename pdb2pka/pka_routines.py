@@ -444,9 +444,10 @@ class pKaRoutines:
                 residue.stateboolean[self.get_state_name(titration.name, state)] = True
                 if not os.path.isfile(intenename):
                     pdb_file = os.path.join(self.pdb_dumps_dir, name+'_interaction_setup_input.pdb')
-                    self.dump_protein_file(pdb_file)
+
 
                     self.hbondOptimization()
+                    self.dump_protein_file(pdb_file)
                     self.zeroAllRadiiCharges()
                     self.setAllRadii()
                     self.setCharges(residue, atomnames)
@@ -590,9 +591,11 @@ class pKaRoutines:
                     #
                     bump=False
                     pdb_file = os.path.join(self.pdb_dumps_dir, name+'_interaction_input.pdb')
-                    self.dump_protein_file(pdb_file)
+
 
                     self.hbondOptimization() # Optimize the hydrogens to actually put the hydrogen in the right position
+                    self.dump_protein_file(pdb_file)
+
                     if self.routines.getbumpscore(pKa_center.residue)>100:
                         bump=True
                     elif self.routines.getbumpscore(pKa.residue)>100:
@@ -1490,9 +1493,10 @@ class pKaRoutines:
                     #residue.stateboolean[self.get_state_name(titration.name, state)] = False
 
                     pdb_file_name = os.path.join(self.pdb_dumps_dir, name+'_desolve_input.pdb')
-                    self.dump_protein_file(pdb_file_name)
+
 
                     self.hbondOptimization()
+                    self.dump_protein_file(pdb_file_name)
 
                     # residue.stateboolean returns to default value (True)
                     #residue.stateboolean[self.get_state_name(titration.name, state)] = True

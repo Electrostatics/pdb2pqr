@@ -304,8 +304,8 @@
         function getpqr(jobid){
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
-            //url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
-            url = "../3dmol/files/1fas.pqr";
+            url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
+            //url = "../3dmol/files/1fas.pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -324,8 +324,8 @@
 
         function getcube(jobid){
             var xhr = new XMLHttpRequest();
-            //xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
-            xhr.open("GET", "../3dmol/files/1fas.cube");
+            xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
+            //xhr.open("GET", "../3dmol/files/1fas.cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {

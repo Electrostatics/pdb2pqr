@@ -271,7 +271,6 @@
         //change output for max_isoval range, not perfect
         function set_max_isoval(max_val) {
             document.querySelector('#max_isoval').value = max_val; 
-            console.log('max');
             protein.max_isoval = max_val;
             update_surface(0);
         }
@@ -281,23 +280,23 @@
         function reset_vals() {
             set_min_isoval2(-5);
             set_max_isoval2(5);
-            document.getElementById("min").value = "-5";
-            document.getElementById("max").value = "5";
+            document.getElementById("min_isoval2").value = "-5";
+            document.getElementById("max_isoval2").value = "5";
             update_surface(0);
             return false;
         }
         
  //change output for min_isoval range, not perfect
         function set_min_isoval2(min_val) {
-            //document.querySelector('#min_isoval2').value = min_val;
+            document.getElementById("min_isoval").innerHTML = min_val;
             protein.min_isoval = Number(min_val);
-            //console.log(protein.min_isoval);
+            console.log(document.getElementById('min_isoval').value);
             update_surface(0);
         }
 
         //change output for max_isoval range, not perfect
         function set_max_isoval2(max_val) {
-            //document.querySelector('#max_isoval2').value = max_val;
+            document.getElementById("max_isoval").innerHTML = max_val;
             protein.max_isoval = Number(max_val);
             update_surface(0);
         }
@@ -306,6 +305,7 @@
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
             url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
+            //url = "../3dmol/files/1fas.pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -325,6 +325,7 @@
         function getcube(jobid){
             var xhr = new XMLHttpRequest();
             xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
+            //xhr.open("GET", "../3dmol/files/1fas.cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {

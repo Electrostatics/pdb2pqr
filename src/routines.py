@@ -1155,6 +1155,8 @@ class Routines:
         anglenum = -1
         currentConflictNames = conflictnames
 
+        EPSILON = 0.0000001
+
         # Try (up to 10 times) to find a workable solution
 
         for _ in range(ANGLE_TEST_COUNT):
@@ -1180,7 +1182,7 @@ class Routines:
 
                 if score == 0:
                     if not self.findResidueConflicts(residue):
-                        self.write("No conflicts found at angle %.2f.\n" % newangle, 1)
+                        self.write("No conflicts found at angle "+repr(newangle)+"\n", 1)
                         return True
                     else:
                         bestangle = newangle
@@ -1188,17 +1190,19 @@ class Routines:
                         break
 
                 # Set the best angle
-
                 elif score < bestscore:
-                    bestscore = score
-                    bestangle = newangle
-                    foundImprovement = True
+                    diff = abs(bestscore - score)
+                    #Don't update if it's effectively a tie
+                    if diff > EPSILON:
+                        bestscore = score
+                        bestangle = newangle
+                        foundImprovement = True
 
             self.setDihedralAngle(residue, anglenum, bestangle)
             currentConflictNames = self.findResidueConflicts(residue)
 
             if foundImprovement:
-                self.write("Best score of %.2f at angle %.2f. New conflict set: " % (bestscore, bestangle), 1)
+                self.write("Best score of "+repr(bestscore)+" at angle "+repr(bestangle)+". New conflict set: ", 1)
                 self.write(str(currentConflictNames)+"\n", 1)
             else:
                 self.write("No improvement found for this dihedral angle.\n", 1)

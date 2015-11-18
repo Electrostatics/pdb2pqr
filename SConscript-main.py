@@ -328,7 +328,7 @@ def print_default_message(target_list):
     print 'Run "python scons/scons.py basic-test" for a basic functionality test'
     print 'Run "python scons/scons.py advanced-test" for a single test of ligand and PROPKA support. Requires numpy and PDB2PKA support compiled.'
     print 'Run "python scons/scons.py complete-test" for a complete test of all functionality EXCEPT PDB2PKA. Requires numpy and PDB2PKA support compiled.'
-    print 'Run "python scons/scons.py pdb2pka-test" for a simple test of PDB2PKA functionality.'
+    print 'Run "python scons/scons.py pdb2pka-test" for a test of PDB2PKA functionality.'
     print '    Requires numpy, PDB2PKA support compiled AND the APBS python libraries compiled and installed in the pdb2pka directory.'
 
     print

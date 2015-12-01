@@ -18,13 +18,12 @@ try:
     from apbslib import *
 except:
     #
-    # We need apbslib.so, apbslib.so and apbslib.py
+    # We need _apbslib.so and apbslib.py
     #
     print
     print 'Missing libraries for interfacing with APBS'
     print
-    print 'You need to find _apbslib.so and apbslib.py and symlink into the pdb2pqr/pdb2pka source code directory'
-    print 'The files can be found in the share/tools/python dir of your apbs installation'
+    print 'You need to build APBS with Python support using the CMake variable -DENABLE_PYTHON=ON.'
     print
     sys.exit(0)
 

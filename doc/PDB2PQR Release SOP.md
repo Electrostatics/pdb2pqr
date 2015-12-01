@@ -12,14 +12,18 @@ When preparing for a new release, the trunk (or tag if a bug fix version needs t
 It should be named something obvious such as pdb2pqr-<code>new version number</code>.
 All testing should be done on a clean checkout of the branch.
 Fixes found during testing should be checked into the branch and merged into the trunk if appropriate.
-Merging fixes back into a tag is not required and probably not appropriate.  
+Merging fixes back into a tag is not required and probably not appropriate.
 
 In the file <code>site_scons/defaults.py</code> change the value of <code>productVersion</code> to reflect the release version.
+
+## Fabric
+All of the steps in the Build, Binary builds and Automated Testing can be done automatically for all target platforms by adapting and using the fabric.py script found in the pdb2pqr directory. Documentation for the python fabric module and how to use the fabric script can be found at http://docs.fabfile.org/
+
 
 ## Build
 The branch should be tested to see if it configures and compiles correctly on all the target operating systems.
 Currently those systems are Linux, Mac OSX 10.6 or newer, and Windows 7.
-Testing against the GNU compilers for pdb2pka is sufficient. 
+Testing against the GNU compilers for pdb2pka is sufficient.
 Remember, these tests should be done on a fresh checkout the branch.
 
 To configure and make branch:
@@ -29,17 +33,19 @@ See INSTALL.md for how to build and install pdb2pqr.
 See INSTALL.md for how to create binary builds. Please note the specific needs of each platform.
 For release we build the OSX version on 10.6 (64 bit only) and the Linux version on RHEL or CentOS 6 (32 and 64 bit) to ensure compatibility with RHEL and Unbuntu LTS. We do not support RHEL 5 or earlier.
 
-On each supported platform the build should be tested with the following command from <code>pdb2pqr/dist/pdb2pqr</code>:
+On each supported platform the build should be tested with the following commands from <code>pdb2pqr/dist/pdb2pqr</code>:
 
-	./pdb2pqr.exe --ff=parse --with-ph=7.0 --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1abf 1abf.pqr
-	
-If the program does not crash then we can release this binary build. 
- 
+	./pdb2pqr.exe --ff=parse --ph-calc_method=propka --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1abf 1abf.pqr
+
+	./pdb2pqr.exe --ff=parse --ph-calc_method=pdb2pka --verbose 1a1p 1a1p.pqr
+
+If the program does not crash in either case then we can release this binary build.
+
 ## Testing
 
 ### Automated Testing
 After a successful build automated tests should be run.
-Run <code>python scons/scons.py test</code>, <code>python scons/scons.py advtest</code>, and <code>python scons/scons.py -j7 complete-test</code>. (Change the -j parameter according to the number of cores in the testing machine.)
+Run <code>python scons/scons.py test</code>, <code>python scons/scons.py advtest</code>, <code>python scons/scons.py -j7 complete-test</code>, and <code>python scons/scons.py -j4 pdb2pka-test</code>. (Change the -j parameters according to the number of cores available in the testing machine.)
 This will test out the most basic case, a more complex case with a pH setting and ligand file, and then test every option in various combinations.
 All three tests should run without issue unless changes were made that affect the output of the program (Version numbers and some atom ordering differences are ignored when comparing expected and actual results.).
 
@@ -81,7 +87,7 @@ Tar and gzip with the following command from the repos base directory:
 
 Build the binaries on all supported targets.
 
-Rename the pdb2pqr folder to 
+Rename the pdb2pqr folder to
 
 	pdb2pqr-<osx|linux|windows>-bin-<version>
 
@@ -90,13 +96,13 @@ From the dist folder create an archive like so:
 #### Linux and OSX
 
 	tar zcvf pdb2pqr-<osx|linux>-bin-<version>.tar.gz pdb2pqr-<osx|linux>-bin-<version>
-	
+
 #### Windows
 
-Compress the 
+Compress the
 
 	pdb2pqr-windows-bin-<version>
-	
+
 folder into a zip file.
 
 ### Release
@@ -105,7 +111,7 @@ The tar and zip files should be uploaded to Source Forge and github.
 #### Source Forge
 A new folder should be created to reflect the version number.
 The new tar ball should be uploaded to that folder.
-A copy of ChangeLog.md (which you should be keeping up to date!) renamed to <code>PDB2PQR-<version>-ReleaseNotes.txt</code> (example PDB2PQR-1.7.1a-ReleasNotes.txt) should also be uploaded to the same folder. 
+A copy of ChangeLog.md (which you should be keeping up to date!) renamed to <code>PDB2PQR-<version>-ReleaseNotes.txt</code> (example PDB2PQR-1.7.1a-ReleasNotes.txt) should also be uploaded to the same folder.
 
 #### Github
 Follow these direction to create a release on Github

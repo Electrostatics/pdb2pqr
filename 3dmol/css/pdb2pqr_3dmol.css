@@ -21,6 +21,7 @@ body {
   font-weight: 300;
   color: #fff; 
   background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
+  //background: black;
   background-size: cover;
   height: 100%
 }
@@ -30,9 +31,9 @@ body {
 }
 
 #gldiv {
-  position: fixed;
+  position: absolute;
   height: 100%;
-  width: 70%;
+  width: 80%;
   right: 26em; 
   left: 0em; 
   margin: 0px;
@@ -165,14 +166,16 @@ div#content {
 
 #outer
 {
-  /*width: 26em;*/
-  width: 30%;
+  width: 20%;
+  /*width: 30%;*/
   right: 0px;
-  top: 0;
+  top: 1em;
   height: 100%;
-  position: fixed; 
+  position: absolute; 
   overflow: auto;
-  //padding-top: 2em;
+  padding: 1em;
+  //background: #ccc url('http://www.poissonboltzmann.org/img/bg.jpg') no-repeat;
+  
 }
 
 .inner
@@ -197,7 +200,7 @@ div#content {
 .inner .button {
   margin: 0;
   right: 0em;
-  float: left;
+  /*float: left;*/
 }
 
 #lastbutton{

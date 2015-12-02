@@ -212,6 +212,17 @@
             set_color();
         }
 
+        function show_colorbar(){
+            var w = document.getElementById("selected_scheme");
+            var y = w.options[w.selectedIndex].value;
+            //console.log(y);
+            if(y=='RWB')
+               document.getElementById("colorbar").innerHTML ="<img src=3dmol/images/rwb.png width='250'>";
+            if(y=='RGB')
+                document.getElementById("colorbar").innerHTML ="<img src=3dmol/images/rgb.png width='250'>";
+
+        }
+
         function set_vis(){
             var f = document.getElementById("selected_vis");
             var y = f.options[f.selectedIndex].value;
@@ -261,14 +272,14 @@
             set_color();
         }
 
-        //change output for min_isoval range, not perfect
+        //change output for min_isoval range
         function set_min_isoval(min_val) {
             document.querySelector('#min_isoval').value = min_val;
             protein.min_isoval = min_val;
             update_surface(0);
         }
 
-        //change output for max_isoval range, not perfect
+        //change output for max_isoval range
         function set_max_isoval(max_val) {
             document.querySelector('#max_isoval').value = max_val; 
             protein.max_isoval = max_val;
@@ -276,7 +287,6 @@
         }
 
         //reset min and max isovals
-        //does not move slider---probably should fix this
         function reset_vals() {
             set_min_isoval2(-5);
             set_max_isoval2(5);

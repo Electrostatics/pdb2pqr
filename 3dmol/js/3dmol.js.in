@@ -208,7 +208,6 @@
             default:
                 break;
         }
-        
             set_color();
         }
 
@@ -221,6 +220,34 @@
             if(y=='RGB')
                 document.getElementById("colorbar").innerHTML ="<img src=3dmol/images/rgb.png width='250'>";
 
+        }
+
+        function surface_vis(checkbox){
+            //console.log(here);
+            if(checkbox.checked)
+                on_surface();
+            else
+                glviewer.removeSurface(surf);
+        }
+
+        function surface_opacity(checkbox){
+            //console.log(here);
+            if(checkbox.checked)
+                update_surface(3);
+            else
+                update_surface(2);
+        }
+
+        function surface_labels(checkbox){
+            //console.log(here);
+            if(checkbox.checked){
+                removetheLabels(glviewer);
+                glviewer.render();
+            }
+            else{
+                addLabels(glviewer); 
+                glviewer.render();
+            }
         }
 
         function set_vis(){
@@ -244,7 +271,7 @@
         
         if(protein.colorScheme=="RWB")
             volscheme_to_use = new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval);
-        else if(protein.colorScheme=="ROYGB")
+        else if(protein.colorScheme=="RGB")
             volscheme_to_use = new $3Dmol.Gradient.ROYGB(protein.min_isoval,protein.max_isoval);
         else if(protein.colorScheme=="BWR")
             volscheme_to_use = new $3Dmol.Gradient.Sinebow(protein.min_isoval,protein.max_isoval);

@@ -314,7 +314,7 @@ Available options:
 pKa Options:
 <blockquote>
 Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
-<input type="RADIO" name="PKACALCMETHOD" value="none" id="pka_none" onClick="setpkamethod(this.value)"> No pkA calculation</input><br />
+<input type="RADIO" name="PKACALCMETHOD" value="none" id="pka_none" onClick="setpkamethod(this.value)"> No pKa calculation</input><br />
 <input type="RADIO" name="PKACALCMETHOD" value="propka" id="pka_propka" onClick="setpkamethod(this.value)" CHECKED> Use <a href="https://github.com/jensengroup/propka-3.1"target="BLANK">PROPKA</a> to assign protonation states at provided pH</input><br />
 <input type="RADIO" name="PKACALCMETHOD" value="pdb2pka" id="pka_pdb2pka" onClick="setpkamethod(this.value)"> Use PDB2PKA to parametrize ligands and assign pKa values (requires PARSE forcefield) at provided pH</input><br />
 

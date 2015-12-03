@@ -208,8 +208,46 @@
             default:
                 break;
         }
-        
             set_color();
+        }
+
+        function show_colorbar(){
+            var w = document.getElementById("selected_scheme");
+            var y = w.options[w.selectedIndex].value;
+            //console.log(y);
+            if(y=='RWB')
+               document.getElementById("colorbar").innerHTML ="<img src=3dmol/images/rwb.png width='250'>";
+            if(y=='RGB')
+                document.getElementById("colorbar").innerHTML ="<img src=3dmol/images/rgb.png width='250'>";
+
+        }
+
+        function surface_vis(checkbox){
+            //console.log(here);
+            if(checkbox.checked)
+                on_surface();
+            else
+                glviewer.removeSurface(surf);
+        }
+
+        function surface_opacity(checkbox){
+            //console.log(here);
+            if(checkbox.checked)
+                update_surface(3);
+            else
+                update_surface(2);
+        }
+
+        function surface_labels(checkbox){
+            //console.log(here);
+            if(checkbox.checked){
+                removetheLabels(glviewer);
+                glviewer.render();
+            }
+            else{
+                addLabels(glviewer); 
+                glviewer.render();
+            }
         }
 
         function set_vis(){
@@ -233,7 +271,7 @@
         
         if(protein.colorScheme=="RWB")
             volscheme_to_use = new $3Dmol.Gradient.RWB(protein.min_isoval,protein.max_isoval);
-        else if(protein.colorScheme=="ROYGB")
+        else if(protein.colorScheme=="RGB")
             volscheme_to_use = new $3Dmol.Gradient.ROYGB(protein.min_isoval,protein.max_isoval);
         else if(protein.colorScheme=="BWR")
             volscheme_to_use = new $3Dmol.Gradient.Sinebow(protein.min_isoval,protein.max_isoval);
@@ -261,14 +299,14 @@
             set_color();
         }
 
-        //change output for min_isoval range, not perfect
+        //change output for min_isoval range
         function set_min_isoval(min_val) {
             document.querySelector('#min_isoval').value = min_val;
             protein.min_isoval = min_val;
             update_surface(0);
         }
 
-        //change output for max_isoval range, not perfect
+        //change output for max_isoval range
         function set_max_isoval(max_val) {
             document.querySelector('#max_isoval').value = max_val; 
             protein.max_isoval = max_val;
@@ -276,7 +314,6 @@
         }
 
         //reset min and max isovals
-        //does not move slider---probably should fix this
         function reset_vals() {
             set_min_isoval2(-5);
             set_max_isoval2(5);
@@ -286,26 +323,27 @@
             return false;
         }
         
- //change output for min_isoval range, not perfect
+ //change output for min_isoval range
         function set_min_isoval2(min_val) {
             document.getElementById("min_isoval").innerHTML = min_val;
             protein.min_isoval = Number(min_val);
-            console.log(document.getElementById('min_isoval').value);
+            console.log(min_val);
             update_surface(0);
         }
 
-        //change output for max_isoval range, not perfect
+        //change output for max_isoval range
         function set_max_isoval2(max_val) {
             document.getElementById("max_isoval").innerHTML = max_val;
             protein.max_isoval = Number(max_val);
+            console.log(max_val);
             update_surface(0);
         }
 
         function getpqr(jobid){
             var xhr = new XMLHttpRequest();
             //jobid = 14357857643;
-            url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
-            //url = "../3dmol/files/1fas.pqr";
+            //url = "@website@tmp/"+jobid+"/"+jobid+".pqr";
+            url = "../3dmol/files/1fas.pqr";
             xhr.open("GET", url);
             //xhr.responseType = 'blob';
 
@@ -324,8 +362,8 @@
 
         function getcube(jobid){
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
-            //xhr.open("GET", "../3dmol/files/1fas.cube");
+            //xhr.open("GET", "@website@tmp/"+jobid+"/"+jobid+".cube");
+            xhr.open("GET", "../3dmol/files/1fas.cube");
             //xhr.responseType = 'blob';
 
             xhr.onload = function(e) {

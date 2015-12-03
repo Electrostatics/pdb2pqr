@@ -60,13 +60,13 @@ To set the URL and prefix based on our example:
     URL='http://my_host_or_ip/kyle/pdb2pqr'
 	PREFIX='/Users/kyle/www/pdb2pqr/'
 
+## Deploy the site for testing
+
+1. run "fab deploy_and_install"
+
 The script does the following steps:
   * pack command in script makes tar
   * deploy command logs into remote machine
   * install command pushes into the www directory on remote machine
-
-## Deploy the site for testing
-
-1. run "fab deploy_and_install"
 
 

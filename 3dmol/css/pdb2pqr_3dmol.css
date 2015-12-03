@@ -126,6 +126,8 @@ input[type=range]::-ms-thumb {
   display: inline-block;
 }
 
+
+
 .disclaimer {
     position:relative;
 }

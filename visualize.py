@@ -92,6 +92,7 @@ def main(apbsOptions):
         <link rel="stylesheet" type="text/css" href="3dmol/css/pure-min.css" media="screen" />
         <link rel="stylesheet" href="3dmol/css/toggles.css" type="text/css">
         <link rel="stylesheet" href="3dmol/css/ui_css.css" type="text/css">
+        <script type="text/JavaScript" src="3dmol/js/pitt_3Dmol.js"></script>
         
        
 

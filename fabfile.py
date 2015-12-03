@@ -3,7 +3,34 @@ import tarfile
 import os
 import zipfile
 
-env.hosts = ['PT24098.pnl.gov']
+import fabfile_settings
+
+env.hosts = []
+
+if hasattr(fabfile_settings, 'osx_host'):
+    osx_host = fabfile_settings.osx_host
+    env.hosts.append(osx_host)
+    if '@' in osx_host:
+        osx_host = osx_host.split('@')[1]
+    if ':' in osx_host:
+        osx_host = osx_host.split(':')[0]
+else:
+    osx_host = ''
+
+if hasattr(fabfile_settings, 'linux_host'):
+    linux_host = fabfile_settings.linux_host
+    env.hosts.append(linux_host)
+    if '@' in linux_host:
+        linux_host = linux_host.split('@')[1]
+    if ':' in linux_host:
+        linux_host = linux_host.split(':')[0]
+else:
+    linux_host = ''
+
+if hasattr(fabfile_settings, 'run_tests'):
+    run_tests = fabfile_settings.run_tests
+else:
+    run_tests=False
 
 import sys, os
 sys.path.append("site_scons")
@@ -32,15 +59,15 @@ class TarWrapper():
 
 def pack():
     tar = start_src_tar()
-    if '127.0.0.1' in env.host or 'rocks-86' in env.host:
+    if env.host == linux_host:
         tar.add('apbs_libs/linux/apbslib.py','pdb2pka/apbslib.py')
         tar.add('apbs_libs/linux/_apbslib.so','pdb2pka/_apbslib.so')
-    if 'PT24098' in env.host:
+    elif env.host == osx_host:
         tar.add('apbs_libs/osx/apbslib.py','pdb2pka/apbslib.py')
         tar.add('apbs_libs/osx/_apbslib.so','pdb2pka/_apbslib.so')
     tar.close()
 
-def pack_for_nadya():
+def pack_for_nbcr():
     tar = start_src_tar('pdb2pqr-src-'+pv+'.tar.gz', 'pdb2pqr-src-'+pv)
     tar.add('apbs_libs/linux/apbslib.py','pdb2pka/apbslib.py')
     tar.add('apbs_libs/linux/_apbslib.so','pdb2pka/_apbslib.so')
@@ -62,12 +89,8 @@ def misc():
     local('copy Changelog.md "dist_files\PDB2PQR-' + pv + '-ReleaseNotes.txt"')
     local("move pdb2pqr-src-"+pv+'.tar.gz dist_files/')
 
-def deploy(complete_test='F'):
-    with settings(warn_only=True):
-        if 'rocks-86' in env.host:
-            python = '/opt/python/bin/python'
-        else:
-            python = 'python2.7'
+def deploy():
+    python = 'python2.7'
 
     put('pdb2pqr.tgz', '~/')
     with settings(warn_only=True):
@@ -75,61 +98,58 @@ def deploy(complete_test='F'):
         run('mkdir tmp')
 
     with cd('~/tmp/'):
-        with settings(warn_only=True):
-            run('rm -rf *')
         run('tar -zxvf ~/pdb2pqr.tgz')
         run(python+' scons/scons.py')
 
-        if complete_test.lower().startswith('t'):
-            run(python+' scons/scons.py pdb2pka-test')
+        if run_tests:
+            run(python+' scons/scons.py -j 4 pdb2pka-test')
             run(python+' scons/scons.py -j 4 complete-test')
 
 
-def install_on_deployed(opal='F'):
+def install_on_deployed():
+    python = 'python2.7'
+
     with settings(warn_only=True):
-        if 'rocks-86' in env.host:
-            python = '/opt/python/bin/python'
-            with cd('/share/apps/pdb2pqr_1.9'):
-                run('rm -rf *')
-        else:
-            python = 'python2.7'
-            if opal.lower().startswith('t'):
-                with cd('~/www/pdb2pqr_opal'):
-                    run('rm -rf *')
-            else:
-                with cd('~/www/pdb2pqr'):
-                    run('rm -rf *')
+        with cd('~/www/pdb2pqr'):
+            run('rm -rf *')
 
     with cd('~/tmp/'):
         configopts = ''
-        if 'PT24098' in env.host:
-            configopts += ' APBS=/Users/d3y382/bin/apbs'
-            if opal.lower().startswith('t'):
-                configopts += ' URL=http://PT24098/d3k084/pdb2pqr_opal'
-                configopts += ' PREFIX=/Users/d3k084/www/pdb2pqr_opal/'
-                configopts += ' APBS_OPAL=http://nbcr-222.ucsd.edu/opal2/services/apbs_1.3'
-                configopts += ' OPAL=http://nbcr-222.ucsd.edu/opal2/services/pdb2pqr_2.0.0'
-            else:
-                configopts += ' PREFIX=/Users/d3k084/www/pdb2pqr/'
-                configopts += ' URL=http://PT24098/d3k084/pdb2pqr'
 
-        elif 'rocks-86' in env.host:
-            configopts += ' URL=http://rocks-86.sdsc.edu/pdb2pqr'
-            configopts += ' PREFIX=/share/apps/pdb2pqr_1.9/'
-            configopts += ' APBS=/opt/apbs/bin/apbs'
-            configopts += ' APBS_OPAL=http://nbcr-222.ucsd.edu/opal2/services/apbs_1.3'
-            configopts += ' OPAL=http://rocks-86.sdsc.edu/opal2/services/pdb2pqr_2.0.0'
+        if hasattr(fabfile_settings, 'APBS'):
+            configopts += ' APBS='+fabfile_settings.APBS
+
+        if hasattr(fabfile_settings, 'URL'):
+            configopts += ' URL='+fabfile_settings.URL
+
+        if hasattr(fabfile_settings, 'PREFIX'):
+            configopts += ' PREFIX='+fabfile_settings.PREFIX
+
+        if hasattr(fabfile_settings, 'OPAL'):
+            configopts += ' OPAL='+fabfile_settings.OPAL
+
+        if hasattr(fabfile_settings, 'APBS_OPAL'):
+            configopts += ' APBS_OPAL='+fabfile_settings.APBS_OPAL
+
+#         if True:
+#             configopts += ' URL=http://PT24098/d3k084/pdb2pqr_opal'
+#             configopts += ' PREFIX=/Users/d3k084/www/pdb2pqr_opal/'
+#             configopts += ' APBS_OPAL=http://nbcr-222.ucsd.edu/opal2/services/apbs_1.3'
+#             configopts += ' OPAL=http://nbcr-222.ucsd.edu/opal2/services/pdb2pqr_2.0.0'
+#         else:
+#             configopts += ' PREFIX=/Users/d3k084/www/pdb2pqr/'
+#             configopts += ' URL=http://PT24098/d3k084/pdb2pqr'
 
         run(python+' scons/scons.py ' + configopts)
         run(python+' scons/scons.py install ' + configopts)
 
-def build_binary_from_deploy(complete_test='F'):
+def build_binary_from_deploy():
     with cd('~/tmp/'):
         os_string = 'NOT_SET_FIX_ME'
-        if '127.0.0.1' in env.host:
+        if env.host == linux_host:
             os_string = 'linux'
 
-        if 'PT24098' in env.host:
+        if env.host == osx_host:
             os_string = 'osx'
 
         run('pyinstaller pdb2pqr.spec')
@@ -138,14 +158,14 @@ def build_binary_from_deploy(complete_test='F'):
         run('mv dist/pdb2pqr dist/' + name)
         with cd('dist/'):
             run('tar -zcvf ' + name + '.tar.gz ' + name)
-            if complete_test.lower().startswith('t'):
+            if run_tests:
                 with cd(name):
                     run('./pdb2pqr --ff=parse --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1ABF 1ABF.pqr')
                     run('./pdb2pqr --with-ph=7.0 --ph-calc-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
 
         get("~/tmp/dist/*.tar.gz","dist_files/")
 
-def linux_test():
+def linux_bin_cross_platform_test():
     '''
     Push the linux bin to a host and test it.
     '''
@@ -160,16 +180,16 @@ def linux_test():
     run('rm -rf '+name)
 
 @runs_once
-def build_windows(complete_test = 'F'):
+def build_windows():
     local('cp apbs_libs/windows/* pdb2pka/')
-    local('python27-64 scons/scons.py -c')
-    local('python27-64 scons/scons.py')
-    if complete_test.lower().startswith('t'):
-        local('python27-64 scons/scons.py pdb2pka-test')
-        local('python27-64 scons/scons.py -j 7 complete-test')
+    local('python scons/scons.py -c')
+    local('python scons/scons.py')
+    if run_tests:
+        local('python scons/scons.py -j 4 pdb2pka-test')
+        local('python scons/scons.py -j 7 complete-test')
 
     build_windows_binary()
-    if complete_test.lower().startswith('t'):
+    if run_tests:
         test_windows_binary()
 
 @runs_once
@@ -184,7 +204,7 @@ def build_windows_binary():
     with settings(warn_only=True):
         local('rm -rf dist')
 
-    local('c:\Python27_64\Scripts\pyinstaller pdb2pqr.spec')
+    local('pyinstaller pdb2pqr.spec')
     name = 'pdb2pqr-windows-bin64-' + pv
     local('mv dist/pdb2pqr dist/' + name)
 
@@ -201,10 +221,15 @@ def build_windows_binary():
     local('mv ' + name + '.zip' + ' dist_files/' + name + '.zip')
 
 
-def doall(complete_test='F'):
-    #misc()
+def doall():
+    misc()
     pack()
-    deploy(complete_test)
-    #windows(complete_test)
-    #zip_windows_binary()
+    deploy()
+    build_binary_from_deploy()
+    build_windows()
+
+def deploy_and_install():
+    pack()
+    deploy()
+    install_on_deployed()
 

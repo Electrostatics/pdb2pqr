@@ -17,8 +17,9 @@ Merging fixes back into a tag is not required and probably not appropriate.
 In the file <code>site_scons/defaults.py</code> change the value of <code>productVersion</code> to reflect the release version.
 
 ## Fabric
-All of the steps in the Build, Binary builds and Automated Testing can be done automatically for all target platforms by adapting and using the fabric.py script found in the pdb2pqr directory. Documentation for the python fabric module and how to use the fabric script can be found at http://docs.fabfile.org/
+All of the steps in the Build, Binary builds and Automated Testing can be done automatically for all target platforms by adapting fabric_settings.py and using the fabric.py script found in the pdb2pqr directory. Documentation for the python fabric module and how to use the fabric script can be found at http://docs.fabfile.org/
 
+Use the command fabric doall on a Windows machine to build and test all versions of pdb2pqr.
 
 ## Build
 The branch should be tested to see if it configures and compiles correctly on all the target operating systems.

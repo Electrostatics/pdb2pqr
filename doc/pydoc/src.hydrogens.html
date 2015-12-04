@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module src.hydrogens</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.hydrogens</strong></big></big> (22 April 2009)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/hydrogens.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/hydrogens.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/hydrogens.py">/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/hydrogens.py</a></font></td></tr></table>
     <p><tt>Hydrogen&nbsp;optimization&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;is&nbsp;an&nbsp;module&nbsp;for&nbsp;hydrogen&nbsp;optimization&nbsp;routines.<br>
@@ -1154,9 +1155,11 @@ Parameters<br>
 <strong>BONDED_SS_LIMIT</strong> = 2.5<br>
 <strong>BUMP_DIST</strong> = 2.0<br>
 <strong>BUMP_HDIST</strong> = 1.5<br>
+<strong>BUMP_HEAVY_SIZE</strong> = 1.0<br>
+<strong>BUMP_HYDROGEN_SIZE</strong> = 0.5<br>
 <strong>CELL_SIZE</strong> = 2<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
-<strong>DIST_CUTOFF</strong> = 3.2999999999999998<br>
+<strong>DIST_CUTOFF</strong> = 3.3<br>
 <strong>HDEBUG</strong> = 0<br>
 <strong>HYDPATH</strong> = 'dat/HYDROGENS.xml'<br>
 <strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
@@ -1165,11 +1168,12 @@ Parameters<br>
 <strong>PATCHPATH</strong> = 'dat/PATCHES.xml'<br>
 <strong>PEPTIDE_DIST</strong> = 1.7<br>
 <strong>REPAIR_LIMIT</strong> = 10<br>
-<strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>SMALL</strong> = 1e-07<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>TOPOLOGYPATH</strong> = 'dat/TOPOLOGY.xml'<br>
 <strong>__author__</strong> = 'Todd Dolinsky, Jens Erik Nielsen, Yong Huang'<br>
-<strong>__date__</strong> = '22 April 2009'</td></tr></table><p>
+<strong>__date__</strong> = '22 April 2009'<br>
+<strong>lineParsers</strong> = {'ANISOU': &lt;class 'src.pdb.ANISOU'&gt;, 'ATOM': &lt;class 'src.pdb.ATOM'&gt;, 'AUTHOR': &lt;class 'src.pdb.AUTHOR'&gt;, 'CAVEAT': &lt;class 'src.pdb.CAVEAT'&gt;, 'CISPEP': &lt;class 'src.pdb.CISPEP'&gt;, 'COMPND': &lt;class 'src.pdb.COMPND'&gt;, 'CONECT': &lt;class 'src.pdb.CONECT'&gt;, 'CRYST1': &lt;class 'src.pdb.CRYST1'&gt;, 'DBREF': &lt;class 'src.pdb.DBREF'&gt;, 'END': &lt;class 'src.pdb.END'&gt;, ...}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

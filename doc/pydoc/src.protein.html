@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module src.protein</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.protein</strong></big></big> (13 May 2008)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/protein.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/protein.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/protein.py">/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/protein.py</a></font></td></tr></table>
     <p><tt>Routines&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;protein&nbsp;object&nbsp;used&nbsp;in&nbsp;PDB2PQR&nbsp;and&nbsp;associated<br>
@@ -147,7 +148,7 @@ multiple&nbsp;chains)<br>
 Returns<br>
 &nbsp;&nbsp;&nbsp;&nbsp;count:&nbsp;&nbsp;Number&nbsp;of&nbsp;residues&nbsp;in&nbsp;the&nbsp;protein&nbsp;(int)</tt></dd></dl>
 
-<dl><dt><a name="Protein-printAtoms"><strong>printAtoms</strong></a>(self, atomlist, chainflag<font color="#909090">=False</font>)</dt><dd><tt>Get&nbsp;the&nbsp;text&nbsp;for&nbsp;the&nbsp;entire&nbsp;protein<br>
+<dl><dt><a name="Protein-printAtoms"><strong>printAtoms</strong></a>(self, atomlist, chainflag<font color="#909090">=False</font>, pdbfile<font color="#909090">=False</font>)</dt><dd><tt>Get&nbsp;the&nbsp;text&nbsp;for&nbsp;the&nbsp;entire&nbsp;protein<br>
 Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;atomlist:&nbsp;&nbsp;The&nbsp;list&nbsp;of&nbsp;atoms&nbsp;to&nbsp;include&nbsp;(list)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;chainflag:&nbsp;Flag&nbsp;whether&nbsp;to&nbsp;print&nbsp;chainid&nbsp;or&nbsp;not&nbsp;-<br>
@@ -167,10 +168,11 @@ Returns<br>
 <td width="100%"><strong>BACKBONE</strong> = ['N', 'CA', 'C', 'O', 'O2', 'HA', 'HN', 'H', 'tN']<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
 <strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
-<strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>SMALL</strong> = 1e-07<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>__author__</strong> = 'Todd Dolinsky, Yong Huang'<br>
-<strong>__date__</strong> = '13 May 2008'</td></tr></table><p>
+<strong>__date__</strong> = '13 May 2008'<br>
+<strong>lineParsers</strong> = {'ANISOU': &lt;class 'src.pdb.ANISOU'&gt;, 'ATOM': &lt;class 'src.pdb.ATOM'&gt;, 'AUTHOR': &lt;class 'src.pdb.AUTHOR'&gt;, 'CAVEAT': &lt;class 'src.pdb.CAVEAT'&gt;, 'CISPEP': &lt;class 'src.pdb.CISPEP'&gt;, 'COMPND': &lt;class 'src.pdb.COMPND'&gt;, 'CONECT': &lt;class 'src.pdb.CONECT'&gt;, 'CRYST1': &lt;class 'src.pdb.CRYST1'&gt;, 'DBREF': &lt;class 'src.pdb.DBREF'&gt;, 'END': &lt;class 'src.pdb.END'&gt;, ...}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

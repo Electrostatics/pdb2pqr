@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module src.inputgen</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.inputgen</strong></big></big> (21 April 2007)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/inputgen.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/inputgen.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/inputgen.py">/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/inputgen.py</a></font></td></tr></table>
     <p><tt>inputgen&nbsp;class<br>
 &nbsp;<br>
 Create&nbsp;an&nbsp;APBS&nbsp;input&nbsp;file&nbsp;using&nbsp;psize&nbsp;data<br>
@@ -60,11 +61,13 @@ Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of
 <font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="pickle.html">pickle</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="pickle.html">pickle</a><br>
 </td><td width="25%" valign=top><a href="src.psize.html">src.psize</a><br>
-</td><td width="25%" valign=top><a href="string.html">string</a><br>
+<a href="string.html">string</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+<a href="src.utilities.html">src.utilities</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -85,7 +88,7 @@ Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of
 <td colspan=2><tt>An&nbsp;object&nbsp;for&nbsp;the&nbsp;ELEC&nbsp;section&nbsp;of&nbsp;an&nbsp;APBS&nbsp;input&nbsp;file<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Elec-__init__"><strong>__init__</strong></a>(self, pqrpath, size, method, asyncflag, istrng<font color="#909090">=0</font>, potdx<font color="#909090">=0</font>)</dt><dd><tt>Initialize&nbsp;the&nbsp;variables&nbsp;that&nbsp;can&nbsp;be&nbsp;set&nbsp;in&nbsp;this&nbsp;object<br>
+<dl><dt><a name="Elec-__init__"><strong>__init__</strong></a>(self, pqrpath, size, method, asyncflag, istrng<font color="#909090">=0</font>, potdx<font color="#909090">=False</font>)</dt><dd><tt>Initialize&nbsp;the&nbsp;variables&nbsp;that&nbsp;can&nbsp;be&nbsp;set&nbsp;in&nbsp;this&nbsp;object<br>
 Users&nbsp;can&nbsp;modify&nbsp;any&nbsp;of&nbsp;these&nbsp;variables&nbsp;(that's&nbsp;why<br>
 they're&nbsp;here!)</tt></dd></dl>
 
@@ -102,7 +105,7 @@ to&nbsp;see&nbsp;which&nbsp;keywords&nbsp;to&nbsp;use.</tt></dd></dl>
 <td colspan=2><tt>The&nbsp;input&nbsp;class.&nbsp;&nbsp;Each&nbsp;input&nbsp;object&nbsp;is&nbsp;one&nbsp;APBS&nbsp;input&nbsp;file.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Input-__init__"><strong>__init__</strong></a>(self, pqrpath, size, method, asyncflag, istrng<font color="#909090">=0</font>, potdx<font color="#909090">=0</font>)</dt><dd><tt>Initialize&nbsp;the&nbsp;input&nbsp;file&nbsp;class.&nbsp;&nbsp;Each&nbsp;input&nbsp;file&nbsp;contains<br>
+<dl><dt><a name="Input-__init__"><strong>__init__</strong></a>(self, pqrpath, size, method, asyncflag, istrng<font color="#909090">=0</font>, potdx<font color="#909090">=False</font>)</dt><dd><tt>Initialize&nbsp;the&nbsp;input&nbsp;file&nbsp;class.&nbsp;&nbsp;Each&nbsp;input&nbsp;file&nbsp;contains<br>
 a&nbsp;PQR&nbsp;name,&nbsp;a&nbsp;list&nbsp;of&nbsp;elec&nbsp;objects,&nbsp;and&nbsp;a&nbsp;list&nbsp;of&nbsp;strings<br>
 containing&nbsp;print&nbsp;statements.&nbsp;&nbsp;For&nbsp;starters&nbsp;assume&nbsp;two<br>
 ELEC&nbsp;statements&nbsp;are&nbsp;needed,&nbsp;one&nbsp;for&nbsp;the&nbsp;inhomgenous&nbsp;and<br>

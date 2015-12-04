@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module src.pdb</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.pdb</strong></big></big> (4 August 2008)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/pdb.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/pdb.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/pdb.py">/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/pdb.py</a></font></td></tr></table>
     <p><tt>PDB&nbsp;parsing&nbsp;class<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;parses&nbsp;PDBs&nbsp;in&nbsp;accordance&nbsp;to&nbsp;PDB&nbsp;Format&nbsp;Description&nbsp;Version&nbsp;2.2<br>
@@ -21,36 +22,36 @@ the&nbsp;classes&nbsp;is&nbsp;taken&nbsp;directly&nbsp;from&nbsp;the&nbsp;above&
 PDB2PQR&nbsp;--&nbsp;An&nbsp;automated&nbsp;pipeline&nbsp;for&nbsp;the&nbsp;setup,&nbsp;execution,&nbsp;and&nbsp;analysis&nbsp;of<br>
 Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;<br>
-Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
-Nathan&nbsp;A.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific&nbsp;<br>
-Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;<br>
-Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;U.S.&nbsp;Department&nbsp;Energy.;&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;<br>
+Nathan&nbsp;A.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific<br>
+Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
+Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;U.S.&nbsp;Department&nbsp;Energy.;<br>
 Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;All&nbsp;rights&nbsp;reserved.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Redistribution&nbsp;and&nbsp;use&nbsp;in&nbsp;source&nbsp;and&nbsp;binary&nbsp;forms,&nbsp;with&nbsp;or&nbsp;without&nbsp;modification,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redistribution&nbsp;and&nbsp;use&nbsp;in&nbsp;source&nbsp;and&nbsp;binary&nbsp;forms,&nbsp;with&nbsp;or&nbsp;without&nbsp;modification,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;permitted&nbsp;provided&nbsp;that&nbsp;the&nbsp;following&nbsp;conditions&nbsp;are&nbsp;met:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;of&nbsp;source&nbsp;code&nbsp;must&nbsp;retain&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;of&nbsp;source&nbsp;code&nbsp;must&nbsp;retain&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and/or&nbsp;other&nbsp;materials&nbsp;provided&nbsp;with&nbsp;the&nbsp;distribution.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pacific&nbsp;Northwest&nbsp;National&nbsp;Laboratory,&nbsp;US&nbsp;Department&nbsp;of&nbsp;Energy,&nbsp;or&nbsp;University<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;WARRANTIES&nbsp;OF&nbsp;MERCHANTABILITY&nbsp;AND&nbsp;FITNESS&nbsp;FOR&nbsp;A&nbsp;PARTICULAR&nbsp;PURPOSE&nbsp;ARE&nbsp;DISCLAIMED.&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;IN&nbsp;NO&nbsp;EVENT&nbsp;SHALL&nbsp;THE&nbsp;COPYRIGHT&nbsp;OWNER&nbsp;OR&nbsp;CONTRIBUTORS&nbsp;BE&nbsp;LIABLE&nbsp;FOR&nbsp;ANY&nbsp;DIRECT,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;INDIRECT,&nbsp;INCIDENTAL,&nbsp;SPECIAL,&nbsp;EXEMPLARY,&nbsp;OR&nbsp;CONSEQUENTIAL&nbsp;DAMAGES&nbsp;(INCLUDING,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;PROCUREMENT&nbsp;OF&nbsp;SUBSTITUTE&nbsp;GOODS&nbsp;OR&nbsp;SERVICES;&nbsp;LOSS&nbsp;OF&nbsp;USE,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;DATA,&nbsp;OR&nbsp;PROFITS;&nbsp;OR&nbsp;BUSINESS&nbsp;INTERRUPTION)&nbsp;HOWEVER&nbsp;CAUSED&nbsp;AND&nbsp;ON&nbsp;ANY&nbsp;THEORY&nbsp;OF&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;LIABILITY,&nbsp;WHETHER&nbsp;IN&nbsp;CONTRACT,&nbsp;STRICT&nbsp;LIABILITY,&nbsp;OR&nbsp;TORT&nbsp;(INCLUDING&nbsp;NEGLIGENCE&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;OTHERWISE)&nbsp;ARISING&nbsp;IN&nbsp;ANY&nbsp;WAY&nbsp;OUT&nbsp;OF&nbsp;THE&nbsp;USE&nbsp;OF&nbsp;THIS&nbsp;SOFTWARE,&nbsp;EVEN&nbsp;IF&nbsp;ADVISED&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WARRANTIES&nbsp;OF&nbsp;MERCHANTABILITY&nbsp;AND&nbsp;FITNESS&nbsp;FOR&nbsp;A&nbsp;PARTICULAR&nbsp;PURPOSE&nbsp;ARE&nbsp;DISCLAIMED.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IN&nbsp;NO&nbsp;EVENT&nbsp;SHALL&nbsp;THE&nbsp;COPYRIGHT&nbsp;OWNER&nbsp;OR&nbsp;CONTRIBUTORS&nbsp;BE&nbsp;LIABLE&nbsp;FOR&nbsp;ANY&nbsp;DIRECT,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;INDIRECT,&nbsp;INCIDENTAL,&nbsp;SPECIAL,&nbsp;EXEMPLARY,&nbsp;OR&nbsp;CONSEQUENTIAL&nbsp;DAMAGES&nbsp;(INCLUDING,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;PROCUREMENT&nbsp;OF&nbsp;SUBSTITUTE&nbsp;GOODS&nbsp;OR&nbsp;SERVICES;&nbsp;LOSS&nbsp;OF&nbsp;USE,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;DATA,&nbsp;OR&nbsp;PROFITS;&nbsp;OR&nbsp;BUSINESS&nbsp;INTERRUPTION)&nbsp;HOWEVER&nbsp;CAUSED&nbsp;AND&nbsp;ON&nbsp;ANY&nbsp;THEORY&nbsp;OF<br>
+&nbsp;&nbsp;&nbsp;&nbsp;LIABILITY,&nbsp;WHETHER&nbsp;IN&nbsp;CONTRACT,&nbsp;STRICT&nbsp;LIABILITY,&nbsp;OR&nbsp;TORT&nbsp;(INCLUDING&nbsp;NEGLIGENCE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;OTHERWISE)&nbsp;ARISING&nbsp;IN&nbsp;ANY&nbsp;WAY&nbsp;OUT&nbsp;OF&nbsp;THE&nbsp;USE&nbsp;OF&nbsp;THIS&nbsp;SOFTWARE,&nbsp;EVEN&nbsp;IF&nbsp;ADVISED<br>
 &nbsp;&nbsp;&nbsp;&nbsp;OF&nbsp;THE&nbsp;POSSIBILITY&nbsp;OF&nbsp;SUCH&nbsp;DAMAGE.<br>
 &nbsp;<br>
 ----------------------------</tt></p>
@@ -72,6 +73,12 @@ Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#BaseRecord">BaseRecord</a>
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="src.pdb.html#ANISOU">ANISOU</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#ATOM">ATOM</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#AUTHOR">AUTHOR</a>
@@ -98,21 +105,35 @@ Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MASTER">MASTER</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MODEL">MODEL</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MODRES">MODRES</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MOL2BOND">MOL2BOND</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MOL2MOLECULE">MOL2MOLECULE</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MTRIX1">MTRIX1</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MTRIXn">MTRIXn</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#MTRIX1">MTRIX1</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MTRIX2">MTRIX2</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MTRIX3">MTRIX3</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#NUMMDL">NUMMDL</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#OBSLTE">OBSLTE</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#ORIGX1">ORIGX1</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#ORIGXn">ORIGXn</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#ORIGX1">ORIGX1</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#ORIGX2">ORIGX2</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#ORIGX3">ORIGX3</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#REMARK">REMARK</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#REMARK">REMARK</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#REVDAT">REVDAT</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SCALE1">SCALE1</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SCALEn">SCALEn</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#SCALE1">SCALE1</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SCALE2">SCALE2</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SCALE3">SCALE3</a>
-</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SEQADV">SEQADV</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#SEQADV">SEQADV</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SEQRES">SEQRES</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SHEET">SHEET</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#SIGATM">SIGATM</a>
@@ -127,18 +148,30 @@ Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#TURN">TURN</a>
 </font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#TVECT">TVECT</a>
 </font></dt></dl>
+</dd>
+</dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="src.pdb.html#MOL2BOND">MOL2BOND</a>
+</font></dt><dt><font face="helvetica, arial"><a href="src.pdb.html#MOL2MOLECULE">MOL2MOLECULE</a>
+</font></dt></dl>
  <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ANISOU">class <strong>ANISOU</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ANISOU">class <strong>ANISOU</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#ANISOU">ANISOU</a>&nbsp;class<br>
 &nbsp;<br>
 The&nbsp;<a href="#ANISOU">ANISOU</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;anisotropic&nbsp;temperature&nbsp;factors.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ANISOU">ANISOU</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="ANISOU-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line:<br>
 &nbsp;<br>
 &nbsp;&nbsp;COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -160,11 +193,23 @@ The&nbsp;<a href="#ANISOU">ANISOU</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;an
 &nbsp;&nbsp;77-78&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
 &nbsp;&nbsp;79-80&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ANISOU-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ATOM">class <strong>ATOM</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ATOM">class <strong>ATOM</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#ATOM">ATOM</a>&nbsp;class<br>
@@ -175,7 +220,13 @@ Heterogen&nbsp;coordinates&nbsp;use&nbsp;the&nbsp;<a href="#HETATM">HETATM</a>&n
 always&nbsp;present&nbsp;on&nbsp;each&nbsp;<a href="#ATOM">ATOM</a>&nbsp;record;&nbsp;segment&nbsp;identifier&nbsp;and&nbsp;charge&nbsp;are<br>
 optional.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ATOM">ATOM</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="ATOM-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -199,34 +250,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 77-78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
 79-80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
 
-<dl><dt><a name="ATOM-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Print&nbsp;object&nbsp;as&nbsp;string<br>
-&nbsp;<br>
-COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
----------------------------------------------<br>
-7-11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;serial&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Atom&nbsp;serial&nbsp;number.<br>
-13-16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Atom&nbsp;name.<br>
-17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;altLoc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alternate&nbsp;location&nbsp;indicator.<br>
-18-20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;resName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Residue&nbsp;name.<br>
-22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;chainID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chain&nbsp;identifier.<br>
-23-26&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;resSeq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Residue&nbsp;sequence&nbsp;number.<br>
-27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;iCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Code&nbsp;for&nbsp;insertion&nbsp;of&nbsp;residues.<br>
-31-38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal&nbsp;coordinates&nbsp;for&nbsp;X&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angstroms.<br>
-39-46&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal&nbsp;coordinates&nbsp;for&nbsp;Y&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angstroms.<br>
-47-54&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal&nbsp;coordinates&nbsp;for&nbsp;Z&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angstroms.<br>
-55-60&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;occupancy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Occupancy.<br>
-61-66&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tempFactor&nbsp;&nbsp;&nbsp;&nbsp;Temperature&nbsp;factor.<br>
-73-76&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;segID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Segment&nbsp;identifier,&nbsp;left-justified.<br>
-77-78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
-79-80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ATOM-__str__"><strong>__str__</strong></a>(self)</dt></dl>
 
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="AUTHOR">class <strong>AUTHOR</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="AUTHOR">class <strong>AUTHOR</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#AUTHOR">AUTHOR</a>&nbsp;field<br>
@@ -234,7 +274,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 The&nbsp;<a href="#AUTHOR">AUTHOR</a>&nbsp;record&nbsp;contains&nbsp;the&nbsp;names&nbsp;of&nbsp;the&nbsp;people&nbsp;responsible&nbsp;for&nbsp;the<br>
 contents&nbsp;of&nbsp;the&nbsp;entry.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#AUTHOR">AUTHOR</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="AUTHOR-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -242,11 +288,46 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;authorList&nbsp;List&nbsp;of&nbsp;the&nbsp;author&nbsp;names,&nbsp;separated&nbsp;by<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;commas</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="AUTHOR-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CAVEAT">class <strong>CAVEAT</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="BaseRecord">class <strong>BaseRecord</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;class&nbsp;for&nbsp;all&nbsp;records.<br>
+Verifies&nbsp;the&nbsp;received&nbsp;record&nbsp;type<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="BaseRecord-__init__"><strong>__init__</strong></a>(self, line)</dt></dl>
+
+<dl><dt><a name="BaseRecord-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="CAVEAT">class <strong>CAVEAT</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#CAVEAT">CAVEAT</a>&nbsp;field<br>
@@ -254,7 +335,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 <a href="#CAVEAT">CAVEAT</a>&nbsp;warns&nbsp;of&nbsp;severe&nbsp;errors&nbsp;in&nbsp;an&nbsp;entry.&nbsp;Use&nbsp;caution&nbsp;when&nbsp;using&nbsp;an<br>
 entry&nbsp;containing&nbsp;this&nbsp;record.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#CAVEAT">CAVEAT</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="CAVEAT-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line.<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -263,11 +350,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 20-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;comment&nbsp;Free&nbsp;text&nbsp;giving&nbsp;the&nbsp;reason&nbsp;for&nbsp;the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#CAVEAT">CAVEAT</a>.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="CAVEAT-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CISPEP">class <strong>CISPEP</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="CISPEP">class <strong>CISPEP</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#CISPEP">CISPEP</a>&nbsp;field<br>
@@ -276,7 +375,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 the&nbsp;cis&nbsp;conformation.&nbsp;This&nbsp;record&nbsp;replaces&nbsp;the&nbsp;use&nbsp;of&nbsp;footnote&nbsp;records<br>
 to&nbsp;list&nbsp;cis&nbsp;peptides.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#CISPEP">CISPEP</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="CISPEP-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -293,11 +398,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 44-46&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;modNum&nbsp;&nbsp;&nbsp;Identifies&nbsp;the&nbsp;specific&nbsp;model.<br>
 54-59&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;measure&nbsp;&nbsp;Measure&nbsp;of&nbsp;the&nbsp;angle&nbsp;in&nbsp;degrees.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="CISPEP-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="COMPND">class <strong>COMPND</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="COMPND">class <strong>COMPND</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#COMPND">COMPND</a>&nbsp;field<br>
@@ -313,19 +430,37 @@ For&nbsp;each&nbsp;macromolecular&nbsp;component,&nbsp;the&nbsp;molecule&nbsp;na
 assigned&nbsp;by&nbsp;the&nbsp;Enzyme&nbsp;Commission&nbsp;(EC),&nbsp;and&nbsp;other&nbsp;relevant&nbsp;details&nbsp;are<br>
 specified.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#COMPND">COMPND</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="COMPND-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 --------------------------------------------------<br>
-11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;compound&nbsp;Description&nbsp;of&nbsp;the&nbsp;molecular&nbsp;list&nbsp;<br>
+11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;compound&nbsp;Description&nbsp;of&nbsp;the&nbsp;molecular&nbsp;list<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;components.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="COMPND-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CONECT">class <strong>CONECT</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="CONECT">class <strong>CONECT</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#CONECT">CONECT</a>&nbsp;class<br>
@@ -338,28 +473,46 @@ standard&nbsp;residue&nbsp;connectivity&nbsp;table&nbsp;which&nbsp;involve&nbsp;
 residues&nbsp;(see&nbsp;Appendix&nbsp;4&nbsp;for&nbsp;the&nbsp;list&nbsp;of&nbsp;standard&nbsp;residues).&nbsp;These<br>
 records&nbsp;are&nbsp;generated&nbsp;by&nbsp;the&nbsp;PDB.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#CONECT">CONECT</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="CONECT-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 --------------------------------------------<br>
-&nbsp;7-11&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial&nbsp;&nbsp;&nbsp;Atom&nbsp;serial&nbsp;number&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-12-16&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial1&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-17-21&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial2&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-22-26&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial3&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-27-31&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial4&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-32-36&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial5&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-37-41&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial6&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-42-46&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial7&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;salt&nbsp;bridged&nbsp;&nbsp;&nbsp;&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-47-51&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial8&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
-52-56&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial9&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;7-11&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial&nbsp;&nbsp;&nbsp;Atom&nbsp;serial&nbsp;number<br>
+12-16&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial1&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom<br>
+17-21&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial2&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom<br>
+22-26&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial3&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom<br>
+27-31&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial4&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;bonded&nbsp;atom<br>
+32-36&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial5&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom<br>
+37-41&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial6&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom<br>
+42-46&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial7&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;salt&nbsp;bridged&nbsp;&nbsp;&nbsp;&nbsp;atom<br>
+47-51&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial8&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom<br>
+52-56&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial9&nbsp;&nbsp;Serial&nbsp;number&nbsp;of&nbsp;hydrogen&nbsp;bonded&nbsp;atom<br>
 57-61&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial10&nbsp;Serial&nbsp;number&nbsp;of&nbsp;salt&nbsp;bridged&nbsp;&nbsp;&nbsp;&nbsp;atom</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="CONECT-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CRYST1">class <strong>CRYST1</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="CRYST1">class <strong>CRYST1</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#CRYST1">CRYST1</a>&nbsp;class<br>
@@ -368,7 +521,13 @@ The&nbsp;<a href="#CRYST1">CRYST1</a>&nbsp;record&nbsp;presents&nbsp;the&nbsp;un
 value.&nbsp;If&nbsp;the&nbsp;structure&nbsp;was&nbsp;not&nbsp;determined&nbsp;by&nbsp;crystallographic&nbsp;means,<br>
 <a href="#CRYST1">CRYST1</a>&nbsp;simply&nbsp;defines&nbsp;a&nbsp;unit&nbsp;cube.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#CRYST1">CRYST1</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="CRYST1-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -382,11 +541,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 56-66&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sGroup&nbsp;Space&nbsp;group.<br>
 67-70&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Z&nbsp;value.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="CRYST1-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="DBREF">class <strong>DBREF</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="DBREF">class <strong>DBREF</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#DBREF">DBREF</a>&nbsp;field<br>
@@ -398,7 +569,13 @@ greater&nbsp;than&nbsp;ten&nbsp;(10)&nbsp;residues.&nbsp;For&nbsp;nucleic&nbsp;a
 pointing&nbsp;to&nbsp;the&nbsp;Nucleic&nbsp;Acid&nbsp;Database&nbsp;(NDB)&nbsp;is&nbsp;mandatory&nbsp;when&nbsp;the<br>
 corresponding&nbsp;entry&nbsp;exists&nbsp;in&nbsp;NDB.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#DBREF">DBREF</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="DBREF-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -433,11 +610,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;residue&nbsp;of&nbsp;the&nbsp;segment,&nbsp;if&nbsp;PDB&nbsp;is<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;reference.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="DBREF-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="END">class <strong>END</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="END">class <strong>END</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#END">END</a>&nbsp;class<br>
@@ -445,14 +634,32 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 The&nbsp;<a href="#END">END</a>&nbsp;records&nbsp;are&nbsp;paired&nbsp;with&nbsp;<a href="#MODEL">MODEL</a>&nbsp;records&nbsp;to&nbsp;group&nbsp;individual<br>
 structures&nbsp;found&nbsp;in&nbsp;a&nbsp;coordinate&nbsp;entry.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#END">END</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="END-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line&nbsp;(nothing&nbsp;to&nbsp;do)</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="END-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ENDMDL">class <strong>ENDMDL</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ENDMDL">class <strong>ENDMDL</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#ENDMDL">ENDMDL</a>&nbsp;class<br>
@@ -460,14 +667,32 @@ structures&nbsp;found&nbsp;in&nbsp;a&nbsp;coordinate&nbsp;entry.<br>&nbsp;</tt><
 The&nbsp;<a href="#ENDMDL">ENDMDL</a>&nbsp;records&nbsp;are&nbsp;paired&nbsp;with&nbsp;<a href="#MODEL">MODEL</a>&nbsp;records&nbsp;to&nbsp;group&nbsp;individual<br>
 structures&nbsp;found&nbsp;in&nbsp;a&nbsp;coordinate&nbsp;entry.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ENDMDL">ENDMDL</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="ENDMDL-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line&nbsp;(nothing&nbsp;to&nbsp;do)</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ENDMDL-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="EXPDTA">class <strong>EXPDTA</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="EXPDTA">class <strong>EXPDTA</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#EXPDTA">EXPDTA</a>&nbsp;field<br>
@@ -484,20 +709,38 @@ NMR<br>
 THEORETICAL&nbsp;<a href="#MODEL">MODEL</a><br>
 X-RAY&nbsp;DIFFRACTION<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#EXPDTA">EXPDTA</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="EXPDTA-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 --------------------------------------------------<br>
 11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;technique&nbsp;The&nbsp;experimental&nbsp;technique(s)&nbsp;with<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;optional&nbsp;comment&nbsp;describing&nbsp;the&nbsp;sample&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;optional&nbsp;comment&nbsp;describing&nbsp;the&nbsp;sample<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;or&nbsp;experiment</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="EXPDTA-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="FORMUL">class <strong>FORMUL</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="FORMUL">class <strong>FORMUL</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#FORMUL">FORMUL</a>&nbsp;field<br>
@@ -505,7 +748,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFI
 The&nbsp;<a href="#FORMUL">FORMUL</a>&nbsp;record&nbsp;presents&nbsp;the&nbsp;chemical&nbsp;formula&nbsp;and&nbsp;charge&nbsp;of&nbsp;a<br>
 non-standard&nbsp;group.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#FORMUL">FORMUL</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="FORMUL-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -515,22 +764,40 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;asterisk&nbsp;*&nbsp;for&nbsp;water<br>
 20-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chemical&nbsp;formula</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="FORMUL-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HEADER">class <strong>HEADER</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HEADER">class <strong>HEADER</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#HEADER">HEADER</a>&nbsp;field&nbsp;<br>
+<td colspan=2><tt><a href="#HEADER">HEADER</a>&nbsp;field<br>
 &nbsp;<br>
 The&nbsp;<a href="#HEADER">HEADER</a>&nbsp;record&nbsp;uniquely&nbsp;identifies&nbsp;a&nbsp;PDB&nbsp;entry&nbsp;through&nbsp;the&nbsp;idCode<br>
 field.&nbsp;This&nbsp;record&nbsp;also&nbsp;provides&nbsp;a&nbsp;classification&nbsp;for&nbsp;the&nbsp;entry.<br>
 Finally,&nbsp;it&nbsp;contains&nbsp;the&nbsp;date&nbsp;the&nbsp;coordinates&nbsp;were&nbsp;deposited&nbsp;at&nbsp;the<br>
 PDB.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="HEADER-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.&nbsp;&nbsp;<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HEADER">HEADER</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="HEADER-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------------------------------<br>
@@ -540,11 +807,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;PDB<br>
 63-66&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;idCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;identifier&nbsp;is&nbsp;unique&nbsp;within&nbsp;PDB</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HEADER-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HELIX">class <strong>HELIX</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HELIX">class <strong>HELIX</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#HELIX">HELIX</a>&nbsp;field<br>
@@ -553,7 +832,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 molecule.&nbsp;Helices&nbsp;are&nbsp;both&nbsp;named&nbsp;and&nbsp;numbered.&nbsp;The&nbsp;residues&nbsp;where&nbsp;the<br>
 helix&nbsp;begins&nbsp;and&nbsp;ends&nbsp;are&nbsp;noted,&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;total&nbsp;length.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HELIX">HELIX</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="HELIX-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -579,11 +864,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 41-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comment&nbsp;about&nbsp;this&nbsp;helix.<br>
 72-76&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;length&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Length&nbsp;of&nbsp;this&nbsp;helix.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HELIX-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HET">class <strong>HET</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HET">class <strong>HET</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#HET">HET</a>&nbsp;field<br>
@@ -591,16 +888,22 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 <a href="#HET">HET</a>&nbsp;records&nbsp;are&nbsp;used&nbsp;to&nbsp;describe&nbsp;non-standard&nbsp;residues,&nbsp;such&nbsp;as<br>
 prosthetic&nbsp;groups,&nbsp;inhibitors,&nbsp;solvent&nbsp;molecules,&nbsp;and&nbsp;ions&nbsp;for&nbsp;which<br>
 coordinates&nbsp;are&nbsp;supplied.&nbsp;Groups&nbsp;are&nbsp;considered&nbsp;<a href="#HET">HET</a>&nbsp;if&nbsp;they&nbsp;are:<br>
-&nbsp;-&nbsp;not&nbsp;one&nbsp;of&nbsp;the&nbsp;standard&nbsp;amino&nbsp;acids,&nbsp;and&nbsp;<br>
-&nbsp;-&nbsp;not&nbsp;one&nbsp;of&nbsp;the&nbsp;nucleic&nbsp;acids&nbsp;(C,&nbsp;G,&nbsp;A,&nbsp;T,&nbsp;U,&nbsp;and&nbsp;I),&nbsp;and&nbsp;<br>
+&nbsp;-&nbsp;not&nbsp;one&nbsp;of&nbsp;the&nbsp;standard&nbsp;amino&nbsp;acids,&nbsp;and<br>
+&nbsp;-&nbsp;not&nbsp;one&nbsp;of&nbsp;the&nbsp;nucleic&nbsp;acids&nbsp;(C,&nbsp;G,&nbsp;A,&nbsp;T,&nbsp;U,&nbsp;and&nbsp;I),&nbsp;and<br>
 &nbsp;-&nbsp;not&nbsp;one&nbsp;of&nbsp;the&nbsp;modified&nbsp;versions&nbsp;of&nbsp;nucleic&nbsp;acids&nbsp;(+C,&nbsp;+G,&nbsp;+A,&nbsp;+T,<br>
-&nbsp;&nbsp;&nbsp;+U,&nbsp;and&nbsp;+I),&nbsp;and&nbsp;<br>
+&nbsp;&nbsp;&nbsp;+U,&nbsp;and&nbsp;+I),&nbsp;and<br>
 &nbsp;-&nbsp;not&nbsp;an&nbsp;unknown&nbsp;amino&nbsp;acid&nbsp;or&nbsp;nucleic&nbsp;acid&nbsp;where&nbsp;UNK&nbsp;is&nbsp;used&nbsp;to<br>
-&nbsp;&nbsp;&nbsp;indicate&nbsp;the&nbsp;unknown&nbsp;residue&nbsp;name.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;indicate&nbsp;the&nbsp;unknown&nbsp;residue&nbsp;name.<br>
 Het&nbsp;records&nbsp;also&nbsp;describe&nbsp;heterogens&nbsp;for&nbsp;which&nbsp;the&nbsp;chemical&nbsp;identity&nbsp;is<br>
 unknown,&nbsp;in&nbsp;which&nbsp;case&nbsp;the&nbsp;group&nbsp;is&nbsp;assigned&nbsp;the&nbsp;hetID&nbsp;UNK.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HET">HET</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="HET-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -612,11 +915,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 21-25&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;numHetAtoms&nbsp;Number&nbsp;of&nbsp;<a href="#HETATM">HETATM</a>&nbsp;records&nbsp;for&nbsp;the<br>
 31-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;text&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Text&nbsp;describing&nbsp;Het&nbsp;group.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HET-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HETATM">class <strong>HETATM</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HETATM">class <strong>HETATM</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#HETATM">HETATM</a>&nbsp;class<br>
@@ -625,7 +940,13 @@ The&nbsp;<a href="#HETATM">HETATM</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;at
 within&nbsp;"non-standard"&nbsp;groups.&nbsp;These&nbsp;records&nbsp;are&nbsp;used&nbsp;for&nbsp;water<br>
 molecules&nbsp;and&nbsp;atoms&nbsp;presented&nbsp;in&nbsp;<a href="#HET">HET</a>&nbsp;groups.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HETATM">HETATM</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="HETATM-__init__"><strong>__init__</strong></a>(self, line, sybylType<font color="#909090">='A.aaa'</font>, lBonds<font color="#909090">=[]</font>, lBondedAtoms<font color="#909090">=[]</font>)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -649,34 +970,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 77-78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
 79-80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
 
-<dl><dt><a name="HETATM-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Print&nbsp;object&nbsp;as&nbsp;string<br>
-&nbsp;<br>
-COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
----------------------------------------------<br>
-7-11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;serial&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Atom&nbsp;serial&nbsp;number.<br>
-13-16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Atom&nbsp;name.<br>
-17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;altLoc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alternate&nbsp;location&nbsp;indicator.<br>
-18-20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;resName&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Residue&nbsp;name.<br>
-22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;chainID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chain&nbsp;identifier.<br>
-23-26&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;resSeq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Residue&nbsp;sequence&nbsp;number.<br>
-27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;iCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Code&nbsp;for&nbsp;insertion&nbsp;of&nbsp;residues.<br>
-31-38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal&nbsp;coordinates&nbsp;for&nbsp;X&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angstroms.<br>
-39-46&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal&nbsp;coordinates&nbsp;for&nbsp;Y&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angstroms.<br>
-47-54&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orthogonal&nbsp;coordinates&nbsp;for&nbsp;Z&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angstroms.<br>
-55-60&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;occupancy&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Occupancy.<br>
-61-66&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tempFactor&nbsp;&nbsp;&nbsp;&nbsp;Temperature&nbsp;factor.<br>
-73-76&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;segID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Segment&nbsp;identifier,&nbsp;left-justified.<br>
-77-78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
-79-80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HETATM-__str__"><strong>__str__</strong></a>(self)</dt></dl>
 
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HETNAM">class <strong>HETNAM</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HETNAM">class <strong>HETNAM</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#HETNAM">HETNAM</a>&nbsp;field<br>
@@ -684,7 +994,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 This&nbsp;record&nbsp;gives&nbsp;the&nbsp;chemical&nbsp;name&nbsp;of&nbsp;the&nbsp;compound&nbsp;with&nbsp;the&nbsp;given<br>
 hetID.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HETNAM">HETNAM</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="HETNAM-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -692,11 +1008,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 12-14&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;hetID&nbsp;&nbsp;Het&nbsp;identifier,&nbsp;right-justified.<br>
 16-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;text&nbsp;&nbsp;&nbsp;Chemical&nbsp;name.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HETNAM-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HETSYN">class <strong>HETSYN</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HETSYN">class <strong>HETSYN</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#HETSYN">HETSYN</a>&nbsp;field<br>
@@ -705,7 +1033,13 @@ This&nbsp;record&nbsp;provides&nbsp;synonyms,&nbsp;if&nbsp;any,&nbsp;for&nbsp;th
 corresponding&nbsp;(i.e.,&nbsp;same&nbsp;hetID)&nbsp;<a href="#HETNAM">HETNAM</a>&nbsp;record.&nbsp;This&nbsp;is&nbsp;to&nbsp;allow<br>
 greater&nbsp;flexibility&nbsp;in&nbsp;searching&nbsp;for&nbsp;<a href="#HET">HET</a>&nbsp;groups.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HETSYN">HETSYN</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="HETSYN-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -713,18 +1047,36 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 12-14&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;hetID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Het&nbsp;identifier,&nbsp;right-justified.<br>
 16-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;hetSynonyms&nbsp;&nbsp;&nbsp;List&nbsp;of&nbsp;synonyms</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HETSYN-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="HYDBND">class <strong>HYDBND</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="HYDBND">class <strong>HYDBND</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#HYDBND">HYDBND</a>&nbsp;field<br>
 &nbsp;<br>
 The&nbsp;<a href="#HYDBND">HYDBND</a>&nbsp;records&nbsp;specify&nbsp;hydrogen&nbsp;bonds&nbsp;in&nbsp;the&nbsp;entry.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#HYDBND">HYDBND</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="HYDBND-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -751,11 +1103,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 67-72&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sym2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;2nd<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;non-hydrogen&nbsp;atom.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="HYDBND-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="JRNL">class <strong>JRNL</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="JRNL">class <strong>JRNL</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#JRNL">JRNL</a>&nbsp;field<br>
@@ -766,18 +1130,36 @@ at&nbsp;most&nbsp;one&nbsp;<a href="#JRNL">JRNL</a>&nbsp;reference&nbsp;per&nbsp
 then&nbsp;there&nbsp;is&nbsp;no&nbsp;<a href="#JRNL">JRNL</a>&nbsp;reference.&nbsp;Other&nbsp;references&nbsp;are&nbsp;given&nbsp;in&nbsp;<a href="#REMARK">REMARK</a><br>
 1.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#JRNL">JRNL</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="JRNL-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 -----------------------------------------------<br>
 13-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;text&nbsp;&nbsp;&nbsp;See&nbsp;Details&nbsp;on&nbsp;web.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="JRNL-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="KEYWDS">class <strong>KEYWDS</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="KEYWDS">class <strong>KEYWDS</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#KEYWDS">KEYWDS</a>&nbsp;field<br>
@@ -789,7 +1171,13 @@ limitations&nbsp;found&nbsp;in&nbsp;the&nbsp;classification&nbsp;field&nbsp;of&n
 provides&nbsp;the&nbsp;opportunity&nbsp;to&nbsp;add&nbsp;further&nbsp;annotation&nbsp;to&nbsp;the&nbsp;entry&nbsp;in&nbsp;a<br>
 concise&nbsp;and&nbsp;computer-searchable&nbsp;fashion.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#KEYWDS">KEYWDS</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="KEYWDS-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -797,11 +1185,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;keywds&nbsp;&nbsp;Comma-separated&nbsp;list&nbsp;of&nbsp;keywords&nbsp;relevant<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;the&nbsp;entry</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="KEYWDS-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="LINK">class <strong>LINK</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="LINK">class <strong>LINK</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#LINK">LINK</a>&nbsp;field<br>
@@ -811,7 +1211,13 @@ implied&nbsp;by&nbsp;the&nbsp;primary&nbsp;structure.&nbsp;Connectivity&nbsp;is&
 the&nbsp;atom&nbsp;names.&nbsp;This&nbsp;record&nbsp;supplements&nbsp;information&nbsp;given&nbsp;in&nbsp;<a href="#CONECT">CONECT</a><br>
 records&nbsp;and&nbsp;is&nbsp;provided&nbsp;here&nbsp;for&nbsp;convenience&nbsp;in&nbsp;searching.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#LINK">LINK</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="LINK-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -831,11 +1237,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFI
 60-65&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sym1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;1st&nbsp;atom.<br>
 67-72&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sym2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;2nd&nbsp;atom.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="LINK-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MASTER">class <strong>MASTER</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MASTER">class <strong>MASTER</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#MASTER">MASTER</a>&nbsp;class<br>
@@ -844,7 +1262,13 @@ The&nbsp;<a href="#MASTER">MASTER</a>&nbsp;record&nbsp;is&nbsp;a&nbsp;control&nb
 number&nbsp;of&nbsp;lines&nbsp;in&nbsp;the&nbsp;coordinate&nbsp;entry&nbsp;or&nbsp;file&nbsp;for&nbsp;selected&nbsp;record<br>
 types.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MASTER">MASTER</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="MASTER-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -863,11 +1287,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFI
 61-65&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;numConect&nbsp;Number&nbsp;of&nbsp;<a href="#CONECT">CONECT</a>&nbsp;records<br>
 66-70&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;numSeq&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;<a href="#SEQRES">SEQRES</a>&nbsp;records</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MASTER-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MODEL">class <strong>MODEL</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MODEL">class <strong>MODEL</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#MODEL">MODEL</a>&nbsp;class<br>
@@ -876,18 +1312,36 @@ The&nbsp;<a href="#MODEL">MODEL</a>&nbsp;record&nbsp;specifies&nbsp;the&nbsp;mod
 structures&nbsp;are&nbsp;presented&nbsp;in&nbsp;a&nbsp;single&nbsp;coordinate&nbsp;entry,&nbsp;as&nbsp;is&nbsp;often&nbsp;the<br>
 case&nbsp;with&nbsp;structures&nbsp;determined&nbsp;by&nbsp;NMR.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MODEL">MODEL</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="MODEL-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 -----------------------------------------------------<br>
 11-14&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial&nbsp;Model&nbsp;serial&nbsp;number.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MODEL-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MODRES">class <strong>MODRES</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MODRES">class <strong>MODRES</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#MODRES">MODRES</a>&nbsp;field<br>
@@ -897,7 +1351,13 @@ chemical&nbsp;or&nbsp;post-translational)&nbsp;to&nbsp;protein&nbsp;and&nbsp;nuc
 Included&nbsp;are&nbsp;a&nbsp;mapping&nbsp;between&nbsp;residue&nbsp;names&nbsp;given&nbsp;in&nbsp;a&nbsp;PDB&nbsp;entry&nbsp;and<br>
 standard&nbsp;residues.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MODRES">MODRES</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="MODRES-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -910,6 +1370,18 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 25-27&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;stdRes&nbsp;&nbsp;Standard&nbsp;residue&nbsp;name.<br>
 30-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;comment&nbsp;Description&nbsp;of&nbsp;the&nbsp;residue&nbsp;modification.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MODRES-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -952,69 +1424,99 @@ This&nbsp;becomes&nbsp;one&nbsp;attribute&nbsp;of&nbsp;MOL2ATOM!</tt></dd></dl>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MTRIX1">class <strong>MTRIX1</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MTRIX1">class <strong>MTRIX1</strong></a>(<a href="src.pdb.html#MTRIXn">MTRIXn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#MTRIX1">MTRIX1</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;MTRIXn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;transformations&nbsp;expressing<br>
-non-crystallographic&nbsp;symmetry.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MTRIX1">MTRIX1</a></dd>
+<dd><a href="src.pdb.html#MTRIXn">MTRIXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#MTRIXn">MTRIXn</a>:<br>
 <dl><dt><a name="MTRIX1-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------<br>
 &nbsp;8-10&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial&nbsp;Serial&nbsp;number<br>
-11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn1&nbsp;&nbsp;&nbsp;&nbsp;M11<br>
-21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn2&nbsp;&nbsp;&nbsp;&nbsp;M12<br>
-31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn3&nbsp;&nbsp;&nbsp;&nbsp;M13<br>
-46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;vn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V1<br>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn1&nbsp;&nbsp;&nbsp;&nbsp;M31<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn2&nbsp;&nbsp;&nbsp;&nbsp;M32<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn3&nbsp;&nbsp;&nbsp;&nbsp;M33<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;vn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V3<br>
 60&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;iGiven&nbsp;1&nbsp;if&nbsp;coordinates&nbsp;for&nbsp;the&nbsp;representations<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;are&nbsp;approximately&nbsp;related&nbsp;by&nbsp;the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transformations&nbsp;of&nbsp;the&nbsp;molecule&nbsp;are&nbsp;contained&nbsp;in<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;entry.&nbsp;&nbsp;Otherwise,&nbsp;blank.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MTRIX1-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MTRIX2">class <strong>MTRIX2</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MTRIX2">class <strong>MTRIX2</strong></a>(<a href="src.pdb.html#MTRIXn">MTRIXn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#MTRIX2">MTRIX2</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;MTRIXn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;transformations&nbsp;expressing<br>
-non-crystallographic&nbsp;symmetry.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MTRIX2">MTRIX2</a></dd>
+<dd><a href="src.pdb.html#MTRIXn">MTRIXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#MTRIXn">MTRIXn</a>:<br>
 <dl><dt><a name="MTRIX2-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------<br>
 &nbsp;8-10&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial&nbsp;Serial&nbsp;number<br>
-11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn1&nbsp;&nbsp;&nbsp;&nbsp;M21<br>
-21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn2&nbsp;&nbsp;&nbsp;&nbsp;M22<br>
-31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn3&nbsp;&nbsp;&nbsp;&nbsp;M23<br>
-46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;vn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V2<br>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn1&nbsp;&nbsp;&nbsp;&nbsp;M31<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn2&nbsp;&nbsp;&nbsp;&nbsp;M32<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn3&nbsp;&nbsp;&nbsp;&nbsp;M33<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;vn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V3<br>
 60&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;iGiven&nbsp;1&nbsp;if&nbsp;coordinates&nbsp;for&nbsp;the&nbsp;representations<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;are&nbsp;approximately&nbsp;related&nbsp;by&nbsp;the<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transformations&nbsp;of&nbsp;the&nbsp;molecule&nbsp;are&nbsp;contained&nbsp;in<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;entry.&nbsp;&nbsp;Otherwise,&nbsp;blank.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MTRIX2-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="MTRIX3">class <strong>MTRIX3</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MTRIX3">class <strong>MTRIX3</strong></a>(<a href="src.pdb.html#MTRIXn">MTRIXn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#MTRIX3">MTRIX3</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;<a href="#MTRIX3">MTRIX3</a>&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;transformations&nbsp;expressing<br>
-non-crystallographic&nbsp;symmetry.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MTRIX3">MTRIX3</a></dd>
+<dd><a href="src.pdb.html#MTRIXn">MTRIXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#MTRIXn">MTRIXn</a>:<br>
 <dl><dt><a name="MTRIX3-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -1029,11 +1531,104 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transformations&nbsp;of&nbsp;the&nbsp;molecule&nbsp;are&nbsp;contained&nbsp;in<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;entry.&nbsp;&nbsp;Otherwise,&nbsp;blank.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MTRIX3-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="OBSLTE">class <strong>OBSLTE</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="MTRIXn">class <strong>MTRIXn</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#MTRIXn">MTRIXn</a>&nbsp;baseclass<br>
+&nbsp;<br>
+The&nbsp;<a href="#MTRIXn">MTRIXn</a>&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;transformations&nbsp;expressing<br>
+non-crystallographic&nbsp;symmetry.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#MTRIXn">MTRIXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="MTRIXn-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
+&nbsp;<br>
+COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
+---------------------------------<br>
+&nbsp;8-10&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;serial&nbsp;Serial&nbsp;number<br>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn1&nbsp;&nbsp;&nbsp;&nbsp;M31<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn2&nbsp;&nbsp;&nbsp;&nbsp;M32<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;mn3&nbsp;&nbsp;&nbsp;&nbsp;M33<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;vn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V3<br>
+60&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;iGiven&nbsp;1&nbsp;if&nbsp;coordinates&nbsp;for&nbsp;the&nbsp;representations<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;are&nbsp;approximately&nbsp;related&nbsp;by&nbsp;the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;transformations&nbsp;of&nbsp;the&nbsp;molecule&nbsp;are&nbsp;contained&nbsp;in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;entry.&nbsp;&nbsp;Otherwise,&nbsp;blank.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="MTRIXn-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="NUMMDL">class <strong>NUMMDL</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#NUMMDL">NUMMDL</a>&nbsp;class<br>
+&nbsp;<br>
+The&nbsp;<a href="#NUMMDL">NUMMDL</a>&nbsp;record&nbsp;indicates&nbsp;total&nbsp;number&nbsp;of&nbsp;models&nbsp;in&nbsp;a&nbsp;PDB&nbsp;entry.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#NUMMDL">NUMMDL</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="NUMMDL-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
+&nbsp;<br>
+COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
+-----------------------------------------------------------<br>
+11-14&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;modelNumber&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;models.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="NUMMDL-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="OBSLTE">class <strong>OBSLTE</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#OBSLTE">OBSLTE</a>&nbsp;field<br>
@@ -1045,8 +1640,14 @@ replaced&nbsp;the&nbsp;withdrawn&nbsp;entry.<br>
 The&nbsp;format&nbsp;allows&nbsp;for&nbsp;the&nbsp;case&nbsp;of&nbsp;multiple&nbsp;new&nbsp;entries&nbsp;replacing&nbsp;one<br>
 existing&nbsp;entry.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="OBSLTE-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.&nbsp;&nbsp;<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#OBSLTE">OBSLTE</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="OBSLTE-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 -----------------------------------------------<br>
@@ -1069,43 +1670,69 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 67-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;rIdCode&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;entry&nbsp;that&nbsp;replaced<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;one.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="OBSLTE-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ORIGX1">class <strong>ORIGX1</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ORIGX1">class <strong>ORIGX1</strong></a>(<a href="src.pdb.html#ORIGXn">ORIGXn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ORIGX1">ORIGX1</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;ORIGXn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
-orthogonal&nbsp;coordinates&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;submitted<br>
-coordinates.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ORIGX1">ORIGX1</a></dd>
+<dd><a href="src.pdb.html#ORIGXn">ORIGXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#ORIGXn">ORIGXn</a>:<br>
 <dl><dt><a name="ORIGX1-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------<br>
-11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on1&nbsp;&nbsp;&nbsp;&nbsp;O11<br>
-21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on2&nbsp;&nbsp;&nbsp;&nbsp;O12<br>
-31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on3&nbsp;&nbsp;&nbsp;&nbsp;O13<br>
-46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T1</tt></dd></dl>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on1&nbsp;&nbsp;&nbsp;&nbsp;O21<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on2&nbsp;&nbsp;&nbsp;&nbsp;O22<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on3&nbsp;&nbsp;&nbsp;&nbsp;O23<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T2</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ORIGX1-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ORIGX2">class <strong>ORIGX2</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ORIGX2">class <strong>ORIGX2</strong></a>(<a href="src.pdb.html#ORIGXn">ORIGXn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ORIGX2">ORIGX2</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;ORIGXn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
-orthogonal&nbsp;coordinates&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;submitted<br>
-coordinates.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ORIGX2">ORIGX2</a></dd>
+<dd><a href="src.pdb.html#ORIGXn">ORIGXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#ORIGXn">ORIGXn</a>:<br>
 <dl><dt><a name="ORIGX2-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -1115,34 +1742,100 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on3&nbsp;&nbsp;&nbsp;&nbsp;O23<br>
 46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T2</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ORIGX2-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="ORIGX3">class <strong>ORIGX3</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ORIGX3">class <strong>ORIGX3</strong></a>(<a href="src.pdb.html#ORIGXn">ORIGXn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#ORIGX3">ORIGX3</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;ORIGXn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
-orthogonal&nbsp;coordinates&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;submitted<br>
-coordinates.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ORIGX3">ORIGX3</a></dd>
+<dd><a href="src.pdb.html#ORIGXn">ORIGXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#ORIGXn">ORIGXn</a>:<br>
 <dl><dt><a name="ORIGX3-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------<br>
-11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on1&nbsp;&nbsp;&nbsp;&nbsp;O31<br>
-21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on2&nbsp;&nbsp;&nbsp;&nbsp;O32<br>
-31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on3&nbsp;&nbsp;&nbsp;&nbsp;O33<br>
-46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T3</tt></dd></dl>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on1&nbsp;&nbsp;&nbsp;&nbsp;O21<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on2&nbsp;&nbsp;&nbsp;&nbsp;O22<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on3&nbsp;&nbsp;&nbsp;&nbsp;O23<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T2</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ORIGX3-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="REMARK">class <strong>REMARK</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="ORIGXn">class <strong>ORIGXn</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ORIGX2">ORIGX2</a>&nbsp;class<br>
+&nbsp;<br>
+The&nbsp;<a href="#ORIGXn">ORIGXn</a>&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
+orthogonal&nbsp;coordinates&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;the&nbsp;submitted<br>
+coordinates.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#ORIGXn">ORIGXn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ORIGXn-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
+&nbsp;<br>
+COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
+---------------------------------<br>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on1&nbsp;&nbsp;&nbsp;&nbsp;O21<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on2&nbsp;&nbsp;&nbsp;&nbsp;O22<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;on3&nbsp;&nbsp;&nbsp;&nbsp;O23<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;tn&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T2</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="ORIGXn-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="REMARK">class <strong>REMARK</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#REMARK">REMARK</a>&nbsp;field<br>
@@ -1154,14 +1847,32 @@ level&nbsp;of&nbsp;structure&nbsp;is&nbsp;being&nbsp;used&nbsp;for&nbsp;some&nbs
 expected&nbsp;to&nbsp;facilitate&nbsp;searching&nbsp;and&nbsp;will&nbsp;assist&nbsp;in&nbsp;the&nbsp;conversion&nbsp;to&nbsp;a<br>
 relational&nbsp;database.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#REMARK">REMARK</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="REMARK-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="REMARK-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="REVDAT">class <strong>REVDAT</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="REVDAT">class <strong>REVDAT</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#REVDAT">REVDAT</a>&nbsp;field<br>
@@ -1169,14 +1880,20 @@ relational&nbsp;database.<br>&nbsp;</tt></td></tr>
 <a href="#REVDAT">REVDAT</a>&nbsp;records&nbsp;contain&nbsp;a&nbsp;history&nbsp;of&nbsp;the&nbsp;modifications&nbsp;made&nbsp;to&nbsp;an&nbsp;entry<br>
 since&nbsp;its&nbsp;release.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#REVDAT">REVDAT</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="REVDAT-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 -------------------------------------------------------<br>
 8-10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;modNum&nbsp;&nbsp;Modification&nbsp;number.<br>
 14-22&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;modDate&nbsp;Date&nbsp;of&nbsp;modification&nbsp;(or&nbsp;release&nbsp;for<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;entries).&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;entries).<br>
 24-28&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;modId&nbsp;&nbsp;&nbsp;Identifies&nbsp;this&nbsp;particular&nbsp;modification.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It&nbsp;links&nbsp;to&nbsp;the&nbsp;archive&nbsp;used&nbsp;internally&nbsp;by<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PDB.<br>
@@ -1190,69 +1907,105 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 54-59&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;record&nbsp;&nbsp;Name&nbsp;of&nbsp;the&nbsp;modified&nbsp;record.<br>
 61-66&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;record&nbsp;&nbsp;Name&nbsp;of&nbsp;the&nbsp;modified&nbsp;record.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="REVDAT-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SCALE1">class <strong>SCALE1</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SCALE1">class <strong>SCALE1</strong></a>(<a href="src.pdb.html#SCALEn">SCALEn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SCALE1">SCALE1</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;SCALEn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
-orthogonal&nbsp;coordinates&nbsp;as&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;fractional<br>
-crystallographic&nbsp;coordinates.&nbsp;Non-standard&nbsp;coordinate&nbsp;systems&nbsp;should&nbsp;be<br>
-explained&nbsp;in&nbsp;the&nbsp;remarks.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SCALE1">SCALE1</a></dd>
+<dd><a href="src.pdb.html#SCALEn">SCALEn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#SCALEn">SCALEn</a>:<br>
 <dl><dt><a name="SCALE1-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------<br>
-11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn1&nbsp;&nbsp;&nbsp;&nbsp;S11<br>
-21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn2&nbsp;&nbsp;&nbsp;&nbsp;S12<br>
-31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn3&nbsp;&nbsp;&nbsp;&nbsp;S13<br>
-46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;un&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U1</tt></dd></dl>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn1&nbsp;&nbsp;&nbsp;&nbsp;S31<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn2&nbsp;&nbsp;&nbsp;&nbsp;S32<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn3&nbsp;&nbsp;&nbsp;&nbsp;S33<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;un&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U3</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SCALE1-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SCALE2">class <strong>SCALE2</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SCALE2">class <strong>SCALE2</strong></a>(<a href="src.pdb.html#SCALEn">SCALEn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SCALE2">SCALE2</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;SCALEn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
-orthogonal&nbsp;coordinates&nbsp;as&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;fractional<br>
-crystallographic&nbsp;coordinates.&nbsp;Non-standard&nbsp;coordinate&nbsp;systems&nbsp;should&nbsp;be<br>
-explained&nbsp;in&nbsp;the&nbsp;remarks.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SCALE2">SCALE2</a></dd>
+<dd><a href="src.pdb.html#SCALEn">SCALEn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#SCALEn">SCALEn</a>:<br>
 <dl><dt><a name="SCALE2-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------<br>
-11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn1&nbsp;&nbsp;&nbsp;&nbsp;S21<br>
-21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn2&nbsp;&nbsp;&nbsp;&nbsp;S22<br>
-31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn3&nbsp;&nbsp;&nbsp;&nbsp;S23<br>
-46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;un&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U2</tt></dd></dl>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn1&nbsp;&nbsp;&nbsp;&nbsp;S31<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn2&nbsp;&nbsp;&nbsp;&nbsp;S32<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn3&nbsp;&nbsp;&nbsp;&nbsp;S33<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;un&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U3</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SCALE2-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SCALE3">class <strong>SCALE3</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SCALE3">class <strong>SCALE3</strong></a>(<a href="src.pdb.html#SCALEn">SCALEn</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#SCALE3">SCALE3</a>&nbsp;class<br>
-&nbsp;<br>
-The&nbsp;SCALEn&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
-orthogonal&nbsp;coordinates&nbsp;as&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;fractional<br>
-crystallographic&nbsp;coordinates.&nbsp;Non-standard&nbsp;coordinate&nbsp;systems&nbsp;should&nbsp;be<br>
-explained&nbsp;in&nbsp;the&nbsp;remarks.<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SCALE3">SCALE3</a></dd>
+<dd><a href="src.pdb.html#SCALEn">SCALEn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="src.pdb.html#SCALEn">SCALEn</a>:<br>
 <dl><dt><a name="SCALE3-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -1262,11 +2015,65 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn3&nbsp;&nbsp;&nbsp;&nbsp;S33<br>
 46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;un&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U3</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SCALE3-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SEQADV">class <strong>SEQADV</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SCALEn">class <strong>SCALEn</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#SCALEn">SCALEn</a>&nbsp;baseclass<br>
+&nbsp;<br>
+The&nbsp;<a href="#SCALEn">SCALEn</a>&nbsp;(n&nbsp;=&nbsp;1,&nbsp;2,&nbsp;or&nbsp;3)&nbsp;records&nbsp;present&nbsp;the&nbsp;transformation&nbsp;from&nbsp;the<br>
+orthogonal&nbsp;coordinates&nbsp;as&nbsp;contained&nbsp;in&nbsp;the&nbsp;entry&nbsp;to&nbsp;fractional<br>
+crystallographic&nbsp;coordinates.&nbsp;Non-standard&nbsp;coordinate&nbsp;systems&nbsp;should&nbsp;be<br>
+explained&nbsp;in&nbsp;the&nbsp;remarks.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SCALEn">SCALEn</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="SCALEn-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
+&nbsp;<br>
+COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
+---------------------------------<br>
+11-20&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn1&nbsp;&nbsp;&nbsp;&nbsp;S31<br>
+21-30&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn2&nbsp;&nbsp;&nbsp;&nbsp;S32<br>
+31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;sn3&nbsp;&nbsp;&nbsp;&nbsp;S33<br>
+46-55&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;un&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U3</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SCALEn-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="SEQADV">class <strong>SEQADV</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SEQADV">SEQADV</a>&nbsp;field<br>
@@ -1279,7 +2086,13 @@ contains&nbsp;the&nbsp;correct&nbsp;data.&nbsp;PDB&nbsp;may&nbsp;include&nbsp;<a
 that&nbsp;reflect&nbsp;the&nbsp;depositor's&nbsp;view&nbsp;of&nbsp;which&nbsp;database&nbsp;has&nbsp;the&nbsp;correct<br>
 sequence.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SEQADV">SEQADV</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SEQADV-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1296,11 +2109,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 44-48&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;dbSeq&nbsp;&nbsp;&nbsp;&nbsp;Sequence&nbsp;database&nbsp;sequence&nbsp;number.<br>
 50-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;conflict&nbsp;Conflict&nbsp;comment.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SEQADV-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SEQRES">class <strong>SEQRES</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SEQRES">class <strong>SEQRES</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SEQRES">SEQRES</a>&nbsp;field<br>
@@ -1308,7 +2133,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 <a href="#SEQRES">SEQRES</a>&nbsp;records&nbsp;contain&nbsp;the&nbsp;amino&nbsp;acid&nbsp;or&nbsp;nucleic&nbsp;acid&nbsp;sequence&nbsp;of<br>
 residues&nbsp;in&nbsp;each&nbsp;chain&nbsp;of&nbsp;the&nbsp;macromolecule&nbsp;that&nbsp;was&nbsp;studied.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SEQRES">SEQRES</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SEQRES-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1336,11 +2167,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 64-66&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;resName&nbsp;Residue&nbsp;name.<br>
 68-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;resName&nbsp;Residue&nbsp;name.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SEQRES-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SHEET">class <strong>SHEET</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SHEET">class <strong>SHEET</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SHEET">SHEET</a>&nbsp;field<br>
@@ -1349,7 +2192,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 molecule.&nbsp;Sheets&nbsp;are&nbsp;both&nbsp;named&nbsp;and&nbsp;numbered.&nbsp;The&nbsp;residues&nbsp;where&nbsp;the<br>
 sheet&nbsp;begins&nbsp;and&nbsp;ends&nbsp;are&nbsp;noted.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SHEET">SHEET</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SHEET-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1361,45 +2210,57 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 15&nbsp;-&nbsp;16&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;numStrands&nbsp;&nbsp;Number&nbsp;of&nbsp;strands&nbsp;in&nbsp;sheet.<br>
 18&nbsp;-&nbsp;20&nbsp;&nbsp;string&nbsp;initResName&nbsp;Residue&nbsp;name&nbsp;of&nbsp;initial&nbsp;residue.<br>
 22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;initChainID&nbsp;Chain&nbsp;identifier&nbsp;of&nbsp;initial&nbsp;residue&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 23&nbsp;-&nbsp;26&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;initSeqNum&nbsp;&nbsp;Sequence&nbsp;number&nbsp;of&nbsp;initial&nbsp;residue&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;initICode&nbsp;&nbsp;&nbsp;Insertion&nbsp;code&nbsp;of&nbsp;initial&nbsp;residue&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
-29&nbsp;-&nbsp;31&nbsp;&nbsp;string&nbsp;endResName&nbsp;&nbsp;Residue&nbsp;name&nbsp;of&nbsp;terminal&nbsp;residue.&nbsp;&nbsp;<br>
-33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endChainID&nbsp;&nbsp;Chain&nbsp;identifier&nbsp;of&nbsp;terminal&nbsp;residue.&nbsp;&nbsp;<br>
-34&nbsp;-&nbsp;37&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;endSeqNum&nbsp;&nbsp;&nbsp;Sequence&nbsp;number&nbsp;of&nbsp;terminal&nbsp;residue.&nbsp;&nbsp;<br>
-38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endICode&nbsp;&nbsp;&nbsp;&nbsp;Insertion&nbsp;code&nbsp;of&nbsp;terminal&nbsp;residue.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
+29&nbsp;-&nbsp;31&nbsp;&nbsp;string&nbsp;endResName&nbsp;&nbsp;Residue&nbsp;name&nbsp;of&nbsp;terminal&nbsp;residue.<br>
+33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endChainID&nbsp;&nbsp;Chain&nbsp;identifier&nbsp;of&nbsp;terminal&nbsp;residue.<br>
+34&nbsp;-&nbsp;37&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;endSeqNum&nbsp;&nbsp;&nbsp;Sequence&nbsp;number&nbsp;of&nbsp;terminal&nbsp;residue.<br>
+38&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endICode&nbsp;&nbsp;&nbsp;&nbsp;Insertion&nbsp;code&nbsp;of&nbsp;terminal&nbsp;residue.<br>
 39&nbsp;-&nbsp;40&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;sense&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sense&nbsp;of&nbsp;strand&nbsp;with&nbsp;respect&nbsp;to<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;strand&nbsp;in&nbsp;the&nbsp;sheet.&nbsp;0&nbsp;if<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first&nbsp;strand,&nbsp;1&nbsp;if&nbsp;parallel,&nbsp;-1&nbsp;if<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anti-parallel.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anti-parallel.<br>
 42&nbsp;-&nbsp;45&nbsp;&nbsp;string&nbsp;curAtom&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Registration.&nbsp;Atom&nbsp;name&nbsp;in&nbsp;current<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 46&nbsp;-&nbsp;48&nbsp;&nbsp;string&nbsp;curResName&nbsp;&nbsp;Registration.&nbsp;Residue&nbsp;name&nbsp;in&nbsp;current<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;curChainId&nbsp;&nbsp;Registration.&nbsp;Chain&nbsp;identifier&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current&nbsp;strand.<br>
 51&nbsp;-&nbsp;54&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;curResSeq&nbsp;&nbsp;&nbsp;Registration.&nbsp;Residue&nbsp;sequence&nbsp;number<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;current&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;current&nbsp;strand.<br>
 55&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;curICode&nbsp;&nbsp;&nbsp;&nbsp;Registration.&nbsp;Insertion&nbsp;code&nbsp;in&nbsp;current<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 57&nbsp;-&nbsp;60&nbsp;&nbsp;string&nbsp;prevAtom&nbsp;&nbsp;&nbsp;&nbsp;Registration.&nbsp;Atom&nbsp;name&nbsp;in&nbsp;previous<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 61&nbsp;-&nbsp;63&nbsp;&nbsp;string&nbsp;prevResName&nbsp;Registration.&nbsp;Residue&nbsp;name&nbsp;in&nbsp;previous<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strand.<br>
 65&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;prevChainId&nbsp;Registration.&nbsp;Chain&nbsp;identifier&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;strand.<br>
 66&nbsp;-&nbsp;69&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;prevResSeq&nbsp;&nbsp;Registration.&nbsp;Residue&nbsp;sequence&nbsp;number<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;previous&nbsp;strand.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;previous&nbsp;strand.<br>
 70&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;prevICode&nbsp;&nbsp;&nbsp;Registration.&nbsp;Insertion&nbsp;code&nbsp;in<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;previous&nbsp;strand.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SHEET-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SIGATM">class <strong>SIGATM</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SIGATM">class <strong>SIGATM</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SIGATM">SIGATM</a>&nbsp;class<br>
@@ -1407,7 +2268,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 The&nbsp;<a href="#SIGATM">SIGATM</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;standard&nbsp;deviation&nbsp;of&nbsp;atomic&nbsp;parameters<br>
 as&nbsp;they&nbsp;appear&nbsp;in&nbsp;<a href="#ATOM">ATOM</a>&nbsp;and&nbsp;<a href="#HETATM">HETATM</a>&nbsp;records.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SIGATM">SIGATM</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SIGATM-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1431,18 +2298,36 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 77-78&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
 79-80&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SIGATM-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SIGUIJ">class <strong>SIGUIJ</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SIGUIJ">class <strong>SIGUIJ</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SIGUIJ">SIGUIJ</a>&nbsp;class<br>
 &nbsp;<br>
 The&nbsp;<a href="#SIGUIJ">SIGUIJ</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;anisotropic&nbsp;temperature&nbsp;factors.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SIGUIJ">SIGUIJ</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SIGUIJ-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line:<br>
 &nbsp;<br>
 &nbsp;&nbsp;COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1464,11 +2349,23 @@ The&nbsp;<a href="#SIGUIJ">SIGUIJ</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;an
 &nbsp;&nbsp;77-78&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;element&nbsp;Element&nbsp;symbol,&nbsp;right-justified.<br>
 &nbsp;&nbsp;79-80&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;charge&nbsp;&nbsp;Charge&nbsp;on&nbsp;the&nbsp;atom.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SIGUIJ-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SITE">class <strong>SITE</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SITE">class <strong>SITE</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SITE">SITE</a>&nbsp;class<br>
@@ -1476,7 +2373,13 @@ The&nbsp;<a href="#SIGUIJ">SIGUIJ</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;an
 The&nbsp;<a href="#SITE">SITE</a>&nbsp;records&nbsp;supply&nbsp;the&nbsp;identification&nbsp;of&nbsp;groups&nbsp;comprising<br>
 important&nbsp;sites&nbsp;in&nbsp;the&nbsp;macromolecule.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SITE">SITE</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SITE-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;the&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1517,11 +2420,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 61&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;iCode4&nbsp;&nbsp;&nbsp;Insertion&nbsp;code&nbsp;for&nbsp;fourth&nbsp;residue<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comprising&nbsp;site.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SITE-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SLTBRG">class <strong>SLTBRG</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SLTBRG">class <strong>SLTBRG</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SLTBRG">SLTBRG</a>&nbsp;field<br>
@@ -1529,7 +2444,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION
 The&nbsp;<a href="#SLTBRG">SLTBRG</a>&nbsp;records&nbsp;specify&nbsp;salt&nbsp;bridges&nbsp;in&nbsp;the&nbsp;entry.<br>
 records&nbsp;and&nbsp;is&nbsp;provided&nbsp;here&nbsp;for&nbsp;convenience&nbsp;in&nbsp;searching.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SLTBRG">SLTBRG</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SLTBRG-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1549,11 +2470,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFI
 60-65&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sym1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;1st&nbsp;atom.<br>
 67-72&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sym2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;2nd&nbsp;atom.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SLTBRG-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SOURCE">class <strong>SOURCE</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SOURCE">class <strong>SOURCE</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SOURCE">SOURCE</a>&nbsp;field<br>
@@ -1564,7 +2497,13 @@ the&nbsp;common&nbsp;name&nbsp;and&nbsp;the&nbsp;scientific&nbsp;name,&nbsp;e.g.
 Strain&nbsp;and/or&nbsp;cell-line&nbsp;for&nbsp;immortalized&nbsp;cells&nbsp;are&nbsp;given&nbsp;when&nbsp;they&nbsp;help<br>
 to&nbsp;uniquely&nbsp;identify&nbsp;the&nbsp;biological&nbsp;entity&nbsp;studied.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SOURCE">SOURCE</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SOURCE-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1572,11 +2511,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;source&nbsp;&nbsp;Identifies&nbsp;the&nbsp;source&nbsp;of&nbsp;the&nbsp;macromolecule<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;a&nbsp;token:&nbsp;value&nbsp;format</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SOURCE-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SPRSDE">class <strong>SPRSDE</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SPRSDE">class <strong>SPRSDE</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SPRSDE">SPRSDE</a>&nbsp;field<br>
@@ -1586,14 +2537,20 @@ made&nbsp;obsolete&nbsp;by&nbsp;the&nbsp;given&nbsp;coordinate&nbsp;entry&nbsp;a
 release&nbsp;set.&nbsp;One&nbsp;entry&nbsp;may&nbsp;replace&nbsp;many.&nbsp;It&nbsp;is&nbsp;PDB&nbsp;policy&nbsp;that&nbsp;only&nbsp;the<br>
 principal&nbsp;investigator&nbsp;of&nbsp;a&nbsp;structure&nbsp;has&nbsp;the&nbsp;authority&nbsp;to&nbsp;withdraw&nbsp;it.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SPRSDE">SPRSDE</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SPRSDE-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 -----------------------------------------------<br>
 12-20&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sprsdeDate&nbsp;Date&nbsp;this&nbsp;entry&nbsp;superseded&nbsp;the<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listed&nbsp;entries.&nbsp;<br>
-22-25&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;idCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;this&nbsp;entry.&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listed&nbsp;entries.<br>
+22-25&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;idCode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;this&nbsp;entry.<br>
 32-35&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sIdCode&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;a&nbsp;superseded&nbsp;entry.<br>
 37-40&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sIdCode&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;a&nbsp;superseded&nbsp;entry.<br>
 42-45&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sIdCode&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;a&nbsp;superseded&nbsp;entry.<br>
@@ -1603,11 +2560,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 62-65&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sIdCode&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;a&nbsp;superseded&nbsp;entry.<br>
 67-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;sIdCode&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;code&nbsp;of&nbsp;a&nbsp;superseded&nbsp;entry.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SPRSDE-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="SSBOND">class <strong>SSBOND</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="SSBOND">class <strong>SSBOND</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#SSBOND">SSBOND</a>&nbsp;field<br>
@@ -1616,7 +2585,13 @@ The&nbsp;<a href="#SSBOND">SSBOND</a>&nbsp;record&nbsp;identifies&nbsp;each&nbsp
 polypeptide&nbsp;structures&nbsp;by&nbsp;identifying&nbsp;the&nbsp;two&nbsp;residues&nbsp;involved&nbsp;in&nbsp;the<br>
 bond.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#SSBOND">SSBOND</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="SSBOND-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -1631,11 +2606,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 60&nbsp;-&nbsp;65&nbsp;&nbsp;string&nbsp;sym1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;1st&nbsp;residue.<br>
 67&nbsp;-&nbsp;72&nbsp;&nbsp;string&nbsp;sym2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Symmetry&nbsp;operator&nbsp;for&nbsp;2nd&nbsp;residue.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="SSBOND-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="TER">class <strong>TER</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="TER">class <strong>TER</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#TER">TER</a>&nbsp;class<br>
@@ -1643,7 +2630,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 The&nbsp;<a href="#TER">TER</a>&nbsp;record&nbsp;indicates&nbsp;the&nbsp;end&nbsp;of&nbsp;a&nbsp;list&nbsp;of&nbsp;<a href="#ATOM">ATOM</a>/<a href="#HETATM">HETATM</a>&nbsp;records&nbsp;for&nbsp;a<br>
 chain.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#TER">TER</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="TER-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line:<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
@@ -1654,11 +2647,23 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;DEFINITION<br>
 23-26&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;resSeq&nbsp;&nbsp;Residue&nbsp;sequence&nbsp;number.<br>
 27&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;iCode&nbsp;&nbsp;&nbsp;Insertion&nbsp;code.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="TER-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="TITLE">class <strong>TITLE</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="TITLE">class <strong>TITLE</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#TITLE">TITLE</a>&nbsp;field<br>
@@ -1667,18 +2672,36 @@ The&nbsp;<a href="#TITLE">TITLE</a>&nbsp;record&nbsp;contains&nbsp;a&nbsp;title&
 is&nbsp;represented&nbsp;in&nbsp;the&nbsp;entry.&nbsp;It&nbsp;should&nbsp;identify&nbsp;an&nbsp;entry&nbsp;in&nbsp;the&nbsp;PDB&nbsp;in<br>
 the&nbsp;same&nbsp;way&nbsp;that&nbsp;a&nbsp;title&nbsp;identifies&nbsp;a&nbsp;paper.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#TITLE">TITLE</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="TITLE-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;a&nbsp;line.<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------------------<br>
 11-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;title&nbsp;&nbsp;Title&nbsp;of&nbsp;the&nbsp;experiment</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="TITLE-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="TURN">class <strong>TURN</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="TURN">class <strong>TURN</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#TURN">TURN</a>&nbsp;field<br>
@@ -1686,37 +2709,55 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 The&nbsp;<a href="#TURN">TURN</a>&nbsp;records&nbsp;identify&nbsp;turns&nbsp;and&nbsp;other&nbsp;short&nbsp;loop&nbsp;turns&nbsp;which<br>
 normally&nbsp;connect&nbsp;other&nbsp;secondary&nbsp;structure&nbsp;segments.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
-<dl><dt><a name="TURN-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line&nbsp;<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#TURN">TURN</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="TURN-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DEFINITION<br>
 ---------------------------------------------------------<br>
 8-10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;seq&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Turn&nbsp;number;&nbsp;starts&nbsp;with&nbsp;1&nbsp;and<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;increments&nbsp;by&nbsp;one.&nbsp;&nbsp;<br>
-12-14&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;turnId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Turn&nbsp;identifier&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;increments&nbsp;by&nbsp;one.<br>
+12-14&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;turnId&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Turn&nbsp;identifier<br>
 16-18&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;initResName&nbsp;Residue&nbsp;name&nbsp;of&nbsp;initial&nbsp;residue&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.<br>
 20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;initChainId&nbsp;Chain&nbsp;identifier&nbsp;for&nbsp;the&nbsp;chain<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containing&nbsp;this&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containing&nbsp;this&nbsp;turn.<br>
 21-24&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;initSeqNum&nbsp;&nbsp;Sequence&nbsp;number&nbsp;of&nbsp;initial&nbsp;residue&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.<br>
 25&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;initICode&nbsp;&nbsp;&nbsp;Insertion&nbsp;code&nbsp;of&nbsp;initial&nbsp;residue&nbsp;in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.<br>
 27-29&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endResName&nbsp;&nbsp;Residue&nbsp;name&nbsp;of&nbsp;terminal&nbsp;residue&nbsp;of<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.<br>
 31&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endChainId&nbsp;&nbsp;Chain&nbsp;identifier&nbsp;for&nbsp;the&nbsp;chain<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containing&nbsp;this&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;containing&nbsp;this&nbsp;turn.<br>
 32-35&nbsp;&nbsp;&nbsp;&nbsp;int&nbsp;&nbsp;&nbsp;&nbsp;endSeqNum&nbsp;&nbsp;&nbsp;Sequence&nbsp;number&nbsp;of&nbsp;terminal&nbsp;residue&nbsp;of<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.<br>
 36&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;endICode&nbsp;&nbsp;&nbsp;&nbsp;Insertion&nbsp;code&nbsp;of&nbsp;terminal&nbsp;residue&nbsp;of<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;turn.<br>
 41-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Associated&nbsp;comment.</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="TURN-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="TVECT">class <strong>TVECT</strong></a></font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="TVECT">class <strong>TVECT</strong></a>(<a href="src.pdb.html#BaseRecord">BaseRecord</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#TVECT">TVECT</a>&nbsp;class<br>
@@ -1724,7 +2765,13 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs
 The&nbsp;<a href="#TVECT">TVECT</a>&nbsp;records&nbsp;present&nbsp;the&nbsp;translation&nbsp;vector&nbsp;for&nbsp;infinite<br>
 covalently&nbsp;connected&nbsp;structures.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
-<td width="100%">Methods defined here:<br>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="src.pdb.html#TVECT">TVECT</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
 <dl><dt><a name="TVECT-__init__"><strong>__init__</strong></a>(self, line)</dt><dd><tt>Initialize&nbsp;by&nbsp;parsing&nbsp;line<br>
 &nbsp;<br>
 COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
@@ -1735,6 +2782,18 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 31-40&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;&nbsp;t2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Components&nbsp;of&nbsp;translation&nbsp;vector<br>
 41-70&nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;text&nbsp;&nbsp;&nbsp;Comments</tt></dd></dl>
 
+<hr>
+Methods inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><a name="TVECT-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#eeaa77">
@@ -1742,7 +2801,8 @@ COLUMNS&nbsp;&nbsp;TYPE&nbsp;&nbsp;&nbsp;FIELD&nbsp;&nbsp;DEFINITION<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-getRandom"><strong>getRandom</strong></a>()</dt><dd><tt>Download&nbsp;a&nbsp;random&nbsp;PDB&nbsp;and&nbsp;return&nbsp;the&nbsp;path&nbsp;name.<br>
+<td width="100%"><dl><dt><a name="-RegisterLineParser"><strong>RegisterLineParser</strong></a>(klass)</dt></dl>
+ <dl><dt><a name="-getRandom"><strong>getRandom</strong></a>()</dt><dd><tt>Download&nbsp;a&nbsp;random&nbsp;PDB&nbsp;and&nbsp;return&nbsp;the&nbsp;path&nbsp;name.<br>
 Returns<br>
 &nbsp;&nbsp;path&nbsp;name&nbsp;of&nbsp;downloaded&nbsp;file</tt></dd></dl>
  <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Main&nbsp;driver&nbsp;for&nbsp;testing.&nbsp;&nbsp;Parses&nbsp;set&nbsp;number&nbsp;of&nbsp;random&nbsp;PDBs</tt></dd></dl>
@@ -1778,9 +2838,9 @@ if&nbsp;record&nbsp;==&nbsp;<a href="#ATOM">ATOM</a>:<br>
 &nbsp;else:&nbsp;raise&nbsp;ValueError,&nbsp;record</tt></dd></dl>
  <dl><dt><a name="-readPDB"><strong>readPDB</strong></a>(file)</dt><dd><tt>Parse&nbsp;PDB-format&nbsp;data&nbsp;into&nbsp;array&nbsp;of&nbsp;Atom&nbsp;objects.<br>
 Parameters<br>
-&nbsp;&nbsp;file:&nbsp;&nbsp;open&nbsp;file&nbsp;object&nbsp;<br>
+&nbsp;&nbsp;file:&nbsp;&nbsp;open&nbsp;file&nbsp;<a href="__builtin__.html#object">object</a><br>
 Returns&nbsp;(dict,&nbsp;errlist)<br>
-&nbsp;&nbsp;dict:&nbsp;&nbsp;a&nbsp;dictionary&nbsp;indexed&nbsp;by&nbsp;PDB&nbsp;record&nbsp;names&nbsp;<br>
+&nbsp;&nbsp;dict:&nbsp;&nbsp;a&nbsp;dictionary&nbsp;indexed&nbsp;by&nbsp;PDB&nbsp;record&nbsp;names<br>
 &nbsp;&nbsp;errlist:&nbsp;&nbsp;a&nbsp;list&nbsp;of&nbsp;record&nbsp;names&nbsp;that&nbsp;couldn't&nbsp;be&nbsp;parsed</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -1790,7 +2850,8 @@ Returns&nbsp;(dict,&nbsp;errlist)<br>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><strong>__author__</strong> = 'Todd Dolinsky, Yong Huang'<br>
-<strong>__date__</strong> = '4 August 2008'</td></tr></table><p>
+<strong>__date__</strong> = '4 August 2008'<br>
+<strong>lineParsers</strong> = {'ANISOU': &lt;class 'src.pdb.ANISOU'&gt;, 'ATOM': &lt;class 'src.pdb.ATOM'&gt;, 'AUTHOR': &lt;class 'src.pdb.AUTHOR'&gt;, 'CAVEAT': &lt;class 'src.pdb.CAVEAT'&gt;, 'CISPEP': &lt;class 'src.pdb.CISPEP'&gt;, 'COMPND': &lt;class 'src.pdb.COMPND'&gt;, 'CONECT': &lt;class 'src.pdb.CONECT'&gt;, 'CRYST1': &lt;class 'src.pdb.CRYST1'&gt;, 'DBREF': &lt;class 'src.pdb.DBREF'&gt;, 'END': &lt;class 'src.pdb.END'&gt;, ...}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

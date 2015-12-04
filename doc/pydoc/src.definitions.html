@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module src.definitions</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.definitions</strong></big></big> (15 May 2008)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/definitions.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/definitions.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/definitions.py">/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/definitions.py</a></font></td></tr></table>
     <p><tt>Definitions&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;file&nbsp;contains&nbsp;classes&nbsp;associated&nbsp;with&nbsp;Amino&nbsp;Acid&nbsp;and&nbsp;Rotamer<br>
@@ -129,6 +130,8 @@ Parameters<br>
 <dd><a href="src.definitions.html#DefinitionAtom">DefinitionAtom</a></dd>
 <dd><a href="src.structures.html#Atom">src.structures.Atom</a></dd>
 <dd><a href="src.pdb.html#ATOM">src.pdb.ATOM</a></dd>
+<dd><a href="src.pdb.html#BaseRecord">src.pdb.BaseRecord</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
 </dl>
 <hr>
 Methods defined here:<br>
@@ -252,6 +255,14 @@ Possible&nbsp;Values<br>
 &nbsp;&nbsp;&nbsp;&nbsp;hdonor:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Whether&nbsp;the&nbsp;atom&nbsp;is&nbsp;a&nbsp;hydrogen&nbsp;donor<br>
 &nbsp;&nbsp;&nbsp;&nbsp;hacceptor:&nbsp;&nbsp;Whether&nbsp;the&nbsp;atom&nbsp;is&nbsp;a&nbsp;hydrogen&nbsp;acceptor</tt></dd></dl>
 
+<hr>
+Data descriptors inherited from <a href="src.pdb.html#BaseRecord">src.pdb.BaseRecord</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
@@ -566,6 +577,8 @@ Parameters<br>
 <strong>BONDED_SS_LIMIT</strong> = 2.5<br>
 <strong>BUMP_DIST</strong> = 2.0<br>
 <strong>BUMP_HDIST</strong> = 1.5<br>
+<strong>BUMP_HEAVY_SIZE</strong> = 1.0<br>
+<strong>BUMP_HYDROGEN_SIZE</strong> = 0.5<br>
 <strong>CELL_SIZE</strong> = 2<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
 <strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
@@ -574,10 +587,11 @@ Parameters<br>
 <strong>PATCHPATH</strong> = 'dat/PATCHES.xml'<br>
 <strong>PEPTIDE_DIST</strong> = 1.7<br>
 <strong>REPAIR_LIMIT</strong> = 10<br>
-<strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>SMALL</strong> = 1e-07<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>__author__</strong> = 'Jens Erik Nielsen, Todd Dolinsky, Yong Huang'<br>
-<strong>__date__</strong> = '15 May 2008'</td></tr></table><p>
+<strong>__date__</strong> = '15 May 2008'<br>
+<strong>lineParsers</strong> = {'ANISOU': &lt;class 'src.pdb.ANISOU'&gt;, 'ATOM': &lt;class 'src.pdb.ATOM'&gt;, 'AUTHOR': &lt;class 'src.pdb.AUTHOR'&gt;, 'CAVEAT': &lt;class 'src.pdb.CAVEAT'&gt;, 'CISPEP': &lt;class 'src.pdb.CISPEP'&gt;, 'COMPND': &lt;class 'src.pdb.COMPND'&gt;, 'CONECT': &lt;class 'src.pdb.CONECT'&gt;, 'CRYST1': &lt;class 'src.pdb.CRYST1'&gt;, 'DBREF': &lt;class 'src.pdb.DBREF'&gt;, 'END': &lt;class 'src.pdb.END'&gt;, ...}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

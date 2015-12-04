@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module string</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>string</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/string.py">/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/string.py</a><br><a href="http://docs.python.org/library/string">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/local/Cellar/python/2.7.10_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/string.py">/usr/local/Cellar/python/2.7.10_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/string.py</a><br><a href="http://docs.python.org/library/string">Module Docs</a></font></td></tr></table>
     <p><tt>A&nbsp;collection&nbsp;of&nbsp;string&nbsp;operations&nbsp;(most&nbsp;are&nbsp;no&nbsp;longer&nbsp;used).<br>
 &nbsp;<br>
 Warning:&nbsp;most&nbsp;of&nbsp;the&nbsp;code&nbsp;you&nbsp;see&nbsp;here&nbsp;isn't&nbsp;normally&nbsp;used&nbsp;nowadays.<br>
@@ -63,7 +64,7 @@ printable&nbsp;--&nbsp;a&nbsp;string&nbsp;containing&nbsp;all&nbsp;characters&nb
 
 <dl><dt><a name="Formatter-convert_field"><strong>convert_field</strong></a>(self, value, conversion)</dt></dl>
 
-<dl><dt><a name="Formatter-format"><strong>format</strong></a>(self, format_string, *args, **kwargs)</dt></dl>
+<dl><dt><a name="Formatter-format"><strong>format</strong></a>(*args, **kwargs)</dt></dl>
 
 <dl><dt><a name="Formatter-format_field"><strong>format_field</strong></a>(self, value, format_spec)</dt></dl>
 
@@ -105,9 +106,9 @@ Data descriptors defined here:<br>
 <td width="100%">Methods defined here:<br>
 <dl><dt><a name="Template-__init__"><strong>__init__</strong></a>(self, template)</dt></dl>
 
-<dl><dt><a name="Template-safe_substitute"><strong>safe_substitute</strong></a>(self, *args, **kws)</dt></dl>
+<dl><dt><a name="Template-safe_substitute"><strong>safe_substitute</strong></a>(*args, **kws)</dt></dl>
 
-<dl><dt><a name="Template-substitute"><strong>substitute</strong></a>(self, *args, **kws)</dt></dl>
+<dl><dt><a name="Template-substitute"><strong>substitute</strong></a>(*args, **kws)</dt></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -125,7 +126,7 @@ Data and other attributes defined here:<br>
 
 <dl><dt><strong>idpattern</strong> = '[_a-z][_a-z0-9]*'</dl>
 
-<dl><dt><strong>pattern</strong> = &lt;_sre.SRE_Pattern object at 0x100267840&gt;</dl>
+<dl><dt><strong>pattern</strong> = &lt;_sre.SRE_Pattern object&gt;</dl>
 
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -158,12 +159,14 @@ unless&nbsp;base&nbsp;is&nbsp;0.</tt></dd></dl>
 &nbsp;<br>
 Return&nbsp;a&nbsp;copy&nbsp;of&nbsp;the&nbsp;string&nbsp;s&nbsp;with&nbsp;only&nbsp;its&nbsp;first&nbsp;character<br>
 capitalized.</tt></dd></dl>
- <dl><dt><a name="-capwords"><strong>capwords</strong></a>(s, sep<font color="#909090">=None</font>)</dt><dd><tt><a href="#-capwords">capwords</a>(s,&nbsp;[sep])&nbsp;-&gt;&nbsp;string<br>
+ <dl><dt><a name="-capwords"><strong>capwords</strong></a>(s, sep<font color="#909090">=None</font>)</dt><dd><tt><a href="#-capwords">capwords</a>(s&nbsp;[,sep])&nbsp;-&gt;&nbsp;string<br>
 &nbsp;<br>
 Split&nbsp;the&nbsp;argument&nbsp;into&nbsp;words&nbsp;using&nbsp;split,&nbsp;capitalize&nbsp;each<br>
 word&nbsp;using&nbsp;capitalize,&nbsp;and&nbsp;join&nbsp;the&nbsp;capitalized&nbsp;words&nbsp;using<br>
-join.&nbsp;Note&nbsp;that&nbsp;this&nbsp;replaces&nbsp;runs&nbsp;of&nbsp;whitespace&nbsp;characters&nbsp;by<br>
-a&nbsp;single&nbsp;space.</tt></dd></dl>
+join.&nbsp;&nbsp;If&nbsp;the&nbsp;optional&nbsp;second&nbsp;argument&nbsp;sep&nbsp;is&nbsp;absent&nbsp;or&nbsp;None,<br>
+runs&nbsp;of&nbsp;whitespace&nbsp;characters&nbsp;are&nbsp;replaced&nbsp;by&nbsp;a&nbsp;single&nbsp;space<br>
+and&nbsp;leading&nbsp;and&nbsp;trailing&nbsp;whitespace&nbsp;are&nbsp;removed,&nbsp;otherwise<br>
+sep&nbsp;is&nbsp;used&nbsp;to&nbsp;split&nbsp;and&nbsp;join&nbsp;the&nbsp;words.</tt></dd></dl>
  <dl><dt><a name="-center"><strong>center</strong></a>(s, width, *args)</dt><dd><tt><a href="#-center">center</a>(s,&nbsp;width[,&nbsp;fillchar])&nbsp;-&gt;&nbsp;string<br>
 &nbsp;<br>
 Return&nbsp;a&nbsp;center&nbsp;version&nbsp;of&nbsp;s,&nbsp;in&nbsp;a&nbsp;field&nbsp;of&nbsp;the&nbsp;specified<br>
@@ -220,11 +223,11 @@ If&nbsp;chars&nbsp;is&nbsp;given&nbsp;and&nbsp;not&nbsp;None,&nbsp;remove&nbsp;c
 Return&nbsp;a&nbsp;translation&nbsp;table&nbsp;(a&nbsp;string&nbsp;of&nbsp;256&nbsp;bytes&nbsp;long)<br>
 suitable&nbsp;for&nbsp;use&nbsp;in&nbsp;string.translate.&nbsp;&nbsp;The&nbsp;strings&nbsp;frm&nbsp;and&nbsp;to<br>
 must&nbsp;be&nbsp;of&nbsp;the&nbsp;same&nbsp;length.</tt></dd></dl>
- <dl><dt><a name="-replace"><strong>replace</strong></a>(s, old, new, maxsplit<font color="#909090">=-1</font>)</dt><dd><tt>replace&nbsp;(str,&nbsp;old,&nbsp;new[,&nbsp;maxsplit])&nbsp;-&gt;&nbsp;string<br>
+ <dl><dt><a name="-replace"><strong>replace</strong></a>(s, old, new, maxreplace<font color="#909090">=-1</font>)</dt><dd><tt>replace&nbsp;(str,&nbsp;old,&nbsp;new[,&nbsp;maxreplace])&nbsp;-&gt;&nbsp;string<br>
 &nbsp;<br>
 Return&nbsp;a&nbsp;copy&nbsp;of&nbsp;string&nbsp;str&nbsp;with&nbsp;all&nbsp;occurrences&nbsp;of&nbsp;substring<br>
-old&nbsp;replaced&nbsp;by&nbsp;new.&nbsp;If&nbsp;the&nbsp;optional&nbsp;argument&nbsp;maxsplit&nbsp;is<br>
-given,&nbsp;only&nbsp;the&nbsp;first&nbsp;maxsplit&nbsp;occurrences&nbsp;are&nbsp;replaced.</tt></dd></dl>
+old&nbsp;replaced&nbsp;by&nbsp;new.&nbsp;If&nbsp;the&nbsp;optional&nbsp;argument&nbsp;maxreplace&nbsp;is<br>
+given,&nbsp;only&nbsp;the&nbsp;first&nbsp;maxreplace&nbsp;occurrences&nbsp;are&nbsp;replaced.</tt></dd></dl>
  <dl><dt><a name="-rfind"><strong>rfind</strong></a>(s, *args)</dt><dd><tt><a href="#-rfind">rfind</a>(s,&nbsp;sub&nbsp;[,start&nbsp;[,end]])&nbsp;-&gt;&nbsp;int<br>
 &nbsp;<br>
 Return&nbsp;the&nbsp;highest&nbsp;index&nbsp;in&nbsp;s&nbsp;where&nbsp;substring&nbsp;sub&nbsp;is&nbsp;found,<br>
@@ -303,7 +306,7 @@ of&nbsp;the&nbsp;specified&nbsp;width.&nbsp;&nbsp;The&nbsp;string&nbsp;x&nbsp;is
 <strong>ascii_uppercase</strong> = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'<br>
 <strong>digits</strong> = '0123456789'<br>
 <strong>hexdigits</strong> = '0123456789abcdefABCDEF'<br>
-<strong>letters</strong> = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'<br>
+<strong>letters</strong> = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'<br>
 <strong>lowercase</strong> = 'abcdefghijklmnopqrstuvwxyz'<br>
 <strong>octdigits</strong> = '01234567'<br>
 <strong>printable</strong> = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&amp;<font color="#c040c0">\'</font>()*+,-./:;&lt;=&gt;?@[<font color="#c040c0">\\</font>]^_`{|}~ <font color="#c040c0">\t\n\r\x0b\x0c</font>'<br>

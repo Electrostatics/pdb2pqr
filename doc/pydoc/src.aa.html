@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module src.aa</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.aa</strong></big></big> (28 December 2006)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/aa.py">/Users/d3y382/workspaces/apbs/pdb2pqr/branches/pdb2pqr-1.8/src/aa.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/aa.py">/Users/d3y382/workspaces/apbs-pdb2pqr/pdb2pqr/src/aa.py</a></font></td></tr></table>
     <p><tt><a href="#Amino">Amino</a>&nbsp;Acid&nbsp;Structures&nbsp;for&nbsp;PDB2PQR<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;contains&nbsp;the&nbsp;base&nbsp;amino&nbsp;acid&nbsp;structures&nbsp;for<br>
@@ -19,36 +20,36 @@ pdb2pqr.<br>
 PDB2PQR&nbsp;--&nbsp;An&nbsp;automated&nbsp;pipeline&nbsp;for&nbsp;the&nbsp;setup,&nbsp;execution,&nbsp;and&nbsp;analysis&nbsp;of<br>
 Poisson-Boltzmann&nbsp;electrostatics&nbsp;calculations<br>
 &nbsp;<br>
-Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;&nbsp;<br>
-Nathan&nbsp;A.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific&nbsp;<br>
-Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;<br>
-Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;U.S.&nbsp;Department&nbsp;Energy.;&nbsp;<br>
+Copyright&nbsp;(c)&nbsp;2002-2011,&nbsp;Jens&nbsp;Erik&nbsp;Nielsen,&nbsp;University&nbsp;College&nbsp;Dublin;<br>
+Nathan&nbsp;A.&nbsp;Baker,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,&nbsp;Developed&nbsp;at&nbsp;the&nbsp;Pacific<br>
+Northwest&nbsp;National&nbsp;Laboratory,&nbsp;operated&nbsp;by&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
+Pacific&nbsp;Northwest&nbsp;Division&nbsp;for&nbsp;the&nbsp;U.S.&nbsp;Department&nbsp;Energy.;<br>
 Paul&nbsp;Czodrowski&nbsp;&amp;&nbsp;Gerhard&nbsp;Klebe,&nbsp;University&nbsp;of&nbsp;Marburg.<br>
 &nbsp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;All&nbsp;rights&nbsp;reserved.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Redistribution&nbsp;and&nbsp;use&nbsp;in&nbsp;source&nbsp;and&nbsp;binary&nbsp;forms,&nbsp;with&nbsp;or&nbsp;without&nbsp;modification,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Redistribution&nbsp;and&nbsp;use&nbsp;in&nbsp;source&nbsp;and&nbsp;binary&nbsp;forms,&nbsp;with&nbsp;or&nbsp;without&nbsp;modification,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;permitted&nbsp;provided&nbsp;that&nbsp;the&nbsp;following&nbsp;conditions&nbsp;are&nbsp;met:<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;of&nbsp;source&nbsp;code&nbsp;must&nbsp;retain&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;of&nbsp;source&nbsp;code&nbsp;must&nbsp;retain&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Redistributions&nbsp;in&nbsp;binary&nbsp;form&nbsp;must&nbsp;reproduce&nbsp;the&nbsp;above&nbsp;copyright&nbsp;notice,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this&nbsp;list&nbsp;of&nbsp;conditions&nbsp;and&nbsp;the&nbsp;following&nbsp;disclaimer&nbsp;in&nbsp;the&nbsp;documentation<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and/or&nbsp;other&nbsp;materials&nbsp;provided&nbsp;with&nbsp;the&nbsp;distribution.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Neither&nbsp;the&nbsp;names&nbsp;of&nbsp;University&nbsp;College&nbsp;Dublin,&nbsp;Battelle&nbsp;Memorial&nbsp;Institute,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pacific&nbsp;Northwest&nbsp;National&nbsp;Laboratory,&nbsp;US&nbsp;Department&nbsp;of&nbsp;Energy,&nbsp;or&nbsp;University<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;Marburg&nbsp;nor&nbsp;the&nbsp;names&nbsp;of&nbsp;its&nbsp;contributors&nbsp;may&nbsp;be&nbsp;used&nbsp;to&nbsp;endorse&nbsp;or&nbsp;promote<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;products&nbsp;derived&nbsp;from&nbsp;this&nbsp;software&nbsp;without&nbsp;specific&nbsp;prior&nbsp;written&nbsp;permission.<br>
 &nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;WARRANTIES&nbsp;OF&nbsp;MERCHANTABILITY&nbsp;AND&nbsp;FITNESS&nbsp;FOR&nbsp;A&nbsp;PARTICULAR&nbsp;PURPOSE&nbsp;ARE&nbsp;DISCLAIMED.&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;IN&nbsp;NO&nbsp;EVENT&nbsp;SHALL&nbsp;THE&nbsp;COPYRIGHT&nbsp;OWNER&nbsp;OR&nbsp;CONTRIBUTORS&nbsp;BE&nbsp;LIABLE&nbsp;FOR&nbsp;ANY&nbsp;DIRECT,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;INDIRECT,&nbsp;INCIDENTAL,&nbsp;SPECIAL,&nbsp;EXEMPLARY,&nbsp;OR&nbsp;CONSEQUENTIAL&nbsp;DAMAGES&nbsp;(INCLUDING,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;PROCUREMENT&nbsp;OF&nbsp;SUBSTITUTE&nbsp;GOODS&nbsp;OR&nbsp;SERVICES;&nbsp;LOSS&nbsp;OF&nbsp;USE,&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;DATA,&nbsp;OR&nbsp;PROFITS;&nbsp;OR&nbsp;BUSINESS&nbsp;INTERRUPTION)&nbsp;HOWEVER&nbsp;CAUSED&nbsp;AND&nbsp;ON&nbsp;ANY&nbsp;THEORY&nbsp;OF&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;LIABILITY,&nbsp;WHETHER&nbsp;IN&nbsp;CONTRACT,&nbsp;STRICT&nbsp;LIABILITY,&nbsp;OR&nbsp;TORT&nbsp;(INCLUDING&nbsp;NEGLIGENCE&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;OTHERWISE)&nbsp;ARISING&nbsp;IN&nbsp;ANY&nbsp;WAY&nbsp;OUT&nbsp;OF&nbsp;THE&nbsp;USE&nbsp;OF&nbsp;THIS&nbsp;SOFTWARE,&nbsp;EVEN&nbsp;IF&nbsp;ADVISED&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;THIS&nbsp;SOFTWARE&nbsp;IS&nbsp;PROVIDED&nbsp;BY&nbsp;THE&nbsp;COPYRIGHT&nbsp;HOLDERS&nbsp;AND&nbsp;CONTRIBUTORS&nbsp;"AS&nbsp;IS"&nbsp;AND<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ANY&nbsp;EXPRESS&nbsp;OR&nbsp;IMPLIED&nbsp;WARRANTIES,&nbsp;INCLUDING,&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;THE&nbsp;IMPLIED<br>
+&nbsp;&nbsp;&nbsp;&nbsp;WARRANTIES&nbsp;OF&nbsp;MERCHANTABILITY&nbsp;AND&nbsp;FITNESS&nbsp;FOR&nbsp;A&nbsp;PARTICULAR&nbsp;PURPOSE&nbsp;ARE&nbsp;DISCLAIMED.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;IN&nbsp;NO&nbsp;EVENT&nbsp;SHALL&nbsp;THE&nbsp;COPYRIGHT&nbsp;OWNER&nbsp;OR&nbsp;CONTRIBUTORS&nbsp;BE&nbsp;LIABLE&nbsp;FOR&nbsp;ANY&nbsp;DIRECT,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;INDIRECT,&nbsp;INCIDENTAL,&nbsp;SPECIAL,&nbsp;EXEMPLARY,&nbsp;OR&nbsp;CONSEQUENTIAL&nbsp;DAMAGES&nbsp;(INCLUDING,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;BUT&nbsp;NOT&nbsp;LIMITED&nbsp;TO,&nbsp;PROCUREMENT&nbsp;OF&nbsp;SUBSTITUTE&nbsp;GOODS&nbsp;OR&nbsp;SERVICES;&nbsp;LOSS&nbsp;OF&nbsp;USE,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;DATA,&nbsp;OR&nbsp;PROFITS;&nbsp;OR&nbsp;BUSINESS&nbsp;INTERRUPTION)&nbsp;HOWEVER&nbsp;CAUSED&nbsp;AND&nbsp;ON&nbsp;ANY&nbsp;THEORY&nbsp;OF<br>
+&nbsp;&nbsp;&nbsp;&nbsp;LIABILITY,&nbsp;WHETHER&nbsp;IN&nbsp;CONTRACT,&nbsp;STRICT&nbsp;LIABILITY,&nbsp;OR&nbsp;TORT&nbsp;(INCLUDING&nbsp;NEGLIGENCE<br>
+&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;OTHERWISE)&nbsp;ARISING&nbsp;IN&nbsp;ANY&nbsp;WAY&nbsp;OUT&nbsp;OF&nbsp;THE&nbsp;USE&nbsp;OF&nbsp;THIS&nbsp;SOFTWARE,&nbsp;EVEN&nbsp;IF&nbsp;ADVISED<br>
 &nbsp;&nbsp;&nbsp;&nbsp;OF&nbsp;THE&nbsp;POSSIBILITY&nbsp;OF&nbsp;SUCH&nbsp;DAMAGE.<br>
 &nbsp;<br>
 ----------------------------</tt></p>
@@ -154,7 +155,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="ALA-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="ALA-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="ALA-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -312,7 +313,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="ARG-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="ARG-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="ARG-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -470,7 +471,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="ASN-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="ASN-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="ASN-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -628,7 +629,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="ASP-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="ASP-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="ASP-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -779,7 +780,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="Amino-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="Amino-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="Amino-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -939,7 +940,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="CYS-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="CYS-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="CYS-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -1097,7 +1098,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="GLN-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="GLN-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="GLN-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -1255,7 +1256,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="GLU-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="GLU-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="GLU-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -1413,7 +1414,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="GLY-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="GLY-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="GLY-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -1574,7 +1575,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="HIS-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="HIS-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="HIS-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -1732,7 +1733,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="ILE-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="ILE-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="ILE-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -1890,7 +1891,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="LEU-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="LEU-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="LEU-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2029,7 +2030,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="LIG-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="LIG-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="LIG-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2188,7 +2189,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="LYS-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="LYS-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="LYS-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2346,7 +2347,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="MET-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="MET-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="MET-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2504,7 +2505,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="PHE-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="PHE-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="PHE-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2662,7 +2663,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="PRO-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="PRO-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="PRO-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2820,7 +2821,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="SER-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="SER-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="SER-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -2978,7 +2979,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="THR-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="THR-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="THR-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -3136,7 +3137,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="TRP-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="TRP-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="TRP-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -3293,7 +3294,7 @@ Parameters<br>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="TYR-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="TYR-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="TYR-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -3451,7 +3452,7 @@ state.&nbsp;&nbsp;Uses&nbsp;N*&nbsp;and&nbsp;C*&nbsp;for&nbsp;termini.</tt></dd>
 
 <hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="VAL-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="VAL-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="VAL-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -3589,8 +3590,12 @@ Parameters<br>
 &nbsp;&nbsp;&nbsp;&nbsp;newcoords:&nbsp;&nbsp;The&nbsp;new&nbsp;coordinates&nbsp;of&nbsp;the&nbsp;atom&nbsp;(list)</tt></dd></dl>
 
 <hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>water_residue_names</strong> = ['HOH', 'WAT']</dl>
+
+<hr>
 Methods inherited from <a href="src.structures.html#Residue">src.structures.Residue</a>:<br>
-<dl><dt><a name="WAT-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation&nbsp;for&nbsp;debugging</tt></dd></dl>
+<dl><dt><a name="WAT-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Basic&nbsp;string&nbsp;representation</tt></dd></dl>
 
 <dl><dt><a name="WAT-addMissing"><strong>addMissing</strong></a>(self, value)</dt><dd><tt>Add&nbsp;the&nbsp;value&nbsp;to&nbsp;the&nbsp;list&nbsp;of&nbsp;missing&nbsp;atoms<br>
 &nbsp;<br>
@@ -3711,10 +3716,11 @@ Parameters<br>
 <td width="100%"><strong>BACKBONE</strong> = ['N', 'CA', 'C', 'O', 'O2', 'HA', 'HN', 'H', 'tN']<br>
 <strong>DIHEDRAL</strong> = 57.2958<br>
 <strong>INSTALLDIR</strong> = '/Users/d3y382/pdb2pqr/'<br>
-<strong>SMALL</strong> = 9.9999999999999995e-08<br>
+<strong>SMALL</strong> = 1e-07<br>
 <strong>TMPDIR</strong> = 'tmp/'<br>
 <strong>__author__</strong> = 'Todd Dolinsky'<br>
-<strong>__date__</strong> = '28 December 2006'</td></tr></table><p>
+<strong>__date__</strong> = '28 December 2006'<br>
+<strong>lineParsers</strong> = {'ANISOU': &lt;class 'src.pdb.ANISOU'&gt;, 'ATOM': &lt;class 'src.pdb.ATOM'&gt;, 'AUTHOR': &lt;class 'src.pdb.AUTHOR'&gt;, 'CAVEAT': &lt;class 'src.pdb.CAVEAT'&gt;, 'CISPEP': &lt;class 'src.pdb.CISPEP'&gt;, 'COMPND': &lt;class 'src.pdb.COMPND'&gt;, 'CONECT': &lt;class 'src.pdb.CONECT'&gt;, 'CRYST1': &lt;class 'src.pdb.CRYST1'&gt;, 'DBREF': &lt;class 'src.pdb.DBREF'&gt;, 'END': &lt;class 'src.pdb.END'&gt;, ...}</td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#7799ee">
 <td colspan=3 valign=bottom>&nbsp;<br>

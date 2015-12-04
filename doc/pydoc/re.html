@@ -1,6 +1,7 @@
 
-<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html><head><title>Python: module re</title>
+<meta charset="utf-8">
 </head><body bgcolor="#f0f0f8">
 
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
@@ -8,7 +9,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>re</strong></big></big> (version 2.2.1)</font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/re.py">/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/re.py</a><br><a href="http://docs.python.org/library/re">Module Docs</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/usr/local/Cellar/python/2.7.10_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/re.py">/usr/local/Cellar/python/2.7.10_2/Frameworks/Python.framework/Versions/2.7/lib/python2.7/re.py</a><br><a href="http://docs.python.org/library/re">Module Docs</a></font></td></tr></table>
     <p><tt>Support&nbsp;for&nbsp;regular&nbsp;expressions&nbsp;(RE).<br>
 &nbsp;<br>
 This&nbsp;module&nbsp;provides&nbsp;regular&nbsp;expression&nbsp;matching&nbsp;operations&nbsp;similar&nbsp;to<br>
@@ -100,11 +101,12 @@ This&nbsp;module&nbsp;also&nbsp;defines&nbsp;an&nbsp;exception&nbsp;'<a href="#e
 <font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="copy_reg.html">copy_reg</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="_locale.html">_locale</a><br>
+<a href="copy_reg.html">copy_reg</a><br>
 </td><td width="25%" valign=top><a href="sre_compile.html">sre_compile</a><br>
-</td><td width="25%" valign=top><a href="sre_parse.html">sre_parse</a><br>
+<a href="sre_parse.html">sre_parse</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-</td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -139,11 +141,11 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Methods inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><a name="error-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;x.__class__.__doc__&nbsp;for&nbsp;signature</tt></dd></dl>
+<dl><dt><a name="error-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#error-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;help(type(x))&nbsp;for&nbsp;signature</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
-<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object at 0x100119f80&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#error-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
 
 <hr>
 Methods inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
@@ -202,19 +204,21 @@ a&nbsp;match&nbsp;object,&nbsp;or&nbsp;None&nbsp;if&nbsp;no&nbsp;match&nbsp;was&
  <dl><dt><a name="-purge"><strong>purge</strong></a>()</dt><dd><tt>Clear&nbsp;the&nbsp;regular&nbsp;expression&nbsp;cache</tt></dd></dl>
  <dl><dt><a name="-search"><strong>search</strong></a>(pattern, string, flags<font color="#909090">=0</font>)</dt><dd><tt>Scan&nbsp;through&nbsp;string&nbsp;looking&nbsp;for&nbsp;a&nbsp;match&nbsp;to&nbsp;the&nbsp;pattern,&nbsp;returning<br>
 a&nbsp;match&nbsp;object,&nbsp;or&nbsp;None&nbsp;if&nbsp;no&nbsp;match&nbsp;was&nbsp;found.</tt></dd></dl>
- <dl><dt><a name="-split"><strong>split</strong></a>(pattern, string, maxsplit<font color="#909090">=0</font>)</dt><dd><tt>Split&nbsp;the&nbsp;source&nbsp;string&nbsp;by&nbsp;the&nbsp;occurrences&nbsp;of&nbsp;the&nbsp;pattern,<br>
+ <dl><dt><a name="-split"><strong>split</strong></a>(pattern, string, maxsplit<font color="#909090">=0</font>, flags<font color="#909090">=0</font>)</dt><dd><tt>Split&nbsp;the&nbsp;source&nbsp;string&nbsp;by&nbsp;the&nbsp;occurrences&nbsp;of&nbsp;the&nbsp;pattern,<br>
 returning&nbsp;a&nbsp;list&nbsp;containing&nbsp;the&nbsp;resulting&nbsp;substrings.</tt></dd></dl>
- <dl><dt><a name="-sub"><strong>sub</strong></a>(pattern, repl, string, count<font color="#909090">=0</font>)</dt><dd><tt>Return&nbsp;the&nbsp;string&nbsp;obtained&nbsp;by&nbsp;replacing&nbsp;the&nbsp;leftmost<br>
+ <dl><dt><a name="-sub"><strong>sub</strong></a>(pattern, repl, string, count<font color="#909090">=0</font>, flags<font color="#909090">=0</font>)</dt><dd><tt>Return&nbsp;the&nbsp;string&nbsp;obtained&nbsp;by&nbsp;replacing&nbsp;the&nbsp;leftmost<br>
 non-overlapping&nbsp;occurrences&nbsp;of&nbsp;the&nbsp;pattern&nbsp;in&nbsp;string&nbsp;by&nbsp;the<br>
 replacement&nbsp;repl.&nbsp;&nbsp;repl&nbsp;can&nbsp;be&nbsp;either&nbsp;a&nbsp;string&nbsp;or&nbsp;a&nbsp;callable;<br>
-if&nbsp;a&nbsp;callable,&nbsp;it's&nbsp;passed&nbsp;the&nbsp;match&nbsp;object&nbsp;and&nbsp;must&nbsp;return<br>
+if&nbsp;a&nbsp;string,&nbsp;backslash&nbsp;escapes&nbsp;in&nbsp;it&nbsp;are&nbsp;processed.&nbsp;&nbsp;If&nbsp;it&nbsp;is<br>
+a&nbsp;callable,&nbsp;it's&nbsp;passed&nbsp;the&nbsp;match&nbsp;object&nbsp;and&nbsp;must&nbsp;return<br>
 a&nbsp;replacement&nbsp;string&nbsp;to&nbsp;be&nbsp;used.</tt></dd></dl>
- <dl><dt><a name="-subn"><strong>subn</strong></a>(pattern, repl, string, count<font color="#909090">=0</font>)</dt><dd><tt>Return&nbsp;a&nbsp;2-tuple&nbsp;containing&nbsp;(new_string,&nbsp;number).<br>
+ <dl><dt><a name="-subn"><strong>subn</strong></a>(pattern, repl, string, count<font color="#909090">=0</font>, flags<font color="#909090">=0</font>)</dt><dd><tt>Return&nbsp;a&nbsp;2-tuple&nbsp;containing&nbsp;(new_string,&nbsp;number).<br>
 new_string&nbsp;is&nbsp;the&nbsp;string&nbsp;obtained&nbsp;by&nbsp;replacing&nbsp;the&nbsp;leftmost<br>
 non-overlapping&nbsp;occurrences&nbsp;of&nbsp;the&nbsp;pattern&nbsp;in&nbsp;the&nbsp;source<br>
 string&nbsp;by&nbsp;the&nbsp;replacement&nbsp;repl.&nbsp;&nbsp;number&nbsp;is&nbsp;the&nbsp;number&nbsp;of<br>
 substitutions&nbsp;that&nbsp;were&nbsp;made.&nbsp;repl&nbsp;can&nbsp;be&nbsp;either&nbsp;a&nbsp;string&nbsp;or&nbsp;a<br>
-callable;&nbsp;if&nbsp;a&nbsp;callable,&nbsp;it's&nbsp;passed&nbsp;the&nbsp;match&nbsp;object&nbsp;and&nbsp;must<br>
+callable;&nbsp;if&nbsp;a&nbsp;string,&nbsp;backslash&nbsp;escapes&nbsp;in&nbsp;it&nbsp;are&nbsp;processed.<br>
+If&nbsp;it&nbsp;is&nbsp;a&nbsp;callable,&nbsp;it's&nbsp;passed&nbsp;the&nbsp;match&nbsp;object&nbsp;and&nbsp;must<br>
 return&nbsp;a&nbsp;replacement&nbsp;string&nbsp;to&nbsp;be&nbsp;used.</tt></dd></dl>
  <dl><dt><a name="-template"><strong>template</strong></a>(pattern, flags<font color="#909090">=0</font>)</dt><dd><tt>Compile&nbsp;a&nbsp;template&nbsp;pattern,&nbsp;returning&nbsp;a&nbsp;pattern&nbsp;object</tt></dd></dl>
 </td></tr></table><p>

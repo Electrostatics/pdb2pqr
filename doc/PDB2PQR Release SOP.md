@@ -19,7 +19,13 @@ In the file <code>site_scons/defaults.py</code> change the value of <code>produc
 ## Fabric
 All of the steps in the Build, Binary builds and Automated Testing can be done automatically for all target platforms by adapting fabric_settings.py and using the fabric.py script found in the pdb2pqr directory. Documentation for the python fabric module and how to use the fabric script can be found at http://docs.fabfile.org/
 
-Use the command "fabric doall" on a Windows machine to build and test pdb2pqr on all target platforms.
+Build the documentation.
+
+Use the command "fab build_all_binaries" on a Windows machine to build and test pdb2pqr on all target platforms.
+
+If all tests pass and all binaries are built then restore fabric_settings.py to it's default state. Run "fab build_all_tarballs"
+
+After these steps all 3 binary tarballs, the source tarball and the source tarball for NBCR will all be in "dist_file" directory.
 
 ## Build
 The branch should be tested to see if it configures and compiles correctly on all the target operating systems.

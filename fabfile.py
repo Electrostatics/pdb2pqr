@@ -67,11 +67,14 @@ def pack():
         tar.add('apbs_libs/osx/_apbslib.so','pdb2pka/_apbslib.so')
     tar.close()
 
+@runs_once
 def pack_for_nbcr():
-    tar = start_src_tar('pdb2pqr-src-'+pv+'.tar.gz', 'pdb2pqr-src-'+pv)
+    create_dist_folder()
+    tar = start_src_tar('pdb2pqr-src-nbcr-'+pv+'.tar.gz', 'pdb2pqr-src-'+pv)
     tar.add('apbs_libs/linux/apbslib.py','pdb2pka/apbslib.py')
     tar.add('apbs_libs/linux/_apbslib.so','pdb2pka/_apbslib.so')
     tar.close()
+    local("move pdb2pqr-src-nbcr-"+pv+'.tar.gz dist_files/')
 
 def start_src_tar(name='pdb2pqr.tgz', prefix=None):
     file_list = local('git ls-tree -r --name-only HEAD', capture=True).split('\n')
@@ -81,9 +84,13 @@ def start_src_tar(name='pdb2pqr.tgz', prefix=None):
     return tar
 
 @runs_once
-def misc():
+def create_dist_folder():
     with settings(warn_only=True):
         local('mkdir dist_files')
+
+@runs_once
+def pack_for_ditro():
+    create_dist_folder()
     tar = start_src_tar('pdb2pqr-src-'+pv+'.tar.gz', 'pdb2pqr-src-'+pv)
     tar.close()
     local('copy Changelog.md "dist_files\PDB2PQR-' + pv + '-ReleaseNotes.txt"')
@@ -144,6 +151,7 @@ def install_on_deployed():
         run(python+' scons/scons.py install ' + configopts)
 
 def build_binary_from_deploy():
+    create_dist_folder()
     with cd('~/tmp/'):
         os_string = 'NOT_SET_FIX_ME'
         if env.host == linux_host:
@@ -218,11 +226,15 @@ def build_windows_binary():
             zip_file.write(real_file_path, zip_file_path)
             print 'Zipping ' + zip_file_path
     zip_file.close()
+    create_dist_folder()
     local('mv ' + name + '.zip' + ' dist_files/' + name + '.zip')
 
 
-def doall():
-    misc()
+def build_all_tarballs():
+    pack_for_ditro()
+    pack_for_nbcr()
+
+def build_all_binaries():
     pack()
     deploy()
     build_binary_from_deploy()

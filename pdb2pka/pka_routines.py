@@ -873,9 +873,14 @@ class pKaRoutines:
             #linear interpolation
             charge0, ph0 =  curve[prevous_cross_index]
             charge1, ph1 =  curve[cross_index]
-            ph_at_0_5 = ph0 + ((ph1-ph0) * ((curve_calc_point-charge0)/(charge1-charge0)))
 
-            pH_results[name] = ph_at_0_5
+            try:
+                ph_at_0_5 = ph0 + ((ph1-ph0) * ((curve_calc_point-charge0)/(charge1-charge0)))
+                pH_results[name] = ph_at_0_5
+            except ZeroDivisionError:
+                warning = "WARNING: UNABLE TO CACLCULATE pH FOR {name}, Divide by zero.\n".format(name=name)
+                print warning,
+                self.warnings.append(warning)
 
             if not bad_curve:
                 print "{name} exhibits Henderson-Hasselbalch behavior.".format(name=name)
@@ -885,8 +890,13 @@ class pKaRoutines:
             end = cross_index + adjacent_data_points
             pka_pairs = curve[start:end]
 
-            pkas = [pH-math.log10(abs(v)/(1.0-abs(v))) for pH, v in pka_pairs]
-            pKa_value = sum(pkas)/float(len(pkas))
+            try:
+                pkas = [pH-math.log10(abs(v)/(1.0-abs(v))) for pH, v in pka_pairs]
+                pKa_value = sum(pkas)/float(len(pkas))
+            except ZeroDivisionError:
+                warning = "WARNING: UNABLE TO CACLCULATE PKA FOR {name}, Divide by zero.\n".format(name=name)
+                print warning,
+                self.warnings.append(warning)
 
 
             pKa_results[name] = pKa_value

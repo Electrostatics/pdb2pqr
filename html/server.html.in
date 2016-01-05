@@ -239,8 +239,10 @@ pKa calculations are performed by <a href="https://github.com/jensengroup/propka
 For more information on PDB2PQR please see the:<br />
 <ul>
 	<li> <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target="BLANK">Home Page</a> </li>
+	<li> <a href="http://eepurl.com/by4eQr"target="BLANK">Register (and help suport PDB2PQR & APBS)</a> </li>
 	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">User Guide</a> </li>
 	<li> <a href="http://www.poissonboltzmann.org/examples/home/"target="BLANK">Examples</a> </li>
+	<li> <a href="https://github.com/Electrostatics/apbs-pdb2pqr/releases/tag/pdb2pqr-2.1.0_release"target="BLANK">Release Notes</a> </li>
 </ul>
 
 If you use the PDB2PQR service in a publication, please cite:
@@ -311,7 +313,7 @@ Available options:
 <input type="CHECKBOX" name="DROPWATER"> Remove the waters from the output file
 </blockquote>
 
-pKa Options:
+pKa Options*:
 <blockquote>
 Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
 <input type="RADIO" name="PKACALCMETHOD" value="none" id="pka_none" onClick="setpkamethod(this.value)"> No pKa calculation</input><br />
@@ -324,6 +326,10 @@ Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
 @WITHOPAL@
 <label>&nbsp;&nbsp;* Warning: PDB2PKA is currently experimental and the process can take a very long time. The webserver will kill any jobs that last longer than one week. </label>
 @WITHOPAL@
+See the 
+<a
+href="https://github.com/Electrostatics/apbs-pdb2pqr/releases/tag/pdb2pqr-2.1.0_release"target="BLANK">Release
+Notes</a> for changes since the last version.
 
 </blockquote>
 

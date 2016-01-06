@@ -1,5 +1,6 @@
+from __future__ import print_function
 import sys
-from itertools import product, izip
+from itertools import product
 import random
 random.seed("Mmmmm, sandwiches...")
 
@@ -17,15 +18,15 @@ def resolve_uncertainty(protein_complex, labeling, uncertain, brute_force_limit=
         return final_labeling
 
     if verbose:
-        print "Uncertain count:", len(uncertain)
+        print("Uncertain count:", len(uncertain))
 
     if len(uncertain) > brute_force_limit:
         if verbose:
-            print "Using Monte Carlo"
+            print("Using Monte Carlo")
         return monte_carlo(protein_complex, final_labeling, uncertain)
     else:
         if verbose:
-            print "Using brute force"
+            print("Using brute force")
         return brute_force(protein_complex, final_labeling, uncertain)
 
 
@@ -39,7 +40,8 @@ def brute_force(pc, labeling, uncertain):
 
     test_labeling = labeling.copy()
     for test_states in product(*state_pairs):
-        test_labeling.update((x,y) for x,y in izip(uncertain, test_states))
+        for x, y in zip(uncertain, test_states):
+            test_labeling.update([(x, y)])
         energy = pc.evaluate_energy(test_labeling, normal_form=True)
         if energy < best_energy:
             best_energy = energy
@@ -75,11 +77,11 @@ def monte_carlo(pc, labeling, uncertain):
     iterations = 1000
     sub_iterations = 500
 
-    for _ in xrange(iterations):
+    for _ in range(iterations):
         test_states = (random.choice(state_pair) for state_pair in state_pairs)
-        test_labeling.update((x,y) for x,y in izip(uncertain, test_states))
+        test_labeling.update((x,y) for x,y in zip(uncertain, test_states))
         last_residue = None
-        for _ in xrange(sub_iterations):
+        for _ in range(sub_iterations):
             random_residue = random.choice(uncertain)
             if random_residue is last_residue:
                 continue
@@ -90,7 +92,7 @@ def monte_carlo(pc, labeling, uncertain):
             elif diff > 0.0:
                 test_labeling[random_residue] = random_residue.instances["DEPROTONATED"]
             else:
-                test_labeling[random_residue] = random.choice(random_residue.instances.values())
+                test_labeling[random_residue] = random.choice(list(random_residue.instances.values()))
 
         energy = pc.evaluate_energy(test_labeling, normal_form=True)
         if energy < best_energy:
@@ -98,4 +100,3 @@ def monte_carlo(pc, labeling, uncertain):
             result_labeling = test_labeling.copy()
 
     return result_labeling
-

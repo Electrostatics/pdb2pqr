@@ -2,7 +2,7 @@ import os.path
 
 def create_output(path, curves):
     file_name_template = "{}_{}_{}.csv"
-    for key, curve in curves.iteritems():
+    for key, curve in curves.items():
         file_name = file_name_template.format(*key)
         file_path = os.path.join(path, file_name)
 

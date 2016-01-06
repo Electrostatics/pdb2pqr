@@ -21,7 +21,7 @@ class ProteinGraph(object):
         self._build_nodes()
 
         #Create edges going in and out of S and T.
-        for key, v in self.pc.residue_variables.iteritems():
+        for key, v in self.pc.residue_variables.items():
             prot_instance = v.instances["PROTONATED"]
             prot_capacity = prot_instance.energyNF / 2.0
             prot_node = key+("PROTONATED",)
@@ -39,7 +39,7 @@ class ProteinGraph(object):
                 self.DG.add_edge(deprot_node, "T", capacity=deprot_capacity)
 
         #Create all interaction energy edges.
-        for p, q in combinations(self.pc.residue_variables.iteritems(),2):
+        for p, q in combinations(iter(self.pc.residue_variables.items()),2):
             p_key, p_residue = p
             q_key, q_residue = q
 
@@ -91,7 +91,7 @@ class ProteinGraph(object):
         """Creates a map of residues to instances based on the """
         labeling = {}
         uncertain = []
-        for key, v in self.pc.residue_variables.iteritems():
+        for key, v in self.pc.residue_variables.items():
             prot_node = key+("PROTONATED",)
             deprot_node = key+("DEPROTONATED",)
 
@@ -106,8 +106,3 @@ class ProteinGraph(object):
 
 
         return labeling, uncertain
-
-
-
-
-

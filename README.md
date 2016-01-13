@@ -1,4 +1,4 @@
-apbs-pdb2pqr
+pdb2pqr
 ============
 
 This directory is the home for the [PDB2PQR software](http://www.poissonboltzmann.org/docs/structures-ready/). 

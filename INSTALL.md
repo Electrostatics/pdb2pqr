@@ -37,6 +37,13 @@ The installation location is specified by the <code>PREFIX</code> setting above.
 
  	$ python scons/scons.py install
 
+## Using pdb2pka
+If you are planning to invoke the flag, 
+
+	--ph-calc-method=pdb2pka
+
+you will need to build the python APBS libraries and set your library path to point to them.  For APBS build instructions see the documention provided [here](../apbs/README.md).
+
 ## Using a different python.
 pdb2pqr will be configured to use whichever python was used to run the build script.
 If you would like to use a different installed python to run pdb2pqr run the scons/scons.py script with that python.

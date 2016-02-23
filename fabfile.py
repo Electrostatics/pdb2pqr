@@ -74,7 +74,7 @@ def pack_for_nbcr():
     tar.add('apbs_libs/linux/apbslib.py','pdb2pka/apbslib.py')
     tar.add('apbs_libs/linux/_apbslib.so','pdb2pka/_apbslib.so')
     tar.close()
-    local("move pdb2pqr-src-nbcr-"+pv+'.tar.gz dist_files/')
+    local("move pdb2pqr-src-nbcr-"+pv+'.tar.gz dist_files\\')
 
 def start_src_tar(name='pdb2pqr.tgz', prefix=None):
     file_list = local('git ls-tree -r --name-only HEAD', capture=True).split('\n')
@@ -94,7 +94,7 @@ def pack_for_ditro():
     tar = start_src_tar('pdb2pqr-src-'+pv+'.tar.gz', 'pdb2pqr-src-'+pv)
     tar.close()
     local('copy Changelog.md "dist_files\PDB2PQR-' + pv + '-ReleaseNotes.txt"')
-    local("move pdb2pqr-src-"+pv+'.tar.gz dist_files/')
+    local("move pdb2pqr-src-"+pv+'.tar.gz dist_files\\')
 
 def deploy():
     python = 'python2.7'
@@ -189,12 +189,12 @@ def linux_bin_cross_platform_test():
 
 @runs_once
 def build_windows():
-    local('cp apbs_libs/windows/* pdb2pka/')
-    local('python scons/scons.py -c')
-    local('python scons/scons.py')
+    local(r'copy apbs_libs\windows\* pdb2pka\\')
+    local(r'python scons\scons.py -c')
+    local(r'python scons\scons.py')
     if run_tests:
-        local('python scons/scons.py -j 4 pdb2pka-test')
-        local('python scons/scons.py -j 7 complete-test')
+        local(r'python scons\scons.py -j 4 pdb2pka-test')
+        local(r'python scons\scons.py -j 7 complete-test')
 
     build_windows_binary()
     if run_tests:
@@ -203,21 +203,21 @@ def build_windows():
 @runs_once
 def test_windows_binary():
     name = 'pdb2pqr-windows-bin64-' + pv
-    with lcd('dist/' + name):
-        local('pdb2pqr --ff=parse --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1ABF 1ABF.pqr')
+    with lcd(r'dist\\' + name):
+        local(r'pdb2pqr --ff=parse --verbose --ligand=examples\ligands\LIG_1ABF.mol2 1ABF 1ABF.pqr')
         local('pdb2pqr --with-ph=7.0 --ph-calc-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
 
 @runs_once
 def build_windows_binary():
     with settings(warn_only=True):
-        local('rm -rf dist')
+        local('del /Q /F dist')
 
     local('pyinstaller pdb2pqr.spec')
     name = 'pdb2pqr-windows-bin64-' + pv
-    local('mv dist/pdb2pqr dist/' + name)
+    local(r'move /Y dist\pdb2pqr dist\\' + name)
 
     zip_file = zipfile.ZipFile(name + '.zip', 'w', zipfile.ZIP_DEFLATED)
-    for root, _, files in os.walk('dist/'+name):
+    for root, _, files in os.walk(r'dist\\'+name):
         new_root = root.split('/', 1)[-1]
         print root
         for f in files:
@@ -227,7 +227,7 @@ def build_windows_binary():
             print 'Zipping ' + zip_file_path
     zip_file.close()
     create_dist_folder()
-    local('mv ' + name + '.zip' + ' dist_files/' + name + '.zip')
+    local('move /Y ' + name + '.zip' + r' dist_files\\' + name + '.zip')
 
 
 def build_all_tarballs():

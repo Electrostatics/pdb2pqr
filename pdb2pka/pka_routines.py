@@ -696,6 +696,26 @@ class pKaRoutines:
         # counted twice
         #
         correct_matrix=self.correct_matrix()
+        
+        #
+        #check that the energies in the interaction matrix are no larger than 80kT; if so, terminate the program.
+        #
+        for pKa in self.pKas:
+            for titration in pKa.pKaGroup.DefTitrations:
+                for pKa2 in self.pKas:
+                    for titration2 in pKa2.pKaGroup.DefTitrations:
+                        pos_states = titration.allstates
+                        pos_states.sort()
+                        for state1 in pos_states:
+                            states2 = titration2.allstates
+                            states2.sort()
+                            for state2 in states2:
+                                linen = correct_matrix[pKa][titration][state1][pKa2][titration2][state2]
+                                if abs(linen) > 80:
+                                    exitString = "\nError!!: Detected abnormally large interaction energy %5.4f kT before calculating pKas\n" % linen
+                                    exitString = exitString + "Terminating Program.\n"
+                                    sys.exit(exitString)
+                            
 
         protein_complex = create_protein_complex_from_matrix(correct_matrix)
         for pKa in self.pKas:

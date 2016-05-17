@@ -210,7 +210,8 @@ def runPDB2PQR(pdblist, ff,
                              When False, no detailed information will be printed (float)
             extensions:      List of extensions to run
             extensionOptions:optionParser like option object that is passed to each object.
-            propkaOptions:optionParser like option object for propka30.
+            ph_calc_method: pKa calculation method ("propka","propka31","pdb2pka")
+            ph_calc_options: optionParser like option object for propka30.
             clean:         only return original PDB file in aligned format.
             neutraln:      Make the N-terminus of this protein neutral
             neutralc:      Make the C-terminus of this protein neutral
@@ -336,7 +337,9 @@ def runPDB2PQR(pdblist, ff,
             myRoutines.debumpProtein()
 
         if ph_calc_method == 'propka':
-            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options)
+            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options, version=30)
+        elif ph_calc_method == 'propka31':
+            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options, version=31)
         elif ph_calc_method == 'pdb2pka':
             myRoutines.runPDB2PKA(ph, ff, pdblist, ligand, verbose, ph_calc_options)
 
@@ -546,11 +549,12 @@ def mainCommand(argv):
 
     pka_group = OptionGroup(parser,"pH options")
 
-    pka_group.add_option('--ph-calc-method', dest='ph_calc_method', metavar='PH_METHOD', choices=('propka', 'pdb2pka'),
+    pka_group.add_option('--ph-calc-method', dest='ph_calc_method', metavar='PH_METHOD', choices=('propka', 'propka31', 'pdb2pka'),
                       help='Method used to calculate ph values. If a pH calculation method is selected, for each'
                       ' titratable residue pH values will be calculated and the residue potentially modified'
                       ' after comparison with the pH value supplied by --with_ph\n'
                       'propka - Use PROPKA to calculate pH values. Actual PROPKA results will be output to <output-path>.propka.\n'
+                      'propka31 - Use PROPKA 3.1 to calculate pH values. Actual PROPKA results will be output to <output-path>.propka.\n'
                       'pdb2pka - Use PDB2PKA to calculate pH values. Requires the use of the PARSE force field.'
                       ' Warning: Larger residues can take a very long time to run using this method. EXPERIMENTAL!')
 
@@ -651,9 +655,10 @@ def mainCommand(argv):
         ph_calc_options = utilities.createPropkaOptions(options.ph,
                                                    verbose=options.propka_verbose,
                                                    reference=options.propka_reference)
-
-
-    if options.ph_calc_method == 'pdb2pka':
+    elif options.ph_calc_method == 'propka31':
+        import propka.lib
+        ph_calc_options, _ = propka.lib.loadOptions('--quiet')
+    elif options.ph_calc_method == 'pdb2pka':
         if options.ff.lower() != 'parse':
             parser.error('PDB2PKA requires the PARSE force field.')
         ph_calc_options = {'output_dir': options.pdb2pka_out,

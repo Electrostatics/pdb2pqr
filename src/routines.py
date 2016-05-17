@@ -1542,17 +1542,7 @@ class Routines:
         self.write('Finished running PDB2PKA.\n')
 
 
-    def runPROPKA(self, ph, ff, rootname, outname, options):
-        """
-            Run PROPKA on the current protein, setting protonation states to
-            the correct values
-
-            Parameters
-               ph:  The desired pH of the system
-               ff:  The forcefield name to be used
-               outname: The name of the PQR outfile
-        """
-        self.write("Running PROPKA and applying at pH %.2f... \n" % ph)
+    def _runPROPKA30(self, rootname, outname, options):
 
         from propka30.Source.protein import Protein as pkaProtein
         from propka30.Source.pdb import readPDB as pkaReadPDB
@@ -1603,9 +1593,101 @@ class Routines:
                 for residue in chain.residues:
                     if residue.resName == residue_type:
                         #Strip out the extra space after C- or N+
-                        key = string.strip('%s %s %s' % (string.strip(residue.resName),
-                                                        residue.resNumb, residue.chainID))
+                        key = ('%s %s %s' % (residue.resName.strip(),
+                                             residue.resNumb, residue.chainID)).strip()
                         pkadic[key] = residue.pKa_pro
+
+        self.pka_protein = myPkaProtein
+
+        return pkadic
+
+
+    def _runPROPKA31(self, pka_options):
+        """
+            Run PROPKA 3.1 on the current protein, setting protonation states to
+            the correct values. pH is set in pka_options
+
+            Parameters
+               pka_options: Options for propKa 3.1, including pH
+
+            Returns
+               pka_molecule: pKa's internal molecule object (including pKa's, etc)
+               not_found:    dict of residues found in pka_molecule but not in PDB2PQR (with pKa)
+        """
+
+        # See https://github.com/jensengroup/propka-3.1/blob/master/scripts/propka31.py
+        import propka.molecular_container
+        import tempfile
+
+
+        def delete_propka_input(fn):
+            import os
+            p, f = os.path.split(fn)
+            f = f.replace('.pdb', '.propka_input')
+            os.remove(f)
+
+        ph = pka_options.pH
+        self.write("Running propka 3.1 at pH %.2f... " % ph)
+
+        # Initialize some variables
+        pkadic = {}
+
+        # Reorder the atoms in each residue to start with N - TONI is this necessary?
+        for residue in self.protein.getResidues():
+            residue.reorder()
+
+        # TONI Make a string with all non-hydrogen atoms. Previously it was removing the "element"
+        # column and hydrogens. This does not seem to be necessary in propKa 3.1 .
+        HFreeProteinFile = tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb")
+        for atom in self.protein.getAtoms():
+            if not atom.isHydrogen():
+                atomtxt = atom.getPDBString()
+                HFreeProteinFile.write(atomtxt + '\n')
+        HFreeProteinFile.seek(0)
+
+        # Run PropKa 3.1 -------------
+
+        # Creating protein object. Annoyingly, at this stage propka generates a
+        # *.propka_input file in PWD and does not delete it (irregardless of the original .pdb location)
+        pka_molecule = propka.molecular_container.Molecular_container(HFreeProteinFile.name, pka_options)
+        delete_propka_input(HFreeProteinFile.name)
+        HFreeProteinFile.close()
+
+        # calculating pKa values for ionizable residues -
+        pka_molecule.calculate_pka()
+
+        ##  pka_molecule.write_pka()
+
+        for grp in pka_molecule.conformations['AVR'].groups:
+            key = str.strip('%s %s %s' % (grp.residue_type, grp.atom.resNumb, grp.atom.chainID))
+            pkadic[key] = grp.pka_value
+
+        self.pka_protein = pka_molecule
+
+        return pkadic
+
+
+
+    def runPROPKA(self, ph, ff, rootname, outname, options, version=30):
+        """
+            Run PROPKA on the current protein, setting protonation states to
+            the correct values
+
+            Parameters
+               ph:  The desired pH of the system
+               ff:  The forcefield name to be used
+               outname: The name of the PQR outfile
+               options: Options to propka
+               version: may be 30 or 31 (uses external propka 3.1)
+        """
+        self.write("Running PROPKA v%d and applying at pH %.2f... \n" % (version,ph))
+
+        if version == 30:
+            pkadic = self._runPROPKA30(rootname, outname, options)
+        elif version == 31:
+            pkadic = self._runPROPKA31(options)
+        else:
+            raise Exception("Wrong version passed to runPROPKA")
 
         if len(pkadic) == 0:
             return
@@ -1614,6 +1696,7 @@ class Routines:
         self.apply_pka_values(ff, ph, pkadic)
 
         self.write("Done.\n")
+
 
     def apply_pka_values(self, ff, ph, pkadic):
         self.write('Applying pKa values at a pH of %.2f:\n' % ph)
@@ -1630,7 +1713,7 @@ class Routines:
 
             if residue.isNterm:
                 key = "N+ %i %s" % (resnum, chainID)
-                key = string.strip(key)
+                key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
@@ -1643,7 +1726,7 @@ class Routines:
 
             if residue.isCterm:
                 key = "C- %i %s" % (resnum, chainID)
-                key = string.strip(key)
+                key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
@@ -1655,7 +1738,7 @@ class Routines:
                             self.applyPatch("NEUTRAL-CTERM", residue)
 
             key = "%s %i %s" % (resname, resnum, chainID)
-            key = string.strip(key)
+            key = key.strip()
             if key in pkadic:
                 value = pkadic[key]
                 del pkadic[key]

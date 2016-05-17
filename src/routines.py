@@ -45,6 +45,8 @@
 
 """
 
+from __future__ import division
+
 __date__ = "1 August 2008"
 __author__ = "Jens Erik Nielsen, Todd Dolinsky, Yong Huang"
 
@@ -1568,8 +1570,12 @@ class Routines:
             if not atom.isHydrogen():
                 atomtxt = atom.getPDBString()
                 atomtxt = atomtxt[:linelen]
+                try:
+                    atomtxt=unicode(atomtxt)   # Backwards py2 compatibility. Exc on py3
+                except:
+                    pass
                 HFreeProteinFile.write(atomtxt)
-                HFreeProteinFile.write('\n')
+                HFreeProteinFile.write(u'\n')
 
 
         HFreeProteinFile.seek(0)

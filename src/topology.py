@@ -81,23 +81,23 @@ class TopologyHandler(sax.ContentHandler):
 				pass
 			elif tagName == "residue":
 				if self.currentResidue != None:
-					print "** Overwriting current TopologyResidue object!"
+					print("** Overwriting current TopologyResidue object!")
 				self.currentResidue = TopologyResidue(self)
 			elif tagName == "reference":
 				if self.currentReference != None:
-					print "** Overwriting current TopologyReference object!"
+					print("** Overwriting current TopologyReference object!")
 				self.currentReference = TopologyReference(self.currentResidue)
 			elif tagName == "titrationstate":
 				if self.currentTitrationState != None:
-					print "** Overwriting current TopologyTitrationState object!"
+					print("** Overwriting current TopologyTitrationState object!")
 				self.currentTitrationState = TopologyTitrationState(self.currentResidue)
 			elif tagName == "tautomer":
 				if self.currentTautomer != None:
-					print "** Overwriting current Tautomer object!"
+					print("** Overwriting current Tautomer object!")
 				self.currentTautomer = TopologyTautomer(self.currentTitrationState)
 			elif tagName == "conformer":
 				if self.currentConformer != None:
-					print "** Overwriting current Conformer object!"
+					print("** Overwriting current Conformer object!")
 				self.currentConformer = TopologyConformer(self.currentTautomer)
 			elif tagName == "name":
 				self.currentElement = tagName
@@ -112,7 +112,7 @@ class TopologyHandler(sax.ContentHandler):
 					#print "    Adding atom to reference..."
 					self.currentAtom = TopologyAtom(self.currentReference)
 				else:
-					print "** Don't know what to do with this atom!"
+					print("** Don't know what to do with this atom!")
 			elif tagName == "x":
 				self.currentElement = tagName
 			elif tagName == "y":
@@ -135,7 +135,7 @@ class TopologyHandler(sax.ContentHandler):
 					#print "    Adding dihedral to reference..."
 					self.currentDihedral = TopologyDihedral(self.currentReference)
 				else:
-					print "** Don't know what to do with this dihedral!"
+					print("** Don't know what to do with this dihedral!")
 			elif tagName == "add":
 				self.currentConformerAdd = TopologyConformerAdd(self.currentConformer)
 			elif tagName == "remove":
@@ -145,7 +145,7 @@ class TopologyHandler(sax.ContentHandler):
 				#print "incomplete state encounted, skipping!"
 				self.incomplete = 1
 			else:
-				print "** NOT handling %s start tag" % tagName
+				print("** NOT handling %s start tag" % tagName)
 			
 	def endElement(self, tagName):
 		if not self.incomplete:
@@ -190,7 +190,7 @@ class TopologyHandler(sax.ContentHandler):
 			elif tagName == "topology":
 				pass
 			else:
-				print "** NOT handling %s end tag" % tagName
+				print("** NOT handling %s end tag" % tagName)
 		else:
 			if tagName == "incomplete":
 				self.incomplete = 0
@@ -218,7 +218,7 @@ class TopologyHandler(sax.ContentHandler):
 					#print "    Setting residue name to %s" % text
 					self.currentResidue.name = text
 				else:
-					print "    *** Don't know what to do with name %s!" % text
+					print("    *** Don't know what to do with name %s!" % text)
 			elif self.currentElement == "x":
 				#print "    Setting atom x coordinate to %s" % text
 				self.currentAtom.x = float(text)
@@ -238,7 +238,7 @@ class TopologyHandler(sax.ContentHandler):
 				#print "    Setting dihedral text to %s" % text
 				self.currentDihedral.atomList = text
 			else:
-				print "** NOT handling character text:  %s" % text
+				print("** NOT handling character text:  %s" % text)
 			
 
 class TopologyResidue:

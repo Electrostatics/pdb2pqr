@@ -380,7 +380,7 @@ def main():
     longOptList = ["help", "cfac=", "fadd=", "space=", "gmemfac=", "gmemceil=", "ofrac=", "redfac="]
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
-    except getopt.GetoptError, details:
+    except getopt.GetoptError as details:
         stderr.write("Option error (%s)!\n" % details)
         usage(2)
     if len(args) != 1: 
@@ -412,7 +412,7 @@ def main():
     psize.runPsize(filename)
     
     stdout.write("# Constants used: \n");
-    for key in psize.constants.keys():
+    for key in list(psize.constants.keys()):
         stdout.write("# \t%s: %s\n" % (key, psize.constants[key]))
     stdout.write("# Run:\n")
     stdout.write("#    `%s --help`\n" % sys.argv[0])

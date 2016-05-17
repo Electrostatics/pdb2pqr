@@ -54,12 +54,12 @@ import os
 import copy
 import re
 from xml import sax
-from pdb import *
-from utilities import *
-from structures import *
-from routines import *
+from .pdb import *
+from .utilities import *
+from .structures import *
+from .routines import *
 
-from errors import PDBInternalError
+from .errors import PDBInternalError
 
 class DefinitionHandler(sax.ContentHandler):
    
@@ -201,7 +201,7 @@ class Definition:
 
                 # Find all residues matching applyto
 
-                resnames = self.map.keys()
+                resnames = list(self.map.keys())
                 for name in resnames:
                     regexp = re.compile(patch.applyto).match(name)
                     if not regexp: continue

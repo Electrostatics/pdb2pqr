@@ -53,7 +53,7 @@ _extList = [name for _, name, _ in pkgutil.iter_modules(__path__)]
 extDict = {}
 
 for extName in _extList:
-    extDict[extName] = __import__(extName,globals(),locals(),[], -1)
+    extDict[extName] = __import__(extName,globals(),locals(),[],1)
     
 def setupExtensionsOptions(parser):
     """
@@ -70,7 +70,7 @@ def setupExtensionsOptions(parser):
     firstGroup = OptionGroup(parser,"Extension options")
     groups = [firstGroup]
     
-    for extName, extModule in extDict.items():
+    for extName, extModule in list(extDict.items()):
         helpArg = {}
         if hasattr(extModule, 'usage'):
             helpArg['help'] = extModule.usage()
@@ -95,8 +95,8 @@ def setupExtensionsOptions(parser):
             else:
                 firstGroup.add_option(extOption)
                 
-        except OptionConflictError, value:
-            print 'Error adding command line options for extension ' + extName + ' ' + '(' + str(value) + ')'
+        except OptionConflictError as value:
+            print('Error adding command line options for extension ' + extName + ' ' + '(' + str(value) + ')')
             
     
     for group in groups:

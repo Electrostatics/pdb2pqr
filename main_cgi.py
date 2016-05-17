@@ -605,12 +605,12 @@ def handleNonOpal(weboptions):
                 if whitespace: 
                     if line[0:4] == 'ATOM':
                         newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
-                        pqrfile.write("%s\n" % string.strip(newline))
+                        pqrfile.write("%s\n" % newline.strip())
                     elif line[0:6] == 'HETATM':
                         newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
-                        pqrfile.write("%s\n" % string.strip(newline))
+                        pqrfile.write("%s\n" % newline.strip())
                 else: 
-                    pqrfile.write("%s\n" % string.strip(line))
+                    pqrfile.write("%s\n" % line.strip())
             pqrfile.close()
                     
             if weboptions.otheroptions['apbs']:

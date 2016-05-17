@@ -10,7 +10,7 @@ __authors__ = "Kyle Monson and Emile Hogan"
 import extensions
 from src.hydrogens import Optimize
 #itertools FTW!
-from itertools import product, permutations, izip, count
+from itertools import product, permutations, count
 from src.hydrogens import hydrogenRoutines
 
 #Here are the Ri -> [Ri0, Ri1] maps:
@@ -196,7 +196,7 @@ class ResInter(object):
         """
         Output the interaction energy between each possible residue pair.
         """
-        for resultKey in sorted(self.pairEnergyResults.iterkeys()):
+        for resultKey in sorted(self.pairEnergyResults.keys()):
             self.output.write(resultKey + ' ' + str(self.pairEnergyResults[resultKey]) + '\n')
         
         self.routines.write(str(self.combinationCount)+' residue combinations tried\n')
@@ -220,7 +220,7 @@ class ResInter(object):
         
         self.routines.removeHydrogens()
         
-        for newResidueName, oldResidue, index in izip(residueSet, self.routines.protein.getResidues(), count()):
+        for newResidueName, oldResidue, index in zip(residueSet, self.routines.protein.getResidues(), count()):
             if newResidueName is None:
                 continue
             
@@ -291,7 +291,7 @@ def residue_set_single_unprotonated_combinations(residues):
     """    
     protonatedNames = get_residue_titration_set_protonated(residues)
     
-    for name, i in izip(protonatedNames, count()):
+    for name, i in zip(protonatedNames, count()):
         if not name in _titrationSetsMap:
             continue
         
@@ -312,12 +312,12 @@ def residue_set_pair_unprotonated_combinations(residues):
     """    
     protonatedNames = get_residue_titration_set_protonated(residues)
     
-    for i in xrange(0,len(protonatedNames)):
+    for i in range(0,len(protonatedNames)):
         firstName = protonatedNames[i]
         if not firstName in _titrationSetsMap:
             continue
         firstStateSet = _titrationSetsMap[firstName][0]
-        for j in xrange(0,i):
+        for j in range(0,i):
             secondName = protonatedNames[j]
             if not secondName in _titrationSetsMap:
                 continue            

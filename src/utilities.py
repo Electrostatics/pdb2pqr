@@ -53,7 +53,7 @@ import math
 import os
 from os.path import splitext 
 import sys
-from aconf import INSTALLDIR, TMPDIR
+from .aconf import INSTALLDIR, TMPDIR
 
 def startLogFile(jobName, fileName, logInput):
     with open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName), 'w') as f:
@@ -173,7 +173,7 @@ def sortDictByValue(inputdict):
         Returns
             items: The dictionary sorted by value (list)
     """
-    items = [(v, k) for k, v in inputdict.items()]
+    items = [(v, k) for k, v in list(inputdict.items())]
     items.sort()
     items.reverse()             
     items = [ k for v, k in items]
@@ -203,7 +203,7 @@ def shortestPath(graph, start, end, path=[]):
     path = path + [start]
     if start == end:
         return path
-    if not graph.has_key(start):
+    if start not in graph:
         return None
     shortest = None
     for node in graph[start]:
@@ -368,14 +368,14 @@ def getPDBFile(path):
             file:  File object containing PDB file (file object)
     """
 
-    import os, urllib
+    import os, urllib.request, urllib.parse, urllib.error
 
     file = None
     if not os.path.isfile(path):
         URLpath = "http://www.rcsb.org/pdb/cgi/export.cgi/" + path + \
                   ".pdb?format=PDB&pdbId=" + path + "&compression=None"
         try:
-            file = urllib.urlopen(URLpath)
+            file = urllib.request.urlopen(URLpath)
             if file.getcode() != 200 or 'nosuchfile' in file.geturl() :
                 raise IOError
         except IOError:

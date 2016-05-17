@@ -64,15 +64,15 @@ NAS = ["A", "A5", "A3", "C", "C5", "C3", "G", "G5", "G3", "T", "T5", "T3", "U", 
 
 import math
 import copy
-from pdb import *
-from utilities import *
-from quatfit import *
-from forcefield import *
-from structures import *
-from protein import *
-from definitions import *
-from StringIO import StringIO
-from errors import PDBInputError, PDBInternalError, PDB2PKAError
+from .pdb import *
+from .utilities import *
+from .quatfit import *
+from .forcefield import *
+from .structures import *
+from .protein import *
+from .definitions import *
+from io import StringIO
+from .errors import PDBInputError, PDBInternalError, PDB2PKAError
 from pprint import pformat
 
 
@@ -1124,7 +1124,7 @@ class Routines:
         moveablenames = self.getMoveableNames(residue, pivot)
         for name in moveablenames:
             nearatoms = self.findNearbyAtoms(residue.getAtom(name))
-            for v in nearatoms.values():
+            for v in list(nearatoms.values()):
                 score += v
 
         return score
@@ -1172,7 +1172,7 @@ class Routines:
             bestangle = originalAngle = residue.dihedrals[anglenum]
 
             #Skip the first angle as it's already known.
-            for i in xrange(1, ANGLE_STEPS):
+            for i in range(1, ANGLE_STEPS):
                 newangle = originalAngle + (ANGLE_STEP_SIZE * i)
                 self.setDihedralAngle(residue, anglenum, newangle)
 
@@ -1373,7 +1373,7 @@ class Routines:
         bestnum = -1
         best = 0
 
-        iList = range(len(residue.dihedrals))
+        iList = list(range(len(residue.dihedrals)))
         #Make sure our testing is done round robin.
         if oldnum is not None and oldnum >= 0 and len(iList) > 0:
             del iList[oldnum]
@@ -1517,7 +1517,7 @@ class Routines:
                                                  restart=pdb2pka_params.get('clean_output'),
                                                  pairene=pdb2pka_params.get('pairene'))
 
-        print 'Doing full pKa calculation'
+        print('Doing full pKa calculation')
         mypkaRoutines.runpKa()
 
         pdb2pka_warnings = mypkaRoutines.warnings[:]
@@ -1525,7 +1525,7 @@ class Routines:
         self.warnings.extend(pdb2pka_warnings)
 
         residue_ph = {}
-        for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.iteritems():
+        for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.items():
             tit_type, chain_id, number_str = pka_residue_tuple
             if tit_type == 'NTR':
                 tit_type = 'N+'
@@ -1797,21 +1797,21 @@ class Cells:
 
         x = atom.get("x")
         if x < 0:
-            x = (int(x) - 1) / size * size
+            x = (int(x) - 1) // size * size
         else:
-            x = int(x) / size * size
+            x = int(x) // size * size
 
         y = atom.get("y")
         if y < 0:
-            y = (int(y) - 1) / size * size
+            y = (int(y) - 1) // size * size
         else:
-            y = int(y) / size * size
+            y = int(y) // size * size
 
         z = atom.get("z")
         if z < 0:
-            z = (int(z) - 1) / size * size
+            z = (int(z) - 1) // size * size
         else:
-            z = int(z) / size * size
+            z = int(z) // size * size
 
         key = (x, y, z)
         try:

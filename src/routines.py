@@ -1844,6 +1844,31 @@ class Routines:
             self.write('\n')
 
 
+    def holdResidues(self, hlist):
+        """Set the stateboolean dictionary to residues in hlist."""
+
+        import logging
+        logger = logging.getLogger(__name__)
+
+        if not hlist:
+            return
+
+        hlist_copy = hlist.copy()
+        for residue in self.protein.getResidues():
+            reskey = (residue.resSeq, residue.chainID, residue.iCode)
+            if reskey in hlist:
+                hlist.remove(reskey)
+                if isinstance(residue, Amino):
+                    residue.stateboolean = {'FIXEDSTATE': False}
+                    self.write("Setting residue {:s} as fixed.\n".format(str(residue)))
+                else:
+                    self.write("Matched residue {:s} but not subclass of Amino.\n".format(str(residue)))
+
+        if len(hlist) > 0:
+            self.write("The following fixed residues were not matched (possible internal error): {:s}.\n"
+                       .format(str(hlist)))
+
+
 class Cells:
     """
         The cells object provides a better way to search for nearby atoms. A

@@ -193,8 +193,9 @@ def runPDB2PQR(pdblist, ff,
                userff = None,
                usernames = None,
                ffout = None,
-               commandLine=None,
-               include_old_header=False):
+                holdList = None,
+               commandLine = None,
+               include_old_header = False):
     """
         Run the PDB2PQR Suite
 
@@ -228,6 +229,7 @@ def runPDB2PQR(pdblist, ff,
                            use the names from the given forcefield
             commandLine:   command line used (if any) to launch the program. Included in output header.
             include_old_header: Include most of the PDB header in output.
+            holdlist:      A list of residues not to be optimized, as [(resid, chain, icode)]
             pdb2pka_params: parameters for running pdb2pka.
 
         Returns
@@ -235,6 +237,7 @@ def runPDB2PQR(pdblist, ff,
             lines:   The PQR file atoms (list)
             missedligandresidues:  A list of ligand residue names whose charges could
                      not be assigned (ligand)
+            protein: The protein object
     """
 
     pkaname = ""
@@ -352,6 +355,8 @@ def runPDB2PQR(pdblist, ff,
 
         if opt:
             myhydRoutines.setOptimizeableHydrogens()
+            # TONI fixing residues - myhydRoutines has a reference to myProtein, so i'm altering it in place
+            myRoutines.holdResidues(holdList)
             myhydRoutines.initializeFullOptimization()
             myhydRoutines.optimizeHydrogens()
         else:

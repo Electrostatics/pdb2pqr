@@ -108,6 +108,12 @@ class Routines:
                 message: The message to write (string)
                 indent : The indent level (int, default=0)
         """
+
+        # When I grow up I'll be a logger
+        # import logging
+        # logger = logging.getLogger(__name__)
+        # logger.info(message.strip())
+
         out = ""
         if self.verbose:
             for i in range(indent):
@@ -1846,9 +1852,6 @@ class Routines:
 
     def holdResidues(self, hlist):
         """Set the stateboolean dictionary to residues in hlist."""
-
-        import logging
-        logger = logging.getLogger(__name__)
 
         if not hlist:
             return

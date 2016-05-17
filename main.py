@@ -455,7 +455,8 @@ def runPDB2PQR(pdblist, ff,
     if verbose:
         print("Total time taken: %.2f seconds\n" % (time.time() - start))
 
-    return header, lines, missedligandresidues
+    return header, lines, missedligandresidues, myProtein
+
 
 def mainCommand(argv):
     """
@@ -719,7 +720,7 @@ Please cite your use of PDB2PQR as:
     # This would also do away with the redundent checks and such in
     # the Forcefield constructor.
     try:
-        header, lines, missedligands = runPDB2PQR(pdblist,
+        header, lines, missedligands, _ = runPDB2PQR(pdblist,
                                                   options.ff,
                                                   outname = options.outname,
                                                   ph = options.ph,

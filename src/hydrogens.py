@@ -966,6 +966,10 @@ class Flip(Optimize):
         
         flag = 0
         if bondatom.name.endswith("FLIP"): flag = 1
+
+        self.debug("fixFlip called for residue {:s}, bondatom {:s} and flag {:d}"
+                   .format(str(residue),str(bondatom),flag))
+        residue.wasFlipped = (flag == 0)
      
         # Delete the appropriate atoms
         

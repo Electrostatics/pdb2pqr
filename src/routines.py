@@ -1609,7 +1609,7 @@ class Routines:
                                              residue.resNumb, residue.chainID)).strip()
                         pkadic[key] = residue.pKa_pro
 
-        self.pka_protein = myPkaProtein
+        self.protein.pka_protein = myPkaProtein
 
         return pkadic
 
@@ -1674,7 +1674,7 @@ class Routines:
             key = str.strip('%s %s %s' % (grp.residue_type, grp.atom.resNumb, grp.atom.chainID))
             pkadic[key] = grp.pka_value
 
-        self.pka_protein = pka_molecule
+        self.protein.pka_protein = pka_molecule
 
         return pkadic
 

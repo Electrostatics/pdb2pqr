@@ -14,5 +14,5 @@ Binary builds do not require python or numpy be installed to use. Everything nee
 + OSX binaries require OSX 10.6 or newer. The OSX binary is 64-bit.
 
 ## Linux
-+ executable is called "pdb2pqr" and should already have the executable flag set.
++ Executable is called "pdb2pqr" and should already have the executable flag set.
 + Linux binaries require CentOS 6 or newer and have been tested on Ubuntu 12.04 LTS and Linux Mint 13. If you are running 64-bit Linux use the 64-bit libraries. In some cases the needed 32-bit system libraries will not be installed on a 64-bit system.

@@ -1,5 +1,5 @@
 # Building From Source
-+ Instructions on how to create a binary build from source are found in [INSTALL.md](INSTALL.md) in the source tarball.
+Instructions on how to create a binary build from source are found in [INSTALL.md](INSTALL.md) in the source tarball.
 
 # Binary Releases
 

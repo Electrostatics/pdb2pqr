@@ -1235,7 +1235,7 @@ def unpickleVars(pdb2pqrID):
     apbsOptions['calculationType'] = myElec.method
     apbsOptions['dime'] = myElec.dime
     apbsOptions['pdime'] = myElec.pdime
-    apbsOptions['async'] = myElec.async
+    apbsOptions['async'] = myElec.async_
     apbsOptions['asyncflag'] = myElec.asyncflag
     apbsOptions['nlev'] = myElec.nlev
     apbsOptions['glen'] = myElec.glen

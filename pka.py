@@ -420,7 +420,6 @@ def pre_init(original_pdb_list=None,
     size=src.psize.Psize()
 
     method=""
-    async=0
     split=0
 
     igen = inputgen_pKa.inputGen(working_pdb_filename)

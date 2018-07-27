@@ -278,7 +278,7 @@ class Input:
         """
         base_pqr_name = utilities.getPQRBaseFileName(self.pqrpath)
         outname = base_pqr_name + "-input.p"
-        pfile = open(outname, "w")
+        pfile = open(outname, "wb")
         pickle.dump(self, pfile)
         pfile.close()
         

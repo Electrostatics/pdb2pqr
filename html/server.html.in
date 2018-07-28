@@ -230,7 +230,7 @@ else
 <P>
 <I>Currently using PDB2PQR Version @PDB2PQR_VERSION@</I>
 <P>
-Return to <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target="BLANK">the PDB2PQR homepage</a>.<br> 	
+Return to <a href="http://www.poissonboltzmann.org/"target="BLANK">the PDB2PQR homepage</a>.<br> 	
 <hr> 	
 This server enables a user to convert <a href="http://www.rcsb.org/pdb/"target="BLANK">PDB</a> files into PQR files.  PQR files are PDB files where the occupancy and B-factor columns have been replaced by per-atom charge and radius.<P>
 
@@ -238,15 +238,15 @@ pKa calculations are performed by <a href="https://github.com/jensengroup/propka
 
 For more information on PDB2PQR please see the:<br />
 <ul>
-	<li> <a href="http://www.poissonboltzmann.org/docs/structures-ready/"target="BLANK">Home Page</a> </li>
-	<li> <a href="http://eepurl.com/by4eQr"target="BLANK">Register (and help suport PDB2PQR & APBS)</a> </li>
-	<li> <a href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">User Guide</a> </li>
-	<li> <a href="http://www.poissonboltzmann.org/examples/home/"target="BLANK">Examples</a> </li>
-	<li> <a href="https://github.com/Electrostatics/apbs-pdb2pqr/releases/tag/pdb2pqr-2.1.0_release"target="BLANK">Release Notes</a> </li>
+	<li> <a href="http://www.poissonboltzmann.org/"target="BLANK">Home Page</a> </li>
+	<li> <a href="http://eepurl.com/by4eQr"target="BLANK">Register (and help support PDB2PQR & APBS)</a> </li>
+	<li> <a href="http://apbs-pdb2pqr.readthedocs.io/en/latest/pdb2pqr/"target="BLANK">User Guide</a> </li>
+	<li> <a href="http://apbs-pdb2pqr.readthedocs.io/en/latest/examples/"target="BLANK">Examples</a> </li>
+	<li> <a href="https://github.com/Electrostatics/apbs-pdb2pqr/releases/tag/pdb2pqr-2.1.1_release"target="BLANK">Release Notes</a> </li>
 </ul>
 
 If you use the PDB2PQR service in a publication, please cite:
-<blockquote>Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations. <I>Nucleic Acids Research</I> <B>32</B> W665-W667 (2004). [<a href="http://nar.oupjournals.org/cgi/content/abstract/32/suppl_2/W665" target="BLANK">Link</a>]
+<blockquote>Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated pipeline for the setup, execution, and analysis of Poisson-Boltzmann electrostatics calculations. <I>Nucleic Acids Research</I> <B>32</B> W665-W667 (2004). [<a href="https://academic.oup.com/nar/article/32/suppl_2/W665/1040494" target="BLANK">Link</a>]
 </blockquote>
 
 <hr>
@@ -255,9 +255,9 @@ If you use the PDB2PQR service in a publication, please cite:
 is limited to a maximum size of @MAXATOMS@ atoms per protein.  If you are interested
 in using PDB2PQR for larger proteins, you are encouraged to download a command
 line version of PDB2PQR from the <a
-	href="http://www.poissonboltzmann.org/docs/downloads/"target="BLANK">PDB2PQR download page</a>.  For
+	href="http://apbs-pdb2pqr.readthedocs.io/en/latest/downloads.html"target="BLANK">PDB2PQR download page</a>.  For
 additional limitations, please see the <a
-	href="http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/"target="BLANK">PDB2PQR user
+	href="http://apbs-pdb2pqr.readthedocs.io/en/latest/pdb2pqr/"target="BLANK">PDB2PQR user
 	guide</a> <P>
 <B>Note:</B> This server uses automatic refreshing to update the status of your PDB2PQR submission.  Do not use the <i>back</i> button on your browser while the server is running.<P>
 @WITHOPAL@
@@ -282,8 +282,8 @@ Pick a forcefield to use:
 <input type="RADIO" name="FF" id = "peoepb" value="peoepb" onClick="setff(this.value)">PEOEPB</input><br />
 <input type="RADIO" name="FF" id = "swanson" value="swanson" onClick="setff(this.value)">SWANSON</input><br /> 
 <input type="RADIO" name="FF" id = "tyl06" value="tyl06" onClick="setff(this.value)">TYL06</input><br />
-<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><br />
-<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://www.poissonboltzmann.org/docs/pdb2pqr-faq/"target="BLANK">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><br />
+<input type="RADIO" name="FF" id = "user" value="user" onClick="setff(this.value)">User-defined forcefield (<a href="http://apbs-pdb2pqr.readthedocs.io/en/latest/pdb2pqr/extending.html"target="BLANK">help</a>): <input type="file" name="USERFF" size="25" maxlength=100 value="" DISABLED><br />
+<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;User-defined names (<a href="http://apbs-pdb2pqr.readthedocs.io/en/latest/formats/pdb2pqr-xml-names.html"target="BLANK">help</a>):</label> <input type="file" name="USERNAMES" size="25" maxlength=100 value="" DISABLED><br />
 <label>&nbsp;&nbsp;* If you select user-defined forcefield, you also need to specify a user-defined .names file.</label><br /> 
 </blockquote>
 
@@ -328,7 +328,7 @@ Use pH <input type="text" name="PH" size=4 maxlength=6  value="7"></input><br />
 @WITHOPAL@
 See the 
 <a
-href="https://github.com/Electrostatics/apbs-pdb2pqr/releases/tag/pdb2pqr-2.1.0_release"target="BLANK">Release
+href="https://github.com/Electrostatics/apbs-pdb2pqr/releases/tag/pdb2pqr-2.1.1_release"target="BLANK">Release
 Notes</a> for changes since the last version.
 
 </blockquote>

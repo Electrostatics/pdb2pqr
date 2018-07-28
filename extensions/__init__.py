@@ -70,7 +70,7 @@ def setupExtensionsOptions(parser):
     firstGroup = OptionGroup(parser,"Extension options")
     groups = [firstGroup]
     
-    for extName, extModule in list(extDict.items()):
+    for extName, extModule in extDict.items():
         helpArg = {}
         if hasattr(extModule, 'usage'):
             helpArg['help'] = extModule.usage()

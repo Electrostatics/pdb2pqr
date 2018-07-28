@@ -173,7 +173,7 @@ def sortDictByValue(inputdict):
         Returns
             items: The dictionary sorted by value (list)
     """
-    items = [(v, k) for k, v in list(inputdict.items())]
+    items = [(v, k) for k, v in inputdict.items()]
     items.sort()
     items.reverse()             
     items = [ k for v, k in items]
@@ -368,13 +368,17 @@ def getPDBFile(path):
             file:  File object containing PDB file (file object)
     """
 
-    import os, urllib.request, urllib.parse, urllib.error
+    import os
+    if sys.version_info[0] == 2:
+        import urllib
+    else:
+        import urllib.request as urllib
 
     file = None
     if not os.path.isfile(path):
         URLpath = "https://files.rcsb.org/download/" + path + ".pdb"
         try:
-            file = urllib.request.urlopen(URLpath)
+            file = urllib.urlopen(URLpath)
             if file.getcode() != 200 or 'nosuchfile' in file.geturl() :
                 raise IOError
         except IOError:

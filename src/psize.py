@@ -76,7 +76,7 @@ class Psize:
 
     def parseString(self, structure):
         """ Parse the input structure as a string in PDB or PQR format """
-        lines = string.split(structure, "\n")
+        lines = structure.split("\n")
         self.parseLines(lines)
 
     def parseInput(self, filename):
@@ -87,9 +87,9 @@ class Psize:
     def parseLines(self, lines):
         """ Parse the lines """
         for line in lines:
-            if string.find(line,"ATOM") == 0:
-                subline = string.replace(line[30:], "-", " -")
-                words = string.split(subline)
+            if line.startswith("ATOM"):
+                subline = line[30:].replace("-", " -")
+                words = subline.split()
                 if len(words) < 5:    
                     continue
                 self.gotatom += 1
@@ -103,12 +103,12 @@ class Psize:
                         self.minlen[i] = center[i]-rad
                     if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
                         self.maxlen[i] = center[i]+rad
-            elif string.find(line, "HETATM") == 0:
+            elif line.startswith("HETATM"):
                 self.gothet = self.gothet + 1
                 # Special handling for no ATOM entries in the pqr file, only HETATM entries
                 if self.gotatom == 0:
-                    subline = string.replace(line[30:], "-", " -")
-                    words = string.split(subline)
+                    subline = line[30:].replace("-", " -")
+                    words = subline.split()
                     if len(words) < 5:    
                         continue
                     self.q = self.q + float(words[3])
@@ -412,7 +412,7 @@ def main():
     psize.runPsize(filename)
     
     stdout.write("# Constants used: \n");
-    for key in list(psize.constants.keys()):
+    for key in psize.constants.keys():
         stdout.write("# \t%s: %s\n" % (key, psize.constants[key]))
     stdout.write("# Run:\n")
     stdout.write("#    `%s --help`\n" % sys.argv[0])

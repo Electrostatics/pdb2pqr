@@ -1124,7 +1124,7 @@ class Routines:
         moveablenames = self.getMoveableNames(residue, pivot)
         for name in moveablenames:
             nearatoms = self.findNearbyAtoms(residue.getAtom(name))
-            for v in list(nearatoms.values()):
+            for v in nearatoms.values():
                 score += v
 
         return score
@@ -1578,8 +1578,12 @@ class Routines:
             if not atom.isHydrogen():
                 atomtxt = atom.getPDBString()
                 atomtxt = atomtxt[:linelen]
+                try:
+                    atomtxt=unicode(atomtxt)   # Backwards py2 compatibility. Exc on py3
+                except:
+                    pass
                 HFreeProteinFile.write(atomtxt)
-                HFreeProteinFile.write('\n')
+                HFreeProteinFile.write(u'\n')
 
 
         HFreeProteinFile.seek(0)
@@ -1603,8 +1607,8 @@ class Routines:
                 for residue in chain.residues:
                     if residue.resName == residue_type:
                         #Strip out the extra space after C- or N+
-                        key = string.strip('%s %s %s' % (string.strip(residue.resName),
-                                                        residue.resNumb, residue.chainID))
+                        key = ('%s %s %s' % (residue.resName.strip(),
+                                             residue.resNumb, residue.chainID)).strip()
                         pkadic[key] = residue.pKa_pro
 
         if len(pkadic) == 0:
@@ -1630,7 +1634,7 @@ class Routines:
 
             if residue.isNterm:
                 key = "N+ %i %s" % (resnum, chainID)
-                key = string.strip(key)
+                key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
@@ -1643,7 +1647,7 @@ class Routines:
 
             if residue.isCterm:
                 key = "C- %i %s" % (resnum, chainID)
-                key = string.strip(key)
+                key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
@@ -1655,7 +1659,7 @@ class Routines:
                             self.applyPatch("NEUTRAL-CTERM", residue)
 
             key = "%s %i %s" % (resname, resnum, chainID)
-            key = string.strip(key)
+            key = key.strip()
             if key in pkadic:
                 value = pkadic[key]
                 del pkadic[key]

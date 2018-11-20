@@ -58,7 +58,7 @@ __version__ = PDB2PQR_VERSION
 if __name__ == "__main__":
     """ Determine if called from command line or CGI """
     
-    if not os.environ.has_key("REQUEST_METHOD"):
+    if "REQUEST_METHOD" not in os.environ:
         mainCommand(sys.argv)
     else:
         mainCGI()

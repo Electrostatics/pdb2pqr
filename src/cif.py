@@ -51,7 +51,7 @@ import sys
 import pdb
 from pdbx.reader.PdbxReader import PdbxReader;
 
-def ATOM(block):
+def ATOM_SITE(block):
     """
     Data items in the ATOM_SITE category record details about
     the atom sites in a macromolecular crystal structure, such as
@@ -71,24 +71,46 @@ def ATOM(block):
     atoms= block.getObj("atom_site");
 
     for i in range(atoms.getRowCount()):
-        if(atoms.getValue("group_PDB", i) == "ATOM"):
-            line = atoms.getValue("group_PDB", i) + \
-            " "*(7 - len(str(atoms.getValue("id", i)))) + str(atoms.getValue("id", i)) + \
-            " "*(4 - len(atoms.getValue("label_atom_id", i))) + atoms.getValue("label_atom_id", i) + \
-            " "*(5 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i) + \
-            " "*(2 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i) + \
-            " "*(4 - len(str(atoms.getValue("label_seq_id", i)))) + str(atoms.getValue("label_seq_id", i)) + \
-            " "*(12 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x", i)) + \
-            " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y", i)) + \
-            " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z", i)) + \
-            " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i)) + \
-            " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i)) + \
-            " "*(12-len(atoms.getValue("type_symbol", i))) + atoms.getValue("type_symbol", i);
+        line = \
+        " "*(6 - len(atoms.getValue("group_PDB", i)))     + atoms.getValue("group_PDB", i)          + \
+        " "*(5 - len(str(atoms.getValue("id", i))))       + str(atoms.getValue("id", i))            + \
+        " "*(4 - len(atoms.getValue("label_atom_id", i))) + atoms.getValue("label_atom_id", i)      + \
+        " "                                                                                         + \
+        " "*(3 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i)      + \
+        " "                                                                                         + \
+        " "*(1 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i)      + \
+        " "*(4 - )        
+        
+#         line = atoms.getValue("group_PDB", i) + \
+#         " "*(5 - len(str(atoms.getValue("id", i)))) + str(atoms.getValue("id", i)) + \
+#         " "*(3 - len(atoms.getValue("label_atom_id", i))) + atoms.getValue("label_atom_id", i) + \
+#         " "*(6 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i) + \
+#         " "*(2 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i) + \
+#         " "*(4 - len(str(atoms.getValue("label_seq_id", i)))) + str(atoms.getValue("label_seq_id", i)).strip(".") + \
+#         " "*(13 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x", i)) + \
+#         " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y", i)) + \
+#         " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z", i)) + \
+#         " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i)) + \
+#         " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i)) + \
+#         " "*(12-len(atoms.getValue("type_symbol", i))) + atoms.getValue("type_symbol", i);
 
+        if(i==575 or i==470):
+            print(line);
+
+        if(atoms.getValue("group_PDB", i) == "ATOM"):
+            
             try:
                 pdb_arr.append(pdb.ATOM(line));
             except:
-                print("cif.ATOM: Error reading line:\n%s" % line);
+                print("cif.ATOM_SITE: Error reading line:\n%s" % line);
+                
+        elif(atoms.getValue("group_PDB", i) == "HETATM"):
+            try:
+                pdb_arr.append(pdb.HETATM(line));
+            except ValueError as e:
+                pass;
+#                 print(e);
+#                 print("cif.ATOM_SITE: Error reading line:\n%s" % line);
 
     return pdb_arr, err_arr;
 
@@ -172,7 +194,7 @@ def readCIF(file):
 
         for i in range(len(pdbdata)):
             block = pdbdata[i];
-            ato_pdb, ato_err = ATOM(block);
+            ato_pdb, ato_err = ATOM_SITE(block);
             con_pdb, con_err = CONECT(block);
 
             pdblist = ato_pdb + con_pdb;

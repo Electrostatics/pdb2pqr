@@ -55,6 +55,7 @@ import os
 import time
 import copy
 from src import pdb
+from src import cif
 from src import utilities
 from src import structures
 from src import routines
@@ -689,7 +690,16 @@ Please cite your use of PDB2PQR as:
 
     path = args[0]
     pdbFile = getPDBFile(path)
-    pdblist, errlist = readPDB(pdbFile)
+
+    if(".pdb" in path):
+        pdblist, errlist = readPDB(pdbFile)
+    elif(".cif" in path):
+        pdbList, errlist = cif.readCIF(pdbFile);
+        print(pdbList);
+    ### delete this
+    pdbFile.close();
+    quit();
+    ###
 
     if len(pdblist) == 0 and len(errlist) == 0:
         parser.error("Unable to find file %s!" % path)

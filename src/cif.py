@@ -71,46 +71,56 @@ def ATOM_SITE(block):
     atoms= block.getObj("atom_site");
 
     for i in range(atoms.getRowCount()):
-        line = \
-        " "*(6 - len(atoms.getValue("group_PDB", i)))     + atoms.getValue("group_PDB", i)          + \
-        " "*(5 - len(str(atoms.getValue("id", i))))       + str(atoms.getValue("id", i))            + \
-        " "*(4 - len(atoms.getValue("label_atom_id", i))) + atoms.getValue("label_atom_id", i)      + \
-        " "                                                                                         + \
-        " "*(3 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i)      + \
-        " "                                                                                         + \
-        " "*(1 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i)      + \
-        " "*(4 - )        
-        
-#         line = atoms.getValue("group_PDB", i) + \
-#         " "*(5 - len(str(atoms.getValue("id", i)))) + str(atoms.getValue("id", i)) + \
-#         " "*(3 - len(atoms.getValue("label_atom_id", i))) + atoms.getValue("label_atom_id", i) + \
-#         " "*(6 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i) + \
-#         " "*(2 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i) + \
-#         " "*(4 - len(str(atoms.getValue("label_seq_id", i)))) + str(atoms.getValue("label_seq_id", i)).strip(".") + \
-#         " "*(13 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x", i)) + \
-#         " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y", i)) + \
-#         " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z", i)) + \
-#         " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i)) + \
-#         " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i)) + \
-#         " "*(12-len(atoms.getValue("type_symbol", i))) + atoms.getValue("type_symbol", i);
-
-        if(i==575 or i==470):
-            print(line);
 
         if(atoms.getValue("group_PDB", i) == "ATOM"):
-            
             try:
+                line = "";
+                line += atoms.getValue("group_PDB", i) + " "*(6 - len(atoms.getValue("group_PDB", i)));                           # 1  - 6  RECORD NAME (ATOM)
+                line += " "*(5 - len(str(atoms.getValue("id", i))))       + str(atoms.getValue("id", i));                         # 7  - 11 ATOM SERIAL
+                line += "  ";                                                                                                     # 12 - 13
+                line += atoms.getValue("label_atom_id", i) + " "*(3 - len(atoms.getValue("label_atom_id", i)));                   # 14 - 16 ATOM NAME
+                line += " " if(atoms.getValue("label_alt_id", i)==".") else atoms.getValue("label_alt_id", i);                    # 17      ALT LOCATION
+                line += " "*(3 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i);                   # 18 - 20 RES NAME
+                line += " ";                                                                                                      # 21
+                line += " "*(1 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i);                   # 22      CHAIN ID
+                line += " "*(4 - len(str(atoms.getValue("auth_seq_id", i)))) +  str(atoms.getValue("auth_seq_id", i));            # 23 - 26 RES SEQ ID
+                line += " "*3;                                                                                                    # 27 - 30
+                line += " "*(8 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x"));                        # 31 - 38 X Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y"));                        # 39 - 46 Y Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z"));                        # 47 - 54 Z Coords
+                line += " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i));                 # 55 - 60 OCCUPANCY
+                line += " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i));       # 61 - 66 TEMP FACTOR
+                line += " "*(10);                                                                                                 # 67 - 76
+                line += " "*(2 - len(atoms.getValue("type_symbol", i))) + atoms.getValue("type_symbol", i);                       # 77 - 78 ELEMENT SYMBOL
+                line += " "*2 if(atoms.getValue("pdbx_formal_charge", i) == "?") else atoms.getValue("pdbx_formal_charge", i);    # 79 - 80 CHARGE OF ATOM
                 pdb_arr.append(pdb.ATOM(line));
             except:
                 print("cif.ATOM_SITE: Error reading line:\n%s" % line);
                 
         elif(atoms.getValue("group_PDB", i) == "HETATM"):
             try:
+                line = "";
+                line += atoms.getValue("group_PDB", i) + ""*(6 - len(atoms.getValue("group_PDB", i)));                            # 1  - 6  RECORD NAME (HETATM)
+                line += " "*(5 - len(str(atoms.getValue("id", i))))       + str(atoms.getValue("id", i));                         # 7  - 11 ATOM SERIAL
+                line += "  ";                                                                                                     # 12 - 13
+                line += atoms.getValue("label_atom_id", i) + " "*(3 - len(atoms.getValue("label_atom_id", i)));                   # 14 - 16 ATOM NAME
+                line += " " if(atoms.getValue("label_alt_id", i)==".") else atoms.getValue("label_alt_id", i);                    # 17      ALT LOCATION
+                line += " "*(3 - len(atoms.getValue("label_comp_id", i))) + atoms.getValue("label_comp_id", i);                   # 18 - 20 RES NAME
+                line += " ";                                                                                                      # 21
+                line += " "*(1 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i);                   # 22      CHAIN ID
+                line += " "*(4 - len(str(atoms.getValue("auth_seq_id", i)))) +  str(atoms.getValue("auth_seq_id", i));            # 23 - 26 RES SEQ ID
+                line += " "*3;                                                                                                    # 27 - 30
+                line += " "*(8 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x"));                        # 31 - 38 X Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y"));                        # 39 - 46 Y Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z"));                        # 47 - 54 Z Coords
+                line += " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i));                 # 55 - 60 OCCUPANCY
+                line += " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i));       # 61 - 66 TEMP FACTOR
+                line += " "*(10);                                                                                                 # 67 - 76
+                line += " "*(2 - len(atoms.getValue("type_symbol", i))) + atoms.getValue("type_symbol", i);                       # 77 - 78 ELEMENT SYMBOL
+                line += " "*2 if(atoms.getValue("pdbx_formal_charge", i) == "?") else atoms.getValue("pdbx_formal_charge", i);    # 79 - 80 CHARGE OF ATOM
                 pdb_arr.append(pdb.HETATM(line));
             except ValueError as e:
-                pass;
-#                 print(e);
-#                 print("cif.ATOM_SITE: Error reading line:\n%s" % line);
+                print("cif.ATOM_SITE: Error reading line:\n%s" % line);
 
     return pdb_arr, err_arr;
 
@@ -168,6 +178,29 @@ def CONECT(block):
 
     return pdb_arr, err_arr;
 
+def HEADER(block):
+
+    header_arr = [];
+    header_err = [];
+
+    struct_obj   = block.getObj("struct_keywords");
+    database_obj = block.getObj("pdbx_database_status");
+    entry_obj    = block.getObj("entry");
+
+    line = "HEADER";
+    line += " "*4;
+    line += struct_obj.getValue("pdbx_keywords") + " "*(40 - len(struct_obj.getValue("pdbx_keywords")));
+    line += " "*(9 - len(database_obj.getValue("recvd_initial_deposition_date"))) + database_obj.getValue("recvd_initial_deposition_date");
+    line += " "*(4 - len(entry_obj.getValue("id"))) + entry_obj.getValue("id");
+
+    try:
+        header_arr.append(pdb.HEADER(line));
+    except:
+        sys.stderr.write("cif.HEADER:   Error parsing line: \n%s" % line);
+        header_err.append("HEADER");
+
+    return header_arr, header_err;
+
 
 def readCIF(file):
     """ Parse CIF-format data into array of Atom objects.
@@ -194,6 +227,7 @@ def readCIF(file):
 
         for i in range(len(pdbdata)):
             block = pdbdata[i];
+            head_pdb, head_err = HEADER(block);
             ato_pdb, ato_err = ATOM_SITE(block);
             con_pdb, con_err = CONECT(block);
 

@@ -693,9 +693,10 @@ Please cite your use of PDB2PQR as:
 
     if(".pdb" in path):
         pdblist, errlist = readPDB(pdbFile)
+        print(pdblist);
+        quit();
     elif(".cif" in path):
-        pdbList, errlist = cif.readCIF(pdbFile);
-        #print(pdbList);
+        pdblist, errlist = cif.readCIF(pdbFile);
     ### delete this
     pdbFile.close();
     quit();

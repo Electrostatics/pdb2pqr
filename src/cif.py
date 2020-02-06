@@ -49,6 +49,7 @@ __author__ = "Juan Brandi"
 import os
 import sys
 import pdb
+from numpy import minimum, ceil
 from pdbx.reader.PdbxReader import PdbxReader;
 
 def ATOM_SITE(block):
@@ -85,9 +86,9 @@ def ATOM_SITE(block):
                 line += " "*(1 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i);                   # 22      CHAIN ID
                 line += " "*(4 - len(str(atoms.getValue("auth_seq_id", i)))) +  str(atoms.getValue("auth_seq_id", i));            # 23 - 26 RES SEQ ID
                 line += " "*3;                                                                                                    # 27 - 30
-                line += " "*(8 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x"));                        # 31 - 38 X Coords
-                line += " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y"));                        # 39 - 46 Y Coords
-                line += " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z"));                        # 47 - 54 Z Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x", i));                        # 31 - 38 X Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y", i));                        # 39 - 46 Y Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z", i));                        # 47 - 54 Z Coords
                 line += " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i));                 # 55 - 60 OCCUPANCY
                 line += " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i));       # 61 - 66 TEMP FACTOR
                 line += " "*(10);                                                                                                 # 67 - 76
@@ -110,16 +111,17 @@ def ATOM_SITE(block):
                 line += " "*(1 - len(atoms.getValue("label_asym_id", i))) + atoms.getValue("label_asym_id", i);                   # 22      CHAIN ID
                 line += " "*(4 - len(str(atoms.getValue("auth_seq_id", i)))) +  str(atoms.getValue("auth_seq_id", i));            # 23 - 26 RES SEQ ID
                 line += " "*3;                                                                                                    # 27 - 30
-                line += " "*(8 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x"));                        # 31 - 38 X Coords
-                line += " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y"));                        # 39 - 46 Y Coords
-                line += " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z"));                        # 47 - 54 Z Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_x", i)))) + str(atoms.getValue("Cartn_x", i));                        # 31 - 38 X Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_y", i)))) + str(atoms.getValue("Cartn_y", i));                        # 39 - 46 Y Coords
+                line += " "*(8 - len(str(atoms.getValue("Cartn_z", i)))) + str(atoms.getValue("Cartn_z", i));                        # 47 - 54 Z Coords
                 line += " "*(6 - len(str(atoms.getValue("occupancy", i)))) + str(atoms.getValue("occupancy", i));                 # 55 - 60 OCCUPANCY
                 line += " "*(6 - len(str(atoms.getValue("B_iso_or_equiv", i)))) + str(atoms.getValue("B_iso_or_equiv", i));       # 61 - 66 TEMP FACTOR
                 line += " "*(10);                                                                                                 # 67 - 76
                 line += " "*(2 - len(atoms.getValue("type_symbol", i))) + atoms.getValue("type_symbol", i);                       # 77 - 78 ELEMENT SYMBOL
                 line += " "*2 if(atoms.getValue("pdbx_formal_charge", i) == "?") else atoms.getValue("pdbx_formal_charge", i);    # 79 - 80 CHARGE OF ATOM
                 pdb_arr.append(pdb.HETATM(line));
-            except ValueError as e:
+                 
+            except:
                 print("cif.ATOM_SITE: Error reading line:\n%s" % line);
 
     return pdb_arr, err_arr;
@@ -201,6 +203,383 @@ def HEADER(block):
 
     return header_arr, header_err;
 
+def TITLE(block):
+    
+    title_arr = [];
+    title_err = [];
+    
+    struct_obj = block.getObj("struct");
+    
+    title_string = struct_obj.getValue("title");
+    title_chunk    = int(ceil(len(title_string)/70.0));
+    
+    for i in range(title_chunk):
+        line = "TITLE  ";
+        line += " "*(2-len(str(i+1))) + str(i+1) if(i+1>1) else "  ";
+        line += title_string[ (i*70) : minimum(len(title_string), (i+1)*70)];
+        try:
+            title_arr.append(pdb.TITLE(line));
+        except:
+            sys.stderr.write("cif.TITLE:    Error parsing line:\n%s" % line);
+            title_err.append("TITLE");
+            
+    return title_arr, title_err;
+
+def COMPND(block):
+    
+    compnd_arr = [];
+    compnd_err = [];
+    
+    entity_obj = block.getObj("entity");
+    
+    cont = 1;
+    for i in range(entity_obj.getRowCount()):
+        line1 = "COMPND "
+        line1 += " "*(3 - len(str(cont))) + str(cont) if(cont>1) else "   ";
+        line1 += "MOL_ID: " + str(entity_obj.getValue("id", i)) + ";";
+        try:
+            compnd_arr.append(pdb.COMPND(line1));
+        except:
+            sys.stderr.write("cif.COMPND:    Error parsing line:\n%s\n" % line1);
+            compnd_err.append("COMPND");
+        
+        cont += 1;
+        
+        line2 = "COMPND "
+        line2 += " "*(3 - len(str(cont))) + str(cont) if(cont>1) else "   ";
+        line2 += "MOLECULE: " + entity_obj.getValue("pdbx_description", i) + ";";
+        try:
+            compnd_arr.append(pdb.COMPND(line2));
+        except:
+            sys.stderr.write("cif.COMPND:    Error parsing line:\n%s\n" % line2);
+            compnd_err.append("COMPND");
+        
+        cont += 1;
+        
+    return compnd_arr, compnd_err;
+
+def SOURCE(block):
+    
+    src_arr = [];
+    src_err = [];
+    
+    src_obj = block.getObj("entity_src_gen");
+    
+    cont = 1;
+    for i in range(src_obj.getRowCount()):
+        
+        if(src_obj.getValue("entity_id", 0) != "?"):
+            line =  "SOURCE ";
+            line += " "*(3 - len(str(cont))) + str(cont) if(cont>1) else "   ";
+            line += "MOL_ID: " + str(src_obj.getValue("entity_id", i)) + ";";
+            cont += 1;
+            try:
+                src_arr.append(pdb.SOURCE(line));
+            except:
+                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                src_err.append("SOURCE");
+                
+        if(src_obj.getValue("pdbx_gene_src_scientific_name", i) != "?"):
+            line = "SOURCE ";
+            line += " "*(3 - len(str(cont))) + str(cont) if(cont>1) else "   ";
+            line += "ORGANISIM_SCIENTIFIC: " + src_obj.getValue("pdbx_gene_src_scientific_name", i) + ";";
+            cont += 1;
+            try:
+                src_arr.append(pdb.SOURCE(line));
+            except:
+                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                src_err.append("SOURCE");
+                
+        if(src_obj.getValue("gene_src_common_name", i) != "?"):
+            line = "SOURCE ";
+            line += " "*(3 - len(str(cont))) + str(cont) if(cont>1) else "   ";
+            line += "ORGANISM_COMMON: " + src_obj.getValue("gene_src_common_name", i) + ";";
+            cont += 1;
+            try:
+                src_arr.append(pdb.SOURCE(line));
+            except:
+                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                src_err.append("SOURCE");
+                
+        if(src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) != "?"):
+            line = "SOURCE ";
+            line += " "*(3 - len(str(cont))) + str(cont) if(cont>1) else "   ";
+            line += "ORGANISM_TAXID: " + src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) + ";";
+            cont += 1;
+            try:
+                src_arr.append(pdb.SOURCE(line));
+            except:
+                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                src_err.append("SOURCE");
+    
+    return src_arr, src_err;
+
+def KEYWDS(block):
+    
+    key_arr = [];
+    key_err = [];
+    
+    key_obj = block.getObj("struct_keywords");
+    
+    key_string = key_obj.getValue("text");
+    key_chunk    = int(ceil(len(key_string)/69.0));
+    
+    
+    for i in range(key_chunk):
+        line = "KEYWDS  ";
+        line += " "*(2-len(str(i+1))) + str(i+1) if(i+1>1) else "  ";
+        line += key_string[ (i*69) : minimum(len(key_string), (i+1)*69)];
+        try:
+            key_arr.append(pdb.KEYWDS(line));
+        except:
+            sys.stderr.write("cif.KEYWDS:    Error parsing line:\n%s" % line);
+            key_err.append("KEYWDS");
+            
+    return key_arr, key_err;
+ 
+def EXPDTA(block):
+    
+    ex_arr = [];
+    ex_err = [];
+    
+    ex_obj = block.getObj("exptl");
+    
+    line = "EXPDTA  ";
+    line += "  ";
+    line += ex_obj.getValue("method", 0);
+    
+    try:
+        ex_arr.append(pdb.EXPDTA(line));
+    except:
+        sys.stderr.write("cif.EXPDTA:    Error parsing line:\n%s\n" % line);
+        ex_err.append("EXPDTA");
+        
+    return ex_arr, ex_err;
+
+def AUTHOR(block):
+    
+    aut_arr = [];
+    aut_err = [];
+    
+    aut_obj = block.getObj("audit_author");
+    
+    for i in range(aut_obj.getRowCount()):
+        line =  "AUTHOR  ";
+        line += "  "*(2 - len(str(aut_obj.getValue("pdbx_ordinal", i)))) + str(aut_obj.getValue("pdbx_ordinal", i));
+        line += aut_obj.getValue("name", i);
+        
+        try:
+            aut_arr.append(pdb.AUTHOR(line));
+        except:
+            sys.stderr.write("cif.AUTHOR:    Error parsing line:\n%s\n" % line);
+            aut_err.append("AUTHOR");
+            
+    return aut_arr, aut_err;
+
+def CRYST1(block):
+    
+    cry_arr = [];
+    cry_err = [];
+    
+    cry_obj = block.getObj("cell");
+    sym_obj = block.getObj("symmetry");
+    
+    line = "CRYST1";
+    line += " "*(9 - len(str(cry_obj.getValue("length_a", 0)))) + cry_obj.getValue("length_a", 0);
+    line += " "*(9 - len(str(cry_obj.getValue("length_b", 0)))) + cry_obj.getValue("length_b", 0);
+    line += " "*(9 - len(str(cry_obj.getValue("length_c", 0)))) + cry_obj.getValue("length_c", 0); 
+    line += " "*(7 - len(str(cry_obj.getValue("angle_alpha", 0)))) + cry_obj.getValue("angle_alpha", 0);
+    line += " "*(7 - len(str(cry_obj.getValue("angle_beta", 0)))) + cry_obj.getValue("angle_beta", 0);
+    line += " "*(7 - len(str(cry_obj.getValue("angle_gamma", 0)))) + cry_obj.getValue("angle_gamma", 0);
+    line += " "*(11 - len(str(sym_obj.getValue("space_group_name_H-M", 0)))) + sym_obj.getValue("space_group_name_H-M", 0);
+    line += " "*(4 - len(str(cry_obj.getValue("Z_PDB", 0)))) + cry_obj.getValue("Z_PDB", 0);
+    
+    try:
+        cry_arr.append(pdb.CRYST1(line));
+    except:
+        sys.stderr.write("cif.CRYST1:    Error parsing line:\n%s\n" % line);
+        cry_err.append(CRYST1);
+        
+    return cry_arr, cry_err;
+
+def SCALEn(block):
+    
+    sc_arr = [];
+    sc_err = [];
+    
+    sc_obj = block.getObj("atom_sites");
+    
+    scale1 =  "";
+    scale1 += "SCALE1    ";
+    scale1 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[1][1]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[1][1]", 0));
+    scale1 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[1][2]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[1][2]", 0));
+    scale1 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[1][3]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[1][3]", 0));
+    scale1 += "     ";
+    scale1 += " "*(10 - len(str(sc_obj.getValue("fract_transf_vector[1]", 0)))) + str(sc_obj.getValue("fract_transf_vector[1]", 0));
+    
+    scale2 =  "";
+    scale2 += "SCALE2    ";
+    scale2 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[2][1]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[2][1]", 0));
+    scale2 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[2][2]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[2][2]", 0));
+    scale2 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[2][3]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[2][3]", 0));
+    scale2 += "     ";
+    scale2 += " "*(10 - len(str(sc_obj.getValue("fract_transf_vector[2]", 0)))) + str(sc_obj.getValue("fract_transf_vector[2]", 0));
+    
+    scale3 =  "";
+    scale3 += "SCALE3    ";
+    scale3 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[3][1]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[3][1]", 0));
+    scale3 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[3][2]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[3][2]", 0));
+    scale3 += " "*(10 - len(str(sc_obj.getValue("fract_transf_matrix[3][3]", 0)))) + str(sc_obj.getValue("fract_transf_matrix[3][3]", 0));
+    scale3 += "     ";
+    scale3 += " "*(10 - len(str(sc_obj.getValue("fract_transf_vector[3]", 0)))) + str(sc_obj.getValue("fract_transf_vector[3]", 0));
+    
+    try:
+        sc_arr.append(pdb.SCALE1(scale1));
+    except:
+        sys.stderr.write("cif.SCALEn:    Error parsing line:\n%s\n" % scale1);
+        sc_err.append("SCALE1");
+        
+    try:
+        sc_arr.append(pdb.SCALE2(scale2));
+    except:
+        sys.stderr.write("cif.SCALEn:    Error parsing line:\n%s\n" % scale2);
+        sc_err.append("SCALE2");
+    
+    try:
+        sc_arr.append(pdb.SCALE3(scale3));
+    except:
+        sys.stderr.write("cif.SCALEn:    Error parsing line:\n%s\n" % scale3);
+        sc_err.append("SCALE3");
+        
+    return sc_arr, sc_err;
+
+def ORIGXn(block):
+    
+    or_arr = [];
+    or_err = [];
+    
+    or_obj = block.getObj("database_PDB_matrix");
+    
+    orig1 =  "ORIGX1    ";
+    orig1 += " "*(10 - len(str(or_obj.getValue("origx[1][1]", 0)))) + str(or_obj.getValue("origx[1][1]", 0));
+    orig1 += " "*(10 - len(str(or_obj.getValue("origx[1][2]", 0)))) + str(or_obj.getValue("origx[1][2]", 0));
+    orig1 += " "*(10 - len(str(or_obj.getValue("origx[1][3]", 0)))) + str(or_obj.getValue("origx[1][3]", 0));
+    orig1 += "     ";
+    orig1 += " "*(10 - len(str(or_obj.getValue("origx_vector[1]", 0)))) + str(or_obj.getValue("origx_vector[1]", 0));
+    
+    orig2 =  "ORIGX2    ";
+    orig2 += " "*(10 - len(str(or_obj.getValue("origx[2][1]", 0)))) + str(or_obj.getValue("origx[2][1]", 0));
+    orig2 += " "*(10 - len(str(or_obj.getValue("origx[2][2]", 0)))) + str(or_obj.getValue("origx[2][2]", 0));
+    orig2 += " "*(10 - len(str(or_obj.getValue("origx[2][3]", 0)))) + str(or_obj.getValue("origx[2][3]", 0));
+    orig2 += "     ";
+    orig2 += " "*(10 - len(str(or_obj.getValue("origx_vector[2]", 0)))) + str(or_obj.getValue("origx_vector[2]", 0));
+    
+    orig3 =  "ORIGX3    ";
+    orig3 += " "*(10 - len(str(or_obj.getValue("origx[3][1]", 0)))) + str(or_obj.getValue("origx[3][1]", 0));
+    orig3 += " "*(10 - len(str(or_obj.getValue("origx[3][2]", 0)))) + str(or_obj.getValue("origx[3][2]", 0));
+    orig3 += " "*(10 - len(str(or_obj.getValue("origx[3][3]", 0)))) + str(or_obj.getValue("origx[3][3]", 0));
+    orig3 += "     ";
+    orig3 += " "*(10 - len(str(or_obj.getValue("origx_vector[3]", 0)))) + str(or_obj.getValue("origx_vector[3]", 0));
+    
+    try:
+        or_arr.append(pdb.ORIGX1(orig1));
+    except:
+        sys.stderr.write("cif.ORIGXn:    Error parsing line:\n%s\n" % orig1);
+        or_err.append("ORIGX1");
+        
+    try:
+        or_arr.append(pdb.ORIGX2(orig2));
+    except:
+        sys.stderr.write("cif.ORIGXn:    Error parsing line:\n%s\n" % orig2);
+        or_err.append("ORIGX2");
+    
+    try:
+        or_arr.append(pdb.ORIGX3(orig3));
+    except:
+        sys.stderr.write("cif.ORIGXn:    Error parsing line:\n%s\n" % orig3);
+        or_err.append("ORIGX3");
+        
+    return or_arr, or_err;
+
+def CISPEP(block):
+    
+    cis_arr = [];
+    cis_err = [];
+    
+    cis_obj = block.getObj("struct_mon_prot_cis");
+    
+    
+    for i in range(cis_obj.getRowCount()):
+        line =  "CISPEP ";
+        line += " "*(3 - len(str(cis_obj.getValue("pdbx_id", i)))) + str(cis_obj.getValue("pdbx_id", i));
+        line += " ";
+        line += " "*(3 - len(cis_obj.getValue("auth_comp_id", i))) + cis_obj.getValue("auth_comp_id", i);
+        line += " ";
+        line += cis_obj.getValue("auth_asym_id", i);
+        line += " ";
+        line += " "*(4 - len(str(cis_obj.getValue("auth_seq_id", i)))) + str(cis_obj.getValue("auth_seq_id", i));
+        line += cis_obj.getValue("pdbx_PDB_ins_code", i) if(cis_obj.getValue("pdbx_PDB_ins_code", i) != '?') else " ";
+        line += "   ";
+        line += " "*(3 - len(cis_obj.getValue("pdbx_auth_comp_id_2", i))) + cis_obj.getValue("pdbx_auth_comp_id_2", i);
+        line += " ";
+        line +=  cis_obj.getValue("pdbx_auth_asym_id_2", i);
+        line += " ";
+        line += " "*(4 - len(str(cis_obj.getValue("pdbx_auth_seq_id_2", i)))) + str(cis_obj.getValue("pdbx_auth_seq_id_2", i));
+        line += cis_obj.getValue("pdbx_PDB_ins_code_2", i) if(cis_obj.getValue("pdbx_PDB_ins_code_2", i) != '?') else " ";
+        line += " "*7;
+        line += " "*(3 - len(str(cis_obj.getValue("pdbx_PDB_model_num", i)))) + str(cis_obj.getValue("pdbx_PDB_model_num", i));
+        line += " "*7
+        line += " "*(6 - len(str(cis_obj.getValue("pdbx_omega_angle", i)))) + str(cis_obj.getValue("pdbx_omega_angle", i));
+        
+        try:
+            cis_arr.append(pdb.CISPEP(line));
+        except:
+            sys.stderr.write("cif.CISPEP:    Erro parsing line:\n%s\n" % line);
+            cis_err.append("CISPEP");
+        
+        
+    return cis_arr, cis_err; 
+
+def SSBOND(block):
+    
+    ssb_arr = [];
+    ssb_err = [];
+    
+    ssb_obj = block.getObj("struct_conn");
+    
+    for i in range(ssb_obj.getRowCount()):
+        line  = "SSBOND ";
+        line += " "*(3 - len(str(ssb_obj.getValue("id", i)[-1]))) + str(ssb_obj.getValue("id", i)[-1]);
+        line += " ";
+        line += " "*(3 - len(ssb_obj.getValue("ptnr1_auth_comp_id", i))) + ssb_obj.getValue("ptnr1_auth_comp_id", i);
+        line += " ";
+        line += ssb_obj.getValue("ptnr1_auth_asym_id", i);
+        line += " ";
+        line += " "*(4 - len(str(ssb_obj.getValue("ptnr1_auth_seq_id", i)))) + str(ssb_obj.getValue("ptnr1_auth_seq_id", i));
+        line += ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i) if (ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i) != '?') else " ";
+        line += " "*3;
+        line += " "*(3 - len(ssb_obj.getValue("ptnr2_auth_comp_id", i))) + ssb_obj.getValue("ptnr2_auth_comp_id", i);
+        line += " ";
+        line += ssb_obj.getValue("ptnr2_auth_asym_id", i);
+        line += " ";
+        line += " "*(4 - len(str(ssb_obj.getValue("ptnr2_auth_seq_id", i)))) + str(ssb_obj.getValue("ptnr2_auth_seq_id", i));
+        line += ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i) if(ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i) != '?') else " ";
+        line += " "*23;
+        line += " "*(6 - len(ssb_obj.getValue("ptnr1_symmetry", i).replace("_", ""))) + ssb_obj.getValue("ptnr1_symmetry", i).replace("_", "");
+        line += " ";
+        line += " "*(6 - len(ssb_obj.getValue("ptnr2_symmetry", i).replace("_", ""))) + ssb_obj.getValue("ptnr2_symmetry", i).replace("_", "");
+        line += " ";
+        line += " "*(5 - len(str(ssb_obj.getValue("pdbx_dist_value", i)))) + str(ssb_obj.getValue("pdbx_dist_value", i));
+        
+        try:
+            ssb_arr.append(pdb.SSBOND(line));
+        except:
+            sys.stderr.write("cif.SSBOND:    Error parsing line:\n%s\n" % line);
+            ssb_err.append("SSBOND");   
+        
+        
+    return ssb_arr, ssb_err;
+    
 
 def readCIF(file):
     """ Parse CIF-format data into array of Atom objects.
@@ -227,12 +606,26 @@ def readCIF(file):
 
         for i in range(len(pdbdata)):
             block = pdbdata[i];
-            head_pdb, head_err = HEADER(block);
-            ato_pdb, ato_err = ATOM_SITE(block);
-            con_pdb, con_err = CONECT(block);
+            head_pdb, head_err   = HEADER(block);
+            title_pdb, title_err = TITLE(block);
+            cmpnd_pdb, cmpnd_err = COMPND(block);
+            src_pdb, src_err     = SOURCE(block);
+            key_pdb, key_err     = KEYWDS(block);
+            ex_pdb, ex_err       = EXPDTA(block);
+            aut_pdb, aut_err     = AUTHOR(block);
+            ssb_pdb, ssb_err     = SSBOND(block);
+            cis_pdb, cis_err     = CISPEP(block);
+            cry_pdb, cry_err     = CRYST1(block);
+            or_pdb, or_err       = ORIGXn(block);
+            sc_pdb, sc_err       = SCALEn(block);
+            ato_pdb, ato_err     = ATOM_SITE(block);
+            con_pdb, con_err     = CONECT(block);
+            
 
-            pdblist = ato_pdb + con_pdb;
-            errlist = ato_err + con_err;
+            pdblist = head_pdb + title_pdb + cmpnd_pdb + src_pdb + key_pdb + ex_pdb + aut_pdb + \
+                    ssb_pdb + cis_pdb + cry_pdb + or_pdb + sc_pdb + ato_pdb + con_pdb;
+            errlist = head_err + title_err + cmpnd_err + src_err + key_err + ex_err + aut_err + \
+                    ssb_err + cis_err + cry_err + or_err + sc_err + ato_err + con_err;
 
         return pdblist, errlist
 

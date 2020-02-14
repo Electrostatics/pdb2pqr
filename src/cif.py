@@ -230,6 +230,9 @@ def CONECT(block):
 
     struct_conn = block.getObj("struct_conn");
     atoms = block.getObj("atom_site");
+    
+    if(struct_conn is None or atoms is None):
+        return pdb_arr, err_arr;
 
     for index in range(struct_conn.getRowCount()):
         atom_pair = [];
@@ -634,6 +637,9 @@ def SSBOND(block):
     ssb_err = [];
     
     ssb_obj = block.getObj("struct_conn");
+    
+    if(ssb_obj is None):
+        return ssb_arr, ssb_err;
     
     for i in range(ssb_obj.getRowCount()):
         line  = "SSBOND ";

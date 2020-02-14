@@ -801,12 +801,20 @@ Please cite your use of PDB2PQR as:
     path = args[0]
     pdbFile = getPDBFile(path)
 
-    if(".pdb" in path):
+    if(path[-3:] == "pdb"):
         pdblist, errlist = readPDB(pdbFile)
         isCIF = False;
-    elif(".cif" in path):
+    elif(path[-3:] == "cif"):
         pdblist, errlist = cif.readCIF(pdbFile);
         isCIF = True;
+    else:
+        sys.stderr.write("Unrecognized file extension.\n");
+        quit();
+        
+        
+    # @TODO: delete this
+    #print(pdblist);
+    #quit();
 
     if len(pdblist) == 0 and len(errlist) == 0:
         parser.error("Unable to find file %s!" % path)

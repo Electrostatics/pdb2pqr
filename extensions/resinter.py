@@ -10,7 +10,7 @@ __authors__ = "Kyle Monson and Emile Hogan"
 import extensions
 from src.hydrogens import Optimize
 #itertools FTW!
-from itertools import product, permutations, izip, count
+from itertools import product, permutations, count
 from collections import defaultdict
 from src.hydrogens import hydrogenRoutines
 
@@ -233,7 +233,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
     
     routines.removeHydrogens()
     
-    for newResidueName, oldResidue, index in izip(residueSet, routines.protein.getResidues(), count()):
+    for newResidueName, oldResidue, index in zip(residueSet, routines.protein.getResidues(), count()):
         if newResidueName is None:
             continue
         
@@ -291,7 +291,7 @@ def write_all_residue_interaction_energies_combinations(routines, output, option
     
     routines.write("Testing the following combinations\n")
     namelist = [r.name for r in routines.protein.getResidues()]
-    combinationsData = izip(namelist, residueNamesList)
+    combinationsData = zip(namelist, residueNamesList)
     for thing in combinationsData:
         routines.write(str(thing)+'\n')
         
@@ -313,7 +313,7 @@ def write_all_residue_interaction_energies_combinations(routines, output, option
                             debump = options.debump,
                             opt = options.opt)
         
-    for resultKey in sorted(_pairEnergyResults.iterkeys()):
+    for resultKey in sorted(_pairEnergyResults.keys()):
         output.write(resultKey + ' ' + str(_pairEnergyResults[resultKey]) + '\n')
     
     routines.write(str(count)+' residue combinations tried\n')

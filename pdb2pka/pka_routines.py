@@ -2361,13 +2361,13 @@ class pKaRoutines:
                     titrations.append(thisTitration)
 
                     line = titration_file.readline()
-                    if string.strip(line) == 'END': break
+                    if line.strip() == 'END': break
 
                 thisGroup = pKaGroup(name, resname, type, titrations)
                 mygroups[name] = thisGroup
 
                 line = titration_file.readline()
-                if string.strip(line) == 'END OF FILE': break
+                if line.strip() == 'END OF FILE': break
 
         return mygroups
 

@@ -69,10 +69,10 @@ from src.protein import *
 from src.server import *
 from src.hydrogens import *
 from src.aconf import *
-from StringIO import *
+from io import StringIO
 from src.errors import PDB2PQRError
 
-__version__ = PDB2PQR_VERSION
+__version__ = "FIXME"
 
 import extensions
 
@@ -193,8 +193,9 @@ def runPDB2PQR(pdblist, ff,
                userff = None,
                usernames = None,
                ffout = None,
-               commandLine=None,
-               include_old_header=False):
+               holdList = None,
+               commandLine = None,
+               include_old_header = False):
     """
         Run the PDB2PQR Suite
 
@@ -210,7 +211,8 @@ def runPDB2PQR(pdblist, ff,
                              When False, no detailed information will be printed (float)
             extensions:      List of extensions to run
             extensionOptions:optionParser like option object that is passed to each object.
-            propkaOptions:optionParser like option object for propka30.
+            ph_calc_method: pKa calculation method ("propka","propka31","pdb2pka")
+            ph_calc_options: optionParser like option object for propka30.
             clean:         only return original PDB file in aligned format.
             neutraln:      Make the N-terminus of this protein neutral
             neutralc:      Make the C-terminus of this protein neutral
@@ -227,6 +229,7 @@ def runPDB2PQR(pdblist, ff,
                            use the names from the given forcefield
             commandLine:   command line used (if any) to launch the program. Included in output header.
             include_old_header: Include most of the PDB header in output.
+            holdlist:      A list of residues not to be optimized, as [(resid, chain, icode)]
             pdb2pka_params: parameters for running pdb2pka.
 
         Returns
@@ -234,6 +237,7 @@ def runPDB2PQR(pdblist, ff,
             lines:   The PQR file atoms (list)
             missedligandresidues:  A list of ligand residue names whose charges could
                      not be assigned (ligand)
+            protein: The protein object
     """
 
     pkaname = ""
@@ -252,11 +256,11 @@ def runPDB2PQR(pdblist, ff,
     start = time.time()
 
     if verbose:
-        print "Beginning PDB2PQR...\n"
+        print("Beginning PDB2PQR...\n")
 
     myDefinition = Definition()
     if verbose:
-        print "Parsed Amino Acid definition file."
+        print("Parsed Amino Acid definition file.")
 
     if drop_water:
         # Remove the waters
@@ -281,9 +285,9 @@ def runPDB2PQR(pdblist, ff,
         myProtein = Protein(pdblist, myDefinition)
 
     if verbose:
-        print "Created protein object -"
-        print "\tNumber of residues in protein: %s" % myProtein.numResidues()
-        print "\tNumber of atoms in protein   : %s" % myProtein.numAtoms()
+        print("Created protein object -")
+        print("\tNumber of residues in protein: %s" % myProtein.numResidues())
+        print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
 
     myRoutines = Routines(myProtein, verbose)
 
@@ -313,7 +317,7 @@ def runPDB2PQR(pdblist, ff,
             module.run_extension(myRoutines, outroot, extensionOptions)
 
         if verbose:
-            print "Total time taken: %.2f seconds\n" % (time.time() - start)
+            print("Total time taken: %.2f seconds\n" % (time.time() - start))
 
         #Be sure to include None for missed ligand residues
         return header, lines, None
@@ -336,7 +340,9 @@ def runPDB2PQR(pdblist, ff,
             myRoutines.debumpProtein()
 
         if ph_calc_method == 'propka':
-            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options)
+            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options, version=30)
+        elif ph_calc_method == 'propka31':
+            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options, version=31)
         elif ph_calc_method == 'pdb2pka':
             myRoutines.runPDB2PKA(ph, ff, pdblist, ligand, verbose, ph_calc_options)
 
@@ -349,6 +355,8 @@ def runPDB2PQR(pdblist, ff,
 
         if opt:
             myhydRoutines.setOptimizeableHydrogens()
+            # TONI fixing residues - myhydRoutines has a reference to myProtein, so i'm altering it in place
+            myRoutines.holdResidues(holdList)
             myhydRoutines.initializeFullOptimization()
             myhydRoutines.optimizeHydrogens()
         else:
@@ -450,9 +458,10 @@ def runPDB2PQR(pdblist, ff,
 
 
     if verbose:
-        print "Total time taken: %.2f seconds\n" % (time.time() - start)
+        print("Total time taken: %.2f seconds\n" % (time.time() - start))
 
-    return header, lines, missedligandresidues
+    return header, lines, missedligandresidues, myProtein
+
 
 def mainCommand(argv):
     """
@@ -546,11 +555,12 @@ def mainCommand(argv):
 
     pka_group = OptionGroup(parser,"pH options")
 
-    pka_group.add_option('--ph-calc-method', dest='ph_calc_method', metavar='PH_METHOD', choices=('propka', 'pdb2pka'),
+    pka_group.add_option('--ph-calc-method', dest='ph_calc_method', metavar='PH_METHOD', choices=('propka', 'propka31', 'pdb2pka'),
                       help='Method used to calculate ph values. If a pH calculation method is selected, for each'
                       ' titratable residue pH values will be calculated and the residue potentially modified'
                       ' after comparison with the pH value supplied by --with_ph\n'
                       'propka - Use PROPKA to calculate pH values. Actual PROPKA results will be output to <output-path>.propka.\n'
+                      'propka31 - Use PROPKA 3.1 to calculate pH values. Actual PROPKA results will be output to <output-path>.propka.\n'
                       'pdb2pka - Use PDB2PKA to calculate pH values. Requires the use of the PARSE force field.'
                       ' Warning: Larger residues can take a very long time to run using this method. EXPERIMENTAL!')
 
@@ -651,9 +661,10 @@ def mainCommand(argv):
         ph_calc_options = utilities.createPropkaOptions(options.ph,
                                                    verbose=options.propka_verbose,
                                                    reference=options.propka_reference)
-
-
-    if options.ph_calc_method == 'pdb2pka':
+    elif options.ph_calc_method == 'propka31':
+        import propka.lib
+        ph_calc_options, _ = propka.lib.loadOptions('--quiet')
+    elif options.ph_calc_method == 'pdb2pka':
         if options.ff.lower() != 'parse':
             parser.error('PDB2PKA requires the PARSE force field.')
         ph_calc_options = {'output_dir': options.pdb2pka_out,
@@ -695,8 +706,8 @@ Please cite your use of PDB2PQR as:
         parser.error("Unable to find file %s!" % path)
 
     if len(errlist) != 0 and options.verbose:
-        print "Warning: %s is a non-standard PDB file.\n" % path
-        print errlist
+        print("Warning: %s is a non-standard PDB file.\n" % path)
+        print(errlist)
 
     outpath = args[1]
     options.outname = outpath
@@ -714,7 +725,7 @@ Please cite your use of PDB2PQR as:
     # This would also do away with the redundent checks and such in
     # the Forcefield constructor.
     try:
-        header, lines, missedligands = runPDB2PQR(pdblist,
+        header, lines, missedligands, _ = runPDB2PQR(pdblist,
                                                   options.ff,
                                                   outname = options.outname,
                                                   ph = options.ph,
@@ -739,7 +750,7 @@ Please cite your use of PDB2PQR as:
                                                   commandLine = commandLine,
                                                   include_old_header = options.include_header)
     except PDB2PQRError as er:
-        print er
+        print(er)
         sys.exit(2)
 
     # Print the PQR file

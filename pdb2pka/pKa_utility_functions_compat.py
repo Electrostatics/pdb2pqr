@@ -97,7 +97,7 @@ def getWI_resid4(line):
     #
     # First trim the string
     #
-    line=string.join(string.split(string.strip(line))[:-1])
+    line=string.join(string.split(line.strip())[:-1])
     #
     # Now the line looks like: 1 THR ( 1 ) N
     #

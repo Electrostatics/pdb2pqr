@@ -57,8 +57,8 @@ import os
 import re
 
 from xml import sax
-from utilities import *
-from errors import PDBInputError, PDBInternalError
+from .utilities import *
+from .errors import PDBInputError, PDBInternalError
 
 class ForcefieldHandler(sax.ContentHandler):
    
@@ -233,7 +233,7 @@ class Forcefield:
         if userff == None:
             defpath = getFFfile(ff)
             if defpath == "":
-                raise PDBInputError, "Unable to find forcefield parameter file %s!" % self.name
+                raise PDBInputError("Unable to find forcefield parameter file %s!" % self.name)
           
             file = open(defpath, 'rU')
 
@@ -243,7 +243,7 @@ class Forcefield:
         lines = file.readlines()
         for line in lines:
             if not line.startswith("#"):
-                fields = string.split(line)
+                fields = line.split()
                 if fields == []: continue  
                 try:
                     resname = fields[0]

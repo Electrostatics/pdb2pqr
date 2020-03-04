@@ -51,10 +51,10 @@ __author__ = "Todd Dolinsky"
 BACKBONE = ["N","CA","C","O","O2","HA","HN","H","tN"]
 
 import string
-from pdb import *
-from utilities import *
-from quatfit import *
-from errors import PDBInternalError
+from .pdb import *
+from .utilities import *
+from .quatfit import *
+from .errors import PDBInternalError
 
 class Chain:
     """
@@ -625,40 +625,40 @@ class Atom(ATOM):
         """
         outstr = ""
         tstr = self.type
-        outstr += string.ljust(tstr, 6)[:6]
+        outstr += str.ljust(tstr, 6)[:6]
         tstr = "%d" % self.serial
-        outstr += string.rjust(tstr, 5)[:5]
+        outstr += str.rjust(tstr, 5)[:5]
         outstr += " "
         tstr = self.name
         if len(tstr) == 4 or len(tstr.strip("FLIP")) == 4:
-            outstr += string.ljust(tstr, 4)[:4]
+            outstr += str.ljust(tstr, 4)[:4]
         else:
-            outstr += " " + string.ljust(tstr, 3)[:3]
+            outstr += " " + str.ljust(tstr, 3)[:3]
 
         tstr = self.resName
         if len(tstr) == 4:
-            outstr += string.ljust(tstr, 4)[:4]
+            outstr += str.ljust(tstr, 4)[:4]
         else:
-            outstr += " " + string.ljust(tstr, 3)[:3]
+            outstr += " " + str.ljust(tstr, 3)[:3]
             
         outstr += " "
         if chainflag:
             tstr = self.chainID
         else:
             tstr = ''
-        outstr += string.ljust(tstr, 1)[:1]
+        outstr += str.ljust(tstr, 1)[:1]
         tstr = "%d" % self.resSeq
-        outstr += string.rjust(tstr, 4)[:4]
+        outstr += str.rjust(tstr, 4)[:4]
         if self.iCode != "":
             outstr += "%s   " % self.iCode
         else:
             outstr += "    "
         tstr = "%8.3f" % self.x
-        outstr += string.ljust(tstr, 8)[:8]
+        outstr += str.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.y
-        outstr += string.ljust(tstr, 8)[:8]
+        outstr += str.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.z
-        outstr += string.ljust(tstr, 8)[:8] 
+        outstr += str.ljust(tstr, 8)[:8] 
         return outstr
         
     def __str__(self):
@@ -692,12 +692,12 @@ class Atom(ATOM):
             ffcharge = "%.4f" % self.ffcharge
         else: 
             ffcharge = "0.0000"
-        outstr += string.rjust(ffcharge, 8)[:8]
+        outstr += str.rjust(ffcharge, 8)[:8]
         if self.radius != None: 
             ffradius = "%.4f" % self.radius
         else: 
             ffradius = "0.0000"
-        outstr += string.rjust(ffradius, 7)[:7]
+        outstr += str.rjust(ffradius, 7)[:7]
 
         return outstr
     
@@ -717,17 +717,17 @@ class Atom(ATOM):
         outstr = self.getCommonStringRep(chainflag=True)
         
         tstr = "%6.2f" % self.occupancy
-        outstr += string.ljust(tstr, 6)[:6]
+        outstr += str.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.tempFactor
-        outstr += string.rjust(tstr, 6)[:6]
+        outstr += str.rjust(tstr, 6)[:6]
         #padding between temp factor and segID
         outstr += ' ' * 7
         tstr = self.segID
-        outstr += string.ljust(tstr, 4)[:4]
+        outstr += str.ljust(tstr, 4)[:4]
         tstr = self.element
-        outstr += string.ljust(tstr, 2)[:2]
+        outstr += str.ljust(tstr, 2)[:2]
         tstr = str(self.charge)
-        outstr += string.ljust(tstr, 2)[:2]
+        outstr += str.ljust(tstr, 2)[:2]
 
 
         return outstr

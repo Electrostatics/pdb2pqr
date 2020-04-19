@@ -37,20 +37,6 @@
      </atom>
    </residue>
    <residue>
-       <name>NCYS</name>
-       <atom>
-          <name>HG</name>
-          <useatomname>HSG</useatomname>
-       </atom>
-   </residue>
-   <residue>
-       <name>CCYS</name> 
-       <atom>
-          <name>HG</name>
-          <useatomname>HSG</useatomname>
-       </atom>
-   </residue>
-   <residue>
        <name>NPRO</name>
        <atom>
           <name>H</name>

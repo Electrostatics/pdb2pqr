@@ -113,7 +113,7 @@ class SchemaInstanceType(type):
 
         if ElementDeclaration in bases:
             if classdict.has_key('schema') is False  or classdict.has_key('literal') is False: 
-                raise AttributeError, 'ElementDeclaration must define schema and literal attributes'
+                raise (AttributeError, 'ElementDeclaration must define schema and literal attributes')
 
             key = (classdict['schema'],classdict['literal'])
             if SchemaInstanceType.elements.has_key(key):
@@ -135,7 +135,7 @@ class SchemaInstanceType(type):
 
         if TypeDefinition in bases:
             if classdict.has_key('type') is None:
-                raise AttributeError, 'TypeDefinition must define type attribute'
+                raise (AttributeError, 'TypeDefinition must define type attribute')
 
             key = classdict['type']
             if SchemaInstanceType.types.has_key(key) is False:
@@ -145,7 +145,7 @@ class SchemaInstanceType(type):
         if LocalElementDeclaration in bases:
                 return type.__new__(cls,classname,bases,classdict)
 
-        raise TypeError, 'SchemaInstanceType must be an ElementDeclaration or TypeDefinition '
+        raise (TypeError, 'SchemaInstanceType must be an ElementDeclaration or TypeDefinition ')
 
     def getTypeDefinition(cls, namespaceURI, name, lazy=False):
         '''Grab a type definition, returns a typecode class definition
@@ -377,7 +377,7 @@ class _GetPyobjWrapper:
         '''register a builtin, create a new wrapper.
         '''
         if arg in cls.types_dict:
-            raise RuntimeError, '%s already registered' %arg
+            raise (RuntimeError, '%s already registered' %arg)
         class _Wrapper(arg):
             'Wrapper for builtin %s\n%s' %(arg, cls.__doc__)
         _Wrapper.__name__ = '_%sWrapper' %arg.__name__
@@ -409,9 +409,9 @@ class _GetPyobjWrapper:
         elif d.has_key(type(pyobj)) is True:
             pyclass = d[type(pyobj)]
         else:
-            raise TypeError,\
+            raise (TypeError,\
                'Expecting a built-in type in %s (got %s).' %(
-                d.keys(),type(pyobj))
+                d.keys(),type(pyobj)))
 
         newobj = pyclass(pyobj)
         newobj.typecode = what
@@ -421,5 +421,5 @@ class _GetPyobjWrapper:
 
 from TC import Any, RegisterType
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)
 

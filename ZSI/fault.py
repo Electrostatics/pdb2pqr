@@ -259,4 +259,4 @@ def FaultFromFaultMessage(ps):
                 pyobj.faultactor, detailany)
 
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

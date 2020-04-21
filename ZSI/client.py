@@ -260,8 +260,8 @@ class _Binding:
         # Serialize WS-Address
         if self.wsAddressURI is not None:
             if self.soapaction and wsaction.strip('\'"') != self.soapaction:
-                raise WSActionException, 'soapAction(%s) and WS-Action(%s) must match'\
-                    %(self.soapaction,wsaction)
+                raise (WSActionException, 'soapAction(%s) and WS-Action(%s) must match'\
+                    %(self.soapaction,wsaction))
 
             self.address = Address(url, self.wsAddressURI)
             self.address.setRequest(endPointReference, wsaction)
@@ -280,11 +280,11 @@ class _Binding:
             elif scheme == 'http':
                 transport = self.defaultHttpTransport
             else:
-                raise RuntimeError, 'must specify transport or url startswith https/http'
+                raise (RuntimeError, 'must specify transport or url startswith https/http')
 
         # Send the request.
         if issubclass(transport, httplib.HTTPConnection) is False:
-            raise TypeError, 'transport must be a HTTPConnection'
+            raise (TypeError, 'transport must be a HTTPConnection')
 
         soapdata = str(sw)
         self.h = transport(netloc, None, **self.transdict)
@@ -337,10 +337,10 @@ class _Binding:
             print >>self.trace, "------ Digest Auth Header"
         url = url or self.url
         if response.status != 401:
-            raise RuntimeError, 'Expecting HTTP 401 response.'
+            raise (RuntimeError, 'Expecting HTTP 401 response.')
         if self.auth_style != AUTH.httpdigest:
-            raise RuntimeError,\
-                'Auth style(%d) does not support requested digest authorization.' %self.auth_style
+            raise (RuntimeError,\
+                'Auth style(%d) does not support requested digest authorization.' %self.auth_style)
 
         from ZSI.digest_auth import fetch_challenge,\
             generate_response,\
@@ -361,8 +361,8 @@ class _Binding:
             self.SendSOAPData(soapdata, url, soapaction, headers, **kw)
             return
 
-        raise RuntimeError,\
-            'Client expecting digest authorization challenge.'
+        raise (RuntimeError,\
+            'Client expecting digest authorization challenge.')
 
     def ReceiveRaw(self, **kw):
         '''Read a server reply, unconverted to any format and return it.
@@ -390,7 +390,7 @@ class _Binding:
             if saved: self.cookies.load(saved)
             if response.status == 401:
                 if not callable(self.http_callbacks.get(response.status,None)):
-                    raise RuntimeError, 'HTTP Digest Authorization Failed'
+                    raise (RuntimeError, 'HTTP Digest Authorization Failed')
                 self.http_callbacks[response.status](response)
                 continue
             if response.status != 100: break
@@ -571,4 +571,4 @@ class NamedParamBinding(Binding):
         return _NamedParamCaller(self, name, self.namespace)
 
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

@@ -62,4 +62,4 @@ class ClientBinding:
         '''
         return self.ps
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

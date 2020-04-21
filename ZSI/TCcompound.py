@@ -263,7 +263,7 @@ class ComplexType(TypeCode):
         # element declaration is initialized with a tag.
         try:
             pyobj = self.pyclass()
-        except Exception, e:
+        except (Exception, e):
             raise TypeError("Constructing element (%s,%s) with pyclass(%s), %s" \
                 %(self.nspname, self.pname, self.pyclass.__name__, str(e)))
         for key in v.keys():
@@ -292,8 +292,8 @@ class ComplexType(TypeCode):
                 elem = elt.createAppendElement(ns, n)
                 self.serialize_as_nil(elem)
                 return
-            raise EvaluateException, 'element(%s,%s) is not nillable(%s)' %(
-                self.nspname,self.pname,self.nillable)
+            raise (EvaluateException, 'element(%s,%s) is not nillable(%s)' %(
+                self.nspname,self.pname,self.nillable))
 
         if self.mutable is False and sw.Known(pyobj): 
             return
@@ -494,11 +494,11 @@ class Struct(ComplexType):
             what = self.ofwhat[idx]
             key = (what.nspname,what.pname)
             if not isinstance(what, AnyElement) and what.maxOccurs > 1:
-                raise TypeError,\
-                    'Constraint: no element can have a maxOccurs>1'
+                raise (TypeError,\
+                    'Constraint: no element can have a maxOccurs>1')
             if key in whats[idx+1:]:
-                raise TypeError,\
-                    'Constraint: No element may have the same name as any other'
+                raise (TypeError,\
+                    'Constraint: No element may have the same name as any other')
 
 
 class Array(TypeCode):
@@ -676,4 +676,4 @@ class Array(TypeCode):
                 position += 1
 
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

@@ -1510,10 +1510,11 @@ class Routines:
 
         import pka
         from pdb2pka import pka_routines
+        
         init_params = pdb2pka_params.copy()
         init_params.pop('pairene')
         init_params.pop('clean_output')
-
+        
         results = pka.pre_init(original_pdb_list=pdblist,
                                ff=ff,
                                verbose=verbose,
@@ -1631,7 +1632,6 @@ class Routines:
         import propka.molecular_container
         import tempfile
 
-
         def delete_propka_input(fn):
             import os
             p, f = os.path.split(fn)
@@ -1650,18 +1650,20 @@ class Routines:
 
         # TONI Make a string with all non-hydrogen atoms. Previously it was removing the "element"
         # column and hydrogens. This does not seem to be necessary in propKa 3.1 .
-        HFreeProteinFile = tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb")
+        HFreeProteinFile = tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb", dir=os.getcwd(), delete=False)
         for atom in self.protein.getAtoms():
             if not atom.isHydrogen():
                 atomtxt = atom.getPDBString()
                 HFreeProteinFile.write(atomtxt + '\n')
-        HFreeProteinFile.seek(0)
+        #HFreeProteinFile.seek(0)
+        HFreeProteinFile.close();
 
         # Run PropKa 3.1 -------------
 
         # Creating protein object. Annoyingly, at this stage propka generates a
         # *.propka_input file in PWD and does not delete it (irregardless of the original .pdb location)
         pka_molecule = propka.molecular_container.Molecular_container(HFreeProteinFile.name, pka_options)
+        #HFreeProteinFile.open()
         delete_propka_input(HFreeProteinFile.name)
         HFreeProteinFile.close()
 

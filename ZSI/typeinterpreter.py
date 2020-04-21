@@ -126,8 +126,8 @@ class BaseTypeInterpreter:
         elif tc in [TC.Boolean]:
             return 'bool'
         elif isinstance(tc, TypeCode):
-            raise EvaluateException,\
-               'failed to map zsi typecode to a python type'
+            raise (EvaluateException,\
+               'failed to map zsi typecode to a python type')
         return None
 
 

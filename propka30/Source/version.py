@@ -38,9 +38,9 @@
 #-------------------------------------------------------------------------------------------------------
 
 import math
-import lib
+from . import lib
 import sys, os
-import calculator as calculate
+from . import calculator as calculate
 pka_print = lib.pka_print
 
 
@@ -457,7 +457,7 @@ class Version(object):
         """
         setting the Coulomb model, and its parameters. If parameter is not defined, it will take the default from 'parameters.py'
         """
-        import parameters_new as parameters
+        from . import parameters_new as parameters
         coulomb_parameters = parameters.getCoulombParameters()
         if label not in coulomb_parameters:
           pka_print("do not accept Coulomb model \"%s\\n" % (label))
@@ -494,7 +494,7 @@ class Version(object):
         """
         setting the desolvation model, and its parameters
         """
-        import parameters_new as parameters
+        from . import parameters_new as parameters
         desolvation_parameters = parameters.getDesolvationParameters()
         if label not in desolvation_parameters:
           pka_print("do not accept solvation model \"%s\\n" % (label))
@@ -1393,7 +1393,7 @@ class Nov30(Version):
         """
         Rules of action for version Nov30
         """
-        import parameters_new as parameters
+        from . import parameters_new as parameters
 
         self.name             = "Nov30"
         self.Nmin             =  280

@@ -85,7 +85,7 @@ def fetch_challenge(http_header):
   """
   m = fetch_challenge.wwwauth_header_re.match(http_header)
   if m is None:
-      raise RuntimeError, 'expecting "WWW-Authenticate header [Basic,Digest]"'
+      raise (RuntimeError, 'expecting "WWW-Authenticate header [Basic,Digest]"')
 
   d = dict(challenge=m.groups()[0])
   m = fetch_challenge.auth_param_re.search(http_header)
@@ -109,4 +109,4 @@ def build_authorization_arg(authdict):
     vallist += ['%s=%s' % (k,authdict[k])]
   return 'Digest '+', '.join(vallist)
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print (_copyright)

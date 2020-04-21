@@ -38,14 +38,14 @@ NonceDec = GED(OASIS.WSSE, "Nonce")
 CreatedDec = GED(OASIS.UTILITY, "Created")
 
 if None in [UsernameTokenDec,SecurityDec,SignatureDec,PasswordDec,NonceDec,CreatedDec]:
-    raise ImportError, 'required global element(s) unavailable: %s ' %({
+    raise (ImportError, 'required global element(s) unavailable: %s ' %({
         (OASIS.WSSE, "UsernameToken"):UsernameTokenDec,
         (OASIS.WSSE, "Security"):SecurityDec,
         (DSIG.BASE, "Signature"):SignatureDec,
         (OASIS.WSSE, "Password"):PasswordDec,
         (OASIS.WSSE, "Nonce"):NonceDec,
         (OASIS.UTILITY, "Created"):CreatedDec,
-        })
+        }))
     
     
 # 
@@ -64,7 +64,7 @@ class WSSecurityHandler:
     @classmethod
     def processRequest(cls, ps, **kw):
         if type(ps) is not ParsedSoap:
-            raise TypeError,'Expecting ParsedSoap instance'
+            raise (TypeError,'Expecting ParsedSoap instance')
         
         security = ps.ParseHeaderElements([cls.securityDec])
         
@@ -75,20 +75,20 @@ class WSSecurityHandler:
                 if any.typecode is UsernameTokenDec:
                     try:
                         ps = cls.UsernameTokenProfileHandler.processRequest(ps, any)
-                    except Exception, ex:
+                    except (Exception, ex):
                         if cls.debug: raise
-                        raise RuntimeError, 'Unauthorized Username/passphrase combination'
+                        raise (RuntimeError, 'Unauthorized Username/passphrase combination')
                     continue
                 
                 if any.typecode is SignatureDec:
                     try:
                         ps = cls.SignatureHandler.processRequest(ps, any)
-                    except Exception, ex:
+                    except (Exception, ex):
                         if cls.debug: raise
-                        raise RuntimeError, 'Invalid Security Header'
+                        raise (RuntimeError, 'Invalid Security Header')
                     continue
                 
-                raise RuntimeError, 'WS-Security, Unsupported token %s' %str(any)
+                raise (RuntimeError, 'WS-Security, Unsupported token %s' %str(any))
             
         return ps
 
@@ -138,8 +138,8 @@ class WSSecurityHandler:
                 token -- UsernameToken pyclass instance
             """
             if token.typecode is not UsernameTokenDec:
-                raise TypeError, 'expecting GED (%s,%s) representation.' %(
-                    UsernameTokenDec.nspname, UsernameTokenDec.pname)
+                raise (TypeError, 'expecting GED (%s,%s) representation.' %(
+                    UsernameTokenDec.nspname, UsernameTokenDec.pname))
                     
             username = token.Username
             
@@ -159,10 +159,10 @@ class WSSecurityHandler:
                     timestamp = any
                     continue
                 
-                raise TypeError, 'UsernameTokenProfileHander unexpected %s' %str(any)
+                raise (TypeError, 'UsernameTokenProfileHander unexpected %s' %str(any))
 
             if password is None:
-                raise RuntimeError, 'Unauthorized, no password'
+                raise (RuntimeError, 'Unauthorized, no password')
             
             # TODO: not yet supporting complexType simpleContent in pyclass_type
             attrs = getattr(password, password.typecode.attrs_aname, {})
@@ -173,16 +173,16 @@ class WSSecurityHandler:
                 if password == cls.passwordCallback(username):
                     return ps
                 
-                raise RuntimeError, 'Unauthorized, clear text password failed'
+                raise (RuntimeError, 'Unauthorized, clear text password failed')
             
             if cls.nonces is None: cls.sweep(0)
             if nonce is not None:
                 if nonce in cls.nonces:
-                    raise RuntimeError, 'Invalid Nonce'
+                    raise (RuntimeError, 'Invalid Nonce')
                 
                 # created was 10 seconds ago or sooner
                 if created is not None and created < time.gmtime(time.time()-10):
-                    raise RuntimeError, 'UsernameToken created is expired' 
+                    raise (RuntimeError, 'UsernameToken created is expired' )
                 
                 cls.nonces.append(nonce)
             
@@ -197,9 +197,9 @@ class WSSecurityHandler:
                 if password == base64.encodestring(digest.digest()).strip():
                     return ps
                 
-                raise RuntimeError, 'Unauthorized, digest failed'
+                raise (RuntimeError, 'Unauthorized, digest failed')
             
-            raise RuntimeError, 'Unauthorized, contents of UsernameToken unknown'
+            raise (RuntimeError, 'Unauthorized, contents of UsernameToken unknown')
             
         @classmethod
         def processResponse(cls, output, **kw):
@@ -231,8 +231,8 @@ class WSSecurityHandler:
                 signature -- Signature pyclass instance
             """
             if token.typecode is not SignatureDec:
-                raise TypeError, 'expecting GED (%s,%s) representation.' %(
-                    SignatureDec.nspname, SignatureDec.pname)
+                raise (TypeError, 'expecting GED (%s,%s) representation.' %(
+                    SignatureDec.nspname, SignatureDec.pname))
                     
             si = signature.SignedInfo
             si.CanonicalizationMethod
@@ -246,22 +246,22 @@ class WSSecurityHandler:
             exp = XPath.Compile('//*[@wsu:Id="%s"]' %si.Reference.get_attribute_URI())
             nodes = exp.evaluate(context)
             if len(nodes) != 1:
-                raise RuntimeError, 'A SignedInfo Reference must refer to one node %s.' %(
-                    si.Reference.get_attribute_URI())
+                raise (RuntimeError, 'A SignedInfo Reference must refer to one node %s.' %(
+                    si.Reference.get_attribute_URI()))
                     
             try:
                 xml = cls.canonicalizeMethods[calgo](nodes[0])
             except IndexError:
-                raise RuntimeError, 'Unsupported canonicalization algorithm'
+                raise (RuntimeError, 'Unsupported canonicalization algorithm')
             
             try:
                 digest = cls.digestMethods[salgo]
             except IndexError:
-                raise RuntimeError, 'unknown digestMethods Algorithm'
+                raise (RuntimeError, 'unknown digestMethods Algorithm')
             
             digestValue = base64.encodestring(digest(xml).digest()).strip()
             if si.Reference.DigestValue != digestValue:
-                raise RuntimeError, 'digest does not match'
+                raise (RuntimeError, 'digest does not match')
             
             if si.Reference.Transforms:
                 pass
@@ -292,13 +292,13 @@ class WSSecurityHandler:
                                  si.Reference.get_attribute_URI()))
             nodes = exp.evaluate(context)
             if len(nodes) != 1:
-                raise RuntimeError, 'A SignedInfo Reference must refer to one node %s.' %(
-                    si.Reference.get_attribute_URI())
+                raise (RuntimeError, 'A SignedInfo Reference must refer to one node %s.' %(
+                    si.Reference.get_attribute_URI()))
                     
             try:
                 xml = cls.canonicalizeMethods[calgo](nodes[0])
             except IndexError:
-                raise RuntimeError, 'Unsupported canonicalization algorithm'
+                raise (RuntimeError, 'Unsupported canonicalization algorithm')
             
             # TODO: Check SignatureValue
             

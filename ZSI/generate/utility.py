@@ -56,7 +56,7 @@ class NamespaceAliasDict:
         if ns in SCHEMA.XSD_LIST:
             msg = 'missing built-in typecode for schema "%s"' %ns
             
-        raise WsdlGeneratorError, msg
+        raise (WsdlGeneratorError, msg)
                                  
     getModuleName = classmethod(getModuleName)
         
@@ -69,7 +69,7 @@ class NamespaceAliasDict:
         if ns in SCHEMA.XSD_LIST:
             msg = 'missing built-in typecode for schema "%s"' %ns
             
-        raise WsdlGeneratorError, msg
+        raise (WsdlGeneratorError, msg)
     
     getAlias = classmethod(getAlias)
 

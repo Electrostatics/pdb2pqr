@@ -26,8 +26,8 @@ def CheckInputArgs(*interfaces):
             for i in range(len(args)):
                 if (l > i and interfaces[i].providedBy(args[i])) or interfaces[-1].providedBy(args[i]):
                     continue
-                if l > i: raise TypeError, 'arg %s does not implement %s' %(args[i], interfaces[i])
-                raise TypeError, 'arg %s does not implement %s' %(args[i], interfaces[-1])
+                if l > i: raise (TypeError, 'arg %s does not implement %s' %(args[i], interfaces[i]))
+                raise (TypeError, 'arg %s does not implement %s' %(args[i], interfaces[-1]))
             func(self, *args, **kw)
         return check_args
     return wrapper

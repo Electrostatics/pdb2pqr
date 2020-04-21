@@ -131,8 +131,8 @@ class ligand_pKa:
         f=urllib.urlopen(thisurl)
         text=f.read()
         output = StringIO.StringIO(text)
-        print text
-        print smiles
+        print(text)
+        print(smiles)
         return text
         #
         # Parse the XML
@@ -141,39 +141,39 @@ class ligand_pKa:
         xmldoc = minidom.parse(output)
 
         ligands = xmldoc.firstChild
-        print 'Search-type was: %s'%ligands.attributes['Type'].value
+        print('Search-type was: %s'%ligands.attributes['Type'].value)
         for ligand in ligands.childNodes:
             atoms = ligand.getElementsByTagName('Atoms')[0]
             mol2 = ligand.getElementsByTagName('mol2')[0]
 
-            print '*'*50
-            print 'Found ligand \"%s\"'%ligand.attributes['Name'].value
-            print
-            print 'mol2 file'
-            print '-'*50
-            print mol2.firstChild.data
-            print
-            print ' Atoms and associated pKa values'
-            print '-'*50
+            print('*'*50)
+            print('Found ligand \"%s\"'%ligand.attributes['Name'].value)
+            print("")
+            print('mol2 file')
+            print('-'*50)
+            print(mol2.firstChild.data)
+            print("")
+            print(' Atoms and associated pKa values')
+            print('-'*50)
             for atom in atoms.childNodes:
-                print '%4s %4s %-6s'%(atom.attributes['Name'].value,
+                print('%4s %4s %-6s'%(atom.attributes['Name'].value,
                                      atom.attributes['Number'].value,
-                                     atom.attributes['Type'].value)
+                                     atom.attributes['Type'].value))
                 pkas = atom.firstChild
                 if pkas:
                     for pka in pkas.childNodes:
-                        print '          Value:            ',pka.attributes['Value'].value
-                        print '          Temperature:      ',pka.attributes['Temperature'].value
-                        print '          pH:               ',pka.attributes['pH'].value
-                        print '          Solvent:          ',pka.attributes['Solvent'].value
-                        print '          Salt type:        ',pka.attributes['Salt_type'].value
-                        print '          Salt conc.:       ',pka.attributes['Salt_conc.'].value
-                        print '          Titratable group: ',pka.attributes['Titratable_group'].value
-                        print '          Most bio. rel.:   ',pka.attributes['Most_bio._relavent'].value
-                        print '          Reference:        ',pka.attributes['Reference'].value
-                        print '          Comment:          ',pka.attributes['Comment'].value
+                        print('          Value:            ',pka.attributes['Value'].value)
+                        print('          Temperature:      ',pka.attributes['Temperature'].value)
+                        print('          pH:               ',pka.attributes['pH'].value)
+                        print('          Solvent:          ',pka.attributes['Solvent'].value)
+                        print('          Salt type:        ',pka.attributes['Salt_type'].value)
+                        print('          Salt conc.:       ',pka.attributes['Salt_conc.'].value)
+                        print('          Titratable group: ',pka.attributes['Titratable_group'].value)
+                        print('          Most bio. rel.:   ',pka.attributes['Most_bio._relavent'].value)
+                        print('          Reference:        ',pka.attributes['Reference'].value)
+                        print('          Comment:          ',pka.attributes['Comment'].value)
 
-            print '*'*50
+            print('*'*50)
         return
 
     def get_allhyd_state(self):
@@ -187,10 +187,10 @@ class ligand_pKa:
 
 
 if __name__=='__main__':
-    print
-    print 'Get pKa values and structures of protonation states for a ligand'
-    print 'Chresten Soendergaard, Paul Czodrowski, Jens Erik Nielsen 2006-2010'
-    print
+    print("")
+    print('Get pKa values and structures of protonation states for a ligand')
+    print('Chresten Soendergaard, Paul Czodrowski, Jens Erik Nielsen 2006-2010')
+    print("")
     import sys, os
     from optparse import OptionParser
     parser = OptionParser(usage='%prog [options] <file>',version='%prog 1.0')
@@ -228,7 +228,7 @@ if __name__=='__main__':
                         break
                 #
                 if mol2file:
-                    print mol2file
+                    print(mol2file)
                     fd=open(mol2file)
                     mol2lines=fd.readlines()
                     fd.close()
@@ -241,11 +241,11 @@ if __name__=='__main__':
                     except:
                         import sys
                         failed.append([mol2file,sys.exc_info()[0]])
-                        print 'FAILED'
-                        print sys.exc_info()[0]
-        print failed
-        print 'OK',len(ok)
-        print 'FAILED',len(failed)
+                        print('FAILED')
+                        print(sys.exc_info()[0])
+        print(failed)
+        print('OK',len(ok))
+        print('FAILED',len(failed))
                         
 
     

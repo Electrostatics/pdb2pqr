@@ -41,8 +41,8 @@
 
 import string, re, sys, os, math
 
-import Source.lib as lib
-from Source.protein import Protein
+from .Source import lib
+from .Source.protein import Protein
  
 
 

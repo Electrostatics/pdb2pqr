@@ -37,11 +37,11 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 import math, time
-import calculator as calculate
-import lib
+from . import calculator as calculate
+from . import lib
 pka_print = lib.pka_print
 #import debug
-from determinant import Determinant
+from .determinant import Determinant
 
 
 # Some library functions for the interative pKa determinants

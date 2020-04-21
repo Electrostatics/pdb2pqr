@@ -50,7 +50,7 @@ def getPage(url, contextFactory=None, *args, **kwargs):
     factory = client.HTTPClientFactory(url, *args, **kwargs)
     if scheme == 'https':
         if contextFactory is None:
-            raise RuntimeError, 'must provide a contextFactory'
+            raise (RuntimeError, 'must provide a contextFactory')
         conn = reactor.connectSSL(host, port, factory, contextFactory)
     else:
         conn = reactor.connectTCP(host, port, factory)
@@ -142,7 +142,7 @@ class WSAddressHandler:
             return
         
         if not sw.header:
-            raise RuntimeError, 'expecting SOAP:Header'
+            raise (RuntimeError, 'expecting SOAP:Header')
         
         self.address = addr = Address(url, wsAddressURI=self.uri)
         addr.setRequest(endPointReference, wsaction)

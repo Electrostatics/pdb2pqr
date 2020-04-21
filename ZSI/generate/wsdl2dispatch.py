@@ -110,7 +110,7 @@ class ServiceModuleWriter:
         '''
         name = GetModuleBaseNameFromWSDL(self.wsdl)
         if not name:
-            raise WsdlGeneratorError, 'could not determine a service name'
+            raise (WsdlGeneratorError, 'could not determine a service name')
         
         if self.server_module_suffix is None:
             return name
@@ -202,10 +202,10 @@ class ServiceModuleWriter:
         for bop in binding.operations:
             try:
                 op = portType.operations[bop.name]
-            except KeyError, ex:
-                raise WsdlGeneratorError,\
+            except (KeyError, ex):
+                raise (WsdlGeneratorError,\
                     'Port(%s) PortType(%s) missing operation(%s) defined in Binding(%s)' \
-                    %(port.name,portType.name,bop.name,binding.name)
+                    %(port.name,portType.name,bop.name,binding.name))
 
             for ext in bop.extensions:
                  if isinstance(ext, WSDLTools.SoapOperationBinding):
@@ -278,7 +278,7 @@ class ServiceModuleWriter:
         assert isinstance(wsdl, WSDLTools.WSDL), 'expecting WSDL instance'
 
         if len(wsdl.services) == 0:
-            raise WsdlGeneratorError, 'No service defined'
+            raise (WsdlGeneratorError, 'No service defined')
             
         self.reset() 
         self.wsdl = wsdl
@@ -293,7 +293,7 @@ class ServiceModuleWriter:
                 desc = BindingDescription(wsdl=wsdl)
                 try:
                     desc.setUp(port.getBinding())
-                except Wsdl2PythonError, ex:
+                except (Wsdl2PythonError, ex):
                     continue
                 
                 for soc in desc.operations:
@@ -372,10 +372,10 @@ class WSAServiceModuleWriter(ServiceModuleWriter):
         for bop in binding.operations:
             try:
                 op = portType.operations[bop.name]
-            except KeyError, ex:
-                raise WsdlGeneratorError,\
+            except (KeyError, ex):
+                raise (WsdlGeneratorError,\
                     'Port(%s) PortType(%s) missing operation(%s) defined in Binding(%s)' \
-                    %(port.name, portType.name, op.name, binding.name)
+                    %(port.name, portType.name, op.name, binding.name))
 
             soap_action = wsaction_in = wsaction_out = None
             if op.input is not None:
@@ -395,9 +395,9 @@ class WSAServiceModuleWriter(ServiceModuleWriter):
                          %(port.name, op.name, binding.name, soap_action, wsaction_in),
                     )
                     break
-                raise WsdlGeneratorError,\
+                raise (WsdlGeneratorError,\
                     'Port(%s) operation(%s) in Binding(%s) soapAction(%s) MUST match WS-Action(%s)' \
-                     %(port.name, op.name, binding.name, soap_action, wsaction_in)
+                     %(port.name, op.name, binding.name, soap_action, wsaction_in))
 
             method_name = self.getMethodName(op.name)
 

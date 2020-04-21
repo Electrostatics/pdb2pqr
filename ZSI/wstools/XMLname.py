@@ -38,7 +38,7 @@ def _toUnicodeHex(x):
     elif (hexlen==6): hexval = "00"  + hexval
     elif (hexlen==7): hexval = "0"   + hexval
     elif (hexlen==8): hexval = ""    + hexval    
-    else: raise Exception, "Illegal Value returned from hex(ord(x))"
+    else: raise (Exception, "Illegal Value returned from hex(ord(x))")
     
     return "_x"+ hexval + "_"
 

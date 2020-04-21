@@ -160,7 +160,7 @@ class ServiceProxy:
             if xml is not None and isinstance(xml, basestring):
                 schema = reader.loadFromString(xml)
             elif xml is not None:
-                raise RuntimeError, 'Unsupported: XML must be string'
+                raise (RuntimeError, 'Unsupported: XML must be string')
             elif not os.path.isfile(location):
                 schema = reader.loadFromURL(location)
             else:
@@ -198,10 +198,10 @@ class ServiceProxy:
         def call_closure(*args, **kwargs):
             """Call the named remote web service method."""
             if len(args) and len(kwargs):
-                raise TypeError, 'Use positional or keyword argument only.'
+                raise (TypeError, 'Use positional or keyword argument only.')
                 
             if len(args) > 0:
-                raise TypeError, 'Not supporting SOAPENC:Arrays or XSD:List'
+                raise (TypeError, 'Not supporting SOAPENC:Arrays or XSD:List')
             
             if len(kwargs): 
                 args = kwargs
@@ -261,11 +261,11 @@ class ServiceProxy:
                 ipart,opart = callinfo.getInParameters(),callinfo.getOutParameters()
                 if ( len(ipart) != 1 or not ipart[0].element_type or 
                     ipart[0].type is None ):
-                    raise RuntimeError, 'Bad Input Message "%s"' %callinfo.name
+                    raise (RuntimeError, 'Bad Input Message "%s"' %callinfo.name)
         
                 if ( len(opart) not in (0,1) or not opart[0].element_type or 
                     opart[0].type is None ):
-                    raise RuntimeError, 'Bad Output Message "%s"' %callinfo.name
+                    raise (RuntimeError, 'Bad Output Message "%s"' %callinfo.name)
                 
 #                if ( len(args) > 1 ):
 #                    raise RuntimeError, 'Message has only one part:  %s' %str(args)
@@ -338,15 +338,15 @@ class MethodProxy:
         for k,v in headers.items():
             h = filter(lambda i: k in i.type, self.callinfo.inheaders)[0]
             if h.element_type != 1: 
-                raise RuntimeError, 'not implemented'
+                raise (RuntimeError, 'not implemented')
 
             typecode = GED(*h.type)
             if typecode is None: 
-                raise RuntimeError, 'no matching element for %s' %str(h.type)
+                raise (RuntimeError, 'no matching element for %s' %str(h.type))
 
             pyclass = typecode.pyclass
             if pyclass is None: 
-                raise RuntimeError, 'no pyclass for typecode %s' %str(h.type)
+                raise (RuntimeError, 'no pyclass for typecode %s' %str(h.type))
 
             if type(v) is not dict:
                 pyobj = pyclass(v)

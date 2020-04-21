@@ -205,7 +205,7 @@ def gridLog(**kw):
         scheme = url[:url.find('://')]
         send = GLRegistry[scheme]
         send( url, str(GLRecord(**kw)), )
-    except Exception, ex:
+    except (Exception, ex):
         print >>sys.stderr, "*** gridLog failed -- %s" %(str(kw))
 
 

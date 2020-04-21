@@ -664,6 +664,7 @@ def mainCommand(argv):
     elif options.ph_calc_method == 'propka31':
         import propka.lib
         ph_calc_options, _ = propka.lib.loadOptions('--quiet')
+
     elif options.ph_calc_method == 'pdb2pka':
         if options.ff.lower() != 'parse':
             parser.error('PDB2PKA requires the PARSE force field.')
@@ -776,8 +777,8 @@ Please cite your use of PDB2PQR as:
         size = psize.Psize()
         size.parseInput(outpath)
         size.runPsize(outpath)
-        async = 0 # No async files here!
-        input = inputgen.Input(outpath, size, method, async, potdx=True)
+        #async = 0 # No async files here!
+        input = inputgen.Input(outpath, size, method, 0, potdx=True)
         input.printInputFiles()
         input.dumpPickle()
 

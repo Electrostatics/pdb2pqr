@@ -44,7 +44,7 @@ def IsRPC(item):
     """item -- OperationBinding instance.
     """
     if not isinstance(item, WSDLTools.OperationBinding):
-        raise TypeError, 'IsRPC takes 1 argument of type WSDLTools.OperationBinding'
+        raise (TypeError, 'IsRPC takes 1 argument of type WSDLTools.OperationBinding')
     soapbinding = item.getBinding().findBinding(WSDLTools.SoapBinding)
     sob = item.findBinding(WSDLTools.SoapOperationBinding)
     style = soapbinding.style
@@ -57,12 +57,12 @@ def IsLiteral(item):
     """item -- MessageRoleBinding instance.
     """
     if not isinstance(item, WSDLTools.MessageRoleBinding):
-        raise TypeError, 'IsLiteral takes 1 argument of type WSDLTools.MessageRoleBinding'
+        raise (TypeError, 'IsLiteral takes 1 argument of type WSDLTools.MessageRoleBinding')
     sbb = None
     if item.type == 'input' or item.type == 'output':
-        sbb = item.findBinding(WSDLTools.SoapBodyBinding)
+        sbb = item.fi(ndBinding(WSDLTools.SoapBodyBinding))
     if sbb is None:
-        raise ValueError, 'Missing soap:body binding.'
+        raise (ValueError, 'Missing soap:body binding.')
     return sbb.use == 'literal'
 
 
@@ -165,9 +165,9 @@ class AttributeMixIn:
                 elif a.getAttribute('form') == 'unqualified':
                     key = '"%s"' % a.getAttribute('name')
                 else:
-                    raise ContainerError, \
+                    raise (ContainerError, \
                           'attribute form must be un/qualified %s' \
-                          % a.getAttribute('form')
+                          % a.getAttribute('form'))
                           
                 atd_list.append(\
                     '%s[%s] = %s' % (atd, key, tc)
@@ -204,7 +204,7 @@ class AttributeMixIn:
                     # built in simple type
                     try:
                         namespace,typeName = ga.getAttribute('type')
-                    except TypeError, ex:
+                    except (TypeError, ex):
                         # TODO: attribute declaration could be anonymous type
                         # hack in something to work
                         atd_list.append(\
@@ -226,7 +226,7 @@ class AttributeMixIn:
                         % (atd, key, alias, type_class_name(typeName))
                         )
             else:
-                raise TypeError, 'expecting an attribute: %s' %a.getItemTrace()
+                raise (TypeError, 'expecting an attribute: %s' %a.getItemTrace())
             
         return formatted_attribute_list
 
@@ -265,7 +265,7 @@ class ContainerBase:
     def _setContent(self):
         '''override in subclasses.  formats the content in the desired way.
         '''
-        raise NotImplementedError, 'abstract method not implemented'
+        raise (NotImplementedError, 'abstract method not implemented')
 
     def getvalue(self):
         if not self.__setup:
@@ -278,12 +278,12 @@ class ContainerBase:
     def getNSAlias(self):
         if self.ns is not None:
             return NAD.getAlias(self.ns)
-        raise ContainerError, 'no self.ns attr defined in %s' % self.__class__
+        raise (ContainerError, 'no self.ns attr defined in %s' % self.__class__)
 
     def getNSModuleName(self):
         if self.ns:
             return NAD.getModuleName(self.ns)
-        raise ContainerError, 'no self.ns attr defined in %s' % self.__class__
+        raise (ContainerError, 'no self.ns attr defined in %s' % self.__class__)
 
     def getAttributeName(self, name):
         '''represents the aname
@@ -365,7 +365,7 @@ class ServiceLocatorContainer(ServiceContainerBase):
         for p in service.ports:
             try:
                 ab = p.getAddressBinding()
-            except WSDLTools.WSDLError, ex:
+            except (WSDLTools.WSDLError, ex):
                 self.logger.warning('Skip port(%s), missing address binding' %p.name)
                 continue
             if isinstance(ab, WSDLTools.SoapAddressBinding) is False:
@@ -390,7 +390,7 @@ class ServiceLocatorContainer(ServiceContainerBase):
 
     def _setContent(self):
         if not self.serviceName:
-            raise ContainerError, 'no service name defined!'
+            raise (ContainerError, 'no service name defined!')
 
         self.serviceName = self.mangle(self.serviceName)
         self.locatorName = '%sLocator' %self.serviceName
@@ -463,11 +463,11 @@ class ServiceOperationContainer(ServiceContainerBase):
             item -- WSDLTools BindingOperation instance.
         '''
         if not isinstance(item, WSDLTools.OperationBinding):
-            raise TypeError, 'Expecting WSDLTools Operation instance'
+            raise (TypeError, 'Expecting WSDLTools Operation instance')
 
         if not item.input:
-            raise WSDLFormatError('No <input/> in <binding name="%s"><operation name="%s">' %(
-                item.getBinding().name, item.name))
+            raise (WSDLFormatError('No <input/> in <binding name="%s"><operation name="%s">' %(
+                item.getBinding().name, item.name)))
         
         self.name = None
         self.port = None
@@ -494,7 +494,7 @@ class ServiceOperationContainer(ServiceContainerBase):
 
         soap_bop = bop.findBinding(WSDLTools.SoapOperationBinding)
         if soap_bop is None: 
-            raise SOAPBindingError, 'expecting SOAP Bindings'
+            raise (SOAPBindingError, 'expecting SOAP Bindings')
 
         self.soapaction = soap_bop.soapAction
         sbody = bop.input.findBinding(WSDLTools.SoapBodyBinding)
@@ -517,7 +517,7 @@ class ServiceOperationContainer(ServiceContainerBase):
         if bop.output is not None:
             sbody = bop.output.findBinding(WSDLTools.SoapBodyBinding)
             if not item.output:
-                raise WSDLFormatError, "Operation %s, no match for output binding"  %name
+                raise (WSDLFormatError, "Operation %s, no match for output binding"  %name)
 
             self.outputName = op.getOutputMessage().name
             self.outputSimpleType = \
@@ -552,13 +552,13 @@ class ServiceOperationContainer(ServiceContainerBase):
             partsList = self.getOperation().getInputMessage().parts.values()
             try:
                 subNames = GetPartsSubNames(partsList, self._wsdl)
-            except TypeError, ex:
-                raise Wsdl2PythonError,\
+            except (TypeError, ex):
+                raise (Wsdl2PythonError,\
                     "Extended generation failure: only supports doc/lit, "\
                     +"and all element attributes (<message><part element="\
                     +"\"my:GED\"></message>) must refer to single global "\
                     +"element declaration with complexType content.  "\
-                    +"\n\n**** TRY WITHOUT EXTENDED ****\n"
+                    +"\n\n**** TRY WITHOUT EXTENDED ****\n")
                 
             args = []
             for pa in subNames:
@@ -754,8 +754,8 @@ class BindingDescription(ServiceContainerBase):
         self.rProp = portType.getResourceProperties() 
         soap_binding = item.findBinding(WSDLTools.SoapBinding)
         if soap_binding is None:
-            raise Wsdl2PythonError,\
-                'Binding(%s) missing WSDLTools.SoapBinding' %item.name
+            raise (Wsdl2PythonError,\
+                'Binding(%s) missing WSDLTools.SoapBinding' %item.name)
 
         for bop in item.operations:
             soap_bop = bop.findBinding(WSDLTools.SoapOperationBinding)
@@ -778,8 +778,8 @@ class BindingDescription(ServiceContainerBase):
                 
             op = portType.operations.get(bop.name)
             if op is None:
-                raise Wsdl2PythonError,\
-                    'no matching portType/Binding operation(%s)' % bop.name
+                raise (Wsdl2PythonError,\
+                    'no matching portType/Binding operation(%s)' % bop.name)
                     
             c = self.operationclass(useWSA=self.useWSA, 
                     do_extended=self.do_extended)
@@ -835,7 +835,7 @@ class MessageContainerInterface:
         port -- WSDLTools.Port instance
         input-- boolean, input messasge or output message of operation.
         '''
-        raise NotImplementedError, 'Message container must implemented setUp.'
+        raise (NotImplementedError, 'Message container must implemented setUp.')
 
 
 class ServiceDocumentLiteralMessageContainer(ServiceContainerBase, 
@@ -867,13 +867,13 @@ class ServiceDocumentLiteralMessageContainer(ServiceContainerBase,
         # using underlying data structure to avoid phantom problem.
         # with message.parts.data.values() 
         if len(message.parts) == 0:
-            raise Wsdl2PythonError, 'must specify part for doc/lit msg'        
+            raise (Wsdl2PythonError, 'must specify part for doc/lit msg')
         
         p = None
         if soapBodyBind.parts is not None:
             if len(soapBodyBind.parts) > 1:
-                raise Wsdl2PythonError,\
-                    'not supporting multiple parts in soap body'
+                raise (Wsdl2PythonError,\
+                    'not supporting multiple parts in soap body')
             if len(soapBodyBind.parts) == 0:
                 return
             
@@ -883,7 +883,7 @@ class ServiceDocumentLiteralMessageContainer(ServiceContainerBase,
         p = p or message.parts[0]
     
         if p.type:
-            raise  Wsdl2PythonError, 'no doc/lit suport for <part type>'
+            raise (Wsdl2PythonError, 'no doc/lit suport for <part type>')
         
         if not p.element:
             return
@@ -900,7 +900,7 @@ class ServiceDocumentLiteralMessageContainer(ServiceContainerBase,
         try:
             simple = self._simple
         except AttributeError:
-            raise RuntimeError, 'call setUp first'
+            raise (RuntimeError, 'call setUp first')
         
         # TODO: Hidden contract.  Must set self.ns before getNSAlias...
         #  File "/usr/local/python/lib/python2.4/site-packages/ZSI/generate/containers.py", line 625, in _setContent
@@ -948,7 +948,7 @@ class ServiceRPCEncodedMessageContainer(ServiceContainerBase, MessageContainerIn
         try: 
             self.op
         except AttributeError:
-            raise RuntimeError, 'call setUp first'
+            raise (RuntimeError, 'call setUp first')
 
         pname = self.op.name
         msgRole = self.op.input
@@ -960,7 +960,7 @@ class ServiceRPCEncodedMessageContainer(ServiceContainerBase, MessageContainerIn
 
         sbody = msgRoleB.findBinding(WSDLTools.SoapBodyBinding)
         if not sbody or not sbody.namespace:
-            raise WSInteropError, WSISpec.R2717
+            raise (WSInteropError, WSISpec.R2717)
 
         assert sbody.use == 'encoded', 'Expecting use=="encoded"'
         encodingStyle = sbody.encodingStyle
@@ -1047,7 +1047,7 @@ class ServiceRPCLiteralMessageContainer(ServiceContainerBase, MessageContainerIn
         try:
             self.op
         except AttributeError:
-            raise RuntimeError, 'call setUp first' 
+            raise (RuntimeError, 'call setUp first')
 
         operation = self.op
         input = self.input
@@ -1061,7 +1061,7 @@ class ServiceRPCLiteralMessageContainer(ServiceContainerBase, MessageContainerIn
 
         sbody = msgRoleB.findBinding(WSDLTools.SoapBodyBinding)
         if not sbody or not sbody.namespace:            
-            raise WSInteropError, WSISpec.R2717
+            raise (WSInteropError, WSISpec.R2717)
         
         namespace = sbody.namespace
         tcb = MessageTypecodeContainer(\
@@ -1233,7 +1233,7 @@ class TypecodeContainerBase(TypesContainerBase):
             elif etp.isComplex():
                 content = ElementLocalComplexTypeContainer(do_extended=self.do_extended)
             else:
-                raise Wsdl2PythonError, "Unknown element declaration: %s" %item.getItemTrace()
+                raise (Wsdl2PythonError, "Unknown element declaration: %s" %item.getItemTrace())
 
             content.setUp(item)
 
@@ -1270,9 +1270,9 @@ class TypecodeContainerBase(TypesContainerBase):
     def getClassName(self):
 
         if not self.name:
-            raise ContainerError, 'self.name not defined!'
+            raise (ContainerError, 'self.name not defined!')
         if not hasattr(self.__class__, 'type'):
-            raise ContainerError, 'container type not defined!'
+            raise (ContainerError, 'container type not defined!')
 
         #suffix = self.__class__.type
         if self.__class__.type == DEF:
@@ -1355,17 +1355,17 @@ class TypecodeContainerBase(TypesContainerBase):
     def schemaTag(self):
         if self.ns is not None:
             return 'schema = "%s"' % self.ns
-        raise ContainerError, 'failed to set schema targetNamespace(%s)' %(self.__class__)
+        raise (ContainerError, 'failed to set schema targetNamespace(%s)' %(self.__class__))
     
     def typeTag(self):
         if self.name is not None:
             return 'type = (schema, "%s")' % self.name
-        raise ContainerError, 'failed to set type name(%s)' %(self.__class__)
+        raise (ContainerError, 'failed to set type name(%s)' %(self.__class__))
     
     def literalTag(self):
         if self.name is not None:
             return 'literal = "%s"' % self.name
-        raise ContainerError, 'failed to set element name(%s)' %(self.__class__)
+        raise (ContainerError, 'failed to set element name(%s)' %(self.__class__))
 
     def getExtraFlags(self):
         if self.mixed:
@@ -1442,7 +1442,7 @@ class TypecodeContainerBase(TypesContainerBase):
                 content.remove(orig)
                 continue
             
-            raise ContainerError, 'unexpected schema item: %s' %c.getItemTrace()
+            raise (ContainerError, 'unexpected schema item: %s' %c.getItemTrace())
                 
         for c in flat:
             if c.isDeclaration() and c.isElement():
@@ -1483,7 +1483,7 @@ class TypecodeContainerBase(TypesContainerBase):
                 self.elementAttrs.append(e)
                 continue
             
-            raise ContainerError, 'unexpected item: %s' % c.getItemTrace()
+            raise (ContainerError, 'unexpected item: %s' % c.getItemTrace())
 
         #return '\n'.join(self.elementAttrs)
         return
@@ -1559,7 +1559,7 @@ class TypecodeContainerBase(TypesContainerBase):
                 content.remove(orig)
                 continue
             
-            raise ContainerError, 'unexpected schema item: %s' %c.getItemTrace()
+            raise (ContainerError, 'unexpected schema item: %s' %c.getItemTrace())
 
         # TODO: Need to store "parents" in a dict[id] = list(),
         #    because cannot follow references, but not currently
@@ -1653,7 +1653,7 @@ class TypecodeContainerBase(TypesContainerBase):
                     tc.setStyleElementReference()
                     self.localTypes.append(c)
                 else:
-                    raise ContainerError, 'unexpected item: %s' % c.getItemTrace()
+                    raise (ContainerError, 'unexpected item: %s' % c.getItemTrace())
 
             elif c.isReference():
                 # element references
@@ -1663,7 +1663,7 @@ class TypecodeContainerBase(TypesContainerBase):
                 tc.setStyleElementReference()
                 tc.setGlobalType(*ref)
             else:
-                raise ContainerError, 'unexpected item: %s' % c.getItemTrace()
+                raise (ContainerError, 'unexpected item: %s' % c.getItemTrace())
 
             self.tcListElements.append(tc)
 
@@ -1710,7 +1710,7 @@ class TypecodeContainerBase(TypesContainerBase):
     def getBasesLogic(self, indent):
         try:
             prefix = NAD.getAlias(self.sKlassNS)
-        except WsdlGeneratorError, ex:
+        except (WsdlGeneratorError, ex):
             # XSD or SOAP
             raise
 
@@ -1769,7 +1769,7 @@ class MessageTypecodeContainer(TypecodeContainerBase):
             #   the job of the constructor or a setUp method.
             min,max,nil = self._getOccurs(p)
             if p.element:
-                raise  WSInteropError, WSISpec.R2203
+                raise  (WSInteropError, WSISpec.R2203)
             elif p.type: 
                 nsuri,name = p.type
                 tc = RPCMessageTcListComponentContainer(qualified=False)
@@ -1781,7 +1781,7 @@ class MessageTypecodeContainer(TypecodeContainerBase):
                 else:
                     tc.klass = '%s.%s' % (NAD.getAlias(nsuri), type_class_name(name) )
             else:
-                raise ContainerError, 'part must define an element or type attribute'
+                raise (ContainerError, 'part must define an element or type attribute')
 
             self.tcListElements.append(tc)
 
@@ -1921,7 +1921,7 @@ class TcListComponentContainer(ContainerBase):
 #        if self.style == 'recursion':
 #            return 'ZSI.TC.AnyElement(aname="%(aname)s", %(occurs)s, %(process)s)' %kw
 
-        raise RuntimeError, 'Must set style for typecode list generation'
+        raise (RuntimeError, 'Must set style for typecode list generation')
     
     def __str__(self):
         return self._getvalue()
@@ -2025,7 +2025,7 @@ class ElementSimpleTypeContainer(TypecodeContainerBase):
             self.substitutionGroup = tp.getAttribute('substitutionGroup')
             self.ns = tp.getTargetNamespace()
             qName = tp.getAttribute('type')
-        except Exception, ex:
+        except (Exception, ex):
             raise Wsdl2PythonError('Error occured processing element: %s' %(
                 tp.getItemTrace()), *ex.args)
 
@@ -2035,11 +2035,11 @@ class ElementSimpleTypeContainer(TypecodeContainerBase):
         tns,local = qName.getTargetNamespace(),qName.getName()
         self.sKlass = BTI.get_typeclass(local, tns)
         if self.sKlass is None:
-            raise Wsdl2PythonError('No built-in typecode for type definition("%s","%s"): %s' %(tns,local,tp.getItemTrace()))
+            raise (Wsdl2PythonError('No built-in typecode for type definition("%s","%s"): %s' %(tns,local,tp.getItemTrace())))
 
         try:
             self.pyclass = BTI.get_pythontype(None, None, typeclass=self.sKlass)
-        except Exception, ex:
+        except (Exception, ex):
             raise Wsdl2PythonError('Error occured processing element: %s' %(
                 tp.getItemTrace()), *ex.args)
 
@@ -2088,7 +2088,7 @@ class ElementLocalSimpleTypeContainer(TypecodeContainerBase):
         try:
             self.pyclass = BTI.get_pythontype(None, None, 
                                               typeclass=self.sKlass)
-        except Exception, ex:
+        except (Exception, ex):
             raise Wsdl2PythonError('Error occured processing element: %s' %(
                 self._item.getItemTrace()), *ex.args)
 
@@ -2105,7 +2105,7 @@ class ElementLocalSimpleTypeContainer(TypecodeContainerBase):
         if content.isRestriction():
             try:
                  base = content.getTypeDefinition()
-            except XMLSchema.SchemaError, ex:
+            except (XMLSchema.SchemaError, ex):
                  base = None
 
             qName = content.getAttributeBase()
@@ -2114,13 +2114,13 @@ class ElementLocalSimpleTypeContainer(TypecodeContainerBase):
                 self._setup_pyclass()
                 return
 
-            raise Wsdl2PythonError, 'unsupported local simpleType restriction: %s' \
-                %tp.content.getItemTrace()
+            raise (Wsdl2PythonError, 'unsupported local simpleType restriction: %s' \
+                %tp.content.getItemTrace())
 
         if content.isList():
             try:
                  base = content.getTypeDefinition()
-            except XMLSchema.SchemaError, ex:
+            except (XMLSchema.SchemaError, ex):
                  base = None
 
             if base is None:
@@ -2129,15 +2129,15 @@ class ElementLocalSimpleTypeContainer(TypecodeContainerBase):
                 self._setup_pyclass()
                 return
 
-            raise Wsdl2PythonError, 'unsupported local simpleType List: %s' \
-                %tp.content.getItemTrace()
+            raise (Wsdl2PythonError, 'unsupported local simpleType List: %s' \
+                %tp.content.getItemTrace())
 
         if content.isUnion():
-            raise Wsdl2PythonError, 'unsupported local simpleType Union: %s' \
-                %tp.content.getItemTrace()
+            raise (Wsdl2PythonError, 'unsupported local simpleType Union: %s' \
+                %tp.content.getItemTrace())
 
-        raise Wsdl2PythonError, 'unexpected schema item: %s' \
-            %tp.content.getItemTrace()
+        raise (Wsdl2PythonError, 'unexpected schema item: %s' \
+            %tp.content.getItemTrace())
 
 
 class ElementLocalComplexTypeContainer(TypecodeContainerBase, AttributeMixIn):
@@ -2160,7 +2160,7 @@ class ElementLocalComplexTypeContainer(TypecodeContainerBase, AttributeMixIn):
                        atypecode=self.attribute_typecode,
                        pyclass=self.getPyClass(),
                        ))
-        except Exception, ex:
+        except (Exception, ex):
             args = ['Failure processing an element w/local complexType: %s' %(
                           self._item.getItemTrace())]
             args += ex.args
@@ -2234,8 +2234,8 @@ class ElementLocalComplexTypeContainer(TypecodeContainerBase, AttributeMixIn):
             return
 
         if is_simple:
-            raise ContainerError, 'not implemented local complexType/simpleContent: %s'\
-               %tp.getItemTrace()
+            raise (ContainerError, 'not implemented local complexType/simpleContent: %s'\
+               %tp.getItemTrace())
 
         is_complex = complex.content.isComplex()
         if is_complex and complex.content.content is None:
@@ -2311,7 +2311,7 @@ class ElementGlobalDefContainer(TypecodeContainerBase):
                        alias=NAD.getAlias(self.sKlassNS),
                        subclass=type_class_name(self.sKlass),
                        ))
-        except Exception, ex:
+        except (Exception, ex):
             args = ['Failure processing an element w/local complexType: %s' %(
                           self._item.getItemTrace())]
             args += ex.args
@@ -2383,20 +2383,19 @@ class ComplexTypeComplexContentContainer(TypecodeContainerBase, AttributeMixIn):
         # Defined in Schema instance?
         try:
             base = derivation.getTypeDefinition('base')
-        except XMLSchema.SchemaError, ex:
+        except (XMLSchema.SchemaError, ex):
             base = None
 
         # anyType, arrayType, etc...
         if base is None:
             base = derivation.getAttributeQName('base')
             if base is None:
-                raise ContainerError, 'Unsupported derivation: %s'\
-                        %derivation.getItemTrace()
+                raise (ContainerError, 'Unsupported derivation: %s'\
+                        %derivation.getItemTrace())
                         
             if base != (SOAP.ENC,'Array') and base != (SCHEMA.XSD3,'anyType'):
-                raise ContainerError, 'Unsupported base(%s): %s' %(
-                    base, derivation.getItemTrace()
-                    )
+                raise (ContainerError, 'Unsupported base(%s): %s' %(
+                    base, derivation.getItemTrace()))
                 
         if base == (SOAP.ENC,'Array'):
             # SOAP-ENC:Array expecting arrayType attribute reference
@@ -2430,7 +2429,7 @@ class ComplexTypeComplexContentContainer(TypecodeContainerBase, AttributeMixIn):
                     namespace = qname[0]
                     try:
                         ofwhat = a.getSchemaItem(XMLSchema.TYPES, namespace, ncname)
-                    except XMLSchema.SchemaError, ex:
+                    except (XMLSchema.SchemaError, ex):
                         ofwhat = None
 
                     if ofwhat is None:
@@ -2439,8 +2438,8 @@ class ComplexTypeComplexContentContainer(TypecodeContainerBase, AttributeMixIn):
                         self._kw_array['ofwhat'] = GetClassNameFromSchemaItem(ofwhat, do_extended=self.do_extended)
 
                     if self._kw_array['ofwhat'] is None:
-                        raise ContainerError, 'For Array could not resolve ofwhat typecode(%s,%s): %s'\
-                            %(namespace, ncname, derivation.getItemTrace())
+                        raise (ContainerError, 'For Array could not resolve ofwhat typecode(%s,%s): %s'\
+                            %(namespace, ncname, derivation.getItemTrace()))
                     
                     self.logger.debug('Attribute soapenc:arrayType="%s"' %
                                       str(self._kw_array['ofwhat']))
@@ -2485,8 +2484,8 @@ class ComplexTypeComplexContentContainer(TypecodeContainerBase, AttributeMixIn):
                 group = group.getModelGroupReference()
             self.mgContent = group.content
         elif derivation.content:
-            raise Wsdl2PythonError, \
-                'expecting model group, not: %s' %derivation.content.getItemTrace()
+            raise (Wsdl2PythonError, \
+                'expecting model group, not: %s' %derivation.content.getItemTrace())
         else:
             self.mgContent = ()
 
@@ -2502,8 +2501,8 @@ class ComplexTypeComplexContentContainer(TypecodeContainerBase, AttributeMixIn):
         if self._is_array:
             # SOAP-ENC:Array
             if _is_xsd_or_soap_ns(self.sKlassNS) is False and self.sKlass == 'Array':
-                raise ContainerError, 'unknown type: (%s,%s)'\
-                    %(self.sKlass, self.sKlassNS)
+                raise (ContainerError, 'unknown type: (%s,%s)'\
+                    %(self.sKlass, self.sKlassNS))
                     
             # No need to xsi:type array items since specify with
             # SOAP-ENC:arrayType attribute.
@@ -2596,8 +2595,8 @@ class ComplexTypeComplexContentContainer(TypecodeContainerBase, AttributeMixIn):
             self.writeArray(definition)
             return
             
-        raise Wsdl2PythonError,\
-            'ComplexContent must be a restriction or extension'
+        raise (Wsdl2PythonError,\
+            'ComplexContent must be a restriction or extension')
 
     def pnameConstructor(self, superclass=None):
         if superclass:
@@ -2659,7 +2658,7 @@ class ComplexTypeContainer(TypecodeContainerBase, AttributeMixIn):
                 '%s%s' % (ID3, self.nsuriLogic()),
                 '%sTClist = [%s]' % (ID3, self.getTypecodeList()),
                 ]
-        except Exception, ex:
+        except (Exception, ex):
             args = ["Failure processing %s" %self._item.getItemTrace()]
             args += ex.args
             ex.args = tuple(args)
@@ -2711,10 +2710,10 @@ class SimpleTypeContainer(TypecodeContainerBase):
         TypecodeContainerBase.__init__(self)
 
     def setUp(self, tp):
-        raise NotImplementedError, 'abstract method not implemented'
+        raise (NotImplementedError, 'abstract method not implemented')
 
     def _setContent(self, tp):
-        raise NotImplementedError, 'abstract method not implemented'
+        raise (NotImplementedError, 'abstract method not implemented')
 
     def getPythonType(self):
         pyclass = eval(str(self.sKlass))
@@ -2753,8 +2752,8 @@ class RestrictionContainer(SimpleTypeContainer):
             'expecting simpleType restriction, not: %s' %tp.getItemTrace()
 
         if tp.content is None:
-            raise Wsdl2PythonError, \
-                  'empty simpleType defintion: %s' %tp.getItemTrace()
+            raise (Wsdl2PythonError, \
+                  'empty simpleType defintion: %s' %tp.getItemTrace())
 
         self.name = tp.getAttribute('name')
         self.ns = tp.getTargetNamespace()
@@ -2764,7 +2763,7 @@ class RestrictionContainer(SimpleTypeContainer):
         if base is not None:
             try:
                 item = tp.content.getTypeDefinition('base')
-            except XMLSchema.SchemaError, ex:
+            except (XMLSchema.SchemaError, ex):
                 item = None
 
             if item is None:
@@ -2775,8 +2774,8 @@ class RestrictionContainer(SimpleTypeContainer):
                 raise Wsdl2PythonError('no built-in type nor schema instance type for base attribute("%s","%s"): %s' %(
                     base.getTargetNamespace(), base.getName(), tp.getItemTrace()))
 
-            raise Wsdl2PythonError, \
-                'Not Supporting simpleType/Restriction w/User-Defined Base: %s %s' %(tp.getItemTrace(),item.getItemTrace())
+            raise (Wsdl2PythonError, \
+                'Not Supporting simpleType/Restriction w/User-Defined Base: %s %s' %(tp.getItemTrace(),item.getItemTrace()))
 
         sc = tp.content.getSimpleTypeContent()
         if sc is not None and True is sc.isSimple() is sc.isLocal() is sc.isDefinition():
@@ -2784,7 +2783,7 @@ class RestrictionContainer(SimpleTypeContainer):
             if sc.content.isRestriction() is True:
                 try:
                     item = tp.content.getTypeDefinition('base')
-                except XMLSchema.SchemaError, ex:
+                except (XMLSchema.SchemaError, ex):
                     pass
 
                 if item is None:
@@ -2792,27 +2791,27 @@ class RestrictionContainer(SimpleTypeContainer):
                     if base is not None:
                         self.sKlass = BTI.get_typeclass(base.getTargetNamespace(), base.getName())
                         return
-                    raise Wsdl2PythonError, \
+                    raise (Wsdl2PythonError, \
                         'Not Supporting simpleType/Restriction w/User-Defined Base: '\
-                        %item.getItemTrace()
+                        %item.getItemTrace())
 
-                raise Wsdl2PythonError, \
+                raise (Wsdl2PythonError, \
                     'Not Supporting simpleType/Restriction w/User-Defined Base: '\
-                    %item.getItemTrace()
+                    %item.getItemTrace())
 
             if sc.content.isList() is True:
-                raise Wsdl2PythonError, \
+                raise (Wsdl2PythonError, \
                       'iction base in subtypes: %s'\
-                      %sc.getItemTrace()
+                      %sc.getItemTrace())
 
             if sc.content.isUnion() is True:
-                raise Wsdl2PythonError, \
+                raise (Wsdl2PythonError, \
                       'could not get restriction base in subtypes: %s'\
-                      %sc.getItemTrace()
+                      %sc.getItemTrace())
 
             return
 
-        raise Wsdl2PythonError, 'No Restriction @base/simpleType: %s' %tp.getItemTrace()
+        raise (Wsdl2PythonError, 'No Restriction @base/simpleType: %s' %tp.getItemTrace())
 
     def _setContent(self):
 
@@ -2877,8 +2876,8 @@ class ComplexTypeSimpleContentContainer(SimpleTypeContainer, AttributeMixIn):
                                       )
             return
 
-        raise Wsdl2PythonError,\
-            'simple content derivation bad base attribute: ' %tp.getItemTrace()
+        raise (Wsdl2PythonError,\
+            'simple content derivation bad base attribute: ' %tp.getItemTrace())
 
     def _setContent(self):
         # TODO: Add derivation logic to constructors. 
@@ -2956,7 +2955,7 @@ class UnionContainer(SimpleTypeContainer):
         self._item = tp
         
         if tp.content.isUnion() is False:
-            raise ContainerError, 'content must be a Union: %s' %tp.getItemTrace()
+            raise (ContainerError, 'content must be a Union: %s' %tp.getItemTrace())
         self.name = tp.getAttribute('name')
         self.ns = tp.getTargetNamespace()
         self.sKlass = 'ZSI.TC.Union'
@@ -2987,7 +2986,7 @@ class ListContainer(SimpleTypeContainer):
         self._item = tp
         
         if tp.content.isList() is False:
-            raise ContainerError, 'content must be a List: %s' %tp.getItemTrace()
+            raise (ContainerError, 'content must be a List: %s' %tp.getItemTrace())
         self.name = tp.getAttribute('name')
         self.ns = tp.getTargetNamespace()
         self.sKlass = 'ZSI.TC.List'

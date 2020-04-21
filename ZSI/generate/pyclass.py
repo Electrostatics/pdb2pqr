@@ -11,9 +11,9 @@ def _x(): return
 try: 
     _x.func_name = '_y'
 except:
-    raise RuntimeError,\
+    raise (RuntimeError,\
         'use python-2.4 or later, cannot set function names in python "%s"'\
-        %sys.version
+        %sys.version)
 del _x
 
 
@@ -80,12 +80,12 @@ class pyclass_type(type):
                 get,set = cls.__create_text_functions_from_what(typecode)
                 
                 if classdict.has_key(get.__name__):
-                    raise AttributeError,\
-                        'attribute %s previously defined.' %get.__name__
+                    raise (AttributeError,\
+                        'attribute %s previously defined.' %get.__name__)
                         
                 if classdict.has_key(set.__name__):
-                    raise AttributeError,\
-                        'attribute %s previously defined.' %set.__name__
+                    raise (AttributeError,\
+                        'attribute %s previously defined.' %set.__name__)
                 
                 classdict[get.__name__] = get
                 classdict[set.__name__] = set
@@ -94,19 +94,19 @@ class pyclass_type(type):
                 get,set,new_func = cls.__create_functions_from_what(what)
 
                 if classdict.has_key(get.__name__):
-                    raise AttributeError,\
-                        'attribute %s previously defined.' %get.__name__
+                    raise (AttributeError,\
+                        'attribute %s previously defined.' %get.__name__)
                         
                 classdict[get.__name__] = get
                 if classdict.has_key(set.__name__):
-                    raise AttributeError,\
-                        'attribute %s previously defined.' %set.__name__
+                    raise (AttributeError,\
+                        'attribute %s previously defined.' %set.__name__)
                         
                 classdict[set.__name__] = set
                 if new_func is not None:
                     if classdict.has_key(new_func.__name__):
-                        raise AttributeError,\
-                            'attribute %s previously defined.' %new_func.__name__
+                        raise (AttributeError,\
+                            'attribute %s previously defined.' %new_func.__name__)
                             
                     classdict[new_func.__name__] = new_func
 
@@ -137,12 +137,12 @@ class pyclass_type(type):
             for key,what in attribute_typecode_dict.items():
                 get,set = cls.__create_attr_functions_from_what(key, what)
                 if classdict.has_key(get.__name__):
-                    raise AttributeError,\
-                        'attribute %s previously defined.' %get.__name__
+                    raise (AttributeError,\
+                        'attribute %s previously defined.' %get.__name__)
                         
                 if classdict.has_key(set.__name__):
-                    raise AttributeError,\
-                        'attribute %s previously defined.' %set.__name__
+                    raise (AttributeError,\
+                        'attribute %s previously defined.' %set.__name__)
                 
                 classdict[get.__name__] = get
                 classdict[set.__name__] = set
@@ -157,7 +157,7 @@ class pyclass_type(type):
             if what.maxOccurs > 1:
                 def set(self, value):
                     if not (value is None or hasattr(value, '__iter__')):
-                        raise TypeError, 'expecting an iterable instance'
+                        raise (TypeError, 'expecting an iterable instance')
                     setattr(self, what.aname, value)
             else:
                 def set(self, value):
@@ -169,7 +169,7 @@ class pyclass_type(type):
             if what.maxOccurs > 1:
                 def set(self, value):
                     if not (value is None or hasattr(value, '__iter__')):
-                        raise TypeError, 'expecting an iterable instance'
+                        raise (TypeError, 'expecting an iterable instance')
                     setattr(self, what().aname, value)
             else:
                 def set(self, value):

@@ -1,4 +1,13 @@
-from itertools import ifilter, izip_longest, izip
+#from itertools import ifilter, izip_longest, izip
+try:
+    from future_builtins import filter
+    from future_builtins import zip_longest
+    from future_builtins import zip
+except ImportError:
+    pass
+
+
+
 from glob import glob
 from os import path
 import csv
@@ -223,9 +232,3 @@ def CompareStringFunc(outputFileName, targetfile, sourcefile, has_chain=None):
 
 def CompareDirectoryFunc(outputFileName, targetdir, sourcedir):
     return 'Comparing directories ("%s", "%s") -> %s' % (targetdir, sourcedir, outputFileName)
-
-
-
-
-
-

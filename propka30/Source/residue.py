@@ -40,8 +40,8 @@ import sys
 import string
 import math
 import copy
-import lib
-from pdb import Atom
+from . import lib
+from .pdb import Atom
 pka_print = lib.pka_print
 
 class Residue:

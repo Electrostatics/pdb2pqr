@@ -133,7 +133,7 @@ def wsdl2py(args=None):
 
     try:
         wsdl = load(location)
-    except Exception, e:
+    except (Exception, e):
         print >> sys.stderr, "Error loading %s: \n\t%s" % (location, e)
         traceback.print_exc(sys.stderr)
         # exit code UNIX specific, Windows?
@@ -252,7 +252,7 @@ def _wsdl2dispatch(options, wsdl):
         kw['base'] = WSResource
         ss = ServiceDescription(**kw)
         if options.address is True:
-            raise RuntimeError, 'WS-Address w/twisted currently unsupported, edit the "factory" attribute by hand'
+            raise (RuntimeError, 'WS-Address w/twisted currently unsupported, edit the "factory" attribute by hand')
     else:
         # TODO: make all this handler arch
         if options.address is True:
@@ -334,7 +334,7 @@ def _writedoc(doc, thing, forceload=0):
         file = open(fname, 'w')
         file.write(page)
         file.close()
-    except (ImportError, pydoc.ErrorDuringImport), value:
+    except ((ImportError, pydoc.ErrorDuringImport), value):
         traceback.print_exc(sys.stderr)
     else:
         return name + '.html'
@@ -365,7 +365,7 @@ def _writeclientdoc(doc, thing, forceload=0):
         file = open(name, 'w')
         file.write(page)
         file.close()
-    except (ImportError, pydoc.ErrorDuringImport), value:
+    except ((ImportError, pydoc.ErrorDuringImport), value):
         log.debug(str(value))
 
     pydoc.HTMLDoc.docmodule = docmodule
@@ -376,7 +376,7 @@ def _writetypesdoc(doc, thing, forceload=0):
     try:
         object, name = pydoc.resolve(thing, forceload)
         name = os.path.join(doc, name + '.html')
-    except (ImportError, pydoc.ErrorDuringImport), value:
+    except ((ImportError, pydoc.ErrorDuringImport), value):
         log.debug(str(value))
         return
         
@@ -397,7 +397,7 @@ def _writetypesdoc(doc, thing, forceload=0):
                 
                 try:
                     typecode = iklass()
-                except (AttributeError,RuntimeError), ex:
+                except ((AttributeError,RuntimeError), ex):
                     elements_dict[iname] = _writebrokedoc(doc, ex, iname)
                     continue
 
@@ -410,7 +410,7 @@ def _writetypesdoc(doc, thing, forceload=0):
             if issubclass(iklass, TypeDefinition):
                 try:
                     typecode = iklass(None)
-                except (AttributeError,RuntimeError), ex:
+                except ((AttributeError,RuntimeError), ex):
                     types_dict[iname] = _writebrokedoc(doc, ex, iname)
                     continue
 
@@ -479,7 +479,7 @@ def _writetypesdoc(doc, thing, forceload=0):
         file = open(name, 'w')
         file.write(page)
         file.close()
-    except (ImportError, pydoc.ErrorDuringImport), value:
+    except ((ImportError, pydoc.ErrorDuringImport), value):
         log.debug(str(value))
         
     pydoc.HTMLDoc.docclass = doclass
@@ -493,7 +493,7 @@ def _writebrokedoc(doc, ex, name, forceload=0):
         file = open(fname, 'w')
         file.write(page)
         file.close()
-    except (ImportError, pydoc.ErrorDuringImport), value:
+    except ((ImportError, pydoc.ErrorDuringImport), value):
         log.debug(str(value))
         
     return name + '.html'
@@ -515,7 +515,7 @@ def _writepydoc(doc, *args):
         name = os.path.sep.join(f.strip('.py').split(os.path.sep))
         try:
             e = __import__(name)
-        except Exception,ex:
+        except (Exception,ex):
             raise
 #            _writebrokedoc(doc, ex, name)
 #            continue
@@ -530,7 +530,7 @@ def _writepydoc(doc, *args):
   
         try: 
             _writedoc(doc, e)
-        except IndexError,ex:
+        except (IndexError,ex):
             _writebrokedoc(doc, ex, name)
             continue
 

@@ -620,8 +620,8 @@ def handleNonOpal(weboptions):
                 size = psize.Psize()
                 size.parseInput(pqrpath)
                 size.runPsize(pqrpath)
-                async = 0 # No async files here!
-                myinput = inputgen.Input(pqrpath, size, method, async, potdx=True)
+                #async = 0 # No async files here!
+                myinput = inputgen.Input(pqrpath, size, method, 0, potdx=True)
                 myinput.printInputFiles()
                 myinput.dumpPickle()
                         

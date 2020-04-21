@@ -159,7 +159,7 @@ class Duration(SimpleType):
             raise EvaluateException('Duration has T without time')
         try:
             retval = _dict_to_tuple(d)
-        except ValueError, e:
+        except (ValueError, e):
             raise EvaluateException(str(e))
     
         if self.pyclass is not None:
@@ -200,7 +200,7 @@ class Gregorian(SimpleType):
             raise EvaluateException('Bad Gregorian: %s' %text, ps.Backtrace(elt))
         try:
             retval = _dict_to_tuple(m.groupdict())
-        except ValueError, e:
+        except (ValueError, e):
             #raise EvaluateException(str(e))
             raise
         
@@ -227,7 +227,7 @@ class Gregorian(SimpleType):
             return self.format % d
 
         if  ms > 999:
-            raise ValueError, 'milliseconds must be a integer between 0 and 999'
+            raise (ValueError, 'milliseconds must be a integer between 0 and 999')
 
         d = { 'Y': pyobj[0], 'M': pyobj[1], 'D': pyobj[2],
             'h': pyobj[3], 'm': pyobj[4], 's': pyobj[5], 'ms':ms, }
@@ -318,4 +318,4 @@ class gTime(Gregorian):
     format_ms = format[:-1] + '.%(ms)03dZ'
     type = (SCHEMA.XSD3, 'time')
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

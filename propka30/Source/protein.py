@@ -37,15 +37,15 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 import math, sys, os, time, string
-import lib
+from . import lib
 pka_print = lib.pka_print
-import determinants
-import pdb 
+from . import determinants
+from . import pdb 
 #import debug
-import output
-import coupled_residues
-import calculator as calculate
-from chain import Chain
+from . import output
+from . import coupled_residues
+from . import calculator as calculate
+from .chain import Chain
 
 
 
@@ -290,7 +290,7 @@ class Protein:
         """ 
         protonates the protein according to given scheme
         """ 
-        from protonator import makeProtonator
+        from .protonator import makeProtonator
         please = makeProtonator(scheme=scheme)
         self.removeHydrogens()
 
@@ -317,7 +317,7 @@ class Protein:
         """ 
         # create a default version if not provided
         if version == None:
-          import version
+          from . import version
           version = version.makeVersion(label=options.version_label)
 
         if len(self.configurations) == 1:
@@ -961,7 +961,7 @@ def getResidueParameters():
     """ 
     Reads necessary information about residues (includes ions)
     """ 
-    from parameters_new import resName2Type, getQs, pKa_mod
+    from .parameters_new import resName2Type, getQs, pKa_mod
     resInfo = {}
     # reading residue information from parameters.py
     resInfo['resType'] = resName2Type()

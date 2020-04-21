@@ -83,13 +83,13 @@ class DefaultCallbackHandler:
                                               
         try:
             req_pyobj,rsp_pyobj = method(ps, request=request)
-        except TypeError, ex:
+        except (TypeError, ex):
             log.err(
                 'ERROR: service %s is broken, method MUST return request, response'\
                     % cls.__name__
             )
             raise
-        except Exception, ex:
+        except (Exception, ex):
             log.err('failure when calling bound method')
             raise
         
@@ -117,8 +117,8 @@ class WSAddressHandler:
         d = getattr(resource, 'root', None)
         key = _get_element_nsuri_name(ps.body_root)
         if d is None or d.has_key(key) is False:
-            raise RuntimeError,\
-                'Error looking for key(%s) in root dictionary(%s)' %(key, str(d))
+            raise (RuntimeError,\
+                'Error looking for key(%s) in root dictionary(%s)' %(key, str(d)))
 
         self.op_name = d[key]
         self.address = address = Address()
@@ -147,13 +147,13 @@ class WSAddressHandler:
         
         request, resource = kw['request'], kw['resource']
         if isinstance(request, twisted.web.http.Request) is False:
-            raise TypeError, '%s instance expected' %http.Request
+            raise (TypeError, '%s instance expected' %http.Request)
                 
         d = getattr(resource, 'wsAction', None)
         key = self.op_name
         if d is None or d.has_key(key) is False:
-            raise WSActionNotSpecified,\
-                'Error looking for key(%s) in wsAction dictionary(%s)' %(key, str(d))
+            raise (WSActionNotSpecified,\
+                'Error looking for key(%s) in wsAction dictionary(%s)' %(key, str(d)))
 
         addressRsp = Address(action=d[key])
         if request.transport.TLS == 0:
@@ -190,13 +190,13 @@ class WSAddressCallbackHandler:
         # TODO: grab ps.address, clean this up.
         try:
             req_pyobj,rsp_pyobj = method(ps, ps.address, request=request)
-        except TypeError, ex:
+        except (TypeError, ex):
             log.err(
                 'ERROR: service %s is broken, method MUST return request, response'\
                     %self.__class__.__name__
             )
             raise
-        except Exception, ex:
+        except (Exception, ex):
             log.err('failure when calling bound method')
             raise
         

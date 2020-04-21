@@ -63,20 +63,20 @@ class SOAPCallbackHandler:
             if (getattr(method, 'soapmethod', False) and method.root == root):
                 break
         else:
-            raise RuntimeError, 'Missing soap callback method for root "%s"' %root
+            raise (RuntimeError, 'Missing soap callback method for root "%s"' %root)
 
         try:
             req = ps.Parse(method.requesttypecode)
-        except Exception, ex:
+        except (Exception, ex):
             raise
         try:
             rsp = method.responsetypecode.pyclass()
-        except Exception, ex:
+        except (Exception, ex):
             raise
         
         try:
             req,rsp = method(req, rsp)
-        except Exception, ex:
+        except (Exception, ex):
             raise
 
         return rsp
@@ -106,12 +106,12 @@ class WSGIApplication(dict):
         ipath = os.path.split(env['PATH_INFO'])[1:]
         for i in range(1, len(ipath)+1):
             path = os.path.join(*ipath[:i])
-            print "PATH: ", path
+            print("PATH: ", path)
             application = self.get(path)
             if application is not None:
                 env['SCRIPT_NAME'] = script + path
                 env['PATH_INFO'] =  ''
-                print "SCRIPT: ", env['SCRIPT_NAME']
+                print("SCRIPT: ", env['SCRIPT_NAME'])
                 return application(env, start_response)
             
         return self._request_cb(env, start_response)
@@ -128,7 +128,7 @@ class WSGIApplication(dict):
         path = path.split('/')
         lp = len(path)
         if lp == 0:
-            raise RuntimeError, 'bad path "%s"' %path
+            raise (RuntimeError, 'bad path "%s"' %path)
         
         if lp == 1:
             self[path[0]] = resource
@@ -168,7 +168,7 @@ class SOAPApplication(WSGIApplication):
         s = StringIO()
         h = env.items(); h.sort()
         for k,v in h:
-            print >>s, k,'=',`v`
+            print >>s, k,'=',repr(v)
         return [s.getvalue()]
 
     def _handle_GET(self, env, start_response):
@@ -196,13 +196,13 @@ class SOAPApplication(WSGIApplication):
         chain = self.factory.newInstance()
         try:
             pyobj = chain.processRequest(data, request=request, resource=resource)
-        except Exception, ex:
+        except (Exception, ex):
             start_response("500 ERROR", [('Content-Type',mimeType)])
             return [fault.FaultFromException(ex, False, sys.exc_info()[2]).AsSOAP()]
 
         try:
             soap = chain.processResponse(pyobj, request=request, resource=resource)
-        except Exception, ex:
+        except (Exception, ex):
             start_response("500 ERROR", [('Content-Type',mimeType)])
             return [fault.FaultFromException(ex, False, sys.exc_info()[2]).AsSOAP()]
         

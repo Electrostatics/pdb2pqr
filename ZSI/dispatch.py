@@ -57,7 +57,7 @@ def _Dispatch(ps, modules, SendResponse, SendFault, nsdict={}, typesmodule=None,
         if len(handlers) == 0:
             raise TypeError("Unimplemented method " + what)
         if len(handlers) > 1:
-            raise TypeError("Multiple implementations found: " + `handlers`)
+            raise TypeError("Multiple implementations found: " + repr(handlers))
         handler = handlers[0]
 
         _client_binding = ClientBinding(ps)
@@ -72,19 +72,19 @@ def _Dispatch(ps, modules, SendResponse, SendFault, nsdict={}, typesmodule=None,
 
             try:
                 arg = tc.parse(ps.body_root, ps)
-            except EvaluateException, ex:
+            except (EvaluateException, ex):
                 SendFault(FaultFromZSIException(ex), **kw)
                 return
 
             try:
                 result = handler(arg)
-            except Exception,ex:
+            except (Exception,ex):
                 SendFault(FaultFromZSIException(ex), **kw)
                 return
 
             try:
                 tc = result.typecode
-            except AttributeError,ex:
+            except (AttributeError,ex):
                 SendFault(FaultFromZSIException(ex), **kw)
                 return
 
@@ -98,7 +98,7 @@ def _Dispatch(ps, modules, SendResponse, SendFault, nsdict={}, typesmodule=None,
 
                 try:
                     kwargs[str(e.localName)] = tc.parse(e, ps)
-                except EvaluateException, ex:
+                except (EvaluateException, ex):
                     SendFault(FaultFromZSIException(ex), **kw)
                     return
 
@@ -125,7 +125,7 @@ def _Dispatch(ps, modules, SendResponse, SendFault, nsdict={}, typesmodule=None,
                 result = handler()
             elif isarray:
                 try: arg = [ tc.parse(e, ps) for e in data ]
-                except EvaluateException, e:
+                except (EvaluateException, e):
                     #SendFault(FaultFromZSIException(e), **kw)
                     SendFault(RuntimeError("THIS IS AN ARRAY: %s" %isarray))
                     return
@@ -133,7 +133,7 @@ def _Dispatch(ps, modules, SendResponse, SendFault, nsdict={}, typesmodule=None,
                 result = handler(*arg)
             else:
                 try: kwarg = dict([ (str(e.localName),tc.parse(e, ps)) for e in data ])
-                except EvaluateException, e:
+                except (EvaluateException, e):
                     SendFault(FaultFromZSIException(e), **kw)
                     return
 
@@ -146,9 +146,9 @@ def _Dispatch(ps, modules, SendResponse, SendFault, nsdict={}, typesmodule=None,
         sw = SoapWriter(nsdict=nsdict)
         sw.serialize(result, tc)
         return SendResponse(str(sw), **kw)
-    except Fault, e:
+    except (Fault, e):
         return SendFault(e, **kw)
-    except Exception, e:
+    except (Exception, e):
         # Something went wrong, send a fault.
         return SendFault(FaultFromException(e, 0, sys.exc_info()[2]), **kw)
 
@@ -174,11 +174,11 @@ def _JonPySendXML(text, code=200, **kw):
     req.write(text)
 
 def _CGISendXML(text, code=200, **kw):
-    print 'Status: %d' % code
-    print 'Content-Type: text/xml; charset="%s"' %UNICODE_ENCODING
-    print 'Content-Length: %d' % len(text)
-    print ''
-    print text
+    print('Status: %d' % code)
+    print('Content-Type: text/xml; charset="%s"' %UNICODE_ENCODING)
+    print('Content-Length: %d' % len(text))
+    print('')
+    print(text)
 
 def _CGISendFault(f, **kw):
     _CGISendXML(f.AsSOAP(), 500, **kw)
@@ -222,10 +222,10 @@ class SOAPRequestHandler(BaseHTTPRequestHandler):
             else:
                 length = int(self.headers['content-length'])
                 ps = ParsedSoap(self.rfile.read(length))
-        except ParseException, e:
+        except (ParseException, e):
             self.send_fault(FaultFromZSIException(e))
             return
-        except Exception, e:
+        except (Exception, e):
             # Faulted while processing; assume it's in the header.
             self.send_fault(FaultFromException(e, 1, sys.exc_info()[2]))
             return
@@ -260,7 +260,7 @@ def AsCGI(nsdict={}, typesmodule=None, rpc=False, modules=None):
         else:
             length = int(os.environ['CONTENT_LENGTH'])
             ps = ParsedSoap(sys.stdin.read(length))
-    except ParseException, e:
+    except (ParseException, e):
         _CGISendFault(FaultFromZSIException(e))
         return
     _Dispatch(ps, modules, _CGISendXML, _CGISendFault, nsdict=nsdict,
@@ -289,10 +289,10 @@ def AsJonPy(request=None, modules=None, **kw):
         else:
             length = int(request.environ['CONTENT_LENGTH'])
             ps = ParsedSoap(request.stdin.read(length))
-    except ParseException, e:
+    except (ParseException, e):
         _JonPySendFault(FaultFromZSIException(e), **kw)
         return
     _Dispatch(ps, modules, _JonPySendXML, _JonPySendFault, **kw)
 
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

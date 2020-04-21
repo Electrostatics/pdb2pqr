@@ -5,6 +5,7 @@
 //
 #include "pMC_mult.h"
 #include "stdio.h"
+#include <algorithm>
 //
 //
 //
@@ -109,7 +110,7 @@ vector<float> MC::calc_pKas(float pH_start,float pH_end, float pH_step) {
                     vector<float> charges_pKadet;
                     int count2=count-static_cast<int>(datapoints);
                     if (count2<0) {count2=0;}
-                    for (double pH2=max(pH_start,pH-datapoints*pH_step);pH2<min(pH_end,pH+datapoints*pH_step);pH2=pH2+pH_step) {
+                    for (double pH2=std::max(pH_start,pH-datapoints*pH_step);pH2<std::min(pH_end,pH+datapoints*pH_step);pH2=pH2+pH_step) {
                         pHs_pKadet.push_back(pH2);
                         charges_pKadet.push_back(charges[count2][group]);
                         count2=count2+1;

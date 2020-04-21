@@ -33,11 +33,12 @@
  *                                                                            *
  *    weskamp@informatik.uni-marburg.de                                       *
  *----------------------------------------------------------------------------*/
+#define PY_SSIZE_T_CLEAN
+#include "Python.h"
 
 #include <iostream>
 #include <string>
 /*----------------------------------------------------------------------------*/
-#include "Python.h"
 #include "clique/bk.h"
 #include "clique/util.h"
 #include "numpy/arrayobject.h"
@@ -136,7 +137,11 @@ static PyObject *find_max_clique(PyObject *self, PyObject *args) {
 
   for (int i=0; i<cliq.size; i++) {
     cerr << cliq.vertex[i] << " ";
+#if PY_MAJOR_VERSION >= 3
+    PyList_Append(erg, PyLong_FromLong(cliq.vertex[i]));
+#else
     PyList_Append(erg, PyInt_FromLong(cliq.vertex[i]));
+#endif
   }
   
   for(int i = 0; i < n; i++) {
@@ -242,7 +247,11 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
     PyObject* cli = PyList_New(0);
 
     for (int j=0; j < collector.cliques[i].size; j++) {
+#if PY_MAJOR_VERSION >= 3
+      PyList_Append(cli, PyLong_FromLong(collector.cliques[i].vertex[j]));
+#else
       PyList_Append(cli, PyInt_FromLong(collector.cliques[i].vertex[j]));
+#endif
     }
 
     PyList_Append(result, cli);
@@ -298,13 +307,30 @@ static PyMethodDef ModuleMethods[] =   {
   {NULL,NULL} // sentinel
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef {
+    PyModuleDef_HEAD_INIT,
+    MODULE_STR,
+    MODULE_STR,
+    -1,
+    ModuleMethods,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+#endif
+
 /*----------------------------------------------------------------------------*/
 PyMODINIT_FUNC MODULE_INIT()
 {
-    
+#if PY_MAJOR_VERSION >=3
+    PyObject* ThisModule = PyModule_Create(&moduledef);
+    PyObject* ModuleDict = PyModule_GetDict(ThisModule);
+#else
     PyObject *ThisModule = Py_InitModule( MODULE_STR , ModuleMethods);
     PyObject *ModuleDict = PyModule_GetDict(ThisModule);  
-
+#endif
     // for correct handling of Numpy
     import_array();           
 

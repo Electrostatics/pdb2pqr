@@ -38,7 +38,7 @@
 #-------------------------------------------------------------------------------------------------------
 
 import math
-from lib import pka_print
+from .lib import pka_print
 
 max_intrinsic_pKa_diff = 2.0
 min_interaction_energy = 0.5

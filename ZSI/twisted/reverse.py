@@ -47,7 +47,7 @@ class CallbackHandler:
                                               
         try:
             req,rsp = method(ps, request=request)
-        except Exception, ex:
+        except (Exception, ex):
             raise
         
         return rsp

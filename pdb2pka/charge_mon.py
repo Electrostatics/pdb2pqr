@@ -98,7 +98,7 @@ class charge_mon(Frame):
         #
         for x_count,text,resid in later:
             self.cv.create_text(x_count,self.calc,text=text,anchor='nw',fill='black')
-            print '!!Wrong charge: %s %s' %(text,str(resid))
+            print('!!Wrong charge: %s %s' %(text,str(resid)))
         #
         # Update and increment row
         #

@@ -38,7 +38,7 @@
 #-------------------------------------------------------------------------------------------------------
 import math, random, string
 
-from lib import pka_print
+from .lib import pka_print
 
 
 def InterAtomDistance(atom1, atom2):

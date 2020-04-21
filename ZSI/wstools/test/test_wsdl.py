@@ -18,7 +18,7 @@ class WSDLToolsTestCase(unittest.TestCase):
 
     def setUp(self):
         self.path = nameGenerator.next()
-        print self.path
+        print(self.path)
         sys.stdout.flush()
 
     def __str__(self):
@@ -52,7 +52,7 @@ class WSDLToolsTestCase(unittest.TestCase):
                 self.wsdl = WSDLReader().loadFromFile(self.path)
 
         except TimeoutError:
-            print "connection timed out"
+            print("connection timed out")
             sys.stdout.flush()
             return
         except:
@@ -110,8 +110,8 @@ class WSDLToolsTestCase(unittest.TestCase):
             raise
 
         if self.wsdl.extensions:
-            print 'No check for WSDLTools(%s) Extensions:' %(self.wsdl.name)
-            for ext in self.wsdl.extensions: print '\t', ext
+            print('No check for WSDLTools(%s) Extensions:' %(self.wsdl.name))
+            for ext in self.wsdl.extensions: print('\t', ext)
 
     def schemaAttributesDeclarations(self, schema, node):
         self.checkXSDCollection('attribute', schema.attr_decl, node)
@@ -131,10 +131,10 @@ def setUpOptions(section):
     cp = ConfigParser.ConfigParser()
     cp.read('config.txt')
     if not cp.sections():
-        print 'fatal error:  configuration file config.txt not present'
+        print('fatal error:  configuration file config.txt not present')
         sys.exit(0)
     if not cp.has_section(section):
-        print '%s section not present in configuration file, exiting' % section
+        print('%s section not present in configuration file, exiting' % section)
         sys.exit(0)
     return cp, len(cp.options(section))
 

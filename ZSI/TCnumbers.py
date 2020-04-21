@@ -181,4 +181,4 @@ class FPEnumeration(FPfloat):
         Decimal.serialize(self, elt, sw, pyobj, name=name, orig=orig, **kw)
     
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

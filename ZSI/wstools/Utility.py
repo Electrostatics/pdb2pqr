@@ -163,7 +163,7 @@ def urlopen(url, timeout=20, redirects=None):
             import M2Crypto
         except ImportError:
             if not hasattr(socket, 'ssl'):
-                raise RuntimeError, 'no built-in SSL Support'
+                raise (RuntimeError, 'no built-in SSL Support')
 
             conn = TimeoutHTTPS(host, None, timeout)
         else:
@@ -428,7 +428,7 @@ class DOM:
                     return child
         if default is not join:
             return default
-        raise KeyError, name
+        raise (KeyError, name)
 
     def getElementById(self, node, id, default=join):
         """Return the first child of node matching an id reference."""
@@ -440,7 +440,7 @@ class DOM:
                     return child
         if default is not join:
             return default
-        raise KeyError, name
+        raise (KeyError, name)
 
     def getMappingById(self, document, depth=None, element=None,
                        mapping=None, level=1):
@@ -643,7 +643,7 @@ class DOM:
 
         try:     
             result = self.loadDocument(file)
-        except Exception, ex:
+        except (Exception, ex):
             file.close()
             raise ParseError(('Failed to load document %s' %url,) + ex.args)
         else:
@@ -679,39 +679,39 @@ class MessageInterface:
     def canonicalize(self):
         '''canonicalize the underlying DOM, and return as string.
         '''
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def createDocument(self, namespaceURI=SOAP.ENV, localName='Envelope'):
         '''create Document
         '''
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def createAppendElement(self, namespaceURI, localName):
         '''create and append element(namespaceURI,localName), and return
         the node.
         '''
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def findNamespaceURI(self, qualifiedName):
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def resolvePrefix(self, prefix):
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def setAttributeNS(self, namespaceURI, localName, value):
         '''set attribute (namespaceURI, localName)=value
         '''
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def setAttributeType(self, namespaceURI, localName):
         '''set attribute xsi:type=(namespaceURI, localName)
         '''
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
     def setNamespaceAttribute(self, namespaceURI, prefix):
         '''set namespace attribute xmlns:prefix=namespaceURI 
         '''
-        raise NotImplementedError, ''
+        raise (NotImplementedError, '')
 
 
 class ElementProxy(Base, MessageInterface):
@@ -794,7 +794,7 @@ class ElementProxy(Base, MessageInterface):
         if localName and self.node:
             check = self._dom.isElement(self.node, localName, namespaceURI)
         if not check:
-            raise NamespaceError, 'unexpected node type %s, expecting %s' %(self.node, localName)
+            raise (NamespaceError, 'unexpected node type %s, expecting %s' %(self.node, localName))
 
     def setNode(self, node=None):
         if node:
@@ -805,7 +805,7 @@ class ElementProxy(Base, MessageInterface):
         elif self.node:
             node = self._dom.getElement(self.node, self.name, self.namespaceURI, default=None)
             if not node:
-                raise NamespaceError, 'cant find element (%s,%s)' %(self.namespaceURI,self.name)
+                raise (NamespaceError, 'cant find element (%s,%s)' %(self.namespaceURI,self.name))
             self.node = node
         else:
             #self.node = self._dom.create(self.node, self.name, self.namespaceURI, default=None)
@@ -835,7 +835,7 @@ class ElementProxy(Base, MessageInterface):
             prefix = 'ns%d' %self._indx
             try:
                 self._dom.findNamespaceURI(prefix, self._getNode())
-            except DOMException, ex:
+            except (DOMException, ex):
                 break
         return prefix
 
@@ -849,7 +849,7 @@ class ElementProxy(Base, MessageInterface):
             if node and (node.nodeType == node.ELEMENT_NODE) and \
                 (nsuri == self._dom.findDefaultNS(node)):
                 return None
-        except DOMException, ex:
+        except (DOMException, ex):
             pass
         if nsuri == XMLNS.XML:
             return self._xml_prefix
@@ -861,7 +861,7 @@ class ElementProxy(Base, MessageInterface):
             else:
                 if node.parentNode:
                     return self._getPrefix(node.parentNode, nsuri)
-        raise NamespaceError, 'namespaceURI "%s" is not defined' %nsuri
+        raise (NamespaceError, 'namespaceURI "%s" is not defined' %nsuri)
 
     def _appendChild(self, node):
         '''
@@ -869,7 +869,7 @@ class ElementProxy(Base, MessageInterface):
             node -- DOM Element Node
         '''
         if node is None:
-            raise TypeError, 'node is None'
+            raise (TypeError, 'node is None')
         self.node.appendChild(node)
 
     def _insertBefore(self, newChild, refChild):
@@ -900,7 +900,7 @@ class ElementProxy(Base, MessageInterface):
     def getPrefix(self, namespaceURI):
         try:
             prefix = self._getPrefix(node=self.node, nsuri=namespaceURI)
-        except NamespaceError, ex:
+        except (NamespaceError, ex):
             prefix = self._getUniquePrefix() 
             self.setNamespaceAttribute(prefix, namespaceURI)
         return prefix
@@ -942,7 +942,7 @@ class ElementProxy(Base, MessageInterface):
             self.node = self._dom.createDocument(None,None,None)
             return
         else:
-            raise KeyError, 'only support creation of document in %s' %self.reserved_ns[prefix]
+            raise (KeyError, 'only support creation of document in %s' %self.reserved_ns[prefix])
 
         document = self._dom.createDocument(nsuri=namespaceURI, qname=qualifiedName, doctype=doctype)
         self.node = document.childNodes[0]
@@ -990,7 +990,7 @@ class ElementProxy(Base, MessageInterface):
         if namespaceURI:
             try:
                 prefix = self.getPrefix(namespaceURI)
-            except KeyError, ex:
+            except (KeyError, ex):
                 prefix = 'ns2'
                 self.setNamespaceAttribute(prefix, namespaceURI)
         qualifiedName = localName

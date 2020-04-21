@@ -250,7 +250,7 @@ def _resolve_prefix(celt, prefix):
         celt = celt.parentNode
     else:
         if prefix:  
-            raise EvaluateException, 'cant resolve xmlns:%s' %prefix
+            raise (EvaluateException, 'cant resolve xmlns:%s' %prefix)
     return namespaceURI
 
 def _valid_encoding(elt):
@@ -430,4 +430,4 @@ schema.RegisterAnyElement()
 #except:
 #    pass
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

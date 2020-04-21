@@ -86,7 +86,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     ligand_titratable_groups=X.find_titratable_groups()
 
     if verbose:
-        print "ligand_titratable_groups", ligand_titratable_groups
+        print("ligand_titratable_groups", ligand_titratable_groups)
     #
     # Append the ligand data to the end of the PDB data
     #
@@ -166,7 +166,7 @@ class ligforcefield(Forcefield):
         elif ff == "parse":
             defpath = PARSE_FILE
         else:
-            raise ValueError, "Invalid forcefield %s!" % ff
+            raise(ValueError, "Invalid forcefield %s!" % ff)
 
         if not os.path.isfile(defpath):
             for path in sys.path:
@@ -175,7 +175,7 @@ class ligforcefield(Forcefield):
                     defpath = testpath
                     break
         if not os.path.isfile(defpath):
-            raise ValueError, "Unable to find forcefield %s!" % defpath
+            raise(ValueError, "Unable to find forcefield %s!" % defpath)
 
         file = open(defpath, 'rU')
         lines = file.readlines()
@@ -317,30 +317,30 @@ class ligand_charge_handler(MOL2MOLECULE):
                 #
                 for atom in atoms_now:
                     if not atom in atoms_last_calc:
-                        print 'This atom was missing before',atom
-                        print 'If it is a hydrogen for the titratable, we need to create a bond entry!'
+                        print('This atom was missing before',atom)
+                        print('If it is a hydrogen for the titratable, we need to create a bond entry!')
                         # We should be here only if is a titratable
                         for current_atom in atoms_now:
                             # check if it't a titratable H
                             for res_atoms in residue.atoms:
                                 if current_atom == res_atoms.name and "titratableH"  in dir(res_atoms):
-                                    print "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
-                                    print "been here"
+                                    print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+                                    print("been here")
                                     for ResAtoms in residue.atoms:
                                         ResAtoms.formalcharge = 0.0
                                     self.recalc_charges(residue)
                 for atom in atoms_last_calc:
                     if not atom in atoms_now:
-                        print 'This atom used to be here, but is now missing',atom
+                        print('This atom used to be here, but is now missing',atom)
                 #self.recalc_charges(residue)
                 xxxnetq = 0.0
                 for xxx in residue.atoms:
-                    print "after neutralizing %s  %1.4f" %(xxx.name, xxx.charge)
+                    print("after neutralizing %s  %1.4f" %(xxx.name, xxx.charge))
                     xxxnetq = xxxnetq+xxx.charge
-                print '-----------------------'
-                print "net charge: %1.4f" % (xxxnetq)
-                print
-                print
+                print('-----------------------')
+                print("net charge: %1.4f" % (xxxnetq))
+                print("")
+                print("")
             else:
                 # Yes - nothing to do
                 pass
@@ -381,7 +381,7 @@ class ligand_charge_handler(MOL2MOLECULE):
             if ParseRadiiDict.has_key(ele):
                 radius = ParseRadiiDict[ele]
             else:
-                raise 'Please check ParseRadiiDict in ligff.py -- radius data not found for',ele
+                raise('Please check ParseRadiiDict in ligff.py -- radius data not found for',ele)
             #
             # Store the radii and charges
             #

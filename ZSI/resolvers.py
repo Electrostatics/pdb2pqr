@@ -144,4 +144,4 @@ class MIMEResolver:
         newio = StringIO.StringIO(body.getvalue())
         return newio
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

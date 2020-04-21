@@ -62,7 +62,7 @@ class ParsedSoap:
                 self.dom = self.reader.fromString(input)
             else:
                 self.dom = self.reader.fromStream(input)
-        except Exception, e:
+        except (Exception, e):
             # Is this in the header?  Your guess is as good as mine.
             #raise ParseException("Can't parse document (" + \
             #    str(e.__class__) + "): " + str(e), 0)
@@ -271,7 +271,7 @@ class ParsedSoap:
         try:
             if type(uri) == types.UnicodeType: uri = str(uri)
             retval = r(uri, tc, self, **keywords)
-        except Exception, e:
+        except (Exception, e):
             raise EvaluateException('''Can't resolve "''' + uri + '" (' + \
                 str(e.__class__) + "): " + str(e))
         return retval
@@ -351,7 +351,7 @@ class ParsedSoap:
         c, crange = self.header_elements[:], range(len(self.header_elements))
         for i,what in [ (i, ofwhat[i]) for i in range(lenofwhat) ]:
             if isinstance(what, AnyElement): 
-                raise EvaluateException, 'not supporting <any> as child of SOAP-ENC:Header'
+                raise (EvaluateException, 'not supporting <any> as child of SOAP-ENC:Header')
 
             v = []
             occurs = 0
@@ -366,8 +366,8 @@ class ParsedSoap:
                 v.append(pyobj)
                 c[j] = None
             if what.minOccurs > len(v) > what.maxOccurs:
-               raise EvaluateException, 'number of occurances(%d) doesnt fit constraints (%d,%s)'\
-                   %(len(v),what.minOccurs,what.maxOccurs)
+               raise (EvaluateException, 'number of occurances(%d) doesnt fit constraints (%d,%s)'\
+                   %(len(v),what.minOccurs,what.maxOccurs))
             if what.maxOccurs == 1:
                 if len(v) == 0: v = None
                 else: v = v[0]
@@ -375,4 +375,4 @@ class ParsedSoap:
         return d
 
 
-if __name__ == '__main__': print _copyright
+if __name__ == '__main__': print(_copyright)

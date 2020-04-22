@@ -18,10 +18,10 @@ vars.Add(PathVariable('PREFIX',
                       defaultPrefix,
                       PathVariable.PathAccept))
 
-vars.Add('URL', "Sets the url of pdb2pqr's web interface.", defaultURL)
+#vars.Add('URL', "Sets the url of pdb2pqr's web interface.", defaultURL)
 
-vars.Add('OPAL', 'Sets the url of a pdb2pqr opal service.', '')
-vars.Add('APBS_OPAL', 'Sets the url of a apbs opal service.', '')
+#vars.Add('OPAL', 'Sets the url of a pdb2pqr opal service.', '')
+#vars.Add('APBS_OPAL', 'Sets the url of a apbs opal service.', '')
 
 vars.Add(PathVariable('APBS',
                       'Location of the APBS binary if installed',
@@ -142,16 +142,16 @@ vars.Save('.variables.cache', env)
 #Should figure out how to do it with a delete command
 Clean('pdb2pqr.py', '.variables.cache')
 
-url = env['URL']
+#url = env['URL']
 #Not sure if this is needed.
-if url is not None:
-    if not url.endswith('/'):
-        url += '/'
-    submitAction = url+'pdb2pqr.cgi'
-else:
-    url = defaultURL
-    #Can it always just be this?
-    submitAction = 'pdb2pqr.cgi'
+# if url is not None:
+#     if not url.endswith('/'):
+#         url += '/'
+#     submitAction = url+'pdb2pqr.cgi'
+# else:
+#     url = defaultURL
+#     #Can it always just be this?
+#     submitAction = 'pdb2pqr.cgi'
 
 maxatomsStr = str(env['MAX_ATOMS'])
 
@@ -160,13 +160,14 @@ codePath = codePath.replace("\\", "/");
 replacementDict = {'@WHICHPYTHON@':pythonBin,
                    '@INSTALLDIR@':prefix,
                    '@MAXATOMS@':maxatomsStr,
-                   '@website@':url,
+                   #'@website@':url,
                    '@srcpath@':codePath,
                    '@PDB2PQR_VERSION@':productVersion,
-                   '@action@':submitAction,
-                   '@APBS_LOCATION@':env['APBS'],
-                   '@APBS_OPAL_URL@':env['APBS_OPAL'],
-                   '@PDB2PQR_OPAL_URL@':env['OPAL']}
+                   #'@action@':submitAction,
+                   '@APBS_LOCATION@':env['APBS']
+                   #'@APBS_OPAL_URL@':env['APBS_OPAL'],
+                   #'@PDB2PQR_OPAL_URL@':env['OPAL']
+                   }
 
 #If any replacement strings change recompile those files.
 #As the product version can be based on the time this may
@@ -176,42 +177,43 @@ settingsValues = env.Value(replacementDict)
 #We have a separate dict for server.html.in as we need to use regex
 #Regex does not play nice with some  possible user strings
 #Set up regex to alternately clear tags or wipe sections
-if env['OPAL'] == '':
-    #Not using opal for pdb2pqr.
-    print("not using opal", env['OPAL'])
-    withOpalRegex = r'@WITHOPAL@.*?@WITHOPAL@'
-    withoutOpalRegex = '@WITHOUTOPAL@'
-
-else:
-    #Using opal for pdb2pqr.
-    print("using opal", env['OPAL'])
-    withOpalRegex = '@WITHOPAL@'
-    withoutOpalRegex = r'@WITHOUTOPAL@.*?@WITHOUTOPAL@'
-
-
-serverHtmlDict = {'@website@':url,
-                  '@PDB2PQR_VERSION@':productVersion,
-                  '@MAXATOMS@':maxatomsStr,
-                  '@action@':submitAction,
-                  withOpalRegex:'',
-                  withoutOpalRegex:''}
+# if env['OPAL'] == '':
+#     #Not using opal for pdb2pqr.
+#     print("not using opal", env['OPAL'])
+#     withOpalRegex = r'@WITHOPAL@.*?@WITHOPAL@'
+#     withoutOpalRegex = '@WITHOUTOPAL@'
+#
+# else:
+#     #Using opal for pdb2pqr.
+#     print("using opal", env['OPAL'])
+#     withOpalRegex = '@WITHOPAL@'
+#     withoutOpalRegex = r'@WITHOUTOPAL@.*?@WITHOUTOPAL@'
+#
+#
+# serverHtmlDict = {'@website@':url,
+#                   '@PDB2PQR_VERSION@':productVersion,
+#                   '@MAXATOMS@':maxatomsStr,
+#                   '@action@':submitAction,
+#                   withOpalRegex:'',
+#                   withoutOpalRegex:''}
 
 chmodAction = Chmod('$TARGET', 0o755)
-serverHtmlCopySub = CopySub('$TARGET', '$SOURCE', serverHtmlDict, useRegex=True)
+#serverHtmlCopySub = CopySub('$TARGET', '$SOURCE', serverHtmlDict, useRegex=True)
 normalCopySub = CopySub('$TARGET', '$SOURCE', replacementDict, useRegex=False)
 
 subFiles = [('pdb2pqr.py', 'pdb2pqr.py.in', True),
-            ('apbs_cgi.cgi', 'apbs_cgi.py', True),
-            ('visualize.cgi', 'visualize.py', True),
-            ('querystatus.cgi', 'querystatus.py', True),
-            ('src/aconf.py', 'src/aconf.py.in', False),
-            ('html/server.html', 'html/server.html.in', False),
-            ('3dmol/js/3dmol.js', '3dmol/js/3dmol.js.in', False)]
+            #('apbs_cgi.cgi', 'apbs_cgi.py', True),
+            #('visualize.cgi', 'visualize.py', True),
+            #('querystatus.cgi', 'querystatus.py', True),
+            ('src/aconf.py', 'src/aconf.py.in', False)
+            #('html/server.html', 'html/server.html.in', False),
+            #('3dmol/js/3dmol.js', '3dmol/js/3dmol.js.in', False)
+            ]
 
 compile_targets = []
 
 for target, source, chmod in subFiles:
-    actions = [normalCopySub] if target != 'html/server.html' else [serverHtmlCopySub]
+    actions = [normalCopySub] #if target != 'html/server.html' else [serverHtmlCopySub]
     if chmod:
         actions.append(chmodAction)
     result = env.Command(target, source, actions)
@@ -222,7 +224,8 @@ for target, source, chmod in subFiles:
     Default(result)
     Depends(result, settingsValues)
 
-Default(env.Command('pdb2pqr.cgi', 'pdb2pqr.py', Copy('$TARGET', '$SOURCE')))
+#Default(env.Command('pdb2pqr.cgi', 'pdb2pqr.py', Copy('$TARGET', '$SOURCE')))
+#Default(env.Command('pdb2pqr.py', Copy('$TARGET', '$SOURCE')))
 
 #Check to see why we can't build pdb2pka.
 numpy_error = False
@@ -320,11 +323,11 @@ def print_default_message(target_list):
             print("");
         else:
             print('pdb2pka and ligand support:', env['BUILD_PDB2PKA'])
-        print('Path to the website directory:', url)
-        if env['OPAL'] == '':
-            print('PDB2PQR jobs run via the web interface will be forked on the server.')
-        else:
-            print('PDB2PQR jobs run via the web interface will be run via opal at', env['OPAL'])
+        #print('Path to the website directory:', url)
+        # if env['OPAL'] == '':
+        #     print('PDB2PQR jobs run via the web interface will be forked on the server.')
+        # else:
+        #     print('PDB2PQR jobs run via the web interface will be run via opal at', env['OPAL'])
     else:
         print("")
         print('Run "python scons/scons.py" to build pdb2pqr.')
@@ -347,8 +350,8 @@ def print_default_message(target_list):
     print('    Requires numpy, PDB2PKA support compiled AND the APBS python libraries compiled and installed in the pdb2pka directory.')
 
     print("")
-    print('To setup a web service create a symbolic link to', env['PREFIX'], 'that enables you to view', env['URL'],'after running "scons/scons.py install"')
-    print("")
+    # print('To setup a web service create a symbolic link to', env['PREFIX'], 'that enables you to view', env['URL'],'after running "scons/scons.py install"')
+    # print("")
     print('Run "python scons/scons.py msvs" to build Visual Studio projects for the Algorithms and pMC_mult modules.')
     print('VS project generation is not well supported in scons. Resulting projects should build using NMAKE but cannot be used for debugging.')
     print('The resulting projects will need to modified to use VS natively to compile the code or debug.')

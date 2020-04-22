@@ -66,7 +66,7 @@ from src.definitions import *
 from src.forcefield import *
 from src.routines import *
 from src.protein import *
-from src.server import *
+#from src.server import *
 from src.hydrogens import *
 from src.aconf import *
 from io import StringIO

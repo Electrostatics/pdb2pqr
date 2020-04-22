@@ -320,7 +320,7 @@ class runAPBS:
         self.alist = new_valist(NOSH_MAXMOL)
         self.atoms = protein.getAtoms()
         self.protsize = len(self.atoms)
-        #proteincopy = copy.copy(protein)
+        proteincopy = copy.copy(protein)
 
         for i in range(len(self.atoms)):
             atom = self.atoms[i]
@@ -351,7 +351,7 @@ class runAPBS:
             print("%s[%d]: Valist_load Warning." % (frameinfo.filename, frameinfo.lineno));
         potentials = getPotentials(self.nosh,self.pbeparm,self.thispmg,self.myAlist)
 
-        #protein = copy.copy(proteincopy)
+        protein = copy.copy(proteincopy)
 
         # Free up the memory allocated for self.myAlist
         remove_Valist(self.myAlist)

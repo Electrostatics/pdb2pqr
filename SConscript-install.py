@@ -101,14 +101,10 @@ for file_name in ('AppService_client.py',
 				  'README.md'):
 	installFile(file_name)
 
-if(sys.version_info >= (3,0)):
-    Alias('install', env.Command(env['PREFIX']+'tmp', None,
+Alias('install', env.Command(env['PREFIX']+'tmp', None,
 							[Mkdir('$TARGET'),
 			 				Chmod('$TARGET', 0o777)]))
-else:
-    Alias('install', env.Command(env['PREFIX']+'tmp', None,
-							[Mkdir('$TARGET'),
-			 				Chmod('$TARGET', 0777)]))
+
 
 #Testing stuff to test installed pdb2pqr
 for dir_name in ('tests/',

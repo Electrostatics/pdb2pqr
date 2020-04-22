@@ -33,7 +33,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: getAppMetadata
     def getAppMetadata(self, request, **kw):
         if isinstance(request, getAppMetadataRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/getAppMetadata", **kw)
         # no output wsaction
@@ -43,7 +43,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: getAppConfig
     def getAppConfig(self, request, **kw):
         if isinstance(request, getAppConfigRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/getAppConfig", **kw)
         # no output wsaction
@@ -53,7 +53,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: launchJob
     def launchJob(self, request, **kw):
         if isinstance(request, launchJobRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/launchJob", **kw)
         # no output wsaction
@@ -63,7 +63,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: launchJobBlocking
     def launchJobBlocking(self, request, **kw):
         if isinstance(request, launchJobBlockingRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/launchJobBlocking", **kw)
         # no output wsaction
@@ -73,7 +73,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: queryStatus
     def queryStatus(self, request, **kw):
         if isinstance(request, queryStatusRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/queryStatus", **kw)
         # no output wsaction
@@ -83,7 +83,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: getOutputs
     def getOutputs(self, request, **kw):
         if isinstance(request, getOutputsRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/getOutputs", **kw)
         # no output wsaction
@@ -93,7 +93,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: getOutputAsBase64ByName
     def getOutputAsBase64ByName(self, request, **kw):
         if isinstance(request, getOutputAsBase64ByNameRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/getOutputAsBase64ByName", **kw)
         # no output wsaction
@@ -103,7 +103,7 @@ class AppServicePortTypeSoapBindingSOAP:
     # op: destroy
     def destroy(self, request, **kw):
         if isinstance(request, destroyRequest) is False:
-            raise TypeError, "%s incorrect request type" % (request.__class__)
+            raise(TypeError, "%s incorrect request type" % (request.__class__))
         # no input wsaction
         self.binding.Send(None, None, request, soapaction="http://nbcr.sdsc.edu/opal/destroy", **kw)
         # no output wsaction

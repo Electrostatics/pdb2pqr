@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 
-from lib import pka_print
+from .lib import pka_print
 
 def resName2Type(resName=None):
     """

@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 import string, sys, copy
-import lib
+from . import lib
 pka_print = lib.pka_print
 
 excluded_resNames = ["H2O", "HOH", "SO4", "PO4", "PEG", "EPE", "NAG", "TRS"]

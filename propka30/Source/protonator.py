@@ -40,11 +40,11 @@
 
 
 import  sys, math
-from vector_algebra import *
-import bonds as bonds
-import pdb as pdb
+from .vector_algebra import *
+from . import bonds as bonds
+from . import pdb as pdb
 
-from lib import pka_print
+from .lib import pka_print
 
 
 def makeProtonator(scheme=None):

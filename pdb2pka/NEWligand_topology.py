@@ -13,7 +13,7 @@ try:
     from substruct import Algorithms
 except ImportError:
     txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"    
-    raise ImportError, txt
+    raise(ImportError, txt)
 from types import *
 
 def length(vector):
@@ -172,12 +172,12 @@ class get_ligand_topology:
         #
         valences={'C':4,'O':2,'N':3}
         for atom in self.atoms:
-            print atom, self.atoms[atom]
+            print(atom, self.atoms[atom])
         #
         # ok, now it gets hairy
         #
-        print
-        print 'Guessing sybyl atom types'
+        print(" ")
+        print('Guessing sybyl atom types')
         for atom in self.atoms.keys():
             stype=None
             at=self.atoms[atom]
@@ -241,9 +241,9 @@ class get_ligand_topology:
         #
         atoms=self.atoms.keys()
         atoms.sort()
-        print '\nFinal Sybyl type results'
+        print('\nFinal Sybyl type results')
         for atom in atoms:
-            print atom,self.atoms[atom]['sybylType']
+            print(atom,self.atoms[atom]['sybylType'])
         return
 
     #
@@ -631,10 +631,10 @@ class get_ligand_topology:
                                         # loop over all entries
                                         for possiblyredundantentries in NonRedundantCliques:
                                             if set(possiblyredundantentries).issubset(set(xxxx)):
-                                                print NonRedundantCliques
+                                                print(NonRedundantCliques)
                                                 NonRedundantCliques.remove(possiblyredundantentries)
                                                 NonRedundantCliques.append(xxxx)
-                                                print NonRedundantCliques
+                                                print(NonRedundantCliques)
                                             elif set(xxxx).issubset(set(possiblyredundantentries)):
                                                 #print "found subset which is not added to the list"
                                                 pass
@@ -665,17 +665,17 @@ class get_ligand_topology:
          
         for allCl in dict_of_matched_lig_fragments:
             if dict_of_matched_lig_fragments[allCl]['matchedligatoms'] == NonRedundantCliques[0]:
-                print "WE MATCHED", dict_of_matched_lig_fragments[allCl]['templatename']
-                print "matchedligatoms            : ", dict_of_matched_lig_fragments[allCl]['matchedligatoms']
-                print "type                       : ", dict_of_matched_lig_fragments[allCl]['type']
-                print "modelpka                   : ", dict_of_matched_lig_fragments[allCl]['modelpka']
-                print "titratableatoms            : ", dict_of_matched_lig_fragments[allCl]['titratableatoms']
-                print "matching atoms             : ", dict_of_matched_lig_fragments[allCl]['matching_atoms']
+                print("WE MATCHED", dict_of_matched_lig_fragments[allCl]['templatename'])
+                print("matchedligatoms            : ", dict_of_matched_lig_fragments[allCl]['matchedligatoms'])
+                print("type                       : ", dict_of_matched_lig_fragments[allCl]['type'])
+                print("modelpka                   : ", dict_of_matched_lig_fragments[allCl]['modelpka'])
+                print("titratableatoms            : ", dict_of_matched_lig_fragments[allCl]['titratableatoms'])
+                print("matching atoms             : ", dict_of_matched_lig_fragments[allCl]['matching_atoms'])
         # re-run matching to get mutiple titratable sites?
         
         # TJD: This is to resolve the bug fix when allCl is None
         if dict_of_matched_lig_fragments != {}:
-            print dict_of_matched_lig_fragments[allCl]
+            print(dict_of_matched_lig_fragments[allCl])
             return dict_of_matched_lig_fragments[allCl]
         else:
             return {}

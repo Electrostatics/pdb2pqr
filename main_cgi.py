@@ -53,7 +53,7 @@ import time
 import re
 import sys
 import string
-from StringIO import StringIO
+from io import StringIO
 #import tempfile
 #from src import pdb
 
@@ -94,16 +94,16 @@ def printHeader(pagetitle,have_opal=None,jobid=None):
     """
     if jobid:
         if have_opal:
-            print "Location: querystatus.cgi?jobid=%s&typeofjob=opal\n" % (jobid)
+            print("Location: querystatus.cgi?jobid=%s&typeofjob=opal\n" % (jobid))
         else:
-            print "Location: querystatus.cgi?jobid=%s&typeofjob=local\n" % (jobid)
+            print("Location: querystatus.cgi?jobid=%s&typeofjob=local\n" % (jobid))
 
     #print "Content-type: text/html\n"
-    print "<HTML>"
-    print "<HEAD>"
-    print "\t<TITLE>%s</TITLE>" % pagetitle
-    print "\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET
-    print "</HEAD>"
+    print("<HTML>")
+    print("<HEAD>")
+    print("\t<TITLE>%s</TITLE>" % pagetitle)
+    print("\t<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET)
+    print("</HEAD>")
     return
 
 def redirector(name, weboptions):
@@ -135,7 +135,7 @@ def redirector(name, weboptions):
     if 'selectedExtensions' in analiticsDict:
         analiticsDict['selectedExtensions'] = ' '.join(analiticsDict['selectedExtensions'])
     
-    options = ','.join(str(k)+':'+str(v) for k,v in analiticsDict.iteritems())
+    options = ','.join(str(k)+':'+str(v) for k,v in analiticsDict.items())
     events['options']=options
 
     eventsScriptString = ''
@@ -188,31 +188,31 @@ class WebOptions(object):
         #These are included in has_key(), __contains__(), and __getitem__() calls.
         self.otheroptions = {}
         
-        self.runoptions['debump'] = form.has_key("DEBUMP")
-        self.runoptions['opt'] = form.has_key("OPT")
+        self.runoptions['debump'] = "DEBUMP" in form
+        self.runoptions['opt'] = "OPT" in form
         
-        if form.has_key('FF'):
+        if 'FF' in form:
             self.ff = form["FF"].value.lower()
         else:
             raise WebOptionsError('Force field type missing from form.')
         
-        if form.has_key("PDBID") and form["PDBID"].value and form["PDBSOURCE"].value == 'ID':
+        if "PDBID" in form and form["PDBID"].value and form["PDBSOURCE"].value == 'ID':
             self.pdbfile = utilities.getPDBFile(form["PDBID"].value)
             if self.pdbfile is None:
                 raise WebOptionsError('The pdb ID provided is invalid.')
             self.pdbfilestring = self.pdbfile.read()
             self.pdbfile = StringIO(self.pdbfilestring)
             self.pdbfilename = form["PDBID"].value
-        elif form.has_key("PDB") and form["PDB"].filename and form["PDBSOURCE"].value == 'UPLOAD':
+        elif "PDB" in form and form["PDB"].filename and form["PDBSOURCE"].value == 'UPLOAD':
             self.pdbfilestring = form["PDB"].value
             self.pdbfile = StringIO(self.pdbfilestring)
             self.pdbfilename = sanitizeFileName(form["PDB"].filename)
         else:
             raise WebOptionsError('You need to specify a pdb ID or upload a pdb file.')
             
-        if form.has_key("PKACALCMETHOD"):
+        if "PKACALCMETHOD" in form:
             if form["PKACALCMETHOD"].value != 'none':
-                if not form.has_key('PH'):
+                if 'PH' not in form:
                     raise WebOptionsError('Please provide a pH value.')
                 
                 phHelp = 'Please choose a pH between 0.0 and 14.0.'
@@ -237,11 +237,11 @@ class WebOptions(object):
                                                           'sdie': 80,
                                                           'pairene': 1.0}
                  
-        self.otheroptions['apbs'] = form.has_key("INPUT")
-        self.otheroptions['whitespace'] = form.has_key("WHITESPACE")
+        self.otheroptions['apbs'] = "INPUT" in form
+        self.otheroptions['whitespace'] = "WHITESPACE" in form
         
         if self.ff == 'user':
-            if form.has_key("USERFF") and form["USERFF"].filename:
+            if "USERFF" in form and form["USERFF"].filename:
                 self.userfffilename = sanitizeFileName(form["USERFF"].filename)
                 self.userffstring = form["USERFF"].value
                 self.runoptions['userff'] = StringIO(form["USERFF"].value)
@@ -249,7 +249,7 @@ class WebOptions(object):
                 text = "A force field file must be provided if using a user created force field."
                 raise WebOptionsError(text)
                 
-            if form.has_key("USERNAMES") and form["USERNAMES"].filename:
+            if "USERNAMES" in form and form["USERNAMES"].filename:
                 self.usernamesfilename = sanitizeFileName(form["USERNAMES"].filename)
                 self.usernamesstring = form["USERNAMES"].value
                 self.runoptions['usernames'] = StringIO(form["USERNAMES"].value)
@@ -257,20 +257,20 @@ class WebOptions(object):
                 text = "A names file must be provided if using a user created force field."
                 raise WebOptionsError(text)
             
-        if form.has_key("FFOUT") and form["FFOUT"].value != "internal":
+        if "FFOUT" in form and form["FFOUT"].value != "internal":
             self.runoptions['ffout'] = form["FFOUT"].value
                 
-        self.runoptions['chain'] = form.has_key("CHAIN")
-        self.runoptions['typemap'] = form.has_key("TYPEMAP")
-        self.runoptions['neutraln'] = form.has_key("NEUTRALN")
-        self.runoptions['neutralc'] = form.has_key("NEUTRALC")
-        self.runoptions['drop_water'] = form.has_key("DROPWATER")
+        self.runoptions['chain'] = "CHAIN" in form
+        self.runoptions['typemap'] = "TYPEMAP" in form
+        self.runoptions['neutraln'] = "NEUTRALN" in form
+        self.runoptions['neutralc'] = "NEUTRALC" in form
+        self.runoptions['drop_water'] = "DROPWATER" in form
         
         if (self.runoptions['neutraln'] or self.runoptions['neutraln']) and \
             self.ff != 'parse':
             raise WebOptionsError('Neutral N-terminus and C-terminus require the PARSE forcefield.')
         
-        if form.has_key("LIGAND") and form['LIGAND'].filename:
+        if "LIGAND" in form and form['LIGAND'].filename:
             self.ligandfilename=sanitizeFileName(form["LIGAND"].filename)
             ligandfilestring = form["LIGAND"].value
             # for Windows and Mac style newline compatibility for pdb2pka
@@ -313,16 +313,16 @@ class WebOptions(object):
         options['pdb'] = self.pdbfilename
         
         #propkaOptions is redundant.
-        if options.has_key('ph_calc_options'):
+        if 'ph_calc_options' in options:
             del options['ph_calc_options']
         
-        if options.has_key('ligand'):
+        if 'ligand' in options:
             options['ligand'] = self.ligandfilename
             
-        if options.has_key('userff'):
+        if 'userff' in options:
             options['userff'] = self.userfffilename
             
-        if options.has_key('usernames'):
+        if 'usernames' in options:
             options['usernames'] = self.usernamesfilename
         
         return options
@@ -437,24 +437,24 @@ def handleOpal(weboptions):
 
     try:
         resp=appServicePort.launchJob(req)
-    except Exception, e:
+    except Exception as e:
         printHeader("PDB2PQR Job Submission - Error")
-        print "<BODY>\n<P>"
-        print "There was an error with your job submission<br>"
-        print "</P>"
-        print "<script type=\"text/javascript\">"
-        print "var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");"
-        print "document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));"
-        print "</script>"
-        print "<script type=\"text/javascript\">"
-        print "try {"
-        print "var pageTracker = _gat._getTracker(\"UA-11026338-3\");"
+        print("<BODY>\n<P>")
+        print("There was an error with your job submission<br>")
+        print("</P>")
+        print("<script type=\"text/javascript\">")
+        print("var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");")
+        print("document.write(unescape(\"%3Cscript src=\'\" + gaJsHost + \"google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E\"));")
+        print("</script>")
+        print("<script type=\"text/javascript\">")
+        print("try {")
+        print("var pageTracker = _gat._getTracker(\"UA-11026338-3\");")
         for key in weboptions:
-            print "pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, weboptions[key])
-        print "pageTracker._trackPageview();"
-        print "} catch(err) {}</script>"
-        print "</BODY>"
-        print "</HTML>"
+            print("pageTracker._trackPageview(\"/main_cgi/has_%s_%s.html\");" % (key, weboptions[key]))
+        print("pageTracker._trackPageview();")
+        print("} catch(err) {}</script>")
+        print("</BODY>")
+        print("</HTML>")
         sys.exit(2)
     
     try:
@@ -475,7 +475,7 @@ def handleOpal(weboptions):
         pdb2pqrOpalJobIDFile.write(resp._jobID)
         pdb2pqrOpalJobIDFile.close()
         
-        print redirector(name, weboptions)
+        print(redirector(name, weboptions))
         
         # Recording CGI run information for PDB2PQR Opal
         pdb2pqrOpalLogFile = open('%s%s%s/pdb2pqr_log' % (INSTALLDIR, TMPDIR, name), 'w')
@@ -483,8 +483,8 @@ def handleOpal(weboptions):
                                  str(os.environ["REMOTE_ADDR"]))
         pdb2pqrOpalLogFile.close()
 
-    except StandardError, details:
-        print details
+    except Exception as details:
+        print(details)
         createError(name, details)
 
 def handleNonOpal(weboptions):
@@ -500,7 +500,7 @@ def handleNonOpal(weboptions):
         text = "Unable to find PDB file - Please make sure this is "
         text += "a valid PDB file ID!"
         #print "Content-type: text/html\n"
-        print text
+        print(text)
         sys.exit(2)
     elif dummyprot.numAtoms() > MAXATOMS and weboptions["opt"] == True:
         text = "<HTML><HEAD>"
@@ -527,7 +527,7 @@ def handleNonOpal(weboptions):
         text += "} catch(err) {}</script>"
         text += "</BODY></HTML>"
         #print "Content-type: text/html\n"
-        print text
+        print(text)
         sys.exit(2)
 
     try:
@@ -558,7 +558,7 @@ def handleNonOpal(weboptions):
 
         pid = os.fork()
         if pid:
-            print redirector(name, weboptions)
+            print(redirector(name, weboptions))
             sys.exit()
         else:
             currentdir = os.getcwd()
@@ -581,7 +581,7 @@ def handleNonOpal(weboptions):
                 run_arguements['ph_calc_options']['output_dir']='%s%s%s/pdb2pka_output' % (INSTALLDIR, TMPDIR, name)
             
             
-            header, lines, missedligands = runPDB2PQR(pdblist, 
+            header, lines, missedligands, _ = runPDB2PQR(pdblist,
                                                       weboptions.ff,
                                                       outname = pqrpath,
                                                       commandLine = weboptions.getCommandLine(),
@@ -605,12 +605,12 @@ def handleNonOpal(weboptions):
                 if whitespace: 
                     if line[0:4] == 'ATOM':
                         newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
-                        pqrfile.write("%s\n" % string.strip(newline))
+                        pqrfile.write("%s\n" % newline.strip())
                     elif line[0:6] == 'HETATM':
                         newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
-                        pqrfile.write("%s\n" % string.strip(newline))
+                        pqrfile.write("%s\n" % newline.strip())
                 else: 
-                    pqrfile.write("%s\n" % string.strip(line))
+                    pqrfile.write("%s\n" % line.strip())
             pqrfile.close()
                     
             if weboptions.otheroptions['apbs']:
@@ -620,8 +620,8 @@ def handleNonOpal(weboptions):
                 size = psize.Psize()
                 size.parseInput(pqrpath)
                 size.runPsize(pqrpath)
-                async = 0 # No async files here!
-                myinput = inputgen.Input(pqrpath, size, method, async, potdx=True)
+                #async = 0 # No async files here!
+                myinput = inputgen.Input(pqrpath, size, method, 0, potdx=True)
                 myinput.printInputFiles()
                 myinput.dumpPickle()
                         
@@ -646,10 +646,10 @@ def handleNonOpal(weboptions):
 
     #TODO: Better error reporting.
     #Also, get forked job to properly write error status on failure.
-    except StandardError, details:
+    except Exception as details:
     #except StandardError as details:
-        print traceback.format_exc()
-        print sys.exc_info()[0]
+        print(traceback.format_exc())
+        print(sys.exc_info()[0])
         #print details
         createError(name, details)
 
@@ -657,7 +657,7 @@ def mainCGI():
     """
         Main driver for running PDB2PQR from a web page
     """
-    print "Content-type: text/html\n"
+    print("Content-type: text/html\n")
     import cgi
     import cgitb
 

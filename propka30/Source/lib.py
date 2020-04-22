@@ -40,7 +40,7 @@
 
 
 import string, sys, copy, math
-import output
+from . import output
 
 
 def loadOptions():

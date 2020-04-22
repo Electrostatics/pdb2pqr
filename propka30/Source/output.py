@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 import sys
-import lib
+from . import lib
 revision = 182
 
 

@@ -38,10 +38,10 @@
 #-------------------------------------------------------------------------------------------------------
 import math, os, sys, re
 
-import lib
+from . import lib
 pka_print = lib.pka_print
-import output
-import pdb
+from . import output
+from . import pdb
 #import debug
 
 

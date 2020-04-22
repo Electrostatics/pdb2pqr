@@ -38,7 +38,7 @@
 #-------------------------------------------------------------------------------------------------------
 import pickle,sys,os,math
 
-from lib import pka_print
+from .lib import pka_print
 
 
 class bondmaker:

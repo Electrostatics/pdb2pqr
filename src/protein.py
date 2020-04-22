@@ -48,10 +48,10 @@
 __date__ = "13 May 2008"
 __author__ = "Todd Dolinsky, Yong Huang"
 
-from pdb import *
-from structures import *
-from aa import *
-from na import *
+from .pdb import *
+from .structures import *
+from .aa import *
+from .na import *
 
 class Protein:
     """
@@ -143,11 +143,11 @@ class Protein:
 
         # Make a list for sequential ordering of chains
         
-        if chainDict.has_key(""):
+        if "" in chainDict:
             chainDict["ZZ"] = chainDict[""]
             del chainDict[""]
 
-        keys = chainDict.keys()
+        keys = list(chainDict.keys())
         keys.sort()
 
         for key in keys:
@@ -227,8 +227,8 @@ class Protein:
                 definition: The definition objects.
                 outfilename:  The name of the file to write (string)
         """
-        from forcefield import Forcefield
-        from aconf import STYLESHEET
+        from .forcefield import Forcefield
+        from .aconf import STYLESHEET
 
         # Cache the initial atom numbers
         numcache = {}

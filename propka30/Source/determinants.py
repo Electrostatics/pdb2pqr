@@ -38,12 +38,12 @@
 #-------------------------------------------------------------------------------------------------------
 import math, time
 
-import iterative
-import lib
-from lib import pka_print
+from . import iterative
+from . import lib
+from .lib import pka_print
 #import debug
-import calculator as calculate
-from   determinant import Determinant
+from . import calculator as calculate
+from .determinant import Determinant
 
 
 def setDeterminants(propka_residues, version=None, options=None):

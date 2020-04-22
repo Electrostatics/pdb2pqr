@@ -31,11 +31,11 @@ def titrate_one_group(name,intpkas,is_charged,acidbase):
     import pMC_mult
     FAST=pMC_mult.MC(intpkas,linear,acidbase,state_counter,is_charged)
     FAST.set_MCsteps(int(mcsteps))
-    print 'Calculating intrinsic pKa value'
+    print('Calculating intrinsic pKa value')
     pKavals=FAST.calc_pKas(phstart,phend,phstep)
     count=0
     intpka=pKavals[0]
-    print 'Simulated intrinsic pKa value: %5.2f' %intpka
+    print('Simulated intrinsic pKa value: %5.2f' %intpka)
     count=1
     #
     # Get the charges
@@ -57,8 +57,8 @@ def titrate_one_group(name,intpkas,is_charged,acidbase):
     if pKavals[count+1]==999.0 and pKavals[count+2]==-999.0:
         count=count+2
     else:
-        print 'Something is wrong'
-        print pKavals[count:count+30]
+        print('Something is wrong')
+        print(pKavals[count:count+30])
         raise Exception('Incorrect data format from pMC_mult')
     return intpka
 
@@ -73,7 +73,7 @@ def dump_protein_no_hydrogens(pdb_list, pdb_out):
                 ##check if the record is not a water in which case we will print a warning
                 from src.aa import WAT
                 if not record.resName in WAT.water_residue_names:
-                    print "Warning!: HETATM record %s " % record.resName + "%s that is not a water is being dropped\n  " % record.element
+                    print("Warning!: HETATM record %s " % record.resName + "%s that is not a water is being dropped\n  " % record.element)
                     ##raw_input("Press enter to continue...")
                 continue
             if isinstance(record, (ATOM, ANISOU, SIGUIJ, SIGATM)):

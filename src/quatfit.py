@@ -61,7 +61,7 @@ __date__ = "28 February 2006"
 __author__ = "David Heisterberg, Jan Labanowski, Jens Erik Nielsen, Todd Dolinsky"
 
 import math
-from utilities import *
+from .utilities import *
 
 def findCoordinates(numpoints, refcoords, defcoords, defatomcoords):
     """

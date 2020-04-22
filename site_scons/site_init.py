@@ -48,7 +48,7 @@ def TOOL_SUBST(env):
             contents = f.read()
             f.close()
         except:
-            raise SCons.Errors.UserError, "Can't read source file %s"%sourcefile
+            raise (SCons.Errors.UserError, "Can't read source file %s"%sourcefile)
         if useRegex:
             for (k,v) in dict.items():
                 #In 2.6 re.sub has no "flags" argument.
@@ -62,13 +62,13 @@ def TOOL_SUBST(env):
             f.write(contents)
             f.close()
         except:
-            raise SCons.Errors.UserError, "Can't write target file %s"%targetfile
+            raise (SCons.Errors.UserError, "Can't write target file %s"%targetfile)
         return 0 # success
 
     def subst_in_file(target, source, env):
         useRegex = env['SUBST_USE_REGEX'] if 'SUBST_USE_REGEX' in env else False
         if 'SUBST_DICT' not in env:
-            raise SCons.Errors.UserError, "SubstInFile requires SUBST_DICT to be set."
+            raise (SCons.Errors.UserError, "SubstInFile requires SUBST_DICT to be set.")
         d = dict(env['SUBST_DICT']) # copy it
         for (k,v) in d.items():
             if callable(v):
@@ -76,7 +76,7 @@ def TOOL_SUBST(env):
             elif SCons.Util.is_String(v):
                 d[k]=env.subst(v)
             else:
-                raise SCons.Errors.UserError, "SubstInFile: key %s: %s must be a string or callable"%(k, repr(v))
+                raise (SCons.Errors.UserError, "SubstInFile: key %s: %s must be a string or callable"%(k, repr(v)))
         for (t,s) in zip(target, source):
             return do_subst_in_file(str(t), str(s), d, useRegex)
 
@@ -108,11 +108,11 @@ def CopySubAction(targetfile, sourcefile, dict, useRegex=False):
     1.2345 etc.
     """
     try:
-        f = open(sourcefile, 'rb')
+        f = open(sourcefile, 'r')
         contents = f.read()
         f.close()
     except:
-        raise SCons.Errors.UserError, "Can't read source file %s"%sourcefile
+        raise (SCons.Errors.UserError, "Can't read source file %s"%sourcefile)
     if useRegex:
         for (k,v) in dict.items():
             #In 2.6 re.sub has no "flags" argument.
@@ -122,11 +122,11 @@ def CopySubAction(targetfile, sourcefile, dict, useRegex=False):
         for (k,v) in dict.items():
             contents = contents.replace(k, v)
     try:
-        f = open(targetfile, 'wb')
+        f = open(targetfile, 'w')
         f.write(contents)
         f.close()
     except:
-        raise SCons.Errors.UserError, "Can't write target file %s"%targetfile
+        raise (SCons.Errors.UserError, "Can't write target file %s"%targetfile)
     return 0 # success
 
 def CopySubActionStringFunc(targetfile, sourcefile, dict, useRegex):
@@ -138,12 +138,12 @@ def CompilePythonAction(targetfile, sourcefile):
     try:
         import py_compile
     except ImportError:
-        raise SCons.Errors.InternalError, "Couldn't import py_compile module"
+        raise (SCons.Errors.InternalError, "Couldn't import py_compile module")
 
     try:
         py_compile.compile(sourcefile, targetfile, doraise=True)
     except py_compile.PyCompileError:
-        raise SCons.Errors.InternalError, "Couldn't compile {0}".format(sourcefile)
+        raise (SCons.Errors.InternalError, "Couldn't compile {0}".format(sourcefile))
 
 
 
@@ -157,7 +157,3 @@ ComparePROPKA = SCons.Action.ActionFactory( ComparePROPKAAction, CompareStringFu
 CompareTitCurves = SCons.Action.ActionFactory( CompareTitCurvesAction, CompareDirectoryFunc )
 
 CompilePython = SCons.Action.ActionFactory( CompilePythonAction, CompilePythonActionStringFunc )
-
-
-
-

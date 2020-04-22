@@ -28,7 +28,7 @@ THE SOFTWARE.
 '''
 
 import atexit
-    
+
 def bf_to_str(bf):
     """Convert an element of GetBuildFailures() to a string
     in a useful way."""
@@ -64,14 +64,14 @@ def display_build_status():
     Here you could do all kinds of complicated things."""
     if GetOption("clean") or GetOption("help"):
         return
-    
+
     status, failures_message = build_status()
     if status == 'failed':
-        print
-        print "FAILED!!!!"  # could display alert, ring bell, etc.
+        print("");
+        print("FAILED!!!!")  # could display alert, ring bell, etc.
     elif status == 'ok':
-        print
-        print "Build succeeded."
-    print failures_message
+        print("")
+        print("Build succeeded.")
+    print(failures_message)
 
 atexit.register(display_build_status)

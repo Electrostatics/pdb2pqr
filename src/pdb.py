@@ -50,7 +50,7 @@ __author__ = "Todd Dolinsky, Yong Huang"
 
 import string, sys
 import copy  ### PC
-from errors import PDBInputError, PDBInternalError
+from .errors import PDBInputError, PDBInternalError
 
 lineParsers = {}
 
@@ -64,9 +64,9 @@ class BaseRecord(object):
     Verifies the received record type
     """
     def __init__(self, line):
-        record = string.strip(line[0:6])
+        record = str.strip(line[0:6])
         if record != self.__class__.__name__:
-            raise ValueError, record
+            raise ValueError(record)
 
         self.original_text = line.rstrip('\r\n')
 
@@ -117,17 +117,17 @@ class MASTER(BaseRecord):
             66-70    int    numSeq    Number of SEQRES records
         """
         super(MASTER, self).__init__(line)
-        self.numRemark = int(string.strip(line[10:15]))
-        self.numHet = int(string.strip(line[20:25]))
-        self.numHelix = int(string.strip(line[25:30]))
-        self.numSheet = int(string.strip(line[30:35]))
-        self.numTurn = int(string.strip(line[35:40]))
-        self.numSite = int(string.strip(line[40:45]))
-        self.numXform = int(string.strip(line[45:50]))
-        self.numCoord = int(string.strip(line[50:55]))
-        self.numTer = int(string.strip(line[55:60]))
-        self.numConect = int(string.strip(line[60:65]))
-        self.numSeq = int(string.strip(line[65:70]))
+        self.numRemark = int(str.strip(line[10:15]))
+        self.numHet = int(str.strip(line[20:25]))
+        self.numHelix = int(str.strip(line[25:30]))
+        self.numSheet = int(str.strip(line[30:35]))
+        self.numTurn = int(str.strip(line[35:40]))
+        self.numSite = int(str.strip(line[40:45]))
+        self.numXform = int(str.strip(line[45:50]))
+        self.numCoord = int(str.strip(line[50:55]))
+        self.numTer = int(str.strip(line[55:60]))
+        self.numConect = int(str.strip(line[60:65]))
+        self.numSeq = int(str.strip(line[65:70]))
 
 
 @RegisterLineParser
@@ -162,27 +162,26 @@ class CONECT(BaseRecord):
             57-61    int    serial10 Serial number of salt bridged    atom
         """
         super(CONECT, self).__init__(line)
-
-        self.serial = int(string.strip(line[6:11]))
-        try:  self.serial1 = int(string.strip(line[11:16]))
+        self.serial = int(str.strip(line[6:11]))
+        try:  self.serial1 = int(str.strip(line[11:16]))
         except ValueError:  self.serial1 = None
-        try:  self.serial2 = int(string.strip(line[16:21]))
+        try:  self.serial2 = int(str.strip(line[16:21]))
         except ValueError:  self.serial2 = None
-        try:  self.serial3 = int(string.strip(line[21:26]))
+        try:  self.serial3 = int(str.strip(line[21:26]))
         except ValueError:  self.serial3 = None
-        try:  self.serial4 = int(string.strip(line[26:31]))
+        try:  self.serial4 = int(str.strip(line[26:31]))
         except ValueError:  self.serial4 = None
-        try:  self.serial5 = int(string.strip(line[31:36]))
+        try:  self.serial5 = int(str.strip(line[31:36]))
         except ValueError:  self.serial5 = None
-        try:  self.serial6 = int(string.strip(line[36:41]))
+        try:  self.serial6 = int(str.strip(line[36:41]))
         except ValueError:  self.serial6 = None
-        try:  self.serial7 = int(string.strip(line[41:46]))
+        try:  self.serial7 = int(str.strip(line[41:46]))
         except ValueError:  self.serial7 = None
-        try:  self.serial8 = int(string.strip(line[46:51]))
+        try:  self.serial8 = int(str.strip(line[46:51]))
         except ValueError:  self.serial8 = None
-        try:  self.serial9 = int(string.strip(line[51:56]))
+        try:  self.serial9 = int(str.strip(line[51:56]))
         except ValueError:  self.serial9 = None
-        try:  self.serial10 = int(string.strip(line[56:61]))
+        try:  self.serial10 = int(str.strip(line[56:61]))
         except ValueError:  self.serial10 = None
 
 @RegisterLineParser
@@ -202,7 +201,7 @@ class NUMMDL(BaseRecord):
         """
         super(NUMMDL, self).__init__(line)
         try:
-            self.modelNumber = int(string.strip(line[10:14]))
+            self.modelNumber = int(str.strip(line[10:14]))
         except ValueError:
             self.modelNumber = None
 
@@ -241,11 +240,11 @@ class TER(BaseRecord):
         """
         super(TER, self).__init__(line)
         try: # Not really needed
-            self.serial = int(string.strip(line[6:11]))
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
+            self.serial = int(str.strip(line[6:11]))
+            self.resName = str.strip(line[17:20])
+            self.chainID = str.strip(line[21])
+            self.resSeq = int(str.strip(line[22:26]))
+            self.iCode = str.strip(line[26])
         except (IndexError, ValueError):
             self.serial = None
             self.resName = None
@@ -285,22 +284,22 @@ class SIGUIJ(BaseRecord):
         """
         super(SIGUIJ, self).__init__(line)
 
-        self.serial = int(string.strip(line[6:11]))
-        self.name = string.strip(line[12:16])
-        self.altLoc = string.strip(line[16])
-        self.resName = string.strip(line[17:20])
-        self.chainID = string.strip(line[21])
-        self.resSeq = int(string.strip(line[22:26]))
-        self.iCode = string.strip(line[26])
-        self.sig11 = int(string.strip(line[28:35]))
-        self.sig22 = int(string.strip(line[35:42]))
-        self.sig33 = int(string.strip(line[42:49]))
-        self.sig12 = int(string.strip(line[49:56]))
-        self.sig13 = int(string.strip(line[56:63]))
-        self.sig23 = int(string.strip(line[63:70]))
-        self.segID = string.strip(line[72:76])
-        self.element = string.strip(line[76:78])
-        self.charge = string.strip(line[78:80])
+        self.serial = int(str.strip(line[6:11]))
+        self.name = str.strip(line[12:16])
+        self.altLoc = str.strip(line[16])
+        self.resName = str.strip(line[17:20])
+        self.chainID = str.strip(line[21])
+        self.resSeq = int(str.strip(line[22:26]))
+        self.iCode = str.strip(line[26])
+        self.sig11 = int(str.strip(line[28:35]))
+        self.sig22 = int(str.strip(line[35:42]))
+        self.sig33 = int(str.strip(line[42:49]))
+        self.sig12 = int(str.strip(line[49:56]))
+        self.sig13 = int(str.strip(line[56:63]))
+        self.sig23 = int(str.strip(line[63:70]))
+        self.segID = str.strip(line[72:76])
+        self.element = str.strip(line[76:78])
+        self.charge = str.strip(line[78:80])
 
 
 @RegisterLineParser
@@ -334,22 +333,22 @@ class ANISOU(BaseRecord):
               79-80    string charge  Charge on the atom.
         """
         super(ANISOU, self).__init__(line)
-        self.serial = int(string.strip(line[6:11]))
-        self.name = string.strip(line[12:16])
-        self.altLoc = string.strip(line[16])
-        self.resName = string.strip(line[17:20])
-        self.chainID = string.strip(line[21])
-        self.resSeq = int(string.strip(line[22:26]))
-        self.iCode = string.strip(line[26])
-        self.u00 = int(string.strip(line[28:35]))
-        self.u11 = int(string.strip(line[35:42]))
-        self.u22 = int(string.strip(line[42:49]))
-        self.u01 = int(string.strip(line[49:56]))
-        self.u02 = int(string.strip(line[56:63]))
-        self.u12 = int(string.strip(line[63:70]))
-        self.segID = string.strip(line[72:76])
-        self.element = string.strip(line[76:78])
-        self.charge = string.strip(line[78:80])
+        self.serial = int(str.strip(line[6:11]))
+        self.name = str.strip(line[12:16])
+        self.altLoc = str.strip(line[16])
+        self.resName = str.strip(line[17:20])
+        self.chainID = str.strip(line[21])
+        self.resSeq = int(str.strip(line[22:26]))
+        self.iCode = str.strip(line[26])
+        self.u00 = int(str.strip(line[28:35]))
+        self.u11 = int(str.strip(line[35:42]))
+        self.u22 = int(str.strip(line[42:49]))
+        self.u01 = int(str.strip(line[49:56]))
+        self.u02 = int(str.strip(line[56:63]))
+        self.u12 = int(str.strip(line[63:70]))
+        self.segID = str.strip(line[72:76])
+        self.element = str.strip(line[76:78])
+        self.charge = str.strip(line[78:80])
 
 @RegisterLineParser
 class SIGATM(BaseRecord):
@@ -385,21 +384,21 @@ class SIGATM(BaseRecord):
             79-80     string charge  Charge on the atom.
         """
         super(SIGATM, self).__init__(line)
-        self.serial = int(string.strip(line[6:11]))
-        self.name = string.strip(line[12:16])
-        self.altLoc = string.strip(line[16])
-        self.resName = string.strip(line[17:20])
-        self.chainID = string.strip(line[21])
-        self.resSeq = int(string.strip(line[22:26]))
-        self.iCode = string.strip(line[26])
-        self.sigX = float(string.strip(line[30:38]))
-        self.sigY = float(string.strip(line[38:46]))
-        self.sigZ = float(string.strip(line[46:54]))
-        self.sigOcc = float(string.strip(line[54:60]))
-        self.sigTemp = float(string.strip(line[60:66]))
-        self.segID = string.strip(line[72:76])
-        self.element = string.strip(line[76:78])
-        self.charge = string.strip(line[78:80])
+        self.serial = int(str.strip(line[6:11]))
+        self.name = str.strip(line[12:16])
+        self.altLoc = str.strip(line[16])
+        self.resName = str.strip(line[17:20])
+        self.chainID = str.strip(line[21])
+        self.resSeq = int(str.strip(line[22:26]))
+        self.iCode = str.strip(line[26])
+        self.sigX = float(str.strip(line[30:38]))
+        self.sigY = float(str.strip(line[38:46]))
+        self.sigZ = float(str.strip(line[46:54]))
+        self.sigOcc = float(str.strip(line[54:60]))
+        self.sigTemp = float(str.strip(line[60:66]))
+        self.segID = str.strip(line[72:76])
+        self.element = str.strip(line[76:78])
+        self.charge = str.strip(line[78:80])
 
 @RegisterLineParser
 class HETATM(BaseRecord):
@@ -436,19 +435,19 @@ class HETATM(BaseRecord):
             79-80     string charge        Charge on the atom.
         """
         super(HETATM, self).__init__(line)
-        self.serial = int(string.strip(line[6:11]))
-        self.name = string.strip(line[12:16])
-        self.altLoc = string.strip(line[16])
+        self.serial = int(str.strip(line[6:11]))
+        self.name = str.strip(line[12:16])
+        self.altLoc = str.strip(line[16])
         try:
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
+            self.resName = str.strip(line[17:20])
+            self.chainID = str.strip(line[21])
+            self.resSeq = int(str.strip(line[22:26]))
+            self.iCode = str.strip(line[26])
         except:
-            raise ValueError, 'Residue name must be less than 4 characters!'
-        self.x = float(string.strip(line[30:38]))
-        self.y = float(string.strip(line[38:46]))
-        self.z = float(string.strip(line[46:54]))
+            raise ValueError('Residue name must be less than 4 characters!')
+        self.x = float(str.strip(line[30:38]))
+        self.y = float(str.strip(line[38:46]))
+        self.z = float(str.strip(line[46:54]))
         ### PC
 #            self.lAtoms = lAtoms
         self.sybylType = sybylType
@@ -459,11 +458,11 @@ class HETATM(BaseRecord):
         self.isNterm=0
         ###
         try:
-            self.occupancy = float(string.strip(line[54:60]))
-            self.tempFactor = float(string.strip(line[60:66]))
-            self.segID = string.strip(line[72:76])
-            self.element = string.strip(line[76:78])
-            self.charge = string.strip(line[78:80])
+            self.occupancy = float(str.strip(line[54:60]))
+            self.tempFactor = float(str.strip(line[60:66]))
+            self.segID = str.strip(line[72:76])
+            self.element = str.strip(line[76:78])
+            self.charge = str.strip(line[78:80])
         except (ValueError, IndexError):
             self.occupancy = 0.00
             self.tempFactor = 0.00
@@ -498,43 +497,43 @@ class HETATM(BaseRecord):
 #         """
 #         str = ""
 #         tstr = "HETATM"
-#         str = str + string.ljust(tstr, 6)[:6]
+#         str = str + str.ljust(tstr, 6)[:6]
 #         tstr = "%d" % self.serial
-#         str = str + string.rjust(tstr, 5)[:5]
+#         str = str + str.rjust(tstr, 5)[:5]
 #         str = str + " "
 #         tstr = self.name
 #         if len(tstr) == 4:
-#             str = str + string.ljust(tstr, 4)[:4]
+#             str = str + str.ljust(tstr, 4)[:4]
 #         else:
-#             str = str + " " + string.ljust(tstr, 3)[:3]
+#             str = str + " " + str.ljust(tstr, 3)[:3]
 #         tstr = self.altLoc
-#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + str.ljust(tstr, 1)[:1]
 #         tstr = self.resName
-#         str = str + string.ljust(tstr, 3)[:3]
+#         str = str + str.ljust(tstr, 3)[:3]
 #         str = str + " "
 #         tstr = self.chainID
-#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + str.ljust(tstr, 1)[:1]
 #         tstr = "%d" % self.resSeq
-#         str = str + string.rjust(tstr, 4)[:4]
+#         str = str + str.rjust(tstr, 4)[:4]
 #         tstr = self.iCode
-#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + str.ljust(tstr, 1)[:1]
 #         str = str + "   "
 #         tstr = "%8.3f" % self.x
-#         str = str + string.ljust(tstr, 8)[:8]
+#         str = str + str.ljust(tstr, 8)[:8]
 #         tstr = "%8.3f" % self.y
-#         str = str + string.ljust(tstr, 8)[:8]
+#         str = str + str.ljust(tstr, 8)[:8]
 #         tstr = "%8.3f" % self.z
-#         str = str + string.ljust(tstr, 8)[:8]
+#         str = str + str.ljust(tstr, 8)[:8]
 #         tstr = "%6.2f" % self.occupancy
-#         str = str + string.ljust(tstr, 6)[:6]
+#         str = str + str.ljust(tstr, 6)[:6]
 #         tstr = "%6.2f" % self.tempFactor
-#         str = str + string.rjust(tstr, 6)[:6]
+#         str = str + str.rjust(tstr, 6)[:6]
 #         tstr = self.segID
-#         str = str + string.ljust(tstr, 4)[:4]
+#         str = str + str.ljust(tstr, 4)[:4]
 #         tstr = self.element
-#         str = str + string.ljust(tstr, 2)[:2]
+#         str = str + str.ljust(tstr, 2)[:2]
 #         tstr = self.charge
-#         str = str + string.ljust(tstr, 2)[:2]
+#         str = str + str.ljust(tstr, 2)[:2]
 #         return str
 
 ### PC
@@ -633,7 +632,7 @@ class MOL2MOLECULE:
                 try:
                     thisAtom.mol2charge=float(charge)
                 except:
-                    print 'Warning. Non-float charge in mol2 file.',charge
+                    print('Warning. Non-float charge in mol2 file.',charge)
                     thisAtom.mol2charge=None
             self.lPDBAtoms.append(mol2pdb)
             self.lAtoms.append(thisAtom)
@@ -729,22 +728,22 @@ class ATOM(BaseRecord):
         """
 
         super(ATOM, self).__init__(line)
-        self.serial = int(string.strip(line[6:11]))
-        self.name = string.strip(line[12:16])
-        self.altLoc = string.strip(line[16])
-        self.resName = string.strip(line[17:20])
-        self.chainID = string.strip(line[21])
-        self.resSeq = int(string.strip(line[22:26]))
-        self.iCode = string.strip(line[26])
-        self.x = float(string.strip(line[30:38]))
-        self.y = float(string.strip(line[38:46]))
-        self.z = float(string.strip(line[46:54]))
+        self.serial = int(str.strip(line[6:11]))
+        self.name = str.strip(line[12:16])
+        self.altLoc = str.strip(line[16])
+        self.resName = str.strip(line[17:20])
+        self.chainID = str.strip(line[21])
+        self.resSeq = int(str.strip(line[22:26]))
+        self.iCode = str.strip(line[26])
+        self.x = float(str.strip(line[30:38]))
+        self.y = float(str.strip(line[38:46]))
+        self.z = float(str.strip(line[46:54]))
         try:
-            self.occupancy = float(string.strip(line[54:60]))
-            self.tempFactor = float(string.strip(line[60:66]))
-            self.segID = string.strip(line[72:76])
-            self.element = string.strip(line[76:78])
-            self.charge = string.strip(line[78:80])
+            self.occupancy = float(str.strip(line[54:60]))
+            self.tempFactor = float(str.strip(line[60:66]))
+            self.segID = str.strip(line[72:76])
+            self.element = str.strip(line[76:78])
+            self.charge = str.strip(line[78:80])
         except (ValueError, IndexError):
             self.occupancy = 0.00
             self.tempFactor = 0.00
@@ -779,43 +778,43 @@ class ATOM(BaseRecord):
 #         """
 #         str = ""
 #         tstr = "ATOM"
-#         str = str + string.ljust(tstr, 6)[:6]
+#         str = str + str.ljust(tstr, 6)[:6]
 #         tstr = "%d" % self.serial
-#         str = str + string.rjust(tstr, 5)[:5]
+#         str = str + str.rjust(tstr, 5)[:5]
 #         str = str + " "
 #         tstr = self.name
 #         if len(tstr) == 4:
-#             str = str + string.ljust(tstr, 4)[:4]
+#             str = str + str.ljust(tstr, 4)[:4]
 #         else:
-#             str = str + " " + string.ljust(tstr, 3)[:3]
+#             str = str + " " + str.ljust(tstr, 3)[:3]
 #         tstr = self.altLoc
-#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + str.ljust(tstr, 1)[:1]
 #         tstr = self.resName
-#         str = str + string.ljust(tstr, 3)[:3]
+#         str = str + str.ljust(tstr, 3)[:3]
 #         str = str + " "
 #         tstr = self.chainID
-#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + str.ljust(tstr, 1)[:1]
 #         tstr = "%d" % self.resSeq
-#         str = str + string.rjust(tstr, 4)[:4]
+#         str = str + str.rjust(tstr, 4)[:4]
 #         tstr = self.iCode
-#         str = str + string.ljust(tstr, 1)[:1]
+#         str = str + str.ljust(tstr, 1)[:1]
 #         str = str + "   "
 #         tstr = "%8.3f" % self.x
-#         str = str + string.ljust(tstr, 8)[:8]
+#         str = str + str.ljust(tstr, 8)[:8]
 #         tstr = "%8.3f" % self.y
-#         str = str + string.ljust(tstr, 8)[:8]
+#         str = str + str.ljust(tstr, 8)[:8]
 #         tstr = "%8.3f" % self.z
-#         str = str + string.ljust(tstr, 8)[:8]
+#         str = str + str.ljust(tstr, 8)[:8]
 #         tstr = "%6.2f" % self.occupancy
-#         str = str + string.ljust(tstr, 6)[:6]
+#         str = str + str.ljust(tstr, 6)[:6]
 #         tstr = "%6.2f" % self.tempFactor
-#         str = str + string.ljust(tstr, 6)[:6]
+#         str = str + str.ljust(tstr, 6)[:6]
 #         tstr = self.segID
-#         str = str + string.ljust(tstr, 4)[:4]
+#         str = str + str.ljust(tstr, 4)[:4]
 #         tstr = self.element
-#         str = str + string.ljust(tstr, 2)[:2]
+#         str = str + str.ljust(tstr, 2)[:2]
 #         tstr = self.charge
-#         str = str + string.ljust(tstr, 2)[:2]
+#         str = str + str.ljust(tstr, 2)[:2]
 #         return str
 
 @RegisterLineParser
@@ -836,7 +835,7 @@ class MODEL(BaseRecord):
            11-14    int    serial Model serial number.
         """
         super(MODEL, self).__init__(line)
-        self.serial = int(string.strip(line[10:14]))
+        self.serial = int(str.strip(line[10:14]))
 
 @RegisterLineParser
 class TVECT(BaseRecord):
@@ -859,11 +858,11 @@ class TVECT(BaseRecord):
             41-70    string text   Comments
         """
         super(TVECT, self).__init__(line)
-        self.serial = int(string.strip(line[7:10]))
-        self.t1 = float(string.strip(line[10:20]))
-        self.t2 = float(string.strip(line[20:30]))
-        self.t3 = float(string.strip(line[30:40]))
-        self.text = string.strip(line[40:70])
+        self.serial = int(str.strip(line[7:10]))
+        self.t1 = float(str.strip(line[10:20]))
+        self.t2 = float(str.strip(line[20:30]))
+        self.t3 = float(str.strip(line[30:40]))
+        self.text = str.strip(line[40:70])
 
 
 class MTRIXn(BaseRecord):
@@ -890,13 +889,13 @@ class MTRIXn(BaseRecord):
                             the entry.  Otherwise, blank.
         """
         super(MTRIXn, self).__init__(line)
-        self.serial = int(string.strip(line[7:10]))
-        self.mn1 = float(string.strip(line[10:20]))
-        self.mn2 = float(string.strip(line[20:30]))
-        self.mn3 = float(string.strip(line[30:40]))
-        self.vn = float(string.strip(line[45:55]))
+        self.serial = int(str.strip(line[7:10]))
+        self.mn1 = float(str.strip(line[10:20]))
+        self.mn2 = float(str.strip(line[20:30]))
+        self.mn3 = float(str.strip(line[30:40]))
+        self.vn = float(str.strip(line[45:55]))
         try:
-            self.iGiven = int(string.strip(line[59]))
+            self.iGiven = int(str.strip(line[59]))
         except (ValueError, IndexError):
             self.iGiven = None
 
@@ -933,10 +932,10 @@ class SCALEn(BaseRecord):
             46-55    float  un     U3
         """
         super(SCALEn, self).__init__(line)
-        self.sn1 = float(string.strip(line[10:20]))
-        self.sn2 = float(string.strip(line[20:30]))
-        self.sn3 = float(string.strip(line[30:40]))
-        self.un = float(string.strip(line[45:55]))
+        self.sn1 = float(str.strip(line[10:20]))
+        self.sn2 = float(str.strip(line[20:30]))
+        self.sn3 = float(str.strip(line[30:40]))
+        self.un = float(str.strip(line[45:55]))
 
 @RegisterLineParser
 class SCALE3(SCALEn):
@@ -970,10 +969,10 @@ class ORIGXn(BaseRecord):
             46-55    float  tn     T2
         """
         super(ORIGXn, self).__init__(line)
-        self.on1 = float(string.strip(line[10:20]))
-        self.on2 = float(string.strip(line[20:30]))
-        self.on3 = float(string.strip(line[30:40]))
-        self.tn = float(string.strip(line[45:55]))
+        self.on1 = float(str.strip(line[10:20]))
+        self.on2 = float(str.strip(line[20:30]))
+        self.on3 = float(str.strip(line[30:40]))
+        self.tn = float(str.strip(line[45:55]))
 
 @RegisterLineParser
 class ORIGX2(ORIGXn):
@@ -1012,14 +1011,14 @@ class CRYST1(BaseRecord):
            67-70    int    z      Z value.
         """
         super(CRYST1, self).__init__(line)
-        self.a = float(string.strip(line[6:15]))
-        self.b = float(string.strip(line[15:24]))
-        self.c = float(string.strip(line[24:33]))
-        self.alpha = float(string.strip(line[33:40]))
-        self.beta = float(string.strip(line[40:47]))
-        self.gamma = float(string.strip(line[47:54]))
-        self.sGroup = string.strip(line[55:65])
-        self.z = int(string.strip(line[66:70]))
+        self.a = float(str.strip(line[6:15]))
+        self.b = float(str.strip(line[15:24]))
+        self.c = float(str.strip(line[24:33]))
+        self.alpha = float(str.strip(line[33:40]))
+        self.beta = float(str.strip(line[40:47]))
+        self.gamma = float(str.strip(line[47:54]))
+        self.sGroup = str.strip(line[55:65])
+        self.z = int(str.strip(line[66:70]))
 
 
 @RegisterLineParser
@@ -1073,26 +1072,26 @@ class SITE(BaseRecord):
                                      comprising site.
         """
         super(SITE, self).__init__(line)
-        self.seqNum = int(string.strip(line[7:10]))
-        self.siteID = string.strip(line[11:14])
-        self.numRes = int(string.strip(line[15:17]))
-        self.resName1 = string.strip(line[18:21])
-        self.chainID1 = string.strip(line[22])
-        self.seq1 = int(string.strip(line[23:27]))
-        self.iCode1 = string.strip(line[27])
-        self.resName2 = string.strip(line[29:32])
-        self.chainID2 = string.strip(line[33])
-        self.seq2 = int(string.strip(line[34:38]))
-        self.iCode2 = string.strip(line[38])
-        self.resName3 = string.strip(line[40:43])
-        self.chainID3 = string.strip(line[44])
-        self.seq3 = int(string.strip(line[45:49]))
-        self.iCode3 = string.strip(line[49])
-        self.resName4 = string.strip(line[51:54])
-        self.chainID4 = string.strip(line[55])
-        self.seq4 = int(string.strip(line[56:60]))
+        self.seqNum = int(str.strip(line[7:10]))
+        self.siteID = str.strip(line[11:14])
+        self.numRes = int(str.strip(line[15:17]))
+        self.resName1 = str.strip(line[18:21])
+        self.chainID1 = str.strip(line[22])
+        self.seq1 = int(str.strip(line[23:27]))
+        self.iCode1 = str.strip(line[27])
+        self.resName2 = str.strip(line[29:32])
+        self.chainID2 = str.strip(line[33])
+        self.seq2 = int(str.strip(line[34:38]))
+        self.iCode2 = str.strip(line[38])
+        self.resName3 = str.strip(line[40:43])
+        self.chainID3 = str.strip(line[44])
+        self.seq3 = int(str.strip(line[45:49]))
+        self.iCode3 = str.strip(line[49])
+        self.resName4 = str.strip(line[51:54])
+        self.chainID4 = str.strip(line[55])
+        self.seq4 = int(str.strip(line[56:60]))
         try:
-            self.iCode4 = string.strip(line[60])
+            self.iCode4 = str.strip(line[60])
         except IndexError:
             self.iCode4 = None
 
@@ -1124,17 +1123,17 @@ class CISPEP(BaseRecord):
             54-59    float  measure  Measure of the angle in degrees.
         """
         super(CISPEP, self).__init__(line)
-        self.serNum = int(string.strip(line[7:10]))
-        self.pep1 = string.strip(line[11:14])
-        self.chainID1 = string.strip(line[15])
-        self.seqNum1 = int(string.strip(line[17:21]))
-        self.icode1 = string.strip(line[21])
-        self.pep2 = string.strip(line[25:28])
-        self.chainID2 = string.strip(line[29])
-        self.seqNum2 = int(string.strip(line[31:35]))
-        self.icode2 = string.strip(line[35])
-        self.modNum = int(string.strip(line[43:46]))
-        self.measure = float(string.strip(line[53:59]))
+        self.serNum = int(str.strip(line[7:10]))
+        self.pep1 = str.strip(line[11:14])
+        self.chainID1 = str.strip(line[15])
+        self.seqNum1 = int(str.strip(line[17:21]))
+        self.icode1 = str.strip(line[21])
+        self.pep2 = str.strip(line[25:28])
+        self.chainID2 = str.strip(line[29])
+        self.seqNum2 = int(str.strip(line[31:35]))
+        self.icode2 = str.strip(line[35])
+        self.modNum = int(str.strip(line[43:46]))
+        self.measure = float(str.strip(line[53:59]))
 
 @RegisterLineParser
 class SLTBRG(BaseRecord):
@@ -1166,20 +1165,20 @@ class SLTBRG(BaseRecord):
             67-72    string sym2      Symmetry operator for 2nd atom.
         """
         super(SLTBRG, self).__init__(line)
-        self.name1 = string.strip(line[12:16])
-        self.altLoc1 = string.strip(line[16])
-        self.resName1 = string.strip(line[17:20])
-        self.chainID1 = string.strip(line[21])
-        self.resSeq1 = int(string.strip(line[22:26]))
-        self.iCode1 = string.strip(line[26])
-        self.name2 = string.strip(line[42:46])
-        self.altLoc2 = string.strip(line[46])
-        self.resName2 = string.strip(line[47:50])
-        self.chainID2 = string.strip(line[51])
-        self.resSeq2 = int(string.strip(line[52:56]))
-        self.iCode2 = string.strip(line[56])
-        self.sym1 = string.strip(line[59:65])
-        self.sym2 = string.strip(line[66:72])
+        self.name1 = str.strip(line[12:16])
+        self.altLoc1 = str.strip(line[16])
+        self.resName1 = str.strip(line[17:20])
+        self.chainID1 = str.strip(line[21])
+        self.resSeq1 = int(str.strip(line[22:26]))
+        self.iCode1 = str.strip(line[26])
+        self.name2 = str.strip(line[42:46])
+        self.altLoc2 = str.strip(line[46])
+        self.resName2 = str.strip(line[47:50])
+        self.chainID2 = str.strip(line[51])
+        self.resSeq2 = int(str.strip(line[52:56]))
+        self.iCode2 = str.strip(line[56])
+        self.sym1 = str.strip(line[59:65])
+        self.sym2 = str.strip(line[66:72])
 
 @RegisterLineParser
 class HYDBND(BaseRecord):
@@ -1217,25 +1216,25 @@ class HYDBND(BaseRecord):
                                               non-hydrogen atom.
         """
         super(HYDBND, self).__init__(line)
-        self.name1 = string.strip(line[12:16])
-        self.altLoc1 = string.strip(line[16])
-        self.resName1 = string.strip(line[17:20])
-        self.Chain1 = string.strip(line[21])
-        self.resSeq1 = string.strip(line[22:27])
-        self.ICode1 = string.strip(line[27])
-        self.nameH = string.strip(line[29:33])
-        self.altLocH = string.strip(line[33])
-        self.ChainH = string.strip(line[35])
-        self.resSeqH = string.strip(line[36:41])
-        self.ICodeH = string.strip(line[41])
-        self.name2 = string.strip(line[43:47])
-        self.altLoc2 = string.strip(line[47])
-        self.resName2 = string.strip(line[48:51])
-        self.Chain2 = string.strip(line[52])
-        self.resSeq2 = string.strip(line[53:58])
-        self.ICode2 = string.strip(line[58])
-        self.sym1 = string.strip(line[59:65])
-        self.sym2 = string.strip(line[66:72])
+        self.name1 = str.strip(line[12:16])
+        self.altLoc1 = str.strip(line[16])
+        self.resName1 = str.strip(line[17:20])
+        self.Chain1 = str.strip(line[21])
+        self.resSeq1 = str.strip(line[22:27])
+        self.ICode1 = str.strip(line[27])
+        self.nameH = str.strip(line[29:33])
+        self.altLocH = str.strip(line[33])
+        self.ChainH = str.strip(line[35])
+        self.resSeqH = str.strip(line[36:41])
+        self.ICodeH = str.strip(line[41])
+        self.name2 = str.strip(line[43:47])
+        self.altLoc2 = str.strip(line[47])
+        self.resName2 = str.strip(line[48:51])
+        self.Chain2 = str.strip(line[52])
+        self.resSeq2 = str.strip(line[53:58])
+        self.ICode2 = str.strip(line[58])
+        self.sym1 = str.strip(line[59:65])
+        self.sym2 = str.strip(line[66:72])
 
 @RegisterLineParser
 class LINK(BaseRecord):
@@ -1269,20 +1268,20 @@ class LINK(BaseRecord):
             67-72    string sym2      Symmetry operator for 2nd atom.
         """
         super(LINK, self).__init__(line)
-        self.name1 = string.strip(line[12:16])
-        self.altLoc1 = string.strip(line[16])
-        self.resName1 = string.strip(line[17:20])
-        self.chainID1 = string.strip(line[21])
-        self.resSeq1 = int(string.strip(line[22:26]))
-        self.iCode1 = string.strip(line[26])
-        self.name2 = string.strip(line[42:46])
-        self.altLoc2 = string.strip(line[46])
-        self.resName2 = string.strip(line[47:50])
-        self.chainID2 = string.strip(line[51])
-        self.resSeq2 = int(string.strip(line[52:56]))
-        self.iCode2 = string.strip(line[56])
-        self.sym1 = string.strip(line[59:65])
-        self.sym2 = string.strip(line[66:72])
+        self.name1 = str.strip(line[12:16])
+        self.altLoc1 = str.strip(line[16])
+        self.resName1 = str.strip(line[17:20])
+        self.chainID1 = str.strip(line[21])
+        self.resSeq1 = int(str.strip(line[22:26]))
+        self.iCode1 = str.strip(line[26])
+        self.name2 = str.strip(line[42:46])
+        self.altLoc2 = str.strip(line[46])
+        self.resName2 = str.strip(line[47:50])
+        self.chainID2 = str.strip(line[51])
+        self.resSeq2 = int(str.strip(line[52:56]))
+        self.iCode2 = str.strip(line[56])
+        self.sym1 = str.strip(line[59:65])
+        self.sym2 = str.strip(line[66:72])
 
 
 @RegisterLineParser
@@ -1311,15 +1310,15 @@ class SSBOND(BaseRecord):
             67 - 72  string sym2           Symmetry operator for 2nd residue.
         """
         super(SSBOND, self).__init__(line)
-        self.serNum = int(string.strip(line[7:10]))
-        self.chainID1 = string.strip(line[15])
-        self.seqNum1 = int(string.strip(line[17:21]))
-        self.icode1 = string.strip(line[21])
-        self.chainID2 = string.strip(line[29])
-        self.seqNum2 = int(string.strip(line[31:35]))
-        self.icode2 = string.strip(line[35])
-        self.sym1 = string.strip(line[59:65])
-        self.sym2 = string.strip(line[66:72])
+        self.serNum = int(str.strip(line[7:10]))
+        self.chainID1 = str.strip(line[15])
+        self.seqNum1 = int(str.strip(line[17:21]))
+        self.icode1 = str.strip(line[21])
+        self.chainID2 = str.strip(line[29])
+        self.seqNum2 = int(str.strip(line[31:35]))
+        self.icode2 = str.strip(line[35])
+        self.sym1 = str.strip(line[59:65])
+        self.sym2 = str.strip(line[66:72])
 
 @RegisterLineParser
 class TURN(BaseRecord):
@@ -1357,17 +1356,17 @@ class TURN(BaseRecord):
             41-70    string comment     Associated comment.
         """
         super(TURN, self).__init__(line)
-        self.seq = int(string.strip(line[7:10]))
-        self.turnId = string.strip(line[11:14])
-        self.initResName = string.strip(line[15:18])
-        self.initChainId = string.strip(line[19])
-        self.initSeqNum = int(string.strip(line[20:24]))
-        self.initICode = string.strip(line[24])
-        self.endResName = string.strip(line[26:29])
-        self.endChainId = string.strip(line[30])
-        self.endSeqNum = int(string.strip(line[31:35]))
-        self.endICode = string.strip(line[35])
-        self.comment = string.strip(line[40:70])
+        self.seq = int(str.strip(line[7:10]))
+        self.turnId = str.strip(line[11:14])
+        self.initResName = str.strip(line[15:18])
+        self.initChainId = str.strip(line[19])
+        self.initSeqNum = int(str.strip(line[20:24]))
+        self.initICode = str.strip(line[24])
+        self.endResName = str.strip(line[26:29])
+        self.endChainId = str.strip(line[30])
+        self.endSeqNum = int(str.strip(line[31:35]))
+        self.endICode = str.strip(line[35])
+        self.comment = str.strip(line[40:70])
 
 @RegisterLineParser
 class SHEET(BaseRecord):
@@ -1426,31 +1425,31 @@ class SHEET(BaseRecord):
                                         previous strand.
         """
         super(SHEET, self).__init__(line)
-        self.strand = int(string.strip(line[7:10]))
-        self.sheetID = string.strip(line[11:14])
-        self.numStrands = int(string.strip(line[14:16]))
-        self.initResName = string.strip(line[17:20])
-        self.initChainID = string.strip(line[21])
-        self.initSeqNum = int(string.strip(line[22:26]))
-        self.initICode = string.strip(line[26])
-        self.endResName = string.strip(line[28:31])
-        self.endChainID = string.strip(line[32])
-        self.endSeqNum = int(string.strip(line[33:37]))
-        self.endICode = string.strip(line[37])
-        self.sense = int(string.strip(line[38:40]))
+        self.strand = int(str.strip(line[7:10]))
+        self.sheetID = str.strip(line[11:14])
+        self.numStrands = int(str.strip(line[14:16]))
+        self.initResName = str.strip(line[17:20])
+        self.initChainID = str.strip(line[21])
+        self.initSeqNum = int(str.strip(line[22:26]))
+        self.initICode = str.strip(line[26])
+        self.endResName = str.strip(line[28:31])
+        self.endChainID = str.strip(line[32])
+        self.endSeqNum = int(str.strip(line[33:37]))
+        self.endICode = str.strip(line[37])
+        self.sense = int(str.strip(line[38:40]))
         try:
-            self.curAtom = string.strip(line[41:45])
-            self.curResName = string.strip(line[45:48])
-            self.curChainID = string.strip(line[49])
-            try:  self.curResSeq = int(string.strip(line[50:54]))
+            self.curAtom = str.strip(line[41:45])
+            self.curResName = str.strip(line[45:48])
+            self.curChainID = str.strip(line[49])
+            try:  self.curResSeq = int(str.strip(line[50:54]))
             except ValueError:  self.curResSeq = None
-            self.curICode = string.strip(line[54])
-            self.prevAtom = string.strip(line[56:60])
-            self.prevResName = string.strip(line[60:63])
-            self.prevChainID = string.strip(line[64])
-            try:  self.prevResSeq = int(string.strip(line[65:69]))
+            self.curICode = str.strip(line[54])
+            self.prevAtom = str.strip(line[56:60])
+            self.prevResName = str.strip(line[60:63])
+            self.prevChainID = str.strip(line[64])
+            try:  self.prevResSeq = int(str.strip(line[65:69]))
             except ValueError:  self.prevResSeq = None
-            self.prevICode = string.strip(line[69])
+            self.prevICode = str.strip(line[69])
         except IndexError:
             self.curAtom = None
             self.curResName = None
@@ -1500,20 +1499,20 @@ class HELIX(BaseRecord):
             72-76    int    length      Length of this helix.
         """
         super(HELIX, self).__init__(line)
-        self.serNum = int(string.strip(line[7:10]))
-        self.helixID = string.strip(line[11:14])
-        self.initResName = string.strip(line[15:18])
-        self.initChainID = string.strip(line[19])
-        self.initSeqNum = int(string.strip(line[21:25]))
-        self.initICode = string.strip(line[25])
-        self.endResName = string.strip(line[27:30])
-        self.endChainID = string.strip(line[31])
-        self.endSeqNum = int(string.strip(line[33:37]))
-        self.endICode = string.strip(line[37])
-        try:  self.helixClass = int(string.strip(line[38:40]))
+        self.serNum = int(str.strip(line[7:10]))
+        self.helixID = str.strip(line[11:14])
+        self.initResName = str.strip(line[15:18])
+        self.initChainID = str.strip(line[19])
+        self.initSeqNum = int(str.strip(line[21:25]))
+        self.initICode = str.strip(line[25])
+        self.endResName = str.strip(line[27:30])
+        self.endChainID = str.strip(line[31])
+        self.endSeqNum = int(str.strip(line[33:37]))
+        self.endICode = str.strip(line[37])
+        try:  self.helixClass = int(str.strip(line[38:40]))
         except ValueError:  self.helixClass = None
-        self.comment = string.strip(line[40:70])
-        try:  self.length = int(string.strip(line[71:76]))
+        self.comment = str.strip(line[40:70])
+        try:  self.length = int(str.strip(line[71:76]))
         except ValueError:  self.length = None
 
 @RegisterLineParser
@@ -1536,10 +1535,10 @@ class FORMUL(BaseRecord):
             20-70    string text     Chemical formula
         """
         super(FORMUL, self).__init__(line)
-        self.compNum = int(string.strip(line[8:10]))
-        self.hetID = string.strip(line[12:15])
-        self.asterisk = string.strip(line[19])
-        self.text = string.strip(line[19:70])
+        self.compNum = int(str.strip(line[8:10]))
+        self.hetID = str.strip(line[12:15])
+        self.asterisk = str.strip(line[19])
+        self.text = str.strip(line[19:70])
 
 @RegisterLineParser
 class HETSYN(BaseRecord):
@@ -1560,8 +1559,8 @@ class HETSYN(BaseRecord):
             16-70    string hetSynonyms   List of synonyms
         """
         super(HETSYN, self).__init__(line)
-        self.hetID = string.strip(line[11:14])
-        self.hetSynonyms = string.strip(line[15:70])
+        self.hetID = str.strip(line[11:14])
+        self.hetSynonyms = str.strip(line[15:70])
 
 @RegisterLineParser
 class HETNAM(BaseRecord):
@@ -1581,8 +1580,8 @@ class HETNAM(BaseRecord):
             16-70    string text   Chemical name.
         """
         super(HETNAM, self).__init__(line)
-        self.hetID = string.strip(line[11:14])
-        self.text = string.strip(line[15:70])
+        self.hetID = str.strip(line[11:14])
+        self.text = str.strip(line[15:70])
 
 @RegisterLineParser
 class HET(BaseRecord):
@@ -1615,15 +1614,15 @@ class HET(BaseRecord):
             31-70    string text        Text describing Het group.
         """
         super(HET, self).__init__(line)
-        self.hetID = string.strip(line[7:10])
-        self.chainID = string.strip(line[12])
+        self.hetID = str.strip(line[7:10])
+        self.chainID = str.strip(line[12])
         try:
-            self.seqNum = int(string.strip(line[13]))
+            self.seqNum = int(str.strip(line[13]))
         except ValueError:
             self.seqNum = None
-        self.iCode = string.strip(line[17])
-        self.numHetAtoms = int(string.strip(line[20:25]))
-        self.text = string.strip(line[30:70])
+        self.iCode = str.strip(line[17])
+        self.numHetAtoms = int(str.strip(line[20:25]))
+        self.text = str.strip(line[30:70])
 
 @RegisterLineParser
 class MODRES(BaseRecord):
@@ -1650,13 +1649,13 @@ class MODRES(BaseRecord):
             30-70    string comment Description of the residue modification.
         """
         super(MODRES, self).__init__(line)
-        string.idCode = string.strip(line[7:11])
-        string.resName = string.strip(line[12:15])
-        string.chainID = string.strip(line[16])
-        string.seqNum = int(string.strip(line[18:22]))
-        string.iCode = string.strip(line[22])
-        string.stdRes = string.strip(line[24:27])
-        string.comment = string.strip(line[29:70])
+        str.idCode = str.strip(line[7:11])
+        str.resName = str.strip(line[12:15])
+        str.chainID = str.strip(line[16])
+        str.seqNum = int(str.strip(line[18:22]))
+        str.iCode = str.strip(line[22])
+        str.stdRes = str.strip(line[24:27])
+        str.comment = str.strip(line[29:70])
 
 @RegisterLineParser
 class SEQRES(BaseRecord):
@@ -1696,23 +1695,23 @@ class SEQRES(BaseRecord):
             68-70    string resName Residue name.
         """
         super(SEQRES, self).__init__(line)
-        self.serNum = int(string.strip(line[8:10]))
-        self.chainID = string.strip(line[11])
-        self.numRes = int(string.strip(line[13:17]))
+        self.serNum = int(str.strip(line[8:10]))
+        self.chainID = str.strip(line[11])
+        self.numRes = int(str.strip(line[13:17]))
         self.resName = []
-        self.resName.append(string.strip(line[19:22]))
-        self.resName.append(string.strip(line[23:26]))
-        self.resName.append(string.strip(line[27:30]))
-        self.resName.append(string.strip(line[31:34]))
-        self.resName.append(string.strip(line[35:38]))
-        self.resName.append(string.strip(line[39:42]))
-        self.resName.append(string.strip(line[43:46]))
-        self.resName.append(string.strip(line[47:50]))
-        self.resName.append(string.strip(line[51:54]))
-        self.resName.append(string.strip(line[55:58]))
-        self.resName.append(string.strip(line[59:62]))
-        self.resName.append(string.strip(line[63:66]))
-        self.resName.append(string.strip(line[67:70]))
+        self.resName.append(str.strip(line[19:22]))
+        self.resName.append(str.strip(line[23:26]))
+        self.resName.append(str.strip(line[27:30]))
+        self.resName.append(str.strip(line[31:34]))
+        self.resName.append(str.strip(line[35:38]))
+        self.resName.append(str.strip(line[39:42]))
+        self.resName.append(str.strip(line[43:46]))
+        self.resName.append(str.strip(line[47:50]))
+        self.resName.append(str.strip(line[51:54]))
+        self.resName.append(str.strip(line[55:58]))
+        self.resName.append(str.strip(line[59:62]))
+        self.resName.append(str.strip(line[63:66]))
+        self.resName.append(str.strip(line[67:70]))
 
 @RegisterLineParser
 class SEQADV(BaseRecord):
@@ -1746,17 +1745,17 @@ class SEQADV(BaseRecord):
             50-70    string conflict Conflict comment.
         """
         super(SEQADV, self).__init__(line)
-        self.idCode = string.strip(line[7:11])
-        self.resName = string.strip(line[12:15])
-        self.chainID = string.strip(line[16])
-        try:  self.seqNum = int(string.strip(line[19:22]))
+        self.idCode = str.strip(line[7:11])
+        self.resName = str.strip(line[12:15])
+        self.chainID = str.strip(line[16])
+        try:  self.seqNum = int(str.strip(line[19:22]))
         except ValueError:  self.seqNum = None
-        self.iCode = string.strip(line[22])
-        self.database = string.strip(line[24:28])
-        self.dbIdCode = string.strip(line[29:38])
-        self.dbRes = string.strip(line[39:42])
-        self.dbSeq = int(string.strip(line[43:48]))
-        self.conflict = string.strip(line[49:70])
+        self.iCode = str.strip(line[22])
+        self.database = str.strip(line[24:28])
+        self.dbIdCode = str.strip(line[29:38])
+        self.dbRes = str.strip(line[39:42])
+        self.dbSeq = int(str.strip(line[43:48]))
+        self.conflict = str.strip(line[49:70])
 
 @RegisterLineParser
 class DBREF(BaseRecord):
@@ -1807,19 +1806,19 @@ class DBREF(BaseRecord):
                                          the reference.
         """
         super(DBREF, self).__init__(line)
-        self.idCode = string.strip(line[7:11])
-        self.chainID = string.strip(line[12])
-        self.seqBegin = int(string.strip(line[14:18]))
-        self.insertBegin = string.strip(line[18])
-        self.seqEnd = int(string.strip(line[20:24]))
-        self.insertEnd = string.strip(line[24])
-        self.database = string.strip(line[26:32])
-        self.dbAccession = string.strip(line[33:41])
-        self.dbIdCode = string.strip(line[42:54])
-        self.dbseqBegin = int(string.strip(line[55:60]))
-        self.dbinsBeg = string.strip(line[60])
-        self.dbseqEnd = int(string.strip(line[62:67]))
-        try:  self.dbinsEnd = string.strip(line[67])
+        self.idCode = str.strip(line[7:11])
+        self.chainID = str.strip(line[12])
+        self.seqBegin = int(str.strip(line[14:18]))
+        self.insertBegin = str.strip(line[18])
+        self.seqEnd = int(str.strip(line[20:24]))
+        self.insertEnd = str.strip(line[24])
+        self.database = str.strip(line[26:32])
+        self.dbAccession = str.strip(line[33:41])
+        self.dbIdCode = str.strip(line[42:54])
+        self.dbseqBegin = int(str.strip(line[55:60]))
+        self.dbinsBeg = str.strip(line[60])
+        self.dbseqEnd = int(str.strip(line[62:67]))
+        try:  self.dbinsEnd = str.strip(line[67])
         except IndexError:  self.dbinsEnd = None
 
 @RegisterLineParser
@@ -1839,32 +1838,32 @@ class REMARK(BaseRecord):
             Initialize by parsing line
         """
         super(REMARK, self).__init__(line)
-        self.remarkNum = int(string.strip(line[7:10]))
+        self.remarkNum = int(str.strip(line[7:10]))
         self.remarkDict = {}
 
         if self.remarkNum == 1:
-            subfield = string.strip(line[11:20])
+            subfield = str.strip(line[11:20])
             if subfield == "REFERENCE":
-                self.remarkDict["refNum"] = int(string.strip(line[21:70]))
+                self.remarkDict["refNum"] = int(str.strip(line[21:70]))
             elif subfield == "AUTH":
-                self.remarkDict["authorList"] = string.strip(line[19:70])
+                self.remarkDict["authorList"] = str.strip(line[19:70])
             elif subfield == "TITL":
-                self.remarkDict["title"] = string.strip(line[19:70])
+                self.remarkDict["title"] = str.strip(line[19:70])
             elif subfield == "EDIT":
-                self.remarkDict["editorList"] = string.strip(line[19:70])
+                self.remarkDict["editorList"] = str.strip(line[19:70])
             elif subfield == "REF":
-                self.remarkDict["ref"] = string.strip(line[19:66])
+                self.remarkDict["ref"] = str.strip(line[19:66])
             elif subfield == "PUBL":
-                self.remarkDict["pub"] = string.strip(line[19:70])
+                self.remarkDict["pub"] = str.strip(line[19:70])
             elif subfield == "REFN":
-                self.remarkDict["refn"] = string.strip(line[19:70])
+                self.remarkDict["refn"] = str.strip(line[19:70])
         elif self.remarkNum == 2:
-            restr = string.strip(line[22:27])
+            restr = str.strip(line[22:27])
             try:  self.remarkDict["resolution"] = float(restr)
             except ValueError:
-                self.remarkDict["comment"] = string.strip(line[11:70])
+                self.remarkDict["comment"] = str.strip(line[11:70])
         else:
-            self.remarkDict["text"] = string.strip(line[11:70])
+            self.remarkDict["text"] = str.strip(line[11:70])
 
 
 
@@ -1889,7 +1888,7 @@ class JRNL(BaseRecord):
         """
         super(JRNL, self).__init__(line)
         #TODO: What is this mess?
-        self.text = string.strip(line[12:70])
+        self.text = str.strip(line[12:70])
 
 @RegisterLineParser
 class SPRSDE(BaseRecord):
@@ -1920,17 +1919,17 @@ class SPRSDE(BaseRecord):
             67-70    string sIdCode    ID code of a superseded entry.
         """
         super(SPRSDE, self).__init__(line)
-        self.sprsdeDate = string.strip(line[11:20])
-        self.idCode = string.strip(line[21:25])
+        self.sprsdeDate = str.strip(line[11:20])
+        self.idCode = str.strip(line[21:25])
         self.sIdCodes = []
-        self.sIdCodes.append(string.strip(line[31:35]))
-        self.sIdCodes.append(string.strip(line[36:40]))
-        self.sIdCodes.append(string.strip(line[41:45]))
-        self.sIdCodes.append(string.strip(line[46:50]))
-        self.sIdCodes.append(string.strip(line[51:55]))
-        self.sIdCodes.append(string.strip(line[56:60]))
-        self.sIdCodes.append(string.strip(line[61:65]))
-        self.sIdCodes.append(string.strip(line[66:70]))
+        self.sIdCodes.append(str.strip(line[31:35]))
+        self.sIdCodes.append(str.strip(line[36:40]))
+        self.sIdCodes.append(str.strip(line[41:45]))
+        self.sIdCodes.append(str.strip(line[46:50]))
+        self.sIdCodes.append(str.strip(line[51:55]))
+        self.sIdCodes.append(str.strip(line[56:60]))
+        self.sIdCodes.append(str.strip(line[61:65]))
+        self.sIdCodes.append(str.strip(line[66:70]))
 
 @RegisterLineParser
 class REVDAT(BaseRecord):
@@ -1963,15 +1962,15 @@ class REVDAT(BaseRecord):
             61-66    string record  Name of the modified record.
         """
         super(REVDAT, self).__init__(line)
-        self.modNum = int(string.strip(line[7:10]))
-        self.modDate = string.strip(line[13:22])
-        self.modId = string.strip(line[23:28])
-        self.modType = int(string.strip(line[31]))
+        self.modNum = int(str.strip(line[7:10]))
+        self.modDate = str.strip(line[13:22])
+        self.modId = str.strip(line[23:28])
+        self.modType = int(str.strip(line[31]))
         self.records = []
-        self.records.append(string.strip(line[39:45]))
-        self.records.append(string.strip(line[46:52]))
-        self.records.append(string.strip(line[53:59]))
-        self.records.append(string.strip(line[60:66]))
+        self.records.append(str.strip(line[39:45]))
+        self.records.append(str.strip(line[46:52]))
+        self.records.append(str.strip(line[53:59]))
+        self.records.append(str.strip(line[60:66]))
 
 @RegisterLineParser
 class AUTHOR(BaseRecord):
@@ -1991,7 +1990,7 @@ class AUTHOR(BaseRecord):
                                        commas
         """
         super(AUTHOR, self).__init__(line)
-        self.authorList = string.strip(line[10:70])
+        self.authorList = str.strip(line[10:70])
 
 @RegisterLineParser
 class EXPDTA(BaseRecord):
@@ -2021,7 +2020,7 @@ class EXPDTA(BaseRecord):
                                       or experiment
         """
         super(EXPDTA, self).__init__(line)
-        self.technique = string.strip(line[10:70])
+        self.technique = str.strip(line[10:70])
 
 @RegisterLineParser
 class KEYWDS(BaseRecord):
@@ -2045,7 +2044,7 @@ class KEYWDS(BaseRecord):
                                     to the entry
         """
         super(KEYWDS, self).__init__(line)
-        self.keywds = string.strip(line[10:70])
+        self.keywds = str.strip(line[10:70])
 
 @RegisterLineParser
 class SOURCE(BaseRecord):
@@ -2068,7 +2067,7 @@ class SOURCE(BaseRecord):
                                     in a token: value format
         """
         super(SOURCE, self).__init__(line)
-        self.source = string.strip(line[10:70])
+        self.source = str.strip(line[10:70])
 
 @RegisterLineParser
 class COMPND(BaseRecord):
@@ -2096,7 +2095,7 @@ class COMPND(BaseRecord):
                                      components.
         """
         super(COMPND, self).__init__(line)
-        self.compound = string.strip(line[10:70])
+        self.compound = str.strip(line[10:70])
 
 @RegisterLineParser
 class CAVEAT(BaseRecord):
@@ -2117,8 +2116,8 @@ class CAVEAT(BaseRecord):
                                     CAVEAT.
         """
         super(CAVEAT, self).__init__(line)
-        self.idCode = string.strip(line[11:15])
-        self.comment = string.strip(line[19:70])
+        self.idCode = str.strip(line[11:15])
+        self.comment = str.strip(line[19:70])
 
 @RegisterLineParser
 class TITLE(BaseRecord):
@@ -2138,7 +2137,7 @@ class TITLE(BaseRecord):
             11-70    string title  Title of the experiment
         """
         super(TITLE, self).__init__(line)
-        self.title = string.strip(line[10:70])
+        self.title = str.strip(line[10:70])
 
 @RegisterLineParser
 class OBSLTE(BaseRecord):
@@ -2178,17 +2177,17 @@ class OBSLTE(BaseRecord):
                                     this one.
         """
         super(OBSLTE, self).__init__(line)
-        self.repDate = string.strip(line[11:20])
-        self.idCode = string.strip(line[21:25])
+        self.repDate = str.strip(line[11:20])
+        self.idCode = str.strip(line[21:25])
         self.rIdCodes = []
-        self.rIdCodes.append(string.strip(line[31:35]))
-        self.rIdCodes.append(string.strip(line[36:40]))
-        self.rIdCodes.append(string.strip(line[41:45]))
-        self.rIdCodes.append(string.strip(line[46:50]))
-        self.rIdCodes.append(string.strip(line[51:55]))
-        self.rIdCodes.append(string.strip(line[56:60]))
-        self.rIdCodes.append(string.strip(line[61:65]))
-        self.rIdCodes.append(string.strip(line[67:70]))
+        self.rIdCodes.append(str.strip(line[31:35]))
+        self.rIdCodes.append(str.strip(line[36:40]))
+        self.rIdCodes.append(str.strip(line[41:45]))
+        self.rIdCodes.append(str.strip(line[46:50]))
+        self.rIdCodes.append(str.strip(line[51:55]))
+        self.rIdCodes.append(str.strip(line[56:60]))
+        self.rIdCodes.append(str.strip(line[61:65]))
+        self.rIdCodes.append(str.strip(line[67:70]))
 
 @RegisterLineParser
 class HEADER(BaseRecord):
@@ -2212,9 +2211,9 @@ class HEADER(BaseRecord):
            63-66    string idCode         This identifier is unique within PDB
         """
         super(HEADER, self).__init__(line)
-        self.classification = string.strip(line[10:50])
-        self.depDate = string.strip(line[50:59])
-        self.IDcode = string.strip(line[62:66])
+        self.classification = str.strip(line[10:50])
+        self.depDate = str.strip(line[50:59])
+        self.IDcode = str.strip(line[62:66])
 
 def readAtom(line):
     """
@@ -2225,22 +2224,22 @@ def readAtom(line):
         Parameters
             line:  The line to parse(string)
        if record == ATOM:
-            self.serial = int(string.strip(line[6:11]))
-            self.name = string.strip(line[12:16])
-            self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
-            self.chainID = string.strip(line[21])
-            self.resSeq = int(string.strip(line[22:26]))
-            self.iCode = string.strip(line[26])
-            self.x = float(string.strip(line[30:38]))
-            self.y = float(string.strip(line[38:46]))
-            self.z = float(string.strip(line[46:54]))
+            self.serial = int(str.strip(line[6:11]))
+            self.name = str.strip(line[12:16])
+            self.altLoc = str.strip(line[16])
+            self.resName = str.strip(line[17:20])
+            self.chainID = str.strip(line[21])
+            self.resSeq = int(str.strip(line[22:26]))
+            self.iCode = str.strip(line[26])
+            self.x = float(str.strip(line[30:38]))
+            self.y = float(str.strip(line[38:46]))
+            self.z = float(str.strip(line[46:54]))
             try:
-                self.occupancy = float(string.strip(line[54:60]))
-                self.tempFactor = float(string.strip(line[60:66]))
-                self.segID = string.strip(line[72:76])
-                self.element = string.strip(line[76:78])
-                self.charge = string.strip(line[78:80])
+                self.occupancy = float(str.strip(line[54:60]))
+                self.tempFactor = float(str.strip(line[60:66]))
+                self.segID = str.strip(line[72:76])
+                self.element = str.strip(line[76:78])
+                self.charge = str.strip(line[78:80])
             except ValueError, IndexError:
                 self.occupancy = 0.00
                 self.tempFactor = 0.00
@@ -2251,7 +2250,7 @@ def readAtom(line):
     """
 
     # Try to find 5 consecutive floats
-    words = string.split(line)
+    words = str.split(line)
     size = len(words) - 1
     consec = 0
     for i in range(size):
@@ -2264,15 +2263,15 @@ def readAtom(line):
         except ValueError:
             consec = 0
 
-    record = string.strip(line[0:6])
+    record = str.strip(line[0:6])
     newline = line[0:22]
-    newline = newline + string.rjust(words[size-i-1],4)
-    newline = newline + string.rjust("",3)
-    newline = newline + string.rjust(words[size-i],8)
-    newline = newline + string.rjust(words[size-i+1],8)
-    newline = newline + string.rjust(words[size-i+2],8)
-    newline = newline + string.rjust(words[size-i+3],6)
-    newline = newline + string.rjust(words[size-i+4],6)
+    newline = newline + str.rjust(words[size-i-1],4)
+    newline = newline + str.rjust("",3)
+    newline = newline + str.rjust(words[size-i],8)
+    newline = newline + str.rjust(words[size-i+1],8)
+    newline = newline + str.rjust(words[size-i+2],8)
+    newline = newline + str.rjust(words[size-i+3],6)
+    newline = newline + str.rjust(words[size-i+4],6)
     klass = lineParsers[record]
     obj = klass(newline)
     return obj
@@ -2294,14 +2293,14 @@ def readPDB(file):
         return pdblist, errlist
 
     while 1:
-        line = string.strip(file.readline())
+        line = file.readline().strip()
         if line == '':
             break
 
         # We assume we have a method for each PDB record and can therefore
         # parse them automatically
         try:
-            record = string.strip(line[0:6])
+            record = line[0:6].strip()
             if record not in errlist:
                 klass = lineParsers[record]
                 obj = klass(line)
@@ -2309,24 +2308,24 @@ def readPDB(file):
         except KeyError as details:
             errlist.append(record)
             sys.stderr.write("Error parsing line: %s\n" % details)
-            sys.stderr.write("<%s>\n" % string.strip(line))
+            sys.stderr.write("<%s>\n" % line.strip())
             sys.stderr.write("Truncating remaining errors for record type:%s\n" % record)
-        except StandardError as details:
+        except Exception as details:
             if record == "ATOM" or record == "HETATM":
                 try:
                     obj = readAtom(line)
                     pdblist.append(obj)
-                except StandardError, details:
+                except Exception as details:
                     sys.stderr.write("Error parsing line: %s\n" % details)
-                    sys.stderr.write("<%s>\n" % string.strip(line))
+                    sys.stderr.write("<%s>\n" % line.strip())
             elif record == "SITE" or record == "TURN":
                 pass
             elif record == "SSBOND" or record == "LINK":
                 sys.stderr.write("Warning -- ignoring record: \n")
-                sys.stderr.write("<%s>\n" % string.strip(line))
+                sys.stderr.write("<%s>\n" % line.strip())
             else:
                 sys.stderr.write("Error parsing line: %s\n" % details)
-                sys.stderr.write("<%s>\n" % string.strip(line))
+                sys.stderr.write("<%s>\n" % line.strip())
 
     return pdblist, errlist
 
@@ -2340,11 +2339,11 @@ def getRandom():
 
     URL = "ftp://ftp.rcsb.org/pub/pdb/data/structures/all/pdb/"
     pdblines = os.popen("ncftpls %s" % URL).readlines()
-    pdbline = string.join(pdblines)
-    pdbline = string.replace(pdbline, "\n", "")
-    pdbline = string.replace(pdbline, "@", "")
-    pdbline = string.strip(pdbline)
-    pdblist = string.split(pdbline)
+    pdbline = str.join(pdblines)
+    pdbline = str.replace(pdbline, "\n", "")
+    pdbline = str.replace(pdbline, "@", "")
+    pdbline = str.strip(pdbline)
+    pdblist = str.split(pdbline)
     pdbZ = random.choice(pdblist)
     os.popen("ncftpget %s/%s" % (URL, pdbZ))
     os.popen("uncompress %s" % pdbZ)

@@ -161,7 +161,7 @@ def checkprogress(jobid=None,appServicePort=None,calctype=None):
         file = open('%s%s%s/%s_status' % (INSTALLDIR,TMPDIR,jobid, form["calctype"].value))
 
         for line in file.readlines():
-            progress.append(string.strip(line))
+            progress.append(line.strip())
         file.close()
         return progress
 

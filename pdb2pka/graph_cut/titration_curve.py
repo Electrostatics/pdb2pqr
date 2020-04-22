@@ -1,10 +1,17 @@
 from __future__ import print_function
-from graph import ProteinGraph
-from uncertainty import resolve_uncertainty
+import sys
+
+if(sys.version_info >= (3,0)):
+    from .graph import ProteinGraph
+    from .uncertainty import resolve_uncertainty
+else:
+    from graph import ProteinGraph
+    from uncertainty import resolve_uncertainty
+    
 from collections import defaultdict
 import math
 from pprint import pprint
-import sys
+
 
 # Use the number for R from https://en.wikipedia.org/wiki/Gas_constant
 gas_constant = 8.3144621

@@ -12,7 +12,7 @@ import sys
 #try:
 import os
 
-from pKa_utility_functions_compat import *
+from .pKa_utility_functions_compat import *
 
 class pKaIO:
 
@@ -95,10 +95,10 @@ class pKaIO:
             filename=self.pkafile
         import string
         if not filename:
-            print filename,'is not a filename'
+            print(filename,'is not a filename')
             os._exit(0)
         if not os.path.isfile(filename):
-            raise 'File does not exist:',filename
+            raise('File does not exist:',filename)
         fd=open(filename)
         lines=fd.readlines()
         fd.close()
@@ -112,7 +112,7 @@ class pKaIO:
         else:
             raise ValueError('Unknown format')
         if string.lower(string.strip(lines[1]))!=string.lower('Format 1.0'):
-            raise 'unknown format: ',lines[1]
+            raise('unknown format: ',lines[1])
         # Next line is text
         linenumber=3
         pKa={}
@@ -253,7 +253,10 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        newgroupkeys.sort()
+        if(sys.version_info >= (3,0)):
+            newgroupkeys = sorted(newgroupkeys)
+        else:
+            newgroupkeys.sort()
         groups = []
         for k in newgroupkeys:
             groups.append(k[1])
@@ -263,7 +266,12 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if data.has_key(group):
+            if(sys.version_info >= (3,0)):
+                hk = group in data;
+            else:
+                hk = data.has_key(group);
+            #if data.has_key(group):
+            if hk:
                 this_data=data[group]
                 fd.write('%15s      %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  \n' %(self.WI_res_text(group,format),
                                                                                     this_data['pKa'],
@@ -276,7 +284,7 @@ class pKaIO:
         fd.write('End of file\n')
         fd.close()
         return
-                         
+
     #
     # -------------------------------
     #
@@ -295,7 +303,7 @@ class pKaIO:
             filename=self.titcurvfile
         import string
         if not os.path.isfile(filename):
-            raise 'File does not exist:',filename
+            raise('File does not exist:',filename)
         fd=open(filename)
         lines=fd.readlines()
         fd.close()
@@ -307,9 +315,9 @@ class pKaIO:
         elif string.lower(string.strip(lines[0]))==string.lower('pdb2pka Titration Curve File'):
             format='pdb2pka'
         else:
-            raise 'Unknown format'
+            raise('Unknown format')
         if string.lower(string.strip(lines[1]))!=string.lower('Format 1.0'):
-            raise 'unknown format: ',lines[1]
+            raise('unknown format: ',lines[1])
         phvals=string.split(lines[2])
         phstart=string.atof(phvals[0])
         phend=string.atof(phvals[1])
@@ -363,30 +371,44 @@ class pKaIO:
         #
         residues=data.keys()
         phvals=data[residues[0]].keys()
-        phvals.sort()
+        if(sys.version_info >= (3,0)):
+            phvals = sorted(phvals);
+        else:
+            phvals.sort()
         for residue in residues:
             newpHvals=data[residue].keys()
-            newpHvals.sort()
+            if(sys.version_info >= (3,0)):
+                newpHvals = sorted(newpHvals)
+            else:
+                newpHvals.sort()
             if newpHvals!=phvals:
-                print phvals
-                print newpHvals
-                raise 'Dictionary does not contain identical pH values'
+                print(phvals)
+                print(newpHvals)
+                raise('Dictionary does not contain identical pH values')
         #
         # Check that a pKa value is in the pH values
         #
         for residue in residues:
-            if not data[residue].has_key('pKa'):
+            if(sys.version_info >= (3,0)):
+                hk = not 'pKa' in data[residue]
+            else:
+                hk = not data[residue].has_key('pKa')
+            #if not data[residue].has_key('pKa'):
+            if hk:
                 #print 'No pKa value found. Setting to zero!! - Jens change this!!'
                 data[residue]['pKa']=0.0
         #
         # Find the pH-start, stop and step
         #
         phvals=data[residues[0]].keys()
-        phvals.sort()
+        if(sys.version_info >= (3,0)):
+            phvals = sorted(phvals)
+        else:
+            phvals.sort()
         phstart=phvals[0]
         phstop=phvals[-2]
         phstep=phvals[1]-phstart
-        
+
         fd=open(filename,'w')
         #
         # Write header
@@ -404,7 +426,10 @@ class pKaIO:
             newr = r.split('_')[2]
             newresidue[int(newr),r]=r
         newresiduekeys = newresidue.keys()
-        newresiduekeys.sort()
+        if(sys.version_info >= (3,0)):
+            newresiduekeys = sorted(newresiduekeys)
+        else:
+            newresiduekeys.sort()
         residues = []
         for k in newresiduekeys:
             residues.append(k[1])
@@ -439,11 +464,11 @@ class pKaIO:
             if self.matrix_file:
                 filename=self.matrix_file
             else:
-                raise 'No matrix filename given'
+                raise('No matrix filename given')
         #
         import os, string
         if not os.path.isfile(filename):
-            raise "File not found",filename
+            raise("File not found",filename)
         fd=open(filename)
         lines=fd.readlines()
         fd.close()
@@ -459,9 +484,9 @@ class pKaIO:
         elif string.lower(string.strip(lines[0]))==string.lower('pdb2pka Interaction Matrix File'):
             format='WHAT IF'
         else:
-            raise 'Unknown format'
+            raise('Unknown format')
         if not string.strip(lines[1])=='Format 1.0':
-            raise 'Wrong format',lines[1]
+            raise('Wrong format',lines[1])
         x=1
         done=None
         partners=None
@@ -500,7 +525,7 @@ class pKaIO:
                     partners=np
                 else:
                     if partners!=np:
-                        raise 'Number of partners changes:',np
+                        raise('Number of partners changes:',np)
                 self.matrix[resid]={}
                 #
                 # Now read all the interactions with the partners
@@ -578,7 +603,10 @@ class pKaIO:
         fd.write('%s Interaction Matrix File\n' %format)
         fd.write('Format 1.0\n')
         groups=self.matrix.keys()
-        groups.sort()
+        if(sys.version_info >= (3,0)):
+            groups = sorted(groups)
+        else:
+            groups.sort()
 
         num_groups=len(groups)
         count=0
@@ -595,7 +623,10 @@ class pKaIO:
             newg = g.split('_')[2]
             newnewgroup[int(newg),g]=g
         newnewgroupkeys = newnewgroup.keys()
-        newnewgroupkeys.sort()
+        if(sys.version_info >= (3,0)):
+            newnewgroupkeys = sorted(newnewgroupkeys)
+        else:
+            newnewgroupkeys.sort()
         newgroups = []
         for k in newnewgroupkeys:
             newgroups.append(k[1])
@@ -605,19 +636,30 @@ class pKaIO:
         # ---------
         #
         for group in newgroups:
-            if self.matrix.has_key(group):
+            if(sys.version_info >= (3,0)):
+                hk0 = group in self.matrix
+                hk1 = 'T'+group in self.matrix
+                hk2 = 'T'+group in self.matrix and not 'T'+group in written
+            else:
+                hk0 = self.matrix.has_key(group)
+                hk1 = self.matrix.has_key('T'+group)
+                hk2 = self.matrix.has_key('T'+group) and not written.has_key('T'+group)
+            #if self.matrix.has_key(group):
+            if hk0:
                 fd.write('%s      %7.4f\n' %(self.WI_res_text(group,format),float(num_groups)))
                 self.write_section(group,fd,format)
                 written[group]=1
                 #
                 # Is there a terminal group associated with this residue?
                 #
-                if self.matrix.has_key('T'+group):
+                #if self.matrix.has_key('T'+group):
+                if hk1:
                     fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group),float(num_groups)))
                     self.write_section('T'+group,fd,format)
                     written['T'+group]=1
             else:
-                if self.matrix.has_key('T'+group) and not written.has_key('T'+group):
+                #if self.matrix.has_key('T'+group) and not written.has_key('T'+group):
+                if hk2:
                     fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group,format),float(num_groups)))
                     self.write_section('T'+group,fd,format)
                     written['T'+group]=1
@@ -638,11 +680,18 @@ class pKaIO:
                 for state1 in matrix[group1][tit1].keys():
                     sub_m=matrix[group1][tit1][state1]
                     for group2 in sub_m.keys():
-                        if not self.matrix[group1.uniqueid].has_key(group2.uniqueid):
-                            self.matrix[group1.uniqueid][group2.uniqueid]=[]
-                        for tit2 in sub_m[group2].keys():
-                            for state2 in sub_m[group2][tit2].keys():
-                                self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
+                        if(sys.version_info >= (3,0)):
+                            if not group2.uniqueid in self.matrix[group1.uniqueid]:
+                                self.matrix[group1.uniqueid][group2.uniqueid]=[]
+                            for tit2 in sub_m[group2].keys():
+                                for state2 in sub_m[group2][tit2].keys():
+                                    self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
+                        else:
+                            if not self.matrix[group1.uniqueid].has_key(group2.uniqueid):
+                                self.matrix[group1.uniqueid][group2.uniqueid]=[]
+                            for tit2 in sub_m[group2].keys():
+                                for state2 in sub_m[group2][tit2].keys():
+                                    self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
         for group1 in self.matrix.keys():
             for group2 in self.matrix[group1].keys():
                 sum=0.0
@@ -651,7 +700,7 @@ class pKaIO:
                 self.matrix[group1][group2]=[sum,0.0,0.0,0.0]
         self.write_matrix(filename,format='pdb2pka')
         return
-   
+
     #
     # ------------------------
     #
@@ -671,29 +720,43 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        newgroupkeys.sort()
+        if(sys.version_info >= (3,0)):
+            newgroupkeys = sorted(newgroupkeys)
+        else:
+            newgroupkeys.sort()
         groups2 = []
         for k in newgroupkeys:
             groups2.append(k[1])
 
         written={}
         for group2 in groups2:
-            if self.matrix[group].has_key(group2):
+            if(sys.version_info >= (3,0)):
+                hk0 = group2 in self.matrix[group]
+                hk1 = 'T'+group2 in self.matrix[group]
+                hk2 = 'T'+group2 in self.matrix[group] and 'T'+group2 not in written
+            else:
+                hk0 = self.matrix[group].has_key(group2)
+                hk1 = self.matrix[group].has_key('T'+group2)
+                hk2 = self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2)
+            #if self.matrix[group].has_key(group2):
+            if hk0:
                 fd.write('%s      %7.4f\n' %(self.WI_res_text(group2,format),self.matrix[group][group2][0]))
                 fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2][1],self.matrix[group][group2][2],self.matrix[group][group2][3]))
                 written[group2]=1
                 #
                 # Is there a terminal group associated with this residue?
                 #
-                if self.matrix[group].has_key('T'+group2):
+                #if self.matrix[group].has_key('T'+group2):
+                if hk1:
                     fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group2,format),self.matrix[group]['T'+group2][0]))
                     fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group]['T'+group2][1],self.matrix[group]['T'+group2][2],self.matrix[group]['T'+group2][3]))
                     written['T'+group2]=1
             else:
-                if self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2):
+                #if self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2):
+                if hk2:
                     fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group2,format),self.matrix[group]['T'+group2][0]))
                     fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group]['T'+group2][1],self.matrix[group]['T'+group2][2],self.matrix[group]['T'+group2][3]))
-                    written['T'+group2]=1 
+                    written['T'+group2]=1
         fd.write('--------------------------------------------\n')
         return
 
@@ -706,14 +769,14 @@ class pKaIO:
             if self.desolv_file:
                 filename=self.desolv_file
             else:
-                raise 'No desolv filename given'
+                raise('No desolv filename given')
         #
         #
         # This subroutine reads a DESOLV file
         #
         import os, string
         if not os.path.isfile(filename):
-            raise "File not found",filename
+            raise("File not found",filename)
         fd=open(filename)
         lines=fd.readlines()
         fd.close()
@@ -729,13 +792,13 @@ class pKaIO:
         elif string.strip(lines[0])=='pdb2pka Desolvation Energy File':
             format='pdb2pka'
         else:
-            raise Exception,'Unknown format:'+string.strip(lines[0])
+            raise(Exception,'Unknown format:'+string.strip(lines[0]))
         #
         # Call the generic read routine
         #
         self.read_WIfile(lines,self.desolv,format)
         return self.desolv
-    
+
     #
     # -----------------------------
     #
@@ -748,11 +811,11 @@ class pKaIO:
             if self.backgr_file:
                 filename=self.backgr_file
             else:
-                raise 'No matrix filename given'
+                raise('No matrix filename given')
         #
         import os, string
         if not os.path.isfile(filename):
-            raise "File not found",filename
+            raise("File not found",filename)
         fd=open(filename)
         lines=fd.readlines()
         fd.close()
@@ -768,7 +831,7 @@ class pKaIO:
         elif string.strip(lines[0])=='pdb2pka Background Energy File':
             format='pdb2pka'
         else:
-            raise Exception,'Unknown format:'+string.strip(lines[0])
+            raise (Exception,'Unknown format:'+string.strip(lines[0]))
         #
         # Call the generic read routine
         #
@@ -837,7 +900,10 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        newgroupkeys.sort()
+        if(sys.version_info >= (3,0)):
+            newgroupkeys = sorted(newgroupkeys)
+        else:
+            newgroupkeys.sort()
         groups = []
         for k in newgroupkeys:
             groups.append(k[1])
@@ -846,7 +912,12 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if self.desolv.has_key(group):
+            if(sys.version_info >= (3,0)):
+                hk = group in self.desolv
+            else:
+                hk = self.desolv.has_key(group)
+            #if self.desolv.has_key(group):
+            if hk:
                 fd.write('%s      %7.4f\n' %(self.WI_res_text(group,format),float(self.desolv[group])))
                 written[group]=1
         fd.write('End of file\n')
@@ -870,7 +941,10 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        newgroupkeys.sort()
+        if(sys.version_info >= (3,0)):
+            newgroupkeys = sorted(newgroupkeys)
+        else:
+            newgroupkeys.sort()
         groups = []
         for k in newgroupkeys:
             groups.append(k[1])
@@ -879,7 +953,12 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if self.backgr.has_key(group):
+            if(sys.version_info >= (3,0)):
+                hk = group in self.backgr
+            else:
+                hk = self.backgr.has_key(group)
+            #if self.backgr.has_key(group):
+            if hk:
                 fd.write('%s      %7.4f\n' %(self.WI_res_text(group,format),float(self.backgr[group])))
                 written[group]=1
         fd.write('End of file\n')
@@ -955,4 +1034,4 @@ class pKaIO:
                 line='TERMINAL GROUP:\n'+line
             return line
         else:
-            raise Exception,'Unknown format:'+format
+            raise (Exception,'Unknown format:'+format)

@@ -64,10 +64,10 @@ __date__ = "21 April 2007"
 __author__ = "Todd Dolinsky, Nathan Baker, Yong Huang"
 
 import string, sys
-import psize
+from . import psize
 import pickle
 import os.path
-import utilities
+from . import utilities
 
 class Elec:
     """
@@ -102,7 +102,7 @@ class Elec:
         self.label = ""
         self.nlev = 4
         self.ofrac = 0.1
-        self.async = 0
+        self._async = 0
         self.asyncflag = asyncflag
         self.cgcent = "mol 1"
         self.fgcent = "mol 1"
@@ -152,7 +152,7 @@ class Elec:
             text += "    cgcent %s\n" % self.cgcent
             text += "    fgcent %s\n" % self.fgcent
             if self.asyncflag == 1:
-                text += "    async %i\n" % self.async
+                text += "    async %i\n" % self._async
         text += "    mol %i\n" % self.mol
         if self.lpbe: text += "    lpbe\n"
         else: text += "    npbe\n"
@@ -261,7 +261,7 @@ class Input:
                 outname = base_pqr_name + "-PE%i.in" % i
                 for elec in self.elecs:
                     elec.asyncflag = 1
-                    elec.async = i
+                    elec._async = i
                 file = open(outname, "w")
                 file.write(str(self))
                 file.close()
@@ -298,7 +298,7 @@ def splitInput(filename):
         line = file.readline()
         if line == "": break
         text += line
-        line = string.strip(line)
+        line = line.strip()
         if line.startswith("pdime"): # Get # Procs
             words = string.split(line)
             nproc = int(words[1]) * int(words[2]) * int(words[3])
@@ -368,7 +368,7 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
-    except getopt.GetoptError, details:
+    except getopt.GetoptError as details:
         sys.stderr.write("Option error (%s)!\n" % details)
         usage()
         
@@ -380,7 +380,7 @@ def main():
 
     method = ""
     size = psize.Psize()
-    async = 0
+    _async = 0
     split = 0
     istrng = 0
     potdx = 0
@@ -400,7 +400,7 @@ def main():
             elif a == "async":
                 sys.stdout.write("Forcing an asynchronous calculation\n")
                 method = "mg-para"
-                async = 1
+                _async = 1
             elif a == "manual":
                 sys.stdout.write("Forcing a manual calculation\n")
                 method = "mg-manual"
@@ -426,7 +426,7 @@ def main():
         splitInput(filename)
     else:
         size.runPsize(filename)
-        input = Input(filename, size, method, async, istrng, potdx)
+        input = Input(filename, size, method, _async, istrng, potdx)
         input.printInputFiles()
 
 if __name__ == "__main__": main()

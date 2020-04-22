@@ -47,11 +47,11 @@ import os
 import string
 import math
 
-from definitions import *
-from utilities import *
-from quatfit import *
-from routines import *
-import topology
+from .definitions import *
+from .utilities import *
+from .quatfit import *
+from .routines import *
+from . import topology
 
 __date__ = "22 April 2009"
 __author__ = "Todd Dolinsky, Jens Erik Nielsen, Yong Huang"
@@ -219,7 +219,7 @@ class Optimize:
         """
             Easy way to turn on/off debugging
         """
-        if HDEBUG: print txt
+        if HDEBUG: print(txt)
 
     @staticmethod
     def getHbondangle(atom1, atom2, atom3):
@@ -966,6 +966,10 @@ class Flip(Optimize):
         
         flag = 0
         if bondatom.name.endswith("FLIP"): flag = 1
+
+        self.debug("fixFlip called for residue {:s}, bondatom {:s} and flag {:d}"
+                   .format(str(residue),str(bondatom),flag))
+        residue.wasFlipped = (flag == 0)
      
         # Delete the appropriate atoms
         
@@ -1035,7 +1039,7 @@ class Alcoholic(Optimize):
         self.atomlist = []
         self.hbonds = []
 
-        name = optinstance.map.keys()[0]
+        name = list(optinstance.map.keys())[0]
         self.hname = name
         
         bondname = residue.reference.getAtom(name).bonds[0]
@@ -1595,7 +1599,7 @@ class Carboxylic(Optimize):
 
         hname2 = ""
         hname1 = ""
-        for name in optinstance.map.keys():
+        for name in list(optinstance.map.keys()):
             if name.endswith("2"): hname2 = name
             else: hname1 = name
 
@@ -1902,7 +1906,7 @@ class Carboxylic(Optimize):
         optinstance = self.optinstance        
 
         # No need to rename if hydatom is not in residue.map
-        if hydatom.name not in residue.map.keys():
+        if hydatom.name not in list(residue.map.keys()):
             return
         # Take off the extension
         if len(hydatom.name) == 4:
@@ -1941,7 +1945,7 @@ class Carboxylic(Optimize):
                     pass
 
             if hydatom.name.endswith("1"):
-                if (hydatom.name[:-1] + "2") in residue.map.keys():
+                if (hydatom.name[:-1] + "2") in list(residue.map.keys()):
                     residue.removeAtom("%s2" % hydatom.name[:-1])
                 residue.renameAtom(hydatom.name, "%s2" % hydatom.name[:-1])
                 bondname0 = self.atomlist[0].name
@@ -2034,7 +2038,7 @@ class hydrogenRoutines:
             Parameters
                 text:  The text to output (string)
         """
-        if HDEBUG: print text  
+        if HDEBUG: print(text)  
 
     def switchstate(self, states, amb, stateID):
         """
@@ -2069,7 +2073,7 @@ class hydrogenRoutines:
             hname = conf.hname
             boundname = conf.boundatom
             if residue.getAtom(hname) != None:
-                print 'Removing',residue.name,residue.resSeq,hname
+                print('Removing',residue.name,residue.resSeq,hname)
                 residue.removeAtom(hname)
             residue.getAtom(boundname).hacceptor = 1
             residue.getAtom(boundname).hdonor = 0
@@ -2088,7 +2092,7 @@ class hydrogenRoutines:
         # Now build appropriate atoms
         state = states[stateID]
         for conf in state:
-            print conf
+            print(conf)
             refcoords = []
             defcoords = []
             defatomcoords = []
@@ -2274,7 +2278,7 @@ class hydrogenRoutines:
 
         if optinstance != None:
             if optinstance.opttype == "Alcoholic":
-                atomname = optinstance.map.keys()[0]
+                atomname = list(optinstance.map.keys())[0]
                 if not residue.reference.hasAtom(atomname):
                     optinstance = None
                    
@@ -2320,7 +2324,7 @@ class hydrogenRoutines:
         for residue in self.protein.getResidues():
             optinstance = self.isOptimizeable(residue)
             if isinstance(residue, Amino):
-                if False in residue.stateboolean.values():
+                if False in list(residue.stateboolean.values()):
                     residue.fixed = 1
                 else:
                     residue.fixed = 0 
@@ -2736,7 +2740,7 @@ class hydrogenRoutines:
             refatoms = ['OE1', 'CD', 'OE2']
         else:
             patchmap = self.routines.protein.patchmap[name]
-            atoms = patchmap.map.keys()
+            atoms = list(patchmap.map.keys())
             atoms.sort()
 
         if name in ['NTR']:

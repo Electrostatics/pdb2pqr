@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 #-------------------------------------------------------------------------------------------------------
 import math, sys
-import lib
+from . import lib
 pka_print = lib.pka_print
 
 

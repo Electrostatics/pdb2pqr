@@ -162,6 +162,7 @@ class CONECT(BaseRecord):
             57-61    int    serial10 Serial number of salt bridged    atom
         """
         super(CONECT, self).__init__(line)
+
         self.serial = int(string.strip(line[6:11]))
         try:  self.serial1 = int(string.strip(line[11:16]))
         except ValueError:  self.serial1 = None
@@ -415,7 +416,7 @@ class HETATM(BaseRecord):
 
             COLUMNS  TYPE   FIELD  DEFINITION
             ---------------------------------------------
-            7-11      int   serial        Atom serial number.
+            7-11      int   serial         Atom serial number.
             13-16     string name          Atom name.
             17        string altLoc        Alternate location indicator.
             18-20     string resName       Residue name.
@@ -726,6 +727,7 @@ class ATOM(BaseRecord):
             77-78     string element       Element symbol, right-justified.
             79-80     string charge        Charge on the atom.
         """
+
         super(ATOM, self).__init__(line)
         self.serial = int(string.strip(line[6:11]))
         self.name = string.strip(line[12:16])

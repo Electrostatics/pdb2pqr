@@ -1,3 +1,0 @@
-To walk through how this example works:
-  1.) wsdl2py -f ../binding.wsdl
-  2.) Examine client.py

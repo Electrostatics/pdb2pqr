@@ -1,3 +1,0 @@
-[console_scripts]
-wsdl2py = ZSI.generate.commands:wsdl2py
-

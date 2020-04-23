@@ -74,7 +74,7 @@ APBS_LOCATION = "@APBS_LOCATION@"
 HAVE_APBS = APBS_LOCATION != ""
 
 """ The APBS_OPAL_URL flag """
-EAPBS_OPAL_URL = "@APBS_OPAL_URL@"
+#APBS_OPAL_URL = "@APBS_OPAL_URL@"
 
 """ The installation directory """
 INSTALLDIR = "@INSTALLDIR@"

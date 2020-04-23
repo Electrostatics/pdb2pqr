@@ -228,7 +228,6 @@ class Protein:
                 outfilename:  The name of the file to write (string)
         """
         from .forcefield import Forcefield
-        from .aconf import STYLESHEET
 
         # Cache the initial atom numbers
         numcache = {}
@@ -243,7 +242,6 @@ class Protein:
         file.write("<HTML>\n")
         file.write("<HEAD>\n")
         file.write("<TITLE>PQR Typemap (beta)</TITLE>\n")
-        file.write("<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" % STYLESHEET)
         file.write("</HEAD>\n")
         file.write("<BODY>\n")
         file.write("<H3>This is a developmental page including the atom type for the atoms in the PQR file.</H3><P>\n")

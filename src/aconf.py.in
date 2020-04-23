@@ -58,23 +58,11 @@ MAXATOMS = @MAXATOMS@
 """ The path to the web site *directory* """
 #WEBSITE     = "@website@"
 
-""" The stylesheet to use """
-#STYLESHEET  = WEBSITE + "pdb2pqr.css"
-
-""" The OPAL service URL """
-#PDB2PQR_OPAL_URL = "@PDB2PQR_OPAL_URL@"
-
-""" The HAVE_PDB2PQR_OPAL flag """
-#HAVE_PDB2PQR_OPAL = PDB2PQR_OPAL_URL != ""
-
 """ The HAVE_APBS flag """
 APBS_LOCATION = "@APBS_LOCATION@"
 
 """ The HAVE_APBS flag """
 HAVE_APBS = APBS_LOCATION != ""
-
-""" The APBS_OPAL_URL flag """
-EAPBS_OPAL_URL = "@APBS_OPAL_URL@"
 
 """ The installation directory """
 INSTALLDIR = "@INSTALLDIR@"

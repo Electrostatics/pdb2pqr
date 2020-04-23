@@ -52,9 +52,6 @@ def installFile(file_name, build_target='install'):
 # installFile('contrib/ZSI-2.1-a1/Copyright')
 
 #ProPKA
-for file_name in getAllFiles('propka30/'):
-	installFile(file_name)
-
 for file_name in getAllFiles('propka/'):
 	installFile(file_name);
 

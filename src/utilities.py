@@ -50,7 +50,7 @@ SMALL = 1.0e-7
 DIHEDRAL = 57.2958
 
 import math
-import os
+import os, urllib.request
 from os.path import splitext
 import sys
 from .aconf import INSTALLDIR, TMPDIR
@@ -374,7 +374,7 @@ def getPDBFile(path):
     if not os.path.isfile(path):
         URLpath = "https://files.rcsb.org/download/" + path + ".pdb"
         try:
-            file = urllib.urlopen(URLpath)
+            file = urllib.request.urlopen(URLpath)
             if file.getcode() != 200 or 'nosuchfile' in file.geturl() :
                 raise IOError
         except IOError:

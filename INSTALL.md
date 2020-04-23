@@ -24,10 +24,7 @@ Instructions and examples for each setting are included in the file.
 These will override any setting in build_config.py.
 
 	PREFIX=<DIR>                	Set install directory. Default is ~/pdb2pqr
-	URL=<URL>              		Set url for the website.  Default http://<COMPUTER NAME>/pdb2pqr/
 	APBS=<APBS_BINARY>            Location of APBS binary.
-	OPAL=<OPAL_URL>	            Set URL for Opal service
-	APBS_OPAL=<APBS_OPAL_URL>		Set URL for APBS Opal service.
 	MAX_ATOMS=<MAX_ATOMS>			Sets the maximum number of atoms in a protein for non-Opal job submission. Only affects web tools. Default is 10000
 	BUILD_PDB2PKA=False           Disable pkb2pka compilation. Needed if no C++ compiler is installed or numpy is not installed. pdb2pka is required for ligand support.
 
@@ -38,7 +35,7 @@ The installation location is specified by the <code>PREFIX</code> setting above.
  	$ python scons/scons.py install
 
 ## Using pdb2pka
-If you are planning to invoke the flag, 
+If you are planning to invoke the flag,
 
 	--ph-calc-method=pdb2pka
 
@@ -49,12 +46,12 @@ pdb2pqr will be configured to use whichever python was used to run the build scr
 If you would like to use a different installed python to run pdb2pqr run the scons/scons.py script with that python.
 For example:
 
- 	$ /opt/python27/python scons/scons.py
+ 	$ /opt/python3/python scons/scons.py
 
 If ligand support is required Numpy must be installed on the python used to build pdb2pqr.
 
 ## Windows Support
-Compilation of pdb2pka on Windows requires that VS2008 or VS Express 2008 and Windows SDK 6.0A installed in the default location. MinGW is no longer supported.
+Compilation of pdb2pka on Windows requires that VS2008 or VS Express 2008 and Windows SDK 10.0A installed in the default location.
 
 ## Numpy
 If numpy cannot be installed directly on the python used to run pdb2pqr you can either install numpy for your local user account or use virtualenv. Homebrew may be an option on OSX.
@@ -75,9 +72,6 @@ in the root archive folder. The distributable program will be in the dist/pdb2pq
 
 Each supported platform has different needs when creating the binary build:
 
-### Windows
-On windows pywin32 is required.
-
 ### Linux
 The built binaries will dynamically link against the system standard libs.
 For this reason the Linux binaries should be built on an older system to increase compatibility if needed.
@@ -92,4 +86,3 @@ We officially support OSX 10.6 or newer.
 ##Documentation
 Please see the main documentation at doc/userguide.html for a complete
 look at installation, compiler/architecture support, and a general FAQ.
-

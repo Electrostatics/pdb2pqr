@@ -11,35 +11,11 @@
 
 #PREFIX="~/pdb2pqr"
 
-
-#Website URL
-#Sets the url of pdb2pqr's web interface.
-#This defaults to http://<COMPUTER NAME>/pdb2pqr/
-# where <COMPUTER NAME> is the network name of the computer.
-
-#URL="http://<COMPUTER NAME>/pdb2pqr/"
-
-
 #APBS binary
 #Change this to specify the location of the APBS binary if installed.
 #This is used for the web interface to pdb2pqr. Provide an absolute path. Relative paths and ~ usually will not work correctly.
 
 #APBS=""
-
-
-#OPAL service URL
-#Set this value to use an opal service for processing
-# pdb2pqr jobs for the web front end.
-
-#OPAL="http://nbcr-222.ucsd.edu/opal2/services/pdb2pqr_1.8"
-
-
-#APBS_OPAL service URL
-#Set this value to use an opal service for processing
-# apbs jobs for the web front end.
-
-#APBS_OPAL="http://nbcr-222.ucsd.edu/opal2/services/apbs_1.3"
-
 
 #MAX_ATOMS
 #Sets the maximum number of atoms in a protein for non-Opal job submission.

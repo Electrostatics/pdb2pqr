@@ -205,7 +205,7 @@ class Psize:
         zofac = 1 + 2 * self.constants["ofrac"]
         for i in range(3):
             self.np[i] = n[i]/float(nsmall[i])
-            if self.np[i] > 1: self.np[i] = int(zofac*n[1]/nsmall[i] + 1.0)
+            if self.np[i] > 1: self.np[i] = int(zofac*n[i]/nsmall[i] + 1.0)
         return self.np
                                                 
     def setFocus(self, flen, np, clen):

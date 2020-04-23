@@ -812,15 +812,12 @@ Please cite your use of PDB2PQR as:
     path = Path(args[0])
     pdbFile = getPDBFile(str(path))
 
-    if path.suffix.lower() == "pdb":
-        pdblist, errlist = readPDB(pdbFile)
-        isCIF = False
-    elif path.suffix.lower() == "cif":
+    isCIF = False
+    if path.suffix.lower() == "cif":
         pdblist, errlist = cif.readCIF(pdbFile)
         isCIF = True
     else:
-        errstr = "Unrecognized file extension: %s" % path.suffix
-        raise ValueError(errstr)
+        pdblist, errlist = readPDB(pdbFile)
 
     if len(pdblist) == 0 and len(errlist) == 0:
         parser.error("Unable to find file %s!" % path)

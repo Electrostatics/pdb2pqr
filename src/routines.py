@@ -1132,7 +1132,7 @@ class Routines:
         moveablenames = self.getMoveableNames(residue, pivot)
         for name in moveablenames:
             nearatoms = self.findNearbyAtoms(residue.getAtom(name))
-            for v in list(nearatoms.values()):
+            for v in nearatoms.values():
                 score += v
 
         return score

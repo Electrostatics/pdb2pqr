@@ -51,7 +51,7 @@ import string
 import os
 import sys
 import time
-from aconf import *
+from .aconf import *
 
 # GLOBAL SERVER VARIABLES
 

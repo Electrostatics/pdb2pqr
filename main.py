@@ -73,7 +73,7 @@ from src.aconf import *
 from io import StringIO
 from src.errors import PDB2PQRError
 
-__version__ = "FIXME"
+__version__ = PDB2PQR_VERSION
 
 import extensions
 

@@ -478,4 +478,3 @@ if __name__ == "__main__":
 
     print('Doing full pKa calculation')
     mypkaRoutines.runpKa()
-

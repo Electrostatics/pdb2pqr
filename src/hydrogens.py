@@ -1599,7 +1599,7 @@ class Carboxylic(Optimize):
 
         hname2 = ""
         hname1 = ""
-        for name in list(optinstance.map.keys()):
+        for name in optinstance.map.keys():
             if name.endswith("2"): hname2 = name
             else: hname1 = name
 
@@ -1906,7 +1906,7 @@ class Carboxylic(Optimize):
         optinstance = self.optinstance        
 
         # No need to rename if hydatom is not in residue.map
-        if hydatom.name not in list(residue.map.keys()):
+        if hydatom.name not in residue.map.keys():
             return
         # Take off the extension
         if len(hydatom.name) == 4:
@@ -1945,7 +1945,7 @@ class Carboxylic(Optimize):
                     pass
 
             if hydatom.name.endswith("1"):
-                if (hydatom.name[:-1] + "2") in list(residue.map.keys()):
+                if (hydatom.name[:-1] + "2") in residue.map.keys():
                     residue.removeAtom("%s2" % hydatom.name[:-1])
                 residue.renameAtom(hydatom.name, "%s2" % hydatom.name[:-1])
                 bondname0 = self.atomlist[0].name
@@ -2324,7 +2324,7 @@ class hydrogenRoutines:
         for residue in self.protein.getResidues():
             optinstance = self.isOptimizeable(residue)
             if isinstance(residue, Amino):
-                if False in list(residue.stateboolean.values()):
+                if False in residue.stateboolean.values():
                     residue.fixed = 1
                 else:
                     residue.fixed = 0 

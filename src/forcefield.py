@@ -776,7 +776,7 @@ class Forcefield:
             elif atomname == "C": atomname = "CY"
             elif atomname == "O": atomname = "OY"
         elif resname == "ADP":
-            atomname = string.replace(atomname,"*","\'")
+            atomname = atomname.replace("*","\'")
         elif resname == "NME":
             resname = "CT3"
             if atomname == "HH31": atomname = "HT1"

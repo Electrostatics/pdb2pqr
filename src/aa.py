@@ -50,7 +50,7 @@ __author__ = "Todd Dolinsky"
 
 import string
 from .structures import *
-from src.errors import PDBInputError
+from .errors import PDBInputError
 
 class Amino(Residue):
     """

@@ -412,7 +412,7 @@ def main():
     psize.runPsize(filename)
 
     stdout.write("# Constants used: \n");
-    for key in list(psize.constants.keys()):
+    for key in psize.constants.keys():
         stdout.write("# \t%s: %s\n" % (key, psize.constants[key]))
     stdout.write("# Run:\n")
     stdout.write("#    `%s --help`\n" % sys.argv[0])

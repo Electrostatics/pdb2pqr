@@ -10,7 +10,7 @@
     Parsing utilities provided by Nathan A. Baker (Nathan.Baker@pnl.gov)
     Pacific Northwest National Laboratory
 
-    Copyright (c) 2002-2020, Jens Erik Nielsen, University College Dublin; 
+    Copyright (c) 2002-2020, Jens Erik Nielsen, University College Dublin;
     Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
     Northwest National Laboratory, operated by Battelle Memorial Institute,
     Pacific Northwest Division for the U.S. Department Energy.;

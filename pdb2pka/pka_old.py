@@ -51,7 +51,7 @@ from src.pdb import *
 from src.utilities import *
 from src.structures import *
 from src.definitions import *
-from src.forcefield import *  
+from src.forcefield import *
 from src.routines import *
 from src.protein import *
 from src.server import *
@@ -86,7 +86,7 @@ def startpKa():
     print(" ")
     print('PDB2PQR pKa calculations')
     print(" ")
-    
+
     import optparse
     parser = optparse.OptionParser()
 
@@ -285,7 +285,7 @@ def pre_init(pdbfilename=None,
     # Add the ligand to the pdb2pqr arrays
     #
     Lig=None
-    MOL2FLAG = False 
+    MOL2FLAG = False
     if not options.ligand:
         dummydef = Definition()
         myProtein = Protein(pdblist, dummydef)
@@ -467,7 +467,7 @@ def pre_init(pdbfilename=None,
                     atom.secret_charge=atom.ffcharge
                     #
                     #
-                    
+
                 charge = residue.getCharge()
                 if abs(charge - round(charge)) > 0.01:
                     # Ligand parameterization failed
@@ -489,8 +489,8 @@ def pre_init(pdbfilename=None,
             templist = misslist[:]
             for atom in templist:
                 if isinstance(atom.residue, Amino) or isinstance(atom.residue, Nucleic): continue
-                misslist.remove(atom)                    
-    
+                misslist.remove(atom)
+
     if verbose:
         print("Created protein object (after processing myRoutines) -")
         print("\tNumber of residues in protein: %s" % myProtein.numResidues())
@@ -533,18 +533,18 @@ def pre_init(pdbfilename=None,
             sys.stderr.write ("Z dielectric map is missing\n")
             usage(2)
             sys.exit(0)
-        
+
         print('Setting dielectric function maps: %s, %s, %s'%(igen.xdiel,igen.ydiel,igen.zdiel))
-        
+
         if kappa:
             igen.kappa = kappa
         else:
             sys.stderr.write ("Mobile ion-accessibility map is missing\n")
             usage(2)
             sys.exit(0)
-            
+
         print('Setting mobile ion-accessibility function map to: ',igen.kappa)
-        
+
         if sd:
             xdiel_smooth, ydiel_smooth, zdiel_smooth = smooth(xdiel,ydiel,zdiel)
             igen.xdiel = xdiel_smooth
@@ -558,9 +558,9 @@ def pre_init(pdbfilename=None,
 #
 # --------------
 #
-            
+
 if __name__ == "__main__":
-    
+
     (protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd), options = startpKa()
     import pka_routines
     mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield, apbs_setup, maps, sd,
@@ -592,7 +592,7 @@ if __name__ == "__main__":
 #         groups=2
 #         acidbase=[-1,1] # 1 if group is a base, -1 if group is an acid
 #         intpkas=[3.4,0.0,0.0,0.0,0.0,
-#                  9.6,0.0,0.0,0.0,0.0] 
+#                  9.6,0.0,0.0,0.0,0.0]
 #         is_charged_state=[1,0,0,0,0,
 #                           1,0,0,0,0]
 #         #

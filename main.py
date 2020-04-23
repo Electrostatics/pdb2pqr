@@ -810,7 +810,7 @@ Please cite your use of PDB2PQR as:
     sys.stdout.write(text)
 
     path = Path(args[0])
-    pdbFile = getPDBFile(path)
+    pdbFile = getPDBFile(str(path))
 
     if path.suffix.lower() == "pdb":
         pdblist, errlist = readPDB(pdbFile)

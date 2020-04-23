@@ -10,7 +10,7 @@
     Parsing utilities provided by Nathan A. Baker (Nathan.Baker@pnl.gov)
     Pacific Northwest National Laboratory
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
+    Copyright (c) 2002-2020, Jens Erik Nielsen, University College Dublin;
     Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
     Northwest National Laboratory, operated by Battelle Memorial Institute,
     Pacific Northwest Division for the U.S. Department Energy.;
@@ -296,7 +296,7 @@ def runPDB2PQR(pdblist, ff,
                userff = None,
                usernames = None,
                ffout = None,
-               #holdList = None,
+               holdList = None,
                commandLine=None,
                include_old_header=False,
                isCIF=False):
@@ -571,7 +571,8 @@ def runPDB2PQR(pdblist, ff,
     if verbose:
         print("Total time taken: %.2f seconds\n" % (time.time() - start))
 
-    return header, lines, missedligandresidues, myProtein
+    #return header, lines, missedligandresidues, myProtein
+    return header, lines, missedligandresidues
 
 
 def mainCommand(argv):
@@ -817,12 +818,12 @@ Please cite your use of PDB2PQR as:
         pdblist, errlist = readPDB(pdbFile)
         isCIF = False;
     elif(path[-3:] == "cif"):
+        print("get into cif....!!!!");
         pdblist, errlist = cif.readCIF(pdbFile);
         isCIF = True;
     else:
         sys.stderr.write("Unrecognized file extension.\n");
         quit();
-
 
     # @TODO: delete this
     #print(pdblist);
@@ -854,7 +855,8 @@ Please cite your use of PDB2PQR as:
     # This would also do away with the redundent checks and such in
     # the Forcefield constructor.
     try:
-        header, lines, missedligands, _ = runPDB2PQR(pdblist,
+        #header, lines, missedligands, _ = runPDB2PQR(pdblist,
+        header, lines, missedligands = runPDB2PQR(pdblist,
                                                   options.ff,
                                                   outname = options.outname,
                                                   ph = options.ph,

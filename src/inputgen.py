@@ -5,40 +5,40 @@
     Written by Todd Dolinsky based on original sed script by Nathan Baker
 
         ----------------------------
-   
+
     PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
     Poisson-Boltzmann electrostatics calculations
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
+    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
+    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
+    Northwest National Laboratory, operated by Battelle Memorial Institute,
+    Pacific Northwest Division for the U.S. Department Energy.;
     Paul Czodrowski & Gerhard Klebe, University of Marburg.
 
 	All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without modification, 
+	Redistribution and use in source and binary forms, with or without modification,
 	are permitted provided that the following conditions are met:
 
-		* Redistributions of source code must retain the above copyright notice, 
+		* Redistributions of source code must retain the above copyright notice,
 		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
 		  and/or other materials provided with the distribution.
         * Neither the names of University College Dublin, Battelle Memorial Institute,
           Pacific Northwest National Laboratory, US Department of Energy, or University
           of Marburg nor the names of its contributors may be used to endorse or promote
           products derived from this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 	OF THE POSSIBILITY OF SUCH DAMAGE.
 
     ----------------------------
@@ -51,8 +51,8 @@
 # fadd = 20                   # Amount to add to mol dims to get fine
                               # grid dims
 # space = 0.50                # Desired fine mesh resolution
-# gmemfac = 200               # Number of bytes per grid point required 
-                              # for sequential MG calculation 
+# gmemfac = 200               # Number of bytes per grid point required
+                              # for sequential MG calculation
 # gmemceil = 400              # Max MB allowed for sequential MG
                               # calculation.  Adjust this to force the
                               # script to perform faster calculations (which
@@ -82,7 +82,7 @@ class Elec:
 
         # If this is an async or parallel calc, we want to use
         # the per-grid dime rather than the global dime.
-        
+
         self.dime = size.getFineGridPoints()
         gmem = 200.0 * self.dime[0] * self.dime[1] * self.dime[2] / 1024.0 / 1024.0
         if method == "": # method not named - use ceiling
@@ -98,7 +98,7 @@ class Elec:
         self.cglen = size.getCoarseGridDims()
         self.fglen = size.getFineGridDims()
         self.pdime = size.getProcGrid()
-        
+
         self.label = ""
         self.nlev = 4
         self.ofrac = 0.1
@@ -127,7 +127,7 @@ class Elec:
             self.write = [["pot", "dx", pqrpath]]
         else:
             self.write = [["pot", "dx", "pot"]] # Multiple write statements possible
-    
+
     def __str__(self):
         """
             Return the elec statement as a string. Check the method
@@ -159,22 +159,22 @@ class Elec:
         text += "    bcfl %s\n" % self.bcfl
         if self.istrng > 0:
             for ion in self.ion:
-                text += "    ion charge %.2f conc %.3f radius %.4f\n" % (ion[0], self.istrng, ion[1])               
-        text += "    pdie %.4f\n" % self.pdie                
-        text += "    sdie %.4f\n" % self.sdie                
-        text += "    srfm %s\n" % self.srfm                   
+                text += "    ion charge %.2f conc %.3f radius %.4f\n" % (ion[0], self.istrng, ion[1])
+        text += "    pdie %.4f\n" % self.pdie
+        text += "    sdie %.4f\n" % self.sdie
+        text += "    srfm %s\n" % self.srfm
         text += "    chgm %s\n" % self.chgm
         text += "    sdens %.2f\n" % self.sdens
-        text += "    srad %.2f\n" % self.srad          
-        text += "    swin %.2f\n" % self.swin         
-        text += "    temp %.2f\n" % self.temp     
+        text += "    srad %.2f\n" % self.srad
+        text += "    swin %.2f\n" % self.swin
+        text += "    temp %.2f\n" % self.temp
         text += "    calcenergy %s\n" % self.calcenergy
         text += "    calcforce %s\n" % self.calcforce
         for write in self.write:
             text += "    write %s %s %s\n" % (write[0], write[1], write[2])
         text += "end\n"
         return text
-        
+
 class Input:
     """
         The input class.  Each input object is one APBS input file.
@@ -201,7 +201,7 @@ class Input:
                 size:      The Psize object (psize)
                 method:    The method (para, auto, manual, async) to use
                 asyncflag: 1 if async is desired, 0 otherwise
-        """ 
+        """
 
         self.pqrpath = pqrpath
         self.asyncflag = asyncflag
@@ -216,11 +216,11 @@ class Input:
         else:
             elec2 = ""
         self.elecs = [elec1, elec2]
-     
+
         self.pqrname = os.path.basename(pqrpath)
 
         if not potdx:
-            self.prints = ["print elecEnergy 2 - 1 end"]     
+            self.prints = ["print elecEnergy 2 - 1 end"]
         else:
             self.prints = ["print elecEnergy 1 end"]
 
@@ -232,12 +232,12 @@ class Input:
         text += "    mol pqr %s\n" % self.pqrname
         text += "end\n"
         for elec in self.elecs:
-            text += str(elec)            
+            text += str(elec)
         for prints in self.prints:
             text += prints
         text += "\nquit\n"
         return text
-  
+
     def printInputFiles(self):
         """
             Make the input file(s) associated with this object
@@ -255,7 +255,7 @@ class Input:
 
             # Now make the async files
             elec = self.elecs[0]
-            
+
             nproc = elec.pdime[0] * elec.pdime[1] * elec.pdime[2]
             for i in range(int(nproc)):
                 outname = base_pqr_name + "-PE%i.in" % i
@@ -265,7 +265,7 @@ class Input:
                 file = open(outname, "w")
                 file.write(str(self))
                 file.close()
-        
+
         else:
             outname = base_pqr_name + ".in"
             file = open(outname, "w")
@@ -278,10 +278,10 @@ class Input:
         """
         base_pqr_name = utilities.getPQRBaseFileName(self.pqrpath)
         outname = base_pqr_name + "-input.p"
-        pfile = open(outname, "w")
+        pfile = open(outname, "wb")
         pickle.dump(self, pfile)
         pfile.close()
-        
+
 
 def splitInput(filename):
     """
@@ -315,7 +315,7 @@ def splitInput(filename):
         outfile = open(outname, "w")
         outfile.write(outtext)
         outfile.close()
-          
+
 def usage():
     """
         Display the usage information for this script
@@ -371,7 +371,7 @@ def main():
     except getopt.GetoptError as details:
         sys.stderr.write("Option error (%s)!\n" % details)
         usage()
-        
+
     if len(args) != 1:
         sys.stderr.write("Invalid argument list!\n")
         usage()
@@ -384,7 +384,7 @@ def main():
     split = 0
     istrng = 0
     potdx = 0
-    
+
     for o, a in opts:
         if o == "--help":
             usage()

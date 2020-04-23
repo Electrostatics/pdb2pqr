@@ -164,9 +164,9 @@ test_obj = buildTest(['1AFS.pdb'],
 			          ['test-output-1AFS-misc.pqr',
 			           'test-output-1AFS-misc.in',
 			           'test-output-1AFS-misc-input.p',
-			           'test-output-1AFS-misc-typemap.html'],
+			           ],
 					  'test-output-1AFS-misc-correct.pqr',
 					  'test-misc-options',
-					  '--ff=AMBER --apbs-input --whitespace --typemap --include-header')
+					  '--ff=AMBER --apbs-input --whitespace --include-header')
 
 Alias('complete-test', testList)

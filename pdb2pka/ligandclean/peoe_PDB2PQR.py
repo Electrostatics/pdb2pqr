@@ -20,7 +20,7 @@
 ground_states = {\
                 #      Eg     Ig
 'H' : (0.747, 13.595),
-'B' : (0.330,  8.296),   
+'B' : (0.330,  8.296),
 'C' : (1.120, 11.256),
 'N' : (1.050, 14.535),
 'O' : (1.465, 13.614),
@@ -30,8 +30,8 @@ ground_states = {\
 'S' : (2.070, 10.357),
 'Cl': (3.690, 12.974),
 'Br': (3.550, 11.84),
-'I' : (3.210, 10.45) 
-} 
+'I' : (3.210, 10.45)
+}
 
 
 Chargeterms = {
@@ -50,7 +50,7 @@ Chargeterms = {
 'N.pl3':(12.87+0.5,  11.15,  0.85,  24.87),
 'N.am': (12.87+3.5,  11.15,  0.85,  24.87),
 'N.1':  (15.68,      11.70, -0.27,  27.11),
-# Oxygen	
+# Oxygen
 'O.OH': (14.18+0.8,  12.92,  1.39,  28.49),
 'O.3':  (14.18-3.1,  12.92,  1.39,  28.49),
 'O.2':  (14.18,      12.92,  1.39,  28.49),
@@ -67,7 +67,7 @@ Chargeterms = {
 }
 
 #Add lower case keys to more lenient matching.
-ChargetermsLower = dict((key.lower(), value) for key, value in Chargeterms.items()) 
+ChargetermsLower = dict((key.lower(), value) for key, value in Chargeterms.items())
 Chargeterms.update(ChargetermsLower)
 
 def PEOE( atoms, damp=0.778, k=1.56):
@@ -75,7 +75,7 @@ def PEOE( atoms, damp=0.778, k=1.56):
         if abs(q) > 1.1:
             if q < 0.0: q = -1.1
             else:       q =  1.1
-        if (q == 1.0) and (atom.sybylType == 'H'): 
+        if (q == 1.0) and (atom.sybylType == 'H'):
             return 20.02
         else:
             if len(atom.abc) == 4:
@@ -88,7 +88,7 @@ def PEOE( atoms, damp=0.778, k=1.56):
     counter = 0
     for a in atoms.atoms:
         sybylType = a.sybylType.lower()
-        if not Chargeterms.has_key(sybylType):
+        if not sybylType in Chargeterms:
             raise(KeyError, 'PEOE Error: Atomtype <%s> not known, treating atom %s as dummy' % (a.sybylType, a.name))
         if a.sybylType == 'O.3':
             a.chi   = Chargeterms['O.OH'][0]
@@ -96,7 +96,7 @@ def PEOE( atoms, damp=0.778, k=1.56):
         else:
             a.chi   = Chargeterms[sybylType][0]
             a.abc   = Chargeterms[sybylType]
-        if a.charge != 0.0:      
+        if a.charge != 0.0:
             a.formal_charge = a.charge*(1/k)
             abs_qges = abs_qges+abs(a.charge)
             counter = counter+1
@@ -108,7 +108,7 @@ def PEOE( atoms, damp=0.778, k=1.56):
         cycles = 7
         for b in range(1,cycles):
             for i in atoms.atoms: # lAtoms
-                i.chi = calcchi(i, i.charge)         
+                i.chi = calcchi(i, i.charge)
                 i.dq = 0.0
                 for j in i.intrabonds: ### lBondedAtoms
                     for yyy in atoms.atoms:
@@ -117,7 +117,7 @@ def PEOE( atoms, damp=0.778, k=1.56):
                             if dchi > 0.0: i.dq += (dchi / calcchi(i, +1) * (damp**b))
                             else:          i.dq += (dchi / calcchi(yyy, +1) * (damp**b))
             for i in atoms.atoms: # lAtoms
-                i.charge += i.dq+(0.166666667*i.formal_charge)  
+                i.charge += i.dq+(0.166666667*i.formal_charge)
         for i in atoms.atoms:  # lAtoms
             i.charge = i.charge * k
             i.charge = i.charge
@@ -125,9 +125,9 @@ def PEOE( atoms, damp=0.778, k=1.56):
             del i.abc
         return atoms
 
-    else:                          
+    else:
     #
-        for a in range(1,7):         
+        for a in range(1,7):
             for i in atoms.atoms: # lAtoms
                 i.chi = calcchi(i, i.charge)
                 i.dq  = 0.0
@@ -135,12 +135,12 @@ def PEOE( atoms, damp=0.778, k=1.56):
                     for xxx in atoms.atoms:
                         if xxx.name == j:
                             dchi  = (calcchi(xxx, xxx.charge) - i.chi)
-                            if dchi > 0.0: i.dq += (dchi / calcchi(i, +1) * (damp**a)) 
+                            if dchi > 0.0: i.dq += (dchi / calcchi(i, +1) * (damp**a))
                             else:          i.dq += (dchi / calcchi(xxx, +1) * (damp**a))
             for i in atoms.atoms: # lAtoms
                 i.charge += i.dq
         for i in atoms.atoms: #lAtoms
-            i.charge = i.charge * k             
+            i.charge = i.charge * k
             i.charge = i.charge
             del i.dq
             del i.abc

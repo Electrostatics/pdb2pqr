@@ -14,6 +14,7 @@ __author__ = "Todd Dolinsky, Jens Erik Nielsen"
 import sys
 import os
 import time
+import copy
 
 try:
     if(sys.version_info >= (3,0)):

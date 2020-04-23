@@ -10,36 +10,36 @@
     Parsing utilities provided by Nathan A. Baker (Nathan.Baker@pnl.gov)
     Pacific Northwest National Laboratory
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
+    Copyright (c) 2002-2020, Jens Erik Nielsen, University College Dublin; 
+    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
+    Northwest National Laboratory, operated by Battelle Memorial Institute,
+    Pacific Northwest Division for the U.S. Department Energy.;
     Paul Czodrowski & Gerhard Klebe, University of Marburg.
 
 	All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without modification, 
+	Redistribution and use in source and binary forms, with or without modification,
 	are permitted provided that the following conditions are met:
 
-		* Redistributions of source code must retain the above copyright notice, 
+		* Redistributions of source code must retain the above copyright notice,
 		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
 		  and/or other materials provided with the distribution.
         * Neither the names of University College Dublin, Battelle Memorial Institute,
           Pacific Northwest National Laboratory, US Department of Energy, or University
           of Marburg nor the names of its contributors may be used to endorse or promote
           products derived from this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 	OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
@@ -72,13 +72,13 @@ from src.protein import Protein
 #from src.hydrogens import *
 from src import utilities
 from src.server import setID, createError
-from src.aconf import (STYLESHEET, 
-                       WEBSITE, 
+from src.aconf import (STYLESHEET,
+                       WEBSITE,
                        PDB2PQR_OPAL_URL,
                        HAVE_PDB2PQR_OPAL,
                        INSTALLDIR,
                        TMPDIR,
-                       MAXATOMS, 
+                       MAXATOMS,
                        PDB2PQR_VERSION)
 
 import traceback
@@ -110,41 +110,41 @@ def redirector(name, weboptions):
     """
         Prints a page which redirects the user to querystatus.cgi and writes starting time to file
     """
-    
+
     redirectWait = 3
 
     utilities.startLogFile(name, 'pdb2pqr_start_time', str(time.time()))
-    
+
     jobid = int(name)
-    
+
     analiticsDict = weboptions.getOptions()
-    
+
     events = {}
-    
+
     events['submission'] = analiticsDict['pdb']+'|'+str(os.environ["REMOTE_ADDR"])
     del analiticsDict['pdb']
-    
+
     events['titration'] = str(analiticsDict.get('ph'))
     if 'ph' in analiticsDict:
         del analiticsDict['ph']
-        
+
     events['apbsInput'] = str(analiticsDict.get('apbs'))
     del analiticsDict['apbs']
-    
+
     #Clean up selected extensions output
     if 'selectedExtensions' in analiticsDict:
         analiticsDict['selectedExtensions'] = ' '.join(analiticsDict['selectedExtensions'])
-    
+
     options = ','.join(str(k)+':'+str(v) for k,v in analiticsDict.items())
     events['options']=options
 
     eventsScriptString = ''
     for event in events:
         eventsScriptString += utilities.getEventTrackingString(category='submissionData',
-                                                               action=event, 
-                                                               label=events[event]) 
-        
-    redirectURL = "{website}querystatus.cgi?jobid={jobid}&calctype=pdb2pqr".format(website=WEBSITE, 
+                                                               action=event,
+                                                               label=events[event])
+
+    redirectURL = "{website}querystatus.cgi?jobid={jobid}&calctype=pdb2pqr".format(website=WEBSITE,
                                                                                    jobid=jobid)
 
     string = """
@@ -154,16 +154,16 @@ def redirector(name, weboptions):
         <script type="text/javascript">
             {trackingevents}
         </script>
-        <meta http-equiv="Refresh" content="{wait}; url={redirectURL}"> 
+        <meta http-equiv="Refresh" content="{wait}; url={redirectURL}">
         <link rel="stylesheet" href="{website}pdb2pqr.css"type="text/css">
     </head>
     <body>
     <center>
         You are being automatically redirected to a new location.<br />
         If your browser does not redirect you in {wait} seconds, or you do
-        not wish to wait, <a href="{redirectURL}">click here</a></center>. 
+        not wish to wait, <a href="{redirectURL}">click here</a></center>.
     </body>
-</html>""".format(trackingscript=utilities.getTrackingScriptString(jobid=jobid), 
+</html>""".format(trackingscript=utilities.getTrackingScriptString(jobid=jobid),
                   trackingevents=eventsScriptString, redirectURL=redirectURL, wait=redirectWait, website=WEBSITE)
     return string
 
@@ -181,21 +181,21 @@ class WebOptions(object):
     def __init__(self, form):
         '''Gleans all information about the user selected options and uploaded files.
         Also validates the user input. Raises WebOptionsError if there is any problems.'''
-        
+
         #options to pass to runPDB2PQR
         self.runoptions = {}
         #Additional options to pass to google analytics along with the run options.
         #These are included in has_key(), __contains__(), and __getitem__() calls.
         self.otheroptions = {}
-        
+
         self.runoptions['debump'] = "DEBUMP" in form
         self.runoptions['opt'] = "OPT" in form
-        
+
         if 'FF' in form:
             self.ff = form["FF"].value.lower()
         else:
             raise WebOptionsError('Force field type missing from form.')
-        
+
         if "PDBID" in form and form["PDBID"].value and form["PDBSOURCE"].value == 'ID':
             self.pdbfile = utilities.getPDBFile(form["PDBID"].value)
             if self.pdbfile is None:
@@ -209,18 +209,18 @@ class WebOptions(object):
             self.pdbfilename = sanitizeFileName(form["PDB"].filename)
         else:
             raise WebOptionsError('You need to specify a pdb ID or upload a pdb file.')
-            
+
         if "PKACALCMETHOD" in form:
             if form["PKACALCMETHOD"].value != 'none':
                 if 'PH' not in form:
                     raise WebOptionsError('Please provide a pH value.')
-                
+
                 phHelp = 'Please choose a pH between 0.0 and 14.0.'
                 try:
                     ph = float(form["PH"].value)
                 except ValueError:
                     raise WebOptionsError('The pH value provided must be a number!  ' + phHelp)
-                if ph < 0.0 or ph > 14.0: 
+                if ph < 0.0 or ph > 14.0:
                     text = "The entered pH of %.2f is invalid!  " % ph
                     text += phHelp
                     raise WebOptionsError(text)
@@ -236,10 +236,10 @@ class WebOptions(object):
                                                           'pdie': 8,
                                                           'sdie': 80,
                                                           'pairene': 1.0}
-                 
+
         self.otheroptions['apbs'] = "INPUT" in form
         self.otheroptions['whitespace'] = "WHITESPACE" in form
-        
+
         if self.ff == 'user':
             if "USERFF" in form and form["USERFF"].filename:
                 self.userfffilename = sanitizeFileName(form["USERFF"].filename)
@@ -248,7 +248,7 @@ class WebOptions(object):
             else:
                 text = "A force field file must be provided if using a user created force field."
                 raise WebOptionsError(text)
-                
+
             if "USERNAMES" in form and form["USERNAMES"].filename:
                 self.usernamesfilename = sanitizeFileName(form["USERNAMES"].filename)
                 self.usernamesstring = form["USERNAMES"].value
@@ -256,141 +256,141 @@ class WebOptions(object):
             else:
                 text = "A names file must be provided if using a user created force field."
                 raise WebOptionsError(text)
-            
+
         if "FFOUT" in form and form["FFOUT"].value != "internal":
             self.runoptions['ffout'] = form["FFOUT"].value
-                
+
         self.runoptions['chain'] = "CHAIN" in form
         self.runoptions['typemap'] = "TYPEMAP" in form
         self.runoptions['neutraln'] = "NEUTRALN" in form
         self.runoptions['neutralc'] = "NEUTRALC" in form
         self.runoptions['drop_water'] = "DROPWATER" in form
-        
+
         if (self.runoptions['neutraln'] or self.runoptions['neutraln']) and \
             self.ff != 'parse':
             raise WebOptionsError('Neutral N-terminus and C-terminus require the PARSE forcefield.')
-        
+
         if "LIGAND" in form and form['LIGAND'].filename:
             self.ligandfilename=sanitizeFileName(form["LIGAND"].filename)
             ligandfilestring = form["LIGAND"].value
             # for Windows and Mac style newline compatibility for pdb2pka
             ligandfilestring = ligandfilestring.replace('\r\n', '\n')
             self.ligandfilestring = ligandfilestring.replace('\r', '\n')
-            
+
             self.runoptions['ligand'] = StringIO(self.ligandfilestring)
-            
+
         if self.pdbfilename[-4:]==".pdb":
             self.pqrfilename = "%s.pqr" % self.pdbfilename[:-4]
         else:
             self.pqrfilename = "%s.pqr" % self.pdbfilename
-            
+
         #Always turn on summary and verbose.
         self.runoptions['verbose'] = True
         self.runoptions['selectedExtensions'] = ['summary']
-        
+
     def getLoggingList(self):
         '''Returns a list of options the user has turned on.
         Used for logging jobs later in usage.txt'''
         results = []
-        
+
         for key in self:
             if self[key]:
                 results.append(key)
-                
+
         return results
-        
+
     def getRunArguments(self):
         '''Returns argument suitable for runPDB2PQR'''
         return self.runoptions.copy()
-    
+
     def getOptions(self):
         '''Returns all options for reporting to Google analytics'''
         options = self.runoptions.copy()
         options.update(self.otheroptions)
-        
+
         options['ff'] = self.ff
-        
+
         options['pdb'] = self.pdbfilename
-        
+
         #propkaOptions is redundant.
         if 'ph_calc_options' in options:
             del options['ph_calc_options']
-        
+
         if 'ligand' in options:
             options['ligand'] = self.ligandfilename
-            
+
         if 'userff' in options:
             options['userff'] = self.userfffilename
-            
+
         if 'usernames' in options:
             options['usernames'] = self.usernamesfilename
-        
+
         return options
-    
+
     def getCommandLine(self):
         commandLine = []
-        
+
         if not self.runoptions['debump']:
             commandLine.append('--nodebump')
-            
+
         if not self.runoptions['opt']:
             commandLine.append('--noopt')
-            
+
         if 'ph' in self.runoptions:
             commandLine.append('--with-ph=%s' % self.runoptions['ph'])
-            
+
         if 'ph_calc_method' in self.runoptions:
             commandLine.append('--ph-calc-method=%s' % self.runoptions['ph_calc_method'])
-            
+
         if self.runoptions['drop_water']:
             commandLine.append('--drop-water')
-        
+
         if self.otheroptions['apbs']:
             commandLine.append('--apbs-input')
-            
+
         if self.otheroptions['whitespace']:
             commandLine.append('--whitespace')
-            
+
         if 'userff' in self.runoptions and self.ff == 'user':
             commandLine.append('--userff=%s' % self.userfffilename)
             commandLine.append('--usernames=%s' % self.usernamesfilename)
         else:
             commandLine.append('--ff=%s' % self.ff)
-            
+
         if 'ffout' in self.runoptions:
             commandLine.append('--ffout=%s' % self.runoptions['ffout'])
-            
+
         for o in ('chain', 'typemap', 'neutraln', 'neutralc', 'verbose'):
             if self.runoptions[o]:
                 commandLine.append('--' + o)
-            
+
         if 'ligand' in self.runoptions:
             commandLine.append('--ligand=%s' % self.ligandfilename)
-            
+
         for ext in self.runoptions.get('selectedExtensions',[]):
             commandLine.append('--%s' % ext)
-            
+
         commandLine.append(self.pdbfilename)
-        
+
         commandLine.append(self.pqrfilename)
-        
+
         return ' '.join(commandLine)
-    
+
     def __contains__(self, item):
         '''Helper for checking for the presence of an option'''
         return item in self.runoptions or item in self.otheroptions
-    
+
     def has_key(self, item):
         '''Helper for checking for the presence of an option'''
         return item in self.runoptions or item in self.otheroptions
-    
+
     def __iter__(self):
         for key in self.runoptions:
             yield key
-        
+
         for key in self.otheroptions:
             yield key
-            
+
     def __getitem__(self, key):
         return self.runoptions[key] if key in self.runoptions else self.otheroptions[key]
 
@@ -403,34 +403,34 @@ def handleOpal(weboptions):
     from AppService_types import ns0
 
     inputFiles = []
-    
+
     if 'userff' in weboptions:
         ffFile = ns0.InputFileType_Def('inputFile')
         ffFile._name = weboptions.userfffilename
         ffFile._contents = weboptions.userffstring
         inputFiles.append(ffFile)
-        
+
     if 'usernames' in weboptions:
         namesFile = ns0.InputFileType_Def('inputFile')
         namesFile._name = weboptions.usernamesfilename
         namesFile._contents = weboptions.usernamesstring
         inputFiles.append(namesFile)
-        
+
     if 'ligand' in weboptions:
         ligandFile = ns0.InputFileType_Def('inputFile')
         ligandFile._name = weboptions.ligandfilename
         ligandFile._contents = weboptions.ligandfilestring
         inputFiles.append(ligandFile)
-        
+
     pdbOpalFile = ns0.InputFileType_Def('inputFile')
     pdbOpalFile._name = weboptions.pdbfilename
     pdbOpalFile._contents = weboptions.pdbfilestring
     inputFiles.append(pdbOpalFile)
-     
-    # launch job   
+
+    # launch job
     appLocator = AppServiceLocator()
     appServicePort = appLocator.getAppServicePort(PDB2PQR_OPAL_URL)
-    
+
     req = launchJobRequest()
     req._argList = weboptions.getCommandLine()
     req._inputFile=inputFiles
@@ -456,27 +456,27 @@ def handleOpal(weboptions):
         print("</BODY>")
         print("</HTML>")
         sys.exit(2)
-    
+
     try:
         starttime = time.time()
         name = setID(starttime)
-        
+
         #Some job parameters logging.
         os.makedirs('%s%s%s' % (INSTALLDIR, TMPDIR, name))
         apbsInputFile = open('%s%s%s/apbs_input' % (INSTALLDIR, TMPDIR, name),'w')
         apbsInputFile.write(str(weboptions["apbs"]))
         apbsInputFile.close()
-        
+
         typemapInputFile = open('%s%s%s/typemap' % (INSTALLDIR, TMPDIR, name),'w')
         typemapInputFile.write(str(weboptions["typemap"]))
         typemapInputFile.close()
-        
+
         pdb2pqrOpalJobIDFile = open('%s%s%s/pdb2pqr_opal_job_id' % (INSTALLDIR, TMPDIR, name), 'w')
         pdb2pqrOpalJobIDFile.write(resp._jobID)
         pdb2pqrOpalJobIDFile.close()
-        
+
         print(redirector(name, weboptions))
-        
+
         # Recording CGI run information for PDB2PQR Opal
         pdb2pqrOpalLogFile = open('%s%s%s/pdb2pqr_log' % (INSTALLDIR, TMPDIR, name), 'w')
         pdb2pqrOpalLogFile.write(str(weboptions.getOptions())+'\n'+
@@ -491,9 +491,9 @@ def handleNonOpal(weboptions):
     """
         Handle non opal run.
     """
- 
+
     pdblist, errlist = readPDB(weboptions.pdbfile)
-    
+
     dummydef = Definition()
     dummyprot = Protein(pdblist, dummydef)
     if len(pdblist) == 0 and len(errlist) == 0:
@@ -539,7 +539,7 @@ def handleNonOpal(weboptions):
         apbsInputFile = open('%s%s%s/apbs_input' % (INSTALLDIR, TMPDIR, name),'w')
         apbsInputFile.write(str(weboptions["apbs"]))
         apbsInputFile.close()
-        
+
         typemapInputFile = open('%s%s%s/typemap' % (INSTALLDIR, TMPDIR, name),'w')
         typemapInputFile.write(str(weboptions["typemap"]))
         typemapInputFile.close()
@@ -547,7 +547,7 @@ def handleNonOpal(weboptions):
         statusfile = open('%s%s%s/pdb2pqr_status' % (INSTALLDIR, TMPDIR, name), 'w')
         statusfile.write('running')
         statusfile.close()
-        
+
         # Recording CGI run information for PDB2PQR Opal
         pdb2pqrLogFile = open('%s%s%s/pdb2pqr_log' % (INSTALLDIR, TMPDIR, name), 'w')
         pdb2pqrLogFile.write(str(weboptions.getOptions())+'\n'+
@@ -568,25 +568,25 @@ def handleNonOpal(weboptions):
             os.chdir(currentdir)
             os.close(1) # not sure if these
             os.close(2) # two lines are necessary
-            
+
             pqrpath = '%s%s%s/%s.pqr' % (INSTALLDIR, TMPDIR, name, name)
-            
+
             orig_stdout = sys.stdout
             orig_stderr = sys.stderr
             sys.stdout = open('%s%s%s/pdb2pqr_stdout.txt' % (INSTALLDIR, TMPDIR, name), 'w')
             sys.stderr = open('%s%s%s/pdb2pqr_stderr.txt' % (INSTALLDIR, TMPDIR, name), 'w')
-            
+
             run_arguements = weboptions.getRunArguments()
             if weboptions.runoptions.get('ph_calc_method', '') == 'pdb2pka':
                 run_arguements['ph_calc_options']['output_dir']='%s%s%s/pdb2pka_output' % (INSTALLDIR, TMPDIR, name)
-            
-            
+
+
             header, lines, missedligands, _ = runPDB2PQR(pdblist,
                                                       weboptions.ff,
                                                       outname = pqrpath,
                                                       commandLine = weboptions.getCommandLine(),
                                                       **weboptions.getRunArguments())
-            
+
             sys.stdout.close()
             sys.stderr.close()
             sys.stdout = orig_stdout
@@ -598,21 +598,21 @@ def handleNonOpal(weboptions):
 
             pqrfile = open(pqrpath, "w")
             pqrfile.write(header)
-            
+
             whitespace = weboptions.otheroptions['whitespace']
             for line in lines:
                 # Adding whitespaces if --whitespace is in the weboptions
-                if whitespace: 
+                if whitespace:
                     if line[0:4] == 'ATOM':
                         newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                         pqrfile.write("%s\n" % newline.strip())
                     elif line[0:6] == 'HETATM':
                         newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                         pqrfile.write("%s\n" % newline.strip())
-                else: 
+                else:
                     pqrfile.write("%s\n" % line.strip())
             pqrfile.close()
-                    
+
             if weboptions.otheroptions['apbs']:
                 from src import inputgen
                 from src import psize
@@ -624,7 +624,7 @@ def handleNonOpal(weboptions):
                 myinput = inputgen.Input(pqrpath, size, method, 0, potdx=True)
                 myinput.printInputFiles()
                 myinput.dumpPickle()
-                        
+
             endtime = time.time() - starttime
             #createResults(header, input, name, endtime, missedligands)
             #logRun(weboptions, endtime, len(lines), weboptions.ff, os.environ["REMOTE_ADDR"])
@@ -663,17 +663,16 @@ def mainCGI():
 
     cgitb.enable()
     form = cgi.FieldStorage()
-    
+
     try:
         weboptions = WebOptions(form)
     except WebOptionsError as error:
         print(error)
         sys.exit(2)
-        
+
     if HAVE_PDB2PQR_OPAL:
         handleOpal(weboptions)
     else:
         handleNonOpal(weboptions)
-        
+
     return
-    

@@ -250,6 +250,7 @@ if env['BUILD_PDB2PKA']:
         compile_targets.append(algorithms_pyc)
 
         if os.name == 'nt':
+            
             alg_msvs_env = env.Clone(MSVSBUILDCOM='cd .. && '+pythonBin+' scons/scons.py algorithms DEBUG=True',
                                      MSVSCLEANCOM='cd .. && '+pythonBin+' scons/scons.py -c algorithms',
                                      MSVSREBUILDCOM='cd .. && '+pythonBin+' scons/scons.py -c algorithms && '+pythonBin+' scons/scons.py algorithms DEBUG=True')

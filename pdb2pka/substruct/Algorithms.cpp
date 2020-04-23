@@ -6,14 +6,14 @@
  * Portions Copyright (C) 1999-2004 Cambridge Crystallographic Data Centre    *
  * Portions Copyright (C) 2000-2004 Stefan Schmitt,Daniel Kuhn,Gerhard Klebe  *
  *                                                                            *
- * Permission to use, copy, modify, and distribute this software and its      * 
+ * Permission to use, copy, modify, and distribute this software and its      *
  * documentation for any purpose, without fee, and without a written          *
  * agreement is hereby granted, provided that the above copyright notice and  *
  * this paragraph and the following two paragraphs appear in all copies.      *
  *                                                                            *
  * IN NO EVENT SHALL THE AUTHOR BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT,  *
  * SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS,     *
- * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE * 
+ * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF THE *
  * AUTHOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                 *
  *                                                                            *
  * THE AUTHOR SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT       *
@@ -28,7 +28,7 @@
  *    Philipps-University, Marburg                                            *
  *    Department of Mathematics and Computer Science                          *
  *    Intelligent Systems Group                                               *
- *    Hans-Meerwein Straße                                                    *
+ *    Hans-Meerwein Straï¿½e                                                    *
  *    35032 Marburg, Germany                                                  *
  *                                                                            *
  *    weskamp@informatik.uni-marburg.de                                       *
@@ -46,17 +46,17 @@
 /*----------------------------------------------------------------------------*/
 using namespace std;
 /*----------------------------------------------------------------------------*/
-#define MODULE_NAME               Algorithms     
-#define MODULE_INIT               initAlgorithms 
-#define MODULE_STR                "Algorithms"   
-#define LASTCHANGE                "01.04.2004"
+//#define MODULE_NAME               Algorithms
+//#define MODULE_INIT               initAlgorithms
+#define MODULE_STR                "Algorithms"
+//#define LASTCHANGE                "01.04.2004"
 #define MAX_CLIQ_NUM              10000
 
 
 /*----------------------------------------------------------------------------*/
 // This class is used as a context object to store the cliques detected by the
 // clique detection algorithms and is called from the respective callback-
-// function. It can store up to MAX_CLIQ_NUM cliques. 
+// function. It can store up to MAX_CLIQ_NUM cliques.
 class CliqueCollector {
 /*----------------------------------------------------------------------------*/
 public:
@@ -73,7 +73,7 @@ public:
 };
 
 /*----------------------------------------------------------------------------*/
-static char find_max_clique__doc__[] = 
+static char find_max_clique__doc__[] =
 "This function takes a two-dimensional Numeric-array and \
 interpretes it as the adjacency matrix of a graph. It then \
 uses the algorithm of Bron and Kerbosch to detect maximal \
@@ -91,29 +91,29 @@ static PyObject *find_max_clique(PyObject *self, PyObject *args) {
     return NULL;
 
   if (array->nd != 2 || array->descr->type_num != PyArray_LONG) {
-    PyErr_SetString(PyExc_ValueError, 
+    PyErr_SetString(PyExc_ValueError,
 		     "array must be two-dimensional and of type int");
     return NULL;
   }
 
   if (array->dimensions[0] != array->dimensions[1]) {
-    PyErr_SetString(PyExc_ValueError, 
+    PyErr_SetString(PyExc_ValueError,
 		     "array must be quadratic");
     return NULL;
   }
 
   // Copying the adjacency matrix
-  
+
   int n = array->dimensions[0];
   char **connected = (char **) malloc(n * sizeof(char*));
   for(int i = 0; i < n; i++) {
     connected[i] = (char *) malloc(n * sizeof(char));
   }
-  
+
   for(int i = 0; i < n; i++) {
     for(int j = 0; j < n; j++) {
-   
-      connected[i][j] = *(long*)(array->data + i*array->strides[0] + 
+
+      connected[i][j] = *(long*)(array->data + i*array->strides[0] +
 				 j*array->strides[1]);
 
       if(i == j) {
@@ -123,12 +123,12 @@ static PyObject *find_max_clique(PyObject *self, PyObject *args) {
   }
 
   // Calling the Bron-Kerbosch-Algorithm
-  
+
   Set cliq;
   init_Set(&cliq, n);
 
-  bron_kerbosch(n, connected, NULL, &cliq, 
-		(clique_callback)print_clique_callback, 
+  bron_kerbosch(n, connected, NULL, &cliq,
+		(clique_callback)print_clique_callback,
 		NULL);
 
   // Building result list
@@ -143,16 +143,16 @@ static PyObject *find_max_clique(PyObject *self, PyObject *args) {
     PyList_Append(erg, PyInt_FromLong(cliq.vertex[i]));
 #endif
   }
-  
+
   for(int i = 0; i < n; i++) {
     free(connected[i]);
   }
-  
+
   free(connected);
-  
+
 
   return erg;
-  
+
 }
 
 /*----------------------------------------------------------------------------*/
@@ -176,7 +176,7 @@ int collect_cliques(const _set *st, void *context)
 }
 
 /*----------------------------------------------------------------------------*/
-static char find_cliques__doc__[] = 
+static char find_cliques__doc__[] =
 "This function takes a two-dimensional Numeric-array and \
 interpretes it as the adjacency matrix of a graph. It then \
 uses the algorithm of Bron and Kerbosch to detect maximal \
@@ -195,29 +195,29 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
     return NULL;
 
   if (array->nd != 2 || array->descr->type_num != PyArray_LONG) {
-    PyErr_SetString(PyExc_ValueError, 
+    PyErr_SetString(PyExc_ValueError,
 		     "array must be two-dimensional and of type int");
     return NULL;
   }
 
   if (array->dimensions[0] != array->dimensions[1]) {
-    PyErr_SetString(PyExc_ValueError, 
+    PyErr_SetString(PyExc_ValueError,
 		     "array must be quadratic");
     return NULL;
   }
 
   // Copying the adjacency matrix
-  
+
   int n = array->dimensions[0];
   char **connected = (char **) malloc(n * sizeof(char*));
   for(int i = 0; i < n; i++) {
     connected[i] = (char *) malloc(n * sizeof(char));
   }
-  
+
   for(int i = 0; i < n; i++) {
     for(int j = 0; j < n; j++) {
-   
-      connected[i][j] = *(long*)(array->data + i*array->strides[0] + 
+
+      connected[i][j] = *(long*)(array->data + i*array->strides[0] +
 				 j*array->strides[1]);
 
       if(i == j) {
@@ -228,14 +228,14 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
   }
 
   // Calling the Bron-Kerbosch-Algorithm
-  
+
   Set cliq;
   init_Set(&cliq, n);
 
   CliqueCollector collector;
 
-  bron_kerbosch(n, connected, NULL, &cliq, 
-		(clique_callback)collect_cliques, 
+  bron_kerbosch(n, connected, NULL, &cliq,
+		(clique_callback)collect_cliques,
 		&collector);
 
   // Building result list
@@ -256,29 +256,29 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
 
     PyList_Append(result, cli);
   }
-  
+
 
   for(int i = 0; i < n; i++) {
     free(connected[i]);
   }
-  
+
   free(connected);
-  
+
   return result;
-  
+
 }
 
 /*----------------------------------------------------------------------------*/
-//static char smiles2graph__doc__[] = 
+//static char smiles2graph__doc__[] =
 //"";
 /*----------------------------------------------------------------------------*/
 //static PyObject *smiles2graph(PyObject *self, PyObject *args) {
 /*----------------------------------------------------------------------------*/
 //
-//  char* s; 
+//  char* s;
 //  int n = -1;
 //  int ok;
-//  
+//
 //  ok = PyArg_ParseTuple(args, "s", &s);
 //
 //  THB_NCONNECT * t = sms_make_thb(s, &n);
@@ -301,17 +301,17 @@ static PyObject *find_cliques(PyObject *self, PyObject *args) {
 /*----------------------------------------------------------------------------*/
 static PyMethodDef ModuleMethods[] =   {
 /*----------------------------------------------------------------------------*/
-  {"find_max_clique",find_max_clique,1,find_max_clique__doc__}, 
-  {"find_cliques",   find_cliques,   1,find_cliques__doc__}, 
-  //  {"smiles2graph",   smiles2graph,   1,smiles2graph__doc__}, 
+  {"find_max_clique",find_max_clique,1,find_max_clique__doc__},
+  {"find_cliques",   find_cliques,   1,find_cliques__doc__},
+  //  {"smiles2graph",   smiles2graph,   1,smiles2graph__doc__},
   {NULL,NULL} // sentinel
 };
 
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef {
     PyModuleDef_HEAD_INIT,
-    MODULE_STR,
-    MODULE_STR,
+    "Algorithms",
+    "Algorithms",
     -1,
     ModuleMethods,
     NULL,
@@ -322,26 +322,30 @@ static struct PyModuleDef moduledef {
 #endif
 
 /*----------------------------------------------------------------------------*/
-PyMODINIT_FUNC MODULE_INIT()
+//PyMODINIT_FUNC MODULE_INIT()
+PyMODINIT_FUNC PyInit_Algorithms()
 {
 #if PY_MAJOR_VERSION >=3
     PyObject* ThisModule = PyModule_Create(&moduledef);
-    PyObject* ModuleDict = PyModule_GetDict(ThisModule);
+    //PyObject* ModuleDict = PyModule_GetDict(ThisModule);
+    import_array();
+    return ThisModule;
 #else
     PyObject *ThisModule = Py_InitModule( MODULE_STR , ModuleMethods);
-    PyObject *ModuleDict = PyModule_GetDict(ThisModule);  
+    PyObject *ModuleDict = PyModule_GetDict(ThisModule);
+    import_array();
 #endif
     // for correct handling of Numpy
-    import_array();           
+    //import_array();
 
     // display welcome message
 
 /*----------------------------------------------------------------------------/
  *   cerr << "Discrete Algorithms Module " << VERSION
- *	 << " [Build "   << TIMESTAMP << "]" << endl 
- *	 << "Send complaints to: Nils Weskamp < weskamp@informatik.uni-marburg.de >" << endl;               
+ *	 << " [Build "   << TIMESTAMP << "]" << endl
+ *	 << "Send complaints to: Nils Weskamp < weskamp@informatik.uni-marburg.de >" << endl;
  *----------------------------------------------------------------------------*/
- 
+
 };
 
 /*----------------------------------------------------------------------------*/

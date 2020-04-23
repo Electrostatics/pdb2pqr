@@ -2,7 +2,8 @@
 from __future__ import division
 from __future__ import print_function
 
-import pickle,sys,os,math,propka.calculations
+import sys,os,math,propka.calculations
+import pickle
 
 import pkg_resources
 from propka.lib import info, warning
@@ -29,7 +30,7 @@ class bondmaker:
 
         # protein bonding data
         self.data_file_name = pkg_resources.resource_filename(__name__, 'protein_bonds.dat')
-
+        # @TODO: Deal with line endings. CRLF -> LF or viceversa.
         data = open(self.data_file_name,'rb')
         self.protein_bonds = pickle.load(data)
         data.close()

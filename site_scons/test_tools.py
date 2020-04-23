@@ -1,11 +1,18 @@
 #from itertools import ifilter, izip_longest, izip
 try:
-    from future_builtins import filter
-    from future_builtins import zip_longest
-    from future_builtins import zip
+    from itertools import ifilter as filter
 except ImportError:
     pass
 
+try:
+    from itertools import izip_longest as zip_longest
+except ImportError:
+    from itertools import zip_longest
+
+try:
+    from itertools import izip as zip
+except ImportError:
+    pass
 
 
 from glob import glob
@@ -40,19 +47,23 @@ def parsePQRAtomLine(line, has_chain):
     return strings,ints,floats
 
 def compareParsedAtoms(atom1, atom2):
-    return atom1[0:1] == atom2[0:1] and all(abs(x-y)<0.1 for x,y in izip(atom1[2],atom2[2]))
+    #return atom1[0:1] == atom2[0:1] and all(abs(x-y)<0.1 for x,y in izip(atom1[2],atom2[2]))
+    return atom1[0:1] == atom2[0:1] and all(abs(x-y)<0.1 for x,y in zip(atom1[2],atom2[2]))
 
 def ComparePQRAction(outputFileName, testFileName, correctFileName, has_chain=False):
     failure = False
     results = []
     with open(testFileName) as testFile:
         with open(correctFileName) as correctFile:
-            testAtoms = ifilter(isAtomLine, testFile)
-            correctAtoms = ifilter(isAtomLine, correctFile)
+            #testAtoms = ifilter(isAtomLine, testFile)
+            #correctAtoms = ifilter(isAtomLine, correctFile)
+            testAtoms = filter(isAtomLine, testFile)
+            correctAtoms = filter(isAtomLine, correctFile)
             check_error = False
             correct_total = 0.0
             test_total = 0.0
-            for testAtom, correctAtom in izip_longest(testAtoms, correctAtoms, fillvalue=None):
+            #for testAtom, correctAtom in izip_longest(testAtoms, correctAtoms, fillvalue=None):
+            for testAtom, correctAtom in zip_longest(testAtoms, correctAtoms, fillvalue=None):
                 if testAtom is None or correctAtom is None:
                     results.append('TEST ERROR: Result file is the wrong length!\n')
                     failure = True
@@ -175,12 +186,13 @@ def CompareTitCurvesAction(outputFileName, testDirName, correctDirName):
 
 
 def getSummaryLines(sourceFile):
-    while 'SUMMARY' not in sourceFile.next():
+    #while 'SUMMARY' not in sourceFile.next():
+    while 'SUMMARY' not in next(sourceFile):
         pass
 
     #Skip header
-    sourceFile.next()
-    line = sourceFile.next()
+    _ = next(sourceFile)
+    line = next(sourceFile)
 
     results = []
 
@@ -193,7 +205,7 @@ def getSummaryLines(sourceFile):
 
         results.append((strings,floats))
 
-        line = sourceFile.next()
+        line = next(sourceFile)
 
     return results
 
@@ -206,7 +218,8 @@ def ComparePROPKAAction(outputFileName, testFileName, correctFileName):
             correctPKAs = getSummaryLines(correctFile)
             correct_total = 0.0
             test_total = 0.0
-            for testPKA, correctPKA in izip_longest(testPKAs, correctPKAs, fillvalue=None):
+            #for testPKA, correctPKA in izip_longest(testPKAs, correctPKAs, fillvalue=None):
+            for testPKA, correctPKA in zip_longest(testPKAs, correctPKAs, fillvalue=None):
                 if testPKA is None or correctPKA is None:
                     results.append('TEST ERROR: Result file is the wrong length!')
                     failure = True

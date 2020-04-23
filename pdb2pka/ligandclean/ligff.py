@@ -1,5 +1,5 @@
 from src.forcefield import *
-from peoe_PDB2PQR import PEOE as calc_charges
+from .peoe_PDB2PQR import PEOE as calc_charges
 from src.pdb import *
 from src.definitions import *
 from pdb2pka import NEWligand_topology
@@ -24,7 +24,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
             definition: The updated definition for this protein
             Lig:       The ligand_charge_handler object
     """
-    
+
     Lig = ligand_charge_handler()
     Lig.read(ligdesc)
     atomnamelist=[]
@@ -35,7 +35,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
             sys.stderr.write("Duplicate atom names (%s) found in ligand file!\n" % atom.name)
         else:
             atomnamelist.append(atom.name)
-            
+
     if duplicatesFound:
         raise PDBInputError("Duplicate atoms names.")
     # Create the ligand definition from the mol2 data
@@ -51,7 +51,10 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     atommap = {}
     for line in X.lines[:-2]:
         obj = DefinitionAtom()
-        entries = string.split(line)
+        if(sys.version_info >= (3,0)):
+            entries = line.split();
+        else:
+            entries = string.split(line)
         if len(entries) != 4:
             raise PDBInputError("Invalid line for MOL2 definition!")
         name = entries[0]
@@ -66,7 +69,10 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     # The second to last line has a list of bonded partners
     #
     line = X.lines[-2]
-    bonds = string.split(line)
+    if(sys.version_info >= (3,0)):
+        bonds = line.split()
+    else:
+        bonds = string.split(line)
 
     for i in range(0,len(bonds),2):
         bondA = int(bonds[i])
@@ -78,7 +84,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
         atomB.bonds.append(atommap[bondA])
 
     # The last line is not yet supported - dihedrals
-    
+
     definition.map["LIG"] = ligresidue
 
     # Look for titratable groups in the ligand
@@ -91,9 +97,9 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     # Append the ligand data to the end of the PDB data
     #
     newpdblist=[]
-       
+
     # First the protein
-    nummodels = 0 
+    nummodels = 0
     for line in pdblist:
         if isinstance(line, END) or isinstance(line,MASTER): continue
         elif isinstance(line, MODEL):
@@ -101,7 +107,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
             if nummodels > 1: break
         else:
             newpdblist.append(line)
-    
+
     # Now the ligand
 
     for e in Lig.lAtoms:
@@ -114,23 +120,23 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     for rrres in  protein.chainmap['L'].residues:
         for aaat in rrres.atoms:
             for ligatoms in Lig.lAtoms:
-               
+
                 if ligatoms.name == aaat.name:
                     aaat.sybylType = ligatoms.sybylType
-    
+
                     # setting the formal charges
 
                     if ligatoms.sybylType == "O.co2":
                         aaat.formalcharge = -0.5
-                    else: 
+                    else:
                         aaat.formalcharge = 0.0
                     xxxlll = []
                     #for xxx in ligatoms.lBondedAtoms:
                     for bond in ligresidue.getAtom(aaat.name).bonds:
                         xxxlll.append(bond)
-        
+
                     aaat.intrabonds = xxxlll
-   
+
                     # charge initialisation must happen somewhere else
                     aaat.charge = 0.0
 
@@ -202,7 +208,7 @@ class ligforcefield(Forcefield):
         #self.lig.read(ligfilename)
         return
 
-    
+
     def getParams(self,residue,name):
         """
             Get the parameters associated with the input fields.
@@ -253,7 +259,7 @@ class ligforcefield(Forcefield):
 #
 # Parse radii data for C, N, O, S, H, Br, F, P are from Sitkoff et al's paper (Sitkoff D, Sharp KA, Honig B.
 # Accurate Calculation of Hydration Free Energies Using Macroscopic Solvent Models. J Phys Chem 98 (7) 1978-88, 1994.
-# (http://pubs.acs.org/cgi-bin/archive.cgi/jpchax/1994/98/i07/pdf/j100058a043.pdf)) and AMBER mailing list 
+# (http://pubs.acs.org/cgi-bin/archive.cgi/jpchax/1994/98/i07/pdf/j100058a043.pdf)) and AMBER mailing list
 # (http://amber.ch.ic.ac.uk/archive/). The radius for Cholrine is Van der Waals radius.
 #
 
@@ -268,7 +274,7 @@ ParseRadiiDict = {"C": 1.70,
                    "Cl": 1.75}
 
 #Add lower case keys to more lenient matching.
-ParseRadiiDictLower = dict((key.lower(), value) for key, value in ParseRadiiDict.items()) 
+ParseRadiiDictLower = dict((key.lower(), value) for key, value in ParseRadiiDict.items())
 ParseRadiiDict.update(ParseRadiiDictLower)
 
 class ligand_charge_handler(MOL2MOLECULE):
@@ -296,10 +302,15 @@ class ligand_charge_handler(MOL2MOLECULE):
             atoms_now=[]
             for at in residue.atoms:
                 atoms_now.append(at.name)
-            atoms_now.sort()
-            #print "atoms_now ",atoms_now
-            atoms_last_calc.sort()
-            #
+
+            if(sys.version_info >= (3,0)):
+                atoms_now = sorted(atoms_now);
+                atoms_last_calc = sorted(atoms_last_calc);
+            else:
+                atoms_now.sort()
+                #print "atoms_now ",atoms_now
+                atoms_last_calc.sort()
+
 #            xxnetqxx = 0.0
 #            for aa in residue.atoms:
 #                #print "NOT recalced  %s  %1.4f  %1.4f " %(aa.name, aa.charge, aa.formalcharge)
@@ -351,7 +362,7 @@ class ligand_charge_handler(MOL2MOLECULE):
 
     #
     # ----
-    #   
+    #
 
     def recalc_charges(self,residue):
         #
@@ -378,7 +389,7 @@ class ligand_charge_handler(MOL2MOLECULE):
         for at in residue.atoms: # WAS: self.lAtoms:
             ele = at.sybylType.split('.')[0]
             charge = at.charge
-            if ParseRadiiDict.has_key(ele):
+            if ele in ParseRadiiDict:
                 radius = ParseRadiiDict[ele]
             else:
                 raise('Please check ParseRadiiDict in ligff.py -- radius data not found for',ele)
@@ -386,4 +397,4 @@ class ligand_charge_handler(MOL2MOLECULE):
             # Store the radii and charges
             #
             self.ligand_props[at.name]={'charge':charge,'radius':radius}
-        return    
+        return

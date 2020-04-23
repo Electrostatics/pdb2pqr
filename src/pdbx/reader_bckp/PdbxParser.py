@@ -1,17 +1,17 @@
 ##
-# File: PdbxParser.py
-# Date: 2009-10-25 Jdw Original from py-pdbx-parser-v2
+# File:  PdbxParser.py
+# Date:  2009-10-25 Jdw  Original from py-pdbx-parser-v2
 #
 # Update:
 #
 # 2009-11-05 - (jdw) Change table storage architecture for list of
-# dictionaries to list of lists.
+#                   dictionaries to list of lists.
 # 2012-01-09 - (jdw) This module now obsolted by PdbxReader/PdbxWriter
-# modules. APIs are preserved.
+#                   modules.  APIs are preserved.
 #
 # 2012-09-01 - (jdw) Revise tokenizer to better handle embedded quoting.
 #
-# NOTE - - Now obsolete - Use pdb.reader.PdbxReader & pdbx.writer.PdbxWriter
+# NOTE -       - Now obsolete - Use pdb.reader.PdbxReader & pdbx.writer.PdbxWriter
 #
 ##
 """
@@ -23,26 +23,24 @@ Acknowledgements:
  used in the PyMMLIB package.
 
  PyMMLib Development Group
- Authors: Ethan Merritt: merritt@u.washington.ed & Jay Painter: jay.painter@gmail.com
- See: http://pymmlib.sourceforge.net/
+ Authors: Ethan Merritt: merritt@u.washington.ed  & Jay Painter: jay.painter@gmail.com
+ See:  http://pymmlib.sourceforge.net/
 
 """
-import re
-import sys
-from pdbx.reader.PdbxContainers import DataCategory, DataContainer, DefinitionContainer
 
 __docformat__ = "restructuredtext en"
-__author__ = "John Westbrook"
-__email__ = "jwest@rcsb.rutgers.edu"
-__license__ = "Creative Commons Attribution 3.0 Unported"
-__version__ = "V0.01"
+__author__    = "John Westbrook"
+__email__     = "jwest@rcsb.rutgers.edu"
+__license__   = "Creative Commons Attribution 3.0 Unported"
+__version__   = "V0.01"
 
+import re,sys
+from PdbxContainers import *
 
 class PdbxError(Exception):
     """ Class for catch general errors
     """
     pass
-
 
 class SyntaxError(Exception):
     """ Class for catching syntax errors
@@ -56,23 +54,22 @@ class SyntaxError(Exception):
         return "%%ERROR - [at line: %d] %s" % (self.lineNumber, self.text)
 
 
+
 class PdbxReader(object):
     """ PDBx reader for data files and dictionaries.
 
     """
-    def __init__(self, ifh):
-        """ ifh - input file handle returned by open()
+    def __init__(self,ifh):
+        """  ifh - input file handle returned by open()
         """
         #
         self.__curLineNumber = 0
-        self.__ifh = ifh
-        self.__stateDict = {
-            "data": "ST_DATA_CONTAINER",
-            "loop": "ST_TABLE",
-            "global": "ST_GLOBAL_CONTAINER",
-            "save": "ST_DEFINITION",
-            "stop": "ST_STOP"
-        }
+        self.__ifh=ifh
+        self.__stateDict={"data":   "ST_DATA_CONTAINER",
+                          "loop":   "ST_TABLE",
+                          "global": "ST_GLOBAL_CONTAINER",
+                          "save":   "ST_DEFINITION",
+                          "stop":   "ST_STOP"}
 
     def read(self, containerList):
         """
@@ -90,7 +87,7 @@ class PdbxReader(object):
     def __syntaxError(self, errText):
         raise SyntaxError(self.__curLineNumber, errText)
 
-    def __getContainerName(self, inWord):
+    def __getContainerName(self,inWord):
         """ Returns the name of the data_ or save_ container
         """
         return str(inWord[5:]).strip()
@@ -100,29 +97,29 @@ class PdbxReader(object):
 
            Returns: (reserved word, state)
            where -
-              reserved word - is one of CIF syntax elements:
+              reserved word -  is one of CIF syntax elements:
                                data_, loop_, global_, save_, stop_
               state - the parser state required to process this next section.
         """
         i = inWord.find("_")
         if i == -1:
-            return None, "ST_UNKNOWN"
+            return None,"ST_UNKNOWN"
 
         try:
-            rWord = inWord[:i].lower()
+            rWord=inWord[:i].lower()
             return rWord, self.__stateDict[rWord]
         except:
-            return None, "ST_UNKNOWN"
+            return None,"ST_UNKNOWN"
 
     def __parser(self, tokenizer, containerList):
         """ Parser for PDBx data files and dictionaries.
 
-            Input - tokenizer() reentrant method recognizing data item names
-                    (_category.attribute) quoted strings (single, double and
-                    multi-line semi-colon delimited), and unquoted strings.
+            Input - tokenizer() reentrant method recognizing data item names (_category.attribute)
+                    quoted strings (single, double and multi-line semi-colon delimited), and unquoted
+                    strings.
 
-                    containerList - list-type container for data and definition
-                    objects parsed from from the input file.
+                    containerList -  list-type container for data and definition objects parsed from
+                                     from the input file.
 
             Return:
                     containerList - is appended with data and definition objects -
@@ -135,7 +132,7 @@ class PdbxReader(object):
         curCategory = None
         #
         curRow = None
-        state = None
+        state =  None
 
         # Find the first reserved word and begin capturing data.
         #
@@ -143,16 +140,16 @@ class PdbxReader(object):
             curCatName, curAttName, curQuotedString, curWord = tokenizer.next()
             if curWord is None:
                 continue
-            reservedWord, state = self.__getState(curWord)
+            reservedWord, state  = self.__getState(curWord)
             if reservedWord is not None:
                 break
 
         while True:
             #
-            # Set the current state -
+            #  Set the current state  -
             #
-            # At this point in the processing cycle we are expecting a token containing
-            # either a '_category.attribute' or a reserved word.
+            #  At this point in the processing cycle we are expecting a token containing
+            #  either a '_category.attribute'  or a reserved word.
             #
             if curCatName is not None:
                 state = "ST_KEY_VALUE_PAIR"
@@ -163,7 +160,7 @@ class PdbxReader(object):
                 return
 
             #
-            # Process _category.attribute value assignments
+            # Process  _category.attribute  value assignments
             #
             if state == "ST_KEY_VALUE_PAIR":
                 try:
@@ -175,7 +172,7 @@ class PdbxReader(object):
                     try:
                         curContainer.append(curCategory)
                     except AttributeError:
-                        self.__syntaxError("Category cannot be added to data_ block")
+                        self.__syntaxError("Category cannot be added to  data_ block")
                         return
 
                     curRow = []
@@ -195,17 +192,18 @@ class PdbxReader(object):
                 else:
                     curCategory.appendAttribute(curAttName)
 
+
                 # Get the data for this attribute from the next token
                 tCat, tAtt, curQuotedString, curWord = tokenizer.next()
 
                 if tCat is not None or (curQuotedString is None and curWord is None):
-                    self.__syntaxError("Missing data for item _%s.%s" % (curCatName, curAttName))
+                    self.__syntaxError("Missing data for item _%s.%s" % (curCatName,curAttName))
 
                 if curWord is not None:
                     #
-                    # Validation check token for misplaced reserved words -
+                    # Validation check token for misplaced reserved words  -
                     #
-                    reservedWord, state = self.__getState(curWord)
+                    reservedWord, state  = self.__getState(curWord)
                     if reservedWord is not None:
                         self.__syntaxError("Unexpected reserved word: %s" % (reservedWord))
 
@@ -225,16 +223,16 @@ class PdbxReader(object):
             #
             elif state == "ST_TABLE":
 
-                # The category name in the next curCatName, curAttName pair
-                # defines the name of the category container.
-                curCatName, curAttName, curQuotedString, curWord = tokenizer.next()
+                # The category name in the next curCatName,curAttName pair
+                #    defines the name of the category container.
+                curCatName,curAttName,curQuotedString,curWord = tokenizer.next()
 
                 if curCatName is None or curAttName is None:
                     self.__syntaxError("Unexpected token in loop_ declaration")
                     return
 
                 # Check for a previous category declaration.
-                if curCatName in categoryIndex:
+                if categoryIndex.has_key(curCatName):
                     self.__syntaxError("Duplicate category declaration in loop_")
                     return
 
@@ -261,16 +259,15 @@ class PdbxReader(object):
 
                     curCategory.appendAttribute(curAttName)
 
+
                 # If the next token is a 'word', check it for any reserved words -
                 if curWord is not None:
-                    reservedWord, state = self.__getState(curWord)
+                    reservedWord, state  = self.__getState(curWord)
                     if reservedWord is not None:
                         if reservedWord == "stop":
                             return
                         else:
-                            self.__syntaxError(
-                                "Unexpected reserved word after loop declaration: %s" %
-                                (reservedWord))
+                            self.__syntaxError("Unexpected reserved word after loop declaration: %s" % (reservedWord))
 
                 # Read the table of data for this loop_ -
                 while True:
@@ -283,7 +280,7 @@ class PdbxReader(object):
                         elif curQuotedString is not None:
                             curRow.append(curQuotedString)
 
-                        curCatName, curAttName, curQuotedString, curWord = tokenizer.next()
+                        curCatName,curAttName,curQuotedString,curWord = tokenizer.next()
 
                     # loop_ data processing ends if -
 
@@ -296,29 +293,31 @@ class PdbxReader(object):
                         reservedWord, state = self.__getState(curWord)
                         if reservedWord is not None:
                             break
+
                 continue
+
 
             elif state == "ST_DEFINITION":
                 # Ignore trailing unnamed saveframe delimiters e.g. 'save_'
-                sName = self.__getContainerName(curWord)
+                sName=self.__getContainerName(curWord)
                 if (len(sName) > 0):
                     curContainer = DefinitionContainer(sName)
                     containerList.append(curContainer)
                     categoryIndex = {}
                     curCategory = None
 
-                curCatName, curAttName, curQuotedString, curWord = tokenizer.next()
+                curCatName,curAttName,curQuotedString,curWord = tokenizer.next()
 
             elif state == "ST_DATA_CONTAINER":
                 #
-                dName = self.__getContainerName(curWord)
+                dName=self.__getContainerName(curWord)
                 if len(dName) == 0:
-                    dName = "unidentified"
+                    dName="unidentified"
                 curContainer = DataContainer(dName)
                 containerList.append(curContainer)
                 categoryIndex = {}
                 curCategory = None
-                curCatName, curAttName, curQuotedString, curWord = tokenizer.next()
+                curCatName,curAttName,curQuotedString,curWord = tokenizer.next()
 
             elif state == "ST_STOP":
                 return
@@ -328,11 +327,12 @@ class PdbxReader(object):
                 containerList.append(curContainer)
                 categoryIndex = {}
                 curCategory = None
-                curCatName, curAttName, curQuotedString, curWord = tokenizer.next()
+                curCatName,curAttName,curQuotedString,curWord = tokenizer.next()
 
             elif state == "ST_UNKNOWN":
                 self.__syntaxError("Unrecogized syntax element: " + str(curWord))
                 return
+
 
     def __tokenizer(self, ifh):
         """ Tokenizer method for the mmCIF syntax file -
@@ -347,24 +347,24 @@ class PdbxReader(object):
         """
         #
         # Regex definition for mmCIF syntax - semi-colon delimited strings are handled
-        # outside of this regex.
+        #                                     outside of this regex.
         mmcifRe = re.compile(
             r"(?:"
 
-            "(?:_(.+?)[.](\S+))" "|"  # _category.attribute
+             "(?:_(.+?)[.](\S+))"               "|"  # _category.attribute
 
-            "(?:['](.*?)(?:[']\s|[']$))" "|"  # single quoted strings
-            "(?:[\"](.*?)(?:[\"]\s|[\"]$))" "|"  # double quoted strings
+             "(?:['](.*?)(?:[']\s|[']$))"       "|"  # single quoted strings
+             "(?:[\"](.*?)(?:[\"]\s|[\"]$))"    "|"  # double quoted strings
 
-            "(?:\s*#.*$)" "|"  # comments (dumped)
+             "(?:\s*#.*$)"                      "|"  # comments (dumped)
 
-            "(\S+)"  # unquoted words
+             "(\S+)"                                 # unquoted words
 
-            ")")
+             ")")
 
         fileIter = iter(ifh)
 
-        # Tokenizer loop begins here ---
+        ## Tokenizer loop begins here ---
         while True:
             line = fileIter.next()
             self.__curLineNumber += 1
@@ -374,7 +374,7 @@ class PdbxReader(object):
                 continue
 
             # Gobble up the entire semi-colon/multi-line delimited string and
-            # and stuff this into the string slot in the return tuple
+            #    and stuff this into the string slot in the return tuple
             #
             if line.startswith(";"):
                 mlString = [line[1:]]
@@ -392,7 +392,7 @@ class PdbxReader(object):
                 #
                 # Need to process the remainder of the current line -
                 line = line[1:]
-                # continue
+                #continue
 
             # Apply regex to the current line consolidate the single/double
             # quoted within the quoted string category
@@ -405,7 +405,7 @@ class PdbxReader(object):
                         qs = tgroups[3]
                     else:
                         qs = None
-                    groups = (tgroups[0], tgroups[1], qs, tgroups[4])
+                    groups = (tgroups[0],tgroups[1],qs,tgroups[4])
                     yield groups
 
     def __tokenizerOrg(self, ifh):
@@ -419,13 +419,13 @@ class PdbxReader(object):
         mmcifRe = re.compile(
             r"(?:"
 
-             "(?:_(.+?)[.](\S+))" "|" # _category.attribute
+             "(?:_(.+?)[.](\S+))"               "|"  # _category.attribute
 
-             "(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|" # quoted strings
+             "(?:['\"](.*?)(?:['\"]\s|['\"]$))"   "|"    # quoted strings
 
-             "(?:\s*#.*$)" "|" # comments (dumped)
+             "(?:\s*#.*$)"                      "|"  # comments (dumped)
 
-             "(\S+)" # unquoted words
+             "(\S+)"                                 # unquoted words
 
              ")")
 
@@ -433,23 +433,23 @@ class PdbxReader(object):
         """
         #
         # Regex definition for mmCIF syntax - semi-colon delimited strings are handled
-        # outside of this regex.
+        #                                     outside of this regex.
         mmcifRe = re.compile(
             r"(?:"
 
-            "(?:_(.+?)[.](\S+))" "|"  # _category.attribute
+             "(?:_(.+?)[.](\S+))"               "|"  # _category.attribute
 
-            "(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
+             "(?:['\"](.*?)(?:['\"]\s|['\"]$))"   "|"    # quoted strings
 
-            "(?:\s*#.*$)" "|"  # comments (dumped)
+             "(?:\s*#.*$)"                      "|"  # comments (dumped)
 
-            "(\S+)"  # unquoted words
+             "(\S+)"                                 # unquoted words
 
-            ")")
+             ")")
 
         fileIter = iter(ifh)
 
-        # Tokenizer loop begins here ---
+        ## Tokenizer loop begins here ---
         while True:
             line = fileIter.next()
             self.__curLineNumber += 1
@@ -459,7 +459,7 @@ class PdbxReader(object):
                 continue
 
             # Gobble up the entire semi-colon/multi-line delimited string and
-            # and stuff this into the string slot in the return tuple
+            #    and stuff this into the string slot in the return tuple
             #
             if line.startswith(";"):
                 mlString = [line[1:]]
@@ -477,52 +477,52 @@ class PdbxReader(object):
                 #
                 # Need to process the remainder of the current line -
                 line = line[1:]
-                # continue
+                #continue
 
-            # Apply regex to the current line
+            ## Apply regex to the current line
             for it in mmcifRe.finditer(line):
                 groups = it.groups()
                 if groups != (None, None, None, None):
                     yield groups
 
-
+
 class PdbxWriter(object):
     """Write PDBx data files or dictionaries using the input container
        or container list.
     """
-    def __init__(self, ofh=sys.stdout):
-        self.__ofh = ofh
-        self.__containerList = []
+    def __init__(self,ofh=sys.stdout):
+        self.__ofh=ofh
+        self.__containerList=[]
         self.__MAXIMUM_LINE_LENGTH = 2048
         self.__SPACING = 2
         self.__INDENT_DEFINITION = 3
         self.__indentSpace = " " * self.__INDENT_DEFINITION
-        self.__doDefinitionIndent = False
+        self.__doDefinitionIndent=False
 
     def write(self, containerList):
-        self.__containerList = containerList
-        for container in self.__containerList:
+        self.__containerList=containerList
+        for  container in self.__containerList:
             self.writeContainer(container)
 
-    def writeContainer(self, container):
-        indS = " " * self.__INDENT_DEFINITION
+    def writeContainer(self,container):
+        indS=" " *  self.__INDENT_DEFINITION
         if isinstance(container, DefinitionContainer):
             self.__write("save_%s\n" % container.getName())
-            self.__doDefinitionIndent = True
-            self.__write(indS + "#\n")
+            self.__doDefinitionIndent=True
+            self.__write(indS+"#\n")
         elif isinstance(container, DataContainer):
             if (container.getGlobal()):
                 self.__write("global_\n")
-                self.__doDefinitionIndent = False
+                self.__doDefinitionIndent=False
                 self.__write("\n")
             else:
                 self.__write("data_%s\n" % container.getName())
-                self.__doDefinitionIndent = False
+                self.__doDefinitionIndent=False
                 self.__write("#\n")
 
         for nm in container.getObjNameList():
-            obj = container.getObj(nm)
-            objL = obj.getRowList()
+            obj=container.getObj(nm)
+            objL=obj.getRowList()
 
             # Skip empty objects
             if len(objL) == 0:
@@ -539,7 +539,7 @@ class PdbxWriter(object):
                 raise PdbxError()
 
             if self.__doDefinitionIndent:
-                self.__write(indS + "#")
+                self.__write(indS+"#")
             else:
                 self.__write("#")
 
@@ -554,22 +554,22 @@ class PdbxWriter(object):
     def __writeItemValueFormat(self, myCategory):
 
         # Compute the maximum item name length within this category -
-        attributeNameLengthMax = 0
+        attributeNameLengthMax  = 0
         for attributeName in myCategory.getAttributeList():
             attributeNameLengthMax = max(attributeNameLengthMax, len(attributeName))
         itemNameLengthMax = self.__SPACING + len(myCategory.getName()) + attributeNameLengthMax + 2
         #
-        lineList = []
-        for attributeName, iPos in myCategory.getAttributeListWithOrder():
+        lineList=[]
+        for attributeName,iPos in myCategory.getAttributeListWithOrder():
             lineList.append("\n")
-            if self.__doDefinitionIndent:
-                # - add indent --
+            if  self.__doDefinitionIndent:
+                #        - add indent --
                 lineList.append(self.__indentSpace)
 
             itemName = "_%s.%s" % (myCategory.getName(), attributeName)
             lineList.append(itemName.ljust(itemNameLengthMax))
 
-            lineList.append(myCategory.getValueFormatted(attributeName, 0))
+            lineList.append(myCategory.getValueFormatted(attributeName,0))
 
         lineList.append("\n")
         self.__write("".join(lineList))
@@ -578,14 +578,14 @@ class PdbxWriter(object):
 
         # Write the declaration of the loop_
         #
-        lineList = []
+        lineList=[]
         lineList.append('\n')
-        if self.__doDefinitionIndent:
+        if  self.__doDefinitionIndent:
             lineList.append(self.__indentSpace)
         lineList.append("loop_")
         for attributeName in myCategory.getAttributeList():
             lineList.append('\n')
-            if self.__doDefinitionIndent:
+            if  self.__doDefinitionIndent:
                 lineList.append(self.__indentSpace)
             itemName = "_%s.%s" % (myCategory.getName(), attributeName)
             lineList.append(itemName)
@@ -594,42 +594,42 @@ class PdbxWriter(object):
         #
         # Write the data in tabular format -
         #
-        # print myCategory.getName()
-        # print myCategory.getAttributeList()
+        #print myCategory.getName()
+        #print myCategory.getAttributeList()
 
-        formatTypeList, dataTypeList = myCategory.getFormatTypeList()
-        maxLengthList = myCategory.getAttributeValueMaxLengthList()
-        spacing = " " * self.__SPACING
+        formatTypeList,dataTypeList=myCategory.getFormatTypeList()
+        maxLengthList=myCategory.getAttributeValueMaxLengthList()
+        spacing   = " " * self.__SPACING
         #
 
-        # print formatTypeList
-        # print dataTypeList
-        # print maxLengthList
+        #print formatTypeList
+        #print dataTypeList
+        #print maxLengthList
         #
         for iRow in range(myCategory.getRowCount()):
-            lineList = []
+            lineList     = []
             lineList.append('\n')
-            if self.__doDefinitionIndent:
-                lineList.append(self.__indentSpace + " ")
+            if  self.__doDefinitionIndent:
+                lineList.append(self.__indentSpace + "  ")
 
             for iAt in range(myCategory.getAttributeCount()):
                 formatType = formatTypeList[iAt]
-                maxLength = maxLengthList[iAt]
+                maxLength  = maxLengthList[iAt]
 
                 if (formatType == 'FT_UNQUOTED_STRING' or formatType == 'FT_NULL_VALUE'):
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val=myCategory.getValueFormattedByIndex(iAt,iRow)
                     lineList.append(val.ljust(maxLength))
 
                 elif formatType == 'FT_NUMBER':
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val=myCategory.getValueFormattedByIndex(iAt,iRow)
                     lineList.append(val.rjust(maxLength))
 
                 elif formatType == 'FT_QUOTED_STRING':
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val=myCategory.getValueFormattedByIndex(iAt,iRow)
                     lineList.append(val.ljust(maxLength))
 
                 elif formatType == "FT_MULTI_LINE_STRING":
-                    val = myCategory.getValueFormattedByIndex(iAt, iRow)
+                    val=myCategory.getValueFormattedByIndex(iAt,iRow)
                     lineList.append(val)
 
                 lineList.append(spacing)

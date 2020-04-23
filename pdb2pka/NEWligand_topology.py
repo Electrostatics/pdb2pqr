@@ -5,15 +5,17 @@
 #
 
 import numpy
-    
+import sys
+from operator import itemgetter
 #from sets import Set
-from ligandclean.trial_templates import *
-from ligandclean.lookuptable import *
+from .ligandclean.trial_templates import *
+from .ligandclean.lookuptable import *
+from .substruct import Algorithms
 try:
-    from substruct import Algorithms
+    from .substruct import Algorithms
 except ImportError:
-    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"    
-    raise(ImportError, txt)
+    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"
+    raise ImportError(txt)
 from types import *
 
 def length(vector):
@@ -80,7 +82,7 @@ class get_ligand_topology:
             # Get the torsion angles
             #
             atoms=self.atoms.keys()
-            atoms.sort()
+            atoms = sorted(atoms)
             for atom in atoms:
                 self.atoms[atom]['torsions']=self.get_torsions(atom)
             #
@@ -129,7 +131,10 @@ class get_ligand_topology:
             # Get the torsion angles
             #
             atoms=self.atoms.keys()
-            atoms.sort()
+            if(sys.version_info > (3,0)):
+                atoms = sorted(atoms);
+            else:
+                atoms.sort()
             for atom in atoms:
                 self.atoms[atom]['torsions']=self.get_torsions(atom)
             self.lines=self.create_deflines()
@@ -212,7 +217,7 @@ class get_ligand_topology:
                 stype=O_types[sum_of_bondorder][number_of_bonds]
             else:
                 pass
-            self.atoms[atom]['sybylType']=stype 
+            self.atoms[atom]['sybylType']=stype
             #print atom,stype
         #
         # Do some postchecks
@@ -312,7 +317,7 @@ class get_ligand_topology:
         # commented out by Paul 010206
 #        print 'Jens has to write the stuff for filtering torsions..\n'
         return possible_torsions
-                        
+
     #
     # ---------
     #
@@ -323,7 +328,10 @@ class get_ligand_topology:
         #
         self.numbers={}
         atoms=self.atoms.keys()
-        atoms.sort()
+        if(sys.version_info >= (3,0)):
+            atoms = sorted(atoms);
+        else:
+            atoms.sort()
         number=0
         for atom in atoms:
             number=number+1
@@ -366,7 +374,7 @@ class get_ligand_topology:
                     written=written+1
         lines.append('%d %s' %(written,tors))
         return lines
-                    
+
 
     #
     # ---------
@@ -396,10 +404,12 @@ class get_ligand_topology:
         # Reformat the lists of lists of lists of ... that we get from the ring detection
         #
 
-        if type(item) is ListType:
+        #if type(item) is ListType:
+        if(isinstance(item, list)):
             real_list=[]
             for sub_item in item:
-                if not type(sub_item) is ListType:
+                #if not type(sub_item) is ListType:
+                if(not isinstance(sub_item, list)):
                     real_list.append(sub_item)
                 else:
                     self.get_items(sub_item)
@@ -408,7 +418,7 @@ class get_ligand_topology:
             #
             if real_list!=[]:
                 self.biglist.append(real_list)
-            return 
+            return
         else:
             raise 'this should not happen'
 
@@ -423,7 +433,7 @@ class get_ligand_topology:
             self.atoms[current_atom]['in_ring'] = 1
         return
 
-                 
+
 
     def find_titratable_groups(self):
         """#
@@ -446,9 +456,9 @@ class get_ligand_topology:
         sorted_ring_list = []
         for rring in ring_list:
             rring = rring[:-1]
-            rring.sort()
+            rring = sorted(rring, key=itemgetter(0))
             sorted_ring_list.append(rring)
-        sorted_ring_list.sort()   
+        sorted_ring_list = sorted(sorted_ring_list)
         #
         # delete ring redundancies - only if ring present
         if len(sorted_ring_list) > 0:
@@ -527,7 +537,7 @@ class get_ligand_topology:
                 AGL = numpy.zeros((len(AtomNameListList),len(AtomNameListList)))
                 if str(AGL[0,0]) != '0':
                     AGL = numpy.zeros((len(AtomNameListList),len(AtomNameListList)), numpy.int)
-				
+
                 daseinecounter = 0
                 dasanderecounter = 0
                 # what again are these counters counting?
@@ -603,7 +613,7 @@ class get_ligand_topology:
                     dict_of_matched_lig_fragments[dictCounter]['titratableatoms']=deposit_list
                     dict_of_matched_lig_fragments[dictCounter]['matching_atoms']=dict
                     dictCounter += 1
-        
+
         #if len(AllCliqueList) == 0:
         #    print
         #    print
@@ -661,8 +671,8 @@ class get_ligand_topology:
             NonRedundantCliques = AllCliqueList
         # redundancies should be removed now...
         #
-       
-         
+
+
         for allCl in dict_of_matched_lig_fragments:
             if dict_of_matched_lig_fragments[allCl]['matchedligatoms'] == NonRedundantCliques[0]:
                 print("WE MATCHED", dict_of_matched_lig_fragments[allCl]['templatename'])
@@ -672,7 +682,7 @@ class get_ligand_topology:
                 print("titratableatoms            : ", dict_of_matched_lig_fragments[allCl]['titratableatoms'])
                 print("matching atoms             : ", dict_of_matched_lig_fragments[allCl]['matching_atoms'])
         # re-run matching to get mutiple titratable sites?
-        
+
         # TJD: This is to resolve the bug fix when allCl is None
         if dict_of_matched_lig_fragments != {}:
             print(dict_of_matched_lig_fragments[allCl])

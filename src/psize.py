@@ -10,40 +10,40 @@
     hacked by Nathan Baker
 
         ----------------------------
-   
+
     PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
     Poisson-Boltzmann electrostatics calculations
 
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
+    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
+    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
+    Northwest National Laboratory, operated by Battelle Memorial Institute,
+    Pacific Northwest Division for the U.S. Department Energy.;
     Paul Czodrowski & Gerhard Klebe, University of Marburg.
 
 	All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without modification, 
+	Redistribution and use in source and binary forms, with or without modification,
 	are permitted provided that the following conditions are met:
 
-		* Redistributions of source code must retain the above copyright notice, 
+		* Redistributions of source code must retain the above copyright notice,
 		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
+		* Redistributions in binary form must reproduce the above copyright notice,
+		  this list of conditions and the following disclaimer in the documentation
 		  and/or other materials provided with the distribution.
         * Neither the names of University College Dublin, Battelle Memorial Institute,
           Pacific Northwest National Laboratory, US Department of Energy, or University
           of Marburg nor the names of its contributors may be used to endorse or promote
           products derived from this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 	OF THE POSSIBILITY OF SUCH DAMAGE.
 
     ----------------------------
@@ -76,7 +76,7 @@ class Psize:
 
     def parseString(self, structure):
         """ Parse the input structure as a string in PDB or PQR format """
-        lines = string.split(structure, "\n")
+        lines = str.split(structure, "\n")
         self.parseLines(lines)
 
     def parseInput(self, filename):
@@ -87,10 +87,10 @@ class Psize:
     def parseLines(self, lines):
         """ Parse the lines """
         for line in lines:
-            if string.find(line,"ATOM") == 0:
-                subline = string.replace(line[30:], "-", " -")
-                words = string.split(subline)
-                if len(words) < 5:    
+            if str.find(line,"ATOM") == 0:
+                subline = str.replace(line[30:], "-", " -")
+                words = str.split(subline)
+                if len(words) < 5:
                     continue
                 self.gotatom += 1
                 self.q = self.q + float(words[3])
@@ -103,13 +103,13 @@ class Psize:
                         self.minlen[i] = center[i]-rad
                     if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
                         self.maxlen[i] = center[i]+rad
-            elif string.find(line, "HETATM") == 0:
+            elif str.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
                 # Special handling for no ATOM entries in the pqr file, only HETATM entries
                 if self.gotatom == 0:
-                    subline = string.replace(line[30:], "-", " -")
-                    words = string.split(subline)
-                    if len(words) < 5:    
+                    subline = str.replace(line[30:], "-", " -")
+                    words = str.split(subline)
+                    if len(words) < 5:
                         continue
                     self.q = self.q + float(words[3])
                     rad = float(words[4])
@@ -121,7 +121,7 @@ class Psize:
                             self.minlen[i] = center[i]-rad
                         if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
                             self.maxlen[i] = center[i]+rad
-    
+
     def setConstant(self, name, value):
         """ Set a constant to a value; returns 0 if constant not found """
         try:
@@ -191,15 +191,15 @@ class Psize:
             else:
                 i = nsmall.index(max(nsmall))
                 nsmall[i] = 32 * ((nsmall[i] - 1)/32 - 1) + 1
-                if nsmall <= 0:
+                if nsmall[i] <= 0:
                     stdout.write("You picked a memory ceiling that is too small\n")
-                    sys.exit(0)        
+                    sys.exit(0)
 
         self.nsmall = nsmall
         return nsmall
 
     def setProcGrid(self, n, nsmall):
-        """ Calculate the number of processors required to span each 
+        """ Calculate the number of processors required to span each
         dimension """
 
         zofac = 1 + 2 * self.constants["ofrac"]
@@ -207,7 +207,7 @@ class Psize:
             self.np[i] = n[i]/float(nsmall[i])
             if self.np[i] > 1: self.np[i] = int(zofac*n[i]/nsmall[i] + 1.0)
         return self.np
-                                                
+
     def setFocus(self, flen, np, clen):
         """ Calculate the number of levels of focusing required for each
         processor subdomain """
@@ -227,28 +227,28 @@ class Psize:
         minlen = self.getMin()
         self.setLength(maxlen, minlen)
         olen = self.getLength()
-        
+
         self.setCoarseGridDims(olen)
-        clen = self.getCoarseGridDims()        
-        
+        clen = self.getCoarseGridDims()
+
         self.setFineGridDims(olen, clen)
         flen = self.getFineGridDims()
-        
+
         self.setCenter(maxlen, minlen)
         cen = self.getCenter()
-        
+
         self.setFineGridPoints(flen)
         n = self.getFineGridPoints()
-        
+
         self.setSmallest(n)
         nsmall = self.getSmallest()
-        
+
         self.setProcGrid(n, nsmall)
         np = self.getProcGrid()
-        
+
         self.setFocus(flen, np, clen)
         nfocus = self.getFocus()
-        
+
     def getMax(self): return self.maxlen
     def getMin(self): return self.minlen
     def getCharge(self): return self.q
@@ -265,19 +265,19 @@ class Psize:
         """ Parse input PQR file and set parameters """
         self.parseInput(filename)
         self.setAll()
-    
+
     def printResults(self):
         """ Return a string with the formatted results """
 
         str = "\n"
-        
+
         if self.gotatom > 0:
 
             maxlen = self.getMax()
             minlen = self.getMin()
             q = self.getCharge()
             olen = self.getLength()
-            clen = self.getCoarseGridDims()        
+            clen = self.getCoarseGridDims()
             flen = self.getFineGridDims()
             cen = self.getCenter()
             n = self.getFineGridPoints()
@@ -289,7 +289,7 @@ class Psize:
 
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             gmem = 200.0 * n[0] * n[1] * n[2] / 1024 / 1024
-            
+
             # Print the calculated entries
             str = str + "################# MOLECULE INFO ####################\n"
             str = str + "Number of ATOM entries = %i\n" % self.gotatom
@@ -370,7 +370,7 @@ def usage(rc):
     usage = usage + "                         dimension can be reduced during focusing\n"
     usage = usage + "                         [default = %g]\n" % psize.getConstant("redfac")
 
-    
+
     stderr.write(usage)
     sys.exit(rc)
 
@@ -383,13 +383,13 @@ def main():
     except getopt.GetoptError as details:
         stderr.write("Option error (%s)!\n" % details)
         usage(2)
-    if len(args) != 1: 
+    if len(args) != 1:
         stderr.write("Invalid argument list!\n")
         usage(2)
     else:
         filename = args[0]
 
-    psize = Psize()    
+    psize = Psize()
 
     for o, a in opts:
         if o.lower() == "--help" or o == "-h":
@@ -410,7 +410,7 @@ def main():
             psize.setConstant("redfac", float(a))
 
     psize.runPsize(filename)
-    
+
     stdout.write("# Constants used: \n");
     for key in list(psize.constants.keys()):
         stdout.write("# \t%s: %s\n" % (key, psize.constants[key]))
@@ -419,5 +419,5 @@ def main():
     stdout.write("# for more information on these default values\n" )
     stdout.write(psize.printResults())
 
-    
+
 if __name__ == "__main__": main()

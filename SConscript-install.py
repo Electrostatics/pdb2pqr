@@ -55,8 +55,11 @@ def installFile(file_name, build_target='install'):
 for file_name in getAllFiles('propka30/'):
 	installFile(file_name)
 
+for file_name in getAllFiles('propka/'):
+	installFile(file_name);
+
 #Whole directories
-for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/', 'ZSI/', '3dmol/'):
+for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/', '3dmol/'):
     for file_name in getAllFiles(dir_name):
         installFile(file_name)
 
@@ -83,21 +86,21 @@ for dir_name in ('src/',
 		installFile(file_name)
 
 Alias('install', env.Install(env['PREFIX'], 'pdb2pqr.py'))
-Alias('install', env.Install(env['PREFIX'], 'pdb2pqr.cgi'))
-Alias('install', env.InstallAs(env['PREFIX']+'/index.html', 'html/server.html'))
+#Alias('install', env.Install(env['PREFIX'], 'pdb2pqr.cgi'))
+#Alias('install', env.InstallAs(env['PREFIX']+'/index.html', 'html/server.html'))
 
-for file_name in ('AppService_client.py',
-				  'AppService_services.py',
-				  'AppService_services_types.py',
-				  'AppService_types.py',
+for file_name in (#'AppService_client.py',
+				  #'AppService_services.py',
+				  #'AppService_services_types.py',
+				  #'AppService_types.py',
 				  'AUTHORS',
 				  'ChangeLog.md',
 				  'COPYING',
 				  'main.py',
-				  'main_cgi.py',
+				  #'main_cgi.py',
 				  'NEWS',
 				  'pka.py',
-				  'pdb2pqr.css',
+				  #'pdb2pqr.css',
 				  'README.md'):
 	installFile(file_name)
 

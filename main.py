@@ -54,6 +54,7 @@ from optparse import OptionParser, OptionGroup
 import os
 import time
 import copy
+from pathlib import Path
 from src import pdb
 from src import cif
 from src import utilities
@@ -593,7 +594,7 @@ def mainCommand(argv):
     parser = OptionParser(description=description, usage=usage, version='%prog (Version ' + __version__ + ')')
 
 
-    group = OptionGroup(parser,"Manditory options", "One of the following options must be used.")
+    group = OptionGroup(parser,"Mandatory options", "One of the following options must be used.")
     group.add_option('--ff', dest='ff', metavar='FIELD_NAME', choices=validForcefields,
                       help='The forcefield to use - currently amber, ' +
                            'charmm, parse, tyl06, peoepb and swanson ' +
@@ -808,23 +809,18 @@ Please cite your use of PDB2PQR as:
 """
     sys.stdout.write(text)
 
-    path = args[0]
+    path = Path(args[0])
     pdbFile = getPDBFile(path)
 
-    if(path[-3:] == "pdb"):
+    if path.suffix.lower() == "pdb":
         pdblist, errlist = readPDB(pdbFile)
-        isCIF = False;
-    elif(path[-3:] == "cif"):
-        print("get into cif....!!!!");
-        pdblist, errlist = cif.readCIF(pdbFile);
-        isCIF = True;
+        isCIF = False
+    elif path.suffix.lower() == "cif":
+        pdblist, errlist = cif.readCIF(pdbFile)
+        isCIF = True
     else:
-        sys.stderr.write("Unrecognized file extension.\n");
-        quit();
-
-    # @TODO: delete this
-    #print(pdblist);
-    #quit();
+        errstr = "Unrecognized file extension: %s" % path.suffix
+        raise ValueError(errstr)
 
     if len(pdblist) == 0 and len(errlist) == 0:
         parser.error("Unable to find file %s!" % path)

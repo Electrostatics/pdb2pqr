@@ -25,20 +25,19 @@ class Molecular_container:
         input_file_extension = input_file[input_file.rfind('.'):]
 
         # set the version
-        if options:
-            parameters = propka.parameters.Parameters(self.options.parameters)
-        else:
-            parameters = propka.parameters.Parameters('propka.cfg')
-        try:
-            exec('self.version = propka.version.%s(parameters)'%parameters.version)
-        except:
-            raise Exception('Error: Version %s does not exist'%parameters.version)
+        parameters = propka.parameters.Parameters('propka.cfg')
+        version_class = getattr(propka.version, parameters.version)
+        self.version = version_class(parameters)
+        # try:
+        #     exec('self.version = propka.version.%s(parameters)'%parameters.version)
+        # except:
+        #     raise Exception('Error: Version %s does not exist'%parameters.version)
 
         # read the input file
         if input_file_extension[0:4] == '.pdb':
             # input is a pdb file
             # read in atoms and top up containers to make sure that all atoms are present in all conformations
-            [self.conformations, self.conformation_names] = propka.pdb.read_pdb(input_file, self.version.parameters,self)
+            [self.conformations, self.conformation_names] = propka.pdb.read_pdb(input_file, self.version.parameters, self)
             if len(self.conformations)==0:
                 info('Error: The pdb file does not seems to contain any molecular conformations')
                 sys.exit(-1)

@@ -178,34 +178,6 @@ class element_based_ligand_interactions(version_A):
 
 
 
-class propka30(version):
-    def __init__(self, parameters):
-        # set the calculation rutines used in this version
-        version.__init__(self, parameters)
-
-        # atom naming, bonding, and protonation
-        self.molecular_preparation_method = propka.calculations.setup_bonding_and_protonation_30_style
-
-        # desolvation related methods
-        self.desolvation_model = calculations.radial_volume_desolvation
-        self.weight_pair_method = calculations.calculatePairWeight
-
-        # side chain methods
-        self.sidechain_interaction_model = propka.calculations.HydrogenBondEnergy
-
-        # colomb methods
-        self.check_coulomb_pair_method = propka.calculations.checkCoulombPair
-        self.coulomb_interaction_model = propka.calculations.CoulombEnergy
-
-        #backbone
-        self.backbone_reorganisation_method = propka.calculations.BackBoneReorganization
-
-        # exception methods
-        self.exception_check_method = propka.calculations.checkExceptions
-
-
-        return
-
     def get_hydrogen_bond_parameters(self, atom1, atom2):
         dpka_max = self.parameters.sidechain_interaction.get_value(atom1.group_type, atom2.group_type)
         cutoff   = self.parameters.sidechain_cutoffs.get_value(atom1.group_type, atom2.group_type)

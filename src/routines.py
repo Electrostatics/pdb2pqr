@@ -1551,7 +1551,7 @@ class Routines:
         self.write('Finished running PDB2PKA.\n')
 
 
-    def _runPROPKA31(self, pka_options):
+    def runPROPKA31(self, pka_options):
         """
             Run PROPKA 3.1 on the current protein, setting protonation states to
             the correct values. pH is set in pka_options
@@ -1632,14 +1632,10 @@ class Routines:
         """
         self.write("Running PROPKA v%d and applying at pH %.2f... \n" % (version,ph))
 
-        if version == 30:
-            pkadic = self._runPROPKA30(rootname, outname, options)
-        elif version == 31:
-            pkadic = self._runPROPKA31(options)
-        else:
-            raise Exception("Wrong version passed to runPROPKA")
+        pkadic = self.runPROPKA31(options)
 
         if len(pkadic) == 0:
+            raise ValueError("PROPKA returned empty results!")
             return
 
         # Now apply each pka to the appropriate residue

@@ -73,6 +73,7 @@ from src.hydrogens import *
 from src.aconf import *
 from io import StringIO
 from src.errors import PDB2PQRError
+import propka.lib
 
 __version__ = PDB2PQR_VERSION
 
@@ -768,11 +769,9 @@ def mainCommand(argv):
 
     ph_calc_options = None
     if options.ph_calc_method == 'propka':
-        ph_calc_options = utilities.createPropkaOptions(options.ph,
-                                                   verbose=options.propka_verbose,
-                                                   reference=options.propka_reference)
-    elif options.ph_calc_method == 'propka':
-        import propka.lib
+        # ph_calc_options = utilities.createPropkaOptions(options.ph,
+        #                                            verbose=options.propka_verbose,
+        #                                            reference=options.propka_reference)
         ph_calc_options, _ = propka.lib.loadOptions('--quiet')
 
     elif options.ph_calc_method == 'pdb2pka':

@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import sys,os,math,propka.calculations
-import pickle
+import json
 
 import pkg_resources
 from propka.lib import info, warning
@@ -29,11 +29,9 @@ class bondmaker:
         self.max_sq_distance = max(list(self.distances_squared.values())+[self.default_dist_squared])
 
         # protein bonding data
-        self.data_file_name = pkg_resources.resource_filename(__name__, 'protein_bonds.dat')
-        # @TODO: Deal with line endings. CRLF -> LF or viceversa.
-        data = open(self.data_file_name,'rb')
-        self.protein_bonds = pickle.load(data)
-        data.close()
+        self.data_file_name = pkg_resources.resource_filename(__name__, 'protein_bonds.json')
+        with open(self.data_file_name, 'rt') as json_file:
+            self.protein_bonds = json.load(json_file)
 
 
         self.intra_residue_backbone_bonds = {'N': ['CA'],

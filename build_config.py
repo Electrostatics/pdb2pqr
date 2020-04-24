@@ -26,9 +26,9 @@
 
 #BUILD_PDB2PKA
 #Set to False to skip building ligand and pdb2pka support. Requires numpy.
-# Defaults to True
+# Defaults to False
 
-#BUILD_PDB2PKA=False
+#BUILD_PDB2PKA=True
 
 #DEBUG
 #Set to True to build compiled extentions with debug headers.

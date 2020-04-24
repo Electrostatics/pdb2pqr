@@ -33,7 +33,7 @@ vars.Add('MAX_ATOMS', 'Sets the maximum number of atoms in a protein for non-Opa
 
 vars.Add(BoolVariable('BUILD_PDB2PKA',
 					  'Set to False to skip building ligand and pdb2pka support. Requires numpy.',
-					  True))
+					  False))
 
 vars.Add(BoolVariable('REBUILD_SWIG',
 					  'Set to True to rebuild the swig bindings. Requires swig on the the user path.',

@@ -377,14 +377,23 @@ def is_planar(atom):
     return are_atoms_planar(atoms)
 
 def are_atoms_planar(atoms):
-    if len(atoms)==0:
-        return False
+    # TODO - File an issue or pull request with this problem.
+    # These two tests are redundant; keeping the more general one
+    # if len(atoms)==0:
+    #     return False
     if len(atoms)<4:
         return False
     v1 = vector(atom1=atoms[0], atom2=atoms[1])
     v2 = vector(atom1=atoms[0], atom2=atoms[2])
-    n = (v1**v2).rescale(1.0)
+    try:
+        n = (v1**v2).rescale(1.0)
+    except ZeroDivisionError:
+        errstr = "Zero division error when testing for planarity with the following atoms:"
+        for iatom in [0, 1, 2]:
+            errstr = "%s\n%s" % (errstr, atoms[iatom].__dict__)
+        raise ZeroDivisionError(errstr)
 
+    # TODO - This type of hard-coded parameter is worrisome.  Move to module-level variable.
     margin = 0.20
     for b in atoms[3:]:
         v = vector(atom1=atoms[0], atom2=b).rescale(1.0)

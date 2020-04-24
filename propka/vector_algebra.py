@@ -5,7 +5,7 @@ from propka.lib import info
 
 class vector:
     """ Vector """
-    def __init__(self, xi=0.0, yi=0.0, zi=0.0, atom1 = 0, atom2 = 0):
+    def __init__(self, xi=0.0, yi=0.0, zi=0.0, atom1 = None, atom2 = None):
         self.x = xi
         self.y = yi
         self.z = zi
@@ -91,6 +91,7 @@ class vector:
 
     def rescale(self, new_length):
         """ Rescale vector to new length while preserving direction """
+        print(self.x, self.y, self.z)
         frac = new_length/(self.length())
         res = vector(xi = self.x*frac,
                      yi = self.y*frac,

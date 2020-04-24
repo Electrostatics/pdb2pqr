@@ -50,7 +50,9 @@ SMALL = 1.0e-7
 DIHEDRAL = 57.2958
 
 import math
-import os, urllib.request
+import os
+import io
+import requests
 from os.path import splitext
 import sys
 from .aconf import INSTALLDIR, TMPDIR
@@ -355,6 +357,7 @@ def getDatFile(name):
 
     return path
 
+
 def getPDBFile(path):
     """
         Obtain a PDB file.  First check the path given on the command
@@ -370,18 +373,16 @@ def getPDBFile(path):
 
     import os
 
-    file = None
     if not os.path.isfile(path):
         URLpath = "https://files.rcsb.org/download/" + path + ".pdb"
-        try:
-            file = urllib.request.urlopen(URLpath)
-            if file.getcode() != 200 or 'nosuchfile' in file.geturl() :
-                raise IOError
-        except IOError:
-            return None
+        resp = requests.get(URLpath)
+        if resp.status_code != 200:
+            errstr = "Got code %d while retrieving %s" % (resp.status_code, URLpath)
+            raise IOError(errstr)
+        return io.StringIO(resp.text)
     else:
-        file = open(path, 'rU')
-    return file
+        return open(path, 'rt', encoding="utf-8")
+
 
 def distance(coords1, coords2):
     """

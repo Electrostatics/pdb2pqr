@@ -1,7 +1,11 @@
+# TODO - clean-up __future__ imports
 from __future__ import division
 from __future__ import print_function
 import math
 from propka.lib import info
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 class vector:
     """ Vector """
@@ -91,7 +95,6 @@ class vector:
 
     def rescale(self, new_length):
         """ Rescale vector to new length while preserving direction """
-        print(self.x, self.y, self.z)
         frac = new_length/(self.length())
         res = vector(xi = self.x*frac,
                      yi = self.y*frac,

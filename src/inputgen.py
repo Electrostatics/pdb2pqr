@@ -1,73 +1,17 @@
-""" inputgen class
+"""Create an APBS input file using psize data
 
-    Create an APBS input file using psize data
-
-    Written by Todd Dolinsky based on original sed script by Nathan Baker
-
-        ----------------------------
-
-    PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
-    Poisson-Boltzmann electrostatics calculations
-
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
-    Northwest National Laboratory, operated by Battelle Memorial Institute,
-    Pacific Northwest Division for the U.S. Department Energy.;
-    Paul Czodrowski & Gerhard Klebe, University of Marburg.
-
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification,
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice,
-		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice,
-		  this list of conditions and the following disclaimer in the documentation
-		  and/or other materials provided with the distribution.
-        * Neither the names of University College Dublin, Battelle Memorial Institute,
-          Pacific Northwest National Laboratory, US Department of Energy, or University
-          of Marburg nor the names of its contributors may be used to endorse or promote
-          products derived from this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-	OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    ----------------------------
+Authors: Todd Dolinsky based on original sed script by Nathan Baker
 """
-
-# User - Definable Variables: Default values
-
-# cfac = 1.7                  # Factor by which to expand mol dims to
-                              # get coarse grid dims
-# fadd = 20                   # Amount to add to mol dims to get fine
-                              # grid dims
-# space = 0.50                # Desired fine mesh resolution
-# gmemfac = 200               # Number of bytes per grid point required
-                              # for sequential MG calculation
-# gmemceil = 400              # Max MB allowed for sequential MG
-                              # calculation.  Adjust this to force the
-                              # script to perform faster calculations (which
-                              # require more parallelism).
-# ofrac = 0.1                  # Overlap factor between mesh partitions
-# redfac = 0.25               # The maximum factor by which a domain
-                              # dimension can be reduced during focusing
-__date__ = "21 April 2007"
-__author__ = "Todd Dolinsky, Nathan Baker, Yong Huang"
-
 import string, sys
 from . import psize
 import pickle
 import os.path
 from . import utilities
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 class Elec:
     """
@@ -304,8 +248,8 @@ def splitInput(filename):
             nproc = int(words[1]) * int(words[2]) * int(words[3])
 
     if nproc == 0:
-        sys.stderr.write("%s is not a valid APBS parallel input file!\n" % filename)
-        sys.stderr.write("The inputgen script was unable to asynchronize this file!\n")
+        _LOGGER.error("%s is not a valid APBS parallel input file!\n" % filename)
+        _LOGGER.error("The inputgen script was unable to asynchronize this file!\n")
         sys.exit(2)
 
     base_pqr_name = utilities.getPQRBaseFileName(filename)
@@ -356,7 +300,7 @@ def usage():
     usage = usage + "                         dimension can be reduced during focusing\n"
     usage = usage + "                         [default = %g]\n" % size.getConstant("redfac")
     usage = usage + "  --istrng=<value>     : Ionic strength (M). Na+ anc Cl- ions will be used\n"
-    sys.stderr.write(usage)
+    _LOGGER.error(usage)
     sys.exit(2)
 
 def main():
@@ -369,11 +313,11 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
     except getopt.GetoptError as details:
-        sys.stderr.write("Option error (%s)!\n" % details)
+        _LOGGER.error("Option error (%s)!\n" % details)
         usage()
 
     if len(args) != 1:
-        sys.stderr.write("Invalid argument list!\n")
+        _LOGGER.error("Invalid argument list!\n")
         usage()
     else:
         filename = args[0]
@@ -392,21 +336,21 @@ def main():
         if o == "--potdx": potdx = 1
         if o == "--method":
             if a == "para":
-                sys.stdout.write("Forcing a parallel calculation\n")
+                _LOGGER.info("Forcing a parallel calculation\n")
                 method = "mg-para"
             elif a == "auto":
-                sys.stdout.write("Forcing a sequential calculation\n")
+                _LOGGER.info("Forcing a sequential calculation\n")
                 method = "mg-auto"
             elif a == "async":
-                sys.stdout.write("Forcing an asynchronous calculation\n")
+                _LOGGER.info("Forcing an asynchronous calculation\n")
                 method = "mg-para"
                 _async = 1
             elif a == "manual":
-                sys.stdout.write("Forcing a manual calculation\n")
+                _LOGGER.info("Forcing a manual calculation\n")
                 method = "mg-manual"
             else:
-                sys.stdout.write("Incorrect method argument: %s\n" % a)
-                sys.stdout.write("Defaulting to memory dependent result\n")
+                _LOGGER.info("Incorrect method argument: %s\n" % a)
+                _LOGGER.info("Defaulting to memory dependent result\n")
         if o == "--cfac":
             size.setConstant("cfac", float(a))
         if o == "--space":

@@ -1,23 +1,25 @@
+"""Contact extension
+
+Find all hydrogen bonds as determined by the DISTANCE cutoff below. Uses
+PDB2PQR to determine donors and acceptors, and displays all available bonds to
+stdout in a WHATIF-like format.
+
+Author:  Julie C. Mitchell
 """
-    Contact extension
 
-    Find all hydrogen bonds as determined by the DISTANCE cutoff below.
-    Uses PDB2PQR to determine donors and acceptors, and displays
-    all available bonds to stdout in a WHATIF-like format.
 
-    Author:  Julie C. Mitchell
-"""
-
-__date__ = "April 2007"
-__author__ = "Julie C. Mitchell"
-
+import logging
 from src.utilities import distance
 from src.routines import Cells
 
+
+_LOGGER = logging.getLogger(__name__)
 DIST_CUTOFF = 3.5         # max distance  
+
 
 def usage():
     return 'Print a list of contacts to {output-path}.con\n'
+
 
 def run_extension(routines, outroot, options):
     """
@@ -76,5 +78,4 @@ def run_extension(routines, outroot, options):
                 outfile.write("%4d %4d %-4s (%4d  ) %s     %-4s<>%4d %-4s (%4d  ) %s     %-4s D=%6.2f  H-ene=%6.2f  Sym=  (%s-%s)\n" % \
                   (count, thisatom.residue.resSeq,thisatom.residue.name,thisatom.residue.resSeq, thisatom.residue.chainID,thisatom.name,thatatom.residue.resSeq,thatatom.residue.name,thatatom.residue.resSeq, thatatom.residue.chainID,thatatom.name, thisdist, hscore, thisBstring, thatBstring)) 
 
-    routines.write("\n")
     outfile.close()

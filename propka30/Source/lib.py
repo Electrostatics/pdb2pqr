@@ -43,7 +43,11 @@ import string
 import sys
 import copy
 import math
+import logging
 from . import output
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def loadOptions():
@@ -117,7 +121,7 @@ def loadOptions():
 
     # checking at early stage that there is at least one pdbfile to work with
     if len(args) == 0:
-        pka_print("Warning: no pdbfile provided")
+        _LOGGER.warn("Warning: no pdbfile provided")
         # sys.exit(9)
 
     # --- post-processing; interpreting some of the arguments ---

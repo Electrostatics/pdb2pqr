@@ -209,7 +209,7 @@ def startpKa():
     # Find the PDB file
     #
     if len(args) != 2:
-        sys.stderr.write("Usage: pka.py [options] <pdbfile> <output directory>\n")
+        _LOGGER.error("Usage: pka.py [options] <pdbfile> <output directory>\n")
         sys.exit(0)
     input_path = args[0]
     output_path = args[1]
@@ -518,19 +518,19 @@ def pre_init(pdbfilename=None,
         if xdiel:
             igen.xdiel = xdiel
         else:
-            sys.stderr.write ("X dielectric map is missing\n")
+            _LOGGER.error("X dielectric map is missing\n")
             usage(2)
             sys.exit(0)
         if ydiel:
             igen.ydiel = ydiel
         else:
-            sys.stderr.write ("Y dielectric map is missing\n")
+            _LOGGER.error("Y dielectric map is missing\n")
             usage(2)
             sys.exit(0)
         if zdiel:
             igen.zdiel = zdiel
         else:
-            sys.stderr.write ("Z dielectric map is missing\n")
+            _LOGGER.error("Z dielectric map is missing\n")
             usage(2)
             sys.exit(0)
 
@@ -539,7 +539,7 @@ def pre_init(pdbfilename=None,
         if kappa:
             igen.kappa = kappa
         else:
-            sys.stderr.write ("Mobile ion-accessibility map is missing\n")
+            _LOGGER.error("Mobile ion-accessibility map is missing\n")
             usage(2)
             sys.exit(0)
 

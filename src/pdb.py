@@ -1,56 +1,21 @@
 """ PDB parsing class
 
-    This module parses PDBs in accordance to PDB Format Description Version 2.2
-    (1996); it is not very forgiving.   Each class in this module corresponds
-    to a record in the PDB Format Description.  Much of the documentation for
-    the classes is taken directly from the above PDB Format Description.
+This module parses PDBs in accordance to PDB Format Description Version 2.2
+(1996); it is not very forgiving.   Each class in this module corresponds
+to a record in the PDB Format Description.  Much of the documentation for
+the classes is taken directly from the above PDB Format Description.
 
-    ----------------------------
-
-    PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
-    Poisson-Boltzmann electrostatics calculations
-
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
-    Northwest National Laboratory, operated by Battelle Memorial Institute,
-    Pacific Northwest Division for the U.S. Department Energy.;
-    Paul Czodrowski & Gerhard Klebe, University of Marburg.
-
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification,
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice,
-		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice,
-		  this list of conditions and the following disclaimer in the documentation
-		  and/or other materials provided with the distribution.
-        * Neither the names of University College Dublin, Battelle Memorial Institute,
-          Pacific Northwest National Laboratory, US Department of Energy, or University
-          of Marburg nor the names of its contributors may be used to endorse or promote
-          products derived from this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-	OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    ----------------------------
+Authors:  Todd Dolinsky, Yong Huang
 """
-
-__date__ = "4 August 2008"
-__author__ = "Todd Dolinsky, Yong Huang"
-
+# TODO - eliminate sys import
 import string, sys
 import copy  ### PC
 from .errors import PDBInputError, PDBInternalError
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 lineParsers = {}
 
@@ -632,7 +597,7 @@ class MOL2MOLECULE:
                 try:
                     thisAtom.mol2charge=float(charge)
                 except:
-                    print('Warning. Non-float charge in mol2 file.',charge)
+                    _LOGGER.warn('Warning. Non-float charge in mol2 file.',charge)
                     thisAtom.mol2charge=None
             self.lPDBAtoms.append(mol2pdb)
             self.lAtoms.append(thisAtom)
@@ -2307,25 +2272,25 @@ def readPDB(file):
                 pdblist.append(obj)
         except KeyError as details:
             errlist.append(record)
-            sys.stderr.write("Error parsing line: %s\n" % details)
-            sys.stderr.write("<%s>\n" % line.strip())
-            sys.stderr.write("Truncating remaining errors for record type:%s\n" % record)
+            _LOGGER.error("Error parsing line: %s\n" % details)
+            _LOGGER.error("<%s>\n" % line.strip())
+            _LOGGER.error("Truncating remaining errors for record type:%s\n" % record)
         except Exception as details:
             if record == "ATOM" or record == "HETATM":
                 try:
                     obj = readAtom(line)
                     pdblist.append(obj)
                 except Exception as details:
-                    sys.stderr.write("Error parsing line: %s\n" % details)
-                    sys.stderr.write("<%s>\n" % line.strip())
+                    _LOGGER.error("Error parsing line: %s\n" % details)
+                    _LOGGER.error("<%s>\n" % line.strip())
             elif record == "SITE" or record == "TURN":
                 pass
             elif record == "SSBOND" or record == "LINK":
-                sys.stderr.write("Warning -- ignoring record: \n")
-                sys.stderr.write("<%s>\n" % line.strip())
+                _LOGGER.error("Warning -- ignoring record: \n")
+                _LOGGER.error("<%s>\n" % line.strip())
             else:
-                sys.stderr.write("Error parsing line: %s\n" % details)
-                sys.stderr.write("<%s>\n" % line.strip())
+                _LOGGER.error("Error parsing line: %s\n" % details)
+                _LOGGER.error("<%s>\n" % line.strip())
 
     return pdblist, errlist
 
@@ -2353,13 +2318,14 @@ def main():
     """ Main driver for testing.  Parses set number of random PDBs """
 
     npdb = 1
-    sys.stdout.write("Testing %d PDBs...\n" % npdb)
+    _LOGGER.info("Testing %d PDBs...\n" % npdb)
     for i in range(0, npdb):
-        sys.stdout.write("Getting random PDB...\n")
+        _LOGGER.info("Getting random PDB...\n")
         path = getRandom()
-        sys.stdout.write("Parsing %s...\n" % path)
+        _LOGGER.info("Parsing %s...\n" % path)
         pdbdict, errlist = readPDB(open(path, "rU"))
-        if len(errlist) > 0:  sys.stdout.write("\tSkipped records: %s\n" % errlist)
-        sys.stdout.write("\tNo skipped records.\n")
+        if len(errlist) > 0:
+            _LOGGER.warn("\tSkipped records: %s\n" % errlist)
+        _LOGGER.info("\tNo skipped records.\n")
 
 if __name__ == "__main__":  main()

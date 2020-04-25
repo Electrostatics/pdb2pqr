@@ -3,10 +3,15 @@ from .peoe_PDB2PQR import PEOE as calc_charges
 from src.pdb import *
 from src.definitions import *
 from pdb2pka import NEWligand_topology
+# TODO - remove sys import
 import sys
 import string
-
+import logging
 from src.errors import PDBInputError
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 def initialize(definition, ligdesc, pdblist, verbose=0):
     """
@@ -32,7 +37,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     for atom in Lig.lAtoms:
         if atom.name in atomnamelist:
             duplicatesFound = True
-            sys.stderr.write("Duplicate atom names (%s) found in ligand file!\n" % atom.name)
+            _LOGGER.error("Duplicate atom names (%s) found in ligand file!\n" % atom.name)
         else:
             atomnamelist.append(atom.name)
 
@@ -91,8 +96,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
 
     ligand_titratable_groups=X.find_titratable_groups()
 
-    if verbose:
-        print("ligand_titratable_groups", ligand_titratable_groups)
+    _LOGGER.debug("ligand_titratable_groups", ligand_titratable_groups)
     #
     # Append the ligand data to the end of the PDB data
     #
@@ -328,30 +332,30 @@ class ligand_charge_handler(MOL2MOLECULE):
                 #
                 for atom in atoms_now:
                     if not atom in atoms_last_calc:
-                        print('This atom was missing before',atom)
-                        print('If it is a hydrogen for the titratable, we need to create a bond entry!')
+                        _LOGGER.info('This atom was missing before',atom)
+                        _LOGGER.info('If it is a hydrogen for the titratable, we need to create a bond entry!')
                         # We should be here only if is a titratable
                         for current_atom in atoms_now:
                             # check if it't a titratable H
                             for res_atoms in residue.atoms:
                                 if current_atom == res_atoms.name and "titratableH"  in dir(res_atoms):
-                                    print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
-                                    print("been here")
+                                    _LOGGER.info("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+                                    _LOGGER.info("been here")
                                     for ResAtoms in residue.atoms:
                                         ResAtoms.formalcharge = 0.0
                                     self.recalc_charges(residue)
                 for atom in atoms_last_calc:
                     if not atom in atoms_now:
-                        print('This atom used to be here, but is now missing',atom)
+                        _LOGGER.info('This atom used to be here, but is now missing',atom)
                 #self.recalc_charges(residue)
                 xxxnetq = 0.0
                 for xxx in residue.atoms:
-                    print("after neutralizing %s  %1.4f" %(xxx.name, xxx.charge))
+                    _LOGGER.info("after neutralizing %s  %1.4f" %(xxx.name, xxx.charge))
                     xxxnetq = xxxnetq+xxx.charge
-                print('-----------------------')
-                print("net charge: %1.4f" % (xxxnetq))
-                print("")
-                print("")
+                _LOGGER.info('-----------------------')
+                _LOGGER.info("net charge: %1.4f" % (xxxnetq))
+                _LOGGER.info("")
+                _LOGGER.info("")
             else:
                 # Yes - nothing to do
                 pass

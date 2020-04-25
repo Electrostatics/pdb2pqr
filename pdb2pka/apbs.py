@@ -1,43 +1,33 @@
+"""APBS interface for PDB2PQR
+
+Authors:  Todd Dolinsky and Jens Erik Nielsen
 """
-    APBS interface for PDB2PQR
-
-    Todd Dolinsky (todd@ccb.wustl.edu)
-    Washington University in St. Louis
-
-    Jens Erik Nielsen
-
-"""
-
-__date__  = "16 August 2005"
-__author__ = "Todd Dolinsky, Jens Erik Nielsen"
-
-import sys
+import logging
+from sys import version_info
 import os
 import time
 import copy
 
+
+_LOGGER = logging.getLogger(__name__)
+
+
 try:
-    if(sys.version_info >= (3,0)):
-        from inspect import currentframe, getframeinfo
-        from .apbslib import *
-    else:
-        from apbslib import *
+    from inspect import currentframe, getframeinfo
+    # TODO - emliminate import *
+    from .apbslib import *
 except:
-    #
-    # We need _apbslib.so and apbslib.py
-    #
-    print(" ");
-    print('Missing libraries for interfacing with APBS')
-    print(" ")
-    print('You need to build APBS with Python support using the CMake variable -DENABLE_PYTHON=ON.')
-    print(" ")
-    sys.exit(0)
+    errstr = "Missing Python libraries for APBS interface.  This often means you need to build APBS with Python support using the Cmake argument -DENABLE_PYTHON=ON"
+    _LOGGER.error(errstr)
+    raise RuntimeError(errstr)
+
 
 Python_kb = 1.3806581e-23
 Python_Na = 6.0221367e+23
 NOSH_MAXMOL = 20
 NOSH_MAXCALC = 20
 ACD_ERROR = 2    # < Error setting up calculation>
+
 
 class APBSError(Exception):
     """ APBSError class
@@ -133,9 +123,9 @@ class runAPBS:
             self.nosh = NOsh_ctor(self.rank, self.size)
             #nosh = NOsh()
             #NOsh_ctor2(nosh, rank, size)
-            routines.write("Parsing input file %s...\n" % inputpath)
+            _LOGGER.info("Parsing input file %s...\n" % inputpath)
             if NOsh_parseInputFile(self.nosh, inputpath) != 1:
-                sys.stderr.write("main:  Error while parsing input file.\n")
+                _LOGGER.error("main:  Error while parsing input file.\n")
                 raise APBSError( "Error while parsing input file!" )
 
             # Load the molecules using Valist_load routine
@@ -147,11 +137,11 @@ class runAPBS:
             # SETUP CALCULATIONS
 
             if NOsh_setupElecCalc(self.nosh, self.alist) != 1:
-                sys.stderr.write("Error setting up ELEC calculations\n")
+                _LOGGER.error("Error setting up ELEC calculations\n")
                 raise APBSError( "Error while setting up calculations!")
 
             if NOsh_setupApolCalc(self.nosh, self.alist) == ACD_ERROR:
-                sys.stderr.write("Error setting up APOL calculations\n")
+                _LOGGER.error("Error setting up APOL calculations\n")
                 raise APBSError( "Error while setting up calculations!")
 
             #
@@ -208,38 +198,38 @@ class runAPBS:
             self.dielZMap = new_gridlist(NOSH_MAXMOL)
 
             if loadDielMaps(self.nosh, self.dielXMap, self.dielYMap, self.dielZMap) != 1:
-                sys.stderr.write("Error reading dielectric maps!\n")
+                _LOGGER.error("Error reading dielectric maps!\n")
                 raise APBSError( "Error reading dielectric maps!")
 
             # Load the kappa maps
             self.kappaMap = new_gridlist(NOSH_MAXMOL)
             if loadKappaMaps(self.nosh, self.kappaMap) != 1:
-                sys.stderr.write("Error reading kappa maps!\n")
+                _LOGGER.error("Error reading kappa maps!\n")
                 raise APBSError( "Error reading kappa maps!")
 
             # Load the potential maps
             self.potMap = new_gridlist(NOSH_MAXMOL)
             if loadPotMaps(self.nosh, self.potMap) != 1:
-                sys.stderr.write("Error reading potential maps!\n")
+                _LOGGER.error("Error reading potential maps!\n")
                 raise APBSError( "Error reading potential maps!")
 
             # Load the charge maps
             self.chargeMap = new_gridlist(NOSH_MAXMOL)
             if loadChargeMaps(self.nosh, self.chargeMap) != 1:
-                sys.stderr.write("Error reading charge maps!\n")
+                _LOGGER.error("Error reading charge maps!\n")
                 raise APBSError( "Error reading charge maps!")
 
             # Do the calculations
 
-            routines.write("Preparing to run %d PBE calculations. \n" % self.nosh.ncalc)
+            _LOGGER.info("Preparing to run %d PBE calculations. \n" % self.nosh.ncalc)
 
             for icalc in range(self.nosh.ncalc):
-                sys.stdout.write("---------------------------------------------\n")
+                _LOGGER.infowrite("---------------------------------------------\n")
                 self.calc = NOsh_getCalc(self.nosh, icalc)
                 self.mgparm = self.calc.mgparm
                 self.pbeparm = self.calc.pbeparm
                 if self.calc.calctype != 0:
-                    sys.stderr.write("main:  Only multigrid calculations supported!\n")
+                    _LOGGER.error("main:  Only multigrid calculations supported!\n")
                     raise APBSError( "Only multigrid calculations supported!")
 
                 for k in range(0, self.nosh.nelec):
@@ -247,18 +237,13 @@ class runAPBS:
                         break
 
                 name = NOsh_elecname(self.nosh, k+1)
-                #if name == "":
-                #    sys.stdout.write("CALCULATION #%d:  MULTIGRID\n" % (icalc+1))
-                #else:
-                #    sys.stdout.write("CALCULATION #%d (%s): MULTIGRID\n" % ((icalc+1),name))
-                #sys.stdout.write("Setting up problem...\n")
 
                 # Routine initMG
 
                 if initMG(icalc, self.nosh, self.mgparm, self.pbeparm, self.realCenter, self.pbe,
                       self.alist, self.dielXMap, self.dielYMap, self.dielZMap, self.kappaMap, self.chargeMap,
                       self.pmgp, self.pmg, self.potMap) != 1:
-                    sys.stderr.write("Error setting up MG calculation!\n")
+                    _LOGGER.error("Error setting up MG calculation!\n")
                     raise APBSError( "Error setting up MG calculation!")
 
                 # Print problem parameters
@@ -271,13 +256,13 @@ class runAPBS:
                 self.thispmg = get_Vpmg(self.pmg,icalc)
 
                 if solveMG(self.nosh, self.thispmg, self.mgparm.type) != 1:
-                    sys.stderr.write("Error solving PDE! \n")
+                    _LOGGER.error("Error solving PDE! \n")
                     raise APBSError( "Error Solving PDE!")
 
                 # Set partition information : Routine setPartMG
 
                 if setPartMG(self.nosh, self.mgparm, self.thispmg) != 1:
-                    sys.stderr.write("Error setting partition info!\n")
+                    _LOGGER.error("Error setting partition info!\n")
                     raise APBSError("Error setting partition info!")
 
                 ret, self.totEnergy[icalc] = energyMG(self.nosh, icalc, self.thispmg, 0,
@@ -349,7 +334,7 @@ class runAPBS:
             Valist_load(self.myAlist, self.protsize, xlist, ylist, zlist, chglist, radlist)
         except:
             frameinfo = getframeinfo(currentframe())
-            print("%s[%d]: Valist_load Warning." % (frameinfo.filename, frameinfo.lineno));
+            _LOGGER.warn("%s[%d]: Valist_load Warning." % (frameinfo.filename, frameinfo.lineno))
         potentials = getPotentials(self.nosh,self.pbeparm,self.thispmg,self.myAlist)
 
         protein = copy.copy(proteincopy)
@@ -367,21 +352,6 @@ class runAPBS:
     def cleanup(self):
 
         # Handle print statements
-
-        #if self.nosh.nprint > 0:
-        #    sys.stdout.write("---------------------------------------------\n")
-        #    sys.stdout.write("PRINT STATEMENTS\n")
-        #for iprint in xrange(self.nosh.nprint):
-        #    if NOsh_printWhat(self.nosh, iprint) == NPT_ENERGY:
-        #        printEnergy(self.com,self.nosh, self.totEnergy, iprint)
-        #    elif NOsh_printWhat(self.nosh, iprint) == NPT_FORCE:
-        #        printForce(self.com, self.nosh, self.nforce, self.atomforce, self.iprint)
-        #    else:
-        #        sys.stdout.write("Undefined PRINT keyword!\n")
-        #        break
-
-        #sys.stdout.write("----------------------------------------\n")
-        #sys.stdout.write("CLEANING UP AND SHUTTING DOWN...\n")
 
         # Clean up APBS structures
 
@@ -421,14 +391,5 @@ class runAPBS:
         # Clean up MALOC structures
         del self.com
         del self.mem
-
-        #sys.stdout.write("\n")
-        #sys.stdout.write("Thanks for using APBS!\n\n")
-
-        # Stop the main timer
-        #main_timer_stop = time.clock()
-        #sys.stdout.write("Total execution time:  %1.6e sec\n" % (main_timer_stop - self.main_timer_start))
-
-        #Return
 
         return

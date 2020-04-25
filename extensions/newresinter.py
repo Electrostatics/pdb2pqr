@@ -1,17 +1,21 @@
-"""
-    Resinter extension
+"""Resinter extension
 
-    Print interaction energy between each residue pair in the protein. 
+Print interaction energy between each residue pair in the protein. 
+
+Authors:  Kyle Monson and Emile Hogan
 """
 
-__date__ = "21 October 2011"
-__authors__ = "Kyle Monson and Emile Hogan"
 
 import extensions
+import logging
 from src.hydrogens import Optimize
 #itertools FTW!
 from itertools import product, permutations, count
 from src.hydrogens import hydrogenRoutines
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 #Here are the Ri -> [Ri0, Ri1] maps:
 #ARG -> [{AR0}, {ARG}]
@@ -26,6 +30,7 @@ from src.hydrogens import hydrogenRoutines
 #HIP -> [{HID, HIE}, {HIP}]
 #HSP -> [{HSD, HSE}, {HSP}]
 
+
 _titrationSets = ((('AR0',), 'ARG'),
                   (('ASH',), 'ASP'),
                   (('CYX',), 'CYS'),
@@ -37,24 +42,25 @@ _titrationSets = ((('AR0',), 'ARG'),
                   (('CTERM',), 'NEUTRAL-CTERM'),
                   (('NEUTRAL-NTERM',), 'NTERM'))
 
-_titrationSetsMap = {}
 
+_titrationSetsMap = {}
 for tsSet in _titrationSets:
     for ts in tsSet[0]:
         _titrationSetsMap[ts] = tsSet
         
     _titrationSetsMap[tsSet[1]] = tsSet
-    
 #loose ends.
 _titrationSetsMap['HIS'] = _titrationSetsMap['HSD']
 _titrationSetsMap['CYM'] = _titrationSetsMap['CYS']
-        
+
+
 def usage():
     """
     Returns usage text for newresinter.
     """
     txt = 'Print interaction energy between each residue pair in the protein to {output-path}.newresinter.'
     return txt
+
 
 def run_extension(routines, outroot, options):
     outname = outroot + ".newresinter"
@@ -63,13 +69,13 @@ def run_extension(routines, outroot, options):
         processor.generate_all()
         processor.write_resinter_output()
 
+
 class ResInter(object):
     def __init__(self, routines, outfile, options):
         self.pairEnergyResults = {}
         self.combinationCount = 0
         self.totalCombinations = 0
         self.options = options
-        self.output = extensions.extOutputHelper(routines, outfile)
         self.routines = routines
 
     def save_interation_energy(self, first, second):
@@ -77,10 +83,9 @@ class ResInter(object):
         pairText = str(first) + ' ' + str(second)
         if pairText in self.pairEnergyResults:            
             txt = '#%s re-tested!!! LOLWAT?\n' % pairText
-            self.output.write(txt)             
+            _LOGGER.debug(txt)
         else:
             self.pairEnergyResults[pairText] = energy
-                    
 
     def save_all_residue_interaction_energies(self):
         """
@@ -179,7 +184,7 @@ class ResInter(object):
         For every titration state combination of residue output the 
         interaction energy for all possible residue pairs. 
         """
-        self.routines.write("Printing residue interaction energies...\n")
+        _LOGGER.debug("Generating residue interaction energies...\n")
         
         self.count_combinations()
         
@@ -197,9 +202,10 @@ class ResInter(object):
         Output the interaction energy between each possible residue pair.
         """
         for resultKey in sorted(self.pairEnergyResults.keys()):
-            self.output.write(resultKey + ' ' + str(self.pairEnergyResults[resultKey]) + '\n')
-        
-        self.routines.write(str(self.combinationCount)+' residue combinations tried\n')
+            # TODO - this may need to be written to outfile as well for PDB2PKA to work
+            _LOGGER.debug(resultKey + ' ' + str(self.pairEnergyResults[resultKey]) + '\n')
+
+        _LOGGER.debug(str(self.combinationCount)+' residue combinations tried\n')
                 
     def process_residue_set(self, residueSet,  
                             clean = False,
@@ -213,10 +219,10 @@ class ResInter(object):
         
         self.combinationCount += 1
         
-        txt = "Running combination {0} of {1}\n".format(self.combinationCount, self.totalCombinations)
-        self.routines.write(txt)
+        txt = "Running combination {0} of {1}".format(self.combinationCount, self.totalCombinations)
+        _LOGGER.debug(txt)
         
-        self.routines.write(str(residueSet)+'\n')
+        _LOGGER.debug(str(residueSet))
         
         self.routines.removeHydrogens()
         

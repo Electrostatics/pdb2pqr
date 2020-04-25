@@ -1,57 +1,22 @@
 """ CIF parsing methods
 
-    This methods use the pdbx/cif parser provided by WWPDB
-    (http://mmcif.wwpdb.org/docs/sw-examples/python/html/index.html)
+This methods use the pdbx/cif parser provided by WWPDB
+(http://mmcif.wwpdb.org/docs/sw-examples/python/html/index.html)
 
-    ----------------------------
-
-    PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
-    Poisson-Boltzmann electrostatics calculations
-
-    Copyright (c) 2002-2020, Jens Erik Nielsen, University College Dublin;
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
-    Northwest National Laboratory, operated by Battelle Memorial Institute,
-    Pacific Northwest Division for the U.S. Department Energy.;
-    Paul Czodrowski & Gerhard Klebe, University of Marburg.
-
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification,
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice,
-		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice,
-		  this list of conditions and the following disclaimer in the documentation
-		  and/or other materials provided with the distribution.
-        * Neither the names of University College Dublin, Battelle Memorial Institute,
-          Pacific Northwest National Laboratory, US Department of Energy, or University
-          of Marburg nor the names of its contributors may be used to endorse or promote
-          products derived from this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-	OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    ----------------------------
+Author:  Juan Brandi
 """
-
-__date__ = "2 January 2020"
-__author__ = "Juan Brandi"
-
 import os
+# TODO - eliminate sys
 import sys
 from . import pdb
 from datetime import datetime
 from numpy import minimum, ceil
 from .pdbx.reader.PdbxReader import PdbxReader;
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 def ATOM_SITE(block):
     """
@@ -101,7 +66,7 @@ def ATOM_SITE(block):
                     line += " "*2 if(atoms.getValue("pdbx_formal_charge", i) == "?") else atoms.getValue("pdbx_formal_charge", i);    # 79 - 80 CHARGE OF ATOM
                     pdb_arr.append(pdb.ATOM(line));
                 except:
-                    print("cif.ATOM_SITE: Error reading line: #%s#\n" % (line));
+                    _LOGGER.error("cif.ATOM_SITE: Error reading line: #%s#\n", line)
 
             elif(atoms.getValue("group_PDB", i) == "HETATM"):
                 try:
@@ -127,7 +92,7 @@ def ATOM_SITE(block):
                     pdb_arr.append(pdb.HETATM(line));
 
                 except:
-                    print("cif.ATOM_SITE: Error reading line:\n%s" % line);
+                    _LOGGER.error("cif.ATOM_SITE: Error reading line:\n%s", line)
 
         return pdb_arr, err_arr;
 
@@ -139,7 +104,7 @@ def ATOM_SITE(block):
                 line += " "*(4 - len(str(j))) + str(j);
                 pdb_arr.append(pdb.MODEL(line));
             except:
-                sys.stderr.write("cif.ATOM_SITE: Error readline line:\n%s\n" % line);
+                _LOGGER.error("cif.ATOM_SITE: Error readline line:\n%s\n" % line);
                 err_arr.append("MODEL");
 
             for i in range(atoms.getRowCount()):
@@ -167,7 +132,7 @@ def ATOM_SITE(block):
                             line += " "*2 if(atoms.getValue("pdbx_formal_charge", i) == "?") else atoms.getValue("pdbx_formal_charge", i);    # 79 - 80 CHARGE OF ATOM
                             pdb_arr.append(pdb.ATOM(line));
                         except:
-                            print("cif.ATOM_SITE: Error reading line:\n%s" % line);
+                            _LOGGER.error("cif.ATOM_SITE: Error reading line:\n%s", line)
                             err_arr.append("ATOM");
 
                     elif(atoms.getValue("group_PDB", i) == "HETATM"):
@@ -194,7 +159,7 @@ def ATOM_SITE(block):
                             pdb_arr.append(pdb.HETATM(line));
 
                         except:
-                            print("cif.ATOM_SITE: Error reading line:\n%s" % line);
+                            _LOGGER.error("cif.ATOM_SITE: Error reading line:\n%s", line)
                             err_arr.append("HETATOM");
 
 
@@ -202,7 +167,7 @@ def ATOM_SITE(block):
                 line  = "ENDMDL";
                 pdb_arr.append(pdb.ENDMDL(line));
             except:
-                sys.stderr.write("cif.ATOM_SITE: Error reading line:\n%s\n" % line);
+                _LOGGER.error("cif.ATOM_SITE: Error reading line:\n%s\n" % line);
                 err_arr.append("ENDMDL");
 
         return pdb_arr, err_arr;
@@ -262,7 +227,7 @@ def CONECT(block):
             try:
                 pdb_arr.append(pdb.CONECT(p1));
             except:
-                sys.stderr.write("cif.CONECT:   Error parsing line: \n%s" % p1);
+                _LOGGER.error("cif.CONECT:   Error parsing line: \n%s" % p1);
                 err_arr.append("CONECT")
 
     return pdb_arr, err_arr;
@@ -290,7 +255,7 @@ def HEADER(block):
     try:
         header_arr.append(pdb.HEADER(line));
     except:
-        sys.stderr.write("cif.HEADER:   Error parsing line: #%s#\n" % line);
+        _LOGGER.error("cif.HEADER:   Error parsing line: #%s#\n" % line);
         header_err.append("HEADER");
 
     return header_arr, header_err;
@@ -312,7 +277,7 @@ def TITLE(block):
         try:
             title_arr.append(pdb.TITLE(line));
         except:
-            sys.stderr.write("cif.TITLE:    Error parsing line:\n%s" % line);
+            _LOGGER.error("cif.TITLE:    Error parsing line:\n%s" % line);
             title_err.append("TITLE");
 
     return title_arr, title_err;
@@ -332,7 +297,7 @@ def COMPND(block):
         try:
             compnd_arr.append(pdb.COMPND(line1));
         except:
-            sys.stderr.write("cif.COMPND:    Error parsing line:\n%s\n" % line1);
+            _LOGGER.error("cif.COMPND:    Error parsing line:\n%s\n" % line1);
             compnd_err.append("COMPND");
 
         cont += 1;
@@ -343,7 +308,7 @@ def COMPND(block):
         try:
             compnd_arr.append(pdb.COMPND(line2));
         except:
-            sys.stderr.write("cif.COMPND:    Error parsing line:\n%s\n" % line2);
+            _LOGGER.error("cif.COMPND:    Error parsing line:\n%s\n" % line2);
             compnd_err.append("COMPND");
 
         cont += 1;
@@ -371,7 +336,7 @@ def SOURCE(block):
             try:
                 src_arr.append(pdb.SOURCE(line));
             except:
-                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                _LOGGER.error("cif.SOURCE:    Error parsing line:\n%s\n" % line);
                 src_err.append("SOURCE");
 
         if(src_obj.getValue("pdbx_gene_src_scientific_name", i) != "?"):
@@ -382,7 +347,7 @@ def SOURCE(block):
             try:
                 src_arr.append(pdb.SOURCE(line));
             except:
-                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                _LOGGER.error("cif.SOURCE:    Error parsing line:\n%s\n" % line);
                 src_err.append("SOURCE");
 
         if(src_obj.getValue("gene_src_common_name", i) != "?"):
@@ -393,7 +358,7 @@ def SOURCE(block):
             try:
                 src_arr.append(pdb.SOURCE(line));
             except:
-                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                _LOGGER.error("cif.SOURCE:    Error parsing line:\n%s\n" % line);
                 src_err.append("SOURCE");
 
         if(src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) != "?"):
@@ -404,7 +369,7 @@ def SOURCE(block):
             try:
                 src_arr.append(pdb.SOURCE(line));
             except:
-                sys.stderr.write("cif.SOURCE:    Error parsing line:\n%s\n" % line);
+                _LOGGER.error("cif.SOURCE:    Error parsing line:\n%s\n" % line);
                 src_err.append("SOURCE");
 
     return src_arr, src_err;
@@ -427,7 +392,7 @@ def KEYWDS(block):
         try:
             key_arr.append(pdb.KEYWDS(line));
         except:
-            sys.stderr.write("cif.KEYWDS:    Error parsing line:\n%s" % line);
+            _LOGGER.error("cif.KEYWDS:    Error parsing line:\n%s" % line);
             key_err.append("KEYWDS");
 
     return key_arr, key_err;
@@ -446,7 +411,7 @@ def EXPDTA(block):
     try:
         ex_arr.append(pdb.EXPDTA(line));
     except:
-        sys.stderr.write("cif.EXPDTA:    Error parsing line:\n%s\n" % line);
+        _LOGGER.error("cif.EXPDTA:    Error parsing line:\n%s\n" % line);
         ex_err.append("EXPDTA");
 
     return ex_arr, ex_err;
@@ -466,7 +431,7 @@ def AUTHOR(block):
         try:
             aut_arr.append(pdb.AUTHOR(line));
         except:
-            sys.stderr.write("cif.AUTHOR:    Error parsing line:\n%s\n" % line);
+            _LOGGER.error("cif.AUTHOR:    Error parsing line:\n%s\n" % line);
             aut_err.append("AUTHOR");
 
     return aut_arr, aut_err;
@@ -492,7 +457,7 @@ def CRYST1(block):
     try:
         cry_arr.append(pdb.CRYST1(line));
     except:
-        sys.stderr.write("cif.CRYST1:    Error parsing line:\n%s\n" % line);
+        _LOGGER.error("cif.CRYST1:    Error parsing line:\n%s\n" % line);
         cry_err.append(CRYST1);
 
     return cry_arr, cry_err;
@@ -531,19 +496,19 @@ def SCALEn(block):
     try:
         sc_arr.append(pdb.SCALE1(scale1));
     except:
-        sys.stderr.write("cif.SCALEn:    Error parsing line:\n%s\n" % scale1);
+        _LOGGER.error("cif.SCALEn:    Error parsing line:\n%s\n" % scale1);
         sc_err.append("SCALE1");
 
     try:
         sc_arr.append(pdb.SCALE2(scale2));
     except:
-        sys.stderr.write("cif.SCALEn:    Error parsing line:\n%s\n" % scale2);
+        _LOGGER.error("cif.SCALEn:    Error parsing line:\n%s\n" % scale2);
         sc_err.append("SCALE2");
 
     try:
         sc_arr.append(pdb.SCALE3(scale3));
     except:
-        sys.stderr.write("cif.SCALEn:    Error parsing line:\n%s\n" % scale3);
+        _LOGGER.error("cif.SCALEn:    Error parsing line:\n%s\n" % scale3);
         sc_err.append("SCALE3");
 
     return sc_arr, sc_err;
@@ -579,19 +544,19 @@ def ORIGXn(block):
     try:
         or_arr.append(pdb.ORIGX1(orig1));
     except:
-        sys.stderr.write("cif.ORIGXn:    Error parsing line:\n%s\n" % orig1);
+        _LOGGER.error("cif.ORIGXn:    Error parsing line:\n%s\n" % orig1);
         or_err.append("ORIGX1");
 
     try:
         or_arr.append(pdb.ORIGX2(orig2));
     except:
-        sys.stderr.write("cif.ORIGXn:    Error parsing line:\n%s\n" % orig2);
+        _LOGGER.error("cif.ORIGXn:    Error parsing line:\n%s\n" % orig2);
         or_err.append("ORIGX2");
 
     try:
         or_arr.append(pdb.ORIGX3(orig3));
     except:
-        sys.stderr.write("cif.ORIGXn:    Error parsing line:\n%s\n" % orig3);
+        _LOGGER.error("cif.ORIGXn:    Error parsing line:\n%s\n" % orig3);
         or_err.append("ORIGX3");
 
     return or_arr, or_err;
@@ -631,7 +596,7 @@ def CISPEP(block):
         try:
             cis_arr.append(pdb.CISPEP(line));
         except:
-            sys.stderr.write("cif.CISPEP:    Erro parsing line:\n%s\n" % line);
+            _LOGGER.error("cif.CISPEP:    Erro parsing line:\n%s\n" % line);
             cis_err.append("CISPEP");
 
 
@@ -674,7 +639,7 @@ def SSBOND(block):
         try:
             ssb_arr.append(pdb.SSBOND(line));
         except:
-            sys.stderr.write("cif.SSBOND:    Error parsing line:\n%s\n" % line);
+            _LOGGER.error("cif.SSBOND:    Error parsing line:\n%s\n" % line);
             ssb_err.append("SSBOND");
 
 
@@ -744,5 +709,5 @@ def readCIF(file):
         return pdblist, errlist
 
     else:
-        print("Unknown error while reading cif file.");
-        return pdblist, errlist;
+        _LOGGER.error("Unknown error while reading cif file.")
+        return pdblist, errlist

@@ -1,18 +1,22 @@
+"""Resinter extension
+
+Print interaction energy between each residue pair in the protein. 
+
+Authors:  Kyle Monson and Emilie Hogan
 """
-    Resinter extension
 
-    Print interaction energy between each residue pair in the protein. 
-"""
 
-__date__ = "21 October 2011"
-__authors__ = "Kyle Monson and Emile Hogan"
-
+import logging
 import extensions
 from src.hydrogens import Optimize
 #itertools FTW!
 from itertools import product, permutations, count
 from collections import defaultdict
 from src.hydrogens import hydrogenRoutines
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 _titrationSets = (('ARG','AR0'),
                   ('ASP', 'ASH'),
@@ -25,19 +29,20 @@ _titrationSets = (('ARG','AR0'),
                   ('NEUTRAL-CTERM', 'CTERM'),
                   ('NEUTRAL-NTERM', 'NTERM'))
 
-_titrationSetsMap = defaultdict(tuple)
 
+_titrationSetsMap = defaultdict(tuple)
 for tsSet in _titrationSets:
     for ts in tsSet:
         _titrationSetsMap[ts] = tsSet
-        
 #loose ends.
 _titrationSetsMap['HIS'] = _titrationSetsMap['HSD']
 _titrationSetsMap['CYM'] = _titrationSetsMap['CYS']
 
+
 _pairEnergyResults = {}
 #If the residue pair energy for a specific pair changes less than this ignore it.
 PAIR_ENERGY_EPSILON = 1.0e-14
+
 
 def addExtensionOptions(extensionGroup):
     """
@@ -229,7 +234,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
                                                       chain = False,
                                                       debump = True,
                                                       opt = True):
-    routines.write(str(residueSet)+'\n')
+    _LOGGER.debug(str(residueSet))
     
     routines.removeHydrogens()
     
@@ -289,11 +294,11 @@ def write_all_residue_interaction_energies_combinations(routines, output, option
     """
     residueNamesList = get_residue_titration_sets(routines.protein.getResidues())
     
-    routines.write("Testing the following combinations\n")
+    _LOGGER.debug("Testing the following combinations")
     namelist = [r.name for r in routines.protein.getResidues()]
     combinationsData = zip(namelist, residueNamesList)
     for thing in combinationsData:
-        routines.write(str(thing)+'\n')
+        _LOGGER.debug(str(thing))
         
     if all_residue_combinations:
         combinationGenerator = combinations(residueNamesList)
@@ -316,7 +321,7 @@ def write_all_residue_interaction_energies_combinations(routines, output, option
     for resultKey in sorted(_pairEnergyResults.keys()):
         output.write(resultKey + ' ' + str(_pairEnergyResults[resultKey]) + '\n')
     
-    routines.write(str(count)+' residue combinations tried\n')
+    _LOGGER.debug(str(count) + ' residue combinations tried')
 
 def create_resinter_output(routines, outfile, options, 
                            residue_combinations=False,
@@ -324,7 +329,7 @@ def create_resinter_output(routines, outfile, options,
     """
     Output the interaction energy between each possible residue pair.
     """
-    routines.write("Printing residue interaction energies...\n")
+    _LOGGER.debug("Printing residue interaction energies...")
     
     output = extensions.extOutputHelper(routines, outfile)
     

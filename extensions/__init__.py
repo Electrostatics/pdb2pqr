@@ -44,16 +44,19 @@
     ----------------------------
 """
 
+import logging
 import pkgutil
-
 from optparse import OptionGroup, OptionConflictError, Option
 
-_extList = [name for _, name, _ in pkgutil.iter_modules(__path__)]
 
+_LOGGER = logging.getLogger(__name__)
+_extList = [name for _, name, _ in pkgutil.iter_modules(__path__)]
 extDict = {}
+
 
 for extName in _extList:
     extDict[extName] = __import__(extName,globals(),locals(),[],1)
+
 
 def setupExtensionsOptions(parser):
     """
@@ -96,22 +99,10 @@ def setupExtensionsOptions(parser):
                 firstGroup.add_option(extOption)
 
         except OptionConflictError as value:
-            print('Error adding command line options for extension ' + extName + ' ' + '(' + str(value) + ')')
-
+            _LOGGER.error('Error adding command line options for extension ' + extName + ' ' + '(' + str(value) + ')')
 
     for group in groups:
         parser.add_option_group(group)
 
     return groups
 
-class extOutputHelper(object):
-    """
-    Simple class that makes writing to both file and output simple.
-    """
-    def __init__(self, routines, outfile):
-        self.routines = routines
-        self.outfile = outfile
-
-    def write(self, s):
-        self.routines.write(s)
-        self.outfile.write(s)

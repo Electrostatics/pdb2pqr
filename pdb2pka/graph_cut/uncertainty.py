@@ -3,6 +3,10 @@ import sys
 from itertools import product
 import random
 random.seed("Mmmmm, sandwiches...")
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def resolve_uncertainty(protein_complex, labeling, uncertain, brute_force_limit=20, verbose=False):
@@ -17,16 +21,13 @@ def resolve_uncertainty(protein_complex, labeling, uncertain, brute_force_limit=
     if not uncertain:
         return final_labeling
 
-    if verbose:
-        print("Uncertain count:", len(uncertain))
+    _LOGGER.debug("Uncertain count:", len(uncertain))
 
     if len(uncertain) > brute_force_limit:
-        if verbose:
-            print("Using Monte Carlo")
+        _LOGGER.debug("Using Monte Carlo")
         return monte_carlo(protein_complex, final_labeling, uncertain)
     else:
-        if verbose:
-            print("Using brute force")
+        _LOGGER.debug("Using brute force")
         return brute_force(protein_complex, final_labeling, uncertain)
 
 

@@ -53,9 +53,14 @@ import math
 import os
 import io
 import requests
+import logging
 from os.path import splitext
 import sys
 from .aconf import INSTALLDIR, TMPDIR
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 def startLogFile(jobName, fileName, logInput):
     with open('%s%s%s/%s' % (INSTALLDIR, TMPDIR, jobName, fileName), 'w') as f:
@@ -368,6 +373,7 @@ def getPDBFile(path):
 
     if not os.path.isfile(path):
         URLpath = "https://files.rcsb.org/download/" + path + ".pdb"
+        _LOGGER.debug("Fetching PDB from %s", URLpath)
         resp = requests.get(URLpath)
         if resp.status_code != 200:
             errstr = "Got code %d while retrieving %s" % (resp.status_code, URLpath)

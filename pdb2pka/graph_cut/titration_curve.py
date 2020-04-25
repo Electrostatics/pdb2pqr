@@ -1,4 +1,5 @@
 from __future__ import print_function
+# TODO - eliminate sys import
 import sys
 
 if(sys.version_info >= (3,0)):
@@ -7,10 +8,13 @@ if(sys.version_info >= (3,0)):
 else:
     from graph import ProteinGraph
     from uncertainty import resolve_uncertainty
-    
 from collections import defaultdict
 import math
 from pprint import pprint
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 # Use the number for R from https://en.wikipedia.org/wiki/Gas_constant
@@ -107,7 +111,7 @@ def get_titration_curves(protein_complex, state_file=None):
 
     for step in range(steps):
         pH = step * step_size
-        print("pH", pH)
+        _LOGGER.info("pH", pH)
 
         if state_file is not None:
             state_file.write ("pH="+ str(pH)+"\n")
@@ -175,20 +179,17 @@ def get_curve_values(protein_complex, labeling, pH):
 
             debug_craziness = False
             if debug_craziness:
-                print("!!! DEBUG - SETTING dGd from %g to 0.0" % energies.dGd)
+                _LOGGER.debug("!!! DEBUG - SETTING dGd from %g to 0.0" % energies.dGd)
                 energies.dGd = 0
-                print("!!! DEBUG - SETTING dGe from %g to 0.0" % energies.dGe)
+                _LOGGER.debug("!!! DEBUG - SETTING dGe from %g to 0.0" % energies.dGe)
                 energies.dGe = 0
             else:
                 old = energies.dGd
                 energies.dGd =  energies.dGd - math.log(aH) - energies.dGdref
-                #print("Removed extra pH and pKa contributions from dGd: %g -> %g" % (old, energies.dGd))
                 old = energies.dGe
                 energies.dGe =  energies.dGe - math.log(aH) - energies.dGeref
-                #print("Removing extra pH and pKa contributions from dGe: %g -> %g" % (old, energies.dGe))
             energies.ddG = (energies.dGe + energies.dGeref) - (energies.dGd + energies.dGdref)
             energies.dGp = energies.dGd - energies.dGdref
-            #print(vars(energies))
             pHSD = 1.0
             pHSE = math.exp(-energies.ddG)
             pHSP = energies.aH*math.exp(-energies.dGp)

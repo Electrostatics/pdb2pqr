@@ -1,66 +1,30 @@
-"""
-    Hydrogen optimization for PDB2PQR
+"""Hydrogen optimization for PDB2PQR
 
-    This is an module for hydrogen optimization routines.
+This is an module for hydrogen optimization routines.
 
-    ----------------------------
-   
-    PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
-    Poisson-Boltzmann electrostatics calculations
-
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
-    Paul Czodrowski & Gerhard Klebe, University of Marburg.
-
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification, 
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice, 
-		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
-		  and/or other materials provided with the distribution.
-        * Neither the names of University College Dublin, Battelle Memorial Institute,
-          Pacific Northwest National Laboratory, US Department of Energy, or University
-          of Marburg nor the names of its contributors may be used to endorse or promote
-          products derived from this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
-	OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    ----------------------------
+Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 """
 
+import logging
 import os
 import string
 import math
 
+# TODO - fix import *
 from .definitions import *
 from .utilities import *
 from .quatfit import *
 from .routines import *
 from . import topology
 
-__date__ = "22 April 2009"
-__author__ = "Todd Dolinsky, Jens Erik Nielsen, Yong Huang"
 
+_LOGGER = logging.getLogger(__name__)
 HDEBUG = 0
 HYDPATH = "dat/HYDROGENS.xml"
 TOPOLOGYPATH = "dat/TOPOLOGY.xml"
 ANGLE_CUTOFF = 20.0       # A - D - H(D) angle
 DIST_CUTOFF = 3.3         # H(D) to A distance
+
 
 class HydrogenHandler(sax.ContentHandler):
     """
@@ -215,12 +179,6 @@ class Optimize:
         txt = "%s (%s)" % (self.residue, self.optinstance.opttype)
         return txt
 
-    def debug(self, txt):
-        """
-            Easy way to turn on/off debugging
-        """
-        if HDEBUG: print(txt)
-
     @staticmethod
     def getHbondangle(atom1, atom2, atom3):
         """
@@ -288,7 +246,7 @@ class Optimize:
             angle = self.getHbondangle(acc, donor, donorhatom)
                 
             if angle <= ANGLE_CUTOFF: 
-                self.debug("Found HBOND! %.4f %.4f" % (dist, angle))
+                _LOGGER.debug("Found HBOND! %.4f %.4f" % (dist, angle))
                 return 1
 
         # If we get here, no bond is formed
@@ -543,7 +501,7 @@ class Optimize:
         # Remove if geometry does not work
                             
         if bestangle > (ANGLE_CUTOFF * 2.0):
-            self.debug("Removing due to geometry %.2f > %.2f" % (bestangle, ANGLE_CUTOFF*2.0))
+            _LOGGER.debug("Removing due to geometry %.2f > %.2f" % (bestangle, ANGLE_CUTOFF*2.0))
             residue.removeAtom(newatom.name)
             return 0
 
@@ -896,13 +854,13 @@ class Flip(Optimize):
             else: return 0
 
     
-        self.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
+        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
                        (donor.residue, donor.name, acc.residue, acc.name))
         if self.isHbond(donor, acc):
             if accobj.tryAcceptor(acc, donor):
                 self.fixFlip(donor)
                 donor.hacceptor = 0
-                self.debug("NET BOND SUCCESSFUL!")
+                _LOGGER.debug("NET BOND SUCCESSFUL!")
                 return 1
             else:
                 return 0
@@ -918,7 +876,7 @@ class Flip(Optimize):
         
         if not acc.hacceptor: return 0
    
-        self.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
+        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
                        (donor.residue, donor.name, acc.residue, acc.name))
             
         if self.isHbond(donor, acc):
@@ -940,7 +898,7 @@ class Flip(Optimize):
 
         if not donor.hdonor: return 0            
             
-        self.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
+        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
                    (acc.residue, acc.name, donor.residue, donor.name))
         if self.isHbond(donor, acc):
             residue.fixed = acc.name
@@ -967,7 +925,7 @@ class Flip(Optimize):
         flag = 0
         if bondatom.name.endswith("FLIP"): flag = 1
 
-        self.debug("fixFlip called for residue {:s}, bondatom {:s} and flag {:d}"
+        _LOGGER.debug("fixFlip called for residue {:s}, bondatom {:s} and flag {:d}"
                    .format(str(residue),str(bondatom),flag))
         residue.wasFlipped = (flag == 0)
      
@@ -1069,11 +1027,11 @@ class Alcoholic(Optimize):
 
         if self.tryDonor(donor, acc):
             if accobj.tryAcceptor(acc, donor):
-                self.debug("NET BOND SUCCESSFUL!")
+                _LOGGER.debug("NET BOND SUCCESSFUL!")
                 return 1
             else: # We need to remove the added H
                 residue.removeAtom(self.hname)
-                self.debug("REMOVED NET HBOND") 
+                _LOGGER.debug("REMOVED NET HBOND") 
                 return 0
         else:
             return 0
@@ -1094,7 +1052,7 @@ class Alcoholic(Optimize):
         newname = self.hname
         if residue.hasAtom(newname): return 0
      
-        self.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
+        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
                    (donor.residue, donor.name, acc.residue, acc.name))
         
         # Act depending on the number of bonds
@@ -1128,7 +1086,7 @@ class Alcoholic(Optimize):
         elif residue.hasAtom("LP1"): newname = "LP2"
         else: newname = "LP1"
         
-        self.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
+        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
                    (acc.residue, acc.name, donor.residue, donor.name))
 
         # Act depending on the number of bonds
@@ -1314,12 +1272,12 @@ class Water(Optimize):
 
         if self.tryDonor(donor, acc):
             if accobj.tryAcceptor(acc, donor):
-                self.debug("NET BOND SUCCESSFUL!")
+                _LOGGER.debug("NET BOND SUCCESSFUL!")
                 return 1
             else:  
                 # We need to undo what we did to the donor
 
-                self.debug("REMOVED NET HBOND")        
+                _LOGGER.debug("REMOVED NET HBOND")        
                 if residue.hasAtom("H2"): residue.removeAtom("H2")      
                 elif residue.hasAtom("H1"): residue.removeAtom("H1")
                 return 0
@@ -1344,7 +1302,7 @@ class Water(Optimize):
         elif residue.hasAtom("LP1"): newname = "LP2"
         else: newname = "LP1"
 
-        self.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
+        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
         (acc.residue, acc.name, donor.residue, donor.name))
 
         # Act depending on the number of bonds
@@ -1363,22 +1321,22 @@ class Water(Optimize):
                 # Point the LP to the best H
                 
                 self.makeAtomWithNoBonds(acc, donorh, newname)
-                self.debug("Added %s to %s" % (newname, acc.residue))
+                _LOGGER.debug("Added %s to %s" % (newname, acc.residue))
                 return 1
                 
             else: return 0
                 
         elif len(acc.bonds) == 1: # No H or LP attached
-            self.debug("Trying to add %s to %s with one bond" % (newname, acc.residue))
+            _LOGGER.debug("Trying to add %s to %s with one bond" % (newname, acc.residue))
             self.makeWaterWithOneBond(acc, newname)
             newatom = acc.residue.getAtom(newname)
             return self.trySingleAlcoholicLP(acc, donor, newatom)
         elif len(acc.bonds) == 2:
-            self.debug("Trying to add %s to %s with two bonds" % (newname, acc.residue))
+            _LOGGER.debug("Trying to add %s to %s with two bonds" % (newname, acc.residue))
             loc1, loc2 = self.getPositionsWithTwoBonds(acc)
             return self.tryPositionsWithTwoBondsLP(acc, donor, newname, loc1, loc2)
         elif len(acc.bonds) == 3:
-            self.debug("Trying to add %s to %s with three bonds" % (newname, acc.residue))
+            _LOGGER.debug("Trying to add %s to %s with three bonds" % (newname, acc.residue))
             loc = self.getPositionWithThreeBonds(acc)
             return self.tryPositionsWithThreeBondsLP(acc, donor, newname, loc)  
 
@@ -1399,7 +1357,7 @@ class Water(Optimize):
         elif residue.hasAtom("H1"): newname = "H2"
         else: newname = "H1"
        
-        self.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
+        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
                    (donor.residue, donor.name, acc.residue, acc.name))
 
         # Act depending on the number of bonds
@@ -1434,17 +1392,17 @@ class Water(Optimize):
         # Conditions for return
 
         if residue.fixed:  
-            self.debug("Residue %s already fixed" % residue)
+            _LOGGER.debug("Residue %s already fixed" % residue)
             return
         if residue.hasAtom("H2"): 
-            self.debug("Residue %s already has H2" % residue)
+            _LOGGER.debug("Residue %s already has H2" % residue)
             return
 
         atom = residue.getAtom("O")
         if not residue.hasAtom("H1"): addname = "H1"
         else:  addname = "H2"
        
-        self.debug("Finalizing %s by adding %s (%i current O bonds)" % (residue, addname, len(atom.bonds)))
+        _LOGGER.debug("Finalizing %s by adding %s (%i current O bonds)" % (residue, addname, len(atom.bonds)))
  
         if len(atom.bonds) == 0:
 
@@ -1697,13 +1655,13 @@ class Carboxylic(Optimize):
             if self.tryDonor(donor, acc): return 1
             else: return 0
 
-        self.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
+        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)" % \
                    (donor.residue, donor.name, acc.residue, acc.name))
 
         if self.isHbond(donor, acc):
             if accobj.tryAcceptor(acc, donor):
                 self.fix(donor, acc)
-                self.debug("NET BOND SUCCESSFUL!")
+                _LOGGER.debug("NET BOND SUCCESSFUL!")
                 return 1
             else:
                 return 0
@@ -1725,7 +1683,7 @@ class Carboxylic(Optimize):
 
             angle = self.getHbondangle(acc, donor, donorhatom)
             if angle <= ANGLE_CUTOFF: 
-                self.debug("Found HBOND! %.4f %.4f" % (dist, angle))
+                _LOGGER.debug("Found HBOND! %.4f %.4f" % (dist, angle))
                 return 1
 
         # If we get here, no bond is formed
@@ -1744,7 +1702,7 @@ class Carboxylic(Optimize):
         if not donor.hdonor: 
             return 0            
 
-        self.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
+        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)" % \
                    (acc.residue, acc.name, donor.residue, donor.name))
 
         # We want to ignore the Hs on the acceptor
@@ -1813,7 +1771,7 @@ class Carboxylic(Optimize):
             Fix the carboxylic residue.
         """
 
-        self.debug("Fixing residue %s due to %s" % (donor.residue, donor.name))
+        _LOGGER.debug("Fixing residue %s due to %s" % (donor.residue, donor.name))
 
         residue = donor.residue
         
@@ -2031,15 +1989,6 @@ class hydrogenRoutines:
 
         self.map = handler.map
 
-    def debug(self, text):
-        """
-            Print text to stdout for debugging purposes.
-
-            Parameters
-                text:  The text to output (string)
-        """
-        if HDEBUG: print(text)  
-
     def switchstate(self, states, amb, stateID):
         """
             Switch a residue to a new state by first removing all
@@ -2073,7 +2022,7 @@ class hydrogenRoutines:
             hname = conf.hname
             boundname = conf.boundatom
             if residue.getAtom(hname) != None:
-                print('Removing',residue.name,residue.resSeq,hname)
+                _LOGGER.debug('Removing',residue.name,residue.resSeq,hname)
                 residue.removeAtom(hname)
             residue.getAtom(boundname).hacceptor = 1
             residue.getAtom(boundname).hdonor = 0
@@ -2092,7 +2041,7 @@ class hydrogenRoutines:
         # Now build appropriate atoms
         state = states[stateID]
         for conf in state:
-            print(conf)
+            _LOGGER.debug(conf)
             refcoords = []
             defcoords = []
             defatomcoords = []
@@ -2306,7 +2255,7 @@ class hydrogenRoutines:
             optimizeable donors and acceptors and sets the internal
             optlist.
         """
-        self.routines.write("Initializing full optimization...\n")
+        _LOGGER.info("Initializing full optimization...")
         
         # Do some setup
 
@@ -2341,7 +2290,7 @@ class hydrogenRoutines:
                 self.optlist.append(myobj)
                 self.resmap[residue] = myobj
       
-        self.routines.write("Done.\n")
+        _LOGGER.debug("Done.")
 
     def initializeWaterOptimization(self):
         """
@@ -2350,7 +2299,7 @@ class hydrogenRoutines:
             optlist.
         """
 
-        self.routines.write("Initializing water bonding optimization...\n")
+        _LOGGER.info("Initializing water bonding optimization...")
         
         # Do some setup
 
@@ -2376,7 +2325,7 @@ class hydrogenRoutines:
                 self.optlist.append(myobj)
                 self.resmap[residue] = myobj
               
-        self.routines.write("Done.\n")
+        _LOGGER.debug("Done.")
     
     def optimizeHydrogens(self):
         """
@@ -2384,7 +2333,7 @@ class hydrogenRoutines:
             called only after the optlist has been initialized.
         """
 
-        self.routines.write("Optimization progress:\n")
+        _LOGGER.debug("Optimization progress:")
         
         optlist = self.optlist
         resmap = {}
@@ -2395,9 +2344,9 @@ class hydrogenRoutines:
         if len(optlist) == 0: return
 
    
-        self.routines.write("  Detecting potential hydrogen bonds:\n")
-        self.routines.write("0% |                    | 100%\n", 1)
-        self.routines.write("    ", 1)
+        _LOGGER.debug("  Detecting potential hydrogen bonds:")
+        _LOGGER.debug("0% |                    | 100%", 1)
+        _LOGGER.debug("    ", 1)
         progress = 0.0
         increment = 1.0/len(optlist) 
 
@@ -2434,10 +2383,8 @@ class hydrogenRoutines:
 
             progress += increment
             while progress >= 0.0499:
-                self.routines.write("*")
+                _LOGGER.debug("*")
                 progress -= 0.05
-
-        if len(optlist) > 0: self.routines.write("\n")                   
 
         # Some residues might have no nearby hbonds - if so, place at
         #   default state
@@ -2445,7 +2392,7 @@ class hydrogenRoutines:
         for obj in optlist:
             if len(obj.hbonds) == 0:
                 if obj.residue.fixed: continue
-                self.debug("%s has no nearby partners - fixing." % obj.residue)
+                _LOGGER.debug("%s has no nearby partners - fixing." % obj.residue)
                 obj.finalize()
             
         # Determine the distinct networks
@@ -2464,9 +2411,9 @@ class hydrogenRoutines:
         # Initialize the output progress
 
         if len(networks) > 0:
-            self.routines.write("  Optimizing hydrogen bonds:\n")
-            self.routines.write("0% |                    | 100%\n", 1)
-            self.routines.write("    ", 1)
+            _LOGGER.debug("  Optimizing hydrogen bonds:")
+            _LOGGER.debug("0% |                    | 100%", 1)
+            _LOGGER.debug("    ", 1)
             progress = 0.0
             increment = 1.0/len(networks)
             
@@ -2476,11 +2423,11 @@ class hydrogenRoutines:
             txt = ""
             for obj in network:
                 txt += "%s, " % obj
-            self.debug("\nStarting network %s" % txt[:-2])
+            _LOGGER.debug("Starting network %s" % txt[:-2])
 
             ###  FIRST:  Only optimizeable to backbone atoms
 
-            self.debug("* Optimizeable to backbone *")
+            _LOGGER.debug("* Optimizeable to backbone *")
 
             hbondmap = {}
             for obj in network:
@@ -2505,7 +2452,7 @@ class hydrogenRoutines:
               
             ### SECOND:  Non-dual water Optimizeable to Optimizeable
 
-            self.debug("\n* Optimizeable to optimizeable *")
+            _LOGGER.debug("* Optimizeable to optimizeable *")
 
             hbondmap = {}
             seenlist = []
@@ -2544,7 +2491,7 @@ class hydrogenRoutines:
 
             ### THIRD:  All water-water residues
 
-            self.debug("\n* Water to Water *")
+            _LOGGER.debug("* Water to Water *")
 
             hbondmap = {}
             seenlist = []
@@ -2583,10 +2530,8 @@ class hydrogenRoutines:
 
             progress += 100.0 * increment
             while progress >= 5.0:
-                self.routines.write("*")
+                _LOGGER.debug("*")
                 progress -= 5.0
-
-        if len(networks) > 0: self.routines.write("\n")
 
     def parseHydrogen(self, res):
         """

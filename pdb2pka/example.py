@@ -12,6 +12,7 @@ __date__  = "16 August 2005"
 __author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
 import sys
+import logging
 import time
 import string
 from src import psize
@@ -20,6 +21,7 @@ from src import inputgen
 from apbslib import *
 
 
+_LOGGER = logging.getLogger(__name__)
 Python_kb = 1.3806581e-23
 Python_Na = 6.0221367e+23
 NOSH_MAXMOL = 20
@@ -144,15 +146,15 @@ def runAPBS(PQR, INPUT):
     
     # Do the calculations
  
-    sys.stdout.write("Preparing to run %d PBE calculations. \n" % nosh.ncalc)
+    _LOGGER.info("Preparing to run %d PBE calculations. \n" % nosh.ncalc)
    
     for icalc in xrange(nosh.ncalc):
-        sys.stdout.write("---------------------------------------------\n")
+        _LOGGER.info("---------------------------------------------\n")
         calc = NOsh_getCalc(nosh, icalc)
         mgparm = calc.mgparm
         pbeparm = calc.pbeparm
         if calc.calctype != 0:
-            sys.stderr.write("main:  Only multigrid calculations supported!\n")
+            _LOGGER.error("main:  Only multigrid calculations supported!\n")
             raise(APBSError, "Only multigrid calculations supported!")
 
         for k in range(0, nosh.nelec):
@@ -161,17 +163,17 @@ def runAPBS(PQR, INPUT):
 
         name = NOsh_elecname(nosh, k+1)
         if name == "":
-            sys.stdout.write("CALCULATION #%d:  MULTIGRID\n" % (icalc+1))
+            _LOGGER.info("CALCULATION #%d:  MULTIGRID\n" % (icalc+1))
         else:
-            sys.stdout.write("CALCULATION #%d (%s): MULTIGRID\n" % ((icalc+1),name))
-        sys.stdout.write("Setting up problem...\n")
+            _LOGGER.info("CALCULATION #%d (%s): MULTIGRID\n" % ((icalc+1),name))
+        _LOGGER.info("Setting up problem...\n")
 	
         # Routine initMG
 	
         if initMG(icalc, nosh, mgparm, pbeparm, realCenter, pbe, 
               alist, dielXMap, dielYMap, dielZMap, kappaMap, chargeMap, 
               pmgp, pmg) != 1:
-            sys.stderr.write("Error setting up MG calculation!\n")
+            _LOGGER.error("Error setting up MG calculation!\n")
             raise(APBSError, "Error setting up MG calculation!")
 	
         # Print problem parameters 
@@ -189,7 +191,7 @@ def runAPBS(PQR, INPUT):
         # Set partition information : Routine setPartMG
 
         if setPartMG(nosh, mgparm, thispmg) != 1:
-            sys.stderr.write("Error setting partition info!\n")
+            _LOGGER.error("Error setting partition info!\n")
             raise(APBSError, "Error setting partition info!")
 	
         ret, totEnergy[icalc] = energyMG(nosh, icalc, thispmg, 0,
@@ -211,19 +213,19 @@ def runAPBS(PQR, INPUT):
     # Handle print statements
 
     if nosh.nprint > 0:
-        sys.stdout.write("---------------------------------------------\n")
-        sys.stdout.write("PRINT STATEMENTS\n")
+        _LOGGER.info("---------------------------------------------\n")
+        _LOGGER.info("PRINT STATEMENTS\n")
     for iprint in xrange(nosh.nprint):
         if NOsh_printWhat(nosh, iprint) == NPT_ENERGY:
             printEnergy(com, nosh, totEnergy, iprint)
         elif NOsh_printWhat(nosh, iprint) == NPT_FORCE:
             printForce(com, nosh, nforce, atomforce, iprint)
         else:
-            sys.stdout.write("Undefined PRINT keyword!\n")
+            _LOGGER.info("Undefined PRINT keyword!\n")
             break
 
-    sys.stdout.write("----------------------------------------\n")
-    sys.stdout.write("CLEANING UP AND SHUTTING DOWN...\n")
+    _LOGGER.info("----------------------------------------\n")
+    _LOGGER.info("CLEANING UP AND SHUTTING DOWN...\n")
 
     # Clean up APBS structures
     
@@ -257,12 +259,12 @@ def runAPBS(PQR, INPUT):
     delete_Com(com)
     delete_Mem(mem)
     
-    sys.stdout.write("\n")
-    sys.stdout.write("Thanks for using APBS!\n\n")
+    _LOGGER.info("\n")
+    _LOGGER.info("Thanks for using APBS!\n\n")
 
     # Stop the main timer
     main_timer_stop = time.clock()
-    sys.stdout.write("Total execution time:  %1.6e sec\n" % (main_timer_stop - main_timer_start))
+    _LOGGER.info("Total execution time:  %1.6e sec\n" % (main_timer_stop - main_timer_start))
 
     #Return potentials
 
@@ -284,7 +286,7 @@ if __name__ == "__main__":
 
     # Print out the number of elec statements
 
-    print("Number of elecs: ", len(input.elecs))
+    _LOGGER.info("Number of elecs: ", len(input.elecs))
 
     # Let's set the dielectric in the second elec statement
 
@@ -296,4 +298,4 @@ if __name__ == "__main__":
 
     # And print the results!
 
-    print("Now we have: ", potentials)
+    _LOGGER.info("Now we have: ", potentials)

@@ -1,54 +1,30 @@
-"""
-    Routines for PDB2PQR
+"""Routines for PDB2PQR
 
-    This module contains the protein object used in PDB2PQR and methods
-    used to correct, analyze, and optimize that protein.
+This module contains the protein object used in PDB2PQR and methods used to
+correct, analyze, and optimize that protein.
 
-    ----------------------------
-
-    PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
-    Poisson-Boltzmann electrostatics calculations
-
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin;
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific
-    Northwest National Laboratory, operated by Battelle Memorial Institute,
-    Pacific Northwest Division for the U.S. Department Energy.;
-    Paul Czodrowski & Gerhard Klebe, University of Marburg.
-
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification,
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice,
-		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice,
-		  this list of conditions and the following disclaimer in the documentation
-		  and/or other materials provided with the distribution.
-        * Neither the names of University College Dublin, Battelle Memorial Institute,
-          Pacific Northwest National Laboratory, US Department of Energy, or University
-          of Marburg nor the names of its contributors may be used to endorse or promote
-          products derived from this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-	OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    ----------------------------
-
+Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """
 
 from __future__ import division
+import math
+import copy
+# TODO - need to fix all of the import * statements
+from .pdb import *
+from .utilities import *
+from .quatfit import *
+from .forcefield import *
+from .structures import *
+from .protein import *
+from .definitions import *
+from io import StringIO
+from .errors import PDBInputError, PDBInternalError, PDB2PKAError
+from pprint import pformat
+import logging
 
-__date__ = "1 August 2008"
-__author__ = "Jens Erik Nielsen, Todd Dolinsky, Yong Huang"
+
+_LOGGER = logging.getLogger(__name__)
+
 
 CELL_SIZE = 2
 BUMP_DIST = 2.0
@@ -64,68 +40,23 @@ AAS = ["ALA", "ARG", "ASH", "ASN", "ASP", "CYS", "CYM", "GLN", "GLU", "GLH", "GL
 NAS = ["A", "A5", "A3", "C", "C5", "C3", "G", "G5", "G3", "T", "T5", "T3", "U", \
        "U5", "U3", "RA", "RG", "RC", "RU", "DA", "DG", "DC", "DT"]
 
-import math
-import copy
-from .pdb import *
-from .utilities import *
-from .quatfit import *
-from .forcefield import *
-from .structures import *
-from .protein import *
-from .definitions import *
-from io import StringIO
-from .errors import PDBInputError, PDBInternalError, PDB2PKAError
-from pprint import pformat
-
 
 class Routines:
-    def __init__(self, protein, verbose, definition=None):
+    def __init__(self, protein, definition=None):
         """
             Initialize the Routines class.  The class contains most
             of the main routines that run PDB2PQR
 
             Parameters
                 protein:  The protein to run PDB2PQR on (Protein)
-                verbose:  A flag to determine whether to write to
-                          stdout
         """
         self.protein = protein
         self.definition = definition
         self.aadef = None
-        self.verbose = verbose
-        self.warnings = []
         self.cells = {}
         if definition != None:
             self.aadef = definition.getAA()
             self.nadef = definition.getNA()
-
-
-    def write(self, message, indent=0):
-        """
-            Write a message to stdout for debugging if verbose
-
-            Parameters
-                message: The message to write (string)
-                indent : The indent level (int, default=0)
-        """
-
-        # When I grow up I'll be a logger
-        # import logging
-        # logger = logging.getLogger(__name__)
-        # logger.info(message.strip())
-
-        out = ""
-        if self.verbose:
-            for i in range(indent):
-                out += "\t"
-            out += message
-            sys.stdout.write(out)
-
-    def getWarnings(self):
-        """
-            Get all warnings generated from routines
-        """
-        return self.warnings
 
     def applyNameScheme(self, forcefield):
         """
@@ -136,7 +67,7 @@ class Routines:
                 forcefield: The forcefield object (forcefield)
 
         """
-        self.write("Applying the naming scheme to the protein...")
+        _LOGGER.info("Applying the naming scheme to the protein...")
         for residue in self.protein.getResidues():
             if isinstance(residue, (Amino, WAT, Nucleic)):
                 resname = residue.ffname
@@ -155,7 +86,7 @@ class Routines:
                     atom.resName = rname
                     atom.name = aname
 
-        self.write("Done.\n")
+        _LOGGER.debug("Done applying naming scheme.")
 
     def applyForcefield(self, forcefield):
         """
@@ -169,7 +100,7 @@ class Routines:
                 misslist:   A list of atoms that were not found in
                             the forcefield (list)
         """
-        self.write("Applying the forcefield to the protein...")
+        _LOGGER.info("Applying the forcefield to the protein...")
         misslist = []
         hitlist = []
         for residue in self.protein.getResidues():
@@ -190,14 +121,14 @@ class Routines:
                 else:
                     misslist.append(atom)
 
-        self.write("Done.\n")
+        _LOGGER.debug("Done applying forcefield.")
         return hitlist, misslist
 
     def updateResidueTypes(self):
         """
             Find the type of residue as notated in the Amino Acid definition
         """
-        self.write("Updating Residue Types... ")
+        _LOGGER.info("Updating residue types... ")
         for chain in self.protein.getChains():
             for residue in chain.get("residues"):
                 name = residue.get("name")
@@ -210,14 +141,14 @@ class Routines:
                 else: # Residue is a ligand or unknown
                     residue.set("type", 2)
 
-        self.write("Done\n")
+        _LOGGER.debug("Done updating residue types.")
 
     def updateSSbridges(self):
         """
             Check for SS-bridge partners, and if present, set appropriate
             partners
         """
-        self.write("Updating SS bridges...\n")
+        _LOGGER.info("Updating SS bridges...")
         SGpartners = {}
         for residue in self.protein.getResidues():
             if isinstance(residue, CYS):
@@ -242,15 +173,14 @@ class Routines:
                 res1.set("SSbonded", 1)
                 res1.set("SSbondedpartner", partner)
                 self.applyPatch("CYX", res1)
-                self.write("%s - %s\n" % (res1, res2), 1)
+                _LOGGER.debug("%s - %s", res1, res2)
             elif numpartners > 1:
                 error = "WARNING: %s has multiple potential " % res1
-                error += "SS-bridge partners\n"
-                self.write(error, 1)
-                self.warnings.append(error)
+                error += "SS-bridge partners"
+                _LOGGER.warn(error)
             elif numpartners == 0:
-                self.write("%s is a free cysteine\n" % res1, 1)
-        self.write("Done.\n")
+                _LOGGER.debug("%s is a free cysteine" % res1, 1)
+        _LOGGER.debug("Done updating SS bridges.")
 
     def updateInternalBonds(self):
         """
@@ -310,10 +240,9 @@ class Routines:
                     continue
 
                 if distance(atom1.getCoords(), atom2.getCoords()) > PEPTIDE_DIST:
-                    text = "Gap in backbone detected between %s and %s!\n" % \
+                    text = "Gap in backbone detected between %s and %s!" % \
                            (res1, res2)
-                    self.write(text, 1)
-                    self.warnings.append(text)
+                    _LOGGER.warn(text)
                     res2.peptideC = None
                     res1.peptideN = None
 
@@ -339,7 +268,7 @@ class Routines:
         if patchname not in self.protein.patchmap:
             raise PDBInternalError("Unable to find patch %s!" % patchname)
 
-        self.write('PATCH INFO: %s patched with %s\n' % (residue,patchname),1)
+        _LOGGER.debug('PATCH INFO: %s patched with %s', residue,patchname)
 
         # Make a copy of the reference, i.e. a new reference for
         # this patch.  Two examples:
@@ -469,8 +398,8 @@ class Routines:
             termini by looking at the ends of the chain. Then
             examine each residue, looking for internal chain breaks.
         """
-
-        self.write("Setting the termini... \n")
+        # TODO - this function does a lot more than just set termini...
+        _LOGGER.info("Setting the termini...")
 
         # First assign the known termini
 
@@ -523,8 +452,8 @@ class Routines:
                         chainid = letters[id] * idLength
 
                     if(idLength > 1):
-                        message = 'Warning: Reusing chain id: ' + chainid[0] + '\n'
-                        self.write(message)
+                        message = 'Warning: Reusing chain id: ' + chainid[0] + ''
+                        _LOGGER.warn(message)
 
                     # Make a new chain with these residues
                     newchain = Chain(chainid[0])
@@ -556,7 +485,7 @@ class Routines:
                     break
 
             if notwat == 0:
-                self.write("Done.\n")
+                _LOGGER.debug("Done setting termini.")
                 return
 
             chain = self.protein.chainmap[""]
@@ -571,8 +500,8 @@ class Routines:
                 chainid = letters[id] * idLength
 
             if(idLength > 1):
-                message = 'Warning: Reusing chain id: ' + chainid[0] + '\n'
-                self.write(message)
+                message = 'Warning: Reusing chain id: ' + chainid[0]
+                _LOGGER.warn(message)
 
             # Use the new chainID
 
@@ -582,14 +511,14 @@ class Routines:
             for res in chain.residues:
                 res.setChainID(chainid[0])
 
-        self.write("Done.\n")
+        _LOGGER.debug("Done setting termini.")
 
 
     def findMissingHeavy(self):
         """
             Repair residues that contain missing heavy (non-Hydrogen) atoms
         """
-        self.write("Checking for missing heavy atoms... \n")
+        _LOGGER.info("Checking for missing heavy atoms...")
         misscount = 0
         heavycount = 0
         for residue in self.protein.getResidues():
@@ -604,8 +533,7 @@ class Routines:
                     if residue.hasAtom("OP1") and residue.hasAtom("OP2"): continue
                 heavycount += 1
                 if not residue.hasAtom(refatomname):
-                    self.write("Missing %s in %s\n" % \
-                               (refatomname, residue), 1)
+                    _LOGGER.debug("Missing %s in %s", refatomname, residue)
                     misscount += 1
                     residue.addMissing(refatomname)
 
@@ -620,10 +548,9 @@ class Routines:
                 if atomname in ["OP1", "OP2"] and residue.reference.hasAtom("O1P") \
                     and residue.reference.hasAtom("O2P"): continue
                 if not residue.reference.hasAtom(atomname):
-                    self.write("Extra atom %s in %s! - " % \
-                               (atomname, residue), 1)
+                    _LOGGER.debug("Extra atom %s in %s! - ", atomname, residue)
                     residue.removeAtom(atomname)
-                    self.write("Deleted this atom.\n")
+                    _LOGGER.debug("Deleted this atom.")
 
         if heavycount == 0:
             raise PDBInputError("No heavy atoms found. " +
@@ -638,12 +565,13 @@ class Routines:
             error += "You may also see this message if PDB2PQR does not have parameters for enough residues in your protein."
             raise PDBInputError(error)
         elif misscount > 0:
-            self.write("Missing %i out of %i heavy atoms (%.2f percent) - " % \
-                       (misscount, heavycount, misspct))
-            self.write("Will attempt to repair.\n")
+            _LOGGER.debug("Missing %i out of %i heavy atoms (%.2f percent) - ",
+                          misscount, heavycount, misspct)
+            _LOGGER.debug("Will attempt to repair.")
             self.repairHeavy()
         else:
-            self.write("No heavy atoms found missing - Done.\n")
+            _LOGGER.debug("No heavy atoms found missing.")
+            _LOGGER.debug("Done checking for missing heavy atoms.")
 
     @staticmethod
     def rebuildTetrahedral(residue, atomname):
@@ -789,7 +717,7 @@ class Routines:
             used when available.
         """
         count = 0
-        self.write("Adding hydrogens to the protein...\n")
+        _LOGGER.info("Adding hydrogens to the protein...")
         for residue in self.protein.getResidues():
             if not isinstance(residue, (Amino, Nucleic)):
                 continue
@@ -842,12 +770,12 @@ class Routines:
                     residue.createAtom(atomname, newcoords)
                     count += 1
                 else:
-                    self.write("Couldn't rebuild %s in %s!\n" % (atomname, residue), 1)
+                    _LOGGER.warn("Couldn't rebuild %s in %s!", atomname, residue)
 
-        self.write(" Added %i hydrogen atoms.\n" % count)
+        _LOGGER.debug(" Added %i hydrogen atoms.", count)
 
     def removeHydrogens(self):
-        self.write("Stripping hydrogens from the protein...\n")
+        _LOGGER.info("Stripping hydrogens from the protein...")
 
         for residue in self.protein.getResidues():
             if not isinstance(residue, (Amino, Nucleic)):
@@ -865,7 +793,7 @@ class Routines:
             we've already seen and subsequent attempts to rebuild the
             atom.
         """
-        self.write("Rebuilding missing heavy atoms... \n")
+        _LOGGER.info("Rebuilding missing heavy atoms...")
         for residue in self.protein.getResidues():
             if not isinstance(residue, (Amino, Nucleic)):
                 continue
@@ -911,9 +839,9 @@ class Routines:
 
                     missing.append(atomname)
                     if seenmap[atomname] > nummissing:
-                        text = "Too few atoms present to reconstruct or cap residue %s in structure!\n" % (residue)
-                        text += "This error is generally caused by missing backbone atoms in this protein;\n"
-                        text += "you must use an external program to complete gaps in the protein backbone.\n"
+                        text = "Too few atoms present to reconstruct or cap residue %s in structure! " % (residue)
+                        text += "This error is generally caused by missing backbone atoms in this protein; "
+                        text += "you must use an external program to complete gaps in the protein backbone. "
                         text += "Heavy atoms missing from %s: " % (residue)
                         text += ' '.join(missing)
                         raise PDBInputError(text)
@@ -921,11 +849,10 @@ class Routines:
                 else: # Rebuild the atom
                     newcoords = findCoordinates(3, coords, refcoords, refatomcoords)
                     residue.createAtom(atomname, newcoords)
-                    self.write("Added %s to %s at coordinates" % (atomname, residue), 1)
-                    self.write(" %.3f %.3f %.3f\n" % \
-                           (newcoords[0], newcoords[1], newcoords[2]))
+                    _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)
+                    _LOGGER.debug(" %.3f %.3f %.3f", newcoords[0], newcoords[1], newcoords[2])
 
-        self.write("Done.\n")
+        _LOGGER.debug("Done rebuilding missing atoms.")
 
     def setReferenceDistance(self):
         """
@@ -943,7 +870,7 @@ class Routines:
             caatom = residue.getAtom("CA")
 
             if caatom == None:
-                text = "Cannot set references to %s without CA atom!\n"
+                text = "Cannot set references to %s without CA atom!"
                 raise PDBInputError(text)
 
             # Set up the linked map
@@ -1049,11 +976,11 @@ class Routines:
             if dist < cutoff:
                 bumpscore = bumpscore + 1000.0
                 if pair_ignored:
-                    self.write('This bump is a donor/acceptor pair.\n')
+                    _LOGGER.debug('This bump is a donor/acceptor pair.')
 #                if heavy_not_ignored:
 #                    print 'Bumped {0} against {1} within residue'.format(atom.name, closeatom.name)
                 #nearatoms[closeatom] = (dist-cutoff)**2
-        self.write('BUMPSCORE ' + str(bumpscore) + '\n')
+        _LOGGER.debug('BUMPSCORE ' + str(bumpscore))
         return bumpscore
 
 
@@ -1064,7 +991,7 @@ class Routines:
             for more information.
         """
 
-        self.write("Checking if we must debump any residues... \n")
+        _LOGGER.info("Checking if we must debump any residues... ")
 
         # Do some setup
 
@@ -1090,19 +1017,18 @@ class Routines:
 
             # Otherwise debump the residue
 
-            self.write("Starting to debump %s...\n" % residue, 1)
-            self.write("Debumping cutoffs: %2.1f for heavy-heavy, %2.1f for hydrogen-heavy, and %2.1f for hydrogen-hydrogen.\n" %
+            _LOGGER.debug("Starting to debump %s...", residue)
+            _LOGGER.debug("Debumping cutoffs: %2.1f for heavy-heavy, %2.1f for hydrogen-heavy, and %2.1f for hydrogen-hydrogen." %
                        (BUMP_HEAVY_SIZE*2,
                         BUMP_HYDROGEN_SIZE+BUMP_HEAVY_SIZE,
                         BUMP_HYDROGEN_SIZE*2), 1)
             if self.debumpResidue(residue, conflictnames):
-                self.write("Debumping Successful!\n\n", 1)
+                _LOGGER.debug("Debumping Successful!", 1)
             else:
-                text = "WARNING: Unable to debump %s\n" % residue
-                self.write("********\n%s********\n\n" % text)
-                self.warnings.append(text)
+                text = "WARNING: Unable to debump %s" % residue
+                _LOGGER.warn(text)
 
-        self.write("Done.\n")
+        _LOGGER.debug("Done checking if we must debump any residues.")
 
     def findResidueConflicts(self, residue, writeConflictInfo=False):
         conflictnames = []
@@ -1120,8 +1046,7 @@ class Routines:
                 conflictnames.append(atomname)
                 if writeConflictInfo:
                     for repatom in nearatoms:
-                        self.write("%s %s is too close to %s %s\n" % \
-                                   (residue, atomname, repatom.residue, repatom.name), 1)
+                        _LOGGER.debug("%s %s is too close to %s %s", residue, atomname, repatom.residue, repatom.name)
 
         return conflictnames
 
@@ -1173,7 +1098,7 @@ class Routines:
 
             if anglenum == -1: return False
 
-            self.write("Using dihedral angle number %i to debump the residue.\n" % anglenum, 1)
+            _LOGGER.debug("Using dihedral angle number %i to debump the residue.", anglenum)
 
             bestscore = self.scoreDihedralAngle(residue, anglenum)
             foundImprovement = False
@@ -1190,7 +1115,7 @@ class Routines:
 
                 if score == 0:
                     if not self.findResidueConflicts(residue):
-                        self.write("No conflicts found at angle "+repr(newangle)+"\n", 1)
+                        _LOGGER.debug("No conflicts found at angle " + repr(newangle))
                         return True
                     else:
                         bestangle = newangle
@@ -1210,10 +1135,10 @@ class Routines:
             currentConflictNames = self.findResidueConflicts(residue)
 
             if foundImprovement:
-                self.write("Best score of "+repr(bestscore)+" at angle "+repr(bestangle)+". New conflict set: ", 1)
-                self.write(str(currentConflictNames)+"\n", 1)
+                _LOGGER.debug("Best score of "+repr(bestscore)+" at angle "+repr(bestangle)+". New conflict set: ")
+                _LOGGER.debug(str(currentConflictNames))
             else:
-                self.write("No improvement found for this dihedral angle.\n", 1)
+                _LOGGER.debug("No improvement found for this dihedral angle.")
 
         # If we're here, debumping was unsuccessful
 
@@ -1295,11 +1220,10 @@ class Routines:
                     bestatom = closeatom
 
         if bestdist > bestwatdist:
-            txt = "Warning: %s in %s skipped when optimizing %s in %s\n" % (bestwatatom.name,
+            txt = "Warning: %s in %s skipped when optimizing %s in %s" % (bestwatatom.name,
                                                                            bestwatatom.residue,
                                                                            atom.name, residue)
-            if txt not in self.warnings:
-                self.warnings.append(txt)
+            _LOGGER.warn(txt)
 
         return bestatom
 
@@ -1502,11 +1426,11 @@ class Routines:
         for residue in self.protein.getResidues():
             residue.setDonorsAndAcceptors()
 
-    def runPDB2PKA(self, ph, ff, pdblist, ligand, verbose, pdb2pka_params):
+    def runPDB2PKA(self, ph, ff, pdblist, ligand, pdb2pka_params):
         if ff.lower() != 'parse':
             PDB2PKAError('PDB2PKA can only be run with the PARSE force field.')
 
-        self.write("Running PDB2PKA and applying at pH %.2f... \n" % ph)
+        _LOGGER.info("Running PDB2PKA and applying at pH %.2f... ", ph)
 
         import pka
         from pdb2pka import pka_routines
@@ -1515,10 +1439,7 @@ class Routines:
         init_params.pop('pairene')
         init_params.pop('clean_output')
         
-        results = pka.pre_init(original_pdb_list=pdblist,
-                               ff=ff,
-                               verbose=verbose,
-                               ligand=ligand,
+        results = pka.pre_init(original_pdb_list=pdblist, ff=ff, ligand=ligand,
                                **init_params)
         output_dir, protein, routines, forcefield,apbs_setup, ligand_titratable_groups, maps, sd = results
 
@@ -1526,12 +1447,12 @@ class Routines:
                                                  restart=pdb2pka_params.get('clean_output'),
                                                  pairene=pdb2pka_params.get('pairene'))
 
-        print('Doing full pKa calculation')
+        _LOGGER.info('Doing full pKa calculation')
         mypkaRoutines.runpKa()
 
         pdb2pka_warnings = mypkaRoutines.warnings[:]
 
-        self.warnings.extend(pdb2pka_warnings)
+        _LOGGER.warn(pdb2pka_warnings)
 
         residue_ph = {}
         for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.items():
@@ -1548,7 +1469,7 @@ class Routines:
 
         self.apply_pka_values(ff, ph, residue_ph)
 
-        self.write('Finished running PDB2PKA.\n')
+        _LOGGER.debug('Finished running PDB2PKA.')
 
 
     def runPROPKA31(self, pka_options):
@@ -1575,7 +1496,7 @@ class Routines:
             os.remove(f)
 
         ph = pka_options.pH
-        self.write("Running propka 3.1 at pH %.2f... " % ph)
+        _LOGGER.info("Running propka 3.1 at pH %.2f... ", ph)
 
         # Initialize some variables
         pkadic = {}
@@ -1630,7 +1551,7 @@ class Routines:
                options: Options to propka
                version: may be 30 or 31 (uses external propka 3.1)
         """
-        self.write("Running PROPKA v%d and applying at pH %.2f... \n" % (version,ph))
+        _LOGGER.info("Running PROPKA v%d and applying at pH %.2f... ", version, ph)
 
         pkadic = self.runPROPKA31(options)
 
@@ -1641,15 +1562,14 @@ class Routines:
         # Now apply each pka to the appropriate residue
         self.apply_pka_values(ff, ph, pkadic)
 
-        self.write("Done.\n")
+        _LOGGER.debug("Done running PROPKA")
 
 
     def apply_pka_values(self, ff, ph, pkadic):
-        self.write('Applying pKa values at a pH of %.2f:\n' % ph)
+        _LOGGER.info('Applying pKa values at a pH of %.2f:', ph)
         formatted_pkadict = pformat(pkadic)
-        self.write(formatted_pkadict+'\n\n')
+        _LOGGER.debug(formatted_pkadict+'')
 
-        warnings = []
         for residue in self.protein.getResidues():
             if not isinstance(residue, Amino):
                 continue
@@ -1666,7 +1586,7 @@ class Routines:
                     if ph >= value:
                         if ff in ["amber", "charmm", "tyl06", "peoepb", "swanson"]:
                             warn = ("N-terminal %s" % key, "neutral")
-                            warnings.append(warn)
+                            _LOGGER.warn(warn)
                         else:
                             self.applyPatch("NEUTRAL-NTERM", residue)
 
@@ -1679,7 +1599,7 @@ class Routines:
                     if ph < value:
                         if ff in ["amber", "charmm", "tyl06", "peoepb", "swanson"]:
                             warn = ("C-terminal %s" % key, "neutral")
-                            warnings.append(warn)
+                            _LOGGER.warn(warn)
                         else:
                             self.applyPatch("NEUTRAL-CTERM", residue)
 
@@ -1691,37 +1611,32 @@ class Routines:
                 if resname == "ARG" and ph >= value:
                     if ff == "parse":
                         self.applyPatch("AR0", residue)
-                        txt = "WARNING: Neutral arginines are very rare. Please double\n"
-                        self.warnings.append(txt)
-                        self.write(txt)
-                        txt = "         check your system and caculation setup.\n"
-                        self.warnings.append(txt)
-                        self.write(txt)
+                        _LOGGER.warn("Neutral arginines are very rare. Please double-check your setup.")
                     else:
                         warn = (key, "neutral")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                 elif resname == "ASP" and ph < value:
                     if residue.isCterm and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     elif residue.isNterm and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at N-Terminal")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     else:
                         self.applyPatch("ASH", residue)
                 elif resname == "CYS" and ph >= value:
                     if ff == "charmm":
                         warn = (key, "negative")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     else:
                         self.applyPatch("CYM", residue)
                 elif resname == "GLU" and ph < value:
                     if residue.isCterm and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     elif residue.isNterm and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at N-Terminal")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     else:
                         self.applyPatch("GLH", residue)
                 elif resname == "HIS" and ph < value:
@@ -1729,60 +1644,36 @@ class Routines:
                 elif resname == "LYS" and ph >= value:
                     if ff == "charmm":
                         warn = (key, "neutral")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     elif ff in ["amber", "tyl06", "swanson"] and residue.get("isCterm"):
                         warn = (key, "neutral at C-Terminal")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     elif ff == "tyl06" and residue.get("isNterm"):
                         warn = (key, "neutral at N-Terminal")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     else:
                         self.applyPatch("LYN", residue)
                 elif resname == "TYR" and ph >= value:
                     if ff in ["charmm", "amber", "tyl06", "peoepb", "swanson"]:
                         warn = (key, "negative")
-                        warnings.append(warn)
+                        _LOGGER.warn(warn)
                     else:
                         self.applyPatch("TYM", residue)
 
         if len(warnings) > 0:
-            init = "WARNING: PDB2PKA determined the following residues to be\n"
-            self.warnings.append(init)
-            self.write(init)
-            init = "         in a protonation state not supported by the\n"
-            self.warnings.append(init)
-            self.write(init)
-            init = "         %s forcefield!\n" % ff
-            self.warnings.append(init)
-            self.write(init)
-            init = "         All were reset to their standard pH 7.0 state.\n"
-            self.warnings.append(init)
-            self.write(init)
-            self.warnings.append("\n")
-            self.write('\n')
+            init = "PDB2PKA determined the following residues to be in a protonation state not supported by the {ff} forcefield.  All were reset to their pH 7.0 model titration state."
+            _LOGGER.warn(init.format(ff=options.ff))
+            _LOGGER.warn(init)
             for warn in warnings:
-                text = "             %s (%s)\n" % (warn[0], warn[1])
-                self.warnings.append(text)
-                self.write(text)
-            self.warnings.append("\n")
-            self.write('\n')
+                text = "             %s (%s)" % (warn[0], warn[1])
+                _LOGGER.warn(text)
 
         if len(pkadic) > 0:
-            warn = "         PDB2PQR could not identify the following residues\n"
-            self.warnings.append(warn)
-            self.write(warn)
-            warn = "         and residue numbers as returned by PROPKA or PDB2PKA:\n"
-            self.warnings.append(warn)
-            self.warnings.append("\n")
-            self.write(warn)
-            self.write('\n')
+            warn = "PDB2PQR could not identify the following residues and residue numbers as returned by PROPKA or PDB2PKA:"
+            _LOGGER.warn(warn)
             for item in pkadic:
-                text = "             %s\n" % item
-                self.warnings.append(text)
-                self.write(text)
-            self.warnings.append("\n")
-            self.write('\n')
-
+                text = "             %s" % item
+                _LOGGER.warn(text)
 
     def holdResidues(self, hlist):
         """Set the stateboolean dictionary to residues in hlist."""
@@ -1797,12 +1688,12 @@ class Routines:
                 hlist.remove(reskey)
                 if isinstance(residue, Amino):
                     residue.stateboolean = {'FIXEDSTATE': False}
-                    self.write("Setting residue {:s} as fixed.\n".format(str(residue)))
+                    _LOGGER.debug("Setting residue {:s} as fixed.".format(str(residue)))
                 else:
-                    self.write("Matched residue {:s} but not subclass of Amino.\n".format(str(residue)))
+                    _LOGGER.warn("Matched residue {:s} but not subclass of Amino.".format(str(residue)))
 
         if len(hlist) > 0:
-            self.write("The following fixed residues were not matched (possible internal error): {:s}.\n"
+            _LOGGER.warn("The following fixed residues were not matched (possible internal error): {:s}."
                        .format(str(hlist)))
 
 

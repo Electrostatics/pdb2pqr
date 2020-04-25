@@ -9,6 +9,7 @@
 # Copyright (c) Jens Erik Nielsen, University College Dublin, 2011
 #
 
+# TODO - eliminate sys and os imports
 import sys, os
 try:
     file_name=__file__
@@ -22,7 +23,12 @@ except:
     scriptpath=os.path.split(sys.argv[0])[0]
     if scriptpath=='.':
         scriptpath=os.getcwd()
-        
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
+
 #
 # Path to pKa_lig_tool server
 #
@@ -131,8 +137,8 @@ class ligand_pKa:
         f=urllib.urlopen(thisurl)
         text=f.read()
         output = StringIO.StringIO(text)
-        print(text)
-        print(smiles)
+        _LOGGER.info(text)
+        _LOGGER.info(smiles)
         return text
         #
         # Parse the XML
@@ -141,39 +147,39 @@ class ligand_pKa:
         xmldoc = minidom.parse(output)
 
         ligands = xmldoc.firstChild
-        print('Search-type was: %s'%ligands.attributes['Type'].value)
+        _LOGGER.info('Search-type was: %s'%ligands.attributes['Type'].value)
         for ligand in ligands.childNodes:
             atoms = ligand.getElementsByTagName('Atoms')[0]
             mol2 = ligand.getElementsByTagName('mol2')[0]
 
-            print('*'*50)
-            print('Found ligand \"%s\"'%ligand.attributes['Name'].value)
-            print("")
-            print('mol2 file')
-            print('-'*50)
-            print(mol2.firstChild.data)
-            print("")
-            print(' Atoms and associated pKa values')
-            print('-'*50)
+            _LOGGER.info('*'*50)
+            _LOGGER.info('Found ligand \"%s\"'%ligand.attributes['Name'].value)
+            _LOGGER.info("")
+            _LOGGER.info('mol2 file')
+            _LOGGER.info('-'*50)
+            _LOGGER.info(mol2.firstChild.data)
+            _LOGGER.info("")
+            _LOGGER.info(' Atoms and associated pKa values')
+            _LOGGER.info('-'*50)
             for atom in atoms.childNodes:
-                print('%4s %4s %-6s'%(atom.attributes['Name'].value,
+                _LOGGER.info('%4s %4s %-6s'%(atom.attributes['Name'].value,
                                      atom.attributes['Number'].value,
                                      atom.attributes['Type'].value))
                 pkas = atom.firstChild
                 if pkas:
                     for pka in pkas.childNodes:
-                        print('          Value:            ',pka.attributes['Value'].value)
-                        print('          Temperature:      ',pka.attributes['Temperature'].value)
-                        print('          pH:               ',pka.attributes['pH'].value)
-                        print('          Solvent:          ',pka.attributes['Solvent'].value)
-                        print('          Salt type:        ',pka.attributes['Salt_type'].value)
-                        print('          Salt conc.:       ',pka.attributes['Salt_conc.'].value)
-                        print('          Titratable group: ',pka.attributes['Titratable_group'].value)
-                        print('          Most bio. rel.:   ',pka.attributes['Most_bio._relavent'].value)
-                        print('          Reference:        ',pka.attributes['Reference'].value)
-                        print('          Comment:          ',pka.attributes['Comment'].value)
+                        _LOGGER.info('          Value:            ',pka.attributes['Value'].value)
+                        _LOGGER.info('          Temperature:      ',pka.attributes['Temperature'].value)
+                        _LOGGER.info('          pH:               ',pka.attributes['pH'].value)
+                        _LOGGER.info('          Solvent:          ',pka.attributes['Solvent'].value)
+                        _LOGGER.info('          Salt type:        ',pka.attributes['Salt_type'].value)
+                        _LOGGER.info('          Salt conc.:       ',pka.attributes['Salt_conc.'].value)
+                        _LOGGER.info('          Titratable group: ',pka.attributes['Titratable_group'].value)
+                        _LOGGER.info('          Most bio. rel.:   ',pka.attributes['Most_bio._relavent'].value)
+                        _LOGGER.info('          Reference:        ',pka.attributes['Reference'].value)
+                        _LOGGER.info('          Comment:          ',pka.attributes['Comment'].value)
 
-            print('*'*50)
+            _LOGGER.info('*'*50)
         return
 
     def get_allhyd_state(self):
@@ -187,10 +193,10 @@ class ligand_pKa:
 
 
 if __name__=='__main__':
-    print("")
-    print('Get pKa values and structures of protonation states for a ligand')
-    print('Chresten Soendergaard, Paul Czodrowski, Jens Erik Nielsen 2006-2010')
-    print("")
+    _LOGGER.info("")
+    _LOGGER.info('Get pKa values and structures of protonation states for a ligand')
+    _LOGGER.info('Chresten Soendergaard, Paul Czodrowski, Jens Erik Nielsen 2006-2010')
+    _LOGGER.info("")
     import sys, os
     from optparse import OptionParser
     parser = OptionParser(usage='%prog [options] <file>',version='%prog 1.0')
@@ -228,7 +234,7 @@ if __name__=='__main__':
                         break
                 #
                 if mol2file:
-                    print(mol2file)
+                    _LOGGER.info(mol2file)
                     fd=open(mol2file)
                     mol2lines=fd.readlines()
                     fd.close()
@@ -241,11 +247,11 @@ if __name__=='__main__':
                     except:
                         import sys
                         failed.append([mol2file,sys.exc_info()[0]])
-                        print('FAILED')
-                        print(sys.exc_info()[0])
-        print(failed)
-        print('OK',len(ok))
-        print('FAILED',len(failed))
+                        _LOGGER.error('FAILED')
+                        _LOGGER.error(sys.exc_info()[0])
+        _LOGGER.warn(failed)
+        _LOGGER.info('OK',len(ok))
+        _LOGGER.warn('FAILED',len(failed))
                         
 
     

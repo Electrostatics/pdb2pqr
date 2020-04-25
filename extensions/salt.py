@@ -13,16 +13,19 @@
     Author:  Mike Bradley (heavily copied from Todd Dolinsky's hbond extension)
 """
 
-__date__ = "25 August 2006"
-__author__ = "Mike Bradley"
 
+import logging
 from src.utilities import distance
 from src.routines import Cells
 
+
+_LOGGER = logging.getLogger(__name__)
 DIST_CUTOFF = 4.0         # maximum cation to anion atom distance in angstroms
+
 
 def usage():
     return 'Print a list of salt bridges to {output-path}.salt'
+
 
 def run_extension(routines, outroot, options):
     """
@@ -36,7 +39,7 @@ def run_extension(routines, outroot, options):
     outname = outroot + ".salt"
     outfile = open(outname, "w")
 
-    routines.write("Printing salt bridge list...\n")
+    _LOGGER.debug("Printing salt bridge list...")
 
     # Define the potential salt bridge atoms here (the current lists are for the AMBER
     # forcefield and are not necessarily exhaustive).
@@ -57,7 +60,7 @@ def run_extension(routines, outroot, options):
     for cation in protein.getAtoms():
         # check that we've found a cation
         if cation.residue.name == "NMET":
-            print("YES NMET")
+            _LOGGER.info("YES NMET")
         if cation.residue.name not in posresList: 
             continue
         elif cation.name not in posatomList: 
@@ -75,9 +78,6 @@ def run_extension(routines, outroot, options):
             dist = distance(cation.getCoords(), anion.getCoords())
             if dist > DIST_CUTOFF: 
                 continue
-            #routines.write("Cation: %s %s\tAnion: %s %s\tsaltdist: %.2f\n" % \
-            #          (cation.residue, cation.name, anion.residue, anion.name, dist)) 
             outfile.write("Cation: %s %s\tAnion: %s %s\tsaltdist: %.2f\n" % \
                       (cation.residue, cation.name, anion.residue, anion.name, dist))
-    #routines.write("\n")
     outfile.close()

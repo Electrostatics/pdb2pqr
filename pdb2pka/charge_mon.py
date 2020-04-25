@@ -1,4 +1,9 @@
 from Tkinter import *
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 class charge_mon(Frame):
 
@@ -98,7 +103,7 @@ class charge_mon(Frame):
         #
         for x_count,text,resid in later:
             self.cv.create_text(x_count,self.calc,text=text,anchor='nw',fill='black')
-            print('!!Wrong charge: %s %s' %(text,str(resid)))
+            _LOGGER.error('!!Wrong charge: %s %s' %(text,str(resid)))
         #
         # Update and increment row
         #

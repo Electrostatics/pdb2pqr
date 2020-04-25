@@ -72,9 +72,6 @@ all_sybyl_types = [
 #    if len(temp)>3:
 #        temp = temp[0:3]
 #    propka_input_types.append(temp)
-#
-#for t in propka_input_types:
-#    print (t)
 
 
 propka_input_types = [

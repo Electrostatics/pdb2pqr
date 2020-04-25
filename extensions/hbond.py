@@ -1,25 +1,21 @@
-"""
-    Hbond extension
+"""Hbond extension
 
-    Find all hydrogen bonds as determined by the cutoffs specified.
-    Uses PDB2PQR to determine donors and acceptors, and displays
-    all available bonds to file. 
-    
-    The original bonding parameters were an angle of 20.0, 
-    distance of 3.30, and using the old method for calculating 
-    distance.
-    
-    The original parameters for WHAT-IF output was an angle of
-    90.0, distance of 3.30, and using the old method for 
-    calculating distance. 
+Find all hydrogen bonds as determined by the cutoffs specified. Uses PDB2PQR to
+determine donors and acceptors, and displays all available bonds to file. 
 
-    Authors:  Todd Dolinsky, Michael J Bradley, Julie Mitchell, and Kyle Monson
+The original bonding parameters were an angle of 20.0, distance of 3.30, and
+using the old method for calculating distance.
+
+The original parameters for WHAT-IF output was an angle of 90.0, distance of
+3.30, and using the old method for calculating distance. 
+
+Authors:  Todd Dolinsky, Michael J Bradley, Julie Mitchell, and Kyle Monson
 """
 
-__date__ = "17 February 2006"
-__author__ = "Todd Dolinsky, Michael J Bradley, Julie Mitchell, and Kyle Monson"
+
 # NOTE: This extension edited and updated on 05 August 2008 by Michael J Bradley
 # and again on 17 October by Kyle Monson.
+
 
 # NOTE: The current defaults for hbonds used below were utilized in the following study:
 #Bradley MJ, Chivers PT, Baker NA. Molecular dynamics simulation of the 
@@ -27,13 +23,21 @@ __author__ = "Todd Dolinsky, Michael J Bradley, Julie Mitchell, and Kyle Monson"
 #inter-domain allosteric communication pathways. Journal of Molecular Biology, 378, 
 #1155-1173, 2008.  http://dx.doi.org/10.1016/j.jmb.2008.03.010
 
+
+import logging
 from src.utilities import distance, getAngle
 from src.routines import Cells
 from math import cos
 import extensions
 
+
+# TODO - this extension used to write to a file as well as stdout.  This logger may need to be modified to recreate the writing to a file.
+_LOGGER = logging.getLogger(__name__)
+
+
 ANGLE_CUTOFF = 30.0       # A - D - H(D) angle
 DIST_CUTOFF = 3.4         # D to A distance
+
 
 def addExtensionOptions(extensionGroup):
     """
@@ -51,22 +55,23 @@ def addExtensionOptions(extensionGroup):
     extensionGroup.add_option('--old_distance_method', dest='old_distance_method', action='store_true', default=False,
                               help='Use distance from donor hydrogen to acceptor to calculate distance used with --distance_cutoff.')
 
+
 def usage():
     return 'Print a list of hydrogen bonds to {output-path}.hbond'
+
 
 #TODO: replace this with a ''.format() call.
 def _residueString(residue, name):
     return '%4d %-4s (%4d  ) %s     %-4s' % \
         (residue.resSeq, residue.name, residue.resSeq, residue.chainID, name)
 
+
 def create_hbond_output(routines, outfile, whatif=False, 
                                            angleCutoff=ANGLE_CUTOFF, 
                                            distanceCutoff=DIST_CUTOFF, 
                                            oldDistanceMethod=False):
 
-    routines.write("Printing hydrogen bond list...\n")
-    
-    output = extensions.extOutputHelper(routines, outfile)
+    _LOGGER.debug("Printing hydrogen bond list...")
     
     cellsize = int(distanceCutoff + 1.0 + 1.0) 
     protein = routines.protein
@@ -127,10 +132,10 @@ def create_hbond_output(routines, outfile, whatif=False,
                     thatBstring='B' if acc.isBackbone() else 'S'
 
                     score= (1.7/dist) * cos(angle * 3.142 / 180.0)
-                    output.write(_residueString(donor.residue, donor.name))
-                    output.write('-> ')
-                    output.write(_residueString(acc.residue, acc.name))
-                    output.write('Sym=   1 Val= %6.3lf  DA=%6.2f  DHA=%6.2f (%s-%s)\n' % 
+                    _LOGGER.debug(_residueString(donor.residue, donor.name))
+                    _LOGGER.debug('-> ')
+                    _LOGGER.debug(_residueString(acc.residue, acc.name))
+                    _LOGGER.debug('Sym=   1 Val= %6.3lf  DA=%6.2f  DHA=%6.2f (%s-%s)\n' % 
                                  (score, dist, angle, thisBstring, thatBstring))
 #                    outfile.write("%4d %-4s (%4d  ) %s     %-4s-> %4d %-4s (%4d  ) %s     %-4sSym=   1 Val= %6.3lf  DA=%6.2f  DHA=%6.2f (%s-%s)\n" % \
 #                      (donor.residue.resSeq,donor.residue.name,donor.residue.resSeq, donor.residue.chainID,donor.name,acc.residue.resSeq,acc.residue.name,acc.residue.resSeq, acc.residue.chainID,acc.name, score, dist, angle, thisBstring, thatBstring)) 
@@ -138,9 +143,8 @@ def create_hbond_output(routines, outfile, whatif=False,
                 else:
                     s = "Donor: %s %s\tAcceptor: %s %s\tdist: %.2f\tAngle: %.2f\n" % \
                         (donor.residue, donor.name, acc.residue, acc.name, dist, angle)
-                    output.write(s) 
+                    _LOGGER.debug(s) 
                     
-    routines.write("\n")
 
 def run_extension(routines, outroot, options):
     """
@@ -155,7 +159,7 @@ def run_extension(routines, outroot, options):
     outname = outroot + ".hbond"
     with open(outname, "w") as outfile:
         create_hbond_output(routines, outfile, whatif=options.whatif, 
-                                               angleCutoff=options.angle_cutoff,
-                                               distanceCutoff=options.distance_cutoff,
-                                               oldDistanceMethod=options.old_distance_method)
+                            angleCutoff=options.angle_cutoff,
+                            distanceCutoff=options.distance_cutoff,
+                            oldDistanceMethod=options.old_distance_method)
 

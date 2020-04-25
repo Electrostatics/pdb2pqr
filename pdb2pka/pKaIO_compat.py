@@ -8,11 +8,17 @@
 # University College Dublin 2003 -
 # All rights reserved
 #
+# TODO - eradicate sys
 import sys
 #try:
 import os
-
+import logging
+# TODO - fix import *
 from .pKa_utility_functions_compat import *
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 class pKaIO:
 
@@ -95,7 +101,7 @@ class pKaIO:
             filename=self.pkafile
         import string
         if not filename:
-            print(filename,'is not a filename')
+            _LOGGER.info(filename,'is not a filename')
             os._exit(0)
         if not os.path.isfile(filename):
             raise('File does not exist:',filename)
@@ -267,9 +273,9 @@ class pKaIO:
         #
         for group in groups:
             if(sys.version_info >= (3,0)):
-                hk = group in data;
+                hk = group in data
             else:
-                hk = data.has_key(group);
+                hk = data.has_key(group)
             #if data.has_key(group):
             if hk:
                 this_data=data[group]
@@ -382,8 +388,8 @@ class pKaIO:
             else:
                 newpHvals.sort()
             if newpHvals!=phvals:
-                print(phvals)
-                print(newpHvals)
+                _LOGGER.info(phvals)
+                _LOGGER.info(newpHvals)
                 raise('Dictionary does not contain identical pH values')
         #
         # Check that a pKa value is in the pH values

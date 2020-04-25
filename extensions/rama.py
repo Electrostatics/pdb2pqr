@@ -7,11 +7,14 @@
     Author:  Mike Bradley and Todd Dolinsky
 """
 
-__date__ = "17 February 2006"
-__author__ = "Mike Bradley, Todd Dolinsky"
-  
+
+import logging
 from src.utilities import getDihedral
 import extensions
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 def addExtensionOptions(extensionGroup):
     """
@@ -32,13 +35,11 @@ def usage():
 
 def create_rama_output(routines, outfile, outputtype='rama'):
 
-    routines.write("\nPrinting %s angles for each residue...\n" % (outputtype if outputtype != 'rama' else 'phi and psi'))
-    verboseHeader = "Residue        %s\n"  % (outputtype.capitalize() if outputtype != 'rama' else 'Phi          Psi')
-    routines.write(verboseHeader)
-    routines.write('-' * len(verboseHeader) + '\n')
+    _LOGGER.debug("\nPrinting %s angles for each residue..." % (outputtype if outputtype != 'rama' else 'phi and psi'))
+    verboseHeader = "Residue        %s"  % (outputtype.capitalize() if outputtype != 'rama' else 'Phi          Psi')
+    _LOGGER.debug(verboseHeader)
+    _LOGGER.debug('-' * len(verboseHeader))
     
-    output = extensions.extOutputHelper(routines, outfile)
-
     # Initialize some variables
 
     protein = routines.protein
@@ -72,19 +73,17 @@ def create_rama_output(routines, outfile, outputtype='rama'):
         except AttributeError: # Non amino acids
             continue
 
-        output.write(str(residue))
+        _LOGGER.debug(str(residue))
         
         if outputtype in ('rama', 'phi'):
             phi = getDihedral(pepccoords, ncoords, cacoords, ccoords)
-            output.write("\t%.4f" % phi)
+            _LOGGER.debug("\t%.4f" % phi)
             
         if outputtype in ('rama', 'psi'):
             psi = getDihedral(ncoords, cacoords, ccoords, pepncoords)
-            output.write("\t%.4f" % psi)
+            _LOGGER.debug("\t%.4f" % psi)
             
-        output.write('\n')
 
-    routines.write("\n")
     
 def run_extension(routines, outroot, options):
     """

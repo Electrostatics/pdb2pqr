@@ -324,13 +324,10 @@ def runPDB2PQR(pdblist, ff,
             os.remove(pkaname)
 
     start = time.time()
-
-    if verbose:
-        print("Beginning PDB2PQR...\n")
+    _LOGGER.debug("Beginning PDB2PQR...")
 
     myDefinition = definitions.Definition()
-    if verbose:
-        print("Parsed Amino Acid definition file.")
+    _LOGGER.debug("Parsed Amino Acid definition file.")
 
     if drop_water:
         # Remove the waters
@@ -354,10 +351,9 @@ def runPDB2PQR(pdblist, ff,
     else:
         myProtein = protein.Protein(pdblist, myDefinition)
 
-    if verbose:
-        print("Created protein object -")
-        print("\tNumber of residues in protein: %s" % myProtein.numResidues())
-        print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
+    _LOGGER.debug("Created protein object -")
+    _LOGGER.debug("\tNumber of residues in protein: %s", myProtein.numResidues())
+    _LOGGER.debug("\tNumber of atoms in protein   : %s", myProtein.numAtoms())
 
     myRoutines = routines.Routines(myProtein, verbose)
 
@@ -384,8 +380,7 @@ def runPDB2PQR(pdblist, ff,
             module = extensions.extDict[ext]
             module.run_extension(myRoutines, outroot, extensionOptions)
 
-        if verbose:
-            print("Total time taken: %.2f seconds\n" % (time.time() - start))
+        _LOGGER.debug("Total time taken: %.2f seconds", (time.time() - start))
 
         #Be sure to include None for missed ligand residues
         return header, lines, None
@@ -526,11 +521,8 @@ def runPDB2PQR(pdblist, ff,
         module = extensions.extDict[ext]
         module.run_extension(myRoutines, outroot, extensionOptions)
 
+    _LOGGER.debug("Total time taken: %.2f seconds", (time.time() - start))
 
-    if verbose:
-        print("Total time taken: %.2f seconds\n" % (time.time() - start))
-
-    #return header, lines, missedligandresidues, myProtein
     return header, lines, missedligandresidues
 
 
@@ -770,10 +762,10 @@ def mainCommand(argv):
 
     if len(errlist) != 0 and options.verbose:
         if(isCIF):
-            print("Warning: %s is a non-standard CIF file.\n" % path)
+            _LOGGER.error("Warning: %s is a non-standard CIF file.\n", path)
         else:
-            print("Warning: %s is a non-standard PDB file.\n" % path)
-        print(errlist)
+            _LOGGER.error("Warning: %s is a non-standard PDB file.\n", path)
+        _LOGGER.error(errlist)
 
     outpath = args[1]
     options.outname = outpath

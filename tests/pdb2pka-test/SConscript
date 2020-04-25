@@ -12,7 +12,7 @@ testList = []
 for residue in ('1a1p', '1etm', '2m0w', '2m8f'):
 
     runTest = env.Command([residue+'/pdb2pka-output-user', residue+'/test-output-user.pqr'], residue+'/'+residue+'.pdb',
-	                      commandLineStart + ' --with-ph=7.00 --ph-calc-method=pdb2pka --pdb2pka-out=${TARGETS[0]} --ff=PARSE $SOURCE ${TARGETS[1]}')
+	                      commandLineStart + ' --with-ph=7.00 --titration-state-method=pdb2pka --pdb2pka-out=${TARGETS[0]} --ff=PARSE $SOURCE ${TARGETS[1]}')
 
     validateTitrationCurveResult = env.Command(residue+'/titcurve.result', [residue+'/pdb2pka-output-user', residue+'/pdb2pka-output-correct'],
 	                                			CompareTitCurves('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))

@@ -169,7 +169,7 @@ def build_binary_from_deploy():
             if run_tests:
                 with cd(name):
                     run('./pdb2pqr --ff=parse --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1ABF 1ABF.pqr')
-                    run('./pdb2pqr --with-ph=7.0 --ph-calc-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
+                    run('./pdb2pqr --with-ph=7.0 --titration-state-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
 
         get("~/tmp/dist/*.tar.gz","dist_files/")
 
@@ -183,7 +183,7 @@ def linux_bin_cross_platform_test():
     run('tar -zxvf ~/' + name + '.tar.gz')
     with cd(name):
         run('./pdb2pqr --ff=parse --verbose --ligand=examples/ligands/LIG_1ABF.mol2 1ABF 1ABF.pqr')
-        run('./pdb2pqr --with-ph=7.0 --ph-calc-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
+        run('./pdb2pqr --with-ph=7.0 --titration-state-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
 
     run('rm -rf '+name)
 
@@ -205,7 +205,7 @@ def test_windows_binary():
     name = 'pdb2pqr-windows-bin64-' + pv
     with lcd(r'dist\\' + name):
         local(r'pdb2pqr --ff=parse --verbose --ligand=examples\ligands\LIG_1ABF.mol2 1ABF 1ABF.pqr')
-        local('pdb2pqr --with-ph=7.0 --ph-calc-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
+        local('pdb2pqr --with-ph=7.0 --titration-state-method=pdb2pka --ff=parse --verbose 1a1p 1a1p.pqr')
 
 @runs_once
 def build_windows_binary():

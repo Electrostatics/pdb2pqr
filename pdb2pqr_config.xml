@@ -65,7 +65,7 @@ Options:
                         PQR file will not work with APBS versions prior to 1.5
 
   pH options:
-    --ph-calc-method=PH_METHOD
+    --titration-state-method=PH_METHOD
                         Method used to calculate ph values. If a pH
                         calculation method is selected, for each titratable
                         residue pH values will be calculated and the residue
@@ -332,8 +332,8 @@ Options:
                 <textDesc>Instead of using the standard canonical naming scheme for residue and atom, use names from the given forcefield:</textDesc>
             </param>
 			<param>
-                <id>ph-calc-method</id>
-                <tag>--ph-calc-method</tag>
+                <id>titration-state-method</id>
+                <tag>--titration-state-method</tag>
                 <paramType>STRING</paramType>
 				<value>PROPKA</value>
                 <value>PDB2PKA</value>
@@ -439,7 +439,7 @@ Options:
           </group>
           <group>
             <name>AvailableOptionsGroup</name>
-            <elements>clean nodebump noopt chain assign-only ph-calc-method with-ph apbs-input 
+            <elements>clean nodebump noopt chain assign-only titration-state-method with-ph apbs-input 
                       ligand whitespace typemap neutraln neutralc verbose </elements>
             <required>false</required>
             <textDesc>Available options </textDesc>

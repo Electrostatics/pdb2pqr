@@ -117,7 +117,7 @@ for ph in range(1,14):
 	propka_correct_file_name = 'test-output-1HPX-ligand-ph{0}-correct.propka'.format(ph)
 
 	test_name = 'test-ligand-ph{0}'.format(ph)
-	command_line_stuffs = '--ff=AMBER --ligand=${{SOURCES[1]}} --with-ph={0} --ph-calc-method=propka --whitespace'.format(ph)
+	command_line_stuffs = '--ff=AMBER --ligand=${{SOURCES[1]}} --with-ph={0} --titration-state-method=propka --whitespace'.format(ph)
 
 	buildTest(['1HPX.pdb', 'LIG_1HPX.mol2'],
 	          out_file_name,
@@ -132,7 +132,7 @@ buildTest(['1AFS.pdb'],
           'test-output-1AFS-ph-neutral.pqr',
 		  'test-output-1AFS-ph-neutral-correct.pqr',
 		  'test-ph-neutral',
-		  '--ff=AMBER --with-ph=7.0 --ph-calc-method=propka --propka-reference=neutral --whitespace',
+		  '--ff=AMBER --with-ph=7.0 --titration-state-method=propka --propka-reference=neutral --whitespace',
 		  'test-output-1AFS-ph-neutral.propka',
 		  'test-output-1AFS-ph-neutral-correct.propka')
 
@@ -140,7 +140,7 @@ buildTest(['1AFS.pdb'],
           'test-output-1AFS-ph-low-ph.pqr',
 		  'test-output-1AFS-ph-low-ph-correct.pqr',
 		  'test-ph-low-Ph',
-		  '--ff=AMBER --with-ph=7.0 --ph-calc-method=propka --propka-reference=low-pH --whitespace',
+		  '--ff=AMBER --with-ph=7.0 --titration-state-method=propka --propka-reference=low-pH --whitespace',
 		  'test-output-1AFS-ph-low-ph.propka',
 		  'test-output-1AFS-ph-low-ph-correct.propka')
 

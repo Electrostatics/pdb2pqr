@@ -37,7 +37,7 @@ The installation location is specified by the <code>PREFIX</code> setting above.
 ## Using pdb2pka
 If you are planning to invoke the flag,
 
-	--ph-calc-method=pdb2pka
+	--titration-state-method=pdb2pka
 
 you will need to build the python APBS libraries and set your library path to point to them.  For APBS build instructions see the documention provided [here](../apbs/README.md).
 

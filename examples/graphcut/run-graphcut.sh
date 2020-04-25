@@ -25,7 +25,7 @@ for pdb in 1P9I 4IL7 1DF4 2GUS 1YZM 4G3O 4CVD 3HRO 3V1A 1KFN 1ZVA 3LAA 2CMP 1ZX6
         PDB2PKA_OUT=${PDB_OUT}/${pdb}
         mkdir ${PDB2PKA_OUT}
 	${syspython} "../../pdb2pqr.py" "--verbose" \
-                "--ph-calc-method=pdb2pka" "--ff=parse" \
+                "--titration-state-method=pdb2pka" "--ff=parse" \
                 "--pdb2pka-out=${PDB2PKA_OUT}" \
                 "${pdb}" "${PDB2PKA_OUT}/$pdb.pqr" | tee "${PDB2PKA_OUT}/stdout.txt"
                 #>& "${graphdir}/stdout.txt" \

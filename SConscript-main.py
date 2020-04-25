@@ -33,7 +33,7 @@ vars.Add('MAX_ATOMS', 'Sets the maximum number of atoms in a protein for non-Opa
 
 vars.Add(BoolVariable('BUILD_PDB2PKA',
 					  'Set to False to skip building ligand and pdb2pka support. Requires numpy.',
-					  False))
+					  True))
 
 vars.Add(BoolVariable('REBUILD_SWIG',
 					  'Set to True to rebuild the swig bindings. Requires swig on the the user path.',
@@ -201,7 +201,14 @@ chmodAction = Chmod('$TARGET', 0o755)
 #serverHtmlCopySub = CopySub('$TARGET', '$SOURCE', serverHtmlDict, useRegex=True)
 normalCopySub = CopySub('$TARGET', '$SOURCE', replacementDict, useRegex=False)
 
-subFiles = []
+subFiles = [('pdb2pqr.py', 'pdb2pqr.py.in', True),
+            #('apbs_cgi.cgi', 'apbs_cgi.py', True),
+            #('visualize.cgi', 'visualize.py', True),
+            #('querystatus.cgi', 'querystatus.py', True),
+            ('src/aconf.py', 'src/aconf.py.in', False)
+            #('html/server.html', 'html/server.html.in', False),
+            #('3dmol/js/3dmol.js', '3dmol/js/3dmol.js.in', False)
+            ]
 
 compile_targets = []
 

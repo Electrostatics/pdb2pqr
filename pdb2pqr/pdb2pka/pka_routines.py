@@ -5,7 +5,6 @@ Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang, Tommy Carstensen
 # TODO - are all of these imports really used?
 import logging
 import os
-from sys
 from . import pKaIO_compat
 # TODO - fix import *
 from .pKa_base import *

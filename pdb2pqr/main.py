@@ -16,6 +16,8 @@ from .errors import PDB2PQRError
 from . import propka
 from . import extensions
 from . import __version__
+from .pdb2pka.ligandclean import ligff
+
 
 HEADER_TEXT = """
 -------------------------------------------
@@ -267,7 +269,6 @@ def runPDB2PQR(pdblist, options):
     # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
 
     if options.ligand is not None:
-        from pdb2pka.ligandclean import ligff
         myProtein, myDefinition, Lig = ligff.initialize(myDefinition,
                                                         options.ligand,
                                                         pdblist)

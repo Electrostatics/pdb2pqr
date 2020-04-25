@@ -1,13 +1,13 @@
-from src.forcefield import *
-from .peoe_PDB2PQR import PEOE as calc_charges
-from src.pdb import *
-from src.definitions import *
-from pdb2pka import NEWligand_topology
 # TODO - remove sys import
 from sys import version_info
 import string
 import logging
-from src.errors import PDBInputError
+from .peoe_PDB2PQR import PEOE as calc_charges
+from .. import NEWligand_topology
+from ...errors import PDBInputError
+from ...forcefield import *
+from ...pdb import *
+from ...definitions import *
 
 
 _LOGGER = logging.getLogger(__name__)

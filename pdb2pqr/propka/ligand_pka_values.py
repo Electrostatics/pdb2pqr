@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 from propka.lib import info, warning
 
-from import exit
+from sys import exit
 import propka.molecular_container, propka.calculations, propka.calculations, propka.parameters, propka.pdb, propka.lib, os, subprocess
 
 class ligand_pka_values:

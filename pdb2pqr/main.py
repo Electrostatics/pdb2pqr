@@ -13,7 +13,7 @@ from . import pdb, cif, utilities, structures, routines, protein, definitions
 from . import aa, hydrogens, forcefield, na
 from io import StringIO
 from .errors import PDB2PQRError
-from . import propka
+from .propka import lib as propka_lib
 from . import extensions
 from . import __version__
 from .pdb2pka.ligandclean import ligff
@@ -560,7 +560,7 @@ def mainCommand():
     ph_calc_options = None
 
     if args.pka_method == 'propka':
-        ph_calc_options, _ = propka.lib.loadOptions('--quiet')
+        ph_calc_options, _ = propka_lib.loadOptions('--quiet')
     elif args.pka_method == 'pdb2pka':
         if args.ff.lower() != 'parse':
             parser.error('PDB2PKA requires the PARSE force field.')

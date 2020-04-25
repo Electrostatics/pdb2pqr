@@ -6,6 +6,8 @@ This module takes a PDB file as input and performs optimizations before yielding
 import sys
 import os
 import time
+import logging
+import warnings
 from pathlib import Path
 from optparse import OptionParser, OptionGroup
 from src import pdb, cif, utilities, structures, routines, protein, definitions
@@ -17,6 +19,20 @@ import extensions
 
 
 __version__ = aconf.PDB2PQR_VERSION
+
+HEADER_TEXT = """
+--------------------------
+PDB2PQR - a Python-based structural conversion utility
+--------------------------
+Please cite your use of PDB2PQR as:
+  Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated
+  pipeline for the setup, execution, and analysis of Poisson-Boltzmann
+  electrostatics calculations. Nucleic Acids Research 32 W665-W667 (2004).
+"""
+
+LOG_LEVEL = logging.INFO
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(LOG_LEVEL)
 
 
 # TODO - needs docstring
@@ -351,7 +367,7 @@ def runPDB2PQR(pdblist, ff,
             if atom.altLoc != "":
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s\n" % (atom.name, residue)
-                sys.stderr.write(txt)
+                warnings.warn(txt)
         if multoccupancy == 1:
             myRoutines.warnings.append("WARNING: multiple occupancies found in %s,\n" % (residue))
             myRoutines.warnings.append("         at least one of the instances is being ignored.\n")
@@ -520,9 +536,7 @@ def runPDB2PQR(pdblist, ff,
 
 # TODO - needs docstring
 def mainCommand(argv):
-    """
-        Main driver for running program from the command line.
-    """
+    """Main driver for running program from the command line."""
 
     fieldNames = ('amber','charmm','parse', 'tyl06','peoepb','swanson')
 
@@ -739,18 +753,7 @@ def mainCommand(argv):
     if options.neutralc and (options.ff is None or options.ff.lower() != 'parse'):
         parser.error('--neutralc option only works with PARSE forcefield!')
 
-    text =  """
---------------------------
-PDB2PQR - a Python-based structural conversion utility
---------------------------
-Please cite your use of PDB2PQR as:
-  Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA.
-  PDB2PQR: an automated pipeline for the setup, execution,
-  and analysis of Poisson-Boltzmann electrostatics calculations.
-  Nucleic Acids Research 32 W665-W667 (2004).
-
-"""
-    sys.stdout.write(text)
+    sys.stdout.write(HEADER_TEXT)
 
     path = Path(args[0])
     pdbFile = utilities.getPDBFile(str(path))
@@ -814,9 +817,9 @@ Please cite your use of PDB2PQR as:
                                                   commandLine = commandLine,
                                                   include_old_header = options.include_header,
                                                   isCIF=isCIF)
-    except PDB2PQRError as er:
-        print(er)
-        sys.exit(2)
+    except PDB2PQRError as error:
+        _LOGGER.error(error)
+        raise PDB2PQRError(error)
 
     # Print the PQR file
     outfile = open(outpath,"w")
@@ -855,4 +858,7 @@ Please cite your use of PDB2PQR as:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=LOG_LEVEL)
+    logging.captureWarnings(True)
+    # TODO - eliminate sys module
     mainCommand(sys.argv)

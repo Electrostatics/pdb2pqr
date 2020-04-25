@@ -3,38 +3,20 @@
 This module takes a PDB file as input and performs optimizations before yielding a new PDB-style file as output.
 """
 
-
-import string
 import sys
-import getopt
-from optparse import OptionParser, OptionGroup
 import os
 import time
-import copy
 from pathlib import Path
-from src import pdb
-from src import cif
-from src import utilities
-from src import structures
-from src import routines
-from src import protein
-from src.pdb import *
-from src.utilities import *
-from src.structures import *
-from src.definitions import *
-from src.forcefield import *
-from src.routines import *
-from src.protein import *
-#from src.server import *
-from src.hydrogens import *
-from src.aconf import *
+from optparse import OptionParser, OptionGroup
+from src import pdb, cif, utilities, structures, routines, protein, definitions
+from src import aa, hydrogens, forcefield, na, aconf
 from io import StringIO
 from src.errors import PDB2PQRError
 import propka.lib
 import extensions
 
 
-__version__ = PDB2PQR_VERSION
+__version__ = aconf.PDB2PQR_VERSION
 
 
 # TODO - needs docstring
@@ -330,7 +312,7 @@ def runPDB2PQR(pdblist, ff,
     if verbose:
         print("Beginning PDB2PQR...\n")
 
-    myDefinition = Definition()
+    myDefinition = definitions.Definition()
     if verbose:
         print("Parsed Amino Acid definition file.")
 
@@ -339,7 +321,7 @@ def runPDB2PQR(pdblist, ff,
         pdblist_new = []
         for record in pdblist:
             if isinstance(record, (HETATM, ATOM, SIGATM, SEQADV)):
-                if record.resName in WAT.water_residue_names:
+                if record.resName in aa.WAT.water_residue_names:
                     continue
             pdblist_new.append(record)
 
@@ -354,14 +336,14 @@ def runPDB2PQR(pdblist, ff,
             if atom.type == "ATOM":
                 atomcount += 1
     else:
-        myProtein = Protein(pdblist, myDefinition)
+        myProtein = protein.Protein(pdblist, myDefinition)
 
     if verbose:
         print("Created protein object -")
         print("\tNumber of residues in protein: %s" % myProtein.numResidues())
         print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
 
-    myRoutines = Routines(myProtein, verbose)
+    myRoutines = routines.Routines(myProtein, verbose)
 
     for residue in myProtein.getResidues():
         multoccupancy = 0
@@ -384,8 +366,6 @@ def runPDB2PQR(pdblist, ff,
         # Process the extensions
         for ext in selectedExtensions:
             module = extensions.extDict[ext]
-            #TODO: figure out a way to do this without crashing...
-            #tempRoutines = copy.deepcopy(myRoutines)
             module.run_extension(myRoutines, outroot, extensionOptions)
 
         if verbose:
@@ -418,7 +398,7 @@ def runPDB2PQR(pdblist, ff,
 
         myRoutines.addHydrogens()
 
-        myhydRoutines = hydrogenRoutines(myRoutines)
+        myhydRoutines = hydrogens.hydrogenRoutines(myRoutines)
 
         if debump:
             myRoutines.debumpProtein()
@@ -444,7 +424,7 @@ def runPDB2PQR(pdblist, ff,
 
     myRoutines.setStates()
 
-    myForcefield = Forcefield(ff, myDefinition, userff, usernames)
+    myForcefield = forcefield.Forcefield(ff, myDefinition, userff, usernames)
     hitlist, misslist = myRoutines.applyForcefield(myForcefield)
 
     ligsuccess = 0
@@ -483,7 +463,7 @@ def runPDB2PQR(pdblist, ff,
     if ligsuccess:
         templist = misslist[:]
         for atom in templist:
-            if isinstance(atom.residue, (Amino, Nucleic)):
+            if isinstance(atom.residue, (aa.Amino, na.Nucleic)):
                 continue
             misslist.remove(atom)
 
@@ -520,7 +500,7 @@ def runPDB2PQR(pdblist, ff,
     # Determine if any of the atoms in misslist were ligands
     missedligandresidues = []
     for atom in misslist:
-        if isinstance(atom.residue, (Amino, Nucleic)):
+        if isinstance(atom.residue, (aa.Amino, na.Nucleic)):
             continue
         if atom.resName not in missedligandresidues:
             missedligandresidues.append(atom.resName)
@@ -528,8 +508,6 @@ def runPDB2PQR(pdblist, ff,
     # Process the extensions
     for ext in selectedExtensions:
         module = extensions.extDict[ext]
-        #TODO: figure out a way to do this without crashing...
-        #tempRoutines = copy.deepcopy(myRoutines)
         module.run_extension(myRoutines, outroot, extensionOptions)
 
 
@@ -624,7 +602,7 @@ def mainCommand(argv):
                       help='Print information to stdout.')
 
     group.add_option('--drop-water', dest='drop_water', action='store_true', default=False,
-                      help='Drop waters before processing protein. Currently recognized and deleted are the following water types:  %s' % ', '.join(WAT.water_residue_names))
+                     help='Drop waters before processing protein. Currently recognized and deleted are the following water types:  %s' % ', '.join(aa.WAT.water_residue_names))
 
     group.add_option('--include-header', dest='include_header', action='store_true', default=False,
                       help='Include pdb header in pqr file. '
@@ -727,7 +705,7 @@ def mainCommand(argv):
                 parser.error('One of the manditory options was not specified.\n' +
                              'Please specify either --ff, --userff, or --clean')
 
-            if getFFfile(options.ff) == '':
+            if utilities.getFFfile(options.ff) == '':
                 parser.error('Unable to find parameter files for forcefield %s!' % options.ff)
 
     if options.ph < 0.0 or options.ph > 14.0:
@@ -775,14 +753,14 @@ Please cite your use of PDB2PQR as:
     sys.stdout.write(text)
 
     path = Path(args[0])
-    pdbFile = getPDBFile(str(path))
+    pdbFile = utilities.getPDBFile(str(path))
 
     isCIF = False
     if path.suffix.lower() == "cif":
         pdblist, errlist = cif.readCIF(pdbFile)
         isCIF = True
     else:
-        pdblist, errlist = readPDB(pdbFile)
+        pdblist, errlist = pdb.readPDB(pdbFile)
 
     if len(pdblist) == 0 and len(errlist) == 0:
         parser.error("Unable to find file %s!" % path)

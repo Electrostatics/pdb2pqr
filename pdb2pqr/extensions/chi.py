@@ -6,8 +6,6 @@ atoms (if available).
 
 Author:  Todd Dolinsky
 """
-
-
 import logging
 from src.utilities import getDihedral
 

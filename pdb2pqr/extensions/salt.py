@@ -12,8 +12,6 @@
 
     Author:  Mike Bradley (heavily copied from Todd Dolinsky's hbond extension)
 """
-
-
 import logging
 from src.utilities import distance
 from src.routines import Cells

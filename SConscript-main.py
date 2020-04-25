@@ -201,14 +201,7 @@ chmodAction = Chmod('$TARGET', 0o755)
 #serverHtmlCopySub = CopySub('$TARGET', '$SOURCE', serverHtmlDict, useRegex=True)
 normalCopySub = CopySub('$TARGET', '$SOURCE', replacementDict, useRegex=False)
 
-subFiles = [('pdb2pqr.py', 'pdb2pqr.py.in', True),
-            #('apbs_cgi.cgi', 'apbs_cgi.py', True),
-            #('visualize.cgi', 'visualize.py', True),
-            #('querystatus.cgi', 'querystatus.py', True),
-            ('src/aconf.py', 'src/aconf.py.in', False)
-            #('html/server.html', 'html/server.html.in', False),
-            #('3dmol/js/3dmol.js', '3dmol/js/3dmol.js.in', False)
-            ]
+subFiles = [('src/aconf.py', 'src/aconf.py.in', False)]
 
 compile_targets = []
 

@@ -11,7 +11,8 @@
 #
 debug=False
 import optparse
-import sys, os
+from sys import argv, sys_path, exit
+import os
 from pKa_base import *
 
 print(__file__)
@@ -25,14 +26,14 @@ try:
         if scriptpath[-1] == "/":
             scriptpath=scriptpath[:-1]
 except:
-    scriptpath=os.path.split(sys.argv[0])[0]
+    scriptpath=os.path.split(argv[0])[0]
     if scriptpath=='.':
         scriptpath=os.getcwd()
 #
 # Add to import path
 #
 pdb2pqr_path=os.path.split(scriptpath)[0]
-sys.path.append(pdb2pqr_path)
+sys_path.append(pdb2pqr_path)
 #
 # Imports - these should be cleaned up
 #
@@ -210,7 +211,7 @@ def startpKa():
     #
     if len(args) != 2:
         _LOGGER.error("Usage: pka.py [options] <pdbfile> <output directory>\n")
-        sys.exit(0)
+        exit(0)
     input_path = args[0]
     output_path = args[1]
 
@@ -265,7 +266,7 @@ def pre_init(pdbfilename=None,
 #     if len(pdblist) == 0 and len(errlist) == 0:
 #         print "Unable to find file %s!\n" % path
 #         os.remove(path)
-#         sys.exit(2)
+#         exit(2)
 
     if len(errlist) != 0 and verbose:
         print("Warning: %s is a non-standard PDB file.\n" %pdbfilename)
@@ -520,19 +521,19 @@ def pre_init(pdbfilename=None,
         else:
             _LOGGER.error("X dielectric map is missing\n")
             usage(2)
-            sys.exit(0)
+            exit(0)
         if ydiel:
             igen.ydiel = ydiel
         else:
             _LOGGER.error("Y dielectric map is missing\n")
             usage(2)
-            sys.exit(0)
+            exit(0)
         if zdiel:
             igen.zdiel = zdiel
         else:
             _LOGGER.error("Z dielectric map is missing\n")
             usage(2)
-            sys.exit(0)
+            exit(0)
 
         print('Setting dielectric function maps: %s, %s, %s'%(igen.xdiel,igen.ydiel,igen.zdiel))
 
@@ -541,7 +542,7 @@ def pre_init(pdbfilename=None,
         else:
             _LOGGER.error("Mobile ion-accessibility map is missing\n")
             usage(2)
-            sys.exit(0)
+            exit(0)
 
         print('Setting mobile ion-accessibility function map to: ',igen.kappa)
 

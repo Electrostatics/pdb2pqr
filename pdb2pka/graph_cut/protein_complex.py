@@ -1,6 +1,6 @@
 from itertools import combinations, product, permutations
 from collections import OrderedDict
-import sys
+from sys import float_info
 import math
 
 titratable_residue_data = {
@@ -360,7 +360,7 @@ class ProteinComplex(object):
             self.add_interaction_energy_pair(hid_prot, hie_prot, energy)
             self.add_interaction_energy_pair(hid_prot, hie_deprot, 0.0)
             self.add_interaction_energy_pair(hid_deprot, hie_prot, 0.0)
-            self.add_interaction_energy_pair(hid_deprot, hie_deprot, sys.float_info.max)
+            self.add_interaction_energy_pair(hid_deprot, hie_deprot, float_info.max)
 
         #Delete residue variables from main map.
         for key in to_drop_his:
@@ -703,7 +703,7 @@ class ProteinComplex(object):
                                  for w_instance in w_instances)
                 v_instance.energyNF += min_energy
 
-                if min_energy != sys.float_info.max:
+                if min_energy != float_info.max:
                     for w_instance in w_instances:
                         self.normalized_interaction_energies[v_instance, w_instance] -= min_energy
                         self.normalized_interaction_energies[w_instance, v_instance] -= min_energy
@@ -712,7 +712,7 @@ class ProteinComplex(object):
         for residue in self.residue_variables.values():
             min_energy = min(instance.energyNF for instance in residue.instances.values())
             self.normalized_constant_energy += min_energy
-            if min_energy != sys.float_info.max:
+            if min_energy != float_info.max:
                 for instance in residue.instances.values():
                     instance.energyNF -= min_energy
 

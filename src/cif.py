@@ -6,8 +6,6 @@ This methods use the pdbx/cif parser provided by WWPDB
 Author:  Juan Brandi
 """
 import os
-# TODO - eliminate sys
-import sys
 from . import pdb
 from datetime import datetime
 from numpy import minimum, ceil

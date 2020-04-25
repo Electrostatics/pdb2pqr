@@ -51,7 +51,6 @@ __date__ = "6 November 2007"
 __author__ = "Todd Dolinsky, Yong Huang"
 
 import string
-import sys
 import getopt
 import os
 import re

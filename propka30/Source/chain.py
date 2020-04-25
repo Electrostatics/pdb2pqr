@@ -39,7 +39,6 @@
 from .residue import Residue
 from . import mutate
 import math
-import sys
 from . import lib
 pka_print = lib.pka_print
 

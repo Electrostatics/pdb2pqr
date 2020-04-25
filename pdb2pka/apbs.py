@@ -297,7 +297,6 @@ class runAPBS:
 
     def get_potentials(self,protein):
 
-        #import sys
         #import copy
 
         #sys.setrecursionlimit(10000)

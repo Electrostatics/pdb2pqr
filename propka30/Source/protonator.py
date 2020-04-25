@@ -39,7 +39,7 @@
 # -------------------------------------------------------------------------------------------------------
 
 
-import sys
+from sys import argv, exit
 import math
 from .vector_algebra import *
 from . import bonds as bonds
@@ -95,7 +95,7 @@ class old_scheme:
                         self.protonateARG(residue)
                     elif residue.resName in self.protonate_residues:
                         pka_print("no protocol to protonate '%s' in 'old-scheme'" % (residue.label))
-                        sys.exit(8)
+                        exit(8)
 
         return
 
@@ -109,7 +109,7 @@ class old_scheme:
             """ do nothing, first residue """
         elif N == None:
             pka_print("could not find N atom in '%s' (protonateBackBone())" % (residue.label))
-            sys.exit(9)
+            exit(9)
         elif residue.resName == "PRO":
             """ do nothing, proline doesn't have a proton """
         else:
@@ -693,17 +693,16 @@ class new_scheme:
 if __name__ == '__main__':
     import protein
     import pdb
-    import sys
     import os
-    arguments = sys.argv
+    arguments = argv
     if len(arguments) != 2:
         pka_print('Usage: protonate.py <pdb_file>')
-        sys.exit(0)
+        exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
         pka_print('Error: Could not find \"%s\"' % filename)
-        sys.exit(1)
+        exit(1)
 
     p = Protonate()
     pdblist = pdb.readPDB(filename)

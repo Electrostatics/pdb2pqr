@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
 import pickle
-import sys
+from sys import argv, exit
 import os
 import math
 
@@ -439,17 +439,16 @@ if __name__ == '__main__':
     # If called directly, set up protein bond dictionary
     import protein
     import pdb
-    import sys
     import os
-    arguments = sys.argv
+    arguments = argv
     if len(arguments) != 2:
         pka_print('Usage: bonds.py <pdb_file>')
-        sys.exit(0)
+        exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
         pka_print('Error: Could not find \"%s\"' % filename)
-        sys.exit(1)
+        exit(1)
 
     pdblist = pdb.readPDB(filename)
     my_protein = protein.Protein(pdblist, 'test.pdb')

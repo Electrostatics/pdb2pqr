@@ -40,7 +40,7 @@
 
 import string
 import re
-import sys
+from sys import exit
 import os
 import math
 import Source.version as propka
@@ -80,7 +80,7 @@ def main():
         best_mutation = myProtein.optimizeMultipleMutations(mutations=mutations, atoms=atoms, version=version, options=options)
     else:
         pka_print("Could not find any mutation combination more stable than WT\n")
-        sys.exit(8)
+        exit(8)
 
 
 if __name__ == '__main__':

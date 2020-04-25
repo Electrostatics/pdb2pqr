@@ -4,7 +4,8 @@ from __future__ import division
 from __future__ import print_function
 from propka.lib import info, warning
 
-import propka.molecular_container, propka.calculations, propka.calculations, propka.parameters, propka.pdb, propka.lib, os, subprocess, sys
+from import exit
+import propka.molecular_container, propka.calculations, propka.calculations, propka.parameters, propka.pdb, propka.lib, os, subprocess
 
 class ligand_pka_values:
     def __init__(self, parameters):
@@ -28,7 +29,7 @@ class ligand_pka_values:
 
         if len(l) == 0:
             info('Error: Could not find %s. Please make sure that it is found in the path.' % program)
-            sys.exit(-1)
+            exit(-1)
 
         return l[0]
 
@@ -86,7 +87,7 @@ class ligand_pka_values:
             info('*                                                                                                      *')
             info('* Please edit the ligand mol2 file and re-run PropKa with the -l option: %29s *' % filename)
             info('********************************************************************************************************')
-            sys.exit(-1)
+            exit(-1)
 
         # extract calculated pkas
         indices,pkas,types = self.extract_pkas(output)

@@ -49,6 +49,11 @@ import os
 import sys
 import getopt
 import string
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 def runtest(argv):
     
@@ -61,9 +66,9 @@ def runtest(argv):
 
     options={"testnum": defaultnum}
  
-    try: opts, args = getopt.getopt(sys.argv[1:], 'n', ['testnum='])
+    try: opts, args = getopt.getopt(argv[1:], 'n', ['testnum='])
     except getopt.GetoptError, details:
-        sys.stderr.write("GetoptError:  %s\n" % details)
+        _LOGGER.error("GetoptError:  %s\n" % details)
 
     for o,a in opts:
         if o in ("-n", "--testnum"):
@@ -92,4 +97,4 @@ if __name__ == "__main__":
     import os
     pwd =os.getcwd()
 
-    runtest(sys.argv) 
+    runtest(argv) 

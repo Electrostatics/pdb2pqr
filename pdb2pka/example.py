@@ -1,17 +1,9 @@
-"""
-    APBS interface for PDB2PQR
+"""APBS interface for PDB2PQR
 
-    Todd Dolinsky (todd@ccb.wustl.edu)
-    Washington University in St. Louis
-
-    Jens Erik Nielsen
-
+Authors:  Todd Dolinsky, Jens Erik Nielsen
 """
 
-__date__  = "16 August 2005"
-__author__ = "Todd Dolinsky, Jens Erik Nielsen"
 
-import sys
 import logging
 import time
 import string
@@ -99,7 +91,7 @@ def runAPBS(PQR, INPUT):
     nosh = NOsh_ctor(rank, size)
 
     if not parseInputFromString(nosh, INPUT):
-        stderr.write("main:  Error while parsing input file.\n")
+        _LOGGER.error("main:  Error while parsing input file.\n")
         raise(APBSError, "Error occurred!")
 
     # Load the molecules using Valist_load routine
@@ -185,7 +177,7 @@ def runAPBS(PQR, INPUT):
         thispmg = get_Vpmg(pmg,icalc)
 
         if solveMG(nosh, thispmg, mgparm.type) != 1:
-            stderr.write("Error solving PDE! \n")
+            _LOGGER.error("Error solving PDE! \n")
             raise(APBSError, "Error Solving PDE!")
 
         # Set partition information : Routine setPartMG

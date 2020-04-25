@@ -416,16 +416,17 @@ class Protonate:
 
 
 if __name__ == '__main__':
-    import protein, pdb, sys,os
-    arguments = sys.argv
+    import protein, pdb, os
+    from sys import exit, argv
+    arguments = argv
     if len(arguments) != 2:
         info('Usage: protonate.py <pdb_file>')
-        sys.exit(0)
+        exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
         info('Error: Could not find \"%s\"' % filename)
-        sys.exit(1)
+        exit(1)
 
 
     p = Protonate()

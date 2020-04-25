@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
 import math
-import sys
+from sys import exit
 from . import lib
 pka_print = lib.pka_print
 
@@ -267,7 +267,7 @@ class multi_vector:
                 if self.keys != keys2:
                     pka_print("ERROR: Inequivalent configurations for atoms, please correct your pdbfile to single configuration")
                     pka_print("%s\n%s" % (atom1, atom2))
-                    sys.exit(8)
+                    exit(8)
                     #raise 'Cannot make multi vector: Atomic configurations mismatch for\n   %s\n   %s\n'%(atom1,atom2)
             for key in self.keys:
                 atom1.setConfiguration(key)

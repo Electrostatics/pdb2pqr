@@ -7,8 +7,7 @@ the classes is taken directly from the above PDB Format Description.
 
 Authors:  Todd Dolinsky, Yong Huang
 """
-# TODO - eliminate sys import
-import string, sys
+import string
 import copy  ### PC
 from .errors import PDBInputError, PDBInternalError
 import logging

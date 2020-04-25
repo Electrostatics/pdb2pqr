@@ -43,7 +43,7 @@ from . import coupled_residues
 from . import output
 from . import determinants
 import math
-import sys
+from sys import exit
 import os
 import time
 import string
@@ -146,7 +146,7 @@ class Protein:
             self.atoms = pdb.readPDB(filename=pdbfile)
         else:
             pka_print("need either an atoms dictionary or pdbfile to create a protein")
-            sys.exit(9)
+            exit(9)
 
         return
 
@@ -494,7 +494,7 @@ class Protein:
         """
         if configurations == None:
             pka_print("need to specify a list of available configuration keys")
-            sys.exit(8)
+            exit(8)
         self.configurations = configurations
 
         return
@@ -785,7 +785,7 @@ class Protein:
             else:
                 """ do nothing ? """
                 #pka_print("multiple-chain convention not verified in sequence")
-                # sys.exit(9)
+                # exit(9)
 
         return sequence
 
@@ -832,7 +832,7 @@ class Protein:
         """
         if label == None:
             pka_print("Must specify residue label, cannot calculate titration curve on whole protein")
-            sys.exit(8)
+            exit(8)
         else:
             residue = self.getResidue(label=label)
 

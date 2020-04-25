@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import math
 import propka.lib as lib
-import sys, os
+import os
 from propka.lib import info, warning
 
 import pkg_resources
@@ -50,7 +50,6 @@ class Parameters:
         #self.print_interaction_parameters()
         #self.print_interaction_parameters_latex()
         #####self.print_interactions_latex()
-        #sys.exit(0)
 
 
         return

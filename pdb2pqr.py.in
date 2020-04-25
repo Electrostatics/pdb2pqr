@@ -48,7 +48,8 @@
 __date__  = "5 April 2010"
 __author__ = "Todd Dolinsky, Nathan Baker, Jens Nielsen, Paul Czodrowski, Jan Jensen, Samir Unni, Yong Huang"
 
-import sys,os
+from sys import version_info, argv
+import os
 from main import mainCommand
 #from main_cgi import mainCGI
 from src.aconf import *
@@ -57,21 +58,4 @@ __version__ = PDB2PQR_VERSION
 
 if __name__ == "__main__":
     """ Determine if called from command line or CGI """
-
-    if(sys.version_info >= (3,0)):
-      mainCommand(sys.argv);
-        # if("REQUEST_METHOD" not in os.environ):
-        #     mainCommand(sys.argv);
-        # else:
-        #     mainCGI();
-    else:
-      mainCommand(sys.argv);
-        # if not os.environ.has_key("REQUEST_METHOD"):
-        #     mainCommand(sys.argv);
-        # else:
-        #     mainCGI();
-
-    #if not os.environ.has_key("REQUEST_METHOD"):
-    #    mainCommand(sys.argv)
-    #else:
-    #    mainCGI()
+    mainCommand()

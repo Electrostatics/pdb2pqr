@@ -11,7 +11,7 @@
 #
 debug=False
 import optparse
-import sys, os
+import os
 
 from src.definitions import Definition
 from src.forcefield import Forcefield

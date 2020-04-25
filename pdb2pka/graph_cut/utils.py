@@ -1,6 +1,6 @@
 from pdb2pka.graph_cut.protein_complex import ProteinComplex
 from pdb2pka.graph_cut.titration_curve import get_titration_curves
-import sys
+from sys import version_info
 import logging
 
 
@@ -57,7 +57,7 @@ def process_desolv_and_background(protein_complex, pKa):
     chain = pKa.residue.chainID
     location = str(pKa.residue.resSeq)
 
-    if(sys.version_info >= (3,0)):
+    if(version_info >= (3,0)):
         for state, energy in pKa.desolvation.items():
             _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
 

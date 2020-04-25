@@ -40,7 +40,7 @@
 
 
 import string
-import sys
+from sys import exit
 import copy
 import math
 from Source.lib import pka_print
@@ -325,7 +325,7 @@ def getExperiment(fullname):
         }
     else:
         pka_print("could not find experimental data for \"%s\"" % (name))
-        sys.exit(9)
+        exit(9)
 
     return experiment
 

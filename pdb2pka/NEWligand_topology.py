@@ -5,7 +5,7 @@
 #
 
 import numpy
-import sys
+from sys import version_info
 from operator import itemgetter
 #from sets import Set
 # TODO - fix import *
@@ -137,7 +137,7 @@ class get_ligand_topology:
             # Get the torsion angles
             #
             atoms=self.atoms.keys()
-            if(sys.version_info > (3,0)):
+            if(version_info > (3,0)):
                 atoms = sorted(atoms);
             else:
                 atoms.sort()
@@ -333,7 +333,7 @@ class get_ligand_topology:
         #
         self.numbers={}
         atoms=self.atoms.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             atoms = sorted(atoms);
         else:
             atoms.sort()

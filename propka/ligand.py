@@ -3,8 +3,6 @@
 from __future__ import division
 from __future__ import print_function
 
-import sys
-
 import propka.calculations
 from propka.vector_algebra import *
 from propka.lib import info, warning

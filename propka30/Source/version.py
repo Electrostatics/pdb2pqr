@@ -39,7 +39,7 @@
 
 import math
 from . import lib
-import sys
+from sys import exit
 import os
 from . import calculator as calculate
 pka_print = lib.pka_print
@@ -316,7 +316,7 @@ def makeVersion(label="Nov30", options=None):
         version = Nov30(options=options)
     else:
         pka_print("version \"%s\" not defined in makeVersion()" % (label))
-        sys.exit(9)
+        exit(9)
 
     pka_print("created version \"%s\"" % (version.name))
 
@@ -356,7 +356,7 @@ class Version(object):
         str = "WARNING: you are trying to create a 'default' version object. "
         str += " This object contains the cross section of all versions and is not a complete version itself."
         pka_print(str)
-        sys.exit(8)
+        exit(8)
 
     def printVersion(self):
         """
@@ -454,7 +454,7 @@ class Version(object):
         coulomb_parameters = parameters.getCoulombParameters()
         if label not in coulomb_parameters:
             pka_print("do not accept Coulomb model \"%s\\n" % (label))
-            sys.exit(9)
+            exit(9)
         else:
             self.CoulombModel = label
             default_parameters = coulomb_parameters[label]
@@ -489,7 +489,7 @@ class Version(object):
         desolvation_parameters = parameters.getDesolvationParameters()
         if label not in desolvation_parameters:
             pka_print("do not accept solvation model \"%s\\n" % (label))
-            sys.exit(9)
+            exit(9)
         else:
             self.DesolvationModel = label
             default_parameters = desolvation_parameters[label]
@@ -537,7 +537,7 @@ class Version(object):
             Nmass, Emass, Nlocl, Elocl = calculate.radialVolumeDesolvation(residue, atoms, self, options=options)
         else:
             pka_print("Desolvation \"%s\" is not implemented" % (self.DesolvationModel))
-            sys.exit(8)
+            exit(8)
 
         return Nmass, Emass, Nlocl, Elocl
 
@@ -603,7 +603,7 @@ class Version(object):
             return calculate.distanceScaledCoulombEnergy(distance, weight, self, options=options)
         else:
             pka_print("Coulomb \"%s\" is not implemented" % (self.CoulombModel))
-            sys.exit(8)
+            exit(8)
 
     def checkExceptions(self, residue1, residue2):
         """

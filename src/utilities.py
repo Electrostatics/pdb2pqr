@@ -55,7 +55,7 @@ import io
 import requests
 import logging
 from os.path import splitext
-import sys
+from sys import path as sys_path
 from .aconf import INSTALLDIR, TMPDIR
 
 
@@ -277,7 +277,7 @@ def getFFfile(name):
         return ''
 
     path = ""
-    dirs = sys.path + ["dat"]
+    dirs = sys_path + ["dat"]
     if name in ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]: name = name.upper()
 
     names = ["dat/%s.DAT" % name]
@@ -314,7 +314,7 @@ def getNamesFile(name):
         return ''
 
     path = ""
-    dirs = sys.path + ["dat"]
+    dirs = sys_path + ["dat"]
     if name in ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]: name = name.upper()
 
     names = ["dat/%s.names" % name]
@@ -348,7 +348,7 @@ def getDatFile(name):
     if os.path.isfile(name):
         path = name
 
-    for p in sys.path:
+    for p in sys_path:
         testpath = "%s/%s" % (p, name)
         if os.path.isfile(testpath):
             path = testpath

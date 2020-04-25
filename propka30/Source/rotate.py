@@ -41,7 +41,6 @@
 
 import math
 import os
-import sys
 import random
 from lib import pka_print
 

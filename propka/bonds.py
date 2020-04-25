@@ -2,7 +2,8 @@
 from __future__ import division
 from __future__ import print_function
 
-import sys,os,math,propka.calculations
+from sys import exit, argv
+import os,math,propka.calculations
 import json
 
 import pkg_resources
@@ -462,16 +463,16 @@ class bondmaker:
 
 if __name__ == '__main__':
     # If called directly, set up protein bond dictionary
-    import protein, pdb, sys,os
-    arguments = sys.argv
+    import protein, pdb, os
+    arguments = argv
     if len(arguments) != 2:
         info('Usage: bonds.py <pdb_file>')
-        sys.exit(0)
+        exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
         info('Error: Could not find \"%s\"' % filename)
-        sys.exit(1)
+        exit(1)
 
     pdblist = pdb.readPDB(filename)
     my_protein = protein.Protein(pdblist,'test.pdb')

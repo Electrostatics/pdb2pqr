@@ -1,8 +1,8 @@
 from __future__ import print_function
 # TODO - eliminate sys import
-import sys
+from sys import version_info
 
-if(sys.version_info >= (3,0)):
+if(version_info >= (3,0)):
     from .graph import ProteinGraph
     from .uncertainty import resolve_uncertainty
 else:

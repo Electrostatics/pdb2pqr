@@ -1,12 +1,12 @@
 from __future__ import division
 from __future__ import print_function
 
-import sys
+from sys import stdout, exit
 import pkg_resources
 import logging
 
 logger = logging.getLogger("propka")
-stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler = logging.StreamHandler(stdout)
 stdout_handler.setFormatter(logging.Formatter("%(message)s"))
 logger.addHandler(stdout_handler)
 
@@ -210,7 +210,7 @@ def loadOptions(*args):
     # if one is using the python interface via Molecular_container.
     if len(args) == 0:
       info("No pdbfile provided")
-      #sys.exit(9)
+      #exit(9)
 
     # Convert titrate_only string to a list of (chain, resnum) items:
     if options.titrate_only is not None:
@@ -220,7 +220,7 @@ def loadOptions(*args):
                 chain, resnum, inscode = parse_res_string(res_str)
             except ValueError:
                 logger.critical('Invalid residue string: "%s"' % res_str)
-                sys.exit(1)
+                exit(1)
             res_list.append((chain, resnum, inscode))
         options.titrate_only = res_list
 

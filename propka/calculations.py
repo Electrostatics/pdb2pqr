@@ -2,7 +2,8 @@
 from __future__ import division
 from __future__ import print_function
 
-import math, propka.protonate, propka.bonds,copy, sys
+import math, propka.protonate, propka.bonds, copy
+from sys import exit
 from propka.lib import info, warning
 
 
@@ -161,7 +162,7 @@ def addTrpHydrogen(residue):
     if CD == None or NE == None or CE == None:
         str = "Did not find all atoms in %s%4d - in %s" % (self.resName, self.resNumb, "addTrpHydrogen()")
         info(str)
-        sys.exit(0)
+        exit(0)
 
     HE = protonateSP2([CD, NE, CE])
     HE.name = "HNE"
@@ -186,7 +187,7 @@ def addAmdHydrogen(residue):
     if C == None or O == None or N == None:
         str = "Did not find N, C and/or O in %s%4d - in %s" % (atom.resName, atom.resNumb, "addAmdHydrogen()")
         info(str)
-        sys.exit(0)
+        exit(0)
 
     H1 = protonateDirection([N, O, C])
     H1.name = "HN1"

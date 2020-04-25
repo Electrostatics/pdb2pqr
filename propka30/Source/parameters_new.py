@@ -371,6 +371,6 @@ def getHydrogenBondParameters(type=None):
 
     else:
         pka_print("cannot determine what type of hydrogen-bonding interactions you want type=\"%s\" ['back-bone', 'side-chain']" % (label))
-        sys.exit(9)
+        exit(9)
 
     return parameters

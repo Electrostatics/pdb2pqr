@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
 import os
-import sys
+from sys import exit
 from calculator import calculate
 import math
 import lib
@@ -335,7 +335,7 @@ def getIndicies(name1, name2):
             indicies.append(9)
         else:
             pka_print("cannot find indicies for residue \"%s\" " % (name))
-            sys.exit(9)
+            exit(9)
 
     if indicies[0] > 6 and indicies[1] > 6:
         return None, None
@@ -491,7 +491,7 @@ def makeVersion(label="Jan15", verbose=True):
         version = Oct13(verbose=verbose)
     else:
         pka_print("Could not find version %s" % (label))
-        sys.exit(9)
+        exit(9)
 
     return version
 
@@ -516,7 +516,7 @@ def setVersion(label="default"):
         version = Dec19()
     else:
         pka_print("Could not find version %s" % (label))
-        sys.exit(9)
+        exit(9)
 
     return version
 
@@ -570,7 +570,7 @@ class Version(object):
         str = "WARNING: you are trying to create a 'default' version object. "
         str += " This object contains the cross section of all versions and is not a complete version itself."
         pka_print(str)
-        sys.exit(8)
+        exit(8)
         self.ions = {}
         self.name = "default"
         if verbose == True:
@@ -665,7 +665,7 @@ class Version(object):
         """
         if label not in self.CoulombDefault:
             pka_print("do not accept Coulomb model \"%s\\n" % (label))
-            sys.exit(9)
+            exit(9)
         else:
             self.CoulombModel = label
 
@@ -697,7 +697,7 @@ class Version(object):
         desolvation_parameters = getDesolvationParameters()
         if label not in desolvation_parameters:
             pka_print("do not accept solvation model \"%s\\n" % (label))
-            sys.exit(9)
+            exit(9)
         else:
             self.DesolvationModel = label
             default_parameters = desolvation_parameters[label]
@@ -735,7 +735,7 @@ class Version(object):
             Nmass, Emass, Nlocl, Elocl = calculate.radialVolumeDesolvation(residue, atoms, self, verbose=verbose)
         else:
             pka_print("Desolvation \"%s\" is not implemented" % (self.DesolvationModel))
-            sys.exit(8)
+            exit(8)
 
         return Nmass, Emass, Nlocl, Elocl
 
@@ -849,7 +849,7 @@ class Version(object):
             return calculate.CoulombEnergy(distance, weight, self, verbose=False)
         else:
             pka_print("Coulomb \"%s\" is not implemented" % (self.CoulombModel))
-            sys.exit(8)
+            exit(8)
 
     def calculateCoulombWeight(self, Nmass1, Nmass2):
         """

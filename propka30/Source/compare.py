@@ -36,7 +36,7 @@
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
-import sys
+from sys import exit
 import math
 import string
 from lib import int2roman, convertResidueCode, pka_print
@@ -98,7 +98,7 @@ def checkDonePKA(target=None, template=None, alignment=None, options=None):
         if False:
             pka_print("target = %s, template = %s : pKas done" % (target.name, template.name))
     else:
-        sys.exit(8)
+        exit(8)
 
     return
 

@@ -2,7 +2,8 @@
 
 Authors: Todd Dolinsky based on original sed script by Nathan Baker
 """
-import string, sys
+import string
+from sys import exit
 from . import psize
 import pickle
 import os.path
@@ -250,7 +251,7 @@ def splitInput(filename):
     if nproc == 0:
         _LOGGER.error("%s is not a valid APBS parallel input file!\n" % filename)
         _LOGGER.error("The inputgen script was unable to asynchronize this file!\n")
-        sys.exit(2)
+        exit(2)
 
     base_pqr_name = utilities.getPQRBaseFileName(filename)
     for i in range(nproc):
@@ -301,7 +302,7 @@ def usage():
     usage = usage + "                         [default = %g]\n" % size.getConstant("redfac")
     usage = usage + "  --istrng=<value>     : Ionic strength (M). Na+ anc Cl- ions will be used\n"
     _LOGGER.error(usage)
-    sys.exit(2)
+    exit(2)
 
 def main():
 
@@ -311,7 +312,7 @@ def main():
     longOptList = ["help","split","potdx","method=","cfac=","space=","gmemceil=","gmemfac=","ofrac=","redfac=","istrng="]
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
+        opts, args = getopt.getopt(argv[1:], shortOptList, longOptList)
     except getopt.GetoptError as details:
         _LOGGER.error("Option error (%s)!\n" % details)
         usage()

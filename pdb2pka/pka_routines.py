@@ -367,7 +367,7 @@ class pKaRoutines:
         # Loop over each titration
         #
         self.all_potentials={}
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             if not pKa in self.matrix:
                 self.matrix[pKa]={}
                 self.all_potentials[pKa]={}
@@ -377,7 +377,7 @@ class pKaRoutines:
                 self.all_potentials[pKa]={}
         #
         for titration in pKaGroup.DefTitrations:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 if not titration in self.matrix[pKa]:
                     self.matrix[pKa][titration]={}
                     self.all_potentials[pKa][titration]={}
@@ -492,7 +492,7 @@ class pKaRoutines:
             #
             # Loop over each titration
             #
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 if not pKa in energies:
                     energies[pKa]={}
                     all_potentials[pKa]={}
@@ -502,7 +502,7 @@ class pKaRoutines:
                     all_potentials[pKa]={}
             #
             for titration in pKaGroup.DefTitrations:
-                if(sys.version_info >= (3,0)):
+                if(version_info >= (3,0)):
                     if not titration in energies[pKa]:
                         energies[pKa][titration]={}
                         all_potentials[pKa][titration]={}
@@ -533,7 +533,7 @@ class pKaRoutines:
                     #
                     # Check if we have values for this calculation already
                     #
-                    if(sys.version_info >= (3,0)):
+                    if(version_info >= (3,0)):
                         if name in savedict:
                             energies[pKa][titration][state]= savedict[name]
                             if mode=='pKD':
@@ -834,7 +834,7 @@ class pKaRoutines:
         pH_results = {}
 
         adjacent_data_points = 5
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             cur_arr = curves.items()
         else:
             cur_arr = curves.iteritems()
@@ -1178,7 +1178,7 @@ class pKaRoutines:
 #             intpka=titrate_one_group(name='%s' %(pKa.residue),intpkas=intpKas,is_charged=is_charged,acidbase=acidbase)
             curve = curve_for_one_group(pKa)
             pka_values, _ = self.find_pka_and_pH(curve)
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 intpka = list(pka_values.values())[0]
             else:
                 intpka = pka_values.values()[0]
@@ -1260,7 +1260,7 @@ class pKaRoutines:
                     # Set the name for this energy
                     #
                     name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name,state))
-                    if(sys.version_info >= (3,0)):
+                    if(version_info >= (3,0)):
                         if name in savedict:
                             pKa.background[self.get_state_name(titration.name,state)] = savedict[name]
                             continue
@@ -1415,7 +1415,7 @@ class pKaRoutines:
 
         with open(self.output_files['background_interaction_energies_file_path'] , 'w') as f:
             keys = savedict.keys()
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 keys = sorted(keys);
             else:
                 keys.sort()
@@ -1502,7 +1502,7 @@ class pKaRoutines:
                     name='%s_%s_%s_%s' %(titration.name,pKa.residue.chainID,pKa.residue.resSeq,self.get_state_name(titration.name,state))
                     #
 
-                    if(sys.version_info >= (3,0)):
+                    if(version_info >= (3,0)):
                         if name in savedict:
                             pKa.desolvation[self.get_state_name(titration.name,state)] = savedict[name]
                             continue
@@ -1579,7 +1579,7 @@ class pKaRoutines:
 
         with open(self.output_files['desolvation_energies_file_path'], 'w') as f:
             keys = savedict.keys()
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 keys = sorted(keys)
             else:
                 keys.sort()
@@ -2070,7 +2070,7 @@ class pKaRoutines:
                 charge, radius = self.forcefield.getParams1(residue, atomname)
                 sum=sum+charge
 
-                if(sys.version_info >= (3,0)):
+                if(version_info >= (3,0)):
                     if  atomname in initialmap:
                         initcharge = initialmap[atomname]
                         if charge != initcharge:
@@ -2321,7 +2321,7 @@ class pKaRoutines:
                 type = ""
                 titrations = []
 
-                if(sys.version_info >= (3,0)):
+                if(version_info >= (3,0)):
                     name = str.strip(line[1:])
                 else:
                     name = string.strip(line[1:])
@@ -2330,7 +2330,7 @@ class pKaRoutines:
                     text = "Wrong line found when looking for 'Residue'"
                     raise(ValueError, "%s: %s" % (text, line))
 
-                if(sys.version_info >= (3, 0)):
+                if(version_info >= (3, 0)):
                     resname = str.strip(str.split(line)[1])
                 else:
                     resname = string.strip(string.split(line)[1])
@@ -2340,7 +2340,7 @@ class pKaRoutines:
                     text = "Wrong line found when looking for 'Grouptype'"
                     raise(ValueError, "%s: %s" % (text, line))
 
-                if(sys.version_info >= (3,0)):
+                if(version_info >= (3,0)):
                     type = str.strip(str.split(line)[1]).lower()
                 else:
                     type = string.lower(string.strip(string.split(line)[1]))
@@ -2364,7 +2364,7 @@ class pKaRoutines:
                         text = "Wrong line found when looking for 'Transition:'"
                         raise(ValueError, "%s: %s" % (text, line))
 
-                    if(sys.version_info >= (3,0)):
+                    if(version_info >= (3,0)):
                         split = str.split(line[11:], '->')
                         for number in str.split(split[0], ','):
                             startstates.append(titrationdict[str.strip(number)])
@@ -2390,7 +2390,7 @@ class pKaRoutines:
                         text = "Wrong line found when looking for 'Model_pKa'"
                         raise(ValueError, "%s: %s" % (text, line))
 
-                    if(sys.version_info >= (3, 0)):
+                    if(version_info >= (3, 0)):
                         modelpKa = float(line.split()[1])
                     else:
                         modelpKa = float(string.split(line)[1])

@@ -1,5 +1,5 @@
-import sys
-sys.path.append('/Users/nielsen/bin/APBS/tools/python/vgrid')
+from sys import path as sys_path
+sys_path.append('/Users/nielsen/bin/APBS/tools/python/vgrid')
 from vgrid import *
 NMAX=5
 
@@ -16,8 +16,6 @@ class phimap_class:
             value=0.0
             
             startVio()
-            import sys
-            from sys import stdout, stderr
             grid = Vgrid_ctor(0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, data)
             Vgrid_readDX(grid, "FILE", "ASC", "", emap)
 

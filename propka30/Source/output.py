@@ -36,7 +36,6 @@
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
-import sys
 from . import lib
 revision = 182
 

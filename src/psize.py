@@ -52,9 +52,14 @@
 __date__ = "4 June 2008"
 __author__ = "Dave Sept, Nathan Baker, Todd Dolinsky, Yong Huang"
 
-import string, sys, getopt
-from sys import stdout, stderr
+import string, getopt
+import exit, argv
 from math import log
+import logging
+
+
+_LOGGER = logging.getLogger(__name__)
+
 
 class Psize:
     """Master class for parsing input files and suggesting settings"""
@@ -154,9 +159,6 @@ class Psize:
         for i in range(3):
             self.flen[i] = olen[i] + self.constants["fadd"]
             if self.flen[i] > clen[i]:
-                #str = "WARNING: Fine length (%.2f) cannot be larger than coarse length (%.2f)\n" % (self.flen[i], clen[i])
-                #str = str + "         Setting fine grid length equal to coarse grid length\n"
-                #stdout.write(str)
                 self.flen[i] = clen[i]
         return self.flen
 
@@ -192,8 +194,8 @@ class Psize:
                 i = nsmall.index(max(nsmall))
                 nsmall[i] = 32 * ((nsmall[i] - 1)/32 - 1) + 1
                 if nsmall[i] <= 0:
-                    stdout.write("You picked a memory ceiling that is too small\n")
-                    sys.exit(0)
+                    _LOGGING.error("You picked a memory ceiling that is too small\n")
+                    exit(0)
 
         self.nsmall = nsmall
         return nsmall
@@ -371,20 +373,20 @@ def usage(rc):
     usage = usage + "                         [default = %g]\n" % psize.getConstant("redfac")
 
 
-    stderr.write(usage)
-    sys.exit(rc)
+    _LOGGER.error(usage)
+    exit(rc)
 
 def main():
     filename = ""
     shortOptList = "h"
     longOptList = ["help", "cfac=", "fadd=", "space=", "gmemfac=", "gmemceil=", "ofrac=", "redfac="]
     try:
-        opts, args = getopt.getopt(sys.argv[1:], shortOptList, longOptList)
+        opts, args = getopt.getopt(argv[1:], shortOptList, longOptList)
     except getopt.GetoptError as details:
-        stderr.write("Option error (%s)!\n" % details)
+        _LOGGER.error("Option error (%s)!\n" % details)
         usage(2)
     if len(args) != 1:
-        stderr.write("Invalid argument list!\n")
+        _LOGGER.error("Invalid argument list!\n")
         usage(2)
     else:
         filename = args[0]
@@ -411,13 +413,13 @@ def main():
 
     psize.runPsize(filename)
 
-    stdout.write("# Constants used: \n");
+    _LOGGING.info("# Constants used: \n");
     for key in psize.constants.keys():
-        stdout.write("# \t%s: %s\n" % (key, psize.constants[key]))
-    stdout.write("# Run:\n")
-    stdout.write("#    `%s --help`\n" % sys.argv[0])
-    stdout.write("# for more information on these default values\n" )
-    stdout.write(psize.printResults())
+        _LOGGING.info("# \t%s: %s\n" % (key, psize.constants[key]))
+    _LOGGING.info("# Run:\n")
+    _LOGGING.info("#    `%s --help`\n" % argv[0])
+    _LOGGING.info("# for more information on these default values\n" )
+    _LOGGING.info(psize.printResults())
 
 
 if __name__ == "__main__": main()

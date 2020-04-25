@@ -39,7 +39,7 @@
 # -------------------------------------------------------------------------------------------------------
 
 
-import sys
+from sys import argv, exit
 import pdb
 import protonate
 import lib
@@ -496,13 +496,13 @@ class ligand_residue:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        sys.exit(0)
+    if len(argv) < 2:
+        exit(0)
 
     protonator = protonate.Protonate()
 
-    pka_print(sys.argv[1])
-    atoms = pdb.readPDB(sys.argv[1], tags=["ATOM", "HETATM"])
+    pka_print(argv[1])
+    atoms = pdb.readPDB(argv[1], tags=["ATOM", "HETATM"])
 
     my_ligand = ligand(atoms)
 

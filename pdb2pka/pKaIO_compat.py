@@ -8,8 +8,7 @@
 # University College Dublin 2003 -
 # All rights reserved
 #
-# TODO - eradicate sys
-import sys
+from sys import version_info
 #try:
 import os
 import logging
@@ -259,7 +258,7 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             newgroupkeys = sorted(newgroupkeys)
         else:
             newgroupkeys.sort()
@@ -272,7 +271,7 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 hk = group in data
             else:
                 hk = data.has_key(group)
@@ -377,13 +376,13 @@ class pKaIO:
         #
         residues=data.keys()
         phvals=data[residues[0]].keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             phvals = sorted(phvals);
         else:
             phvals.sort()
         for residue in residues:
             newpHvals=data[residue].keys()
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 newpHvals = sorted(newpHvals)
             else:
                 newpHvals.sort()
@@ -395,7 +394,7 @@ class pKaIO:
         # Check that a pKa value is in the pH values
         #
         for residue in residues:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 hk = not 'pKa' in data[residue]
             else:
                 hk = not data[residue].has_key('pKa')
@@ -407,7 +406,7 @@ class pKaIO:
         # Find the pH-start, stop and step
         #
         phvals=data[residues[0]].keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             phvals = sorted(phvals)
         else:
             phvals.sort()
@@ -432,7 +431,7 @@ class pKaIO:
             newr = r.split('_')[2]
             newresidue[int(newr),r]=r
         newresiduekeys = newresidue.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             newresiduekeys = sorted(newresiduekeys)
         else:
             newresiduekeys.sort()
@@ -609,7 +608,7 @@ class pKaIO:
         fd.write('%s Interaction Matrix File\n' %format)
         fd.write('Format 1.0\n')
         groups=self.matrix.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             groups = sorted(groups)
         else:
             groups.sort()
@@ -629,7 +628,7 @@ class pKaIO:
             newg = g.split('_')[2]
             newnewgroup[int(newg),g]=g
         newnewgroupkeys = newnewgroup.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             newnewgroupkeys = sorted(newnewgroupkeys)
         else:
             newnewgroupkeys.sort()
@@ -642,7 +641,7 @@ class pKaIO:
         # ---------
         #
         for group in newgroups:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 hk0 = group in self.matrix
                 hk1 = 'T'+group in self.matrix
                 hk2 = 'T'+group in self.matrix and not 'T'+group in written
@@ -686,7 +685,7 @@ class pKaIO:
                 for state1 in matrix[group1][tit1].keys():
                     sub_m=matrix[group1][tit1][state1]
                     for group2 in sub_m.keys():
-                        if(sys.version_info >= (3,0)):
+                        if(version_info >= (3,0)):
                             if not group2.uniqueid in self.matrix[group1.uniqueid]:
                                 self.matrix[group1.uniqueid][group2.uniqueid]=[]
                             for tit2 in sub_m[group2].keys():
@@ -726,7 +725,7 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             newgroupkeys = sorted(newgroupkeys)
         else:
             newgroupkeys.sort()
@@ -736,7 +735,7 @@ class pKaIO:
 
         written={}
         for group2 in groups2:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 hk0 = group2 in self.matrix[group]
                 hk1 = 'T'+group2 in self.matrix[group]
                 hk2 = 'T'+group2 in self.matrix[group] and 'T'+group2 not in written
@@ -906,7 +905,7 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             newgroupkeys = sorted(newgroupkeys)
         else:
             newgroupkeys.sort()
@@ -918,7 +917,7 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 hk = group in self.desolv
             else:
                 hk = self.desolv.has_key(group)
@@ -947,7 +946,7 @@ class pKaIO:
             newg = g.split('_')[2]
             newgroup[int(newg),g]=g
         newgroupkeys = newgroup.keys()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             newgroupkeys = sorted(newgroupkeys)
         else:
             newgroupkeys.sort()
@@ -959,7 +958,7 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 hk = group in self.backgr
             else:
                 hk = self.backgr.has_key(group)

@@ -36,7 +36,7 @@
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
-import sys
+from sys import exit
 import string
 import math
 import copy
@@ -257,7 +257,7 @@ class Residue:
             C = self.getAtom(name="C")
             if O == None or CA == None or C == None:
                 pka_print("ERROR: cannot create OXT atom - missing CA, C, or O atoms; please correct pdbfile")
-                sys.exit(8)
+                exit(8)
             dX = -((CA.x-C.x) + (O.x-C.x))
             dY = -((CA.y-C.y) + (O.y-C.y))
             dZ = -((CA.z-C.z) + (O.z-C.z))
@@ -415,7 +415,7 @@ class Residue:
 
         if self.resName not in version.atomInteractionList[pair_type]:
             pka_print("cannot find atomInteractionList for residue %s in residue.makeDeterminantAtomList()" % (self.resName))
-            sys.exit(9)
+            exit(9)
 
         # Searching for determinant atom
         atoms = []

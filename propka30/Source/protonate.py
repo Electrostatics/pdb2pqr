@@ -135,9 +135,6 @@ class Protonate:
         # make bonds
         self.my_bond_maker.find_bonds_for_ligand(ligand)
 
-        #import sys
-        # sys.exit(0)
-
         # set charges
         self.set_ligand_charges(ligand)
 
@@ -460,17 +457,17 @@ class Protonate:
 if __name__ == '__main__':
     import protein
     import pdb
-    import sys
+    from sys import argv, exit
     import os
-    arguments = sys.argv
+    arguments = argv
     if len(arguments) != 2:
         pka_print('Usage: protonate.py <pdb_file>')
-        sys.exit(0)
+        exit(0)
 
     filename = arguments[1]
     if not os.path.isfile(filename):
         pka_print('Error: Could not find \"%s\"' % filename)
-        sys.exit(1)
+        exit(1)
 
     p = Protonate()
     pdblist = pdb.readPDB(filename)

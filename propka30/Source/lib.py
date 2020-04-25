@@ -40,7 +40,7 @@
 
 
 import string
-import sys
+from sys import exit, version, hexversion
 import copy
 import math
 import logging
@@ -122,7 +122,6 @@ def loadOptions():
     # checking at early stage that there is at least one pdbfile to work with
     if len(args) == 0:
         _LOGGER.warn("Warning: no pdbfile provided")
-        # sys.exit(9)
 
     # --- post-processing; interpreting some of the arguments ---
 
@@ -161,7 +160,7 @@ def checkPythonVersion():
 
     if sys.hexversion < 0x02060000:
         pka_print("propka does not run under python %s, please use version 2.6 or later" % (sys.version.split()[0]))
-        sys.exit(8)
+        exit(8)
 
     return
 
@@ -242,7 +241,7 @@ def interpretMutationsDictionary_old(options):
                     label = mutation
                 else:
                     pka_print("cannot assign pdbcode to mutation %s; specify pdbcode or use a different mutator" % (mutation))
-                    sys.exit(9)
+                    exit(9)
             else:
                 # not using alignment anyway
                 code = None
@@ -289,7 +288,7 @@ def interpretDictionaryMutations(options):
         else:
             # too difficult to figure out what user want
             pka_print("cannot interpret mutation '%s'; specify as '2vuj:A:N25R/N181D'" % (mutation))
-            sys.exit(9)
+            exit(9)
 
         mutation = {code: {chainID: label}}
         mutations.append(mutation)
@@ -335,7 +334,7 @@ def interpretMutationsList(options):
         else:
             # too difficult to figure out what user want
             pka_print("cannot interpret mutation '%s'; specify as '2vuj:A:N25R/N181D'" % (mutation))
-            sys.exit(9)
+            exit(9)
         mutations.append([code, chainID, label])
         if code != None and code not in options.thermophiles:
             options.thermophiles.append(code)
@@ -368,7 +367,7 @@ def residueList(name):
         residue_list = ["H2O", "HOH", "SO4", "PO4", "HEM", "cu", "zn", "GTT", "PMS", "MYG"]
     else:
         pka_print('cannot understand \"%s\" residueList' % (name))
-        sys.exit(0)
+        exit(0)
 
     return residue_list
 
@@ -390,7 +389,7 @@ def residueInteractionList(grpName):
         residue_list = ['ASP', 'GLU', 'SER', 'THR', 'ASN', 'GLN', 'TRP', 'HIS', 'CYS', 'TYR', 'LYS', 'ARG', 'C- ', 'N+ ']
     else:
         pka_print("Don't understand %s" % (grpName))
-        sys.exit(0)
+        exit(0)
 
     if len(residue_list) == 0:
         return string.split(str)
@@ -478,7 +477,7 @@ def atomList(resName):
         str = ""
     else:
         pka_print("Don't understand %s in atomList(resName)" % (resName))
-        sys.exit(0)
+        exit(0)
 
     atom_list = str.split()
     return atom_list
@@ -648,7 +647,7 @@ def convertResidueCode(code=None, resName=None):
             return test1, test2
 
     pka_print("could not figure out code=%s resName=%s" % (code, resName))
-    sys.exit(9)
+    exit(9)
 
 
 def extractResidueNumbers(description_line):

@@ -4,7 +4,7 @@ from src.pdb import *
 from src.definitions import *
 from pdb2pka import NEWligand_topology
 # TODO - remove sys import
-import sys
+from sys import version_info
 import string
 import logging
 from src.errors import PDBInputError
@@ -56,7 +56,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     atommap = {}
     for line in X.lines[:-2]:
         obj = DefinitionAtom()
-        if(sys.version_info >= (3,0)):
+        if(version_info >= (3,0)):
             entries = line.split();
         else:
             entries = string.split(line)
@@ -74,7 +74,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     # The second to last line has a list of bonded partners
     #
     line = X.lines[-2]
-    if(sys.version_info >= (3,0)):
+    if(version_info >= (3,0)):
         bonds = line.split()
     else:
         bonds = string.split(line)
@@ -179,7 +179,7 @@ class ligforcefield(Forcefield):
             raise(ValueError, "Invalid forcefield %s!" % ff)
 
         if not os.path.isfile(defpath):
-            for path in sys.path:
+            for path in sys_path:
                 testpath = "%s/%s" % (path, defpath)
                 if os.path.isfile(testpath):
                     defpath = testpath
@@ -307,7 +307,7 @@ class ligand_charge_handler(MOL2MOLECULE):
             for at in residue.atoms:
                 atoms_now.append(at.name)
 
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 atoms_now = sorted(atoms_now);
                 atoms_last_calc = sorted(atoms_last_calc);
             else:

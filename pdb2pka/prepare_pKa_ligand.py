@@ -10,7 +10,8 @@
 #
 
 # TODO - eliminate sys and os imports
-import sys, os
+import sys.exc_info, argv, sys_path
+import os
 try:
     file_name=__file__
     if file_name[:2]=='./':
@@ -20,7 +21,7 @@ try:
         if scriptpath[-1] == "/":
             scriptpath=scriptpath[:-1]
 except:
-    scriptpath=os.path.split(sys.argv[0])[0]
+    scriptpath=os.path.split(argv[0])[0]
     if scriptpath=='.':
         scriptpath=os.getcwd()
 import logging
@@ -48,7 +49,7 @@ if not os.path.isfile(OPENBABEL):
 # Add to import path
 #
 pdb2pqr_path=os.path.split(scriptpath)[0]
-sys.path.append(pdb2pqr_path)
+sys_path.append(pdb2pqr_path)
         
 class ligand_pKa:
 
@@ -197,7 +198,6 @@ if __name__=='__main__':
     _LOGGER.info('Get pKa values and structures of protonation states for a ligand')
     _LOGGER.info('Chresten Soendergaard, Paul Czodrowski, Jens Erik Nielsen 2006-2010')
     _LOGGER.info("")
-    import sys, os
     from optparse import OptionParser
     parser = OptionParser(usage='%prog [options] <file>',version='%prog 1.0')
     parser.add_option('-m','--mol2',dest='mol2',action='store',type='string',
@@ -245,7 +245,6 @@ if __name__=='__main__':
                         I=ligand_pKa(mol2lines)
                         ok.append()
                     except:
-                        import sys
                         failed.append([mol2file,sys.exc_info()[0]])
                         _LOGGER.error('FAILED')
                         _LOGGER.error(sys.exc_info()[0])

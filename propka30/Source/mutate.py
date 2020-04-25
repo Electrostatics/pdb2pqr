@@ -40,7 +40,7 @@ from . import pdb
 from . import output
 import math
 import os
-import sys
+from sys import exit
 import re
 
 from . import lib
@@ -228,7 +228,7 @@ def makeMutatedProtein(protein, mutation=None, atoms=None, alignment=None, optio
         os.system(cmd)
     else:
         pka_print("don't know how to use mutator \"%s\"" % (options.mutator.label))
-        sys.exit(9)
+        exit(9)
 
     return newProtein
 
@@ -595,7 +595,7 @@ def extractSingleMutationInformation(mutation_label):
     """
     if mutation_label[1] == ':':
         pka_print("this should be called through splitSingleMutation() instead")
-        sys.exit(8)
+        exit(8)
     else:
         code1 = mutation_label[:1]
         resNumb = int(mutation_label[1:-1])
@@ -819,7 +819,7 @@ def splitSingleMutation(single_mutation):
         return single_mutation[0], single_mutation[1], single_mutation[3:]
     else:
         pka_print("could not split mutation \"%s\" correctly in splitSingleMutation()" % (single_mutation))
-        sys.exit(8)
+        exit(8)
 
 
 def extractMutationLabel(generic_mutation):
@@ -859,11 +859,11 @@ def remakeStringMutation(generic_mutation, keys1=None, keys2=None):
         mutation = generic_mutation
     elif isinstance(generic_mutation, list):
         pka_print("don't know how to deal with list-mutations in checkStringMutation()")
-        sys.exit(8)
+        exit(8)
         mutations = generic_mutation
     elif isinstance(generic_mutation, dict):
         pka_print("don't know how to deal with dictionary-mutations in checkStringMutation()")
-        sys.exit(8)
+        exit(8)
 
     new_string = ""
     pdbcode, mutation_string = splitStringMutationInTwo(mutation)
@@ -899,7 +899,7 @@ def makeDictionaryMutation(mutation=None, label=None, pdb=None, template=None):
     # new[label] = {'pdb': pdb, 'template': label2, 'label': new_label}
     if isinstance(mutation, str):
         pka_print("not coded this conversion in makeDictionaryMutation()")
-        sys.exit(8)
+        exit(8)
     elif isinstance(mutation, list):
         new = {}
         for target_label, template_label in mutation:
@@ -1136,7 +1136,7 @@ def mutateAtomsDictionaryUsingOverlap(protein=None, atoms=None, mutation=None, o
             pka_print("REMARK   Final structure")
             for atom in newAtoms[target_chainID][label]:
                 pka_print(atom.makePDBLine())
-        # sys.exit(8)
+        # exit(8)
 
     return newAtoms
 

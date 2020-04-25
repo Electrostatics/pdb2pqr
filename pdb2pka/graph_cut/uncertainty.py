@@ -1,5 +1,5 @@
 from __future__ import print_function
-import sys
+from sys import float_info
 from itertools import product
 import random
 random.seed("Mmmmm, sandwiches...")
@@ -35,7 +35,7 @@ def brute_force(pc, labeling, uncertain):
     """Iterate through all possible combinations of uncertain
        residue states picking the one that produces the best results."""
     result_labeling = None
-    best_energy = sys.float_info.max
+    best_energy = float_info.max
 
     state_pairs = ((x.instances["PROTONATED"], x.instances["DEPROTONATED"]) for x in uncertain)
 
@@ -68,7 +68,7 @@ def monte_carlo(pc, labeling, uncertain):
      Return the current best state.
     """
     result_labeling = None
-    best_energy = sys.float_info.max
+    best_energy = float_info.max
 
     state_pairs = [(x.instances["PROTONATED"], x.instances["DEPROTONATED"]) for x in uncertain]
 

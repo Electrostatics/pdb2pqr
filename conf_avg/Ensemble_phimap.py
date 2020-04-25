@@ -3,7 +3,8 @@
 # This is a module in development for making conformationally averaged PBE maps
 #
 debug=False
-import sys, os
+from sys import path as sys_path, argv
+import os
 
 print __file__
 import os
@@ -16,14 +17,14 @@ try:
         if scriptpath[-1] == "/":
             scriptpath=scriptpath[:-1]
 except:
-    scriptpath=os.path.split(sys.argv[0])[0]
+    scriptpath=os.path.split(argv[0])[0]
     if scriptpath=='.':
         scriptpath=os.getcwd()
 #
 # Add to import path
 #
 pdb2pqr_path=os.path.split(scriptpath)[0]
-sys.path.append(pdb2pqr_path)
+sys_path.append(pdb2pqr_path)
 
 import string
 import math

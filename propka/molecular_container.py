@@ -6,7 +6,8 @@
 from __future__ import division
 from __future__ import print_function
 
-import os, sys
+import os
+from sys import exit, argv
 
 import propka.pdb, propka.version, propka.output, propka.conformation_container, propka.group, propka.lib
 from propka.lib import info, warning
@@ -40,7 +41,7 @@ class Molecular_container:
             [self.conformations, self.conformation_names] = propka.pdb.read_pdb(input_file, self.version.parameters, self)
             if len(self.conformations)==0:
                 info('Error: The pdb file does not seems to contain any molecular conformations')
-                sys.exit(-1)
+                exit(-1)
 
             self.top_up_conformations()
 
@@ -77,7 +78,7 @@ class Molecular_container:
 
         else:
             info('Unrecognized input file:%s' % input_file)
-            sys.exit(-1)
+            exit(-1)
 
 
         return
@@ -248,5 +249,5 @@ class Molecular_container:
 
 
 if __name__ == '__main__':
-    input_file = sys.argv[1]
+    input_file = argv[1]
     mc = Molecular_container(input_file)

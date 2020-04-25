@@ -1,7 +1,7 @@
 from __future__ import division
 from __future__ import print_function
 import math
-import sys, os
+import os
 
 import propka.lib as lib
 from propka.lib import info, warning

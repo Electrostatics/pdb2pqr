@@ -4,7 +4,7 @@
 #
 
 import os
-import sys
+from sys import argv
 
 
 class inputGen:
@@ -75,7 +75,7 @@ class inputGen:
         fd=open(self.fullpath)
         line=fd.readline()
         while line:
-            if(sys.version_info >= (3,0)):
+            if(version_info >= (3,0)):
                 split = str.split(line);
             else:
                 split=string.split(line)
@@ -333,8 +333,7 @@ class inputGen:
         return outname
 
 def main():
-    import sys
-    X=inputGenpKa(sys.argv[1],13)
+    X=inputGenpKa(argv[1],13)
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
 # -------------------------------------------------------------------------------------------------------
 import string
-import sys
+from sys import exit
 import copy
 from . import lib
 pka_print = lib.pka_print
@@ -95,10 +95,10 @@ def readPDB(filename, file=None, verbose=True, tags=["ATOM"]):
             reskey = "%-3s%4d%2s" % (getResName(line), getResNumb(line), chainID)
             if chainID not in atoms:
                 pka_print("incorrect labeling in %s, please correct your pdbfile; could not find chain '%s'" % (filename, chainID))
-                sys.exit(8)
+                exit(8)
             if reskey not in atoms[chainID]:
                 pka_print("incorrect labeling in %s, please correct your pdbfile; could not find '%s'" % (filename, reskey))
-                sys.exit(8)
+                exit(8)
             for atom in atoms[chainID][reskey]:
                 if atom.name == getAtomName(line):
                     key = makeConfigurationKey(line, i_model)
@@ -116,7 +116,7 @@ def readPDB(filename, file=None, verbose=True, tags=["ATOM"]):
                     pka_print(str)
 
     #pka_print(number_of_configurations, models_configurations)
-    # sys.exit(9)
+    # exit(9)
 
     return atoms
 
@@ -271,7 +271,7 @@ def openPdbFile(filename):
     else:
         pka_print("trying to pass me a rotten pdbfile \"%s\" - no pdb extension" % (filename))
         pka_print("check if there is a dot in full path ...")
-        sys.exit(9)
+        exit(9)
 
     return file
 
@@ -417,7 +417,7 @@ class Atom:
             for item in self.configurations.keys():
                 keys += "%5s" % (item)
             pka_print("configuration '%s' not found in '%s' atom '%s' [%s]" % (key, resLabel, self.name, keys))
-            sys.exit(8)
+            exit(8)
 
     def setProperty(self,
                     numb=None,

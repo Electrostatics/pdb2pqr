@@ -1,7 +1,9 @@
-"""Driver for PDB2PQR
+"""PDB2PQR
 
-This module takes a PDB file as input and performs optimizations before yielding
-a new PDB-style file as output.
+This package takes a PDB file as input and performs optimizations before
+yielding a new PDB-style file as output.
+
+For more information, see http://www.poissonboltzmann.org/
 """
 from main import mainCommand
 

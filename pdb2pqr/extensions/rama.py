@@ -6,11 +6,8 @@
 
     Author:  Mike Bradley and Todd Dolinsky
 """
-
-
 import logging
 from src.utilities import getDihedral
-import extensions
 
 
 _LOGGER = logging.getLogger(__name__)

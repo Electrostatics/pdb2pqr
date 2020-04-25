@@ -4,9 +4,6 @@ Print interaction energy between each residue pair in the protein.
 
 Authors:  Kyle Monson and Emile Hogan
 """
-
-
-import extensions
 import logging
 from src.hydrogens import Optimize
 #itertools FTW!

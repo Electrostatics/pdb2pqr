@@ -14,7 +14,7 @@ from src import aa, hydrogens, forcefield, na
 from io import StringIO
 from src.errors import PDB2PQRError
 import propka.lib
-import extensions
+from . import extensions
 from . import __version__
 
 HEADER_TEXT = """

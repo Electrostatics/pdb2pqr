@@ -5,10 +5,7 @@ Currently prints a list of all residue in protein.
 
 Author:  Kyle Monson
 """
-
-
 import logging
-import extensions
 
 
 _LOGGER = logging.getLogger(__name__)

@@ -6,8 +6,6 @@ stdout in a WHATIF-like format.
 
 Author:  Julie C. Mitchell
 """
-
-
 import logging
 from src.utilities import distance
 from src.routines import Cells

@@ -28,7 +28,6 @@ import logging
 from src.utilities import distance, getAngle
 from src.routines import Cells
 from math import cos
-import extensions
 
 
 # TODO - this extension used to write to a file as well as stdout.  This logger may need to be modified to recreate the writing to a file.

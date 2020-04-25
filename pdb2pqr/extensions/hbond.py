@@ -25,8 +25,8 @@ Authors:  Todd Dolinsky, Michael J Bradley, Julie Mitchell, and Kyle Monson
 
 
 import logging
-from src.utilities import distance, getAngle
-from src.routines import Cells
+from ..utilities import distance, getAngle
+from ..routines import Cells
 from math import cos
 
 

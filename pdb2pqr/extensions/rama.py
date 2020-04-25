@@ -7,7 +7,7 @@
     Author:  Mike Bradley and Todd Dolinsky
 """
 import logging
-from src.utilities import getDihedral
+from ..utilities import getDihedral
 
 
 _LOGGER = logging.getLogger(__name__)

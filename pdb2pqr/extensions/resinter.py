@@ -5,10 +5,10 @@ Print interaction energy between each residue pair in the protein.
 Authors:  Kyle Monson and Emilie Hogan
 """
 import logging
-from src.hydrogens import Optimize
 from itertools import product, permutations, count
 from collections import defaultdict
-from src.hydrogens import hydrogenRoutines
+from ..hydrogens import Optimize
+from ..hydrogens import hydrogenRoutines
 
 
 _LOGGER = logging.getLogger(__name__)

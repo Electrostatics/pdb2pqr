@@ -7,7 +7,7 @@ atoms (if available).
 Author:  Todd Dolinsky
 """
 import logging
-from src.utilities import getDihedral
+from ..utilities import getDihedral
 
 
 _LOGGER = logging.getLogger(__name__)

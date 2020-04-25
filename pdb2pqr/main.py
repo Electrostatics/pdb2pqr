@@ -9,11 +9,11 @@ import time
 import logging
 from pathlib import Path
 import argparse
-from src import pdb, cif, utilities, structures, routines, protein, definitions
-from src import aa, hydrogens, forcefield, na
+from . import pdb, cif, utilities, structures, routines, protein, definitions
+from . import aa, hydrogens, forcefield, na
 from io import StringIO
-from src.errors import PDB2PQRError
-import propka.lib
+from .errors import PDB2PQRError
+from . import propka
 from . import extensions
 from . import __version__
 

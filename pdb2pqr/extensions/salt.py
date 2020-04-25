@@ -13,8 +13,8 @@
     Author:  Mike Bradley (heavily copied from Todd Dolinsky's hbond extension)
 """
 import logging
-from src.utilities import distance
-from src.routines import Cells
+from ..utilities import distance
+from ..routines import Cells
 
 
 _LOGGER = logging.getLogger(__name__)

@@ -36,7 +36,7 @@ aliasObj = setupTest('basic-test', runTest, [validatePQRResult])
 #Local Test
 
 runTest = env.Command('local-test/test-output-user.pqr', 'local-test/1AFS.pdb',
-                      commandLineStart + ' --log-level=DEBUG --ff=AMBER $SOURCE $TARGET')
+                      commandLineStart + ' --log-level=INFO --ff=AMBER $SOURCE $TARGET')
 
 validatePQRResult = env.Command('local-test/pqr.result', ['local-test/test-output-user.pqr', 'local-test/test-output-correct.pqr'],
                                 ComparePQR('$TARGET', '${SOURCES[0]}', '${SOURCES[1]}'))

@@ -45,18 +45,12 @@ def installFile(file_name, build_target='install'):
 	else:
 		Alias(build_target, env.Install(env['PREFIX']+dirname(file_name), target))
 
-#Contrib
-# for file_name in getAllFiles('contrib/ZSI-2.1-a1/ZSI'):
-# 	installFile(file_name)
-#
-# installFile('contrib/ZSI-2.1-a1/Copyright')
-
 #ProPKA
-for file_name in getAllFiles('propka/'):
+for file_name in getAllFiles('pdb2pqr/propka/'):
 	installFile(file_name);
 
 #Whole directories
-for dir_name in ('dat/', 'doc/', 'examples/', 'jmol/', 'images/', '3dmol/'):
+for dir_name in ('dat/', 'examples/'):
     for file_name in getAllFiles(dir_name):
         installFile(file_name)
 
@@ -73,31 +67,19 @@ for target in compile_targets:
 		Alias('install', env.Install(env['PREFIX']+dirname(file_name), target))
 
 #PDB2PKA
-for file_name in getAllFiles('pdb2pka/'):
+for file_name in getAllFiles('pdb2pqr/pdb2pka/'):
 	installFile(file_name)
 
 #Main Program
-for dir_name in ('src/',
-                 'extensions/'):
+for dir_name in ('pdb2pqr/', 'pdb2pqr/extensions/', 'pdb2pqr/pdb2pka/', 'pdb2pqr/pdbx/', 'pdb2pqr/propka/', 'pdb2pqr/tools/'):
 	for file_name in getAllFiles(dir_name, python_only=True):
 		installFile(file_name)
 
 Alias('install', env.Install(env['PREFIX'], 'pdb2pqr.py'))
-#Alias('install', env.Install(env['PREFIX'], 'pdb2pqr.cgi'))
-#Alias('install', env.InstallAs(env['PREFIX']+'/index.html', 'html/server.html'))
 
-for file_name in (#'AppService_client.py',
-				  #'AppService_services.py',
-				  #'AppService_services_types.py',
-				  #'AppService_types.py',
-				  'AUTHORS',
-				  'ChangeLog.md',
+
+for file_name in ('ChangeLog.md',
 				  'COPYING',
-				  'main.py',
-				  #'main_cgi.py',
-				  'NEWS',
-				  'pka.py',
-				  #'pdb2pqr.css',
 				  'README.md'):
 	installFile(file_name)
 

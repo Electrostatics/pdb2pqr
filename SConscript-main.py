@@ -18,11 +18,6 @@ vars.Add(PathVariable('PREFIX',
                       defaultPrefix,
                       PathVariable.PathAccept))
 
-#vars.Add('URL', "Sets the url of pdb2pqr's web interface.", defaultURL)
-
-#vars.Add('OPAL', 'Sets the url of a pdb2pqr opal service.', '')
-#vars.Add('APBS_OPAL', 'Sets the url of a apbs opal service.', '')
-
 vars.Add(PathVariable('APBS',
                       'Location of the APBS binary if installed',
                       '',
@@ -45,14 +40,6 @@ vars.Add(BoolVariable('DEBUG',
 
 vars.Add('EXTRA_CXXFLAGS', 'Set to add extra CXX flags to the build.', '')
 vars.Add('EXTRA_LINKFLAGS', 'Set to add extra link flags to the build.', '')
-
-#TODO: setup rebuilding of docs.
-# THIS SHOULD BE A TARGET!
-#AddOption('--rebuild-docs',
-#        dest='docs',
-#        action='store_true',
-#        default=False,
-#        help='Rebuild pydocs.')
 
 #Windows: make sure we use correct target arch.
 target_arch='x86_64'
@@ -138,21 +125,6 @@ Help(vars.GenerateHelpText(env))
 
 vars.Save('.variables.cache', env)
 
-#Not the optimal way to do this...
-#Should figure out how to do it with a delete command
-Clean('pdb2pqr.py', '.variables.cache')
-
-#url = env['URL']
-#Not sure if this is needed.
-# if url is not None:
-#     if not url.endswith('/'):
-#         url += '/'
-#     submitAction = url+'pdb2pqr.cgi'
-# else:
-#     url = defaultURL
-#     #Can it always just be this?
-#     submitAction = 'pdb2pqr.cgi'
-
 maxatomsStr = str(env['MAX_ATOMS'])
 
 codePath = codePath.replace("\\", "/");
@@ -160,10 +132,8 @@ codePath = codePath.replace("\\", "/");
 replacementDict = {'@WHICHPYTHON@':pythonBin,
                    '@INSTALLDIR@':prefix,
                    '@MAXATOMS@':maxatomsStr,
-                   #'@website@':url,
                    '@srcpath@':codePath,
                    '@PDB2PQR_VERSION@':productVersion,
-                   #'@action@':submitAction,
                    '@APBS_LOCATION@':env['APBS']
                    #'@APBS_OPAL_URL@':env['APBS_OPAL'],
                    #'@PDB2PQR_OPAL_URL@':env['OPAL']
@@ -174,41 +144,14 @@ replacementDict = {'@WHICHPYTHON@':pythonBin,
 # rebuild string replacement files after less than one minute between builds
 settingsValues = env.Value(replacementDict)
 
-#We have a separate dict for server.html.in as we need to use regex
-#Regex does not play nice with some  possible user strings
-#Set up regex to alternately clear tags or wipe sections
-# if env['OPAL'] == '':
-#     #Not using opal for pdb2pqr.
-#     print("not using opal", env['OPAL'])
-#     withOpalRegex = r'@WITHOPAL@.*?@WITHOPAL@'
-#     withoutOpalRegex = '@WITHOUTOPAL@'
-#
-# else:
-#     #Using opal for pdb2pqr.
-#     print("using opal", env['OPAL'])
-#     withOpalRegex = '@WITHOPAL@'
-#     withoutOpalRegex = r'@WITHOUTOPAL@.*?@WITHOUTOPAL@'
-#
-#
-# serverHtmlDict = {'@website@':url,
-#                   '@PDB2PQR_VERSION@':productVersion,
-#                   '@MAXATOMS@':maxatomsStr,
-#                   '@action@':submitAction,
-#                   withOpalRegex:'',
-#                   withoutOpalRegex:''}
-
 chmodAction = Chmod('$TARGET', 0o755)
 #serverHtmlCopySub = CopySub('$TARGET', '$SOURCE', serverHtmlDict, useRegex=True)
 normalCopySub = CopySub('$TARGET', '$SOURCE', replacementDict, useRegex=False)
 
-subFiles = [('pdb2pqr.py', 'pdb2pqr.py.in', True),
-            #('apbs_cgi.cgi', 'apbs_cgi.py', True),
-            #('visualize.cgi', 'visualize.py', True),
-            #('querystatus.cgi', 'querystatus.py', True),
-            ('src/aconf.py', 'src/aconf.py.in', False)
-            #('html/server.html', 'html/server.html.in', False),
-            #('3dmol/js/3dmol.js', '3dmol/js/3dmol.js.in', False)
-            ]
+pdb2pqr = ["pdb2pqr.py"]
+Export("pdb2pqr")
+
+subFiles = []
 
 compile_targets = []
 
@@ -220,12 +163,10 @@ for target, source, chmod in subFiles:
     compile_targets.append(result)
     if target == 'pdb2pqr.py':
         pdb2pqr = result
+        print(result)
         Export('pdb2pqr')
     Default(result)
     Depends(result, settingsValues)
-
-#Default(env.Command('pdb2pqr.cgi', 'pdb2pqr.py', Copy('$TARGET', '$SOURCE')))
-#Default(env.Command('pdb2pqr.py', Copy('$TARGET', '$SOURCE')))
 
 #Check to see why we can't build pdb2pka.
 numpy_error = False
@@ -241,9 +182,9 @@ if env['BUILD_PDB2PKA']:
 
         env.Append(CPPPATH=[distutils.sysconfig.get_python_inc(), numpy.get_include()])
 
-        alg_srcs = ['pdb2pka/substruct/Algorithms.cpp']
+        alg_srcs = ['pdb2pqr/pdb2pka/substruct/Algorithms.cpp']
 
-        algorithms_pyc = env.LoadableModule('pdb2pka/substruct/Algorithms', ['pdb2pka/substruct/Algorithms.cpp'])
+        algorithms_pyc = env.LoadableModule('pdb2pqr/pdb2pka/substruct/Algorithms', ['pdb2pqr/pdb2pka/substruct/Algorithms.cpp'])
 
         Default(algorithms_pyc)
         Alias('algorithms', algorithms_pyc)
@@ -257,18 +198,18 @@ if env['BUILD_PDB2PKA']:
 
             algorithms_project = alg_msvs_env.MSVSProject(target = 'msvs/Algorithms' + env['MSVSPROJECTSUFFIX'],
                                                           auto_build_solution=0,
-                                                          srcs = ['../pdb2pka/substruct/Algorithms.cpp'],
+                                                          srcs = ['../pdb2pqr/pdb2pka/substruct/Algorithms.cpp'],
                                                           buildtarget = algorithms_pyc[0],
                                                           variant = 'Debug|x64')
             Alias('msvs', algorithms_project)
 
-        pmc_srcs = ['pdb2pka/pMC_mult.cpp', 'pdb2pka/pMC_mult_wrap.cpp']
+        pmc_srcs = ['pdb2pqr/pdb2pka/pMC_mult.cpp', 'pdb2pqr/pdb2pka/pMC_mult_wrap.cpp']
 
         if env['REBUILD_SWIG']:
-            pmc_pyc = env.LoadableModule('pdb2pka/_pMC_mult', ['pdb2pka/pMC_mult.cpp', 'pdb2pka/pMC_mult.i'])
+            pmc_pyc = env.LoadableModule('pdb2pqr/pdb2pka/_pMC_mult', ['pdb2pqr/pdb2pka/pMC_mult.cpp', 'pdb2pqr/pdb2pka/pMC_mult.i'])
             build_swig = ' REBUILD_SWIG=True'
         else:
-            pmc_pyc = env.LoadableModule('pdb2pka/_pMC_mult', ['pdb2pka/pMC_mult.cpp', 'pdb2pka/pMC_mult_wrap.cpp'])
+            pmc_pyc = env.LoadableModule('pdb2pqr/pdb2pka/_pMC_mult', ['pdb2pqr/pdb2pka/pMC_mult.cpp', 'pdb2pqr/pdb2pka/pMC_mult_wrap.cpp'])
             build_swig = ' '
 
         Default(pmc_pyc)
@@ -282,9 +223,9 @@ if env['BUILD_PDB2PKA']:
 
             pmc_mult_project = pmc_msvs_env.MSVSProject(target = 'msvs/pMC_mult' + env['MSVSPROJECTSUFFIX'],
                                                         auto_build_solution=0,
-                                                        srcs = ['../pdb2pka/pMC_mult.cpp', '../pdb2pka/pMC_mult_wrap.cpp'],
-                                                        incs = ['../pdb2pka/pMC_mult.h'],
-                                                        resources = ['../pdb2pka/pMC_mult.i'],
+                                                        srcs = ['../pdb2pqr/pdb2pka/pMC_mult.cpp', '../pdb2pqr/pdb2pka/pMC_mult_wrap.cpp'],
+                                                        incs = ['../pdb2pqr/pdb2pka/pMC_mult.h'],
+                                                        resources = ['../pdb2pqr/pdb2pka/pMC_mult.i'],
                                                         buildtarget = pmc_pyc[0],
                                                         variant = 'Debug|x64')
             Alias('msvs', pmc_mult_project)

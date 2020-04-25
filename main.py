@@ -10,14 +10,12 @@ import logging
 from pathlib import Path
 import argparse
 from src import pdb, cif, utilities, structures, routines, protein, definitions
-from src import aa, hydrogens, forcefield, na, aconf
+from src import aa, hydrogens, forcefield, na
 from io import StringIO
 from src.errors import PDB2PQRError
 import propka.lib
 import extensions
-
-
-__version__ = aconf.PDB2PQR_VERSION
+from __init__ import __version__
 
 HEADER_TEXT = """
 -------------------------------------------

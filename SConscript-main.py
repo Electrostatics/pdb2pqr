@@ -201,7 +201,7 @@ chmodAction = Chmod('$TARGET', 0o755)
 #serverHtmlCopySub = CopySub('$TARGET', '$SOURCE', serverHtmlDict, useRegex=True)
 normalCopySub = CopySub('$TARGET', '$SOURCE', replacementDict, useRegex=False)
 
-subFiles = [('src/aconf.py', 'src/aconf.py.in', False)]
+subFiles = []
 
 compile_targets = []
 

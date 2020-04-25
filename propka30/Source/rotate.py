@@ -11,18 +11,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -36,10 +36,13 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 
 
-import math, os, sys, random
+import math
+import os
+import sys
+import random
 from lib import pka_print
 
 
@@ -50,9 +53,9 @@ def generateCorrespondingAtoms():
     corresponding_atoms = {}
     # initialization
     for resName1 in lib.residueList("standard"):
-      corresponding_atoms[resName1] = {}
-      for resName2 in lib.residueList("standard"):
-        corresponding_atoms[resName1][resName2] = ["N", "CA", "C", "O"]
+        corresponding_atoms[resName1] = {}
+        for resName2 in lib.residueList("standard"):
+            corresponding_atoms[resName1][resName2] = ["N", "CA", "C", "O"]
 
     corresponding_atoms['ALA']['ALA'].extend(["CA"])
 
@@ -82,41 +85,41 @@ def generalRotationMatrix(axis, theta):
     R[2][1] = Uy*Uz*(1-cos) + Ux*sin
     R[2][2] = Uz*Uz + (1-Uz*Uz)*cos
 
-    return  R
+    return R
 
 
 def generateRotationMatrix(alpha, beta, gamma):
     """
     setting up Euler rotation matrix
     """
-    
+
     # alpha around Z-axis
     cos = math.cos(alpha)
     sin = math.sin(alpha)
-    Rz = [[ cos,  sin, 0.00],
+    Rz = [[cos,  sin, 0.00],
           [-sin,  cos, 0.00],
-          [0.00, 0.00, 1.00],]
-    
+          [0.00, 0.00, 1.00], ]
+
     # beta around X-axis
     cos = math.cos(beta)
     sin = math.sin(beta)
     Rx = [[1.00, 0.00, 0.00],
           [0.00,  cos,  sin],
-          [0.00, -sin,  cos],]
+          [0.00, -sin,  cos], ]
 
     R_new = matrixRotation(Rx, Rz)
-    
+
     # gamma around Z-axis
     cos = math.cos(gamma)
     sin = math.sin(gamma)
-    Rz = [[ cos,  sin, 0.00],
+    Rz = [[cos,  sin, 0.00],
           [-sin,  cos, 0.00],
-          [0.00, 0.00, 1.00],]
+          [0.00, 0.00, 1.00], ]
 
     R_new = matrixRotation(Rz, R_new)
 
-    return  R_new
-    
+    return R_new
+
 
 def matrixRotation(R, M):
     """
@@ -124,43 +127,45 @@ def matrixRotation(R, M):
     """
     R_new = [[None, None, None],
              [None, None, None],
-             [None, None, None],]
+             [None, None, None], ]
 
     for x in range(3):
-      for y in range(3):
-        R_new[y][x] = 0.00
-        for i in range(3):
-          R_new[y][x] += R[y][i] * M[i][x]
+        for y in range(3):
+            R_new[y][x] = 0.00
+            for i in range(3):
+                R_new[y][x] += R[y][i] * M[i][x]
 
-    return  R_new
-    
+    return R_new
+
 
 def calculateVectorLength(vector):
     """
     calculating the vector length
     """
-    return  math.sqrt( vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2] )
-    
+    return math.sqrt(vector[0]*vector[0] + vector[1]*vector[1] + vector[2]*vector[2])
+
 
 def makeScalarProduct(vector1, vector2):
     """
     calculating the scalar product vector1 x vector2
     """
-    return  vector1[0]*vector2[0] + vector1[1]*vector2[1] + vector1[2]*vector2[2]
-    
+    return vector1[0]*vector2[0] + vector1[1]*vector2[1] + vector1[2]*vector2[2]
+
 
 def makeCrossProduct(vector1, vector2):
     """
     making cross product vector1 x vector2
     """
-    x=0; y=1; z=2
+    x = 0
+    y = 1
+    z = 2
     cross_product = [0.00, 0.00, 0.00]
     cross_product[x] = vector1[y]*vector2[z] - vector1[z]*vector2[y]
     cross_product[y] = vector1[z]*vector2[x] - vector1[x]*vector2[z]
     cross_product[z] = vector1[x]*vector2[y] - vector1[y]*vector2[x]
 
-    return  cross_product
-    
+    return cross_product
+
 
 def rotateAtom(R, atom):
     """
@@ -172,11 +177,11 @@ def rotateAtom(R, atom):
     #pka_print("R    = ", R)
 
     for xyz in range(3):
-      new_position[xyz] = 0.00
-      for i in range(3):
-        new_position[xyz] += R[xyz][i]*atom[i]
-        
-    return  new_position
+        new_position[xyz] = 0.00
+        for i in range(3):
+            new_position[xyz] += R[xyz][i]*atom[i]
+
+    return new_position
 
 
 def translatePosition(position, translation):
@@ -184,8 +189,8 @@ def translatePosition(position, translation):
     translates the position according to 'translation'
     """
     for key in position.keys():
-      for i in range(3):
-        position[key][i] += translation[i]
+        for i in range(3):
+            position[key][i] += translation[i]
 
 
 def rotatePosition(position, axis, theta, center=None):
@@ -194,15 +199,15 @@ def rotatePosition(position, axis, theta, center=None):
     """
     translate = [0.00, 0.00, 0.00]
     if center == None:
-      center = sorted(position.keys())
+        center = sorted(position.keys())
     for key in center:
-      for i in range(3):
-        translate[i] += position[key][i]/len(center)
+        for i in range(3):
+            translate[i] += position[key][i]/len(center)
 
     # translate to rotation center
     for key in position.keys():
-      for i in range(3):
-        position[key][i] -= translate[i]
+        for i in range(3):
+            position[key][i] -= translate[i]
 
     # get rotation matrix
     rotation_matrix = generalRotationMatrix(axis, theta)
@@ -210,16 +215,16 @@ def rotatePosition(position, axis, theta, center=None):
     # do the actual rotation
     new_position = [None, None, None]
     for key in position.keys():
-      # rotate
-      for xyz in range(3):
-        new_position[xyz] = translate[xyz]
-        for i in range(3):
-          new_position[xyz] += rotation_matrix[xyz][i]*position[key][i]
-      # update position
-      for xyz in range(3):
-        position[key][xyz] = new_position[xyz]
-      
-    return  None
+        # rotate
+        for xyz in range(3):
+            new_position[xyz] = translate[xyz]
+            for i in range(3):
+                new_position[xyz] += rotation_matrix[xyz][i]*position[key][i]
+        # update position
+        for xyz in range(3):
+            position[key][xyz] = new_position[xyz]
+
+    return None
 
 
 def translateAtoms(atoms, translation):
@@ -227,7 +232,7 @@ def translateAtoms(atoms, translation):
     rotate an atoms-list 'theta' around 'axis'
     """
     for atom in atoms:
-      atom.translate(translation)
+        atom.translate(translation)
 
 
 def rotateAtoms(atoms, axis, theta, center=None):
@@ -237,20 +242,20 @@ def rotateAtoms(atoms, axis, theta, center=None):
     translate = [0.00, 0.00, 0.00]
     number_of_atoms = 0
     for atom in atoms:
-      if atom.name in center or center == None:
-        number_of_atoms += 1
-        translate[0] += atom.x
-        translate[1] += atom.y
-        translate[2] += atom.z
+        if atom.name in center or center == None:
+            number_of_atoms += 1
+            translate[0] += atom.x
+            translate[1] += atom.y
+            translate[2] += atom.z
     for atom in atoms:
-      for i in range(3):
-        translate[i] = translate[i]/number_of_atoms
+        for i in range(3):
+            translate[i] = translate[i]/number_of_atoms
 
     # translate to rotation center
     for atom in atoms:
-      atom.x -= translate[0]
-      atom.y -= translate[1]
-      atom.z -= translate[2]
+        atom.x -= translate[0]
+        atom.y -= translate[1]
+        atom.z -= translate[2]
 
     # get rotation matrix
     rotation_matrix = generalRotationMatrix(axis, theta)
@@ -258,27 +263,27 @@ def rotateAtoms(atoms, axis, theta, center=None):
     # do the actual rotation
     new_position = [None, None, None]
     for atom in atoms:
-      # rotate actual position
-      old_position = [atom.x, atom.y, atom.z]
-      for xyz in range(3):
-        new_position[xyz] = translate[xyz]
-        for i in range(3):
-          new_position[xyz] += rotation_matrix[xyz][i]*old_position[i]
-      # update position
-      atom.x = new_position[0]
-      atom.y = new_position[1]
-      atom.z = new_position[2]
-
-      # rotate configuration
-      for key in atom.configurations.keys():
+        # rotate actual position
+        old_position = [atom.x, atom.y, atom.z]
         for xyz in range(3):
-          new_position[xyz] = translate[xyz]
-          for i in range(3):
-            new_position[xyz] += rotation_matrix[xyz][i]*atom.configurations[key][i]
-        for xyz in range(3):
-          atom.configurations[key][xyz] = new_position[xyz]
+            new_position[xyz] = translate[xyz]
+            for i in range(3):
+                new_position[xyz] += rotation_matrix[xyz][i]*old_position[i]
+        # update position
+        atom.x = new_position[0]
+        atom.y = new_position[1]
+        atom.z = new_position[2]
 
-    return  None
+        # rotate configuration
+        for key in atom.configurations.keys():
+            for xyz in range(3):
+                new_position[xyz] = translate[xyz]
+                for i in range(3):
+                    new_position[xyz] += rotation_matrix[xyz][i]*atom.configurations[key][i]
+            for xyz in range(3):
+                atom.configurations[key][xyz] = new_position[xyz]
+
+    return None
 
 
 def generateRandomAxis():
@@ -286,23 +291,23 @@ def generateRandomAxis():
     generates a random axis in 3D space
     """
     alpha = random.uniform(0.00, 2*math.pi)
-    beta  = random.uniform(-0.5*math.pi, 0.5*math.pi)
+    beta = random.uniform(-0.5*math.pi, 0.5*math.pi)
 
-    return  [math.cos(beta)*math.sin(alpha),
-             math.cos(beta)*math.cos(alpha),
-             math.sin(beta)]
+    return [math.cos(beta)*math.sin(alpha),
+            math.cos(beta)*math.cos(alpha),
+            math.sin(beta)]
 
 
 def generateRandomDisplacement(max_dR):
     """
     generates a random distance displacement
     """
-    dR    = random.uniform(0.00, max_dR)
-    axis  = generateRandomAxis()
+    dR = random.uniform(0.00, max_dR)
+    axis = generateRandomAxis()
     for i in range(3):
-      axis[i] = axis[i]*dR
+        axis[i] = axis[i]*dR
 
-    return  axis
+    return axis
 
 
 def generateRandomRotation(max_dA):
@@ -311,9 +316,9 @@ def generateRandomRotation(max_dA):
     """
     theta = random.uniform(-max_dA, max_dA)
 
-    axis  = generateRandomAxis()
+    axis = generateRandomAxis()
 
-    return  theta, axis
+    return theta, axis
 
 
 def rotateResidue(R, residue):
@@ -323,21 +328,18 @@ def rotateResidue(R, residue):
 
     new_position = [0.00, 0.00, 0.00]
     for atom in residue.atoms:
-      for key in atom.configurations:
-        for xyz in range(3):
-          new_position[xyz] = 0.00
-          for i in range(3):
-            new_position[xyz] += R[xyz][i]*atom.configurations[key][i]
-        for xyz in range(3):
-          atom.configurations[key][xyz] = new_position[xyz]
-      atom.x = atom.configurations['M0CA'][0]
-      atom.y = atom.configurations['M0CA'][1]
-      atom.z = atom.configurations['M0CA'][2]
-        
-    return  None
+        for key in atom.configurations:
+            for xyz in range(3):
+                new_position[xyz] = 0.00
+                for i in range(3):
+                    new_position[xyz] += R[xyz][i]*atom.configurations[key][i]
+            for xyz in range(3):
+                atom.configurations[key][xyz] = new_position[xyz]
+        atom.x = atom.configurations['M0CA'][0]
+        atom.y = atom.configurations['M0CA'][1]
+        atom.z = atom.configurations['M0CA'][2]
 
-
-
+    return None
 
 
 def main():
@@ -373,15 +375,15 @@ def main():
     target.append(22.537-24.631)
     target.append(34.806-34.705)
     str = "   %8.3lf%8.3lf%8.3lf" % (target[0], target[1], target[2])
-    #pka_print(str)
+    # pka_print(str)
     atom = []
     atom.append(31.038-27.682)
     atom.append(22.566-24.579)
     atom.append(34.925-34.689)
 
-    rmsd  = 0.00
+    rmsd = 0.00
     for i in range(3):
-      rmsd += pow( (atom[i] - target[i]), 2)
+        rmsd += pow((atom[i] - target[i]), 2)
     rmsd = math.sqrt(rmsd)
 
     str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (0, atom[0], atom[1], atom[2], rmsd)
@@ -390,34 +392,34 @@ def main():
 
     for iter in range(1, 37):
 
-      if False:
-        # print out current
-        str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (iter, atom[0], atom[1], atom[2], rmsd)
-        pka_print(str)
-      
-        alpha = random.uniform(-0.10, 0.10)
-        beta  = random.uniform(-0.10, 0.10)
-        gamma = random.uniform(-0.10, 0.10)
+        if False:
+            # print out current
+            str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (iter, atom[0], atom[1], atom[2], rmsd)
+            pka_print(str)
 
-        R_rot = generateRotationMatrix(alpha, beta, gamma)
-        #pka_print(R_rot)
-        new_position = rotateAtom(R_rot, atom)
-      
-        new_rmsd = 0.00
-        for i in range(3):
-          new_rmsd += pow( (new_position[i] - target[i]), 2)
-        new_rmsd = math.sqrt(new_rmsd)
-      
-        if new_rmsd < rmsd:
-          rmsd = new_rmsd
-          for i in range(3):
-            atom[i] = new_position[i]
-      else:
-        R_rot = generalRotationMatrix(axis, math.pi*iter/18.)
-        new_position = rotateAtom(R_rot, atom)
-        str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (iter, new_position[0], new_position[1], new_position[2], rmsd)
-        pka_print(str)
+            alpha = random.uniform(-0.10, 0.10)
+            beta = random.uniform(-0.10, 0.10)
+            gamma = random.uniform(-0.10, 0.10)
+
+            R_rot = generateRotationMatrix(alpha, beta, gamma)
+            # pka_print(R_rot)
+            new_position = rotateAtom(R_rot, atom)
+
+            new_rmsd = 0.00
+            for i in range(3):
+                new_rmsd += pow((new_position[i] - target[i]), 2)
+            new_rmsd = math.sqrt(new_rmsd)
+
+            if new_rmsd < rmsd:
+                rmsd = new_rmsd
+                for i in range(3):
+                    atom[i] = new_position[i]
+        else:
+            R_rot = generalRotationMatrix(axis, math.pi*iter/18.)
+            new_position = rotateAtom(R_rot, atom)
+            str = "%2d %8.3lf%8.3lf%8.3lf%10.3lf" % (iter, new_position[0], new_position[1], new_position[2], rmsd)
+            pka_print(str)
 
 
-if __name__ == '__main__': main()
-
+if __name__ == '__main__':
+    main()

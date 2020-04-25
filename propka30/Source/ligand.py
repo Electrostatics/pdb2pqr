@@ -11,18 +11,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -36,77 +36,81 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 
 
-import sys, pdb, protonate, lib, bonds
+import sys
+import pdb
+import protonate
+import lib
+import bonds
 from vector_algebra import *
 pka_print = lib.pka_print
 
 all_sybyl_types = [
-    'C.3',   #  carbon sp3
-    'H',     #  hydrogen
-    'C.2',   #  carbon sp2
-    'H.spc', #  hydrogen in Single Point Charge (SPC) water model
-    'C.1',   #  carbon sp
-    'H.t3p', #  hydrogen in Transferable intermolecular Potential (TIP3P) water model
-    'C.ar',  #  carbon aromatic
-    'LP',    #  lone pair
-    'C.cat', #  carbocation (C+) used only in a guadinium group
-    'Du',    #  dummy atom
-    'N.3',   #  nitrogen sp3
-    'Du.C',  #  dummy carbon
-    'N.2',   #  nitrogen sp2
-    'Any',   #  any atom
-    'N.1',   #  nitrogen sp
-    'Hal',   #  halogen
-    'N.ar',  #  nitrogen aromatic
-    'Het',   #  heteroatom = N, O, S, P
-    'N.am',  #  nitrogen amide
-    'Hev',   #  heavy atom (non hydrogen)
-    'N.pl3', #  nitrogen trigonal planar
-    'Li',    #  lithium
-    'N.4',   #  nitrogen sp3 positively charged
-    'Na',    #  sodium
-    'O.3',   #  oxygen sp3
-    'Mg',    #  magnesium
-    'O.2',   #  oxygen sp2
-    'Al',    #  aluminum
-    'O.co2', #  oxygen in carboxylate and phosphate groups
-    'Si',    #  silicon
-    'O.spc', #  oxygen in Single Point Charge (SPC) water model
-    'K',     #  potassium
-    'O.t3p', #  oxygen in Transferable Intermolecular Potential (TIP3P) water model
-    'Ca',    #  calcium
-    'S.3',   #  sulfur sp3
-    'Cr.th', #  chromium (tetrahedral)
-    'S.2',   #  sulfur sp2
-    'Cr.oh', #  chromium (octahedral)
-    'S.O',   #  sulfoxide sulfur
-    'Mn',    #  manganese
-    'S.O2',  #  sulfone sulfur
-    'Fe',    #  iron
-    'P.3',   #  phosphorous sp3
-    'Co.oh', #  cobalt (octahedral)
-    'F',     #  fluorine
-    'Cu',    #  copper
-    'Cl',    #  chlorine
-    'Zn',    #  zinc
-    'Br',    #  bromine
-    'Se',    #  selenium
-    'I',     #  iodine
-    'Mo',    #  molybdenum
-    'Sn']    #  tin
+    'C.3',  # carbon sp3
+    'H',  # hydrogen
+    'C.2',  # carbon sp2
+    'H.spc',  # hydrogen in Single Point Charge (SPC) water model
+    'C.1',  # carbon sp
+    'H.t3p',  # hydrogen in Transferable intermolecular Potential (TIP3P) water model
+    'C.ar',  # carbon aromatic
+    'LP',  # lone pair
+    'C.cat',  # carbocation (C+) used only in a guadinium group
+    'Du',  # dummy atom
+    'N.3',  # nitrogen sp3
+    'Du.C',  # dummy carbon
+    'N.2',  # nitrogen sp2
+    'Any',  # any atom
+    'N.1',  # nitrogen sp
+    'Hal',  # halogen
+    'N.ar',  # nitrogen aromatic
+    'Het',  # heteroatom = N, O, S, P
+    'N.am',  # nitrogen amide
+    'Hev',  # heavy atom (non hydrogen)
+    'N.pl3',  # nitrogen trigonal planar
+    'Li',  # lithium
+    'N.4',  # nitrogen sp3 positively charged
+    'Na',  # sodium
+    'O.3',  # oxygen sp3
+    'Mg',  # magnesium
+    'O.2',  # oxygen sp2
+    'Al',  # aluminum
+    'O.co2',  # oxygen in carboxylate and phosphate groups
+    'Si',  # silicon
+    'O.spc',  # oxygen in Single Point Charge (SPC) water model
+    'K',  # potassium
+    'O.t3p',  # oxygen in Transferable Intermolecular Potential (TIP3P) water model
+    'Ca',  # calcium
+    'S.3',  # sulfur sp3
+    'Cr.th',  # chromium (tetrahedral)
+    'S.2',  # sulfur sp2
+    'Cr.oh',  # chromium (octahedral)
+    'S.O',  # sulfoxide sulfur
+    'Mn',  # manganese
+    'S.O2',  # sulfone sulfur
+    'Fe',  # iron
+    'P.3',  # phosphorous sp3
+    'Co.oh',  # cobalt (octahedral)
+    'F',  # fluorine
+    'Cu',  # copper
+    'Cl',  # chlorine
+    'Zn',  # zinc
+    'Br',  # bromine
+    'Se',  # selenium
+    'I',  # iodine
+    'Mo',  # molybdenum
+    'Sn']  # tin
 
 
 #propka_input_types = ['1P','1N','2P','2N']
-#for type in all_sybyl_types:
+# for type in all_sybyl_types:
 #    temp = type.replace('.','')
 #    if len(temp)>3:
 #        temp = temp[0:3]
 #    propka_input_types.append(temp)
 #
-#for t in propka_input_types:
+# for t in propka_input_types:
 #    print (t)
 
 
@@ -170,7 +174,7 @@ propka_input_types = [
     'Sn']
 
 
-ions = ['CA','NA']
+ions = ['CA', 'NA']
 
 max_C_double_bond = 1.3
 max_C_triple_bond = 1.2
@@ -178,15 +182,16 @@ max_C_triple_bond = 1.2
 max_C_double_bond_squared = max_C_double_bond*max_C_double_bond
 max_C_triple_bond_squared = max_C_triple_bond*max_C_triple_bond
 
+
 class ligand:
     def __init__(self, atoms):
         self.atoms = atoms
         for atom in self.atoms:
             atom.residue = self
 
-        #self.remove_ions()
+        # self.remove_ions()
         self.configuration_keys = atoms[0].configurations.keys()
-        
+
         # create ligand residue objects
         self.ligand_residues = []
         self.split_into_residues()
@@ -194,17 +199,16 @@ class ligand:
         return
 
     def __str__(self):
-        res  = '----Ligand----\n'
+        res = '----Ligand----\n'
         for atom in self.atoms:
-            res += '%s\n'%atom
-        res+='--------------'
+            res += '%s\n' % atom
+        res += '--------------'
         return res
 
-
     def split_into_residues(self):
-        
+
         residue = []
-        if len(self.atoms)>0:
+        if len(self.atoms) > 0:
             current_residue_number = self.atoms[0].resNumb
 
         for atom in self.atoms:
@@ -218,9 +222,7 @@ class ligand:
         # remember to include the last ligand residue
         self.ligand_residues.append(ligand_residue(residue))
 
-
         return
-
 
     def remove_ions(self):
         self.atoms = [atom for atom in self.atoms if atom.get_element() not in ions]
@@ -231,25 +233,24 @@ class ligand:
         file = open(pdbname, 'w')
 
         configurations = lib.get_sorted_configurations(self.configuration_keys)
-        if len(configurations)==1:        
+        if len(configurations) == 1:
             self.write_atoms(file)
         else:
             for configuration in configurations:
                 self.setConfiguration(configuration)
-                file.write('MODEL%9d\n'%int(configuration[1]))
+                file.write('MODEL%9d\n' % int(configuration[1]))
                 self.write_atoms(file)
                 file.write('ENDMDL\n')
         file.close()
 
         return
-    
-    def write_atoms(self,file):
-        atom_number=1
-        for atom in my_ligand.atoms:
-            atom.writePDB(file,atom_number)
-            atom_number+=1
-        return
 
+    def write_atoms(self, file):
+        atom_number = 1
+        for atom in my_ligand.atoms:
+            atom.writePDB(file, atom_number)
+            atom_number += 1
+        return
 
     def assign_atom_names(self):
         """
@@ -278,11 +279,11 @@ class ligand:
 
             # Aromatic carbon/nitrogen
             if aromatic:
-                #print "--- if aromatic",atom.resName, atom.numb, atom.name, atom.get_element()
-                #for ra in ring_atoms:
+                # print "--- if aromatic",atom.resName, atom.numb, atom.name, atom.get_element()
+                # for ra in ring_atoms:
                 #    if ra.get_element() in ['C', 'N']:
                 #        self.set_type(ra, ra.get_element() + '.ar')
-                #continue
+                # continue
                 '''SH: In the original version, if a ring is planar (eg., 4FXF_D_FBP_606)
                 but contains other atoms than C or N the loop breaks without assigning these atoms
                 '''
@@ -309,7 +310,6 @@ class ligand:
                 if amide == 1:
                     continue
 
-
             if atom.get_element() == 'C':
                 # check for amide
                 if 'O' in bonded_elements.values() and 'N' in bonded_elements.values():
@@ -327,7 +327,7 @@ class ligand:
                     i2 = list(bonded_elements.values()).index('O', i1 + 1)
                     if len(atom.bonded_atoms[i1].bonded_atoms) == 1 and len(atom.bonded_atoms[i2].bonded_atoms) == 1:
                         #self.set_type(atom.bonded_atoms[i1], 'O.co2+')
-                        self.set_type(atom.bonded_atoms[i1], 'O.co2') #SH: problems in 1a3w
+                        self.set_type(atom.bonded_atoms[i1], 'O.co2')  # SH: problems in 1a3w
                         self.set_type(atom.bonded_atoms[i2], 'O.co2')
                         self.set_type(atom, 'C.2')
                         continue
@@ -381,17 +381,16 @@ class ligand:
                             self.set_type(atom.bonded_atoms[0], 'C.2')
                 continue
 
-
             # Sulphur
             if atom.get_element() == 'S':
-                #check for SO2
+                # check for SO2
                 if list(bonded_elements.values()).count('O') == 2:
-                        i1 = list(bonded_elements.values()).index('O')
-                        i2 = list(bonded_elements.values()).index('O', i1 + 1)
-                        self.set_type(atom.bonded_atoms[i1], 'O.2')
-                        self.set_type(atom.bonded_atoms[i2], 'O.2')
-                        self.set_type(atom, 'S.o2')
-                        continue
+                    i1 = list(bonded_elements.values()).index('O')
+                    i2 = list(bonded_elements.values()).index('O', i1 + 1)
+                    self.set_type(atom.bonded_atoms[i1], 'O.2')
+                    self.set_type(atom.bonded_atoms[i2], 'O.2')
+                    self.set_type(atom, 'S.o2')
+                    continue
 
                 # check for SO4
                 if list(bonded_elements.values()).count('O') == 4:
@@ -407,44 +406,41 @@ class ligand:
                 continue
 
             # Phosphorous (phosphorous sp3)
-            #@attention: This was added and may not consider all types of phosphorous
+            # @attention: This was added and may not consider all types of phosphorous
             if atom.get_element() == 'P':
                 self.set_type(atom, 'P.3')
                 continue
-            
 
             element = atom.get_element().capitalize()
             self.set_type(atom, element)
             #pka_print('Using element as type for %s'%atom.get_element())
         return
 
-    def set_type(self,atom,type):
-        pka_print(atom,'->',type)
+    def set_type(self, atom, type):
+        pka_print(atom, '->', type)
         atom.name = type
-        atom.sybyl_assigned=1
+        atom.sybyl_assigned = 1
         return
 
-
     def is_ring_member(self, atom):
-        return self.identify_ring(atom,atom,0,[])
+        return self.identify_ring(atom, atom, 0, [])
 
     def identify_ring(self, this_atom, original_atom, number, past_atoms):
-        number+=1
-        past_atoms=past_atoms+[this_atom]
+        number += 1
+        past_atoms = past_atoms+[this_atom]
         return_atoms = []
 
         for atom in this_atom.bonded_atoms:
-            if atom == original_atom and number>2:
+            if atom == original_atom and number > 2:
                 return past_atoms
 
             if atom not in past_atoms:
                 these_return_atoms = self.identify_ring(atom, original_atom, number, past_atoms)
                 if len(these_return_atoms) > 0:
-                    if len(return_atoms)>len(these_return_atoms) or len(return_atoms)==0:
+                    if len(return_atoms) > len(these_return_atoms) or len(return_atoms) == 0:
                         return_atoms = these_return_atoms
 
         return return_atoms
-
 
     def is_planar(self, atom):
         """ Finds out if atom forms a plane together with its bonded atoms"""
@@ -452,9 +448,9 @@ class ligand:
         return self.are_atoms_planar(atoms)
 
     def are_atoms_planar(self, atoms):
-        if len(atoms)==0:
+        if len(atoms) == 0:
             return False
-        if len(atoms)<4:
+        if len(atoms) < 4:
             return False
         v1 = vector(atom1=atoms[0], atom2=atoms[1])
         v2 = vector(atom1=atoms[0], atom2=atoms[2])
@@ -464,21 +460,20 @@ class ligand:
         for b in atoms[3:]:
             v = vector(atom1=atoms[0], atom2=b).rescale(1.0)
             #pka_print(atoms[0],abs(v*n) )
-            if abs(v*n)>margin:
+            if abs(v*n) > margin:
                 return False
-            
+
         return True
 
     def is_aromatic_ring(self, atoms):
-        if len(atoms)<5:
+        if len(atoms) < 5:
             return False
-        
+
         for i in range(len(atoms)):
             if not self.are_atoms_planar(atoms[i:]+atoms[:i]):
                 return False
 
         return True
-
 
 
 class ligand_residue:
@@ -488,38 +483,36 @@ class ligand_residue:
 
         self.atoms = atoms
 
-        if len(self.atoms)>0:
+        if len(self.atoms) > 0:
             self.resNumb = self.atoms[0].resNumb
             self.resName = self.atoms[0].resName
 
-        pka_print('Created ligand residue %s with %2d atoms'%(self, len(self.atoms)))
+        pka_print('Created ligand residue %s with %2d atoms' % (self, len(self.atoms)))
 
         return
 
     def __str__(self):
-        return '%s-%4d'%(self.resName,self.resNumb)
+        return '%s-%4d' % (self.resName, self.resNumb)
 
 
 if __name__ == '__main__':
-    if len(sys.argv)<2:
+    if len(sys.argv) < 2:
         sys.exit(0)
 
     protonator = protonate.Protonate()
 
     pka_print(sys.argv[1])
-    atoms = pdb.readPDB(sys.argv[1],tags=["ATOM","HETATM"])
-    
-    my_ligand = ligand(atoms)
-    
-    
+    atoms = pdb.readPDB(sys.argv[1], tags=["ATOM", "HETATM"])
 
-    #assign sybyl names
+    my_ligand = ligand(atoms)
+
+    # assign sybyl names
     protonator.remove_all_hydrogen_atoms_from_ligand(my_ligand)
     my_ligand.assign_atom_names()
 
     my_ligand.writePDB('before_ligand_protonation.pdb')
 
-    #convert to propka input names
+    # convert to propka input names
 #    for atom in my_ligand.atoms:
 #        temp = atom.name
 #        temp = temp.replace('.','')
@@ -530,4 +523,3 @@ if __name__ == '__main__':
     # protonate
     protonator.protonate_ligand(my_ligand)
     my_ligand.writePDB('after_ligand_protonation.pdb')
-

@@ -10,18 +10,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -35,20 +35,21 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
-import string, sys, copy
+# -------------------------------------------------------------------------------------------------------
+import string
+import sys
+import copy
 from . import lib
 pka_print = lib.pka_print
 
 excluded_resNames = ["H2O", "HOH", "SO4", "PO4", "PEG", "EPE", "NAG", "TRS"]
 
 
-
-def readPDB(filename, file=None, verbose=True, tags = ["ATOM"]):
+def readPDB(filename, file=None, verbose=True, tags=["ATOM"]):
     """
     Reads the pdb line and returns an atom-dictionary; atoms sorted according to chain and residue
     """
-    atoms   = {}   # atoms[chainID][resLabel] = [A1, A2, A3 ...]
+    atoms = {}   # atoms[chainID][resLabel] = [A1, A2, A3 ...]
 
     # check the filename and open the file
     if file is None:
@@ -59,65 +60,65 @@ def readPDB(filename, file=None, verbose=True, tags = ["ATOM"]):
 
     file.close()
 
-    # creating the atom objects. 
+    # creating the atom objects.
     # Note, only reading 'first' configuration, not adding anything to 'self.configurations'
     done_atoms = False
     for model in models_lines:
-      if done_atoms == True:
-        break
-      for line in model:
-        if line[16] == 'A' or line[16] == ' ' or line[16] == '1':
-          newatom = Atom(line=line, verbose=verbose)
-          key = newatom.makeResidueLabel()
-          if newatom.chainID in atoms:
-            if key in atoms[newatom.chainID]:
-              # adding new atom to existing residue
-              atoms[newatom.chainID][key].append(newatom)
+        if done_atoms == True:
+            break
+        for line in model:
+            if line[16] == 'A' or line[16] == ' ' or line[16] == '1':
+                newatom = Atom(line=line, verbose=verbose)
+                key = newatom.makeResidueLabel()
+                if newatom.chainID in atoms:
+                    if key in atoms[newatom.chainID]:
+                        # adding new atom to existing residue
+                        atoms[newatom.chainID][key].append(newatom)
+                    else:
+                        # adding new residue to existing chainID
+                        atoms[newatom.chainID]["keys"].append(key)
+                        atoms[newatom.chainID][key] = [newatom]
+                else:
+                    # adding new chain to existing library
+                    atoms[newatom.chainID] = {"keys": [key]}
+                    atoms[newatom.chainID][key] = [newatom]
+                    done_atoms = True
             else:
-              # adding new residue to existing chainID
-              atoms[newatom.chainID]["keys"].append(key)
-              atoms[newatom.chainID][key] = [newatom]
-          else:
-            # adding new chain to existing library
-            atoms[newatom.chainID] = {"keys": [key]}
-            atoms[newatom.chainID][key] = [newatom]
-            done_atoms = True
-        else:
-          # printing alternative configurations
-          """pka_print(line)"""
-
+                # printing alternative configurations
+                """pka_print(line)"""
 
     # creating and adding the existing configurations to atoms
     i_model = 0
     for current_model in models_lines:
-      for line in current_model:
-        chainID = getChainID(line)
-        reskey = "%-3s%4d%2s" % (getResName(line), getResNumb(line), chainID)
-        if chainID not in atoms:
-          pka_print("incorrect labeling in %s, please correct your pdbfile; could not find chain '%s'" % (filename, chainID)); sys.exit(8)
-        if reskey not in atoms[chainID]:
-          pka_print("incorrect labeling in %s, please correct your pdbfile; could not find '%s'" % (filename, reskey)); sys.exit(8)
-        for atom in atoms[chainID][reskey]:
-          if atom.name == getAtomName(line):
-            key = makeConfigurationKey(line, i_model)
-            atom.configurations[key] = makeConfiguration(line)
-      i_model += 1
-
+        for line in current_model:
+            chainID = getChainID(line)
+            reskey = "%-3s%4d%2s" % (getResName(line), getResNumb(line), chainID)
+            if chainID not in atoms:
+                pka_print("incorrect labeling in %s, please correct your pdbfile; could not find chain '%s'" % (filename, chainID))
+                sys.exit(8)
+            if reskey not in atoms[chainID]:
+                pka_print("incorrect labeling in %s, please correct your pdbfile; could not find '%s'" % (filename, reskey))
+                sys.exit(8)
+            for atom in atoms[chainID][reskey]:
+                if atom.name == getAtomName(line):
+                    key = makeConfigurationKey(line, i_model)
+                    atom.configurations[key] = makeConfiguration(line)
+        i_model += 1
 
     # some debugging printouts
     if False:
-      for chainID in sorted( atoms.keys() ):
-        for key in atoms[chainID]["keys"]:
-          for atom in atoms[chainID][key]:
-            str = "%s%4d  %4s%3d%7s" % (atom.resName, atom.resNumb, atom.name, len(atom.configurations.keys()), atom.type)
-            for key in atom.configurations.keys():
-              str += "%5s" % (key)
-            pka_print(str)
+        for chainID in sorted(atoms.keys()):
+            for key in atoms[chainID]["keys"]:
+                for atom in atoms[chainID][key]:
+                    str = "%s%4d  %4s%3d%7s" % (atom.resName, atom.resNumb, atom.name, len(atom.configurations.keys()), atom.type)
+                    for key in atom.configurations.keys():
+                        str += "%5s" % (key)
+                    pka_print(str)
 
     #pka_print(number_of_configurations, models_configurations)
-    #sys.exit(9)
+    # sys.exit(9)
 
-    return  atoms
+    return atoms
 
 
 def getResNumb(line):
@@ -125,9 +126,9 @@ def getResNumb(line):
     reads the resNumb from the pdbline
     """
     if line == None:
-      return 0
+        return 0
     else:
-      return int( line[22:26].strip() )
+        return int(line[22:26].strip())
 
 
 def getResName(line):
@@ -135,9 +136,9 @@ def getResName(line):
     reads the resName from the pdbline
     """
     if line == None:
-      return ""
+        return ""
     else:
-      return "%-3s" % (line[17:20].strip())
+        return "%-3s" % (line[17:20].strip())
 
 
 def getAtomName(line):
@@ -145,9 +146,9 @@ def getAtomName(line):
     reads the name from the pdbline
     """
     if line == None:
-      return ""
+        return ""
     else:
-      return line[12:16].strip()
+        return line[12:16].strip()
 
 
 def getElement(line):
@@ -155,16 +156,16 @@ def getElement(line):
     Chresten's stuff, have no idear why its like this
     """
     if line == None:
-      return  ""
+        return ""
     elif len(line) > 75:
-      element = line[76:78].strip()
+        element = line[76:78].strip()
     else:
-      element = line[12:14].strip().strip(string.digits)
-      # Xplor exception to HE, HD, HG, HH etc.
-      if len(element) > 1 and element[0] == "H":
-          element = element[0]
+        element = line[12:14].strip().strip(string.digits)
+        # Xplor exception to HE, HD, HG, HH etc.
+        if len(element) > 1 and element[0] == "H":
+            element = element[0]
 
-    return  element
+    return element
 
 
 def getAtomNumb(line):
@@ -172,53 +173,53 @@ def getAtomNumb(line):
     reads the numb from the pdbline
     """
     if line == None:
-      return 0
+        return 0
     else:
-      return int( line[ 6:11].strip() )
+        return int(line[6:11].strip())
 
 
 def getChainID(line):
     """
     reads the chainID from the pdbline
     """
-    if   line == None:
-      return "A"
+    if line == None:
+        return "A"
     elif line[21] == " ":
-      return "A"
+        return "A"
     else:
-      return line[21]
+        return line[21]
 
 
 def getOccupation(line):
     """
     reads the resName from the pdbline
     """
-    if   line == None:
-      return 1.0
+    if line == None:
+        return 1.0
     elif len(line) > 59:
-      if line[56:60] != "    ":
-        return float( line[56:60].strip() )
+        if line[56:60] != "    ":
+            return float(line[56:60].strip())
 
 
 def getBeta(line):
     """
     reads the resName from the pdbline
     """
-    if   line == None:
-      return 0.0
+    if line == None:
+        return 0.0
     elif len(line) > 65:
-      if line[60:66] != "      ":
-        return float( line[60:66].strip() )
+        if line[60:66] != "      ":
+            return float(line[60:66].strip())
 
 
 def getType(line):
     """
     reads the resName from the pdbline
     """
-    if   line == None:
-      return  ""
+    if line == None:
+        return ""
     else:
-      return line[:6].strip().lower()
+        return line[:6].strip().lower()
 
 
 def makeConfiguration(line):
@@ -226,12 +227,12 @@ def makeConfiguration(line):
     returns configuration based on the line
     """
     if line == None:
-      configuration = [0.0, 0.0, 0.0]
+        configuration = [0.0, 0.0, 0.0]
     else:
-      x = float( line[30:38].strip() )
-      y = float( line[38:46].strip() )
-      z = float( line[46:54].strip() )
-      configuration = [x, y, z]
+        x = float(line[30:38].strip())
+        y = float(line[38:46].strip())
+        z = float(line[46:54].strip())
+        configuration = [x, y, z]
 
     return configuration
 
@@ -241,9 +242,9 @@ def makeConfigurationKey(line, i_model):
     returns a configuration key
     """
     if line[16] == " " or line[16] == "1":
-      return "M%dC%s" % (i_model, "A")
+        return "M%dC%s" % (i_model, "A")
     else:
-      return "M%dC%s" % (i_model, line[16])
+        return "M%dC%s" % (i_model, line[16])
 
 
 def openPdbFile(filename):
@@ -251,7 +252,7 @@ def openPdbFile(filename):
     check the name and open the pdbfile
     """
     root, extension = lib.splitFileName(filename)
-    if   extension == "pdb":
+    if extension == "pdb":
         # all good, it's a pdbfile
         file = open(filename)
     elif extension == None:
@@ -272,7 +273,7 @@ def openPdbFile(filename):
         pka_print("check if there is a dot in full path ...")
         sys.exit(9)
 
-    return  file
+    return file
 
 
 def scanFileForConfigurations(file, tags=["ATOM"], options=None):
@@ -281,40 +282,39 @@ def scanFileForConfigurations(file, tags=["ATOM"], options=None):
     """
     acceptedAtomTypes = ["ATOM", "HETATM"]
     model_configurations = [[]]
-    model_lines          = [[]]
+    model_lines = [[]]
     current_model_configurations = model_configurations[-1]
-    current_model_lines  = model_lines[-1]
+    current_model_lines = model_lines[-1]
 
     while True:
         line = file.readline()
         if line == "":
-          break
+            break
         line = line.strip()
         if line[:5] == "MODEL":
-          model_configurations.append(["A"])
-          current_model_configurations = model_configurations[-1]
-          model_lines.append([])
-          current_model_lines  = model_lines[-1]
+            model_configurations.append(["A"])
+            current_model_configurations = model_configurations[-1]
+            model_lines.append([])
+            current_model_lines = model_lines[-1]
         if line[:6] == "ENDMDL":
-          # reset to 'first/0' model
-          current_model_configurations = model_configurations[0]
-          current_model_lines  = model_lines[0]
+            # reset to 'first/0' model
+            current_model_configurations = model_configurations[0]
+            current_model_lines = model_lines[0]
         record = line[0:6].strip()
         if record in acceptedAtomTypes:
-          if getResName(line) not in excluded_resNames:
-            current_model_lines.append(line)
-            configuration = line[16]
-            if configuration == " ":
-              configuration = "A"
-            if configuration not in current_model_configurations:
-              current_model_configurations.append(configuration)
+            if getResName(line) not in excluded_resNames:
+                current_model_lines.append(line)
+                configuration = line[16]
+                if configuration == " ":
+                    configuration = "A"
+                if configuration not in current_model_configurations:
+                    current_model_configurations.append(configuration)
 
     number_of_configurations = 0
     for current_model_configurations in model_configurations:
-      number_of_configurations += len(current_model_configurations)
+        number_of_configurations += len(current_model_configurations)
 
     return number_of_configurations, model_configurations, model_lines
-
 
 
 class Atom:
@@ -324,19 +324,18 @@ class Atom:
 
     def __init__(self, line=None, verbose=False):
 
-     
-        self.name      =   getAtomName(line)
-        self.numb      =   getAtomNumb(line)
-        self.resName   =   getResName(line)
-        self.resNumb   =   getResNumb(line)
-        self.chainID   =   getChainID(line)
-        self.occ       =   getOccupation(line)
-        self.beta      =   getBeta(line)
-        self.type      =   getType(line)
-        self.element   =   getElement(line)
+        self.name = getAtomName(line)
+        self.numb = getAtomNumb(line)
+        self.resName = getResName(line)
+        self.resNumb = getResNumb(line)
+        self.chainID = getChainID(line)
+        self.occ = getOccupation(line)
+        self.beta = getBeta(line)
+        self.type = getType(line)
+        self.element = getElement(line)
         self.x, self.y, self.z = makeConfiguration(line)
         self.configurations = {}
-        
+
         self.bonded_atoms = []
         self.residue = None
         self.charge = 0
@@ -346,231 +345,250 @@ class Atom:
         self.number_of_pi_electrons_in_double_and_triple_bonds = 0
         self.number_of_pi_electrons_in_conjugate_double_and_triple_bonds = 0
 
-
     def makeResidueLabel(self):
-            """
-            making a key = residue.label in readPDB()
-            """
-            return lib.makeResidueLabel(self.resName, self.resNumb, self.chainID)
-
+        """
+        making a key = residue.label in readPDB()
+        """
+        return lib.makeResidueLabel(self.resName, self.resNumb, self.chainID)
 
     def translate(self, vector):
-            """
-            print Atom information
-            """
-            self.x += vector[0]
-            self.y += vector[1]
-            self.z += vector[2]
-            for key in self.configurations.keys():
-              for i in range(3):
+        """
+        print Atom information
+        """
+        self.x += vector[0]
+        self.y += vector[1]
+        self.z += vector[2]
+        for key in self.configurations.keys():
+            for i in range(3):
                 self.configurations[key][i] += vector[i]
 
-
     def printAtom(self):
-            """
-            print Atom information
-            """
-            str  = ""
-            str += " %s" % (self.resName)
-            str += " %6d" % (self.resNumb)
-            str += " %s" % (self.chainID)
-            str += "  %s" % (self.name)
-            pka_print(str)
-
+        """
+        print Atom information
+        """
+        str = ""
+        str += " %s" % (self.resName)
+        str += " %6d" % (self.resNumb)
+        str += " %s" % (self.chainID)
+        str += "  %s" % (self.name)
+        pka_print(str)
 
     def trimConfigurations(self, configurations=None):
-            """
-            checks the configurations to make sure a 'align-mutated' residue contains the right configuration
-            do not allow change in M value - not considered enough
-            """
+        """
+        checks the configurations to make sure a 'align-mutated' residue contains the right configuration
+        do not allow change in M value - not considered enough
+        """
 
-            return
-
+        return
 
     def setConfigurationPosition(self, key=None):
-            """
-            set the position of a 'configuration' to 'current position'
-            """
-            configuration = [self.x, self.y, self.z]
-            self.configurations[key] = configuration
-
+        """
+        set the position of a 'configuration' to 'current position'
+        """
+        configuration = [self.x, self.y, self.z]
+        self.configurations[key] = configuration
 
     def setConfiguration(self, key=None):
-            """
-            set the 'current possition' to a 'configuration'
-            """
-            if   key in self.configurations:
-              self.x = self.configurations[key][0]
-              self.y = self.configurations[key][1]
-              self.z = self.configurations[key][2]
-            elif len(self.configurations) == 1:
-              # get single key if only one configuration: saving back-bone protonation when previous residue doesn't have 'key'
-              for default_key in self.configurations.keys():
+        """
+        set the 'current possition' to a 'configuration'
+        """
+        if key in self.configurations:
+            self.x = self.configurations[key][0]
+            self.y = self.configurations[key][1]
+            self.z = self.configurations[key][2]
+        elif len(self.configurations) == 1:
+            # get single key if only one configuration: saving back-bone protonation when previous residue doesn't have 'key'
+            for default_key in self.configurations.keys():
                 break
-              self.x = self.configurations[default_key][0]
-              self.y = self.configurations[default_key][1]
-              self.z = self.configurations[default_key][2]
-            elif True:
-              # get single key if only one configuration: saving back-bone protonation when previous residue doesn't have 'key'
-              for default_key in self.configurations.keys():
+            self.x = self.configurations[default_key][0]
+            self.y = self.configurations[default_key][1]
+            self.z = self.configurations[default_key][2]
+        elif True:
+            # get single key if only one configuration: saving back-bone protonation when previous residue doesn't have 'key'
+            for default_key in self.configurations.keys():
                 if key[:-2] == default_key[:-2]:
-                  break
-              self.x = self.configurations[default_key][0]
-              self.y = self.configurations[default_key][1]
-              self.z = self.configurations[default_key][2]
-            else:
-              resLabel = "%-3s%4d%2s" % (self.resName, self.resNumb, self.chainID)
-              keys = ""
-              for item in self.configurations.keys(): keys += "%5s" % (item)
-              pka_print("configuration '%s' not found in '%s' atom '%s' [%s]" % (key, resLabel, self.name, keys))
-              sys.exit(8)
-
-
+                    break
+            self.x = self.configurations[default_key][0]
+            self.y = self.configurations[default_key][1]
+            self.z = self.configurations[default_key][2]
+        else:
+            resLabel = "%-3s%4d%2s" % (self.resName, self.resNumb, self.chainID)
+            keys = ""
+            for item in self.configurations.keys():
+                keys += "%5s" % (item)
+            pka_print("configuration '%s' not found in '%s' atom '%s' [%s]" % (key, resLabel, self.name, keys))
+            sys.exit(8)
 
     def setProperty(self,
-                    numb    = None, 
-                    name    = None, 
-                    resName = None, 
-                    chainID = None,
-                    resNumb = None,
-                    x       = None,
-                    y       = None,
-                    z       = None,
-                    occ     = None,
-                    beta    = None,
-                    element = None):
+                    numb=None,
+                    name=None,
+                    resName=None,
+                    chainID=None,
+                    resNumb=None,
+                    x=None,
+                    y=None,
+                    z=None,
+                    occ=None,
+                    beta=None,
+                    element=None):
         """
         sets properties of the atom object
         """
 
-        if numb    != None: self.numb    = numb
-        if name    != None: self.name    = name
-        if resName != None: self.resName = resName
-        if chainID != None: self.chainID = chainID
-        if resNumb != None: self.resNumb = resNumb
-        if x       != None: self.x       = x
-        if y       != None: self.y       = y
-        if z       != None: self.z       = z
-        if occ     != None: self.occ     = occ
-        if beta    != None: self.beta    = beta
-        if element != None: self.element = element
+        if numb != None:
+            self.numb = numb
+        if name != None:
+            self.name = name
+        if resName != None:
+            self.resName = resName
+        if chainID != None:
+            self.chainID = chainID
+        if resNumb != None:
+            self.resNumb = resNumb
+        if x != None:
+            self.x = x
+        if y != None:
+            self.y = y
+        if z != None:
+            self.z = z
+        if occ != None:
+            self.occ = occ
+        if beta != None:
+            self.beta = beta
+        if element != None:
+            self.element = element
 
-
-
-    def makeCopy(self, 
-                    numb    = None,
-                    name    = None,
-                    resName = None,
-                    chainID = None,
-                    resNumb = None,
-                    x       = None,
-                    y       = None,
-                    z       = None,
-                    occ     = None,
-                    beta    = None,
-                    configs = None,
-                    element = None):
+    def makeCopy(self,
+                 numb=None,
+                 name=None,
+                 resName=None,
+                 chainID=None,
+                 resNumb=None,
+                 x=None,
+                 y=None,
+                 z=None,
+                 occ=None,
+                 beta=None,
+                 configs=None,
+                 element=None):
         """
         making a copy of this atom
         """
-        if numb    == None:  numb    = self.numb
-        if name    == None:  name    = self.name
-        if resName == None:  resName = self.resName
-        if chainID == None:  chainID = self.chainID
-        if resNumb == None:  resNumb = self.resNumb
-        if x       == None:  x       = self.x
-        if y       == None:  y       = self.y
-        if z       == None:  z       = self.z
-        if occ     == None:  occ     = self.occ
-        if beta    == None:  beta    = self.beta
-        if configs == None:  configs = sorted(self.configurations.keys())
-        if element == None:  element = self.element
+        if numb == None:
+            numb = self.numb
+        if name == None:
+            name = self.name
+        if resName == None:
+            resName = self.resName
+        if chainID == None:
+            chainID = self.chainID
+        if resNumb == None:
+            resNumb = self.resNumb
+        if x == None:
+            x = self.x
+        if y == None:
+            y = self.y
+        if z == None:
+            z = self.z
+        if occ == None:
+            occ = self.occ
+        if beta == None:
+            beta = self.beta
+        if configs == None:
+            configs = sorted(self.configurations.keys())
+        if element == None:
+            element = self.element
 
-        line = self.makePDBLine(name=name, 
-                                numb=numb, 
-                                resName=resName, 
-                                resNumb=resNumb, 
-                                x=x, y=y, z=z, 
-                                chainID=chainID, 
+        line = self.makePDBLine(name=name,
+                                numb=numb,
+                                resName=resName,
+                                resNumb=resNumb,
+                                x=x, y=y, z=z,
+                                chainID=chainID,
                                 element=element)
-        newAtom =  Atom(line)
+        newAtom = Atom(line)
         # copy configurations
         for key in configs:
-          newAtom.configurations[key] = [x, y, z]
+            newAtom.configurations[key] = [x, y, z]
 
-        return  newAtom
-
+        return newAtom
 
     def makePDBLine(self,
-                    numb    = None,
-                    name    = None,
-                    resName = None,
-                    chainID = None,
-                    resNumb = None,
-                    x       = None,
-                    y       = None,
-                    z       = None,
-                    occ     = None,
-                    beta    = None,
-                    element = None):
+                    numb=None,
+                    name=None,
+                    resName=None,
+                    chainID=None,
+                    resNumb=None,
+                    x=None,
+                    y=None,
+                    z=None,
+                    occ=None,
+                    beta=None,
+                    element=None):
         """
         returns a pdb ATOM-line for various purposes;
         specifying arguments over-writes.
         """
-        if numb    == None: numb    = self.numb
-        if name    == None: name    = self.name
-        if resName == None: resName = self.resName
-        if chainID == None: chainID = self.chainID
-        if resNumb == None: resNumb = self.resNumb
-        if x       == None: x       = self.x
-        if y       == None: y       = self.y
-        if z       == None: z       = self.z
-        if occ     == None: occ     = self.occ
-        if beta    == None: beta    = self.beta
-        if element == None: element = self.element
+        if numb == None:
+            numb = self.numb
+        if name == None:
+            name = self.name
+        if resName == None:
+            resName = self.resName
+        if chainID == None:
+            chainID = self.chainID
+        if resNumb == None:
+            resNumb = self.resNumb
+        if x == None:
+            x = self.x
+        if y == None:
+            y = self.y
+        if z == None:
+            z = self.z
+        if occ == None:
+            occ = self.occ
+        if beta == None:
+            beta = self.beta
+        if element == None:
+            element = self.element
 
         if len(name) > 4:
-          name = name[:4]
+            name = name[:4]
 
         # making pdb-string
-        str  = "ATOM "
-        str += "%6d"      % (numb)
-        if   len(element) == 2:
-          str += " %-5s"  % (name)
+        str = "ATOM "
+        str += "%6d" % (numb)
+        if len(element) == 2:
+            str += " %-5s" % (name)
         elif name[0] in "0123456789":
-          str += " %-5s"  % (name)
+            str += " %-5s" % (name)
         else:
-          str += "  %-4s" % (name)
-        str += "%s"       % (resName)
-        str += "%2s"      % (chainID)
-        str += "%4d"      % (resNumb)
-        str += "%12.3lf"  % (x)
-        str += "%8.3lf"   % (y)
-        str += "%8.3lf"   % (z)
-        str += "%6.2lf"   % (occ)
-        str += "%6.2lf"   % (beta)
-        str += "%12s"     % (element)
+            str += "  %-4s" % (name)
+        str += "%s" % (resName)
+        str += "%2s" % (chainID)
+        str += "%4d" % (resNumb)
+        str += "%12.3lf" % (x)
+        str += "%8.3lf" % (y)
+        str += "%8.3lf" % (z)
+        str += "%6.2lf" % (occ)
+        str += "%6.2lf" % (beta)
+        str += "%12s" % (element)
 
         return str
 
-
     def __str__(self):
-        return '%5d-%4s %5d-%3s (%1s) [%8.3f %8.3f %8.3f]' %(self.numb, self.name, self.resNumb, self.resName, self.chainID, self.x, self.y, self.z)
-            
+        return '%5d-%4s %5d-%3s (%1s) [%8.3f %8.3f %8.3f]' % (self.numb, self.name, self.resNumb, self.resName, self.chainID, self.x, self.y, self.z)
 
     def get_element(self):
         """ try to extract element if not already done"""
         if self.element == '':
-          if self.name[0] in "0123456789":
-            self.element = self.name[1]
-          else:
-            self.element = self.name[0]
+            if self.name[0] in "0123456789":
+                self.element = self.name[1]
+            else:
+                self.element = self.name[0]
         return self.element
-    
 
     def set_residue(self, residue):
         """ Makes a references to the parent residue"""
         if self.residue == None:
             self.residue = residue
-
- 

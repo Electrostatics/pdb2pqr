@@ -10,18 +10,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -35,9 +35,10 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 
 from .lib import pka_print
+
 
 def resName2Type(resName=None):
     """
@@ -65,21 +66,20 @@ def resName2Type(resName=None):
         return resType
 
 
-
 def getQs(resName=None):
     """
     Returns a dictionary with residue charges
     """
-    Q  =      {'COO': -1.0,
-               'ASP': -1.0,
-               'GLU': -1.0,
-               'C- ': -1.0,
-               'TYR': -1.0,
-               'CYS': -1.0,
-               'HIS':  1.0,
-               'LYS':  1.0,
-               'ARG':  1.0,
-               'N+ ':  1.0}
+    Q = {'COO': -1.0,
+         'ASP': -1.0,
+         'GLU': -1.0,
+         'C- ': -1.0,
+         'TYR': -1.0,
+         'CYS': -1.0,
+         'HIS':  1.0,
+         'LYS':  1.0,
+         'ARG':  1.0,
+         'N+ ':  1.0}
 
     if resName in Q:
         return Q[resName]
@@ -102,19 +102,19 @@ def pKa_mod(resName=None):
                'N+ ':      8.00,
                'default': 20.00}
 
-    if   resName == None:
-        return  pKa_mod
+    if resName == None:
+        return pKa_mod
     elif resName in pKa_mod:
-        return  pKa_mod[resName]
+        return pKa_mod[resName]
     else:
         # generic value for 'uninteresting' residues, e.g. ASN, GLN
-        return  20.00
+        return 20.00
 
 
 def getInteraction():
     """
       matrix for propka interactions; Note that only the LOWER part of the matrix is used!
-    
+
       'N'   non-iterative interaction
       'I'   iterative interaction
       '-'   no interaction
@@ -132,8 +132,7 @@ def getInteraction():
                   'AMD': ["N", "N", "N", "N", "N", "N", "N"],
                   'TRP': ["N", "N", "N", "-", "-", "-", "-"]}
 
-    return  side_chain
-
+    return side_chain
 
 
 # ------- Coulomb parameters --------- #
@@ -144,24 +143,23 @@ def getCoulombParameters(label=None):
     storage of Coulomb default parameters
     """
     CoulombParameters = {}
-    CoulombParameters['Linear']                 = {'cutoff':             [4.0,  7.0],
-                                                   'max_dpka':                  2.40,
-                                                   'scaled':                    True,
-                                                  }
-    CoulombParameters['Coulomb']                = {'cutoff':             [4.0, 10.0],
-                                                   'diel':                     80.00,
-                                                   'scaled':                    True,
-                                                  }
-    CoulombParameters['DistanceScaledCoulomb']  = {'cutoff':             [4.0, 10.0],
-                                                   'diel':             [30.0, 160.0],
-                                                   'scaled':                   False,
+    CoulombParameters['Linear'] = {'cutoff':             [4.0,  7.0],
+                                   'max_dpka':                  2.40,
+                                   'scaled':                    True,
+                                   }
+    CoulombParameters['Coulomb'] = {'cutoff':             [4.0, 10.0],
+                                    'diel':                     80.00,
+                                    'scaled':                    True,
+                                    }
+    CoulombParameters['DistanceScaledCoulomb'] = {'cutoff':             [4.0, 10.0],
+                                                  'diel':             [30.0, 160.0],
+                                                  'scaled':                   False,
                                                   }
 
     if label in CoulombParameters:
-      return CoulombParameters[label]
+        return CoulombParameters[label]
     else:
-      return CoulombParameters
-
+        return CoulombParameters
 
 
 # ------- Desolvation parameters --------- #
@@ -172,31 +170,31 @@ def getDesolvationParameters(label=None):
     storage of desolvation default parameters
     """
     DesolvationParameters = {}
-    DesolvationParameters['propka2']            = {'allowance':               400.00,
-                                                   'prefactor':                -0.01,
-                                                   'local':                    -0.07,
-                                                   'radii':          getLocalRadii(),
-                                                  }
-    DesolvationParameters['ContactModel']       = {'allowance':               400.00,
-                                                   'prefactor':                -0.01,
-                                                   'local':                    -0.07,
-                                                   'radii':          getLocalRadii(),
-                                                  }
-    DesolvationParameters['VolumeModel']        = {'allowance':                 0.00,
-                                                   'prefactor':               -13.50,
-                                                   'surface':                   0.25,
-                                                   'volume': getVanDerWaalsVolumes(),
-                                                  }
-    DesolvationParameters['ScaledVolumeModel']  = {'allowance':                 0.00,
-                                                   'prefactor':               -13.50,
-                                                   'surface':                   0.00,
-                                                   'volume': getVanDerWaalsVolumes(),
+    DesolvationParameters['propka2'] = {'allowance':               400.00,
+                                        'prefactor': -0.01,
+                                        'local': -0.07,
+                                        'radii':          getLocalRadii(),
+                                        }
+    DesolvationParameters['ContactModel'] = {'allowance':               400.00,
+                                             'prefactor': -0.01,
+                                             'local': -0.07,
+                                             'radii':          getLocalRadii(),
+                                             }
+    DesolvationParameters['VolumeModel'] = {'allowance':                 0.00,
+                                            'prefactor': -13.50,
+                                            'surface':                   0.25,
+                                            'volume': getVanDerWaalsVolumes(),
+                                            }
+    DesolvationParameters['ScaledVolumeModel'] = {'allowance':                 0.00,
+                                                  'prefactor': -13.50,
+                                                  'surface':                   0.00,
+                                                  'volume': getVanDerWaalsVolumes(),
                                                   }
 
     if label in DesolvationParameters:
-      return DesolvationParameters[label]
+        return DesolvationParameters[label]
     else:
-      return DesolvationParameters
+        return DesolvationParameters
 
 
 def getVanDerWaalsVolumes():
@@ -209,7 +207,7 @@ def getVanDerWaalsVolumes():
                          'N':    1.06,    # 15.60   1.55   all nitrogen atoms
                          'O':    1.00,    # 14.71   1.52   all oxygen atoms
                          'S':    1.66,    # 24.43   1.80   all sulphur atoms
-                        }
+                         }
 
     return VanDerWaalsVolume
 
@@ -231,9 +229,6 @@ def getLocalRadii():
     return local_radius
 
 
-
-
-
 # ------- hydrogen-bond parameters --------- #
 
 
@@ -245,142 +240,137 @@ def getHydrogenBondParameters(type=None):
     """
     if type == "back-bone":
 
-            # --- new back-bone parameter set ---
-            # parameters determining the interaction with back-bone NH or CO groups
+        # --- new back-bone parameter set ---
+        # parameters determining the interaction with back-bone NH or CO groups
 
-            parameters        = {"COO": [-0.80, [2.00, 3.00]],
-                                 "CYS": [-0.80, [3.00, 4.00]],
-                                 "TYR": [-1.20, [2.20, 3.20]],
-                                 "HIS": [ 0.80, [2.00, 3.00]],
-                                 "N+ ": [ 0.80, [2.80, 3.80]],
-                                 "LYS": [ 0.80, [2.80, 3.80]],
-                                 "ARG": [ 0.80, [2.00, 3.00]]}
-      
+        parameters = {"COO": [-0.80, [2.00, 3.00]],
+                      "CYS": [-0.80, [3.00, 4.00]],
+                      "TYR": [-1.20, [2.20, 3.20]],
+                      "HIS": [0.80, [2.00, 3.00]],
+                      "N+ ": [0.80, [2.80, 3.80]],
+                      "LYS": [0.80, [2.80, 3.80]],
+                      "ARG": [0.80, [2.00, 3.00]]}
+
     elif type == "side-chain":
 
+        # --- new side-chain parameter set ---
+        # parameters determining the interaction with side-chain NH or CO groups
+        # IMPORTANT: parameters with assigned to 'None' are given by the reverse
+        # (e.g. CYS-COO is given by COO-CYS) generated at the end.
 
-            # --- new side-chain parameter set ---
-            # parameters determining the interaction with side-chain NH or CO groups
-            # IMPORTANT: parameters with assigned to 'None' are given by the reverse
-            # (e.g. CYS-COO is given by COO-CYS) generated at the end.
+        parameters = {}
+        parameters["COO"] = {"COO": [-0.80, [2.50, 3.50]],
+                             "CYS": [-0.80, [3.00, 4.00]],
+                             "TYR": [-0.80, [2.65, 3.65]],
+                             "HIS": [-0.80, [2.00, 3.00]],
+                             "N+ ": [-0.80, [2.85, 3.85]],
+                             "LYS": [-0.80, [2.85, 3.85]],
+                             "ARG": [-0.80, [1.85, 2.85]],
+                             "ROH": [-0.80, [2.65, 3.65]],
+                             "AMD": [-0.80, [2.00, 3.00]],
+                             "TRP": [-0.80, [2.00, 3.00]]}
+        parameters["CYS"] = {"COO": None,
+                             "CYS": [-1.60, [3.00, 5.00]],
+                             "TYR": [-0.80, [3.50, 4.50]],
+                             "HIS": [-1.60, [3.00, 4.00]],
+                             "N+ ": [-2.40, [3.00, 4.50]],
+                             "LYS": [-1.60, [3.00, 4.00]],
+                             "ARG": [-1.60, [2.50, 4.00]],
+                             "ROH": [-1.60, [3.50, 4.50]],
+                             "AMD": [-1.60, [2.50, 3.50]],
+                             "TRP": [-1.60, [2.50, 3.50]]}
+        parameters["TYR"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": [0.80, [3.50, 4.50]],
+                             "HIS": [-0.80, [2.00, 3.00]],
+                             "N+ ": [-1.20, [3.00, 4.50]],
+                             "LYS": [-0.80, [3.00, 4.00]],
+                             "ARG": [-0.80, [2.50, 4.00]],
+                             "ROH": [-0.80, [3.50, 4.50]],
+                             "AMD": [-0.80, [2.50, 3.50]],
+                             "TRP": [-0.80, [2.50, 3.50]]}
+        parameters["HIS"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": [0.00, [0.00, 0.00]],
+                             "N+ ": [0.00, [0.00, 0.00]],
+                             "LYS": [0.00, [0.00, 0.00]],
+                             "ARG": [0.00, [0.00, 0.00]],
+                             "ROH": [0.00, [0.00, 0.00]],
+                             "AMD": [0.80, [2.00, 3.00]],
+                             "TRP": [0.00, [0.00, 0.00]]}
+        parameters["N+ "] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": None,
+                             "N+ ": [0.00, [0.00, 0.00]],
+                             "LYS": [0.00, [0.00, 0.00]],
+                             "ARG": [0.00, [0.00, 0.00]],
+                             "ROH": [0.00, [0.00, 0.00]],
+                             "AMD": [0.00, [0.00, 0.00]],
+                             "TRP": [0.00, [0.00, 0.00]]}
+        parameters["LYS"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": None,
+                             "N+ ": None,
+                             "LYS": [0.00, [0.00, 0.00]],
+                             "ARG": [0.00, [0.00, 0.00]],
+                             "ROH": [0.00, [0.00, 0.00]],
+                             "AMD": [0.00, [0.00, 0.00]],
+                             "TRP": [0.00, [0.00, 0.00]]}
+        parameters["ARG"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": None,
+                             "N+ ": None,
+                             "LYS": None,
+                             "ARG": [0.00, [0.00, 0.00]],
+                             "ROH": [0.00, [0.00, 0.00]],
+                             "AMD": [0.00, [0.00, 0.00]],
+                             "TRP": [0.00, [0.00, 0.00]]}
+        parameters["ROH"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": None,
+                             "N+ ": None,
+                             "LYS": None,
+                             "ARG": None,
+                             "ROH": [0.00, [0.00, 0.00]],
+                             "AMD": [0.00, [0.00, 0.00]],
+                             "TRP": [0.00, [0.00, 0.00]]}
+        parameters["AMD"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": None,
+                             "N+ ": None,
+                             "LYS": None,
+                             "ARG": None,
+                             "ROH": None,
+                             "AMD": [0.00, [0.00, 0.00]],
+                             "TRP": [0.00, [0.00, 0.00]]}
+        parameters["TRP"] = {"COO": None,
+                             "CYS": None,
+                             "TYR": None,
+                             "HIS": None,
+                             "N+ ": None,
+                             "LYS": None,
+                             "ARG": None,
+                             "ROH": None,
+                             "AMD": None,
+                             "TRP": [0.00, [0.00, 0.00]]}
 
-            parameters = {}
-            parameters["COO"] = {"COO": [-0.80, [ 2.50, 3.50]],
-                                 "CYS": [-0.80, [ 3.00, 4.00]],
-                                 "TYR": [-0.80, [ 2.65, 3.65]],
-                                 "HIS": [-0.80, [ 2.00, 3.00]],
-                                 "N+ ": [-0.80, [ 2.85, 3.85]],
-                                 "LYS": [-0.80, [ 2.85, 3.85]],
-                                 "ARG": [-0.80, [ 1.85, 2.85]],
-                                 "ROH": [-0.80, [ 2.65, 3.65]],
-                                 "AMD": [-0.80, [ 2.00, 3.00]],
-                                 "TRP": [-0.80, [ 2.00, 3.00]]}
-            parameters["CYS"] = {"COO": None,
-                                 "CYS": [-1.60, [ 3.00, 5.00]],
-                                 "TYR": [-0.80, [ 3.50, 4.50]],
-                                 "HIS": [-1.60, [ 3.00, 4.00]],
-                                 "N+ ": [-2.40, [ 3.00, 4.50]],
-                                 "LYS": [-1.60, [ 3.00, 4.00]],
-                                 "ARG": [-1.60, [ 2.50, 4.00]],
-                                 "ROH": [-1.60, [ 3.50, 4.50]],
-                                 "AMD": [-1.60, [ 2.50, 3.50]],
-                                 "TRP": [-1.60, [ 2.50, 3.50]]}
-            parameters["TYR"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": [ 0.80, [ 3.50, 4.50]],
-                                 "HIS": [-0.80, [ 2.00, 3.00]],
-                                 "N+ ": [-1.20, [ 3.00, 4.50]],
-                                 "LYS": [-0.80, [ 3.00, 4.00]],
-                                 "ARG": [-0.80, [ 2.50, 4.00]],
-                                 "ROH": [-0.80, [ 3.50, 4.50]],
-                                 "AMD": [-0.80, [ 2.50, 3.50]],
-                                 "TRP": [-0.80, [ 2.50, 3.50]]}
-            parameters["HIS"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": [ 0.00, [ 0.00, 0.00]],
-                                 "N+ ": [ 0.00, [ 0.00, 0.00]],
-                                 "LYS": [ 0.00, [ 0.00, 0.00]],
-                                 "ARG": [ 0.00, [ 0.00, 0.00]],
-                                 "ROH": [ 0.00, [ 0.00, 0.00]],
-                                 "AMD": [ 0.80, [ 2.00, 3.00]],
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-            parameters["N+ "] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": None,
-                                 "N+ ": [ 0.00, [ 0.00, 0.00]],
-                                 "LYS": [ 0.00, [ 0.00, 0.00]],
-                                 "ARG": [ 0.00, [ 0.00, 0.00]],
-                                 "ROH": [ 0.00, [ 0.00, 0.00]],
-                                 "AMD": [ 0.00, [ 0.00, 0.00]],
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-            parameters["LYS"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": None,
-                                 "N+ ": None,
-                                 "LYS": [ 0.00, [ 0.00, 0.00]],
-                                 "ARG": [ 0.00, [ 0.00, 0.00]],
-                                 "ROH": [ 0.00, [ 0.00, 0.00]],
-                                 "AMD": [ 0.00, [ 0.00, 0.00]],
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-            parameters["ARG"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": None,
-                                 "N+ ": None,
-                                 "LYS": None,
-                                 "ARG": [ 0.00, [ 0.00, 0.00]],
-                                 "ROH": [ 0.00, [ 0.00, 0.00]],
-                                 "AMD": [ 0.00, [ 0.00, 0.00]],
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-            parameters["ROH"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": None,
-                                 "N+ ": None,
-                                 "LYS": None,
-                                 "ARG": None,
-                                 "ROH": [ 0.00, [ 0.00, 0.00]],
-                                 "AMD": [ 0.00, [ 0.00, 0.00]],
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-            parameters["AMD"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": None,
-                                 "N+ ": None,
-                                 "LYS": None,
-                                 "ARG": None,
-                                 "ROH": None,
-                                 "AMD": [ 0.00, [ 0.00, 0.00]],
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-            parameters["TRP"] = {"COO": None,
-                                 "CYS": None,
-                                 "TYR": None,
-                                 "HIS": None,
-                                 "N+ ": None,
-                                 "LYS": None,
-                                 "ARG": None,
-                                 "ROH": None,
-                                 "AMD": None,
-                                 "TRP": [ 0.00, [ 0.00, 0.00]]}
-
-
-            # updating parameter matrix to full matrix
-            keys = parameters.keys()
-            for key1 in keys:
-              for key2 in keys:
+        # updating parameter matrix to full matrix
+        keys = parameters.keys()
+        for key1 in keys:
+            for key2 in keys:
                 if key2 not in parameters[key1]:
-                  parameters[key1][key2] == [ 0.00, [ 0.00, 0.00]]
+                    parameters[key1][key2] == [0.00, [0.00, 0.00]]
                 elif parameters[key1][key2] == None:
-                  parameters[key1][key2] = parameters[key2][key1]
-
+                    parameters[key1][key2] = parameters[key2][key1]
 
     else:
-      pka_print("cannot determine what type of hydrogen-bonding interactions you want type=\"%s\" ['back-bone', 'side-chain']" % (label))
-      sys.exit(9)
+        pka_print("cannot determine what type of hydrogen-bonding interactions you want type=\"%s\" ['back-bone', 'side-chain']" % (label))
+        sys.exit(9)
 
     return parameters
-
-

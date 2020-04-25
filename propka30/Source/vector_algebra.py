@@ -10,18 +10,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -35,15 +35,17 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
-import math, sys
+# -------------------------------------------------------------------------------------------------------
+import math
+import sys
 from . import lib
 pka_print = lib.pka_print
 
 
 class vector:
     """ Vector """
-    def __init__(self, xi=0.0, yi=0.0, zi=0.0, atom1 = 0, atom2 = 0):
+
+    def __init__(self, xi=0.0, yi=0.0, zi=0.0, atom1=0, atom2=0):
         self.x = xi
         self.y = yi
         self.z = zi
@@ -62,87 +64,75 @@ class vector:
 
         return
 
-
     def __add__(self, other):
         return vector(self.x + other.x,
                       self.y + other.y,
-                      self.z + other.z)    
-
+                      self.z + other.z)
 
     def __sub__(self, other):
         return vector(self.x - other.x,
                       self.y - other.y,
                       self.z - other.z)
-    
 
     def __mul__(self, other):
         """ Dot product, scalar and matrix multiplication """
 
-        if isinstance(other,vector):
+        if isinstance(other, vector):
             return self.x * other.x + self.y * other.y + self.z * other.z
         elif isinstance(other, matrix4x4):
             return vector(
-                xi = other.a11*self.x + other.a12*self.y + other.a13*self.z + other.a14*1.0,
-                yi = other.a21*self.x + other.a22*self.y + other.a23*self.z + other.a24*1.0,
-                zi = other.a31*self.x + other.a32*self.y + other.a33*self.z + other.a34*1.0
-                )
+                xi=other.a11*self.x + other.a12*self.y + other.a13*self.z + other.a14*1.0,
+                yi=other.a21*self.x + other.a22*self.y + other.a23*self.z + other.a24*1.0,
+                zi=other.a31*self.x + other.a32*self.y + other.a33*self.z + other.a34*1.0
+            )
         elif type(other) in [int, float]:
             return vector(self.x * other, self.y * other, self.z * other)
         else:
-            pka_print('%s not supported'%type(other))
+            pka_print('%s not supported' % type(other))
             raise TypeError
 
-
-    def __rmul__(self,other):
-       return self.__mul__(other)
-        
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
     def __pow__(self, other):
         """ Cross product """
         return vector(self.y * other.z - self.z * other.y,
                       self.z * other.x - self.x * other.z,
                       self.x * other.y - self.y * other.x)
-        
 
     def __neg__(self):
-        res = vector(xi = -self.x,
-                     yi = -self.y,
-                     zi = -self.z)
+        res = vector(xi=-self.x,
+                     yi=-self.y,
+                     zi=-self.z)
         return res
-
 
     def sq_length(self):
         return self.x * self.x + self.y * self.y + self.z * self.z
 
-
     def length(self):
         return math.sqrt(self.sq_length())
 
-
     def __str__(self):
-        return '%10.4f %10.4f %10.4f'%(self.x, self.y, self.z)
-
+        return '%10.4f %10.4f %10.4f' % (self.x, self.y, self.z)
 
     def __repr__(self):
         return '<vector>'
 
-
     def orthogonal(self):
         """ Returns a vector orthogonal to self """
         res = vector(self.y, -self.x, 0)
-        
+
         if abs(self.y) < abs(self.z):
             res = vector(self.z, 0, -self.x)
 
         return res
 
-
     def rescale(self, new_length):
         """ Rescale vector to new length while preserving direction """
         frac = new_length/(self.length())
-        res = vector(xi = self.x*frac,
-                     yi = self.y*frac,
-                     zi = self.z*frac)
+        res = vector(xi=self.x*frac,
+                     yi=self.y*frac,
+                     zi=self.z*frac)
         return res
 
 
@@ -176,9 +166,6 @@ class matrix4x4:
         return
 
 
-
-
-
 # methods working on vectors
 
 
@@ -187,85 +174,84 @@ def angle(a, b):
     return math.acos(dot / (a.length() * b.length()))
 
 
-def angle_degrees(a,b):
+def angle_degrees(a, b):
     return math.degrees(angle(a, b))
 
 
-def signed_angle_around_axis(a,b, axis):
+def signed_angle_around_axis(a, b, axis):
     na = a**axis
     nb = b**axis
 
-    v = angle(na,nb)
+    v = angle(na, nb)
 
     d = b*(a**axis)
 
     if d < 0:
-        v =-v
+        v = -v
 
     return v
 
 
-def signed_angle_degrees(a,b):
+def signed_angle_degrees(a, b):
     return 180/math.pi * signed_angle(a, b)
 
-        
+
 def rotate_vector_around_an_axis(theta, axis, v):
-        #print "# 1. rotate space about the z-axis so that the rotation axis lies in the xz-plane"
-        gamma = 0.0
-        if axis.y != 0:
-            if axis.x != 0:
-                gamma = -axis.x/abs(axis.x)*math.asin(axis.y/(math.sqrt(axis.x*axis.x + axis.y*axis.y)))
-            else:
-                gamma = math.pi/2.0
-
-            Rz = rotate_atoms_around_z_axis(gamma)
-            v = Rz * v
-            axis = Rz * axis
-            
-        #print "# 2. rotate space about the y-axis so that the rotation axis lies along the z-axis"
-        beta = 0.0
+    # print "# 1. rotate space about the z-axis so that the rotation axis lies in the xz-plane"
+    gamma = 0.0
+    if axis.y != 0:
         if axis.x != 0:
-            beta = -axis.x/abs(axis.x)*math.acos(axis.z/math.sqrt(axis.x*axis.x + axis.z*axis.z))
-            Ry = rotate_atoms_around_y_axis(beta)
-            v = Ry * v
-            axis = Ry *axis
+            gamma = -axis.x/abs(axis.x)*math.asin(axis.y/(math.sqrt(axis.x*axis.x + axis.y*axis.y)))
+        else:
+            gamma = math.pi/2.0
 
-        #print "# 3. perform the desired rotation by theta about the z-axis"
-        Rz = rotate_atoms_around_z_axis(theta)
+        Rz = rotate_atoms_around_z_axis(gamma)
         v = Rz * v
+        axis = Rz * axis
 
-        #print "# 4. apply the inverse of step 2."
-        Ry = rotate_atoms_around_y_axis(-beta)
+    # print "# 2. rotate space about the y-axis so that the rotation axis lies along the z-axis"
+    beta = 0.0
+    if axis.x != 0:
+        beta = -axis.x/abs(axis.x)*math.acos(axis.z/math.sqrt(axis.x*axis.x + axis.z*axis.z))
+        Ry = rotate_atoms_around_y_axis(beta)
         v = Ry * v
-        
-        #print "# 5. apply the inverse of step 1."
-        Rz = rotate_atoms_around_z_axis(-gamma)
-        v = Rz * v
-        
-        return v
+        axis = Ry * axis
+
+    # print "# 3. perform the desired rotation by theta about the z-axis"
+    Rz = rotate_atoms_around_z_axis(theta)
+    v = Rz * v
+
+    # print "# 4. apply the inverse of step 2."
+    Ry = rotate_atoms_around_y_axis(-beta)
+    v = Ry * v
+
+    # print "# 5. apply the inverse of step 1."
+    Rz = rotate_atoms_around_z_axis(-gamma)
+    v = Rz * v
+
+    return v
 
 
 def rotate_atoms_around_z_axis(angle):
     Rz = matrix4x4(
-        a11i = math.cos(angle), a12i = -math.sin(angle), a13i = 0.0, a14i = 0.0,
-        a21i = math.sin(angle), a22i =  math.cos(angle), a23i = 0.0, a24i = 0.0,
-        a31i = 0.0            , a32i = 0.0             , a33i = 1.0, a34i = 0.0,
-        a41i = 0.0            , a42i = 0.0             , a43i = 0.0, a44i = 1.0
-        )
-    
+        a11i=math.cos(angle), a12i=-math.sin(angle), a13i=0.0, a14i=0.0,
+        a21i=math.sin(angle), a22i=math.cos(angle), a23i=0.0, a24i=0.0,
+        a31i=0.0, a32i=0.0, a33i=1.0, a34i=0.0,
+        a41i=0.0, a42i=0.0, a43i=0.0, a44i=1.0
+    )
+
     return Rz
 
 
 def rotate_atoms_around_y_axis(angle):
     Ry = matrix4x4(
-        a11i =  math.cos(angle), a12i = 0.0, a13i = math.sin(angle), a14i = 0.0,
-        a21i =  0.0            , a22i = 1.0, a23i = 0.0            , a24i = 0.0,
-        a31i = -math.sin(angle), a32i = 0.0, a33i = math.cos(angle), a34i = 0.0,
-        a41i =  0.0            , a42i = 0.0, a43i = 0.0            , a44i = 1.0
-        )
-        
-    return Ry
+        a11i=math.cos(angle), a12i=0.0, a13i=math.sin(angle), a14i=0.0,
+        a21i=0.0, a22i=1.0, a23i=0.0, a24i=0.0,
+        a31i=-math.sin(angle), a32i=0.0, a33i=math.cos(angle), a34i=0.0,
+        a41i=0.0, a42i=0.0, a43i=0.0, a44i=1.0
+    )
 
+    return Ry
 
 
 class multi_vector:
@@ -274,9 +260,9 @@ class multi_vector:
         self.keys = []
 
         # store vectors for all configurations of atoms
-        if atom1!=0:
+        if atom1 != 0:
             self.keys = lib.get_sorted_configurations(atom1.configurations.keys())
-            if atom2!=0:
+            if atom2 != 0:
                 keys2 = lib.get_sorted_configurations(atom2.configurations.keys())
                 if self.keys != keys2:
                     pka_print("ERROR: Inequivalent configurations for atoms, please correct your pdbfile to single configuration")
@@ -285,80 +271,68 @@ class multi_vector:
                     #raise 'Cannot make multi vector: Atomic configurations mismatch for\n   %s\n   %s\n'%(atom1,atom2)
             for key in self.keys:
                 atom1.setConfiguration(key)
-                if atom2!=0:
+                if atom2 != 0:
                     atom2.setConfiguration(key)
                 v = vector(atom1=atom1, atom2=atom2)
                 self.vectors.append(v)
-                #pka_print(key,v)
+                # pka_print(key,v)
         return
-    
 
-    def __getattribute__(self,name):
+    def __getattribute__(self, name):
         try:
             return object.__getattribute__(self, name)
         except AttributeError:
             return self.do_job(name)
 
-
     def __str__(self):
         res = ''
         for i in range(len(self.keys)):
-            res += '%s %s\n'%(self.keys[i], self.vectors[i])
+            res += '%s %s\n' % (self.keys[i], self.vectors[i])
         return res
 
-
     def do_job(self, job):
-        #pka_print(job)
+        # pka_print(job)
         self.res = multi_vector()
         for i in range(len(self.vectors)):
-            self.res.vectors.append(eval('self.vectors[%d].%s()'%(i,job)))
+            self.res.vectors.append(eval('self.vectors[%d].%s()' % (i, job)))
             self.res.keys.append(self.keys[i])
         return self.get_result
-
 
     def get_result(self):
         return self.res
 
-    
     def generic_operation(self, operation, other):
         if self.keys != other.keys:
             raise 'Incompatable keys'
 
         self.res = multi_vector()
         for i in range(len(self.vectors)):
-            self.res.vectors.append(eval('self.vectors[%d] %s other.vectors[%d]'%(i,operation,i)))
+            self.res.vectors.append(eval('self.vectors[%d] %s other.vectors[%d]' % (i, operation, i)))
             self.res.keys.append(self.keys[i])
         return
 
-
     def __add__(self, other):
-        self.generic_operation('+',other)
+        self.generic_operation('+', other)
         return self.res
-
 
     def __sub__(self, other):
-        self.generic_operation('-',other)
+        self.generic_operation('-', other)
         return self.res
-
 
     def __mul__(self, other):
-        self.generic_operation('*',other)
+        self.generic_operation('*', other)
         return self.res
-
 
     def __pow__(self, other):
-        self.generic_operation('**',other)
+        self.generic_operation('**', other)
         return self.res
-
 
     def generic_self_operation(self, operation):
         return
 
-
     def __neg__(self):
-        self.generic_operation('*',-1.0)
+        self.generic_operation('*', -1.0)
         return self.res
-
 
     def rescale(self, new_length):
         self.res = multi_vector()
@@ -366,7 +340,7 @@ class multi_vector:
             self.res.vectors.append(self.vectors[i].rescale(new_length))
             self.res.keys.append(self.keys[i])
         return self.res
-    
+
     def orthogonal(self):
         self.res = multi_vector()
         for i in range(len(self.vectors)):
@@ -377,15 +351,13 @@ class multi_vector:
 
 def rotate_multi_vector_around_an_axis(theta, axis, v):
     """ both axis ans v must be multi_vectors """
-    
+
     if axis.keys != v.keys:
         raise 'Incompatible keys in rotate multi_vector'
-    
+
     res = multi_vector()
     for i in range(len(v.keys)):
         res.vectors.append(rotate_vector_around_an_axis(theta, axis.vectors[i], v.vectors[i]))
         res.keys.append(v.keys[i])
-        
+
     return res
-
-

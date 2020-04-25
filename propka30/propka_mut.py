@@ -11,18 +11,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -36,9 +36,13 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 
-import string, re, sys, os, math
+import string
+import re
+import sys
+import os
+import math
 
 import Source.lib as lib
 import Source.mutate as mutate
@@ -67,21 +71,20 @@ def main():
     # creating a dictionary with atom objects needed for e.g. alignment mutations
     atoms = mutate.makeCompositeAtomsDictionary(protein=myProtein, pdbfiles=pdbfiles, options=options)
 
-
     # II. making mutations and calculating the folding energy
     for mutation in options.mutations:
-      pka_print(mutation)
-      newProtein = mutate.makeMutatedProtein(myProtein, atoms=atoms, mutation=mutation, options=options)
+        pka_print(mutation)
+        newProtein = mutate.makeMutatedProtein(myProtein, atoms=atoms, mutation=mutation, options=options)
 
-      # calculating pKa values for ionizable residues
-      newProtein.calculatePKA(version=version, options=options)
-      newProtein.writePKA(options=options)
-      dG_mut = newProtein.calculateFoldingEnergy(options=options)
-      pka_print("staliblization:")
-      pka_print("%8.2lf %6.2lf  %s" % (dG_ref, dG_ref-dG_ref, "WT"))
-      pka_print("%8.2lf %6.2lf  %s" % (dG_mut, dG_mut-dG_ref, "Mutant"))
-      newProtein.writePDB(hydrogens=True, options=options)
+        # calculating pKa values for ionizable residues
+        newProtein.calculatePKA(version=version, options=options)
+        newProtein.writePKA(options=options)
+        dG_mut = newProtein.calculateFoldingEnergy(options=options)
+        pka_print("staliblization:")
+        pka_print("%8.2lf %6.2lf  %s" % (dG_ref, dG_ref-dG_ref, "WT"))
+        pka_print("%8.2lf %6.2lf  %s" % (dG_mut, dG_mut-dG_ref, "Mutant"))
+        newProtein.writePDB(hydrogens=True, options=options)
 
 
-if __name__ == '__main__': main()
-
+if __name__ == '__main__':
+    main()

@@ -10,18 +10,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -35,8 +35,9 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
-import math, time
+# -------------------------------------------------------------------------------------------------------
+import math
+import time
 
 from . import iterative
 from . import lib
@@ -50,7 +51,7 @@ def setDeterminants(propka_residues, version=None, options=None):
     """
     adding side-chain and coulomb determinants/perturbations to all residues - note, backbone determinants are set separately
     """
-    #debug.printResidues(propka_residues)
+    # debug.printResidues(propka_residues)
     iterative_interactions = []
     # --- NonIterative section ---#
     for residue1 in propka_residues:
@@ -70,15 +71,15 @@ def setDeterminants(propka_residues, version=None, options=None):
                 if do_pair == True:
                     if iterative_interaction == True:
                         iterative.addtoDeterminantList(residue1, residue2, distance, iterative_interactions, version=version)
-                        #print "%s - %s I" % (residue1.label, residue2.label)
+                        # print "%s - %s I" % (residue1.label, residue2.label)
                     else:
                         addDeterminants(residue1, residue2, distance, version=version)
-                        #print "%s - %s" % (residue1.label, residue2.label)
+                        # print "%s - %s" % (residue1.label, residue2.label)
                 else:
                     """ False - don't do this at home folks """
 
     # --- Iterative section ---#
-    #debug.printIterativeDeterminants(iterative_interactions)
+    # debug.printIterativeDeterminants(iterative_interactions)
     iterative.addDeterminants(iterative_interactions, version, options=options)
 
 
@@ -121,7 +122,7 @@ def addSidechainDeterminants(residue1, residue2, version=None):
 
     dpka_max, cutoff = version.SideChainParameters[residue1.resType][residue2.resType]
     if distance < cutoff[1]:
-        if   residue2.resType in version.angularDependentSideChainInteractions:
+        if residue2.resType in version.angularDependentSideChainInteractions:
             atom3 = residue2.getThirdAtomInAngle(closest_atom2)
             distance, f_angle, nada = calculate.AngleFactorX(closest_atom1, closest_atom2, atom3)
         elif residue1.resType in version.angularDependentSideChainInteractions:
@@ -133,7 +134,7 @@ def addSidechainDeterminants(residue1, residue2, version=None):
 
         weight = version.calculatePairWeight(residue1.Nmass, residue2.Nmass)
         exception, value = version.checkExceptions(residue1, residue2)
-        #exception = False # circumventing exception
+        # exception = False # circumventing exception
         if exception == True:
             """ do nothing, value should have been assigned """
             #pka_print(" exception for %s %s %6.2lf" % (residue1.label, residue2.label, value))
@@ -161,12 +162,12 @@ def addCoulombDeterminants(residue1, residue2, distance, version):
     adding NonIterative Coulomb determinants/perturbations
     """
     weight = version.calculatePairWeight(residue1.Nmass, residue2.Nmass)
-    value  = version.calculateCoulombEnergy(distance, weight)
+    value = version.calculateCoulombEnergy(distance, weight)
     Q1 = residue1.Q
     Q2 = residue2.Q
 
     # assigning the Coulombic interaction
-    if   Q1 < 0.0 and Q2 < 0.0:
+    if Q1 < 0.0 and Q2 < 0.0:
         """ both are acids """
         addCoulombAcidPair(residue1, residue2, value)
     elif Q1 > 0.0 and Q2 > 0.0:
@@ -226,8 +227,6 @@ def addCoulombIonPair(object1, object2, value):
     object2.determinants[2].append(newDeterminant)
 
 
-
-
 def setIonDeterminants(protein, version=None):
     """
     adding ion determinants/perturbations
@@ -238,10 +237,10 @@ def setIonDeterminants(protein, version=None):
             for ion in protein.residue_dictionary["ION"]:
                 distance = calculate.InterResidueDistance(residue, ion)
                 if distance < version.coulomb_cutoff[1]:
-                    label  = "%s%4d%2s" % (ion.resName, ion.resNumb, ion.chainID)
+                    label = "%s%4d%2s" % (ion.resName, ion.resNumb, ion.chainID)
                     weight = version.calculatePairWeight(residue.Nmass, ion.Nmass)
                     # the pKa of both acids and bases are shifted up by negative ions (and vice versa)
-                    value  =  (-ion.Q) * version.calculateCoulombEnergy(distance, weight)
+                    value = (-ion.Q) * version.calculateCoulombEnergy(distance, weight)
                     newDeterminant = Determinant(label, value)
                     residue.determinants[2].append(newDeterminant)
 
@@ -316,4 +315,3 @@ def setBackBoneBaseDeterminants(data_clump, version=None):
                         value = residue.Q * calculate.HydrogenBondEnergy(distance, dpKa_max, cutoff, f_angle)
                         newDeterminant = Determinant(label, value)
                         residue.determinants[1].append(newDeterminant)
-

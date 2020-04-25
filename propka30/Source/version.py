@@ -10,18 +10,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -35,11 +35,12 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 
 import math
 from . import lib
-import sys, os
+import sys
+import os
 from . import calculator as calculate
 pka_print = lib.pka_print
 
@@ -64,7 +65,7 @@ def getAtomInteractionList():
                       'GLU': ['OE1', 'OE2'],
                       'N+ ': ['N'],
                       'C- ': ['O', 'OXT'],
-                     } 
+                      }
     # the atoms with which this residue interacts with bases
     labels['base'] = {'SER': ['OG'],
                       'THR': ['OG1'],
@@ -80,7 +81,7 @@ def getAtomInteractionList():
                       'GLU': ['OE1', 'OE2'],
                       'N+ ': ['N'],
                       'C- ': ['O', 'OXT'],
-                     } 
+                      }
     return labels
 
 
@@ -88,7 +89,7 @@ def getSideChainInteractionMatrix(side_chain=None):
     """ 
       setting up rules for iterative/non-iterative/non-interacting; 
       Note that only the LOWER part of the matrix is used!
-     
+
       'N'   non-iterative interaction
       'I'   iterative interaction
       '-'   no interaction
@@ -97,7 +98,7 @@ def getSideChainInteractionMatrix(side_chain=None):
     # WARNING, this matrix has been moved to parameters_xxx since
     #          it is different for various versions!!!
     #                     COO  CYS  TYR  HIS   N+  LYS  ARG
-    #side_chain = {'COO': ["I", "I", "N", "N", "N", "N", "N"],
+    # side_chain = {'COO': ["I", "I", "N", "N", "N", "N", "N"],
     #              'CYS': ["I", "I", "N", "I", "N", "N", "N"],
     #              'TYR': ["N", "N", "I", "I", "I", "I", "N"],
     #              'HIS': ["I", "I", "I", "I", "N", "N", "N"],
@@ -112,29 +113,31 @@ def getSideChainInteractionMatrix(side_chain=None):
     # generating the true 'interaction' matrix
     interaction = {}
     for key1 in keys:
-      i=0
-      interaction[key1] = {}
-      for key2 in keys:
-        if   i >= len(side_chain[key1]):
-          do_pair = False; iterative = None
-        elif side_chain[key1][i] == "I":
-          do_pair = True;  iterative = True
-        elif side_chain[key1][i] == "N":
-          do_pair = True;  iterative = False
-        else:
-          do_pair = False; iterative = None
-          
-        interaction[key1][key2] = [do_pair, iterative]
-        interaction[key2][key1] = [do_pair, iterative]
+        i = 0
+        interaction[key1] = {}
+        for key2 in keys:
+            if i >= len(side_chain[key1]):
+                do_pair = False
+                iterative = None
+            elif side_chain[key1][i] == "I":
+                do_pair = True
+                iterative = True
+            elif side_chain[key1][i] == "N":
+                do_pair = True
+                iterative = False
+            else:
+                do_pair = False
+                iterative = None
 
-        if key1 == key2:
-          break
-        else:
-          i += 1
+            interaction[key1][key2] = [do_pair, iterative]
+            interaction[key2][key1] = [do_pair, iterative]
+
+            if key1 == key2:
+                break
+            else:
+                i += 1
 
     return interaction
-
-
 
 
 # ----- methods for checking a number of propka exceptions -----
@@ -156,34 +159,34 @@ def checkCooArgException(residue_coo, residue_arg, version=None):
     # needs to be this way since you want to find shortest distance first
     # pka_print("--- exception for %s %s ---" % (residue_coo.label, residue_arg.label))
     for iter in ["shortest", "runner-up"]:
-      distance = 999.
-      closest_coo_atom = None
-      closest_arg_atom = None
-      for atom_coo in residue_coo.makeDeterminantAtomList(residue_arg.resName, version=version):
-        for atom_arg in residue_arg.makeDeterminantAtomList(residue_coo.resName, version=version):
-          fucked = False
-          if atom_coo in excluded_atoms or atom_arg in excluded_atoms:
-            fucked = True
-          if fucked == False:
-            current_distance = calculate.InterAtomDistance(atom_coo, atom_arg)
-            #pka_print("- %-4s %-4s: %6.2lf%6.2lf %s" % (atom_coo.name, atom_arg.name, current_distance, distance, iter))
-            if current_distance < distance:
-              closest_arg_atom = atom_arg
-              closest_coo_atom = atom_coo
-              distance = current_distance
-      atom3 = residue_arg.getThirdAtomInAngle(closest_arg_atom)
-      if   residue_arg.resType in version.angularDependentSideChainInteractions:
-        distance, f_angle, nada = calculate.AngleFactorX(closest_coo_atom, closest_arg_atom, atom3)
-      else:
-        f_angle = 1.00
-      value = calculate.HydrogenBondEnergy(distance, dpka_max, cutoff, f_angle)
-      value_tot += value
-      #pka_print(">>> %s %s: %6.2lf %6.2lf %6.2lf %s" % (closest_coo_atom.name, closest_arg_atom.name, distance, f_angle, value, iter))
-      str += "%6.2lf" % (value)
-      #str += "%6.2lf" % (distance)
-      excluded_atoms.append(closest_coo_atom)
-      excluded_atoms.append(closest_arg_atom)
-    #pka_print(str)
+        distance = 999.
+        closest_coo_atom = None
+        closest_arg_atom = None
+        for atom_coo in residue_coo.makeDeterminantAtomList(residue_arg.resName, version=version):
+            for atom_arg in residue_arg.makeDeterminantAtomList(residue_coo.resName, version=version):
+                fucked = False
+                if atom_coo in excluded_atoms or atom_arg in excluded_atoms:
+                    fucked = True
+                if fucked == False:
+                    current_distance = calculate.InterAtomDistance(atom_coo, atom_arg)
+                    #pka_print("- %-4s %-4s: %6.2lf%6.2lf %s" % (atom_coo.name, atom_arg.name, current_distance, distance, iter))
+                    if current_distance < distance:
+                        closest_arg_atom = atom_arg
+                        closest_coo_atom = atom_coo
+                        distance = current_distance
+        atom3 = residue_arg.getThirdAtomInAngle(closest_arg_atom)
+        if residue_arg.resType in version.angularDependentSideChainInteractions:
+            distance, f_angle, nada = calculate.AngleFactorX(closest_coo_atom, closest_arg_atom, atom3)
+        else:
+            f_angle = 1.00
+        value = calculate.HydrogenBondEnergy(distance, dpka_max, cutoff, f_angle)
+        value_tot += value
+        #pka_print(">>> %s %s: %6.2lf %6.2lf %6.2lf %s" % (closest_coo_atom.name, closest_arg_atom.name, distance, f_angle, value, iter))
+        str += "%6.2lf" % (value)
+        #str += "%6.2lf" % (distance)
+        excluded_atoms.append(closest_coo_atom)
+        excluded_atoms.append(closest_arg_atom)
+    # pka_print(str)
 
     return exception, value_tot
 
@@ -194,20 +197,20 @@ def checkCooArgException_old(residue_coo, residue_arg, version=None):
     """
     distances = []
     for atom_coo in residue_coo.makeDeterminantAtomList(residue_arg.resName, version=version):
-      distance = 999.
-      for atom_arg in residue_arg.makeDeterminantAtomList(residue_coo.resName, version=version):
-        distance = min(calculate.InterAtomDistance(atom_coo, atom_arg), distance)
-      distances.append(distance)
+        distance = 999.
+        for atom_arg in residue_arg.makeDeterminantAtomList(residue_coo.resName, version=version):
+            distance = min(calculate.InterAtomDistance(atom_coo, atom_arg), distance)
+        distances.append(distance)
     exception = True
     for distance in distances:
-      if distance > 2.2:
-        exception = False
+        if distance > 2.2:
+            exception = False
 
     # Value not set here anymore!!!
     if lib.checkBuried(residue_coo.Nmass, residue_arg.Nmass):
-      return exception, 2.40
+        return exception, 2.40
     else:
-      return exception, 2.40
+        return exception, 2.40
 
 
 def checkCooCooException(residue1, residue2, version=None):
@@ -217,8 +220,8 @@ def checkCooCooException(residue1, residue2, version=None):
     exception = True
     distance = 999.
     for atom1 in residue1.makeDeterminantAtomList(residue2.resName, version=version):
-      for atom2 in residue2.makeDeterminantAtomList(residue1.resName, version=version):
-        distance = min(calculate.InterAtomDistance(atom1, atom2), distance)
+        for atom2 in residue2.makeDeterminantAtomList(residue1.resName, version=version):
+            distance = min(calculate.InterAtomDistance(atom1, atom2), distance)
     dpka_max, cutoff = version.SideChainParameters[residue1.resType][residue2.resType]
     f_angle = 1.00
     value = calculate.HydrogenBondEnergy(distance, dpka_max, cutoff, f_angle)
@@ -236,7 +239,7 @@ def checkCooCooException_old(residue1, residue2, version=None):
     if lib.checkBuried(residue1.Nmass, residue2.Nmass):
         exception = True
 
-    return exception, 1.60 # 1.60 0.80
+    return exception, 1.60  # 1.60 0.80
 
 
 def checkCooHisException(residue1, residue2, version=None):
@@ -272,7 +275,6 @@ def checkCysCysException(residue1, residue2, version=None):
     return exception, 3.60
 
 
-
 # ----- methods for making a version -----
 
 
@@ -280,47 +282,45 @@ def makeVersion(label="Nov30", options=None):
     """
     return a version object for exceptions and weird stuff
     """
-    if   label == "Jan15":
-      version = Jan15(options=options)
+    if label == "Jan15":
+        version = Jan15(options=options)
     elif label == "Jan01":
-      version = Jan01(options=options)
+        version = Jan01(options=options)
     elif label == "Aug24":
-      version = Aug24(options=options)
+        version = Aug24(options=options)
     elif label == "Aug30":
-      version = Aug30(options=options)
+        version = Aug30(options=options)
     elif label == "Aug31":
-      version = Aug31(options=options)
+        version = Aug31(options=options)
     elif label == "Sep05":
-      version = Sep05(options=options)
+        version = Sep05(options=options)
     elif label == "Sep06":
-      version = Sep06(options=options)
+        version = Sep06(options=options)
     elif label == "Sep07":
-      version = Sep07(options=options)
+        version = Sep07(options=options)
     elif label == "Sep08":
-      version = Sep08(options=options)
+        version = Sep08(options=options)
     elif label == "Dec18":
-      version = Dec18(options=options)
+        version = Dec18(options=options)
     elif label == "Dec19":
-      version = Dec19(options=options)
+        version = Dec19(options=options)
     elif label == "Oct13":
-      version = Oct13(options=options)
+        version = Oct13(options=options)
     elif label == "Oct14":
-      version = Oct14(options=options)
+        version = Oct14(options=options)
     elif label == "Nov28":
-      version = Nov28(options=options)
+        version = Nov28(options=options)
     elif label == "Nov29":
-      version = Nov29(options=options)
+        version = Nov29(options=options)
     elif label == "Nov30":
-      version = Nov30(options=options)
+        version = Nov30(options=options)
     else:
-      pka_print("version \"%s\" not defined in makeVersion()" % (label))
-      sys.exit(9)
+        pka_print("version \"%s\" not defined in makeVersion()" % (label))
+        sys.exit(9)
 
     pka_print("created version \"%s\"" % (version.name))
 
     return version
-
-
 
 
 # --- definition of various classes for obtaining propka version ---
@@ -330,35 +330,33 @@ class Version(object):
     """
         Version class - contains rules for calculating pKa values.
     """
-    name             =   None
-    buried_cutoff    =   15.50
-    desolv_cutoff    =   20.00
-    Nmin             =  300
-    Nmax             =  600
-    sidechain_cutoff =  6.0
-    CoulombModel     = "Linear"
+    name = None
+    buried_cutoff = 15.50
+    desolv_cutoff = 20.00
+    Nmin = 300
+    Nmax = 600
+    sidechain_cutoff = 6.0
+    CoulombModel = "Linear"
     DesolvationModel = "ContactModel"
-    BackBoneParameters  = None                    # set when class initialized
+    BackBoneParameters = None                    # set when class initialized
     SideChainParameters = None                    # set when class initialized
     angularDependentSideChainInteractions = None  # set when class initialized
     doingBackBoneReorganization = False
-    scaleUpBuriedSideChain      = 0.00
+    scaleUpBuriedSideChain = 0.00
     valueCooArgException = 2.40
     valueCooCooException = 1.60
     coulomb_list = ["COO", "CYS", "TYR", "HIS", "LYS", "ARG", "N+ "]
     exclude_sidechain_interactions = ["LYS", "ARG", "N+ "]
     atomInteractionList = getAtomInteractionList()
 
-
     def __init__(self, options=None):
         """
         constructer of the Default object.
         """
-        str  = "WARNING: you are trying to create a 'default' version object. "
+        str = "WARNING: you are trying to create a 'default' version object. "
         str += " This object contains the cross section of all versions and is not a complete version itself."
         pka_print(str)
         sys.exit(8)
-
 
     def printVersion(self):
         """
@@ -368,18 +366,17 @@ class Version(object):
         pka_print("  desolvation   = %s" % (self.DesolvationModel))
         pka_print("    prefactor   = %6.2lf" % (self.desolvationPrefactor))
         pka_print("    allowance   = %6.2lf" % (self.desolvationAllowance))
-        if   self.DesolvationModel in ["propka2", "ContactModel"]:
-          pka_print("    radii       = %s" % (self.desolvationRadii))
-        if   self.DesolvationModel in ["VolumeModel", "ScaledVolumeModel"]:
-          pka_print("    surface     = %s" % (self.desolvationSurfaceScalingFactor))
+        if self.DesolvationModel in ["propka2", "ContactModel"]:
+            pka_print("    radii       = %s" % (self.desolvationRadii))
+        if self.DesolvationModel in ["VolumeModel", "ScaledVolumeModel"]:
+            pka_print("    surface     = %s" % (self.desolvationSurfaceScalingFactor))
         pka_print("  Coulomb       = %s" % (self.CoulombModel))
         pka_print("    cutoff      = %s" % (self.coulomb_cutoff))
         pka_print("    scaled      = %s" % (self.coulomb_scaled))
-        if   self.CoulombModel == "Linear":
-          pka_print("    prefactor   = %s" % (self.coulomb_maxpka))
+        if self.CoulombModel == "Linear":
+            pka_print("    prefactor   = %s" % (self.coulomb_maxpka))
         elif self.CoulombModel == "Coulomb":
-          pka_print("    diel        = %s" % (self.coulomb_diel))
-
+            pka_print("    diel        = %s" % (self.coulomb_diel))
 
     def calculateWeight(self, Nmass):
         """
@@ -391,67 +388,63 @@ class Version(object):
 
         return weight
 
-
     def calculatePairWeight(self, Nmass1, Nmass2):
         """
         calculating the atom-pair based desolvation weight
         """
         Nmass = Nmass1 + Nmass2
-        Nmin  = 2*self.Nmin
-        Nmax  = 2*self.Nmax
+        Nmin = 2*self.Nmin
+        Nmax = 2*self.Nmax
         weight = float(Nmass - Nmin)/float(Nmax - Nmin)
         weight = min(1.0, weight)
         weight = max(0.0, weight)
 
         return weight
 
-
     def setBackBoneMaxPKA(self, dpka=None, resType=None):
         """
         setting the max pKa shift due to all side-chain groups
         """
         if resType == None:
-          # doing it for all residues
-          #pka_print("changing back-bone parameters")
-          for key in self.BackBoneParameters.keys():
-            self.BackBoneParameters[key][0] = dpka
-            str  = " %s: %6.2lf " % (key, self.BackBoneParameters[key][0])
-            str += "[%5.2lf,%5.2lf]" % (self.BackBoneParameters[key][1][0], self.BackBoneParameters[key][1][1])
-            #pka_print(str)
+            # doing it for all residues
+            #pka_print("changing back-bone parameters")
+            for key in self.BackBoneParameters.keys():
+                self.BackBoneParameters[key][0] = dpka
+                str = " %s: %6.2lf " % (key, self.BackBoneParameters[key][0])
+                str += "[%5.2lf,%5.2lf]" % (self.BackBoneParameters[key][1][0], self.BackBoneParameters[key][1][1])
+                # pka_print(str)
         else:
-          # doing it just for residue 'key'
-          key = resType
-          #pka_print("changing back-bone parameters")
-          self.BackBoneParameters[key][0] = dpka
-          str  = " %s: %6.2lf " % (key, self.BackBoneParameters[key][0])
-          str += "[%5.2lf,%5.2lf]" % (self.BackBoneParameters[key][1][0], self.BackBoneParameters[key][1][1])
-          #pka_print(str)
-
+            # doing it just for residue 'key'
+            key = resType
+            #pka_print("changing back-bone parameters")
+            self.BackBoneParameters[key][0] = dpka
+            str = " %s: %6.2lf " % (key, self.BackBoneParameters[key][0])
+            str += "[%5.2lf,%5.2lf]" % (self.BackBoneParameters[key][1][0], self.BackBoneParameters[key][1][1])
+            # pka_print(str)
 
     def setSideChainMaxPKA(self, dpka=None, resType=None):
         """
         setting the max pKa shift due to all side-chain groups
         """
         if resType == None:
-          # doing it for all residues
-          for key1 in self.SideChainParameters.keys():
+            # doing it for all residues
+            for key1 in self.SideChainParameters.keys():
+                #pka_print("changing side-chain parameters for resType \"%s\"" % (key1))
+                for key2 in self.SideChainParameters[key1].keys():
+                    self.SideChainParameters[key1][key2][0] = dpka
+                    str = " %s: %6.2lf " % (key2, self.SideChainParameters[key1][key2][0])
+                    str += "[%5.2lf,%5.2lf]" % (self.SideChainParameters[key1][key2][1][0], self.SideChainParameters[key1][key2][1][1])
+                    # pka_print(str)
+        else:
+            # doing it just for residue 'key1'
+            key1 = resType
             #pka_print("changing side-chain parameters for resType \"%s\"" % (key1))
             for key2 in self.SideChainParameters[key1].keys():
-              self.SideChainParameters[key1][key2][0] = dpka
-              str  = " %s: %6.2lf " % (key2, self.SideChainParameters[key1][key2][0])
-              str += "[%5.2lf,%5.2lf]" % (self.SideChainParameters[key1][key2][1][0], self.SideChainParameters[key1][key2][1][1])
-              #pka_print(str)
-        else:
-          # doing it just for residue 'key1'
-          key1 = resType
-          #pka_print("changing side-chain parameters for resType \"%s\"" % (key1))
-          for key2 in self.SideChainParameters[key1].keys():
-            self.SideChainParameters[key1][key2][0] = dpka
-            self.SideChainParameters[key2][key1][0] = dpka
-            str  = " %s: %6.2lf " % (key2, self.SideChainParameters[key1][key2][0])
-            str += "[%5.2lf,%5.2lf]" % (self.SideChainParameters[key1][key2][1][0], self.SideChainParameters[key1][key2][1][1])
-            #pka_print(str)
-
+                self.SideChainParameters[key1][key2][0] = dpka
+                self.SideChainParameters[key2][key1][0] = dpka
+                str = " %s: %6.2lf " % (key2, self.SideChainParameters[key1][key2][0])
+                str += "[%5.2lf,%5.2lf]" % (self.SideChainParameters[key1][key2][1][0], self.SideChainParameters[key1][key2][1][1])
+                # pka_print(str)
 
     def setCoulomb(self, label, max_dpka=None, cutoff=None, diel=None, scaled=None, mixed=False):
         """
@@ -460,35 +453,33 @@ class Version(object):
         from . import parameters_new as parameters
         coulomb_parameters = parameters.getCoulombParameters()
         if label not in coulomb_parameters:
-          pka_print("do not accept Coulomb model \"%s\\n" % (label))
-          sys.exit(9)
+            pka_print("do not accept Coulomb model \"%s\\n" % (label))
+            sys.exit(9)
         else:
-          self.CoulombModel = label
-          default_parameters = coulomb_parameters[label]
+            self.CoulombModel = label
+            default_parameters = coulomb_parameters[label]
 
         if 'max_dpka' in default_parameters:
-          if max_dpka == None:
-            self.coulomb_maxpka = default_parameters['max_dpka']
-          else:
-            self.coulomb_maxpka = max_dpka
+            if max_dpka == None:
+                self.coulomb_maxpka = default_parameters['max_dpka']
+            else:
+                self.coulomb_maxpka = max_dpka
         if 'cutoff' in default_parameters:
-          if cutoff == None:
-            self.coulomb_cutoff = default_parameters['cutoff']
-          else:
-            self.coulomb_cutoff = cutoff
+            if cutoff == None:
+                self.coulomb_cutoff = default_parameters['cutoff']
+            else:
+                self.coulomb_cutoff = cutoff
         if 'diel' in default_parameters:
-          if diel == None:
-            self.coulomb_diel = default_parameters['diel']
-          else:
-            self.coulomb_diel = diel
+            if diel == None:
+                self.coulomb_diel = default_parameters['diel']
+            else:
+                self.coulomb_diel = diel
         if 'scaled' in default_parameters:
-          if scaled == None:
-            self.coulomb_scaled = default_parameters['scaled']
-          else:
-            self.coulomb_scaled = scaled
-        self.coulomb_mixed  = mixed
-
-
+            if scaled == None:
+                self.coulomb_scaled = default_parameters['scaled']
+            else:
+                self.coulomb_scaled = scaled
+        self.coulomb_mixed = mixed
 
     def setDesolvation(self, label, prefactor=None, allowance=None, surface=None, volume=None, local=None, radii=None):
         """
@@ -497,70 +488,67 @@ class Version(object):
         from . import parameters_new as parameters
         desolvation_parameters = parameters.getDesolvationParameters()
         if label not in desolvation_parameters:
-          pka_print("do not accept solvation model \"%s\\n" % (label))
-          sys.exit(9)
+            pka_print("do not accept solvation model \"%s\\n" % (label))
+            sys.exit(9)
         else:
-          self.DesolvationModel = label
-          default_parameters = desolvation_parameters[label]
+            self.DesolvationModel = label
+            default_parameters = desolvation_parameters[label]
 
         if 'allowance' in default_parameters:
-          if allowance == None:
-            self.desolvationAllowance            = default_parameters['allowance']
-          else:
-            self.desolvationAllowance            = allowance
+            if allowance == None:
+                self.desolvationAllowance = default_parameters['allowance']
+            else:
+                self.desolvationAllowance = allowance
         if 'prefactor' in default_parameters:
-          if prefactor == None:
-            self.desolvationPrefactor            = default_parameters['prefactor']
-          else:
-            self.desolvationPrefactor            = prefactor
+            if prefactor == None:
+                self.desolvationPrefactor = default_parameters['prefactor']
+            else:
+                self.desolvationPrefactor = prefactor
         if 'surface' in default_parameters:
-          if surface == None:
-            self.desolvationSurfaceScalingFactor = default_parameters['surface']
-          else:
-            self.desolvationSurfaceScalingFactor = surface
+            if surface == None:
+                self.desolvationSurfaceScalingFactor = default_parameters['surface']
+            else:
+                self.desolvationSurfaceScalingFactor = surface
         if 'volume' in default_parameters:
-          if volume    == None:
-            self.desolvationVolume               = default_parameters['volume']
-          else:
-            self.desolvationVolume               = volume
+            if volume == None:
+                self.desolvationVolume = default_parameters['volume']
+            else:
+                self.desolvationVolume = volume
         if 'local' in default_parameters:
-          if local     == None:
-            self.desolvationLocal                = default_parameters['local']
-          else:
-            self.desolvationLocal                = local
+            if local == None:
+                self.desolvationLocal = default_parameters['local']
+            else:
+                self.desolvationLocal = local
         if 'radii' in default_parameters:
-          if radii     == None:
-            self.desolvationRadii                = default_parameters['radii']
-          else:
-            self.desolvationRadii                = radii
-
+            if radii == None:
+                self.desolvationRadii = default_parameters['radii']
+            else:
+                self.desolvationRadii = radii
 
     def calculateDesolvation(self, residue, atoms, options=None):
         """
         redirecting the desolvation calculation to the right model
         """
-        if   self.DesolvationModel == "propka2":
-          Nmass, Emass, Nlocl, Elocl = calculate.originalDesolvation(residue=residue, atoms=atoms, version=self, options=options)
+        if self.DesolvationModel == "propka2":
+            Nmass, Emass, Nlocl, Elocl = calculate.originalDesolvation(residue=residue, atoms=atoms, version=self, options=options)
         elif self.DesolvationModel == "ContactModel":
-          Nmass, Emass, Nlocl, Elocl = calculate.contactDesolvation(residue, atoms, self, options=options)
+            Nmass, Emass, Nlocl, Elocl = calculate.contactDesolvation(residue, atoms, self, options=options)
         elif self.DesolvationModel in ["VolumeModel", "ScaledVolumeModel"]:
-          Nmass, Emass, Nlocl, Elocl = calculate.radialVolumeDesolvation(residue, atoms, self, options=options)
+            Nmass, Emass, Nlocl, Elocl = calculate.radialVolumeDesolvation(residue, atoms, self, options=options)
         else:
-          pka_print("Desolvation \"%s\" is not implemented" % (self.DesolvationModel))
-          sys.exit(8)
+            pka_print("Desolvation \"%s\" is not implemented" % (self.DesolvationModel))
+            sys.exit(8)
 
         return Nmass, Emass, Nlocl, Elocl
-
 
     def calculateBackBoneReorganization(self, protein, options=None):
         """
         Testing new term, reorganization of back-bone CO groups
         """
         if self.doingBackBoneReorganization == True:
-          calculate.BackBoneReorganization(protein)
+            calculate.BackBoneReorganization(protein)
         else:
-          """ do nothing """
-
+            """ do nothing """
 
     def checkCoulombPair(self, residue1, residue2, distance):
         """
@@ -570,22 +558,20 @@ class Version(object):
         do_coulomb = True
 
         if residue1.resType in self.coulomb_list and residue2.resType in self.coulomb_list:
-          # distance criteria
-          if distance > self.coulomb_cutoff[1]:
-            do_coulomb = False
-          # famous COO-TYR exception
-          if (residue1.resType == "COO" and residue2.resType == "TYR") or \
-             (residue2.resType == "COO" and residue1.resType == "TYR"):
-              """ do nothing """
-          elif Npair < self.Nmin:
-              do_coulomb = False
+            # distance criteria
+            if distance > self.coulomb_cutoff[1]:
+                do_coulomb = False
+            # famous COO-TYR exception
+            if (residue1.resType == "COO" and residue2.resType == "TYR") or \
+               (residue2.resType == "COO" and residue1.resType == "TYR"):
+                """ do nothing """
+            elif Npair < self.Nmin:
+                do_coulomb = False
         else:
-          do_coulomb = False
+            do_coulomb = False
 
-        #print "%s - %s Npair=%4d %s" % (residue1.label, residue2.label, Npair, do_coulomb)
+        # print "%s - %s Npair=%4d %s" % (residue1.label, residue2.label, Npair, do_coulomb)
         return do_coulomb
-
-
 
     def setCoulombCutOff(self, cutoff):
         """
@@ -593,34 +579,31 @@ class Version(object):
         """
         self.coulomb_cutoff = cutoff
 
-
     def calculateSideChainEnergy(self, distance, dpka_max, cutoff, weight, f_angle):
         """
         redirects to get the correct side-chain interaction
         """
         if False:
-          prefactor = (1.0 + weight*self.scaleUpBuriedSideChain)
+            prefactor = (1.0 + weight*self.scaleUpBuriedSideChain)
         else:
-          prefactor = 1.00
+            prefactor = 1.00
         return calculate.HydrogenBondEnergy(distance, prefactor*dpka_max, cutoff, f_angle)
-
 
     def calculateCoulombEnergy(self, distance, weight, options=None):
         """
         redirects to get the correct Coulomb interaction - linear for default
         """
-        if   self.CoulombModel == "Linear":
-          return calculate.linearCoulombEnergy(distance, weight, self, options=options)
+        if self.CoulombModel == "Linear":
+            return calculate.linearCoulombEnergy(distance, weight, self, options=options)
         elif self.CoulombModel == "Coulomb" and self.coulomb_mixed == True:
-          return calculate.MixedCoulombEnergy(distance, weight, self, options=options)
+            return calculate.MixedCoulombEnergy(distance, weight, self, options=options)
         elif self.CoulombModel == "Coulomb":
-          return calculate.CoulombEnergy(distance, weight, self, options=options)
+            return calculate.CoulombEnergy(distance, weight, self, options=options)
         elif self.CoulombModel == "DistanceScaledCoulomb":
-          return calculate.distanceScaledCoulombEnergy(distance, weight, self, options=options)
+            return calculate.distanceScaledCoulombEnergy(distance, weight, self, options=options)
         else:
-          pka_print("Coulomb \"%s\" is not implemented" % (self.CoulombModel))
-          sys.exit(8)
-          
+            pka_print("Coulomb \"%s\" is not implemented" % (self.CoulombModel))
+            sys.exit(8)
 
     def checkExceptions(self, residue1, residue2):
         """
@@ -628,26 +611,26 @@ class Version(object):
         """
         resType1 = residue1.resType
         resType2 = residue2.resType
-        if   (resType1 == "COO" and resType2 == "ARG"):
-          exception, value = checkCooArgException(residue1, residue2, version=self)
+        if (resType1 == "COO" and resType2 == "ARG"):
+            exception, value = checkCooArgException(residue1, residue2, version=self)
         elif (resType1 == "ARG" and resType2 == "COO"):
-          exception, value = checkCooArgException(residue2, residue1, version=self)
+            exception, value = checkCooArgException(residue2, residue1, version=self)
         elif (resType1 == "COO" and resType2 == "COO"):
-          exception, value = checkCooCooException(residue1, residue2, version=self)
+            exception, value = checkCooCooException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "CYS"):
-          exception, value = checkCysCysException(residue1, residue2, version=self)
+            exception, value = checkCysCysException(residue1, residue2, version=self)
         elif (resType1 == "COO" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "COO"):
-          exception, value = checkCooHisException(residue1, residue2, version=self)
+            exception, value = checkCooHisException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "CYS"):
-          exception, value = checkCysHisException(residue1, residue2, version=self)
+            exception, value = checkCysHisException(residue1, residue2, version=self)
         else:
-          # do nothing, no exception for this pair
-          exception = False; value = None
+            # do nothing, no exception for this pair
+            exception = False
+            value = None
 
         return exception, value
-
 
 
 #   --- specific versions with different behaviour or initialization ---
@@ -662,21 +645,22 @@ class Jan01(Version):
         Rules of action for version Jan01
         """
         import parameters_std as parameters
-    
-        self.name             = "Jan01"
-        self.Nmin             =  300
-        self.Nmax             =  600
-        self.buried_cutoff    =   15.50; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   15.50; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+
+        self.name = "Jan01"
+        self.Nmin = 300
+        self.Nmax = 600
+        self.buried_cutoff = 15.50
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 15.50
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("propka2")
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=None, scaled=False)
         self.doingBackBoneReorganization = False
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.angularDependentSideChainInteractions = []
         self.exclude_sidechain_interactions = ["LYS", "ARG", "N+ "]
-
 
     def checkCoulombPair(self, residue1, residue2, distance):
         """
@@ -686,30 +670,28 @@ class Jan01(Version):
 
         # check all Coulomb criteria!
         if residue1.resType in self.coulomb_list and residue2.resType in self.coulomb_list:
-          # distance criteria
-          if distance > self.coulomb_cutoff[1]:
-            do_coulomb = False
-          # famous COO-TYR exception
-          if (residue1.resType == "COO" and residue2.resType == "TYR") or \
-             (residue2.resType == "COO" and residue1.resType == "TYR"):
-              """ do nothing """
-          elif lib.checkBuried(residue1.Nmass, residue2.Nmass) == False:
-              do_coulomb = False
+            # distance criteria
+            if distance > self.coulomb_cutoff[1]:
+                do_coulomb = False
+            # famous COO-TYR exception
+            if (residue1.resType == "COO" and residue2.resType == "TYR") or \
+               (residue2.resType == "COO" and residue1.resType == "TYR"):
+                """ do nothing """
+            elif lib.checkBuried(residue1.Nmass, residue2.Nmass) == False:
+                do_coulomb = False
         else:
-          do_coulomb = False
+            do_coulomb = False
 
         return do_coulomb
-
 
     def calculatePairWeight(self, Nmass1, Nmass2):
         """
         calculates the weight for the Coulomb interaction - used for version "Dec18" & "Sep23"
         """
         if lib.checkBuried(Nmass1, Nmass2) == False:
-          return 0.0
+            return 0.0
         else:
-          return 1.0
-
+            return 1.0
 
     def checkExceptions(self, residue1, residue2):
         """
@@ -717,28 +699,26 @@ class Jan01(Version):
         """
         resType1 = residue1.resType
         resType2 = residue2.resType
-        if   (resType1 == "COO" and resType2 == "ARG"):
-          exception, value = checkCooArgException_old(residue1, residue2, version=self)
+        if (resType1 == "COO" and resType2 == "ARG"):
+            exception, value = checkCooArgException_old(residue1, residue2, version=self)
         elif (resType1 == "ARG" and resType2 == "COO"):
-          exception, value = checkCooArgException_old(residue2, residue1, version=self)
+            exception, value = checkCooArgException_old(residue2, residue1, version=self)
         elif (resType1 == "COO" and resType2 == "COO"):
-          exception, value = checkCooCooException(residue1, residue2, version=self)
+            exception, value = checkCooCooException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "CYS"):
-          exception, value = checkCysCysException(residue1, residue2, version=self)
+            exception, value = checkCysCysException(residue1, residue2, version=self)
         elif (resType1 == "COO" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "COO"):
-          exception, value = checkCooHisException(residue1, residue2, version=self)
+            exception, value = checkCooHisException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "CYS"):
-          exception, value = checkCysHisException(residue1, residue2, version=self)
+            exception, value = checkCysHisException(residue1, residue2, version=self)
         else:
-          # do nothing, no exception for this pair
-          exception = False; value = None
+            # do nothing, no exception for this pair
+            exception = False
+            value = None
 
         return exception, value
-
-
-
 
 
 class Jan15(Version):
@@ -752,20 +732,21 @@ class Jan15(Version):
         """
         import parameters_std as parameters
 
-        self.name             = "Jan15"
-        self.Nmin             =  300
-        self.Nmax             =  600
-        self.buried_cutoff    =   15.50; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   15.50; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Jan15"
+        self.Nmin = 300
+        self.Nmax = 600
+        self.buried_cutoff = 15.50
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 15.50
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("ContactModel", prefactor=-0.01, allowance=400.0)
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=None, scaled=False)
         self.doingBackBoneReorganization = False
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
-        self.angularDependentSideChainInteractions = [] 
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
+        self.angularDependentSideChainInteractions = []
         self.exclude_sidechain_interactions = ["LYS", "ARG", "N+ "]
-
 
     def checkCoulombPair(self, residue1, residue2, distance):
         """
@@ -775,30 +756,28 @@ class Jan15(Version):
 
         # check all Coulomb criteria!
         if residue1.resType in self.coulomb_list and residue2.resType in self.coulomb_list:
-          # distance criteria
-          if distance > self.coulomb_cutoff[1]:
-            do_coulomb = False
-          # famous COO-TYR exception
-          if (residue1.resType == "COO" and residue2.resType == "TYR") or \
-             (residue2.resType == "COO" and residue1.resType == "TYR"):
-              """ do nothing """
-          elif lib.checkBuried(residue1.Nmass, residue2.Nmass) == False:
-              do_coulomb = False
+            # distance criteria
+            if distance > self.coulomb_cutoff[1]:
+                do_coulomb = False
+            # famous COO-TYR exception
+            if (residue1.resType == "COO" and residue2.resType == "TYR") or \
+               (residue2.resType == "COO" and residue1.resType == "TYR"):
+                """ do nothing """
+            elif lib.checkBuried(residue1.Nmass, residue2.Nmass) == False:
+                do_coulomb = False
         else:
-          do_coulomb = False
+            do_coulomb = False
 
         return do_coulomb
-
 
     def calculatePairWeight(self, Nmass1, Nmass2):
         """
         calculates the weight for the Coulomb interaction - used for version "Dec18" & "Sep23"
         """
         if lib.checkBuried(Nmass1, Nmass2) == False:
-          return 0.0
+            return 0.0
         else:
-          return 1.0
-
+            return 1.0
 
     def checkExceptions(self, residue1, residue2):
         """
@@ -806,28 +785,26 @@ class Jan15(Version):
         """
         resType1 = residue1.resType
         resType2 = residue2.resType
-        if   (resType1 == "COO" and resType2 == "ARG"):
-          exception, value = checkCooArgException_old(residue1, residue2, version=self)
+        if (resType1 == "COO" and resType2 == "ARG"):
+            exception, value = checkCooArgException_old(residue1, residue2, version=self)
         elif (resType1 == "ARG" and resType2 == "COO"):
-          exception, value = checkCooArgException_old(residue2, residue1, version=self)
+            exception, value = checkCooArgException_old(residue2, residue1, version=self)
         elif (resType1 == "COO" and resType2 == "COO"):
-          exception, value = checkCooCooException(residue1, residue2, version=self)
+            exception, value = checkCooCooException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "CYS"):
-          exception, value = checkCysCysException(residue1, residue2, version=self)
+            exception, value = checkCysCysException(residue1, residue2, version=self)
         elif (resType1 == "COO" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "COO"):
-          exception, value = checkCooHisException(residue1, residue2, version=self)
+            exception, value = checkCooHisException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "CYS"):
-          exception, value = checkCysHisException(residue1, residue2, version=self)
+            exception, value = checkCysHisException(residue1, residue2, version=self)
         else:
-          # do nothing, no exception for this pair
-          exception = False; value = None
+            # do nothing, no exception for this pair
+            exception = False
+            value = None
 
         return exception, value
-
-
-
 
 
 class May13(Version):
@@ -841,22 +818,21 @@ class May13(Version):
         """
         import parameters_std as parameters
 
-        self.name             = "May13"
-        self.coulomb_cutoff =   7.00
+        self.name = "May13"
+        self.coulomb_cutoff = 7.00
         pka_print("creating propka version \"%s\"" % (self.name))
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
-        self.angularDependentSideChainInteractions = [] 
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
+        self.angularDependentSideChainInteractions = []
         self.exclude_sidechain_interactions = ["LYS", "ARG", "N+ "]
-
 
     def checkExceptions(self, residue1, residue2):
         """
         overwrites 'exceptions' from the default - no exceptions here
         """
         exception = False
-        value     = 0.00
+        value = 0.00
         return exception, value
 
 
@@ -871,20 +847,21 @@ class Dec18(Version):
         """
         import parameters_std as parameters
 
-        self.name             = "Dec18"
-        self.Nmin             =  300
-        self.Nmax             =  600
-        self.buried_cutoff    =   15.50; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   15.50; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Dec18"
+        self.Nmin = 300
+        self.Nmax = 600
+        self.buried_cutoff = 15.50
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 15.50
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("propka2")
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=None, scaled=True)
         self.doingBackBoneReorganization = False
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
-        self.angularDependentSideChainInteractions = [] 
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
+        self.angularDependentSideChainInteractions = []
         self.exclude_sidechain_interactions = ["LYS", "ARG", "N+ "]
-
 
     def checkExceptions(self, residue1, residue2):
         """
@@ -892,28 +869,26 @@ class Dec18(Version):
         """
         resType1 = residue1.resType
         resType2 = residue2.resType
-        if   (resType1 == "COO" and resType2 == "ARG"):
-          exception, value = checkCooArgException_old(residue1, residue2, version=self)
+        if (resType1 == "COO" and resType2 == "ARG"):
+            exception, value = checkCooArgException_old(residue1, residue2, version=self)
         elif (resType1 == "ARG" and resType2 == "COO"):
-          exception, value = checkCooArgException_old(residue2, residue1, version=self)
+            exception, value = checkCooArgException_old(residue2, residue1, version=self)
         elif (resType1 == "COO" and resType2 == "COO"):
-          exception, value = checkCooCooException(residue1, residue2, version=self)
+            exception, value = checkCooCooException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "CYS"):
-          exception, value = checkCysCysException(residue1, residue2, version=self)
+            exception, value = checkCysCysException(residue1, residue2, version=self)
         elif (resType1 == "COO" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "COO"):
-          exception, value = checkCooHisException(residue1, residue2, version=self)
+            exception, value = checkCooHisException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "CYS"):
-          exception, value = checkCysHisException(residue1, residue2, version=self)
+            exception, value = checkCysHisException(residue1, residue2, version=self)
         else:
-          # do nothing, no exception for this pair
-          exception = False; value = None
+            # do nothing, no exception for this pair
+            exception = False
+            value = None
 
         return exception, value
-
-
-
 
 
 class Dec19(Version):
@@ -926,21 +901,22 @@ class Dec19(Version):
         Rules of action for version Dec19
         """
         import parameters_std as parameters
-        
-        self.name             = "Dec19"
-        self.Nmin             =  300
-        self.Nmax             =  600
-        self.buried_cutoff    =   15.50; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   15.50; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+
+        self.name = "Dec19"
+        self.Nmin = 300
+        self.Nmax = 600
+        self.buried_cutoff = 15.50
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 15.50
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("ContactModel", prefactor=-0.01, allowance=400.0)
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=None, scaled=True)
         self.doingBackBoneReorganization = False
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
-        self.angularDependentSideChainInteractions = [] 
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
+        self.angularDependentSideChainInteractions = []
         self.exclude_sidechain_interactions = ["LYS", "ARG", "N+ "]
-
 
     def checkExceptions(self, residue1, residue2):
         """
@@ -948,28 +924,26 @@ class Dec19(Version):
         """
         resType1 = residue1.resType
         resType2 = residue2.resType
-        if   (resType1 == "COO" and resType2 == "ARG"):
-          exception, value = checkCooArgException(residue1, residue2, version=self)
+        if (resType1 == "COO" and resType2 == "ARG"):
+            exception, value = checkCooArgException(residue1, residue2, version=self)
         elif (resType1 == "ARG" and resType2 == "COO"):
-          exception, value = checkCooArgException(residue2, residue1, version=self)
+            exception, value = checkCooArgException(residue2, residue1, version=self)
         elif (resType1 == "COO" and resType2 == "COO"):
-          exception, value = checkCooCooException(residue1, residue2, version=self)
+            exception, value = checkCooCooException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "CYS"):
-          exception, value = checkCysCysException(residue1, residue2, version=self)
+            exception, value = checkCysCysException(residue1, residue2, version=self)
         elif (resType1 == "COO" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "COO"):
-          exception, value = checkCooHisException(residue1, residue2, version=self)
+            exception, value = checkCooHisException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "CYS"):
-          exception, value = checkCysHisException(residue1, residue2, version=self)
+            exception, value = checkCysHisException(residue1, residue2, version=self)
         else:
-          # do nothing, no exception for this pair
-          exception = False; value = None
+            # do nothing, no exception for this pair
+            exception = False
+            value = None
 
         return exception, value
-
-
-
 
 
 class Aug24(Version):
@@ -983,20 +957,22 @@ class Aug24(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Aug24"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Aug24"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-7.00, surface=1.00)
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=80.0, scaled=True)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-1.15)
         self.setSideChainMaxPKA(resType=None, dpka=-1.15)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1011,20 +987,22 @@ class Aug30(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Aug30"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Aug30"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-14.00, surface=0.00)
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=80.0, scaled=True)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.70)
         self.setSideChainMaxPKA(resType=None, dpka=-0.70)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1039,20 +1017,22 @@ class Aug31(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Aug31"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff0
+        self.name = "Aug31"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff0
         self.setDesolvation("VolumeModel", prefactor=-13.00, surface=0.25)
         self.setCoulomb("Linear", cutoff=[4.0, 7.0], diel=80.0, scaled=True)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.95)
         self.setSideChainMaxPKA(resType=None, dpka=-0.95)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1067,20 +1047,22 @@ class Sep05(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Sep05"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Sep05"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-7.50, surface=1.00)
         self.setCoulomb("Coulomb", cutoff=[4.0, 10.0], diel=[20.0, 80.0], scaled=False)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-1.00)
         self.setSideChainMaxPKA(resType=None, dpka=-1.00)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1095,20 +1077,22 @@ class Sep06(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Sep06"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Sep06"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-13.00, surface=0.00)
         self.setCoulomb("Coulomb", cutoff=[4.0, 10.0], diel=[20.0, 80.0], scaled=False)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.55)
         self.setSideChainMaxPKA(resType=None, dpka=-0.55)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1123,20 +1107,22 @@ class Sep07(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Sep07"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Sep07"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-12.50, surface=0.25)
         self.setCoulomb("Coulomb", cutoff=[4.0, 10.0], diel=[20.0, 80.0], scaled=False)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.75)
         self.setSideChainMaxPKA(resType=None, dpka=-0.75)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1151,20 +1137,22 @@ class Sep08(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Sep08"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Sep08"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-13.00, surface=0.25)
         self.setCoulomb("Coulomb", cutoff=[4.0, 10.0], diel=20.0, scaled=True)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-1.00)
         self.setSideChainMaxPKA(resType=None, dpka=-1.00)
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
 
 
@@ -1179,20 +1167,22 @@ class Oct13(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Oct13"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Oct13"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-13.12, surface=0.40,  allowance=0.0)
         self.setCoulomb("Coulomb", cutoff=[4.0, 10.0], diel=80.0, scaled=False)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
-        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"] 
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
+        self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
-        
+
         coulomb_list = ["COO", "CYS", "TYR", "HIS", "LYS", "ARG", "N+ "]
 
         # ligand parameters
@@ -1202,8 +1192,6 @@ class Oct13(Version):
 
         self.pl_coulomb_list = coulomb_list+mono_atomic_ions
 
-
-
     def read_ion_parameters(self):
         """ Reads in ions.list """
 
@@ -1211,10 +1199,10 @@ class Oct13(Version):
         self.ions_long_names = {}
         file = os.path.join(os.path.dirname(__file__), 'ions.list')
         if not os.path.isfile(file):
-            pka_print('Error: Could not find ion parameter file:',file)
+            pka_print('Error: Could not find ion parameter file:', file)
             exit(9)
 
-        lines = open(file,'r').readlines()
+        lines = open(file, 'r').readlines()
         for line in lines:
             words = line[:line.find('#')].split()
             if len(words) == 2:
@@ -1222,21 +1210,20 @@ class Oct13(Version):
                 self.ions_long_names[words[0]] = line[line.find('#')+1:-1]
         return
 
-
     def getQ(self, resName):
         """
         Returns a residue charge
         """
-        Q  =  {'C- ':-1.0,
-               'ASP':-1.0,
-               'GLU':-1.0,
-               'CYS':-1.0,
-               'TYR':-1.0,
-               'HIS': 1.0,
-               'LYS': 1.0,
-               'ARG': 1.0,
-               'N+ ': 1.0}
-        
+        Q = {'C- ': -1.0,
+             'ASP': -1.0,
+             'GLU': -1.0,
+             'CYS': -1.0,
+             'TYR': -1.0,
+             'HIS': 1.0,
+             'LYS': 1.0,
+             'ARG': 1.0,
+             'N+ ': 1.0}
+
         if resName in Q:
             return Q[resName]
         elif resName in self.ions.keys():
@@ -1244,19 +1231,17 @@ class Oct13(Version):
         else:
             return 0.00
 
-
-
     def resName2Type(self, resName):
         """ 
         Expands the standard resName2Type to make sure that ion names are included 
         """
 
-        resType = {'C- ': "COO", 
-                   'ASP': "COO", 
+        resType = {'C- ': "COO",
+                   'ASP': "COO",
                    'GLU': "COO",
                    'HIS': "HIS",
                    'CYS': "CYS",
-                   'TYR': "TYR", 
+                   'TYR': "TYR",
                    'LYS': "LYS",
                    'ARG': "ARG",
                    'N+ ': "N+ ",
@@ -1273,7 +1258,6 @@ class Oct13(Version):
         else:
             return None
 
-
     def checkCoulombPair(self, residue1, residue2, distance):
         """
         Checks if this Coulomb interaction should be done - a propka2.0 hack
@@ -1282,22 +1266,19 @@ class Oct13(Version):
 
         # check all Coulomb criteria!
         if residue1.resType in self.pl_coulomb_list and residue2.resType in self.pl_coulomb_list:
-          # distance criteria
-          if distance > self.coulomb_cutoff[1]:
-            do_coulomb = False
-          # famous COO-TYR exception
-          if (residue1.resType == "COO" and residue2.resType == "TYR") or \
-             (residue2.resType == "COO" and residue1.resType == "TYR"):
-              """ do nothing """
-          elif lib.checkBuried(residue1.Nmass, residue2.Nmass) == False:
-              do_coulomb = False
+            # distance criteria
+            if distance > self.coulomb_cutoff[1]:
+                do_coulomb = False
+            # famous COO-TYR exception
+            if (residue1.resType == "COO" and residue2.resType == "TYR") or \
+               (residue2.resType == "COO" and residue1.resType == "TYR"):
+                """ do nothing """
+            elif lib.checkBuried(residue1.Nmass, residue2.Nmass) == False:
+                do_coulomb = False
         else:
-          do_coulomb = False
+            do_coulomb = False
 
         return do_coulomb
-
-
-
 
 
 class Oct14(Version):
@@ -1311,17 +1292,19 @@ class Oct14(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Oct14"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Oct14"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-13.00, surface=0.250)
         self.setCoulomb("Coulomb", cutoff=[3.5, 10.0], diel=80.0, scaled=False, mixed=True)
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.75)
         self.setSideChainMaxPKA(resType=None, dpka=-0.75)
         self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
@@ -1339,17 +1322,19 @@ class Nov28(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Nov28"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Nov28"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-8.00, surface=1.00)
         self.setCoulomb("DistanceScaledCoulomb", cutoff=[4.0, 10.0], diel=[20.0, 80.0])
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-1.00)
         self.setSideChainMaxPKA(resType=None, dpka=-1.00)
         self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
@@ -1367,17 +1352,19 @@ class Nov29(Version):
         """
         import parameters_new as parameters
 
-        self.name             = "Nov29"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Nov29"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-13.00, surface=0.00)
         self.setCoulomb("DistanceScaledCoulomb", cutoff=[4.0, 10.0], diel=[20.0, 80.0])
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.40)
         self.setSideChainMaxPKA(resType=None, dpka=-0.40)
         self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
@@ -1395,22 +1382,23 @@ class Nov30(Version):
         """
         from . import parameters_new as parameters
 
-        self.name             = "Nov30"
-        self.Nmin             =  280
-        self.Nmax             =  560
-        self.buried_cutoff    =   15.00; self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
-        self.desolv_cutoff    =   20.00; self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
+        self.name = "Nov30"
+        self.Nmin = 280
+        self.Nmax = 560
+        self.buried_cutoff = 15.00
+        self.buried_cutoff_sqr = self.buried_cutoff*self.buried_cutoff
+        self.desolv_cutoff = 20.00
+        self.desolv_cutoff_sqr = self.desolv_cutoff*self.desolv_cutoff
         self.setDesolvation("VolumeModel", prefactor=-13.00, surface=0.25)
-        self.setCoulomb("DistanceScaledCoulomb", cutoff=[4.0, 10.0], diel=[30.0,160.0])
+        self.setCoulomb("DistanceScaledCoulomb", cutoff=[4.0, 10.0], diel=[30.0, 160.0])
         self.doingBackBoneReorganization = True
-        self.BackBoneParameters  = parameters.getHydrogenBondParameters(type='back-bone')
+        self.BackBoneParameters = parameters.getHydrogenBondParameters(type='back-bone')
         self.SideChainParameters = parameters.getHydrogenBondParameters(type='side-chain')
-        self.interaction         = getSideChainInteractionMatrix(side_chain=parameters.getInteraction()) # interaction rule matrix ['N'/'I'/'-']
+        self.interaction = getSideChainInteractionMatrix(side_chain=parameters.getInteraction())  # interaction rule matrix ['N'/'I'/'-']
         self.setBackBoneMaxPKA(resType=None, dpka=-0.85)
         self.setSideChainMaxPKA(resType=None, dpka=-0.85)
         self.angularDependentSideChainInteractions = ["HIS", "ARG", "AMD", "TRP"]
         self.exclude_sidechain_interactions = []
-
 
     def checkExceptions(self, residue1, residue2):
         """
@@ -1418,24 +1406,23 @@ class Nov30(Version):
         """
         resType1 = residue1.resType
         resType2 = residue2.resType
-        if   (resType1 == "COO" and resType2 == "ARG"):
-          exception, value = checkCooArgException(residue1, residue2, version=self)
+        if (resType1 == "COO" and resType2 == "ARG"):
+            exception, value = checkCooArgException(residue1, residue2, version=self)
         elif (resType1 == "ARG" and resType2 == "COO"):
-          exception, value = checkCooArgException(residue2, residue1, version=self)
+            exception, value = checkCooArgException(residue2, residue1, version=self)
         elif (resType1 == "COO" and resType2 == "COO"):
-          exception, value = checkCooCooException(residue1, residue2, version=self)
+            exception, value = checkCooCooException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "CYS"):
-          exception, value = checkCysCysException(residue1, residue2, version=self)
-        #elif (resType1 == "COO" and resType2 == "HIS") or \
+            exception, value = checkCysCysException(residue1, residue2, version=self)
+        # elif (resType1 == "COO" and resType2 == "HIS") or \
         #     (resType1 == "HIS" and resType2 == "COO"):
         #  exception, value = checkCooHisException(residue1, residue2, version=self)
         elif (resType1 == "CYS" and resType2 == "HIS") or \
              (resType1 == "HIS" and resType2 == "CYS"):
-          exception, value = checkCysHisException(residue1, residue2, version=self)
+            exception, value = checkCysHisException(residue1, residue2, version=self)
         else:
-          # do nothing, no exception for this pair
-          exception = False; value = None
+            # do nothing, no exception for this pair
+            exception = False
+            value = None
 
         return exception, value
-
-

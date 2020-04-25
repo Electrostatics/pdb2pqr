@@ -10,18 +10,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -35,7 +35,7 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 import sys
 import string
 import math
@@ -43,6 +43,7 @@ import copy
 from . import lib
 from .pdb import Atom
 pka_print = lib.pka_print
+
 
 class Residue:
     """
@@ -53,8 +54,8 @@ class Residue:
         """
         Constructer of the residue object.
         """
-        self.label   = None
-        self.atoms   = []
+        self.label = None
+        self.atoms = []
         if chainID == None:
             self.chainID = atoms[0].chainID
         else:
@@ -68,25 +69,25 @@ class Residue:
         else:
             self.resName = resName
         self.resType = None                         # determins the interaction parameters, e.g. 'COO'
-        self.Q       = None                         # residue charge
-        self.type    = None                         # 'amino-acid' / 'ion' / 'ligand' / 'N-terminus' / 'C-terminus'
-        self.buried  = None
-        self.location= None
+        self.Q = None                         # residue charge
+        self.type = None                         # 'amino-acid' / 'ion' / 'ligand' / 'N-terminus' / 'C-terminus'
+        self.buried = None
+        self.location = None
         self.determinants = [[], [], []]
-        self.Nmass   = 0
-        self.Nlocl   = 0
-        self.Emass   = 0.0
-        self.Vmass   = 0.0
-        self.Elocl   = 0.0
-        self.Vlocl   = 0.0
-        self.x       = 0.00
-        self.y       = 0.00
-        self.z       = 0.00
+        self.Nmass = 0
+        self.Nlocl = 0
+        self.Emass = 0.0
+        self.Vmass = 0.0
+        self.Elocl = 0.0
+        self.Vlocl = 0.0
+        self.x = 0.00
+        self.y = 0.00
+        self.z = 0.00
         self.pKa_mod = None
         self.pKa_pro = None
-        self.pKas    = []                           # list with several pKa-objects: not used yet
-        self.center_atoms   = []                    # list of atoms constituting the 'residue center', needed!
-        self.default_key    = None                  # the 'default' configuration if not all are there
+        self.pKas = []                           # list with several pKa-objects: not used yet
+        self.center_atoms = []                    # list of atoms constituting the 'residue center', needed!
+        self.default_key = None                  # the 'default' configuration if not all are there
         self.configurations = []                    # keys to the atom configurations belonging to this residue
         self.coupled_residues = []
 
@@ -111,11 +112,11 @@ class Residue:
                 if key not in self.configurations:
                     self.configurations.append(key)
 
-            #if atom.name[0] != 'H':
+            # if atom.name[0] != 'H':
             if True:
                 atom.set_residue(self)
                 self.atoms.append(atom)
-                
+
             # setting 'center atoms'; needs to be on self since it is reset when you switch configurations
             if len(residue_center_atom_labels) == 0:
                 self.center_atoms.append(atom)
@@ -126,7 +127,6 @@ class Residue:
         if len(self.center_atoms) > 0:
             self.setResidueCenter()
 
-
     def setResidueInformation(self, resInfo=None):
         """
         set residue information based on resName - it is set here since it is a convenience thing
@@ -134,18 +134,18 @@ class Residue:
         # resType - determines interaction parameters
         if self.resName in resInfo['resType']:
             self.resType = resInfo['resType'][self.resName]
-          
+
         # Q - group charge
         if self.resName in resInfo['Q']:
-            self.Q       = resInfo['Q'][self.resName]
+            self.Q = resInfo['Q'][self.resName]
         else:
-            self.Q       = 0.00
+            self.Q = 0.00
 
         # type - 'amino-acid' / 'ion' / 'ligand' / 'N-terminus' / 'C-terminus'
-        if   self.resName in lib.residueList("standard"):
-            self.type    = "amino-acid"
+        if self.resName in lib.residueList("standard"):
+            self.type = "amino-acid"
         elif self.resName in resInfo['type']:
-            self.type    = resInfo['type'][self.resName]
+            self.type = resInfo['type'][self.resName]
 
         # pKa_mod - model or water pKa value
         if self.resName in resInfo['pKa']:
@@ -154,7 +154,6 @@ class Residue:
         else:
             self.pKa_mod = resInfo['pKa']['default']
             self.pKa_pro = resInfo['pKa']['default']
-
 
     def setConfiguration(self, key=None):
         """
@@ -165,24 +164,22 @@ class Residue:
             configuration = key
         else:
             configuration = self.default_key
-          
+
         for atom in self.atoms:
             atom.setConfiguration(key=configuration)
         self.setResidueCenter()
-
 
     def cleanupPKA(self):
         """
         Initializing/cleaning up residue!
         """
-        self.Nmass   = 0
-        self.Nlocl   = 0
-        self.Emass   = 0.00
-        self.Elocl   = 0.00
-        self.buried  = 0.00
+        self.Nmass = 0
+        self.Nlocl = 0
+        self.Emass = 0.00
+        self.Elocl = 0.00
+        self.buried = 0.00
         self.pKa_pro = self.pKa_mod
         self.determinants = [[], [], []]
-
 
     def setResidueCenter(self):
         """
@@ -201,19 +198,18 @@ class Residue:
             self.y = self.y/number_of_atoms
             self.z = self.z/number_of_atoms
 
-
     def getThirdAtomInAngle(self, atom=None):
         """
         finds and returns the third atom in angular dependent interactions
         expecting one of ["HIS", "ARG", "AMD", "TRP"]
         """
-        if   self.resName == "HIS":
-            if   atom.name == "HD1":
+        if self.resName == "HIS":
+            if atom.name == "HD1":
                 return self.getAtom(name="ND1")
             elif atom.name == "HE2":
                 return self.getAtom(name="NE2")
         elif self.resName == "ARG":
-            if   atom.name in ["HE"]:
+            if atom.name in ["HE"]:
                 return self.getAtom(name="NE")
             elif atom.name in ["1HH1", "2HH1"]:
                 return self.getAtom(name="NH1")
@@ -226,47 +222,46 @@ class Residue:
         elif self.resName == "TRP":
             return self.getAtom(name="NE1")
 
-
     def getAtom(self, name=None):
         """
         finds and returns the specified atom in this residue.
         """
         for atom in self.atoms:
             if atom.name == name:
-                return  atom
+                return atom
                 break
 
-        return  None
-
+        return None
 
     def checkOXT(self):
         """
         Checks that OXT is present or creates it.
         """
-        O   = self.getAtom(name="O")
+        O = self.getAtom(name="O")
         OXT = self.getAtom(name="OXT")
 
         # NMR Xplor over-write
         if O == None:
             O = self.getAtom(name="OT1")
-            if O != None: 
+            if O != None:
                 O.setProperty(name="O")
         if OXT == None:
             OXT = self.getAtom(name="OT2")
-            if OXT != None: 
+            if OXT != None:
                 OXT.setProperty(name="OXT")
 
         # continuing after 'NMR exception'; creating OXT if not found
         if OXT == None:
             # did not find OXT, creating it 'on the fly'
             CA = self.getAtom(name="CA")
-            C  = self.getAtom(name="C")
+            C = self.getAtom(name="C")
             if O == None or CA == None or C == None:
-                pka_print("ERROR: cannot create OXT atom - missing CA, C, or O atoms; please correct pdbfile"); sys.exit(8)
+                pka_print("ERROR: cannot create OXT atom - missing CA, C, or O atoms; please correct pdbfile")
+                sys.exit(8)
             dX = -((CA.x-C.x) + (O.x-C.x))
             dY = -((CA.y-C.y) + (O.y-C.y))
             dZ = -((CA.z-C.z) + (O.z-C.z))
-            distance = math.sqrt( dX*dX + dY*dY + dZ*dZ )
+            distance = math.sqrt(dX*dX + dY*dY + dZ*dZ)
             x = C.x + 1.23*dX/distance
             y = C.y + 1.23*dY/distance
             z = C.z + 1.23*dZ/distance
@@ -275,9 +270,6 @@ class Residue:
             pka_print("creating %s atom" % (OXT.name))
 
         return [O, OXT]
-
-
-
 
     def fillUnknownConfigurations(self, keys=None, options=None):
         """
@@ -295,7 +287,6 @@ class Residue:
                 if key not in atom.configurations:
                     atom.configurations[configuration] = atom.configurations[self.default_key]
 
-
     def checked(self, options=None):
         """
         Checks that I understand all residues.
@@ -306,7 +297,6 @@ class Residue:
         else:
             return True
 
-
     def checkResidue(self, options=None):
         """
         Checks that I understand all residues. 
@@ -316,7 +306,7 @@ class Residue:
         rename = {"LYP": "LYS",
                   "CYX": "CYS",
                   "HSD": "HIS",
-                 }
+                  }
 
         # renaming residue if in rename dictionary
         if self.resName in rename:
@@ -335,24 +325,23 @@ class Residue:
             self.checkAtoms(options=options)
         # Chresten's stuff
         elif self.type == "ion":
-            outstr  = "%s%4d -  OK %s" % (self.resName, self.resNumb, self.type)
+            outstr = "%s%4d -  OK %s" % (self.resName, self.resNumb, self.type)
             pka_print(outstr)
-        #elif self.resName in version.ions.keys():
-        #    str  = "%-3s%4d - %s with charge %+d" % (self.resName, 
-        #                                             self.resNumb, 
-        #                                             version.ions_long_names[self.resName], 
+        # elif self.resName in version.ions.keys():
+        #    str  = "%-3s%4d - %s with charge %+d" % (self.resName,
+        #                                             self.resNumb,
+        #                                             version.ions_long_names[self.resName],
         #                                             version.ions[self.resName])
-        #    pka_print(str)            
+        #    pka_print(str)
         else:
-            outstr  = "%s%4d - unidentified residue" % (self.resName, self.resNumb)
+            outstr = "%s%4d - unidentified residue" % (self.resName, self.resNumb)
             pka_print(outstr)
-
 
     def checkAtoms(self, options=None):
         """
         Checks that all heavy atoms are there
         """
-        outstr  = "%s%4d - " % (self.resName, self.resNumb)
+        outstr = "%s%4d - " % (self.resName, self.resNumb)
         atom_list = lib.atomList(self.resName)
         OK = True
         for name in atom_list:
@@ -373,7 +362,6 @@ class Residue:
             outstr += " missing"
             pka_print(outstr)
 
-
     def checkConfigurations(self, verbose=False):
         """
         checks that all atoms in this residue has the same number of configurations
@@ -383,14 +371,12 @@ class Residue:
                 if key not in atom.configurations:
                     atom.configurations[key] = atom.configurations[self.default_key]
 
-
     def printLabel(self):
         """
         prints the residue ID
         """
         outstr = "%s%4d %s" % (self.resName, self.resNumb, self.chainID)
         pka_print(outstr)
-
 
     def __str__(self):
         return self.label
@@ -404,7 +390,7 @@ class Residue:
         C = None
         O = None
         for atom in self.atoms:
-            if   atom.name == "N":
+            if atom.name == "N":
                 N = atom
             elif atom.name == "H":
                 H = atom
@@ -413,8 +399,7 @@ class Residue:
             elif atom.name == "O":
                 O = atom
 
-        return  N, H, C, O
-        
+        return N, H, C, O
 
     def makeDeterminantAtomList(self, resType=None, type=None, version=None):
         """
@@ -431,7 +416,7 @@ class Residue:
         if self.resName not in version.atomInteractionList[pair_type]:
             pka_print("cannot find atomInteractionList for residue %s in residue.makeDeterminantAtomList()" % (self.resName))
             sys.exit(9)
-            
+
         # Searching for determinant atom
         atoms = []
         for atom in self.atoms:
@@ -439,13 +424,12 @@ class Residue:
                 atoms.append(atom)
 
         return atoms
-        
 
     def calculateTotalPKA(self):
         """
         Calculates the total pKa values from the desolvation and determinants
         """
-        back_bone  = 0.00
+        back_bone = 0.00
         for determinant in self.determinants[0]:
             value = determinant.value
             back_bone += value
@@ -455,27 +439,26 @@ class Residue:
             value = determinant.value
             side_chain += value
 
-        coulomb    = 0.00
+        coulomb = 0.00
         for determinant in self.determinants[2]:
             value = determinant.value
-            coulomb    += value
+            coulomb += value
 
         self.pKa_pro = self.pKa_mod + self.Emass + self.Elocl + back_bone + side_chain + coulomb
-
 
     def calculateIntrinsicPKA(self):
         """
         Calculates the intrinsic pKa values from the desolvation determinants, back-bone hydrogen bonds, 
         and side-chain hydrogen bond to non-titratable residues
         """
-        back_bone  = 0.00
+        back_bone = 0.00
         for determinant in self.determinants[1]:
             value = determinant.value
             back_bone += value
 
         side_chain = 0.00
         for determinant in self.determinants[0]:
-            if determinant.label[0:3] not in ['ASP','GLU','LYS','ARG','HIS','CYS','TYR','C- ','N+ ']:
+            if determinant.label[0:3] not in ['ASP', 'GLU', 'LYS', 'ARG', 'HIS', 'CYS', 'TYR', 'C- ', 'N+ ']:
                 value = determinant.value
                 side_chain += value
 
@@ -483,14 +466,11 @@ class Residue:
 
         return
 
-
-
     def calculateDesolvation(self, atoms, version=None, options=None):
         """
         Calculates the desolvation contribution
         """
         version.calculateDesolvation(self, atoms, options=options)
-
 
     def setChain(self, chainID):
         """
@@ -500,13 +480,11 @@ class Residue:
         for atom in self.atoms:
             atom.chainID = chainID
 
-
     def setResidueNumber(self, resNumb):
         """
         Set the residue numbers to 'resNumb'
         """
         self.resNumb = resNumb
-
 
     def setResidueLabel(self, label=None):
         """
@@ -517,13 +495,11 @@ class Residue:
         else:
             self.label = label
 
-
     def shiftResidueNumber(self, shift):
         """
         Shift the residue numbers with 'shift'
         """
         self.resNumb = self.resNumb + shift
-
 
     def calculateFoldingEnergy(self, pH=None, reference=None, options=None):
         """
@@ -550,39 +526,37 @@ class Residue:
                     ddG_neutral = -1.36*(pKa_prime - self.pKa_mod)
                 else:
                     ddG_neutral = 0.00
-        
+
             # calculating the ddG(low-pH --> pH) contribution
             # folded
-            x =  pH - self.pKa_pro
+            x = pH - self.pKa_pro
             y = 10**x
             Q_pro = math.log10(1+y)
-            
+
             # unfolded
-            x =  pH - self.pKa_mod
+            x = pH - self.pKa_mod
             y = 10**x
             Q_mod = math.log10(1+y)
-            
+
             ddG_low = -1.36*(Q_pro - Q_mod)
             ddG = ddG_neutral + ddG_low
 
         return ddG
-
 
     def getCharge(self, pH, state):
         """
         returning the charge of this residue at pH 'pH'
         """
         if state == "mod" or state == "unfolded":
-            x =  self.Q*(self.pKa_mod - pH)
+            x = self.Q*(self.pKa_mod - pH)
         else:
-            x =  self.Q*(self.pKa_pro - pH)
+            x = self.Q*(self.pKa_pro - pH)
             #x =  pH - self.pKa_pro
         y = 10**x
         charge = self.Q*(y/(1.0+y))
         #charge = math.log10(1+y)
 
         return charge
-
 
     def calculateTitrationCurve(self, grid=[0., 14., 0.10]):
         """
@@ -592,15 +566,14 @@ class Residue:
             grid = [self.pKa_pro-2.5, self.pKa_pro+2.5, 0.10]
         state = "folded"
         titration_curve = []
-        pH   = grid[0]
+        pH = grid[0]
         stop = grid[1] + grid[2]/2.0
         while pH < stop:
-            Q  = self.getCharge(pH, state)
+            Q = self.getCharge(pH, state)
             titration_curve.append([pH, Q])
             pH += grid[2]
 
         return titration_curve
-
 
     def getSummaryString(self):
         """
@@ -608,7 +581,6 @@ class Residue:
         """
         outstr = "   %s%8.2lf%10.2lf" % (self.label, self.pKa_pro, self.pKa_mod)
         return outstr
-
 
     def mutateToAla(self):
         """
@@ -632,7 +604,6 @@ class Residue:
         self.pKa_pro = self.pKa_mod
         self.atoms = new_atoms
 
-
     def replaceWithResidue(self, new_residue):
         """
         replacing current residue with incoming residue
@@ -653,36 +624,35 @@ class Residue:
             else:
                 self.atoms.append(new_atom)
 
-
     def getDeterminantString(self):
         """
         Everything should be calculated, now, let's print the darn thing and be done!
         """
-        #if self.location == "SURFACE" or self.location == "BURIED ":
+        # if self.location == "SURFACE" or self.location == "BURIED ":
         BURIED_RATIO = True
 
         empty_determinant = "%s%4d%2s" % ("XXX", 0, "X")
         number_of_sidechain = len(self.determinants[0])
-        number_of_backbone  = len(self.determinants[1])
-        number_of_coulomb   = len(self.determinants[2])
+        number_of_backbone = len(self.determinants[1])
+        number_of_coulomb = len(self.determinants[2])
         number_of_determinants = number_of_sidechain + number_of_backbone + number_of_coulomb
-        number_of_lines     = max(1, number_of_sidechain, number_of_backbone, number_of_coulomb)
-        outsting  = ""
+        number_of_lines = max(1, number_of_sidechain, number_of_backbone, number_of_coulomb)
+        outsting = ""
         #outsting += " number_of_sidechain = %d" % (number_of_sidechain)
         #outsting += " number_of_backbone  = %d" % (number_of_backbone )
         #outsting += " number_of_coulomb   = %d" % (number_of_coulomb  )
         #outsting += " number_of_lines     = %d" % (number_of_lines    )
-        #print outsting
+        # print outsting
 
         for line_number in range(1, number_of_lines+1):
             outsting += "%s" % (self.label)
             if line_number == 1:
                 outsting += " %6.2lf" % (self.pKa_pro)
-                if len(self.coupled_residues)>0:
-                    outsting+='*'
+                if len(self.coupled_residues) > 0:
+                    outsting += '*'
                 else:
-                    outsting+=' '
-                
+                    outsting += ' '
+
                 if BURIED_RATIO == True:
                     if self.type == "BONDED":
                         outsting += " BONDED "
@@ -694,57 +664,56 @@ class Residue:
                 outsting += " %6.2lf %4d" % (self.Elocl, self.Nlocl)
             else:
                 outsting += "%40s" % (" ")
-            
+
             # Side-chain determinants
-            if line_number > number_of_sidechain :
+            if line_number > number_of_sidechain:
                 outsting += "%8.2lf %s" % (0.0, empty_determinant)
             else:
                 determinant = self.determinants[0][line_number-1]
                 outsting += "%8.2lf %s" % (determinant.value, determinant.label)
-            
+
             # Back-bone determinants
             if line_number > number_of_backbone:
                 outsting += "%8.2lf %s" % (0.0, empty_determinant)
             else:
                 determinant = self.determinants[1][line_number-1]
                 outsting += "%8.2lf %s" % (determinant.value, determinant.label)
-            
+
             # Coulomb determinants
             if line_number > number_of_coulomb:
                 outsting += "%8.2lf %s" % (0.0, empty_determinant)
             else:
                 determinant = self.determinants[2][line_number-1]
                 outsting += "%8.2lf %s" % (determinant.value, determinant.label)
-            
+
             # adding end-of-line
             outsting += "\n"
 
         return outsting
 
-
     def printResult(self):
         """
         Everything should be calculated, now, let's print the darn thing and be done!
         """
-        #if self.location == "SURFACE" or self.location == "BURIED ":
+        # if self.location == "SURFACE" or self.location == "BURIED ":
         BURIED_RATIO = True
 
         empty_determinant = "%s%4d%2s" % ("XXX", 0, "X")
         number_of_sidechain = len(self.determinants[0])
-        number_of_backbone  = len(self.determinants[1])
-        number_of_coulomb   = len(self.determinants[2])
+        number_of_backbone = len(self.determinants[1])
+        number_of_coulomb = len(self.determinants[2])
         number_of_determinants = number_of_sidechain + number_of_backbone + number_of_coulomb
-        number_of_lines     = max(1, number_of_sidechain, number_of_backbone, number_of_coulomb)
-        outstr  = ""
+        number_of_lines = max(1, number_of_sidechain, number_of_backbone, number_of_coulomb)
+        outstr = ""
         outstr += " number_of_sidechain = %d" % (number_of_sidechain)
-        outstr += " number_of_backbone  = %d" % (number_of_backbone )
-        outstr += " number_of_coulomb   = %d" % (number_of_coulomb  )
-        outstr += " number_of_lines     = %d" % (number_of_lines    )
-        #print outstr
+        outstr += " number_of_backbone  = %d" % (number_of_backbone)
+        outstr += " number_of_coulomb   = %d" % (number_of_coulomb)
+        outstr += " number_of_lines     = %d" % (number_of_lines)
+        # print outstr
 
         if True:
             for line_number in range(1, number_of_lines+1):
-                outstr  = "%s%4d%2s" % (self.resName, self.resNumb, self.chainID)
+                outstr = "%s%4d%2s" % (self.resName, self.resNumb, self.chainID)
                 if line_number == 1:
                     outstr += " %6.2lf" % (self.pKa_pro)
                     if BURIED_RATIO == True:
@@ -755,21 +724,21 @@ class Residue:
                     outstr += " %6.2lf %4d" % (self.Elocl, self.Nlocl)
                 else:
                     outstr += "%40s" % (" ")
-                
+
                 # Side-chain determinant
-                if line_number > number_of_sidechain :
+                if line_number > number_of_sidechain:
                     outstr += "%8.2lf %s" % (0.0, empty_determinant)
                 else:
                     determinant = self.determinants[0][line_number-1]
                     outstr += "%8.2lf %s" % (determinant.value, determinant.label)
-                
+
                 # Back-bone determinant
                 if line_number > number_of_backbone:
                     outstr += "%8.2lf %s" % (0.0, empty_determinant)
                 else:
                     determinant = self.determinants[1][line_number-1]
                     outstr += "%8.2lf %s" % (determinant.value, determinant.label)
-                
+
                 # Coulomb determinant
                 if line_number > number_of_coulomb:
                     outstr += "%8.2lf %s" % (0.0, empty_determinant)
@@ -778,24 +747,22 @@ class Residue:
                     outstr += "%8.2lf %s" % (determinant.value, determinant.label)
                 pka_print('%s' % (outstr))
         else:
-            outstr  = "%s%4d%2s%4d%2d" % (self.resName, self.resNumb, self.chainID, number_of_lines, number_of_determinants)
+            outstr = "%s%4d%2s%4d%2d" % (self.resName, self.resNumb, self.chainID, number_of_lines, number_of_determinants)
             pka_print('%s' % (outstr))
 
         pka_print('')
-
 
     def translate(self, translation):
         """
         translate residue according to 'translation'
         """
         for atom in self.atoms:
-          atom.x += translation[0]
-          atom.y += translation[1]
-          atom.z += translation[2]
-          for key in atom.configurations.keys():
-            for i in range(3):
-              atom.configurations[key][i] += translation[i]
-
+            atom.x += translation[0]
+            atom.y += translation[1]
+            atom.z += translation[2]
+            for key in atom.configurations.keys():
+                for i in range(3):
+                    atom.configurations[key][i] += translation[i]
 
     def rotate(self, axis, theta, center=None):
         """
@@ -805,20 +772,20 @@ class Residue:
         translate = [0.00, 0.00, 0.00]
         number_of_atoms = 0
         for atom in self.atoms:
-          if atom.name in center or center == None:
-            number_of_atoms += 1
-            translate[0] += atom.x/len(self.atoms)
-            translate[1] += atom.y/len(self.atoms)
-            translate[2] += atom.z/len(self.atoms)
+            if atom.name in center or center == None:
+                number_of_atoms += 1
+                translate[0] += atom.x/len(self.atoms)
+                translate[1] += atom.y/len(self.atoms)
+                translate[2] += atom.z/len(self.atoms)
         for atom in self.atoms:
-          for i in range(3):
-            translate[i] = translate[i]/number_of_atoms
+            for i in range(3):
+                translate[i] = translate[i]/number_of_atoms
 
         # translate to rotation center
         for atom in self.atoms:
-          atom.x -= translate[0]
-          atom.y -= translate[1]
-          atom.z -= translate[2]
+            atom.x -= translate[0]
+            atom.y -= translate[1]
+            atom.z -= translate[2]
 
         # get rotation matrix
         rotation_matrix = generalRotationMatrix(axis, theta)
@@ -827,48 +794,47 @@ class Residue:
         new_position = [None, None, None]
         for atom in self.atoms:
 
-          # rotate actual position
-          old_position = [atom.x, atom.y, atom.z]
-          for xyz in range(3):
-            new_position[xyz] = translate[xyz]
-            for i in range(3):
-              new_position[xyz] += rotation_matrix[xyz][i]*old_position[i]
-          # update position
-          atom.x = new_position[0]
-          atom.y = new_position[1]
-          atom.z = new_position[2]
-
-          # rotate configuration
-          for key in atom.configurations.keys():
+            # rotate actual position
+            old_position = [atom.x, atom.y, atom.z]
             for xyz in range(3):
-              new_position[xyz] = translate[xyz]
-              for i in range(3):
-                new_position[xyz] += rotation_matrix[xyz][i]*atom.configurations[key][i]
-            for xyz in range(3):
-              atom.configurations[key][xyz] = new_position[xyz]
+                new_position[xyz] = translate[xyz]
+                for i in range(3):
+                    new_position[xyz] += rotation_matrix[xyz][i]*old_position[i]
+            # update position
+            atom.x = new_position[0]
+            atom.y = new_position[1]
+            atom.z = new_position[2]
 
+            # rotate configuration
+            for key in atom.configurations.keys():
+                for xyz in range(3):
+                    new_position[xyz] = translate[xyz]
+                    for i in range(3):
+                        new_position[xyz] += rotation_matrix[xyz][i]*atom.configurations[key][i]
+                for xyz in range(3):
+                    atom.configurations[key][xyz] = new_position[xyz]
 
     def makeCopy(self,
-                    chainID = None,
-                    resNumb = None,
-                ):
+                 chainID=None,
+                 resNumb=None,
+                 ):
         """
         making a copy of this residue
         """
         from protein import getResidueParameters
-        if chainID == None: chainID = self.chainID
-        if resNumb == None: resNumb = self.resNumb
+        if chainID == None:
+            chainID = self.chainID
+        if resNumb == None:
+            resNumb = self.resNumb
 
         newAtoms = []
         for atom in self.atoms:
-          newAtoms.append( atom.makeCopy(chainID=chainID, resNumb=resNumb) )
+            newAtoms.append(atom.makeCopy(chainID=chainID, resNumb=resNumb))
 
         resInfo = getResidueParameters()
         newResidue = Residue(newAtoms, resInfo=resInfo)
         newResidue.resType = self.resType
-        newResidue.Q       = self.Q
-        newResidue.type    = self.type
+        newResidue.Q = self.Q
+        newResidue.type = self.type
 
-        return  newResidue
-
-
+        return newResidue

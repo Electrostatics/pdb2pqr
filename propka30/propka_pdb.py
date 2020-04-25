@@ -11,18 +11,18 @@
 # * Lesser General Public License for more details.
 #
 
-#propka3.0, revision 182                                                                      2011-08-09
-#-------------------------------------------------------------------------------------------------------
-#--                                                                                                   --
-#--                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
-#--                                                                                                   --
-#--                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
-#--                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
-#--                                                                                                   --
-#-------------------------------------------------------------------------------------------------------
+# propka3.0, revision 182                                                                      2011-08-09
+# -------------------------------------------------------------------------------------------------------
+# --                                                                                                   --
+# --                                   PROPKA: A PROTEIN PKA PREDICTOR                                 --
+# --                                                                                                   --
+# --                              VERSION 3.0,  01/01/2011, COPENHAGEN                                 --
+# --                              BY MATS H.M. OLSSON AND CHRESTEN R. SONDERGARD                       --
+# --                                                                                                   --
+# -------------------------------------------------------------------------------------------------------
 #
 #
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 # References:
 #
 #   Very Fast Empirical Prediction and Rationalization of Protein pKa Values
@@ -36,13 +36,16 @@
 #   PROPKA3: Consistent Treatment of Internal and Surface Residues in Empirical pKa predictions
 #   Mats H.M. Olsson, Chresten R. Sondergard, Michal Rostkowski, and Jan H. Jensen
 #   Journal of Chemical Theory and Computation, 7, 525-537 (2011)
-#-------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
 
-import string, re, sys, os, math
+import string
+import re
+import sys
+import os
+import math
 
 import Source.lib as lib
 from Source.protein import Protein
- 
 
 
 def main():
@@ -55,11 +58,11 @@ def main():
 
     for pdbfile in pdbfiles:
 
-      # creating protein object
-      myProtein = Protein(pdbfile=pdbfile, options=options)
-      filename = "%s_new.pdb" % (myProtein.name)
-      myProtein.writePDB(filename=filename, hydrogens=True)
+        # creating protein object
+        myProtein = Protein(pdbfile=pdbfile, options=options)
+        filename = "%s_new.pdb" % (myProtein.name)
+        myProtein.writePDB(filename=filename, hydrogens=True)
 
 
-if __name__ == '__main__': main()
-
+if __name__ == '__main__':
+    main()

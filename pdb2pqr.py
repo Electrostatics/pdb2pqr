@@ -5,7 +5,7 @@ yielding a new PDB-style file as output.
 
 For more information, see http://www.poissonboltzmann.org/
 """
-from main import mainCommand
+from pdb2pqr.main import mainCommand
 
 
 if __name__ == "__main__":

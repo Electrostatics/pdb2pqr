@@ -15,11 +15,12 @@ from io import StringIO
 from src.errors import PDB2PQRError
 import propka.lib
 import extensions
-from __init__ import __version__
+from . import __version__
 
 HEADER_TEXT = """
 -------------------------------------------
 PDB2PQR - biomolecular structure conversion
+Version {version}
 -------------------------------------------
 Please cite your use of PDB2PQR as:
 
@@ -27,6 +28,7 @@ Please cite your use of PDB2PQR as:
   pipeline for the setup, execution, and analysis of Poisson-Boltzmann
   electrostatics calculations. Nucleic Acids Research 32 W665-W667 (2004).
 """
+HEADER_TEXT = HEADER_TEXT.format(version=__version__)
 FIELD_NAMES = ('amber', 'charmm', 'parse', 'tyl06', 'peoepb', 'swanson')
 _LOGGER = logging.getLogger(__name__)
 logging.captureWarnings(True)

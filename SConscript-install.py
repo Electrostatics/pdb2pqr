@@ -77,8 +77,7 @@ for file_name in getAllFiles('pdb2pka/'):
 	installFile(file_name)
 
 #Main Program
-for dir_name in ('src/',
-                 'extensions/'):
+for dir_name in ('src/'):
 	for file_name in getAllFiles(dir_name, python_only=True):
 		installFile(file_name)
 

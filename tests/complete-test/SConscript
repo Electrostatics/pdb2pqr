@@ -45,21 +45,6 @@ def buildTest(input_file_names,
     testList.append(aliasObj)
     return aliasObj
 
-#Test Clean
-buildTest('1AFS.pdb',
-		  'test-output-1AFS-clean.pqr',
-		  'test-output-1AFS-clean-correct.pqr',
-		  'test-clean',
-		  '--clean --whitespace')
-
-#Test assign only
-#We must use 1A1P as it has the needed atoms in HIS to keep the run from failing as it otherwise should.
-buildTest('1A1P.pdb',
-		  'test-output-1A1P-assign-only.pqr',
-		  'test-output-1A1P-assign-only-correct.pqr',
-		  'test-assign-only',
-		  '--ff=AMBER --assign-only --whitespace')
-
 #Test nodebump and noopt
 
 buildTest('1AFS.pdb',

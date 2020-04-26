@@ -11,6 +11,17 @@ _LOGGER = logging.getLogger(__name__)
 PARSER = cli.build_parser()
 
 
+def run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path_):
+    """Basic code for invoking PDB2PQR."""
+    arg_str = args + " {inp} {out}"
+    output_pqr = tmp_path_ / output_pqr
+    _LOGGER.debug("Writing output to %s", output_pqr)
+    arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
+    args = PARSER.parse_args(arg_str.split())
+    main(args)
+    common.compare_pqr(output_pqr, expected_pqr)
+
+
 @pytest.mark.parametrize(
     "args, input_pdb, output_pqr, expected_pqr",
     [
@@ -32,13 +43,7 @@ PARSER = cli.build_parser()
 )
 def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS."""
-    arg_str = args + " {inp} {out}"
-    output_pqr = tmp_path / output_pqr
-    _LOGGER.debug("Writing output to %s", output_pqr)
-    arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
-    args = PARSER.parse_args(arg_str.split())
-    main(args)
-    common.compare_pqr(output_pqr, expected_pqr)
+    run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path)
 
 
 @pytest.mark.parametrize(
@@ -88,15 +93,34 @@ def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
         )
     ]
 )
-def test_whitespace(args, input_pdb, output_pqr, expected_pqr, tmp_path):
+def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
+    """Basic code to run 1AFS with --whitespace for different forcefields."""
+    run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path)
+
+
+@pytest.mark.parametrize(
+    "args, input_pdb, output_pqr, expected_pqr",
+    [
+        pytest.param(
+            "--log-level=INFO --whitespace --clean",
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / "1AFS_clean_whitespace.pqr",
+            id="1AFS whitespace clean"
+        ),
+        pytest.param(
+            "--log-level=INFO --whitespace --clean --ff=AMBER",
+            common.DATA_DIR / "1A1P.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1A1P_assign-only_whitespace_ff=AMBER.pqr',
+            id="1A1P assign-only clean"
+        )
+
+    ]
+)
+def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace."""
-    arg_str = args + " {inp} {out}"
-    output_pqr = tmp_path / output_pqr
-    _LOGGER.debug("Writing output to %s", output_pqr)
-    arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
-    args = PARSER.parse_args(arg_str.split())
-    main(args)
-    common.compare_pqr(output_pqr, expected_pqr)
+    run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path)
 
 
 @pytest.mark.slow

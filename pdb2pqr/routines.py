@@ -40,7 +40,7 @@ AAS = ["ALA", "ARG", "ASH", "ASN", "ASP", "CYS", "CYM", "GLN", "GLU", "GLH", "GL
 # TODO -- seems like NAS should go in aa module.
 NAS = ["A", "A5", "A3", "C", "C5", "C3", "G", "G5", "G3", "T", "T5", "T3", "U", \
        "U5", "U3", "RA", "RG", "RC", "RU", "DA", "DG", "DC", "DT"]
-FILTER_WARNINGS_LIMIT = 100
+FILTER_WARNINGS_LIMIT = 50
 FILTER_WARNINGS = ["Skipped atom during water optimization"]
 
 
@@ -59,7 +59,7 @@ class DuplicateFilter(logging.Filter):
                         return False
                     elif self.warn_count[fwarn] == FILTER_WARNINGS_LIMIT:
                         _LOGGER.warning("Suppressing further '%s' messages", fwarn)
-                        return True
+                        return False
                     else:
                         return True
         return True

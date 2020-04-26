@@ -121,6 +121,27 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
             "output.pqr",
             common.DATA_DIR / '1AFS_nodebump_noopt_whitespace_ff=AMBER.pqr',
             id="1A1P nodebump noopt whitespace AMBER"
+        ),
+        pytest.param(
+            "--ff=AMBER --chain --whitespace",
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1AFS_chain_whitespace_ff=AMBER.pqr',
+            id="1AFS chain whitespace AMBER"
+        ),
+        pytest.param(
+            "--ff=PARSE --neutraln --neutralc --whitespace",
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1AFS_neutralc_neutraln_whitespace_ff=PARSE.pqr',
+            id="1AFS neutralc neutraln PARSE"
+        ),
+        pytest.param(
+            "--ff=AMBER --drop-water",
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1AFS_drop-water_ff=AMBER.pqr',
+            id="1AFS drop-water AMBER"
         )
     ]
 )

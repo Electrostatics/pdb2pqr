@@ -45,22 +45,6 @@ def buildTest(input_file_names,
     testList.append(aliasObj)
     return aliasObj
 
-#Test chain
-buildTest('1AFS.pdb',
-          'test-output-1AFS-chain.pqr',
-		  'test-output-1AFS-chain-correct.pqr',
-		  'test-chain',
-		  '--ff=AMBER --chain --whitespace',
-		  test_chain=True)
-
-#Test neutraln and neutralc
-
-buildTest('1AFS.pdb',
-          'test-output-1AFS-neutraln-neutralc.pqr',
-		  'test-output-1AFS-neutraln-neutralc-correct.pqr',
-		  'test-neutraln-neutralc',
-		  '--ff=PARSE --neutraln --neutralc --whitespace')
-
 #Test ligand
 buildTest(['1HPX.pdb', 'LIG_1HPX.mol2'],
           'test-output-1HPX-ligand.pqr',

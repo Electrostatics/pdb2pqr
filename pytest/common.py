@@ -27,14 +27,15 @@ def pqr_to_dict(pqr_file):
         row_dict = {}
         line = " ".join([line[:6], line[6:]])
         words = line.strip().split()
-        if words[0] in ["REMARK", "TER", "END"]:
+        label = words.pop(0)
+        if label in ["REMARK", "TER", "END"]:
             pass
-        elif words[0] in ["ATOM", "HETATM"]:
-            row_dict["atom_num"] = int(words[1])
-            atom_name = words[2].strip()
+        elif label in ["ATOM", "HETATM"]:
+            row_dict["atom_num"] = int(words.pop(0))
             # Many hydrogens are created in arbitrary order when attached to
             # the same heavy atom. Therefore, the last number in their name is
             # not meaningful
+            atom_name = words.pop(0).strip()
             if atom_name[0] == "H":
                 try:
                     int(atom_name[-1])
@@ -42,13 +43,19 @@ def pqr_to_dict(pqr_file):
                 except ValueError:
                     pass
             row_dict["atom_name"] = atom_name
-            row_dict["res_name"] = words[3].strip()
-            row_dict["res_num"] = int(words[4])
-            row_dict["x"] = float(words[5])
-            row_dict["y"] = float(words[6])
-            row_dict["z"] = float(words[7])
-            row_dict["q"] = float(words[8])
-            row_dict["r"] = float(words[9])
+            row_dict["res_name"] = words.pop(0).strip()
+            num_or_chain = words.pop(0).strip()
+            try:
+                res_num = int(num_or_chain)
+                row_dict["res_num"] = res_num
+            except ValueError:
+                row_dict["chain"] = num_or_chain
+                row_dict["res_num"] = int(words.pop(0))
+            row_dict["x"] = float(words.pop(0))
+            row_dict["y"] = float(words.pop(0))
+            row_dict["z"] = float(words.pop(0))
+            row_dict["q"] = float(words.pop(0))
+            row_dict["r"] = float(words.pop(0))
             pqr.append(row_dict)
         else:
             raise NotImplementedError(words)
@@ -66,9 +73,13 @@ def pqr_distance(df1, df2):
     Returns:
         Dataframe of distances
     """
-    df = df1.merge(df2, on=["atom_name", "res_name", "res_num"], how="inner",
-                  suffixes=("A", "B"))
-    
+    if "chain" in df1.columns:
+        df = df1.merge(df2, on=["atom_name", "res_name", "res_num", "chain"],
+                       how="inner", suffixes=("A", "B"))
+    else:
+        df = df1.merge(df2, on=["atom_name", "res_name", "res_num"], how="inner",
+                       suffixes=("A", "B"))
+
     # Calculate differences and drop original columns
     for c in ("x", "y", "z", "q", "r"):
         d = "d%s" % c
@@ -104,14 +115,14 @@ def compare_pqr(pqr1_path, pqr2_path):
     """
     with open(pqr1_path, "rt", encoding="utf-8") as pqr1_file:
         df1 = pqr_to_dict(pqr1_file)
-        _LOGGER.info("PQR 1 has %d atoms", df1.shape[0])
+        _LOGGER.info("PQR 1 has shape %s", df1.shape)
     
     with open(pqr2_path, "rt", encoding="utf-8") as pqr2_file:
         df2 = pqr_to_dict(pqr2_file)
-        _LOGGER.info("PQR 2 has %d atoms", df2.shape[0])
+        _LOGGER.info("PQR 2 has shape %s", df2.shape)
     
     df = pqr_distance(df1, df2)
-    _LOGGER.info("Merged df has %d rows", df.shape[0])
+    _LOGGER.info("Merged df has shape %s", df.shape)
 
     grouped = df.groupby(["res_name", "res_name", "atom_name"])
     _LOGGER.info("Have %d unique atoms", len(grouped))

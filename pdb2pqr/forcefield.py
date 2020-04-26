@@ -234,7 +234,7 @@ class Forcefield:
             if defpath == "":
                 raise PDBInputError("Unable to find forcefield parameter file %s!" % self.name)
           
-            file = open(defpath, 'rU')
+            file = open(defpath, 'rt', encoding="utf-8")
 
         else: 
             file = userff

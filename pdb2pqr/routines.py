@@ -5,8 +5,6 @@ correct, analyze, and optimize that protein.
 
 Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """
-
-from __future__ import division
 import math
 import copy
 # TODO - need to fix all of the import * statements
@@ -1223,7 +1221,7 @@ class Routines:
             txt = "Warning: %s in %s skipped when optimizing %s in %s" % (bestwatatom.name,
                                                                            bestwatatom.residue,
                                                                            atom.name, residue)
-            _LOGGER.warn(txt)
+            _LOGGER.warning(txt)
 
         return bestatom
 

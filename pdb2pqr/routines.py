@@ -18,6 +18,7 @@ from .definitions import *
 from io import StringIO
 from .errors import PDBInputError, PDBInternalError, PDB2PKAError
 from pprint import pformat
+from collections import Counter
 import logging
 
 
@@ -32,11 +33,39 @@ BUMP_HEAVY_SIZE = 1.0
 BONDED_SS_LIMIT = 2.5
 PEPTIDE_DIST = 1.7
 REPAIR_LIMIT = 10
+# TODO -- seems like AAS should go in aa module.
 AAS = ["ALA", "ARG", "ASH", "ASN", "ASP", "CYS", "CYM", "GLN", "GLU", "GLH", "GLY", \
        "HIS", "HID", "HIE", "HIP", "HSD", "HSE", "HSP", "ILE", "LEU", "LYS", "LYN", \
        "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "TYM", "VAL"]
+# TODO -- seems like NAS should go in aa module.
 NAS = ["A", "A5", "A3", "C", "C5", "C3", "G", "G5", "G3", "T", "T5", "T3", "U", \
        "U5", "U3", "RA", "RG", "RC", "RU", "DA", "DG", "DC", "DT"]
+FILTER_WARNINGS_LIMIT = 100
+FILTER_WARNINGS = ["Skipped atom during water optimization"]
+
+
+class DuplicateFilter(logging.Filter):
+    """Filter duplicate messages."""
+
+    def filter(self, record):
+        """Filter current record."""
+        if record.levelname == "WARNING":
+            for fwarn in FILTER_WARNINGS:
+                if record.getMessage().startswith(fwarn):
+                    if not hasattr(self, "warn_count"):
+                        self.warn_count = Counter()
+                    self.warn_count.update([fwarn])
+                    if self.warn_count[fwarn] > FILTER_WARNINGS_LIMIT:
+                        return False
+                    elif self.warn_count[fwarn] == FILTER_WARNINGS_LIMIT:
+                        _LOGGER.warning("Suppressing further '%s' messages", fwarn)
+                        return True
+                    else:
+                        return True
+        return True
+
+
+_LOGGER.addFilter(DuplicateFilter())
 
 
 class Routines:
@@ -1218,9 +1247,7 @@ class Routines:
                     bestatom = closeatom
 
         if bestdist > bestwatdist:
-            txt = "Warning: %s in %s skipped when optimizing %s in %s" % (bestwatatom.name,
-                                                                           bestwatatom.residue,
-                                                                           atom.name, residue)
+            txt = "Skipped atom during water optimization: %s in %s skipped when optimizing %s in %s" % (bestwatatom.name, bestwatatom.residue, atom.name, residue)
             _LOGGER.warning(txt)
 
         return bestatom

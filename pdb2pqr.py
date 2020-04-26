@@ -5,9 +5,11 @@ yielding a new PDB-style file as output.
 
 For more information, see http://www.poissonboltzmann.org/
 """
-from pdb2pqr.main import mainCommand
+from pdb2pqr import main
+from pdb2pqr import cli
 
 
 if __name__ == "__main__":
-    """ Determine if called from command line or CGI """
-    mainCommand()
+    parser = cli.build_parser()
+    args = parser.parse_args()
+    main(args)

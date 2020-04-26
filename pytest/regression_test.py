@@ -11,28 +11,32 @@ _LOGGER = logging.getLogger(__name__)
 PARSER = cli.build_parser()
 
 
-def run(input_pdb, output_pqr, ref_pqr, arg_str):
+@pytest.mark.parametrize(
+    "args, input_pdb, output_pqr, expected_pqr",
+    [
+        pytest.param(
+            "--log-level=INFO --ff=AMBER",
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / "1AFS_ff=AMBER.pqr",
+            id="1AFS local"
+        ),
+        pytest.param(
+            "--log-level=INFO --ff=AMBER",
+            "1AFS",
+            "output.pqr",
+            common.DATA_DIR / "1AFS_ff=AMBER.pqr",
+            id="1AFS remote"
+        )
+    ]
+)
+def test_fast(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS."""
-    arg_str = arg_str + " {inp} {out}"
+    arg_str = args + " {inp} {out}"
+    output_pqr = tmp_path / output_pqr
+    _LOGGER.debug("Writing output to %s", output_pqr)
     arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
     args = PARSER.parse_args(arg_str.split())
     main(args)
-    common.compare_pqr(output_pqr, ref_pqr)
+    common.compare_pqr(output_pqr, expected_pqr)
 
-
-def test_1AFS_local(tmpdir):
-    """Test basic options for 1AFS using local copy of PDB."""
-    ref_pqr = common.DATA_DIR / "1AFS_ff=AMBER.pqr"
-    output_pqr = Path(tmpdir) / "output.pqr"
-    input_pdb = common.DATA_DIR / "1AFS.pdb"
-    arg_str = "--log-level=INFO --ff=AMBER"
-    run(input_pdb, output_pqr, ref_pqr, arg_str)
-
-
-def test_1AFS_remote(tmpdir):
-    """Test basic options for 1AFS using remote copy of PDB."""
-    ref_pqr = common.DATA_DIR / "1AFS_ff=AMBER.pqr"
-    output_pqr = Path(tmpdir) / "output.pqr"
-    input_pdb = "1AFS"
-    arg_str = "--log-level=INFO --ff=AMBER"
-    run(input_pdb, output_pqr, ref_pqr, arg_str)

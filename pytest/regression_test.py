@@ -109,13 +109,19 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
             id="1AFS whitespace clean"
         ),
         pytest.param(
-            "--log-level=INFO --whitespace --clean --ff=AMBER",
+            "--log-level=INFO --whitespace --assign-only --ff=AMBER",
             common.DATA_DIR / "1A1P.pdb",
             "output.pqr",
             common.DATA_DIR / '1A1P_assign-only_whitespace_ff=AMBER.pqr',
-            id="1A1P assign-only clean"
+            id="1A1P assign-only whitespace AMBER"
+        ),
+        pytest.param(
+            "--log-level=INFO --whitespace --nodebump --noopt --ff=AMBER",
+            common.DATA_DIR / "1A1P.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1AFS_nodebump_noopt_whitespace_ff=AMBER.pqr',
+            id="1A1P nodebump noopt whitespace AMBER"
         )
-
     ]
 )
 def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):

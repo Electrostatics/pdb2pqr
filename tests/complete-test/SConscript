@@ -45,16 +45,7 @@ def buildTest(input_file_names,
     testList.append(aliasObj)
     return aliasObj
 
-#Test nodebump and noopt
-
-buildTest('1AFS.pdb',
-          'test-output-1AFS-nodebump-noopt.pqr',
-		  'test-output-1AFS-nodebump-noopt-correct.pqr',
-		  'test-nodebump-noopt',
-		  '--ff=AMBER --nodebump --noopt --whitespace')
-
 #Test chain
-
 buildTest('1AFS.pdb',
           'test-output-1AFS-chain.pqr',
 		  'test-output-1AFS-chain-correct.pqr',

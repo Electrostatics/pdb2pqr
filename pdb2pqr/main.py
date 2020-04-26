@@ -300,10 +300,10 @@ def runPDB2PQR(pdblist, options):
 
     if options.clean:
         header = ""
-        lines = myProtein.printAtoms(myProtein.getAtoms(), chain)
+        lines = myProtein.printAtoms(myProtein.getAtoms(), options.chain)
 
         # Process the extensions
-        for ext in args.active_extensions:
+        for ext in options.active_extensions:
             module = extensions.extDict[ext]
             module.run_extension(myRoutines, outroot, extensionOptions)
 
@@ -357,7 +357,7 @@ def runPDB2PQR(pdblist, options):
 
     else:  # Special case for HIS if using assign-only
         for residue in myProtein.getResidues():
-            if isinstance(residue, HIS):
+            if isinstance(residue, aa.HIS):
                 myRoutines.applyPatch("HIP", residue)
 
     myRoutines.setStates()

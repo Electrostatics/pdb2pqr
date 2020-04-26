@@ -45,21 +45,6 @@ def buildTest(input_file_names,
     testList.append(aliasObj)
     return aliasObj
 
-#Test All Force Fields and Force Field out options
-for ff_name in ('AMBER', 'CHARMM', 'PARSE', 'TYL06', 'PEOEPB', 'SWANSON'):
-
-    out_file_name = 'test-output-1AFS-{0}.pqr'.format(ff_name)
-    correct_file_name = 'test-output-1AFS-{0}-correct.pqr'.format(ff_name)
-    test_name = 'test-ff-{0}'.format(ff_name)
-    command_line_stuffs = '--ff={0} --ffout={0} --whitespace'.format(ff_name)
-
-
-    buildTest('1AFS.pdb',
-    		  out_file_name,
-			  correct_file_name,
-			  test_name,
-			  command_line_stuffs)
-
 #Test Clean
 buildTest('1AFS.pdb',
 		  'test-output-1AFS-clean.pqr',

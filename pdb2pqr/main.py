@@ -464,7 +464,7 @@ def build_parser():
     p.add_argument("input_pdb",
                    help="Input PDB path or ID (to be retrieved from RCSB database")
     p.add_argument("output_pqr", help="Output PQR path")
-    p.add_argument("--log-level", help="Logging level", default="DEBUG",
+    p.add_argument("--log-level", help="Logging level", default="INFO",
                    choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
     g1 = p.add_argument_group(title="Mandatory options",
                              description="One of the following options must be used")

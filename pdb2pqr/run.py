@@ -262,9 +262,9 @@ def runPDB2PQR(pdblist, options):
     else:
         myProtein = protein.Protein(pdblist, myDefinition)
 
-    _LOGGER.info("Created protein object -")
-    _LOGGER.info("\tNumber of residues in protein: %s", myProtein.numResidues())
-    _LOGGER.info("\tNumber of atoms in protein   : %s", myProtein.numAtoms())
+    _LOGGER.info("Created protein object:")
+    _LOGGER.info("  Number of residues in protein: %s", myProtein.numResidues())
+    _LOGGER.info("  Number of atoms in protein   : %s", myProtein.numAtoms())
 
     myRoutines = routines.Routines(myProtein)
 
@@ -273,11 +273,10 @@ def runPDB2PQR(pdblist, options):
         for atom in residue.getAtoms():
             if atom.altLoc != "":
                 multoccupancy = 1
-                txt = "Warning: multiple occupancies found: %s in %s\n" % (atom.name, residue)
+                txt = "Warning: multiple occupancies found: %s in %s." % (atom.name, residue)
                 _LOGGER.warn(txt)
         if multoccupancy == 1:
-            _LOGGER.warn("WARNING: multiple occupancies found in %s,\n" % (residue))
-            _LOGGER.warn("         at least one of the instances is being ignored.\n")
+            _LOGGER.warn("WARNING: multiple occupancies found in %s at least one of the instances is being ignored.", residue)
 
     myRoutines.setTermini(options.neutraln, options.neutralc)
     myRoutines.updateBonds()

@@ -40,3 +40,7 @@ def test_fast(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     main(args)
     common.compare_pqr(output_pqr, expected_pqr)
 
+
+@pytest.mark.slow
+def test_slow():
+    _LOGGER.error("Need to add slow tests")

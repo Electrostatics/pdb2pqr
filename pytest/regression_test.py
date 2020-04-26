@@ -27,3 +27,12 @@ def test_1AFS_local(tmpdir):
     input_pdb = common.DATA_DIR / "1AFS.pdb"
     arg_str = "--log-level=INFO --ff=AMBER"
     run(input_pdb, output_pqr, ref_pqr, arg_str)
+
+
+def test_1AFS_remote(tmpdir):
+    """Test basic options for 1AFS using remote copy of PDB."""
+    ref_pqr = common.DATA_DIR / "1AFS_ff=AMBER.pqr"
+    output_pqr = Path(tmpdir) / "output.pqr"
+    input_pdb = "1AFS"
+    arg_str = "--log-level=INFO --ff=AMBER"
+    run(input_pdb, output_pqr, ref_pqr, arg_str)

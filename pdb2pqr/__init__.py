@@ -19,18 +19,14 @@ from . import __version__
 from .pdb2pka.ligandclean import ligff
 
 
-HEADER_TEXT = """
-----------------------------------------------------
-PDB2PQR - biomolecular structure conversion software
-Version {version}
-----------------------------------------------------
-Please cite your use of PDB2PQR as:
+TITLE_TEXT = "PDB2PQR v{version} - biomolecular structure conversion software"
+TITLE_TEXT = TITLE_TEXT.format(version=__version__)
+CITE_TEXTS = [
+    "Please cite:  Jurrus E, et al.  Improvements to the APBS biomolecular solvation software suite.  Protein Sci 27 112-128 (2018).  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5734301/",
+    "Please cite:  Dolinsky TJ, et al.  PDB2PQR: expanding and upgrading automated preparation of biomolecular structures for molecular simulations.  Nucleic Acids Res 35 W522-W525 (2007).  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1933214/"
+]
 
-  Dolinsky TJ, Nielsen JE, McCammon JA, Baker NA. PDB2PQR: an automated
-  pipeline for the setup, execution, and analysis of Poisson-Boltzmann
-  electrostatics calculations. Nucleic Acids Research 32 W665-W667 (2004).
-"""
-HEADER_TEXT = HEADER_TEXT.format(version=__version__)
+
 _LOGGER = logging.getLogger(__name__)
 logging.captureWarnings(True)
 
@@ -44,7 +40,9 @@ def main(args):
     logging.basicConfig(level=getattr(logging, args.log_level))
 
     _LOGGER.debug("Args:  %s", args)
-    _LOGGER.info(HEADER_TEXT)
+    _LOGGER.info(TITLE_TEXT)
+    for citation in CITE_TEXTS:
+        _LOGGER.info(citation)
 
     if args.assign_only or args.clean:
         args.debump = False

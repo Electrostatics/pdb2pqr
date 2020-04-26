@@ -28,7 +28,8 @@ def pqr_to_dict(pqr_file):
         line = " ".join([line[:6], line[6:]])
         words = line.strip().split()
         label = words.pop(0)
-        if label in ["REMARK", "TER", "END"]:
+        if label in ["REMARK", "TER", "END", "HEADER", "TITLE", "COMPND",
+                     "SOURCE", "KEYWDS", "EXPDTA", "AUTHOR", "REVDAT", "JRNL"]:
             pass
         elif label in ["ATOM", "HETATM"]:
             row_dict["atom_num"] = int(words.pop(0))
@@ -58,7 +59,7 @@ def pqr_to_dict(pqr_file):
             row_dict["r"] = float(words.pop(0))
             pqr.append(row_dict)
         else:
-            raise NotImplementedError(words)
+            raise NotImplementedError(label, words)
     return pandas.DataFrame(pqr)
 
 

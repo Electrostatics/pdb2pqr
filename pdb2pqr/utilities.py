@@ -367,6 +367,7 @@ def dot(coords1, coords2):
         value += coords1[i]*coords2[i]
     return value
 
+
 # TODO - replace with numpy
 def normalize(coords):
     """

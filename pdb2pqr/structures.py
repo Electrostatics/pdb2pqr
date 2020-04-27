@@ -16,11 +16,10 @@ BACKBONE = ["N","CA","C","O","O2","HA","HN","H","tN"]
 
 
 class Chain:
-    """
-        Chain class
-
-        The chain class contains information about each chain within a given
-        Protein object.  
+    """Chain class 
+    
+    The chain class contains information about each chain within a given
+    Protein object.  
     """
 
     def __init__(self, chainID):

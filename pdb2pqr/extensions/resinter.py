@@ -177,7 +177,7 @@ def get_residue_interaction_energy(residue1, residue2):
     residue1 and residue2 will not always produce the same result.
     """
     energy = 0.0
-    for pair in product(residue1.getAtoms(), residue2.getAtoms()):
+    for pair in product(residue1.get_atoms(), residue2.get_atoms()):
         energy += Optimize.getPairEnergy(pair[0], pair[1])
         
     return energy
@@ -234,7 +234,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
     
     routines.removeHydrogens()
     
-    for newResidueName, oldResidue, index in zip(residueSet, routines.protein.getResidues(), count()):
+    for newResidueName, oldResidue, index in zip(residueSet, routines.protein.get_residues(), count()):
         if newResidueName is None:
             continue
         
@@ -280,7 +280,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
         # Special for GLH/ASH, since both conformations were added
         hydRoutines.cleanup()
         
-    save_residue_interaction_energies(routines.protein.getResidues(), output)        
+    save_residue_interaction_energies(routines.protein.get_residues(), output)        
         
 
 def write_all_residue_interaction_energies_combinations(routines, output, options, all_residue_combinations=False):
@@ -288,10 +288,10 @@ def write_all_residue_interaction_energies_combinations(routines, output, option
     For every titration state combination of residue output the 
     interaction energy for all possible residue pairs. 
     """
-    residueNamesList = get_residue_titration_sets(routines.protein.getResidues())
+    residueNamesList = get_residue_titration_sets(routines.protein.get_residues())
     
     _LOGGER.debug("Testing the following combinations")
-    namelist = [r.name for r in routines.protein.getResidues()]
+    namelist = [r.name for r in routines.protein.get_residues()]
     combinationsData = zip(namelist, residueNamesList)
     for thing in combinationsData:
         _LOGGER.debug(str(thing))
@@ -333,7 +333,7 @@ def create_resinter_output(routines, outfile, options,
         write_all_residue_interaction_energies_combinations(routines, output, options, 
                                                             all_residue_combinations=all_residue_combinations)
     else:
-        save_residue_interaction_energies(routines.protein.getResidues(), output)
+        save_residue_interaction_energies(routines.protein.get_residues(), output)
     
 
 def run_extension(routines, outroot, options):

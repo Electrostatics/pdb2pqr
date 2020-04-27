@@ -40,7 +40,7 @@ class Nucleic(Residue):
 
             if a.name not in self.map:
                 atom = Atom(a, "ATOM", self)
-                self.addAtom(atom)
+                self.add_atom(atom)
 
     def create_atom(self, atomname, newcoords):
         """Create an atom.  Overrides the generic residue's create_atom().
@@ -58,10 +58,10 @@ class Nucleic(Residue):
         newatom.set("occupancy",1.00)
         newatom.set("tempFactor",0.00)
         newatom.added = 1
-        self.addAtom(newatom) 
+        self.add_atom(newatom) 
 
-    def addAtom(self, atom):
-        """Override the existing addAtom - include the link to the reference
+    def add_atom(self, atom):
+        """Override the existing add_atom - include the link to the reference
         object.
         """
         self.atoms.append(atom)
@@ -70,7 +70,7 @@ class Nucleic(Residue):
         try:
             atom.reference = self.reference.map[atomname]
             for bond in atom.reference.bonds:
-                if self.hasAtom(bond):
+                if self.has_atom(bond):
                     bondatom = self.map[bond]
                     if bondatom not in atom.bonds: atom.bonds.append(bondatom)
                     if atom not in bondatom.bonds: bondatom.bonds.append(atom)
@@ -98,7 +98,7 @@ class ADE(Nucleic):
         return 'A'
 
     def set_state(self):
-        if self.hasAtom("O2'"):
+        if self.has_atom("O2'"):
             self.ffname = "RA"
         else:
             self.ffname = "DA"
@@ -116,7 +116,7 @@ class CYT(Nucleic):
         return 'C'
         
     def set_state(self):
-        if self.hasAtom("O2'"):
+        if self.has_atom("O2'"):
             self.ffname = "RC"
         else:
             self.ffname = "DC"
@@ -134,7 +134,7 @@ class GUA(Nucleic):
         return 'G'
         
     def set_state(self):
-        if self.hasAtom("O2'"):
+        if self.has_atom("O2'"):
             self.ffname = "RG"
         else:
             self.ffname = "DG"

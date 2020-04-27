@@ -41,19 +41,19 @@ def create_rama_output(routines, outfile, outputtype='rama'):
 
     protein = routines.protein
 
-    for residue in protein.getResidues():
-        if residue.hasAtom("N"): 
-            ncoords = residue.getAtom("N").getCoords()
+    for residue in protein.get_residues():
+        if residue.has_atom("N"): 
+            ncoords = residue.get_atom("N").getCoords()
         else: 
             continue
 
-        if residue.hasAtom("CA"): 
-            cacoords = residue.getAtom("CA").getCoords()
+        if residue.has_atom("CA"): 
+            cacoords = residue.get_atom("CA").getCoords()
         else: 
             continue
 
-        if residue.hasAtom("C"): 
-            ccoords = residue.getAtom("C").getCoords()
+        if residue.has_atom("C"): 
+            ccoords = residue.get_atom("C").getCoords()
         else: 
             continue
 

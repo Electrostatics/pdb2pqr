@@ -97,7 +97,7 @@ def runAPBS(PQR, INPUT):
     # Load the molecules using Valist_load routine
 
     alist = new_valist(NOSH_MAXMOL)
-    #atoms = protein.getAtoms()
+    #atoms = protein.get_atoms()
     #protsize = len(atoms)
     atoms = string.split(PQR,"\n")
     for i in range(len(atoms)):
@@ -265,7 +265,7 @@ def runAPBS(PQR, INPUT):
 if __name__ == "__main__":
 
     # This would really be something like
-    #   atoms = protein.getAtoms()
+    #   atoms = protein.get_atoms()
     #   PQR = protein.printAtoms(atoms)
     PQR = "ATOM      1  I   ION     1       0.000   0.000  0.000  1.00  3.00"
 

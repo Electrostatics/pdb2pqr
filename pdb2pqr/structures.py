@@ -46,7 +46,7 @@ class Chain:
             Returns
                 item:     The value of the member
         """
-        if name == "atoms": self.getAtoms()
+        if name == "atoms": self.get_atoms()
         else:
             try:
                 item = getattr(self, name)
@@ -92,16 +92,16 @@ class Chain:
             Returns
                 count:  Number of atoms in the chain (int)
         """
-        count = len(self.getAtoms())       
+        count = len(self.get_atoms())       
         return count
 
-    def getResidues(self):
+    def get_residues(self):
         """
             Return a list of Residue objects in this chain
         """
         return self.residues
     
-    def getAtoms(self):
+    def get_atoms(self):
         """
             Return a list of Atom objects contained in this chain
 
@@ -162,9 +162,9 @@ class Residue:
             atom = Atom(a, atomclass, self)
             atomname = atom.get("name")
             if atomname not in self.map:
-                self.addAtom(atom)
+                self.add_atom(atom)
             else: # Don't add duplicate atom              
-                oldatom = self.getAtom(atomname)
+                oldatom = self.get_atom(atomname)
                 oldatom.set("altLoc","")
 
         if self.name == "HOH":
@@ -302,7 +302,7 @@ class Residue:
         for atom in self.atoms:
             atom.set("chainID", value)
         
-    def addAtom(self, atom):
+    def add_atom(self, atom):
         """
             Add the atom object to the residue.
 
@@ -370,7 +370,7 @@ class Residue:
         newatom.set("name", name)
         newatom.set("occupancy",1.00)
         newatom.set("tempFactor",0.00)
-        self.addAtom(newatom) 
+        self.add_atom(newatom) 
 
     def addMissing(self, value):
         """
@@ -381,7 +381,7 @@ class Residue:
         """
         self.missing.append(value)
 
-    def getAtom(self, name):
+    def get_atom(self, name):
         """
             Retrieve an atom from the mapping
 
@@ -390,10 +390,10 @@ class Residue:
         """
         return self.map.get(name);
 
-    def getAtoms(self):
+    def get_atoms(self):
         return self.atoms
 
-    def hasAtom(self, name):
+    def has_atom(self, name):
         return name in self.map
 
     def getCharge(self):
@@ -466,7 +466,7 @@ class Residue:
             Set the donors and acceptors within the residue
         """
         if not hasattr(self, "reference"): return
-        for atom in self.getAtoms():
+        for atom in self.get_atoms():
             atomname = atom.get("name")
             resname = self.name
 
@@ -496,10 +496,10 @@ class Residue:
             Reorder the atoms to start with N, CA, C, O if they exist
         """
         templist = []
-        if self.hasAtom("N"): templist.append(self.getAtom("N"))
-        if self.hasAtom("CA"): templist.append(self.getAtom("CA"))
-        if self.hasAtom("C"): templist.append(self.getAtom("C"))
-        if self.hasAtom("O"): templist.append(self.getAtom("O"))
+        if self.has_atom("N"): templist.append(self.get_atom("N"))
+        if self.has_atom("CA"): templist.append(self.get_atom("CA"))
+        if self.has_atom("C"): templist.append(self.get_atom("C"))
+        if self.has_atom("O"): templist.append(self.get_atom("O"))
 
         # Add remaining atoms
         for atom in self.atoms:

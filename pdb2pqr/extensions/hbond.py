@@ -78,7 +78,7 @@ def create_hbond_output(routines, outfile, whatif=False,
     routines.cells = Cells(cellsize)
     routines.cells.assignCells(protein)
 
-    for donor in protein.getAtoms():
+    for donor in protein.get_atoms():
 
         # Grab the list of donors
         if not donor.hdonor: 

@@ -68,32 +68,32 @@ class Protein:
                 if resSeq != previousAtom.resSeq or \
                       iCode != previousAtom.iCode or \
                       chainID != previousAtom.chainID:
-                    myResidue = self.createResidue(residue, previousAtom.resName)
-                    chainDict[previousAtom.chainID].addResidue(myResidue)
+                    my_residue = self.createResidue(residue, previousAtom.resName)
+                    chainDict[previousAtom.chainID].addResidue(my_residue)
                     residue = []
 
                 residue.append(record)
                 previousAtom = record
 
             elif isinstance(record, END):
-                myResidue = self.createResidue(residue, previousAtom.resName)
-                chainDict[previousAtom.chainID].addResidue(myResidue)
+                my_residue = self.createResidue(residue, previousAtom.resName)
+                chainDict[previousAtom.chainID].addResidue(my_residue)
                 residue = []
 
             elif isinstance(record, MODEL):
                 numModels += 1
                 if residue == []: continue
                 if numModels > 1:
-                    myResidue = self.createResidue(residue, previousAtom.resName)    
-                    chainDict[previousAtom.chainID].addResidue(myResidue)
+                    my_residue = self.createResidue(residue, previousAtom.resName)    
+                    chainDict[previousAtom.chainID].addResidue(my_residue)
                     break
 
             elif isinstance(record, TER):
                 count += 1
 
         if residue != [] and numModels <= 1:
-            myResidue = self.createResidue(residue, previousAtom.resName)
-            chainDict[previousAtom.chainID].addResidue(myResidue)
+            my_residue = self.createResidue(residue, previousAtom.resName)
+            chainDict[previousAtom.chainID].addResidue(my_residue)
 
         # Keep a map for accessing chains via chainID
 
@@ -112,7 +112,7 @@ class Protein:
             self.chains.append(chainDict[key])
 
         for chain in self.chains:
-            for residue in chain.getResidues():
+            for residue in chain.get_residues():
                 self.residues.append(residue)
 
     def createResidue(self, residue, resname):
@@ -179,7 +179,7 @@ class Protein:
         """
         # Cache the initial atom numbers
         numcache = {}
-        for atom in self.getAtoms():
+        for atom in self.get_atoms():
             numcache[atom] = atom.serial
         self.reSerialize()
 
@@ -196,14 +196,14 @@ class Protein:
         file.write("<TABLE CELLSPACING=2 CELLPADDING=2 BORDER=1>\n")
         file.write("<tr><th>Atom Number</th><th>Atom Name</th><th>Residue Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>CHARMM Atom Type</th></tr>\n")
        
-        for atom in self.getAtoms():
+        for atom in self.get_atoms():
             if isinstance(atom.residue, (Amino, WAT, Nucleic)):
                 resname = atom.residue.ffname
             else:
                 resname = atom.residue.name
 
-            ambergroup = amberff.getGroup(resname, atom.name)
-            charmmgroup  = charmmff.getGroup(resname, atom.name)
+            ambergroup = amberff.get_group(resname, atom.name)
+            charmmgroup  = charmmff.get_group(resname, atom.name)
         
             
             file.write("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (atom.serial, atom.name, resname, atom.chainID, ambergroup, charmmgroup))
@@ -214,17 +214,17 @@ class Protein:
         file.close()
 
         # Return the original numbers back
-        for atom in self.getAtoms():
+        for atom in self.get_atoms():
             atom.serial = numcache[atom]
 
     def reSerialize(self):
         """Generate new serial numbers for atoms in the protein"""
         count = 1
-        for atom in self.getAtoms():
+        for atom in self.get_atoms():
             atom.set("serial", count)
             count += 1
 
-    def getResidues(self):
+    def get_residues(self):
         """Return the list of residues in the entire protein"""
         return self.residues
     
@@ -235,15 +235,15 @@ class Protein:
         Returns:
             count:  Number of residues in the protein (int)
         """
-        return len(self.getResidues())
+        return len(self.get_residues())
 
     def numAtoms(self):
         """Get the number of atoms for the entire protein (including multiple
         chains)
         """
-        return len(self.getAtoms())
+        return len(self.get_atoms())
 
-    def getAtoms(self):
+    def get_atoms(self):
         """Return all Atom objects in list format
 
         Returns:
@@ -251,7 +251,7 @@ class Protein:
         """
         atomlist = []
         for chain in self.chains:
-            for atom in chain.getAtoms():
+            for atom in chain.get_atoms():
                 atomlist.append(atom)
         return atomlist
 

@@ -436,14 +436,14 @@ def pre_init(pdbfilename=None,
         #
         templist=[]
         ligsuccess=False
-        for residue in myProtein.getResidues():
+        for residue in myProtein.get_residues():
             if isinstance(residue, LIG):
                 templist = []
                 Lig.make_up2date(residue)
                 net_charge=0.0
                 print('Ligand',residue)
                 print('Atom\tCharge\tRadius')
-                for atom in residue.getAtoms():
+                for atom in residue.get_atoms():
                     if atom.mol2charge:
                         atom.ffcharge=atom.mol2charge
                     else:
@@ -712,5 +712,5 @@ if __name__ == "__main__":
 #             for residue in chain.get("residues"):
 #                 for atom in residue.get("atoms"):
 #                     atomname = atom.get("name")
-#                     charge, radius = forcefield.getParams(residue, atomname)
+#                     charge, radius = forcefield.get_params(residue, atomname)
 #                     print '%2s %4s %3d %4s %5.2f %5.2f' %(chain.chainID,residue.name,residue.resSeq,atomname,charge,radius)

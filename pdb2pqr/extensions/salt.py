@@ -55,7 +55,7 @@ def run_extension(routines, outroot, options):
     routines.cells.assignCells(protein)
 
     # Loop over all the atoms
-    for cation in protein.getAtoms():
+    for cation in protein.get_atoms():
         # check that we've found a cation
         if cation.residue.name == "NMET":
             _LOGGER.info("YES NMET")

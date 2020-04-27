@@ -56,7 +56,7 @@ class Amino(Residue):
                 atom_.name = ref.altnames[atom_.name]
             if atom_.name not in self.map:
                 atom = Atom(atom_, "ATOM", self)
-                self.addAtom(atom)
+                self.add_atom(atom)
             else:
                 _LOGGER.debug("Ignoring atom %s", atom_.name)
 
@@ -74,10 +74,10 @@ class Amino(Residue):
         newatom.set("occupancy", 1.00)
         newatom.set("tempFactor", 0.00)
         newatom.added = 1
-        self.addAtom(newatom)
+        self.add_atom(newatom)
 
-    def addAtom(self, atom):
-        """Override the existing addAtom - include the link to the reference
+    def add_atom(self, atom):
+        """Override the existing add_atom - include the link to the reference
         object
         """
         self.atoms.append(atom)
@@ -86,7 +86,7 @@ class Amino(Residue):
         try:
             atom.reference = self.reference.map[atomname]
             for bond in atom.reference.bonds:
-                if self.hasAtom(bond):
+                if self.has_atom(bond):
                     bondatom = self.map[bond]
                     if bondatom not in atom.bonds:
                         atom.bonds.append(bondatom)
@@ -206,7 +206,7 @@ class CYS(Amino):
             self.ffname = "CYX"
         elif "CYM" in self.patches or self.name == "CYM":
             self.ffname = "CYM"
-        elif not self.hasAtom("HG"):
+        elif not self.has_atom("HG"):
             self.ffname = "CYX"
         Amino.set_state(self)
 
@@ -267,24 +267,24 @@ class HIS(Amino):
         hacceptor or hdonor flags.  Otherwise HID is used as the default.
         """
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
-            if self.getAtom("ND1").hdonor and not self.getAtom("ND1").hacceptor:
-                if self.hasAtom("HE2"):
+            if self.get_atom("ND1").hdonor and not self.get_atom("ND1").hacceptor:
+                if self.has_atom("HE2"):
                     self.removeAtom("HE2")
-            elif self.getAtom("NE2").hdonor and not self.getAtom("NE2").hacceptor:
-                if self.hasAtom("HD1"):
+            elif self.get_atom("NE2").hdonor and not self.get_atom("NE2").hacceptor:
+                if self.has_atom("HD1"):
                     self.removeAtom("HD1")
-            elif self.getAtom("ND1").hacceptor and not self.getAtom("ND1").hdonor:
-                if self.hasAtom("HD1"):
+            elif self.get_atom("ND1").hacceptor and not self.get_atom("ND1").hdonor:
+                if self.has_atom("HD1"):
                     self.removeAtom("HD1")
             else: # Default to HID
-                if self.hasAtom("HE2"):
+                if self.has_atom("HE2"):
                     self.removeAtom("HE2")
 
-        if self.hasAtom("HD1") and self.hasAtom("HE2"):
+        if self.has_atom("HD1") and self.has_atom("HE2"):
             self.ffname = "HIP"
-        elif self.hasAtom("HD1"):
+        elif self.has_atom("HD1"):
             self.ffname = "HID"
-        elif self.hasAtom("HE2"):
+        elif self.has_atom("HE2"):
             self.ffname = "HIE"
         else:
             errstr = ("Invalid type for %s! Missing both HD1 and HE2 atoms. If "
@@ -466,9 +466,9 @@ class WAT(Residue):
             atom = Atom(atom_, "HETATM", self)
             atomname = atom.get("name")
             if atomname not in self.map:
-                self.addAtom(atom)
+                self.add_atom(atom)
             else: # Don't add duplicate atom with altLoc field
-                oldatom = self.getAtom(atomname)
+                oldatom = self.get_atom(atomname)
                 oldatom.set("altLoc", "")
 
     def create_atom(self, atomname, newcoords):
@@ -482,10 +482,10 @@ class WAT(Residue):
         newatom.set("occupancy", 1.00)
         newatom.set("tempFactor", 0.00)
         newatom.added = 1
-        self.addAtom(newatom)
+        self.add_atom(newatom)
 
-    def addAtom(self, atom):
-        """Override the existing addAtom - include the link to the reference
+    def add_atom(self, atom):
+        """Override the existing add_atom - include the link to the reference
         object.
         """
         self.atoms.append(atom)
@@ -494,7 +494,7 @@ class WAT(Residue):
         try:
             atom.reference = self.reference.map[atomname]
             for bond in atom.reference.bonds:
-                if self.hasAtom(bond):
+                if self.has_atom(bond):
                     bondatom = self.map[bond]
                     if bondatom not in atom.bonds:
                         atom.bonds.append(bondatom)
@@ -534,9 +534,9 @@ class LIG(Residue):
             atom = Atom(atom_, "HETATM", self)
             atomname = atom.get("name")
             if atomname not in self.map:
-                self.addAtom(atom)
+                self.add_atom(atom)
             else: # Don't add duplicate atom with altLoc field
-                oldatom = self.getAtom(atomname)
+                oldatom = self.get_atom(atomname)
                 oldatom.set("altLoc", "")
 
     def create_atom(self, atomname, newcoords):
@@ -549,16 +549,16 @@ class LIG(Residue):
         newatom.set("occupancy", 1.00)
         newatom.set("tempFactor", 0.00)
         newatom.added = 1
-        self.addAtom(newatom)
+        self.add_atom(newatom)
 
-    def addAtom(self, atom):
+    def add_atom(self, atom):
         self.atoms.append(atom)
         atomname = atom.get("name")
         self.map[atomname] = atom
         try:
             atom.reference = self.reference.map[atomname]
             for bond in atom.reference.bonds:
-                if self.hasAtom(bond):
+                if self.has_atom(bond):
                     bondatom = self.map[bond]
                     if bondatom not in atom.bonds:
                         atom.bonds.append(bondatom)

@@ -82,8 +82,8 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     for i in range(0,len(bonds),2):
         bondA = int(bonds[i])
         bondB = int(bonds[i+1])
-        atomA = ligresidue.getAtom(atommap[bondA])
-        atomB = ligresidue.getAtom(atommap[bondB])
+        atomA = ligresidue.get_atom(atommap[bondA])
+        atomB = ligresidue.get_atom(atommap[bondB])
 
         atomA.bonds.append(atommap[bondB])
         atomB.bonds.append(atommap[bondA])
@@ -136,7 +136,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
                         aaat.formalcharge = 0.0
                     xxxlll = []
                     #for xxx in ligatoms.lBondedAtoms:
-                    for bond in ligresidue.getAtom(aaat.name).bonds:
+                    for bond in ligresidue.get_atom(aaat.name).bonds:
                         xxxlll.append(bond)
 
                     aaat.intrabonds = xxxlll
@@ -199,11 +199,11 @@ class ligforcefield(Forcefield):
 
                 atom = ForcefieldAtom(atomname, charge, radius)
 
-                myResidue = self.getResidue(resname)
-                if myResidue == None:
-                    myResidue = ForcefieldResidue(resname)
-                    self.residues[resname] = myResidue
-                myResidue.addAtom(atom)
+                my_residue = self.get_residue(resname)
+                if my_residue == None:
+                    my_residue = ForcefieldResidue(resname)
+                    self.residues[resname] = my_residue
+                my_residue.add_atom(atom)
             #
         ### PC - charge assignment on ligand
         ###
@@ -213,7 +213,7 @@ class ligforcefield(Forcefield):
         return
 
 
-    def getParams(self,residue,name):
+    def get_params(self,residue,name):
         """
             Get the parameters associated with the input fields.
             The residue itself is needed instead of simply its name
@@ -236,17 +236,17 @@ class ligforcefield(Forcefield):
         #for at in self.lig.lAtoms:
         #    at.charge = 0.0
         if self.name == "amber" and residue.type != 2:
-            resname, atomname = self.getAmberParams(residue, name)
+            resname, atomname = self.get_amber_params(residue, name)
         elif self.name == "charmm" and residue.type != 2:
-            resname, atomname = self.getCharmmParams(residue, name)
+            resname, atomname = self.get_charmm_params(residue, name)
         elif self.name == "parse" and residue.type != 2:
-            resname, atomname = self.getParseParams(residue, name)
-        defresidue = self.getResidue(resname)
+            resname, atomname = self.get_parse_params(residue, name)
+        defresidue = self.get_residue(resname)
         ### This is a rather quick and dirty solution
         if residue.type == 2:
             charge,radius = self.getChargeAndRadius(residue,name)
         if defresidue != None:
-            atom = defresidue.getAtom(atomname)
+            atom = defresidue.get_atom(atomname)
         else:
             atom = None
         if atom != None:

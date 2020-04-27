@@ -173,7 +173,7 @@ class pKaRoutines:
         return
 
     def dump_protein_file(self, file_name, pdbfile=True):
-        lines = self.protein.printAtoms(self.protein.getAtoms(), chainflag=True, pdbfile=pdbfile)
+        lines = self.protein.printAtoms(self.protein.get_atoms(), chainflag=True, pdbfile=pdbfile)
         with open(file_name,'w') as fd:
             _LOGGER.info( 'dumping protein state to '+ fd.name)
             for line in lines:
@@ -228,7 +228,7 @@ class pKaRoutines:
         titration=pKaGroup.DefTitrations[0]
         possiblestates = titration.allstates
         state=possiblestates[0]
-        atomnames = self.getAtomsForPotential(pKa,titration)
+        atomnames = self.get_atomsForPotential(pKa,titration)
 
         self.apbs_setup.set_type('desolv')
 
@@ -282,7 +282,7 @@ class pKaRoutines:
             titgroup='%s:%s:%s' %(residue.chainID, string.zfill(residue.resSeq,4),pKaGroup.name)
             if not potentialDifference.has_key(titgroup):
                 potentialDifference[titgroup]={}
-                for atom in self.protein.getAtoms():
+                for atom in self.protein.get_atoms():
                     if atom.name in ['N','H','C']:
                         atom_uniqueid=atom.chainID+':'+string.zfill(atom.resSeq,4)+':'+atom.name
                         potentialDifference[titgroup][atom_uniqueid]=0.00
@@ -298,7 +298,7 @@ class pKaRoutines:
                 # Loop over each state
                 #
                 for state in possiblestates:
-                    for atom in self.protein.getAtoms():
+                    for atom in self.protein.get_atoms():
                         if atom.name in ['N','H','C']:
                             atom_uniqueid=atom.chainID+':'+string.zfill(atom.resSeq,4)+':'+atom.name
                             if state in startstates:
@@ -337,11 +337,11 @@ class pKaRoutines:
             elif residue.name == "ARG":
                 defaultprotonationstates[key] = "1+2+3+4+5"
             elif residue.name == "HIS":
-                if residue.hasAtom("HD1") and residue.hasAtom("HE2"):
+                if residue.has_atom("HD1") and residue.has_atom("HE2"):
                     defaultprotonationstates[key] = "1+2"
-                elif residue.hasAtom("HD1"):
+                elif residue.has_atom("HD1"):
                     defaultprotonationstates[key] = "1"
-                elif residue.hasAtom("HE2"):
+                elif residue.has_atom("HE2"):
                     defaultprotonationstates[key] = "2"
             if residue.isNterm:
                 key = 'NTR' + '_' + residue.chainID + '_' + str(residue.resSeq)
@@ -387,10 +387,10 @@ class pKaRoutines:
             #
             # Get the atomnames
             #
-            atomnames = self.getAtomsForPotential(pKa,titration)
+            atomnames = self.get_atomsForPotential(pKa,titration)
             atomlist=[]
             for atomname in atomnames:
-                atomlist.append(residue.getAtom(atomname))
+                atomlist.append(residue.get_atom(atomname))
             center=self.get_atoms_center(atomlist)
             self.apbs_setup.setfineCenter(center)
             #
@@ -513,7 +513,7 @@ class pKaRoutines:
                 # Get all states
                 #
                 possiblestates = titration.allstates
-                atomnames=self.getAtomsForPotential(pKa,titration)
+                atomnames=self.get_atomsForPotential(pKa,titration)
                 #
                 # Calculate the interaction energy with a charged state. If that energy is not large, then
                 # assume that all other energies for this titgroup are zero
@@ -603,12 +603,12 @@ class pKaRoutines:
                     #
                     atomlist=[]
                     for atomname in atomnames:
-                        if residue.getAtom(atomname) not in atomlist:
-                            atomlist.append(residue.getAtom(atomname))
+                        if residue.get_atom(atomname) not in atomlist:
+                            atomlist.append(residue.get_atom(atomname))
 
                     energy=0.0
                     count=0
-                    for atom in self.protein.getAtoms():
+                    for atom in self.protein.get_atoms():
                         for atom2 in atomlist:
                             if is_sameatom(atom,atom2):
                                 energy=energy+potentials[count]*atom.get("ffcharge")
@@ -650,7 +650,7 @@ class pKaRoutines:
                     #
                     if mode=='pKD':
                         count=0
-                        for atom in self.protein.getAtoms():
+                        for atom in self.protein.get_atoms():
                             atom_uniqueid=atom.chainID+':'+string.zfill(atom.resSeq,4)+':'+atom.name
                             all_potentials[pKa][titration][state][atom_uniqueid]=potentials[count]
                             count=count+1
@@ -1048,11 +1048,11 @@ class pKaRoutines:
         residue = pKa.residue
         pKaGroup = pKa.pKaGroup
         sum=0.0
-        for atom in residue.getAtoms():
+        for atom in residue.get_atoms():
             atomname = atom.get("name")
             if atomname.find('FLIP')!=-1:
                 continue
-            charge, radius = self.forcefield.getParams1(residue, atomname)
+            charge, radius = self.forcefield.get_params1(residue, atomname)
             sum=sum+charge
 
         return abs(sum)>0.05
@@ -1280,10 +1280,10 @@ class pKaRoutines:
                     # Get the atoms where we will measure the potential
                     #
                     firststate = possiblestates[0]
-                    atomnames = self.getAtomsForPotential(pKa,titration)
+                    atomnames = self.get_atomsForPotential(pKa,titration)
                     atomlist=[]
                     for atomname in atomnames:
-                        atomlist.append(residue.getAtom(atomname))
+                        atomlist.append(residue.get_atom(atomname))
                     #
                     # Switch the states of all other titratable groups to the neutral reference state
                     #
@@ -1461,10 +1461,10 @@ class pKaRoutines:
                 #
                 # Get atoms for potential
                 #
-                atomnames = self.getAtomsForPotential(pKa,titration)
+                atomnames = self.get_atomsForPotential(pKa,titration)
                 atomlist=[]
                 for atomname in atomnames:
-                    atomlist.append(residue.getAtom(atomname))
+                    atomlist.append(residue.get_atom(atomname))
                 #
                 # Switch all the other groups to the neutral reference state
                 #
@@ -1634,7 +1634,7 @@ class pKaRoutines:
 #                         #
 #                         atomlist=[]
 #                         atomnames=[]
-#                         for atom in residue.getAtoms():
+#                         for atom in residue.get_atoms():
 #                             atomlist.append(atom)
 #                             atomnames.append(atom.name)
 #                         #
@@ -1835,7 +1835,7 @@ class pKaRoutines:
         #
         # Get the potentials
         #
-        for atom in self.protein.getAtoms():
+        for atom in self.protein.get_atoms():
             if not atom:
                 continue
             for atom_2 in atomlist:
@@ -1926,10 +1926,10 @@ class pKaRoutines:
                 residue:  The residue to set (residue)
                 atomlist: A list of atomnames (list)
         """
-        for atom in residue.getAtoms():
+        for atom in residue.get_atoms():
             atomname = atom.get("name")
             if atomname not in atomlist: continue
-            charge, radius = self.forcefield.getParams1(residue, atomname)
+            charge, radius = self.forcefield.get_params1(residue, atomname)
             if hasattr(atom,'secret_radius'):
                 atom.set('radius',atom.secret_radius)
             elif radius != None:
@@ -1951,11 +1951,11 @@ class pKaRoutines:
                 residue:  The residue to set (residue)
                 atomlist: A list of atomnames (list)
         """
-        for atom in residue.getAtoms():
+        for atom in residue.get_atoms():
             atomname = atom.get("name")
             if atomname not in atomlist:
                 continue
-            charge, radius = self.forcefield.getParams1(residue, atomname)
+            charge, radius = self.forcefield.get_params1(residue, atomname)
 
             if hasattr(atom,'secret_charge'):
                 atom.set("ffcharge",atom.secret_charge)
@@ -1982,7 +1982,7 @@ class pKaRoutines:
                     if atomname.find('FLIP')!=-1:
                         continue
                     else:
-                        charge, radius = self.forcefield.getParams1(residue, atomname)
+                        charge, radius = self.forcefield.get_params1(residue, atomname)
                     ###PC
 
                     if hasattr(atom,'secret_radius'):
@@ -2012,7 +2012,7 @@ class pKaRoutines:
     # --------------------------------
     #
 
-    def getAtomsForPotential(self, pKa,titration, get_neutral_state=None):
+    def get_atomsForPotential(self, pKa,titration, get_neutral_state=None):
         """
         #    Find the atoms that are needed for measuring the potential,
         #    only selecting atoms where the charge changes.
@@ -2036,12 +2036,12 @@ class pKaRoutines:
         start_state=self.get_state_name(titration.name,start_state)
         self.hydrogenRoutines.switchstate('pKa', ambiguity, start_state)
         sum=0.0
-        for atom in residue.getAtoms():
+        for atom in residue.get_atoms():
             atomname = atom.get("name")
             if atomname.find('FLIP')!=-1:
                 continue
 
-            charge, radius = self.forcefield.getParams1(residue, atomname)
+            charge, radius = self.forcefield.get_params1(residue, atomname)
             initialmap[atomname] = charge
             if charge is None:
                 errstr = "Charge on atom is none:  %s, %s, %s" % atomname, charge, residue.isCterm
@@ -2061,12 +2061,12 @@ class pKaRoutines:
             # Check that no charges changed and that no atoms were added
             #
             sum=0.0
-            for atom in residue.getAtoms():
+            for atom in residue.get_atoms():
                 atomname = atom.get("name")
                 if atomname.find('FLIP')!=-1:
                     continue
 
-                charge, radius = self.forcefield.getParams1(residue, atomname)
+                charge, radius = self.forcefield.get_params1(residue, atomname)
                 sum=sum+charge
 
                 if(version_info >= (3,0)):
@@ -2116,7 +2116,7 @@ class pKaRoutines:
                         continue
                     if not atomname in atomnames:
                         continue
-                    charge, radius = self.forcefield.getParams1(residue, atomname)
+                    charge, radius = self.forcefield.get_params1(residue, atomname)
                     this_sum=this_sum+charge
                 #
                 # Is this the first neutral state?
@@ -2249,7 +2249,7 @@ class pKaRoutines:
             ambiguity = this_pka.amb
             self.neutral_ref_state[this_pka]={}
             for titration in pKaGroup.DefTitrations:
-                neutral_state = self.getAtomsForPotential(this_pka,titration,get_neutral_state=1)
+                neutral_state = self.get_atomsForPotential(this_pka,titration,get_neutral_state=1)
                 self.neutral_ref_state[this_pka][titration]=neutral_state
         #
         # Store pKa groups in self.pKas

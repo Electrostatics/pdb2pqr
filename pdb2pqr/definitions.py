@@ -189,7 +189,7 @@ class Definition(object):
 
             # Remove atoms as directed
             for remove in patch.remove:
-                if not patch_residue.hasAtom(remove):
+                if not patch_residue.has_atom(remove):
                     continue
                 removebonds = patch_residue.map[remove].bonds
                 del patch_residue.map[remove]

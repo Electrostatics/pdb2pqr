@@ -258,7 +258,7 @@ def runPDB2PQR(pdblist, options):
         myProtein, myDefinition, Lig = ligff.initialize(myDefinition,
                                                         options.ligand,
                                                         pdblist)
-        for atom in myProtein.getAtoms():
+        for atom in myProtein.get_atoms():
             if atom.type == "ATOM":
                 atomcount += 1
     else:
@@ -270,9 +270,9 @@ def runPDB2PQR(pdblist, options):
 
     myRoutines = routines.Routines(myProtein)
 
-    for residue in myProtein.getResidues():
+    for residue in myProtein.get_residues():
         multoccupancy = 0
-        for atom in residue.getAtoms():
+        for atom in residue.get_atoms():
             if atom.altLoc != "":
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s." % (atom.name, residue)
@@ -285,7 +285,7 @@ def runPDB2PQR(pdblist, options):
 
     if options.clean:
         header = ""
-        lines = myProtein.printAtoms(myProtein.getAtoms(), options.chain)
+        lines = myProtein.printAtoms(myProtein.get_atoms(), options.chain)
 
         # Process the extensions
         for ext in options.active_extensions:
@@ -345,7 +345,7 @@ def runPDB2PQR(pdblist, options):
 
 
     else:  # Special case for HIS if using assign-only
-        for residue in myProtein.getResidues():
+        for residue in myProtein.get_residues():
             if isinstance(residue, aa.HIS):
                 myRoutines.applyPatch("HIP", residue)
 
@@ -359,11 +359,11 @@ def runPDB2PQR(pdblist, options):
 
     if options.ligand is not None:
         # If this is independent, we can assign charges and radii here
-        for residue in myProtein.getResidues():
+        for residue in myProtein.get_residues():
             if isinstance(residue, LIG):
                 templist = []
                 Lig.make_up2date(residue)
-                for atom in residue.getAtoms():
+                for atom in residue.get_atoms():
                     atom.ffcharge = Lig.ligand_props[atom.name]["charge"]
                     atom.radius = Lig.ligand_props[atom.name]["radius"]
                     if atom in misslist:

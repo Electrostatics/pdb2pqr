@@ -161,7 +161,7 @@ def getAngle(coords1, coords2, coords3):
         return angle
 
 
-#TODO: with changes to --userff and --usernames getFFfile and getNamesFile do not need to go on wild
+#TODO: with changes to --userff and --usernames getFFfile and get_names_file do not need to go on wild
 #goose chases to find the files in question.
 def getFFfile(name):
     """
@@ -197,7 +197,7 @@ def getFFfile(name):
     return ""
 
 
-def getNamesFile(name):
+def get_names_file(name):
     """
         Grab the *.names file that contains the XML mapping.
 

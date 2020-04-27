@@ -166,4 +166,3 @@ def main(args):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logging.captureWarnings(True)
-    cli_entry()

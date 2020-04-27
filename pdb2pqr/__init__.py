@@ -22,8 +22,11 @@ from . import inputgen, psize
 TITLE_TEXT = "PDB2PQR v{version} - biomolecular structure conversion software"
 TITLE_TEXT = TITLE_TEXT.format(version=__version__)
 CITE_TEXTS = [
-    "Please cite:  Jurrus E, et al.  Improvements to the APBS biomolecular solvation software suite.  Protein Sci 27 112-128 (2018).  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5734301/",
-    "Please cite:  Dolinsky TJ, et al.  PDB2PQR: expanding and upgrading automated preparation of biomolecular structures for molecular simulations.  Nucleic Acids Res 35 W522-W525 (2007).  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1933214/"
+    ("Please cite:  Jurrus E, et al.  Improvements to the APBS biomolecular "
+     "solvation software suite.  Protein Sci 27 112-128 (2018)."),
+    ("Please cite:  Dolinsky TJ, et al.  PDB2PQR: expanding and upgrading "
+     "automated preparation of biomolecular structures for molecular "
+     "simulations.  Nucleic Acids Res 35 W522-W525 (2007).")
 ]
 
 
@@ -33,7 +36,7 @@ logging.captureWarnings(True)
 
 def main(args):
     """Main driver for running program from the command line.
-    
+
     Args:
         args:  argument namespace object (e.g., as returned by argparse).
     """
@@ -51,34 +54,36 @@ def main(args):
     if not args.clean:
         if args.usernames is not None:
             # TODO - it makes me sad to open a file without a close() statement
-            user_names_file = open(args.usernames, 'rt', encoding="utf-8")
+            _ = open(args.usernames, 'rt', encoding="utf-8")
         if args.userff is not None:
             # TODO - it makes me sad to open a file without a close() statement
-            user_ff_file = open(args.userff, "rt", encoding="utf-8")
+            _ = open(args.userff, "rt", encoding="utf-8")
             if args.usernames is None:
                 raise RuntimeError('--usernames must be specified if using --userff')
         if utilities.getFFfile(args.ff) == "":
             raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
         if (args.ph < 0) or (args.ph > 14):
-            raise RuntimeError("Specified pH (%s) is outside the range [1, 14] of this program" % args.ph)
-    
-    ph_calc_options = None
+            raise RuntimeError(("Specified pH (%s) is outside the range [1, 14] "
+                                "of this program") % args.ph)
 
-    if args.pka_method == 'propka':
-        ph_calc_options, _ = propka_lib.loadOptions('--quiet')
-    elif args.pka_method == 'pdb2pka':
-        if args.ff.lower() != 'parse':
-            raise RuntimeError('PDB2PKA requires the PARSE force field.')
-        ph_calc_options = {'output_dir': args.output_pqr,
-                          'clean_output': not args.pdb2pka_resume,
-                          'pdie': args.pdie,
-                          'sdie': args.sdie,
-                          'pairene': args.pairene}
+    # TODO - it appears none of the following code is actually used
+    # if args.pka_method == 'propka':
+    #     ph_calc_options, _ = propka_lib.loadOptions('--quiet')
+    # elif args.pka_method == 'pdb2pka':
+    #     if args.ff.lower() != 'parse':
+    #         raise RuntimeError('PDB2PKA requires the PARSE force field.')
+    #     ph_calc_options = {'output_dir': args.output_pqr,
+    #                        'clean_output': not args.pdb2pka_resume,
+    #                        'pdie': args.pdie,
+    #                        'sdie': args.sdie,
+    #                        'pairene': args.pairene}
+    # else:
+    #     ph_calc_options = None
 
     if args.ligand is not None:
         try:
             # TODO - it makes me sad to open a file without a close() statement
-            ligand_file = open(args.ligand, 'rt', encoding="utf-8")
+            _ = open(args.ligand, 'rt', encoding="utf-8")
         except IOError:
             raise RuntimeError('Unable to find ligand file %s!' % args.ligand)
 
@@ -90,20 +95,20 @@ def main(args):
 
 
     path = Path(args.input_pdb)
-    pdbFile = utilities.getPDBFile(args.input_pdb)
+    pdb_file = utilities.getPDBFile(args.input_pdb)
 
     args.isCIF = False
     if path.suffix.lower() == "cif":
-        pdblist, errlist = cif.readCIF(pdbFile)
+        pdblist, errlist = cif.readCIF(pdb_file)
         args.isCIF = True
     else:
-        pdblist, errlist = pdb.readPDB(pdbFile)
+        pdblist, errlist = pdb.readPDB(pdb_file)
 
     if len(pdblist) == 0 and len(errlist) == 0:
         raise RuntimeError("Unable to find file %s!" % path)
 
     if len(errlist) != 0:
-        if(isCIF):
+        if args.isCIF:
             _LOGGER.warn("Warning: %s is a non-standard CIF file.\n", path)
         else:
             _LOGGER.warn("Warning: %s is a non-standard PDB file.\n", path)
@@ -117,53 +122,51 @@ def main(args):
         args.active_extensions = []
     elif args.active_extensions is None:
         args.active_extensions = []
-    extensionOpts = args
+    _ = args
 
     try:
         results_dict = run.runPDB2PQR(pdblist, args)
-        header = results_dict["header"]
+        _ = results_dict["header"]
         lines = results_dict["lines"]
-        missedligands = results_dict["missed_ligands"]
+        _ = results_dict["missed_ligands"]
     except PDB2PQRError as error:
         _LOGGER.error(error)
         raise PDB2PQRError(error)
 
     # Print the PQR file
     # TODO - move this to another function... this function is already way too long.
-    outfile = open(args.output_pqr,"w")
-    outfile.write(header)
-    # Adding whitespaces if --whitespace is in the options
-    for line in lines:
-        if args.whitespace:
-            if line[0:4] == 'ATOM':
-                newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
-                outfile.write(newline)
-            elif line[0:6] == 'HETATM':
-                newline = line[0:6] + ' ' + line[6:16] + ' ' + line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
-                outfile.write(newline)
-            elif line[0:3] == "TER" and args.isCIF:
-                pass
-        else:
-            if line[0:3] == "TER" and args.isCIF:
-                pass
+    with open(args.output_pqr, "wt") as outfile:
+        # Adding whitespaces if --whitespace is in the options
+        for line in lines:
+            if args.whitespace:
+                if line[0:4] == 'ATOM':
+                    newline = line[0:6] + ' ' + line[6:16] + ' ' + \
+                        line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                    outfile.write(newline)
+                elif line[0:6] == 'HETATM':
+                    newline = line[0:6] + ' ' + line[6:16] + ' ' + \
+                        line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                    outfile.write(newline)
+                elif line[0:3] == "TER" and args.isCIF:
+                    pass
             else:
-                outfile.write(line)
-    if(args.isCIF):
-        outfile.write("#\n")
-    outfile.close()
+                if line[0:3] == "TER" and args.isCIF:
+                    pass
+                else:
+                    outfile.write(line)
+        if args.isCIF:
+            outfile.write("#\n")
 
     if args.apbs_input:
         method = "mg-auto"
         size = psize.Psize()
         size.parseInput(args.output_pqr)
         size.runPsize(args.output_pqr)
-        #async = 0 # No async files here!
-        input = inputgen.Input(args.output_pqr, size, method, 0, potdx=True)
-        input.printInputFiles()
-        input.dumpPickle()
+        input_ = inputgen.Input(args.output_pqr, size, method, 0, potdx=True)
+        input_.printInputFiles()
+        input_.dumpPickle()
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logging.captureWarnings(True)
-    cli_entry()

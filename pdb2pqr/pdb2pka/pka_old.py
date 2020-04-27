@@ -423,7 +423,7 @@ def pre_init(pdbfilename=None,
     myhydRoutines.initializeFullOptimization()
     myhydRoutines.optimizeHydrogens()
     myhydRoutines.cleanup()
-    myRoutines.setStates()
+    myRoutines.set_states()
 
     #
     # Choose the correct forcefield

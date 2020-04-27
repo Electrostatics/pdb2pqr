@@ -1213,7 +1213,7 @@ class pKaRoutines:
 
         # Clean up, debump
         self.hydrogenRoutines.cleanup()
-        myRoutines.setStates() # this identifies the protonation states to pdb2pqr
+        myRoutines.set_states() # this identifies the protonation states to pdb2pqr
         #myRoutines.debumpProtein() # why do we debump after setting the states?
 
         return

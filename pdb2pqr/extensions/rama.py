@@ -58,13 +58,13 @@ def create_rama_output(routines, outfile, outputtype='rama'):
             continue
 
         try:
-            if residue.peptideN != None:
-                pepncoords = residue.peptideN.getCoords()
+            if residue.peptide_n != None:
+                pepncoords = residue.peptide_n.getCoords()
             else: 
                 continue
 
-            if residue.peptideC != None:
-                pepccoords = residue.peptideC.getCoords()
+            if residue.peptide_c != None:
+                pepccoords = residue.peptide_c.getCoords()
             else: 
                 continue
         except AttributeError: # Non amino acids

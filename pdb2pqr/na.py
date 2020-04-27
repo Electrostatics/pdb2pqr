@@ -13,13 +13,13 @@ class Nucleic(Residue):
     below.
     """
     def __init__(self, atoms, ref):
-        sampleAtom = atoms[-1]
+        sample_atom = atoms[-1]
         
         self.atoms = []
-        self.name = sampleAtom.resName
-        self.chainID = sampleAtom.chainID
-        self.resSeq = sampleAtom.resSeq
-        self.iCode = sampleAtom.iCode
+        self.name = sample_atom.resName
+        self.chainID = sample_atom.chainID
+        self.resSeq = sample_atom.resSeq
+        self.iCode = sample_atom.iCode
 
         self.ffname = self.name
         self.map = {}
@@ -42,8 +42,8 @@ class Nucleic(Residue):
                 atom = Atom(a, "ATOM", self)
                 self.addAtom(atom)
 
-    def createAtom(self, atomname, newcoords):
-        """Create an atom.  Overrides the generic residue's createAtom().
+    def create_atom(self, atomname, newcoords):
+        """Create an atom.  Overrides the generic residue's create_atom().
 
         Args:
             atomname:  The name of the atom to add (string)
@@ -77,11 +77,11 @@ class Nucleic(Residue):
         except KeyError:
             atom.reference = None
 
-    def addDihedralAngle(self, value):
+    def add_dihedral_angle(self, value):
         """Add the value to the list of chiangles."""
         self.dihedrals.append(value)
 
-    def setState(self):
+    def set_state(self):
         """Adds the termini for all inherited objects."""
         if self.is5term: self.ffname = self.ffname + "5"
         if self.is3term: self.ffname = self.ffname + "3"
@@ -97,12 +97,12 @@ class ADE(Nucleic):
     def letterCode(self):
         return 'A'
 
-    def setState(self):
+    def set_state(self):
         if self.hasAtom("O2'"):
             self.ffname = "RA"
         else:
             self.ffname = "DA"
-        Nucleic.setState(self)
+        Nucleic.set_state(self)
 
 
 class CYT(Nucleic):
@@ -115,12 +115,12 @@ class CYT(Nucleic):
     def letterCode(self):
         return 'C'
         
-    def setState(self):
+    def set_state(self):
         if self.hasAtom("O2'"):
             self.ffname = "RC"
         else:
             self.ffname = "DC"
-        Nucleic.setState(self)
+        Nucleic.set_state(self)
 
 
 class GUA(Nucleic):
@@ -133,12 +133,12 @@ class GUA(Nucleic):
     def letterCode(self):
         return 'G'
         
-    def setState(self):
+    def set_state(self):
         if self.hasAtom("O2'"):
             self.ffname = "RG"
         else:
             self.ffname = "DG"
-        Nucleic.setState(self)
+        Nucleic.set_state(self)
 
 
 class THY(Nucleic):
@@ -151,9 +151,9 @@ class THY(Nucleic):
     def letterCode(self):
         return 'T'
         
-    def setState(self):
+    def set_state(self):
         self.ffname = "DT"
-        Nucleic.setState(self)
+        Nucleic.set_state(self)
 
 
 class URA(Nucleic):
@@ -166,9 +166,9 @@ class URA(Nucleic):
     def letterCode(self):
         return 'U'
         
-    def setState(self):
+    def set_state(self):
         self.ffname = "RU"
-        Nucleic.setState(self)
+        Nucleic.set_state(self)
 
 
 class RA(ADE):

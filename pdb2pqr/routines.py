@@ -194,8 +194,8 @@ class Routines:
             if numpartners == 1:
                 partner = SGpartners[atom][0]
                 res2 = partner.get("residue")
-                res1.set("SSbonded", 1)
-                res1.set("SSbondedpartner", partner)
+                res1.set("ss_bonded", 1)
+                res1.set("ss_bonded_partner", partner)
                 self.applyPatch("CYX", res1)
                 _LOGGER.debug("%s - %s", res1, res2)
             elif numpartners > 1:
@@ -257,9 +257,9 @@ class Routines:
                 atom2 = res2.getAtom("N")
 
                 if atom1 != None:
-                    res2.peptideC = atom1
+                    res2.peptide_c = atom1
                 if atom2 != None:
-                    res1.peptideN = atom2
+                    res1.peptide_n = atom2
                 if atom1 == None or atom2 == None:
                     continue
 
@@ -267,8 +267,8 @@ class Routines:
                     text = "Gap in backbone detected between %s and %s!" % \
                            (res1, res2)
                     _LOGGER.warn(text)
-                    res2.peptideC = None
-                    res1.peptideN = None
+                    res2.peptide_c = None
+                    res1.peptide_n = None
 
     def applyPatch(self, patchname, residue):
         """
@@ -351,7 +351,7 @@ class Routines:
                 atom = residue.getAtom(atomname)
                 atom.reference = newreference.map[atomname]
 
-    def setStates(self):
+    def set_states(self):
         """
             Set the state of each residue.  This is the last step
             before assigning the forcefield, but is necessary so
@@ -361,7 +361,7 @@ class Routines:
         """
         for residue in self.protein.getResidues():
             if isinstance(residue, (Amino, Nucleic)):
-                residue.setState()
+                residue.set_state()
 
     def assignTermini(self, chain, neutraln=False, neutralc=False):
         """
@@ -655,7 +655,7 @@ class Routines:
                          residue.reference.map[nextatomname].getCoords()]
             refatomcoords = atomref.getCoords()
             newcoords = findCoordinates(2, coords, refcoords, refatomcoords)
-            residue.createAtom(atomname, newcoords)
+            residue.create_atom(atomname, newcoords)
 
             # For LEU and ILE residues only: make sure the Hydrogens are in staggered conformation instead of eclipsed.
 
@@ -697,7 +697,7 @@ class Routines:
             residue.rotateTetrahedral(nextatom, bondatom, 120)
             newcoords = hatom.getCoords()
             residue.rotateTetrahedral(nextatom, bondatom, -120)
-            residue.createAtom(atomname, newcoords)
+            residue.create_atom(atomname, newcoords)
 
             return 1
 
@@ -725,9 +725,9 @@ class Routines:
             # Determine which one hatoms[1] is not in
 
             if distance(hatoms[1].getCoords(), newcoords1) > 0.1:
-                residue.createAtom(atomname, newcoords1)
+                residue.create_atom(atomname, newcoords1)
             else:
-                residue.createAtom(atomname, newcoords2)
+                residue.create_atom(atomname, newcoords2)
 
             return 1
 
@@ -750,7 +750,7 @@ class Routines:
                     continue
                 if residue.hasAtom(atomname):
                     continue
-                if isinstance(residue, CYS) and residue.SSbonded and atomname == "HG":
+                if isinstance(residue, CYS) and residue.ss_bonded and atomname == "HG":
                     continue
 
                 # If this hydrogen is part of a tetrahedral group,
@@ -770,9 +770,9 @@ class Routines:
 
                 for bond in bondlist:
                     if bond == "N+1":
-                        atom = residue.peptideN
+                        atom = residue.peptide_n
                     elif bond == "C-1":
-                        atom = residue.peptideC
+                        atom = residue.peptide_c
                     else:
                         atom = residue.getAtom(bond)
 
@@ -791,7 +791,7 @@ class Routines:
 
                 if len(coords) == 3:
                     newcoords = findCoordinates(3, coords, refcoords, refatomcoords)
-                    residue.createAtom(atomname, newcoords)
+                    residue.create_atom(atomname, newcoords)
                     count += 1
                 else:
                     _LOGGER.warn("Couldn't rebuild %s in %s!", atomname, residue)
@@ -838,8 +838,8 @@ class Routines:
                 bondlist = residue.reference.getNearestBonds(atomname)
 
                 for bond in bondlist:
-                    if bond == "N+1": atom = residue.peptideN
-                    elif bond == "C-1": atom = residue.peptideC
+                    if bond == "N+1": atom = residue.peptide_n
+                    elif bond == "C-1": atom = residue.peptide_c
                     else: atom = residue.getAtom(bond)
 
                     if atom == None: continue
@@ -872,7 +872,7 @@ class Routines:
 
                 else: # Rebuild the atom
                     newcoords = findCoordinates(3, coords, refcoords, refatomcoords)
-                    residue.createAtom(atomname, newcoords)
+                    residue.create_atom(atomname, newcoords)
                     _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)
                     _LOGGER.debug(" %.3f %.3f %.3f", newcoords[0], newcoords[1], newcoords[2])
 
@@ -981,7 +981,7 @@ class Routines:
             if not isinstance(closeresidue, Amino):
                 continue
             if isinstance(residue, CYS):
-                if residue.SSbondedpartner == closeatom: continue
+                if residue.ss_bonded_partner == closeatom: continue
 
             # Also ignore if this is a donor/acceptor pair
             pair_ignored = False
@@ -1188,7 +1188,7 @@ class Routines:
                 if len(coords) == 4: angle = getDihedral(coords[0], coords[1], coords[2], coords[3])
                 else: angle = None
 
-                residue.addDihedralAngle(angle)
+                residue.add_dihedral_angle(angle)
 
     def getClosestAtom(self, atom):
         """
@@ -1222,7 +1222,7 @@ class Routines:
             if closeresidue == residue: continue
             if not isinstance(closeresidue, (Amino,WAT)): continue
             if isinstance(residue, CYS):
-                if residue.SSbondedpartner == closeatom: continue
+                if residue.ss_bonded_partner == closeatom: continue
 
             # Also ignore if this is a donor/acceptor pair
 
@@ -1282,7 +1282,7 @@ class Routines:
 
             if not isinstance(closeresidue, (Amino, WAT)):
                 continue
-            if isinstance(residue, CYS) and residue.SSbondedpartner == closeatom:
+            if isinstance(residue, CYS) and residue.ss_bonded_partner == closeatom:
                 continue
 
             # Also ignore if this is a donor/acceptor pair

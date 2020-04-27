@@ -347,7 +347,7 @@ def runPDB2PQR(pdblist, options):
             if isinstance(residue, aa.HIS):
                 myRoutines.applyPatch("HIP", residue)
 
-    myRoutines.setStates()
+    myRoutines.set_states()
 
     myForcefield = forcefield.Forcefield(ff, myDefinition, options.userff,
                                          options.usernames)

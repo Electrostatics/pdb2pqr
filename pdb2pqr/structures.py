@@ -140,13 +140,13 @@ class Residue:
                             (list)
         """
 
-        sampleAtom = atoms[-1]
+        sample_atom = atoms[-1]
         
         self.atoms = []
-        self.name = sampleAtom.resName
-        self.chainID = sampleAtom.chainID
-        self.resSeq = sampleAtom.resSeq
-        self.iCode = sampleAtom.iCode
+        self.name = sample_atom.resName
+        self.chainID = sample_atom.chainID
+        self.resSeq = sample_atom.resSeq
+        self.iCode = sample_atom.iCode
         #
         #
         self.map = {}
@@ -192,7 +192,7 @@ class Residue:
                 chainID:       The chainID associated with the residue
                 resSeq:        The sequence number of the residue
                 icode:         The iCode of the residue
-                SSbonded:      1 if the residue has a SS bond, 0 otherwise
+                ss_bonded:      1 if the residue has a SS bond, 0 otherwise
                 SSbondpartner: The residue of the bond partner
                 type:          The type associated with this residue
                 isNterm:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
@@ -221,7 +221,7 @@ class Residue:
                 chain:         The chainID associated with the residue
                 resSeq:        The sequence number of the residue
                 icode:         The iCode of the residue
-                SSbonded:      1 if the residue has a SS bond, 0 otherwise
+                ss_bonded:      1 if the residue has a SS bond, 0 otherwise
                 SSbondpartner: The residue of the bond partner
                 type:          The type associated with this residue
                 isNterm:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
@@ -351,7 +351,7 @@ class Residue:
         self.map[newname] = atom
         del self.map[oldname]
         
-    def createAtom(self, name, newcoords, type):
+    def create_atom(self, name, newcoords, type):
         """
             Add a new atom object to the residue. Uses an atom
             currently in the residue to seed the new atom

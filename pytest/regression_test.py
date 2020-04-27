@@ -152,8 +152,8 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
         ),
         pytest.param(
             "--userff={ff} --usernames={names} --whitespace".format(
-                ff=common.DATA_DIR / "AMBER.DAT",
-                names=common.DATA_DIR / "AMBER.names"),
+                ff=common.DATA_DIR / "CUSTOM-FF.DAT",
+                names=common.DATA_DIR / "CUSTOM.names"),
             common.DATA_DIR / "1AFS.pdb",
             "output.pqr",
             common.DATA_DIR / '1AFS_userff_usernames_whitespace.pqr',

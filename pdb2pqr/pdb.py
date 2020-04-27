@@ -165,9 +165,9 @@ class NUMMDL(BaseRecord):
         """
         super(NUMMDL, self).__init__(line)
         try:
-            self.modelNumber = int(str.strip(line[10:14]))
+            self.model_number = int(str.strip(line[10:14]))
         except ValueError:
-            self.modelNumber = None
+            self.model_number = None
 
 @RegisterLineParser
 class ENDMDL(BaseRecord):

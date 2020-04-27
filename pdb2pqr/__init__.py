@@ -99,7 +99,7 @@ def main(args):
 
     args.isCIF = False
     if path.suffix.lower() == "cif":
-        pdblist, errlist = cif.readCIF(pdb_file)
+        pdblist, errlist = cif.read_cif(pdb_file)
         args.isCIF = True
     else:
         pdblist, errlist = pdb.readPDB(pdb_file)

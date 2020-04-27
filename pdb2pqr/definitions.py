@@ -3,8 +3,6 @@ definitions as used by PDB2PQR.
 
 Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """
-
-import os
 import copy
 import re
 from xml import sax
@@ -19,7 +17,7 @@ PATCHPATH = "dat/PATCHES.xml"
 
 
 class DefinitionHandler(sax.ContentHandler):
-   
+
     def __init__(self):
         self.curelement = ""
         self.curatom = None
@@ -29,7 +27,7 @@ class DefinitionHandler(sax.ContentHandler):
         self.patches = []
         return
 
-    def startElement(self, name, attributes):
+    def startElement(self, name, _):
         if name == "residue":
             obj = DefinitionResidue()
             self.curholder = obj
@@ -70,8 +68,7 @@ class DefinitionHandler(sax.ContentHandler):
                 self.patches.append(patch)
                 self.curholder = None
                 self.curobj = None
-        
-        
+
         elif name == "atom": # Complete atom object
             atom = self.curatom
             if not isinstance(atom, DefinitionAtom):
@@ -90,7 +87,8 @@ class DefinitionHandler(sax.ContentHandler):
         return self.map
 
     def characters(self, text):
-        if text.isspace(): return
+        if text.isspace():
+            return
 
         # If this is a float, make it so
         try:
@@ -112,7 +110,7 @@ class DefinitionHandler(sax.ContentHandler):
         return
 
 
-class Definition:
+class Definition(object):
     """The Definition class contains the structured definitions found in the
     files and several mappings for easy access to the information.
     """
@@ -130,27 +128,25 @@ class Definition:
             if defpath == "":
                 raise PDBInternalError("%s not found!" % path)
 
-            acidFile = open(defpath)
-            sax.parseString(acidFile.read(), handler)
-            acidFile.close()
+            acid_file = open(defpath)
+            sax.parseString(acid_file.read(), handler)
+            acid_file.close()
 
             self.map.update(handler.map)
-    
-        # Now handle patches
 
+        # Now handle patches
         # TODO - I don't think files should be loaded so deep in this module
         defpath = getDatFile(PATCHPATH)
         if defpath == "":
             raise PDBInternalError("%s not found!" % PATCHPATH)
-     
+
         handler.map = {}
-        patchFile = open(defpath)
-        sax.parseString(patchFile.read(), handler)
-        patchFile.close()
+        patch_file = open(defpath)
+        sax.parseString(patch_file.read(), handler)
+        patch_file.close()
 
         # Apply specific patches to the reference object, allowing users
-        #  to specify protonation states in the PDB file
-        
+        # to specify protonation states in the PDB file
         for patch in handler.patches:
             if patch.newname != "":
 
@@ -158,16 +154,15 @@ class Definition:
                 resnames = list(self.map.keys())
                 for name in resnames:
                     regexp = re.compile(patch.applyto).match(name)
-                    if not regexp: continue
+                    if not regexp:
+                        continue
                     newname = patch.newname.replace("*", name)
-                    self.addPatch(patch, name, newname)
-                  
+                    self.add_patch(patch, name, newname)
 
             # Either way, make sure the main patch name is available
-            
-            self.addPatch(patch, patch.applyto, patch.name)
+            self.add_patch(patch, patch.applyto, patch.name)
 
-    def addPatch(self, patch, refname, newname):
+    def add_patch(self, patch, refname, newname):
         """Add a patch to a definition residue.
 
         Args:
@@ -177,44 +172,46 @@ class Definition:
         """
         try:
             aadef = self.map[refname] # The reference
-            patchResidue = copy.deepcopy(aadef)
+            patch_residue = copy.deepcopy(aadef)
 
             # Add atoms from patch
             for atomname in patch.map:
-                patchResidue.map[atomname] = patch.map[atomname]
+                patch_residue.map[atomname] = patch.map[atomname]
                 for bond in patch.map[atomname].bonds:
-                    if bond not in patchResidue.map: continue
-                    if atomname not in patchResidue.map[bond].bonds:
-                        patchResidue.map[bond].bonds.append(atomname)
+                    if bond not in patch_residue.map:
+                        continue
+                    if atomname not in patch_residue.map[bond].bonds:
+                        patch_residue.map[bond].bonds.append(atomname)
 
             # Rename atoms as directed
             for key in patch.altnames:
-                patchResidue.altnames[key] = patch.altnames[key]
+                patch_residue.altnames[key] = patch.altnames[key]
 
             # Remove atoms as directed
             for remove in patch.remove:
-                if not patchResidue.hasAtom(remove): continue
-                removebonds = patchResidue.map[remove].bonds
-                del patchResidue.map[remove]
+                if not patch_residue.hasAtom(remove):
+                    continue
+                removebonds = patch_residue.map[remove].bonds
+                del patch_residue.map[remove]
                 for bond in removebonds:
-                    if remove in patchResidue.map[bond].bonds:
-                        patchResidue.map[bond].bonds.remove(remove)
+                    if remove in patch_residue.map[bond].bonds:
+                        patch_residue.map[bond].bonds.remove(remove)
 
             # Add the new dihedrals
             for dihedral in patch.dihedrals:
-                patchResidue.dihedrals.append(dihedral)
+                patch_residue.dihedrals.append(dihedral)
 
             # Point at the new reference
-            self.map[newname] = patchResidue
+            self.map[newname] = patch_residue
 
             # Store the patch
             self.patches[newname] = patch
-                   
+
         except KeyError: # Just store the patch
             self.patches[newname] = patch
 
 
-class Patch:
+class Patch(object):
     """Patch the definitionResidue class"""
     def __init__(self):
         self.name = ""
@@ -224,7 +221,7 @@ class Patch:
         self.altnames = {}
         self.dihedrals = []
         self.newname = ""
-        
+
     def __str__(self):
         """
             A basic string representation for debugging
@@ -240,7 +237,7 @@ class Patch:
         text += "Alternate naming map: \n"
         text += "\t%s\n" % self.altnames
         return text
-        
+
 
 class DefinitionResidue(structures.Residue):
     """The DefinitionResidue class extends the Residue class to allow for a
@@ -250,7 +247,7 @@ class DefinitionResidue(structures.Residue):
         self.dihedrals = []
         self.map = {}
         self.altnames = {}
-        
+
     def __str__(self):
         text = "%s\n" % self.name
         text += "Atoms: \n"
@@ -263,12 +260,12 @@ class DefinitionResidue(structures.Residue):
         text += "\t%s\n" % self.altnames
         return text
 
-    def getNearestBonds(self, atomname):
+    def get_nearest_bonds(self, atomname):
         bonds = []
         lev2bonds = []
         atom = self.map[atomname]
-        
-        # Get directly bonded (length = 1) atoms        
+
+        # Get directly bonded (length = 1) atoms
         for bondedatom in atom.bonds:
             if bondedatom not in bonds:
                 bonds.append(bondedatom)
@@ -285,7 +282,7 @@ class DefinitionResidue(structures.Residue):
             for bond3 in self.map[lev2atom].bonds:
                 if bond3 not in bonds:
                     bonds.append(bond3)
-         
+
         return bonds
 
 
@@ -297,25 +294,24 @@ class DefinitionAtom(structures.Atom):
         self.x = x
         self.y = y
         self.z = z
-        if name == None:
+        if name is None:
             self.name = ""
-        if x == None:
+        if x is None:
             self.x = 0.0
-        if y == None:
+        if y is None:
             self.y = 0.0
-        if z == None:
+        if z is None:
             self.z = 0.0
         self.bonds = []
-     
+
     def __str__(self):
         text = "%s: %.3f %.3f %.3f" % (self.name, self.x, self.y, self.z)
         for bond in self.bonds:
             text += " %s" % bond
         return text
-    
+
     def isBackbone(self):
         """Return true if atom name is in backbone, otherwise false"""
         if self.name in structures.BACKBONE:
-            return 1
-        else:
-            return 0
+            return True
+        return False

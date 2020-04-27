@@ -8,7 +8,7 @@ import os
 import copy
 import re
 from xml import sax
-from .structures import Residue, Atom
+from . import structures
 from .utilities import getDatFile
 from .errors import PDBInternalError
 
@@ -242,7 +242,7 @@ class Patch:
         return text
         
 
-class DefinitionResidue(Residue):
+class DefinitionResidue(structures.Residue):
     """The DefinitionResidue class extends the Residue class to allow for a
     trimmed down initializing function."""
     def __init__(self):
@@ -262,9 +262,6 @@ class DefinitionResidue(Residue):
         text += "Alternate naming map: \n"
         text += "\t%s\n" % self.altnames
         return text
-
-    def addDihedral(self, atom):
-        self.dihedralatoms.append(atom)
 
     def getNearestBonds(self, atomname):
         bonds = []
@@ -292,7 +289,7 @@ class DefinitionResidue(Residue):
         return bonds
 
 
-class DefinitionAtom(Atom):
+class DefinitionAtom(structures.Atom):
     """A trimmed down version of the Atom class"""
 
     def __init__(self, name=None, x=None, y=None, z=None):
@@ -318,5 +315,7 @@ class DefinitionAtom(Atom):
     
     def isBackbone(self):
         """Return true if atom name is in backbone, otherwise false"""
-        if self.name in BACKBONE: return 1
-        else: return 0
+        if self.name in structures.BACKBONE:
+            return 1
+        else:
+            return 0

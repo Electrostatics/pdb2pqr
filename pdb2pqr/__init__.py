@@ -103,7 +103,7 @@ def main(args):
         raise RuntimeError("Unable to find file %s!" % path)
 
     if len(errlist) != 0:
-        if(isCIF):
+        if(args.isCIF):
             _LOGGER.warn("Warning: %s is a non-standard CIF file.\n", path)
         else:
             _LOGGER.warn("Warning: %s is a non-standard PDB file.\n", path)

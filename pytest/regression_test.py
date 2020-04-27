@@ -142,6 +142,22 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
             "output.pqr",
             common.DATA_DIR / '1AFS_drop-water_ff=AMBER.pqr',
             id="1AFS drop-water AMBER"
+        ),
+        pytest.param(
+            "--ff=AMBER --apbs-input --whitespace --include-header",
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1AFS_apbs-input_include-header_whitespace_ff=AMBER.pqr',
+            id="1AFS apbs-input include-header whitespace AMBER"
+        ),
+        pytest.param(
+            "--userff={ff} --usernames={names} --whitespace".format(
+                ff=common.DATA_DIR / "AMBER.DAT",
+                names=common.DATA_DIR / "AMBER.names"),
+            common.DATA_DIR / "1AFS.pdb",
+            "output.pqr",
+            common.DATA_DIR / '1AFS_userff_usernames_whitespace.pqr',
+            id="1AFS userff usernames whitespace"
         )
     ]
 )

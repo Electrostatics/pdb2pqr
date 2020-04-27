@@ -17,6 +17,7 @@ from .propka import lib as propka_lib
 from . import extensions
 from . import __version__
 from .pdb2pka.ligandclean import ligff
+from . import inputgen, psize
 
 
 TITLE_TEXT = "PDB2PQR v{version} - biomolecular structure conversion software"
@@ -56,11 +57,11 @@ def main(args):
             # TODO - it makes me sad to open a file without a close() statement
             user_ff_file = open(args.userff, "rt", encoding="utf-8")
             if args.usernames is None:
-                parser.error(message='--usernames must be specified if using --userff')
+                raise RuntimeError('--usernames must be specified if using --userff')
         if utilities.getFFfile(args.ff) == "":
-            parser.error(message="Unable to load parameter file for forcefield %s" % args.ff)
+            raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
         if (args.ph < 0) or (args.ph > 14):
-            parser.error(message="Specified pH (%s) is outside the range [1, 14] of this program" % args.ph)
+            raise RuntimeError("Specified pH (%s) is outside the range [1, 14] of this program" % args.ph)
     
     ph_calc_options = None
 
@@ -68,7 +69,7 @@ def main(args):
         ph_calc_options, _ = propka_lib.loadOptions('--quiet')
     elif args.pka_method == 'pdb2pka':
         if args.ff.lower() != 'parse':
-            parser.error('PDB2PKA requires the PARSE force field.')
+            raise RuntimeError('PDB2PKA requires the PARSE force field.')
         ph_calc_options = {'output_dir': args.output_pqr,
                           'clean_output': not args.pdb2pka_resume,
                           'pdie': args.pdie,
@@ -80,13 +81,13 @@ def main(args):
             # TODO - it makes me sad to open a file without a close() statement
             ligand_file = open(args.ligand, 'rt', encoding="utf-8")
         except IOError:
-            parser.error('Unable to find ligand file %s!' % args.ligand)
+            raise RuntimeError('Unable to find ligand file %s!' % args.ligand)
 
     if args.neutraln and (args.ff is None or args.ff.lower() != 'parse'):
-        parser.error('--neutraln option only works with PARSE forcefield!')
+        raise RuntimeError('--neutraln option only works with PARSE forcefield!')
 
     if args.neutralc and (args.ff is None or args.ff.lower() != 'parse'):
-        parser.error('--neutralc option only works with PARSE forcefield!')
+        raise RuntimeError('--neutralc option only works with PARSE forcefield!')
 
 
     path = Path(args.input_pdb)
@@ -100,7 +101,7 @@ def main(args):
         pdblist, errlist = pdb.readPDB(pdbFile)
 
     if len(pdblist) == 0 and len(errlist) == 0:
-        parser.error("Unable to find file %s!" % path)
+        raise RuntimeError("Unable to find file %s!" % path)
 
     if len(errlist) != 0:
         if(isCIF):
@@ -153,8 +154,6 @@ def main(args):
     outfile.close()
 
     if args.apbs_input:
-        from src import inputgen
-        from src import psize
         method = "mg-auto"
         size = psize.Psize()
         size.parseInput(args.output_pqr)

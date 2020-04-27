@@ -89,29 +89,5 @@ buildTest(['1AFS.pdb'],
 		  'test-output-1AFS-ph-low-ph.propka',
 		  'test-output-1AFS-ph-low-ph-correct.propka')
 
-#Test drop water
-buildTest(['1AFS.pdb'],
-          'test-output-1AFS-drop-water.pqr',
-		  'test-output-1AFS-drop-water-correct.pqr',
-		  'test-drop-water',
-		  '--ff=AMBER --drop-water')
-
-
-#Test user ff and names
-buildTest(['1AFS.pdb', 'AMBER.DAT', 'AMBER.names'],
-          'test-output-1AFS-usernames-user-ff.pqr',
-		  'test-output-1AFS-usernames-user-ff-correct.pqr',
-		  'test-username-user-ff',
-		  '--userff=${SOURCES[1]} --usernames=${SOURCES[2]} --whitespace')
-
-#Test misc options to make sure they don't crash.
-test_obj = buildTest(['1AFS.pdb'],
-			          ['test-output-1AFS-misc.pqr',
-			           'test-output-1AFS-misc.in',
-			           'test-output-1AFS-misc-input.p',
-			           ],
-					  'test-output-1AFS-misc-correct.pqr',
-					  'test-misc-options',
-					  '--ff=AMBER --apbs-input --whitespace --include-header')
 
 Alias('complete-test', testList)

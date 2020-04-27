@@ -10,6 +10,7 @@ from . import hydrogens
 from . import forcefield
 from . import aa
 from . import na
+from . import pdb
 from . import __version__
 
 
@@ -26,9 +27,9 @@ def getOldHeader(pdblist):
         Old header as string.
     """
     oldHeader = io.StringIO()
-    headerTypes = (HEADER, TITLE, COMPND, SOURCE,
-                   KEYWDS, EXPDTA, AUTHOR, REVDAT,
-                   JRNL, REMARK, SPRSDE, NUMMDL)
+    headerTypes = (pdb.HEADER, pdb.TITLE, pdb.COMPND, pdb.SOURCE, pdb.KEYWDS,
+                   pdb.EXPDTA, pdb.AUTHOR, pdb.REVDAT, pdb.JRNL, pdb.REMARK,
+                   pdb.SPRSDE, pdb.NUMMDL)
     for pdbObj in pdblist:
         if not isinstance(pdbObj,headerTypes):
             break
@@ -243,7 +244,8 @@ def runPDB2PQR(pdblist, options):
         # Remove the waters
         pdblist_new = []
         for record in pdblist:
-            if isinstance(record, (HETATM, ATOM, SIGATM, SEQADV)):
+            if isinstance(record, (pdb.HETATM, pdb.ATOM, pdb.SIGATM,
+                                   pdb.SEQADV)):
                 if record.resName in aa.WAT.water_residue_names:
                     continue
             pdblist_new.append(record)

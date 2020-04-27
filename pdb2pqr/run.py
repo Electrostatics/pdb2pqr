@@ -300,7 +300,9 @@ def runPDB2PQR(pdblist, options):
         return results_dict
 
     #remove any future need to convert to lower case
-    if options.ff is not None:
+    if options.userff is not None:
+        ff = options.userff.lower()
+    elif options.ff is not None:
         ff = options.ff.lower()
     if options.ffout is not None:
         ffout = options.ffout.lower()

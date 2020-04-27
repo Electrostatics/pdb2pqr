@@ -189,71 +189,56 @@ class Forcefield:
             defpath = getFFfile(ff)
             if defpath == "":
                 raise PDBInputError("Unable to find forcefield parameter file %s!" % self.name)
+        else:
+            defpath = userff
           
-            file = open(defpath, 'rt', encoding="utf-8")
+        
+        with open(defpath, 'rt', encoding="utf-8") as ff_file:
 
-        else: 
-            file = userff
+            lines = ff_file.readlines()
+            for line in lines:
+                if not line.startswith("#"):
+                    fields = line.split()
+                    if fields == []: continue  
+                    try:
+                        resname = fields[0]
+                        atomname = fields[1]
+                        charge = float(fields[2])
+                        radius = float(fields[3])
+                    except ValueError:
+                        txt = "Unable to recognize user-defined forcefield file" 
+                        if defpath != "": txt += " %s!" % defpath
+                        else: txt += "!"
+                        txt += " Please use a valid parameter file."
+                        raise PDBInputError(txt)
+                
+                    try:
+                        group = fields[4]
+                        atom = ForcefieldAtom(atomname, charge, radius, resname, group)
+                    except IndexError:
+                        atom = ForcefieldAtom(atomname, charge, radius, resname)
 
-        lines = file.readlines()
-        for line in lines:
-            if not line.startswith("#"):
-                fields = line.split()
-                if fields == []: continue  
-                try:
-                    resname = fields[0]
-                    atomname = fields[1]
-                    charge = float(fields[2])
-                    radius = float(fields[3])
-                except ValueError:
-                    txt = "Unable to recognize user-defined forcefield file" 
-                    if defpath != "": txt += " %s!" % defpath
-                    else: txt += "!"
-                    txt += " Please use a valid parameter file."
-                    raise PDBInputError(txt)
-            
-                try:
-                    group = fields[4]
-                    atom = ForcefieldAtom(atomname, charge, radius, resname, group)
-                except IndexError:
-                    atom = ForcefieldAtom(atomname, charge, radius, resname)
-
-                myResidue = self.getResidue(resname)
-                if myResidue == None:
-                    myResidue = ForcefieldResidue(resname)
-                    self.map[resname] = myResidue
-                myResidue.addAtom(atom)
-
-        file.close()
+                    myResidue = self.getResidue(resname)
+                    if myResidue == None:
+                        myResidue = ForcefieldResidue(resname)
+                        self.map[resname] = myResidue
+                    myResidue.addAtom(atom)
 
         # Now parse the XML file, associating with FF objects -
         # This is not necessary (if canonical names match ff names)
  
         # TODO - why are files being loaded this deep in the module?
         defpath = getNamesFile(ff)
-        if defpath != "":
-        
-            handler = ForcefieldHandler(self.map, definition.map)
-            sax.make_parser()
-
-            if usernames != None:
-                namesfile = usernames
-                sax.parseString(namesfile.read(), handler)
-            else:
-                namesfile = open(defpath)
-                sax.parseString(namesfile.read(), handler)
-            namesfile.close()
-        else: 
-            handler = ForcefieldHandler(self.map, definition.map)
-            sax.make_parser()
-
-            if usernames != None:
-                namesfile = usernames            
-                sax.parseString(namesfile.read(), handler)
-            else:
-                raise PDBInputError("Please provide a valid .names file!")
-            namesfile.close()
-
+        if usernames:
+            names_path = usernames
+        elif defpath:
+            names_path = defpath
+        else:
+            raise ValueError("Unable to identify .names file.")
+        handler = ForcefieldHandler(self.map, definition.map)
+        sax.make_parser()
+        with open(names_path, "rt", encoding="utf-8") as namesfile:
+            sax.parseString(namesfile.read(), handler)
 
     def hasResidue(self, resname):
         """

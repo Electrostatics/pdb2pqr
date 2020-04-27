@@ -60,7 +60,7 @@ def main(args):
             _ = open(args.userff, "rt", encoding="utf-8")
             if args.usernames is None:
                 raise RuntimeError('--usernames must be specified if using --userff')
-        if utilities.getFFfile(args.ff) == "":
+        elif utilities.getFFfile(args.ff) == "":
             raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
         if (args.ph < 0) or (args.ph > 14):
             raise RuntimeError(("Specified pH (%s) is outside the range [1, 14] "

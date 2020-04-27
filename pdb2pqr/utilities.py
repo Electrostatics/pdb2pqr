@@ -231,6 +231,7 @@ def getNamesFile(name):
     return ""
 
 
+# TODO - This is a terrible function that should be replaced.
 def getDatFile(name):
     """
         Grab a data file. If the file cannot be found in the
@@ -281,6 +282,7 @@ def getPDBFile(path):
         return open(path, 'rt', encoding="utf-8")
 
 
+# TODO - this should be replaced by numpy
 def distance(coords1, coords2):
     """
         Calculate the distance between two coordinates, as denoted by
@@ -335,6 +337,7 @@ def subtract(coords1, coords2):
     z = coords1[2] - coords2[2]
     return [x,y,z]
 
+# TODO - replace with numpy
 def cross(coords1, coords2):
     """
         Find the cross product of two 3-dimensional points
@@ -352,6 +355,7 @@ def cross(coords1, coords2):
     list = [x,y,z]
     return list
 
+# TODO - replace with numpy
 def dot(coords1, coords2):
     """
         Find the dot product of two 3-dimensional points

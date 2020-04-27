@@ -4,18 +4,19 @@ This is an module for hydrogen optimization routines.
 
 Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 """
-
 import logging
 import os
 import string
 import math
-
-# TODO - fix import *
-from .definitions import *
-from .utilities import *
-from .quatfit import *
-from .routines import *
+from xml import sax
 from . import topology
+from .utilities import getDatFile, distance, subtract, normalize, dot
+from .utilities import analyzeConnectivity, sortDictByValue
+from .quatfit import findCoordinates
+from .definitions import DefinitionAtom
+from .aa import Amino, WAT, HIS
+from .routines import Cells
+# TODO - fix import *
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -1979,6 +1980,7 @@ class hydrogenRoutines:
         handler = HydrogenHandler()
         sax.make_parser()
 
+        # TODO - I don't think files should be loaded so deep in this module
         defpath = getDatFile(HYDPATH)
         if defpath == "":
             raise PDBInternalError("Could not find %s!" % HYDPATH) 
@@ -2549,6 +2551,7 @@ class hydrogenRoutines:
     # ------------------
     #
 
+        # TODO - I don't think files should be loaded so deep in this module
         toppath = getDatFile(TOPOLOGYPATH)
         if toppath == "":
             raise PDBInternalError("Could not find %s!" % TOPOLOGYPATH) 

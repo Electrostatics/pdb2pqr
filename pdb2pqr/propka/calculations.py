@@ -462,7 +462,7 @@ def calculate_weight(parameters, Nmass):
     return weight
 
 
-
+# TODO - this should be replaced by numpy
 def squared_distance(atom1, atom2):
 #    if atom1 in atom2.squared_distances:
 #        return atom2.squared_distances[atom1]
@@ -476,6 +476,7 @@ def squared_distance(atom1, atom2):
     return res
 
 
+# TODO - this should be replaced by numpy
 def distance(atom1, atom2):
     return math.sqrt(squared_distance(atom1,atom2))
 

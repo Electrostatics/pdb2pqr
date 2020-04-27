@@ -5,8 +5,6 @@ Get dimensions and other information from a PQR file.
 
 Authors:  Dave Sept, Nathan Baker, Todd Dolinksy, Yong Huang
 """
-
-
 import string, getopt
 from sys import exit, argv
 from math import log
@@ -259,8 +257,7 @@ class Psize:
 
             str = str + "\n"
             str = str + "############## GENERAL CALCULATION INFO #############\n"
-            str = str + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (clen[0],
-clen[1], clen[2])
+            str = str + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (clen[0], clen[1], clen[2])
             str = str + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (flen[0], flen[1], flen[2])
             str = str + "Num. fine grid pts. = %i x %i x %i\n" % (n[0], n[1], n[2])
 
@@ -297,6 +294,7 @@ clen[1], clen[2])
 
         return str
 
+# TODO - this function should be modernized with argparse
 def usage(rc):
     """ Print usage information and exit with error code rc """
     psize = Psize()
@@ -330,6 +328,7 @@ def usage(rc):
 
     _LOGGER.error(usage)
     exit(rc)
+
 
 def main():
     filename = ""

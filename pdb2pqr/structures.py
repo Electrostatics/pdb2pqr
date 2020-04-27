@@ -12,6 +12,7 @@ from .utilities import subtract
 from .quatfit import qchichange
 
 
+# TODO - why is the backbone defined here?
 BACKBONE = ["N","CA","C","O","O2","HA","HN","H","tN"]
 
 

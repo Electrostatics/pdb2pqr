@@ -7,19 +7,16 @@ Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """
 import math
 import copy
-# TODO - need to fix all of the import * statements
-from .pdb import *
-from .utilities import *
-from .quatfit import *
-from .forcefield import *
-from .structures import *
-from .protein import *
-from .definitions import *
-from io import StringIO
-from .errors import PDBInputError, PDBInternalError, PDB2PKAError
-from pprint import pformat
-from collections import Counter
+import string
 import logging
+from collections import Counter
+from io import StringIO
+from pprint import pformat
+from .aa import Amino, PRO, WAT, CYS, LEU, ILE
+from .na import Nucleic
+from .utilities import distance, getDihedral, shortestPath, subtract
+from .quatfit import findCoordinates, qchichange
+from .errors import PDBInputError, PDBInternalError, PDB2PKAError
 
 
 _LOGGER = logging.getLogger(__name__)

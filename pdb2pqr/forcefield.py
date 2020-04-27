@@ -1,63 +1,18 @@
+"""Force fields are fun.
+
+The forcefield structure is modeled off of the structures.py file, where each
+forcefield is considered a chain of residues of atoms.
+
+Authors:  Todd Dolinsky, Yong Huang
 """
-    Forcefield.py
-
-    This module takes a pdblist as input and replaces the occupancy and
-    tempfactor fields with charge and radius fields, with values as defined
-    by a particular forcefield.  The forcefield structure is modeled off of
-    the structures.py file, where each forcefield is considered a chain of
-    residues of atoms.
-
-    ----------------------------
-   
-    PDB2PQR -- An automated pipeline for the setup, execution, and analysis of
-    Poisson-Boltzmann electrostatics calculations
-
-    Copyright (c) 2002-2011, Jens Erik Nielsen, University College Dublin; 
-    Nathan A. Baker, Battelle Memorial Institute, Developed at the Pacific 
-    Northwest National Laboratory, operated by Battelle Memorial Institute, 
-    Pacific Northwest Division for the U.S. Department Energy.; 
-    Paul Czodrowski & Gerhard Klebe, University of Marburg.
-
-	All rights reserved.
-
-	Redistribution and use in source and binary forms, with or without modification, 
-	are permitted provided that the following conditions are met:
-
-		* Redistributions of source code must retain the above copyright notice, 
-		  this list of conditions and the following disclaimer.
-		* Redistributions in binary form must reproduce the above copyright notice, 
-		  this list of conditions and the following disclaimer in the documentation 
-		  and/or other materials provided with the distribution.
-        * Neither the names of University College Dublin, Battelle Memorial Institute,
-          Pacific Northwest National Laboratory, US Department of Energy, or University
-          of Marburg nor the names of its contributors may be used to endorse or promote
-          products derived from this software without specific prior written permission.
-
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-	IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-	INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
-	BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-	DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-	LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
-	OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED 
-	OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    ----------------------------
-"""
-
-__date__ = "6 November 2007"
-__author__ = "Todd Dolinsky, Yong Huang"
-
 import string
 import getopt
 import os
 import re
-
 from xml import sax
-from .utilities import *
 from .errors import PDBInputError, PDBInternalError
+from .utilities import getFFfile, getNamesFile
+
 
 class ForcefieldHandler(sax.ContentHandler):
    
@@ -230,6 +185,7 @@ class Forcefield:
         defpath = ""
 
         if userff == None:
+            # TODO - why are files being loaded so deep in this function?
             defpath = getFFfile(ff)
             if defpath == "":
                 raise PDBInputError("Unable to find forcefield parameter file %s!" % self.name)
@@ -273,7 +229,7 @@ class Forcefield:
         # Now parse the XML file, associating with FF objects -
         # This is not necessary (if canonical names match ff names)
  
-
+        # TODO - why are files being loaded this deep in the module?
         defpath = getNamesFile(ff)
         if defpath != "":
         

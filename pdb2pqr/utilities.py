@@ -319,6 +319,7 @@ def add(coords1, coords2):
     z = coords1[2] + coords2[2]
     return [x,y,z]
 
+# TODO - replace this with numpy
 def subtract(coords1, coords2):
     """
         Subtract one 3-dimensional point from another
@@ -366,6 +367,7 @@ def dot(coords1, coords2):
         value += coords1[i]*coords2[i]
     return value
 
+# TODO - replace with numpy
 def normalize(coords):
     """
         Normalize a set of coordinates

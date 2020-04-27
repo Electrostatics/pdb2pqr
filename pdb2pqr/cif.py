@@ -16,14 +16,15 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def atom_site(block):
-    """
+    """Handle ATOM_SITE block.
+
     Data items in the ATOM_SITE category record details about
     the atom sites in a macromolecular crystal structure, such as
     the positional coordinates, atomic displacement parameters,
     magnetic moments and directions.
     (source: http://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Categories/atom_site.html)
 
-    Parameters:
+    Args:
         block: Pdbx data block
     Returs:
         pdblist: array of pdb.ATOM objects
@@ -314,21 +315,20 @@ def atom_site(block):
 
 
 def conect(block):
-    """
-        Data items in the STRUCT_CONN category record details about
-        the connections between portions of the structure. These can be
-        hydrogen bonds, salt bridges, disulfide bridges and so on.
+    """Handle CONECT block.
 
-        The STRUCT_CONN_TYPE records define the criteria used to
-        identify these connections.
-        (source:
-        http://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Categories/struct_conn.html)
+    Data items in the STRUCT_CONN category record details about the connections
+    between portions of the structure. These can be hydrogen bonds, salt
+    bridges, disulfide bridges and so on.
 
-        Parameters:
-            block: Pdbx data block
-        Returs:
-            pdblist: array of pdb.conect objects
-            errlist: array of thigs that
+    The STRUCT_CONN_TYPE records define the criteria used to identify these connections.
+    (source: http://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Categories/struct_conn.html)
+
+    Args:
+        block: Pdbx data block
+    Returs:
+        pdblist: array of pdb.conect objects
+        errlist: array of thigs that
     """
     pdb_arr = []
     err_arr = []
@@ -366,13 +366,13 @@ def conect(block):
                 pdb_arr.append(pdb.CONECT(pline))
             # TODO - what are we catching here?
             except:
-                _LOGGER.error("conect:   Error parsing line: \n%s" % pline)
+                _LOGGER.error("conect:   Error parsing line: \n%s", pline)
                 err_arr.append("conect")
 
     return pdb_arr, err_arr
 
 def header(block):
-
+    """Handle HEADER block"""
     header_arr = []
     header_err = []
 
@@ -396,13 +396,13 @@ def header(block):
         header_arr.append(pdb.HEADER(line))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("header:   Error parsing line: #%s#\n" % line)
+        _LOGGER.error("header:   Error parsing line: #%s#", line)
         header_err.append("header")
 
     return header_arr, header_err
 
 def title(block):
-
+    """Handle TITLE block"""
     title_arr = []
     title_err = []
 
@@ -416,19 +416,19 @@ def title(block):
         if i+1 > 1:
             line += " "*(2-len(str(i+1))) + str(i+1)
         else:
-            "  "
+            line += "  "
         line += title_string[(i*70) : minimum(len(title_string), (i+1)*70)]
         try:
             title_arr.append(pdb.TITLE(line))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("TITLE:    Error parsing line:\n%s" % line)
+            _LOGGER.error("TITLE:    Error parsing line:\n%s", line)
             title_err.append("title")
 
     return title_arr, title_err
 
 def compnd(block):
-
+    """Handle COMPND block"""
     compnd_arr = []
     compnd_err = []
 
@@ -440,13 +440,13 @@ def compnd(block):
         if cont > 1:
             line1 += " "*(3 - len(str(cont))) + str(cont)
         else:
-            "   "
+            line1 += "   "
         line1 += "MOL_ID: " + str(entity_obj.getValue("id", i)) + ""
         try:
             compnd_arr.append(pdb.COMPND(line1))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("compnd:    Error parsing line:\n%s\n" % line1)
+            _LOGGER.error("compnd:    Error parsing line:\n%s", line1)
             compnd_err.append("compnd")
 
         cont += 1
@@ -455,13 +455,13 @@ def compnd(block):
         if cont > 1:
             line2 += " "*(3 - len(str(cont))) + str(cont)
         else:
-            "   "
+            line2 += "   "
         line2 += "MOLECULE: " + entity_obj.getValue("pdbx_description", i) + ""
         try:
             compnd_arr.append(pdb.COMPND(line2))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("compnd:    Error parsing line:\n%s\n" % line2)
+            _LOGGER.error("compnd:    Error parsing line:\n%s", line2)
             compnd_err.append("compnd")
 
         cont += 1
@@ -469,7 +469,7 @@ def compnd(block):
     return compnd_arr, compnd_err
 
 def source(block):
-
+    """Handle SOURCE block."""
     src_arr = []
     src_err = []
 
@@ -486,14 +486,14 @@ def source(block):
             if cont > 1:
                 line += " "*(3 - len(str(cont))) + str(cont)
             else:
-                "   "
+                line += "   "
             line += "MOL_ID: " + str(src_obj.getValue("entity_id", i)) + ""
             cont += 1
             try:
                 src_arr.append(pdb.SOURCE(line))
             # TODO - what are we catching here?
             except:
-                _LOGGER.error("source:    Error parsing line:\n%s\n" % line)
+                _LOGGER.error("source:    Error parsing line:\n%s", line)
                 src_err.append("source")
 
         if src_obj.getValue("pdbx_gene_src_scientific_name", i) != "?":
@@ -501,7 +501,7 @@ def source(block):
             if cont > 1:
                 line += " "*(3 - len(str(cont))) + str(cont)
             else:
-                "   "
+                line += "   "
             line += "ORGANISIM_SCIENTIFIC: " + \
                 src_obj.getValue("pdbx_gene_src_scientific_name", i) + ""
             cont += 1
@@ -509,7 +509,7 @@ def source(block):
                 src_arr.append(pdb.SOURCE(line))
             # TODO - what are we catching here?
             except:
-                _LOGGER.error("source:    Error parsing line:\n%s\n" % line)
+                _LOGGER.error("source:    Error parsing line:\n%s", line)
                 src_err.append("source")
 
         if src_obj.getValue("gene_src_common_name", i) != "?":
@@ -517,14 +517,14 @@ def source(block):
             if cont > 1:
                 line += " "*(3 - len(str(cont))) + str(cont)
             else:
-                "   "
+                line += "   "
             line += "ORGANISM_COMMON: " + src_obj.getValue("gene_src_common_name", i) + ""
             cont += 1
             try:
                 src_arr.append(pdb.SOURCE(line))
             # TODO - what are we catching here?
             except:
-                _LOGGER.error("source:    Error parsing line:\n%s\n" % line)
+                _LOGGER.error("source:    Error parsing line:\n%s,", line)
                 src_err.append("source")
 
         if src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) != "?":
@@ -532,20 +532,20 @@ def source(block):
             if cont > 1:
                 line += " "*(3 - len(str(cont))) + str(cont)
             else:
-                "   "
+                line += "   "
             line += "ORGANISM_TAXID: " + src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) + ""
             cont += 1
             try:
                 src_arr.append(pdb.SOURCE(line))
             # TODO - what are we catching here?
             except:
-                _LOGGER.error("source:    Error parsing line:\n%s\n" % line)
+                _LOGGER.error("source:    Error parsing line:\n%s", line)
                 src_err.append("source")
 
     return src_arr, src_err
 
 def keywds(block):
-
+    """Handle KEYWDS block"""
     key_arr = []
     key_err = []
 
@@ -559,19 +559,19 @@ def keywds(block):
         if i+1 > 1:
             line += " "*(2-len(str(i+1))) + str(i+1)
         else:
-            "  "
+            line += "  "
         line += key_string[(i*69) : minimum(len(key_string), (i+1)*69)]
         try:
             key_arr.append(pdb.KEYWDS(line))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("keywds:    Error parsing line:\n%s" % line)
+            _LOGGER.error("keywds:    Error parsing line:\n%s", line)
             key_err.append("keywds")
 
     return key_arr, key_err
 
 def expdata(block):
-
+    """Handle EXPDTA block"""
     ex_arr = []
     ex_err = []
 
@@ -585,13 +585,13 @@ def expdata(block):
         ex_arr.append(pdb.EXPDTA(line))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("expdata:    Error parsing line:\n%s\n" % line)
+        _LOGGER.error("expdata:    Error parsing line:\n%s\n", line)
         ex_err.append("expdata")
 
     return ex_arr, ex_err
 
 def author(block):
-
+    """Handle AUTHOR block."""
     aut_arr = []
     aut_err = []
 
@@ -607,13 +607,13 @@ def author(block):
             aut_arr.append(pdb.AUTHOR(line))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("author:    Error parsing line:\n%s\n" % line)
+            _LOGGER.error("author:    Error parsing line:\n%s", line)
             aut_err.append("author")
 
     return aut_arr, aut_err
 
 def cryst1(block):
-
+    """Handle CRYST1 block"""
     cry_arr = []
     cry_err = []
 
@@ -642,13 +642,13 @@ def cryst1(block):
         cry_arr.append(pdb.CRYST1(line))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.cryst1:    Error parsing line:\n%s\n" % line)
+        _LOGGER.error("cif.cryst1:    Error parsing line:\n%s", line)
         cry_err.append(cryst1)
 
     return cry_arr, cry_err
 
 def scalen(block):
-
+    """Handle SCALEn block"""
     sc_arr = []
     sc_err = []
 
@@ -694,27 +694,27 @@ def scalen(block):
         sc_arr.append(pdb.SCALE1(scale1))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.scalen:    Error parsing line:\n%s\n" % scale1)
+        _LOGGER.error("cif.scalen:    Error parsing line:\n%s", scale1)
         sc_err.append("SCALE1")
 
     try:
         sc_arr.append(pdb.SCALE2(scale2))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.scalen:    Error parsing line:\n%s\n" % scale2)
+        _LOGGER.error("cif.scalen:    Error parsing line:\n%s", scale2)
         sc_err.append("SCALE2")
 
     try:
         sc_arr.append(pdb.SCALE3(scale3))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.scalen:    Error parsing line:\n%s\n" % scale3)
+        _LOGGER.error("cif.scalen:    Error parsing line:\n%s", scale3)
         sc_err.append("SCALE3")
 
     return sc_arr, sc_err
 
 def origxn(block):
-
+    """Handle ORIGXn block"""
     or_arr = []
     or_err = []
 
@@ -757,27 +757,27 @@ def origxn(block):
         or_arr.append(pdb.ORIGX1(orig1))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.origxn:    Error parsing line:\n%s\n" % orig1)
+        _LOGGER.error("cif.origxn:    Error parsing line:\n%s", orig1)
         or_err.append("ORIGX1")
 
     try:
         or_arr.append(pdb.ORIGX2(orig2))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.origxn:    Error parsing line:\n%s\n" % orig2)
+        _LOGGER.error("cif.origxn:    Error parsing line:\n%s", orig2)
         or_err.append("ORIGX2")
 
     try:
         or_arr.append(pdb.ORIGX3(orig3))
     # TODO - what are we catching here?
     except:
-        _LOGGER.error("cif.origxn:    Error parsing line:\n%s\n" % orig3)
+        _LOGGER.error("cif.origxn:    Error parsing line:\n%s", orig3)
         or_err.append("ORIGX3")
 
     return or_arr, or_err
 
 def cispep(block):
-
+    """Handle CISPEP block"""
     cis_arr = []
     cis_err = []
 
@@ -800,7 +800,7 @@ def cispep(block):
         if cis_obj.getValue("pdbx_PDB_ins_code", i) != '?':
             line += cis_obj.getValue("pdbx_PDB_ins_code", i)
         else:
-            " "
+            line += " "
         line += "   "
         line += " "*(3 - len(cis_obj.getValue("pdbx_auth_comp_id_2", i))) + \
             cis_obj.getValue("pdbx_auth_comp_id_2", i)
@@ -812,7 +812,7 @@ def cispep(block):
         if cis_obj.getValue("pdbx_PDB_ins_code_2", i) != '?':
             line += cis_obj.getValue("pdbx_PDB_ins_code_2", i)
         else:
-            " "
+            line += " "
         line += " "*7
         line += " "*(3 - len(str(cis_obj.getValue("pdbx_PDB_model_num", i)))) + \
             str(cis_obj.getValue("pdbx_PDB_model_num", i))
@@ -824,13 +824,13 @@ def cispep(block):
             cis_arr.append(pdb.CISPEP(line))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("cif.cispep:    Erro parsing line:\n%s\n" % line)
+            _LOGGER.error("cif.cispep:    Erro parsing line:\n%s", line)
             cis_err.append("cispep")
 
     return cis_arr, cis_err
 
 def ssbond(block):
-
+    """Handle SSBOND block"""
     ssb_arr = []
     ssb_err = []
 
@@ -854,7 +854,7 @@ def ssbond(block):
         if ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i) != '?':
             line += ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i)
         else:
-            " "
+            line += " "
         line += " "*3
         line += " "*(3 - len(ssb_obj.getValue("ptnr2_auth_comp_id", i))) + \
             ssb_obj.getValue("ptnr2_auth_comp_id", i)
@@ -866,7 +866,7 @@ def ssbond(block):
         if ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i) != '?':
             line += ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i)
         else:
-            " "
+            line += " "
         line += " "*23
         line += " "*(6 - len(ssb_obj.getValue("ptnr1_symmetry", i).replace("_", ""))) + \
             ssb_obj.getValue("ptnr1_symmetry", i).replace("_", "")
@@ -881,14 +881,14 @@ def ssbond(block):
             ssb_arr.append(pdb.SSBOND(line))
         # TODO - what are we catching here?
         except:
-            _LOGGER.error("cif.ssbond:    Error parsing line:\n%s\n" % line)
+            _LOGGER.error("cif.ssbond:    Error parsing line:\n%s", line)
             ssb_err.append("ssbond")
 
     return ssb_arr, ssb_err
 
 
 def count_models(block):
-
+    """Count models in structure file block"""
     atom_obj = block.getObj("atom_site")
 
     model_num = []
@@ -902,7 +902,7 @@ def count_models(block):
     return model_num
 
 
-def read_cif(file):
+def read_cif(cif_file):
     """ Parse CIF-format data into array of Atom objects.
         Parameters:
             file: open file object
@@ -914,19 +914,18 @@ def read_cif(file):
     pdblist = [] # Array of parsed lines (as objects)
     errlist = [] # List of record names that couldn't be parsed.
 
-    if file is None:
+    if cif_file is None:
         return pdblist, errlist
 
     pdbdata = []
 
-    reader = PdbxReader(file)
+    reader = PdbxReader(cif_file)
     reader.read(pdbdata)
 
     # TODO - manage several blocks of data.
     if len(pdbdata) > 0:
 
-        for i in range(len(pdbdata)):
-            block = pdbdata[i]
+        for block in pdbdata:
             head_pdb, head_err = header(block)
             title_pdb, title_err = title(block)
             cmpnd_pdb, cmpnd_err = compnd(block)
@@ -942,7 +941,6 @@ def read_cif(file):
             ato_pdb, ato_err = atom_site(block)
             con_pdb, con_err = conect(block)
 
-
             pdblist = head_pdb + title_pdb + cmpnd_pdb + src_pdb + key_pdb + ex_pdb + aut_pdb + \
                     ssb_pdb + cis_pdb + cry_pdb + or_pdb + sc_pdb + ato_pdb + con_pdb
             errlist = head_err + title_err + cmpnd_err + src_err + key_err + ex_err + aut_err + \
@@ -951,5 +949,5 @@ def read_cif(file):
         return pdblist, errlist
     # TODO - does this "else" do anything given the "return" above?
     else:
-        _LOGGER.error("Unknown error while reading cif file.")
+        _LOGGER.error("Unknown error while reading CIF file.")
         return pdblist, errlist

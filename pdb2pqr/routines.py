@@ -766,7 +766,7 @@ class Routines:
                 refcoords = []
 
                 refatomcoords = residue.reference.map[atomname].getCoords()
-                bondlist = residue.reference.getNearestBonds(atomname)
+                bondlist = residue.reference.get_nearest_bonds(atomname)
 
                 for bond in bondlist:
                     if bond == "N+1":
@@ -835,7 +835,7 @@ class Routines:
 
                 atomname = missing.pop(0)
                 refatomcoords = residue.reference.map[atomname].getCoords()
-                bondlist = residue.reference.getNearestBonds(atomname)
+                bondlist = residue.reference.get_nearest_bonds(atomname)
 
                 for bond in bondlist:
                     if bond == "N+1": atom = residue.peptide_n

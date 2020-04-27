@@ -16,7 +16,6 @@ from .quatfit import findCoordinates
 from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS
 from .routines import Cells
-# TODO - fix import *
 
 
 _LOGGER = logging.getLogger(__name__)

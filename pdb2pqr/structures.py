@@ -7,7 +7,6 @@ Author: Todd Dolinsky
 """
 import string
 from .pdb import ATOM, HETATM
-# TODO - this should be replaced with numpy
 from .utilities import subtract
 from .quatfit import qchichange
 

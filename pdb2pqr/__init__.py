@@ -15,7 +15,6 @@ from . import pdb, cif, utilities, structures
 from .errors import PDB2PQRError
 from .propka import lib as propka_lib
 from . import extensions
-from . import __version__
 from .pdb2pka.ligandclean import ligff
 from . import inputgen, psize
 

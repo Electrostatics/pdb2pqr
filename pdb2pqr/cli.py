@@ -59,7 +59,7 @@ def build_parser():
     g2.add_argument('--neutralc', action='store_true', default=False,
                     help='Make the C-terminus of this protein neutral (default is charged). Requires PARSE force field.')
     g2.add_argument('--drop-water', action='store_true', default=False,
-                    help='Drop waters (%s) before processing protein.' % aa.WAT.water_residue_names)
+                    help='Drop waters before processing protein.')
 
     g2.add_argument('--include-header', action='store_true', default=False,
                     help='Include pdb header in pqr file. WARNING: The resulting PQR file will not work with APBS versions prior to 1.5')

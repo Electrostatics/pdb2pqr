@@ -412,10 +412,10 @@ def pre_init(pdbfilename=None,
     # Inject the information on hydrogen conformations in the HYDROGENS.DAT arrays
     # We get this information from ligand_titratable_groups
     #
-    from src.hydrogens import hydrogenRoutines
+    from src.hydrogens import HydrogenRoutines
     myRoutines.updateInternalBonds()
     myRoutines.calculateDihedralAngles()
-    myhydRoutines = hydrogenRoutines(myRoutines)
+    myhydRoutines = HydrogenRoutines(myRoutines)
     #
     # Here we should inject the info!!
     #

@@ -8,7 +8,7 @@ import logging
 from itertools import product, permutations, count
 from collections import defaultdict
 from ..hydrogens import Optimize
-from ..hydrogens import hydrogenRoutines
+from ..hydrogens import HydrogenRoutines
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -167,7 +167,7 @@ def get_residue_interaction_energy(residue1, residue2):
     """
     Returns to total energy of every atom pair between the two residues.
     
-    Uses Optimize.getPairEnergy and it's donor/accepter model 
+    Uses Optimize.get_pair_energy and it's donor/accepter model 
     to determine energy.
     
     residue1 - "donor" residue
@@ -178,7 +178,7 @@ def get_residue_interaction_energy(residue1, residue2):
     """
     energy = 0.0
     for pair in product(residue1.get_atoms(), residue2.get_atoms()):
-        energy += Optimize.getPairEnergy(pair[0], pair[1])
+        energy += Optimize.get_pair_energy(pair[0], pair[1])
         
     return energy
 
@@ -264,7 +264,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
             
         routines.addHydrogens()
 
-        hydRoutines = hydrogenRoutines(routines)
+        hydRoutines = HydrogenRoutines(routines)
 
         if debump:
             routines.debumpProtein()  

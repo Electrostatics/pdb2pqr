@@ -17,8 +17,8 @@ class pKa:
                 residue: The residue object (residue)
                 group:   The pKaGroup object associated with the residue
                          (pKaGroup)
-                amb:     The associated hydrogenAmbiguity object
-                         (hydrogenAmbiguity)
+                amb:     The associated HydrogenAmbiguity object
+                         (HydrogenAmbiguity)
         """
         self.residue = residue
         self.pKaGroup = group

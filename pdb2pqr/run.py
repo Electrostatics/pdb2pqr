@@ -325,7 +325,7 @@ def runPDB2PQR(pdblist, options):
 
         myRoutines.addHydrogens()
 
-        myhydRoutines = hydrogens.hydrogenRoutines(myRoutines)
+        myhydRoutines = hydrogens.HydrogenRoutines(myRoutines)
 
         if options.debump:
             myRoutines.debumpProtein()

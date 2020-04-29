@@ -163,8 +163,8 @@ def main(args):
         size.parseInput(args.output_pqr)
         size.runPsize(args.output_pqr)
         input_ = inputgen.Input(args.output_pqr, size, method, 0, potdx=True)
-        input_.printInputFiles()
-        input_.dumpPickle()
+        input_.print_input_files()
+        input_.dump_pickle()
 
 
 if __name__ == "__main__":

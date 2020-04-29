@@ -11,13 +11,22 @@ from math import log
 import logging
 
 
+CFAC = 1.7
+FADD = 20
+SPACE = 0.50
+GMEMFAC = 200
+GMEMCEIL = 400
+OFRAC = 0.1
+REDFRAC = 0.25
 _LOGGER = logging.getLogger(__name__)
 
 
 class Psize:
     """Master class for parsing input files and suggesting settings"""
     def __init__(self):
-        self.constants = {"cfac": 1.7, "fadd":20, "space": 0.50, "gmemfac": 200, "gmemceil": 400, "ofrac":0.1, "redfac": 0.25 }
+        self.constants = {"cfac": CFAC, "fadd": FADD, "space": SPACE,
+                          "gmemfac": GMEMFAC, "gmemceil": GMEMCEIL,
+                          "ofrac": OFRAC, "redfac": REDFRAC}
         self.minlen = [None, None, None]
         self.maxlen = [None, None, None]
         self.q = 0.0

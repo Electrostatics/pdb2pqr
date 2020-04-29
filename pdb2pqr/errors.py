@@ -40,7 +40,7 @@ class PDBFileParseError(PDB2PQRError):
     """Parsing error with PDB file."""
     def __init__(self, lineno, error_str):
         self.lineno = lineno
-        self.error_str = error_str 
+        self.error_str = error_str
 
     def __str__(self):
         estr = 'PDB file parsing error line {lineno}: {error_str}'

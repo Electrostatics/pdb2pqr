@@ -5,8 +5,6 @@ This is an module for hydrogen optimization routines.
 Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 """
 import logging
-import os
-import string
 import math
 from xml import sax
 from . import topology

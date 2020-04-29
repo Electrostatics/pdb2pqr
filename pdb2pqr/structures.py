@@ -12,14 +12,14 @@ from .quatfit import qchichange
 
 
 # TODO - why is the backbone defined here?
-BACKBONE = ["N","CA","C","O","O2","HA","HN","H","tN"]
+BACKBONE = ["N", "CA", "C", "O", "O2", "HA", "HN", "H", "tN"]
 
 
 class Chain:
-    """Chain class 
-    
+    """Chain class
+
     The chain class contains information about each chain within a given
-    Protein object.  
+    Protein object.
     """
 
     def __init__(self, chainID):
@@ -46,7 +46,8 @@ class Chain:
             Returns
                 item:     The value of the member
         """
-        if name == "atoms": self.get_atoms()
+        if name == "atoms":
+            self.get_atoms()
         else:
             try:
                 item = getattr(self, name)
@@ -63,7 +64,7 @@ class Chain:
                 residue: The residue to be added (Residue)
         """
         self.residues.append(residue)
-        
+
     def numResidues(self):
         """
             Get the number of residues for the chain
@@ -92,7 +93,7 @@ class Chain:
             Returns
                 count:  Number of atoms in the chain (int)
         """
-        count = len(self.get_atoms())       
+        count = len(self.get_atoms())
         return count
 
     def get_residues(self):
@@ -100,7 +101,7 @@ class Chain:
             Return a list of Residue objects in this chain
         """
         return self.residues
-    
+
     def get_atoms(self):
         """
             Return a list of Atom objects contained in this chain
@@ -114,12 +115,12 @@ class Chain:
             for atom in myList:
                 atomlist.append(atom)
         return atomlist
-    
+
     def getSummary(self):
         output = []
         for residue in self.residues:
             output.append(residue.letterCode())
-            
+
         return ''.join(output)
 
 
@@ -141,7 +142,7 @@ class Residue:
         """
 
         sample_atom = atoms[-1]
-        
+
         self.atoms = []
         self.name = sample_atom.resName
         self.chainID = sample_atom.chainID
@@ -155,7 +156,7 @@ class Residue:
 
         atomclass = ""
         for a in atoms:
-            if isinstance(a,ATOM):
+            if isinstance(a, ATOM):
                 atomclass = "ATOM"
             elif isinstance(a, HETATM):
                 atomclass = "HETATM"
@@ -163,14 +164,14 @@ class Residue:
             atomname = atom.get("name")
             if atomname not in self.map:
                 self.add_atom(atom)
-            else: # Don't add duplicate atom              
+            else: # Don't add duplicate atom
                 oldatom = self.get_atom(atomname)
-                oldatom.set("altLoc","")
+                oldatom.set("altLoc", "")
 
         if self.name == "HOH":
             self.name = "WAT"
             for atom in self.atoms:
-                atom.set("resName","WAT")
+                atom.set("resName", "WAT")
 
     def __str__(self):
         """
@@ -178,7 +179,7 @@ class Residue:
         """
         text = "%s %s %i%s" % (self.name, self.chainID, self.resSeq, self.iCode)
         return text
-    
+
     #TODO: Kill this in a fire.
     def get(self, name):
         """
@@ -210,7 +211,7 @@ class Residue:
 
     def set(self, name, value):
         """
-            Set a member of the Residue class to a specific value 
+            Set a member of the Residue class to a specific value
 
             Parameters
                 name:          The name of the object to set (string)
@@ -231,9 +232,9 @@ class Residue:
             Notes
                 resSeq points to the residue.setResSeq function
             Returns
-                item:          The value of the member   
+                item:          The value of the member
         """
-        if name == "resSeq": 
+        if name == "resSeq":
             self.setResSeq(value)
         else:
             try:
@@ -248,26 +249,26 @@ class Residue:
         # If Nterm then update counter of hydrogens
         #
         if self.isNterm:
-            count=0
-            atoms=['H','H2','H3']
+            count = 0
+            atoms = ['H', 'H2', 'H3']
             for atom in atoms:
                 for atom2 in self.atoms:
-                    atomname=atom2.get('name')
-                    if atom==atomname:
-                        count=count+1
-            self.isNterm=count
+                    atomname = atom2.get('name')
+                    if atom == atomname:
+                        count = count+1
+            self.isNterm = count
         #
         # If Cterm then update counter
         #
         if self.isCterm:
-            self.isCterm=None
+            self.isCterm = None
             for atom in self.atoms:
-                atomname=atom.get('name')
-                if atomname=='HO':
-                    self.isCterm=2
+                atomname = atom.get('name')
+                if atomname == 'HO':
+                    self.isCterm = 2
                     break
             if not self.isCterm:
-                self.isCterm=1
+                self.isCterm = 1
         return
 
     def numAtoms(self):
@@ -278,7 +279,7 @@ class Residue:
                 Number of atoms in the residue (int)
         """
         return len(self.atoms)
-                    
+
     def setResSeq(self, value):
         """
             Set the atom field resSeq to a certain value and
@@ -291,8 +292,8 @@ class Residue:
         self.iCode = ""
         self.resSeq = value
         for atom in self.atoms:
-            atom.set("resSeq",value)
-            #atom.set("iCode","")
+            atom.set("resSeq", value)
+            #atom.set("iCode", "")
 
     def setChainID(self, value):
         """
@@ -301,7 +302,7 @@ class Residue:
         self.chainID = value
         for atom in self.atoms:
             atom.set("chainID", value)
-        
+
     def add_atom(self, atom):
         """
             Add the atom object to the residue.
@@ -321,7 +322,7 @@ class Residue:
         """
 
         # Delete the atom from the map
-        
+
         atom = self.map[atomname]
         bonds = atom.bonds
         del self.map[atomname]
@@ -331,7 +332,7 @@ class Residue:
         self.atoms.remove(atom)
 
         # Delete all instances of the atom as a bond
-        
+
         for bondatom in bonds:
             if atom in bondatom.bonds:
                 bondatom.bonds.remove(atom)
@@ -347,10 +348,10 @@ class Residue:
                 newname: The new atom name (string)
         """
         atom = self.map[oldname]
-        atom.set("name",newname)
+        atom.set("name", newname)
         self.map[newname] = atom
         del self.map[oldname]
-        
+
     def create_atom(self, name, newcoords, type):
         """
             Add a new atom object to the residue. Uses an atom
@@ -364,13 +365,13 @@ class Residue:
         """
         oldatom = self.atoms[0]
         newatom = Atom(oldatom, type, self)
-        newatom.set("x",newcoords[0])
-        newatom.set("y",newcoords[1])
-        newatom.set("z",newcoords[2])
+        newatom.set("x", newcoords[0])
+        newatom.set("y", newcoords[1])
+        newatom.set("z", newcoords[2])
         newatom.set("name", name)
-        newatom.set("occupancy",1.00)
-        newatom.set("tempFactor",0.00)
-        self.add_atom(newatom) 
+        newatom.set("occupancy", 1.00)
+        newatom.set("tempFactor", 0.00)
+        self.add_atom(newatom)
 
     def addMissing(self, value):
         """
@@ -388,7 +389,7 @@ class Residue:
             Parameters
                 resname: The name of the residue to retrieve (string)
         """
-        return self.map.get(name);
+        return self.map.get(name)
 
     def get_atoms(self):
         return self.atoms
@@ -440,11 +441,11 @@ class Residue:
         """
         moveatoms = []
         movecoords = []
-        
+
         initcoords = subtract(atom2.getCoords(), atom1.getCoords())
 
         # Determine which atoms to rotate
-        
+
         for atom in atom2.bonds:
             if atom == atom1: continue
             moveatoms.append(atom)
@@ -459,7 +460,7 @@ class Residue:
             atom.set("x", x)
             atom.set("y", y)
             atom.set("z", z)
-           
+
 
     def setDonorsAndAcceptors(self):
         """
@@ -472,24 +473,24 @@ class Residue:
 
             atom.set("hdonor", 0)
             atom.set("hacceptor", 0)
-         
+
             if atomname.startswith("N"):
                 bonded = 0
                 for bondedatom in atom.bonds:
                     if bondedatom.isHydrogen():
-                        atom.set("hdonor",1)
+                        atom.set("hdonor", 1)
                         bonded = 1
                         break
                 if not bonded and self.reference.name == "HIS":
-                    atom.set("hacceptor",1)
-                    
+                    atom.set("hacceptor", 1)
+
             elif atomname.startswith("O") or \
                  (atomname.startswith("S") and self.reference.name == "CYS"):
-                atom.set("hacceptor",1)
+                atom.set("hacceptor", 1)
                 for bondedatom in atom.bonds:
                     if bondedatom.isHydrogen():
-                        atom.set("hdonor",1)
-                        break     
+                        atom.set("hdonor", 1)
+                        break
 
     def reorder(self):
         """
@@ -509,7 +510,7 @@ class Residue:
         # Change the list pointer
 
         self.atoms = templist[:]
-        
+
     def letterCode(self):
         return 'X'
 
@@ -522,7 +523,7 @@ class Atom(ATOM):
         Also simplifies code by combining ATOM and HETATM objects into a
         single class.
     """
-    
+
     def __init__(self, atom, type, residue):
         """
             Initialize the new Atom object by using the old object.
@@ -565,17 +566,17 @@ class Atom(ATOM):
         self.refdistance = 0
         self.id = None
 
-        self.mol2charge=None
-        if hasattr(atom,'mol2charge'):
-            self.mol2charge=atom.mol2charge
-        
-    
+        self.mol2charge = None
+        if hasattr(atom, 'mol2charge'):
+            self.mol2charge = atom.mol2charge
+
+
     def getCommonStringRep(self, chainflag=False):
         """
-            Returns a string of the common column of the new atom type.  
-            Uses the ATOM string output but changes the first field 
+            Returns a string of the common column of the new atom type.
+            Uses the ATOM string output but changes the first field
             to either by ATOM or HETATM as necessary.
-            
+
             This is used to create the output for pqr and pdb files! No touchy!
 
             Returns
@@ -598,7 +599,7 @@ class Atom(ATOM):
             outstr += str.ljust(tstr, 4)[:4]
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
-            
+
         outstr += " "
         if chainflag:
             tstr = self.chainID
@@ -616,64 +617,64 @@ class Atom(ATOM):
         tstr = "%8.3f" % self.y
         outstr += str.ljust(tstr, 8)[:8]
         tstr = "%8.3f" % self.z
-        outstr += str.ljust(tstr, 8)[:8] 
+        outstr += str.ljust(tstr, 8)[:8]
         return outstr
-        
+
     def __str__(self):
         """
             Returns a string of the new atom type.  Uses the ATOM string
             output but changes the first field to either by ATOM or
             HETATM as necessary.
-            
+
             This is used to create the output for pqr files! No touchy!
 
             Returns
                 str: String with ATOM/HETATM field set appropriately
         """
         return self.getPQRString()
-    
-    
+
+
     def getPQRString(self, chainflag=False):
         """
             Returns a string of the new atom type.  Uses the ATOM string
             output but changes the first field to either by ATOM or
             HETATM as necessary.
-            
+
             This is used to create the output for pqr files! No touchy!
 
             Returns
                 str: String with ATOM/HETATM field set appropriately
         """
         outstr = self.getCommonStringRep(chainflag=chainflag)
-        
-        if self.ffcharge != None: 
+
+        if self.ffcharge != None:
             ffcharge = "%.4f" % self.ffcharge
-        else: 
+        else:
             ffcharge = "0.0000"
         outstr += str.rjust(ffcharge, 8)[:8]
-        if self.radius != None: 
+        if self.radius != None:
             ffradius = "%.4f" % self.radius
-        else: 
+        else:
             ffradius = "0.0000"
         outstr += str.rjust(ffradius, 7)[:7]
 
         return outstr
-    
-    
+
+
     def getPDBString(self):
         """
             Returns a string of the new atom type.  Uses the ATOM string
             output but changes the first field to either by ATOM or
             HETATM as necessary.
-            
-            This is for the pdb representation of the atom. The propka30 module 
+
+            This is for the pdb representation of the atom. The propka30 module
             depends on this being correct. No touchy!
 
             Returns
                 str: String with ATOM/HETATM field set appropriately
         """
         outstr = self.getCommonStringRep(chainflag=True)
-        
+
         tstr = "%6.2f" % self.occupancy
         outstr += str.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.tempFactor
@@ -689,7 +690,7 @@ class Atom(ATOM):
 
 
         return outstr
-    
+
     #TODO: What? Why? Isn't this Python?
     #Are we really doing attribute access based
     # on dynamic names? A search of the code says no.
@@ -768,7 +769,7 @@ class Atom(ATOM):
             setattr(self, name, value)
         except AttributeError:
             message = "Unable to set object \"%s\" in class Atom" % name
-            raise PDBInternalError(message)   
+            raise PDBInternalError(message)
 
     def getCoords(self):
         """
@@ -816,6 +817,3 @@ class Atom(ATOM):
         """
 
         return self.reference != None
-
-    
-        

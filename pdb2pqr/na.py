@@ -196,4 +196,3 @@ class DT(THY):
 class RU(URA):
     """Ribo-URA"""
     pass
-

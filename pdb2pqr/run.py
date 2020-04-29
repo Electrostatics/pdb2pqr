@@ -331,14 +331,14 @@ def runPDB2PQR(pdblist, options):
             myRoutines.debumpProtein()
 
         if options.opt:
-            myhydRoutines.setOptimizeableHydrogens()
+            myhydRoutines.set_optimizeable_hydrogens()
             # TONI fixing residues - myhydRoutines has a reference to myProtein, so i'm altering it in place
             myRoutines.holdResidues(None)
-            myhydRoutines.initializeFullOptimization()
-            myhydRoutines.optimizeHydrogens()
+            myhydRoutines.initialize_full_optimization()
+            myhydRoutines.optimize_hydrogens()
         else:
-            myhydRoutines.initializeWaterOptimization()
-            myhydRoutines.optimizeHydrogens()
+            myhydRoutines.initialize_wat_optimization()
+            myhydRoutines.optimize_hydrogens()
 
         # Special for GLH/ASH, since both conformations were added
         myhydRoutines.cleanup()

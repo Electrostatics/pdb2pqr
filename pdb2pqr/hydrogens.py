@@ -15,7 +15,7 @@ from .utilities import analyzeConnectivity, sortDictByValue
 from .quatfit import findCoordinates
 from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS
-from .routines import Cells
+from .routines import Cells, Routines
 
 # TODO - This module is insane... so many lines!
 
@@ -1794,25 +1794,25 @@ class HydrogenRoutines(object):
         if defpath == "":
             raise KeyError("Could not find %s!" % HYDPATH)
 
-        hydrogenFile = open(defpath)
-        sax.parseString(hydrogenFile.read(), handler)
-        hydrogenFile.close()
+        hydrogen_file = open(defpath)
+        sax.parseString(hydrogen_file.read(), handler)
+        hydrogen_file.close()
 
         self.map = handler.map
 
-    def switchstate(self, states, amb, stateID):
+    def switchstate(self, states, amb, state_id):
         """Switch a residue to a new state by first removing all hydrogens.
 
         Args:
             states: The list of states (list)
             amb   : The amibiguity to switch (tuple)
-            stateID    : The state id to switch to (int)
+            state_id    : The state id to switch to (int)
         """
         if states == 'pKa':
-            return self.pKa_switchstate(amb, stateID)
+            return self.pka_switchstate(amb, state_id)
 
-        if stateID > len(states):
-            raise PDBInternalError("Invalid State ID!")
+        if state_id > len(states):
+            raise IndexError("Invalid State ID!")
 
         # First Remove all Hs
         residue = getattr(amb, "residue")
@@ -1821,7 +1821,7 @@ class HydrogenRoutines(object):
             hname = conf.hname
             boundname = conf.boundatom
             if residue.get_atom(hname) != None:
-                _LOGGER.debug('Removing', residue.name, residue.resSeq, hname)
+                _LOGGER.debug('Removing %s %s %s', residue.name, residue.resSeq, hname)
                 residue.removeAtom(hname)
             residue.get_atom(boundname).hacceptor = 1
             residue.get_atom(boundname).hdonor = 0
@@ -1832,7 +1832,7 @@ class HydrogenRoutines(object):
         residue.updateIntraBonds(defresidue)
 
         # Now build appropriate atoms
-        state = states[stateID]
+        state = states[state_id]
         for conf in state:
             _LOGGER.debug(conf)
             refcoords = []
@@ -1851,7 +1851,7 @@ class HydrogenRoutines(object):
                     refcoords.append(resatom.getCoords())
                     defcoords.append(atom.getCoords())
                 else:
-                    raise PDBInternalError("Could not find necessary atom!")
+                    raise KeyError("Could not find necessary atom!")
 
             newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
@@ -1867,15 +1867,16 @@ class HydrogenRoutines(object):
             # flag the added hydrogen
             residue.get_atom(hname).titratableH = True
             residue.get_atom(hname).addIntraBond(boundname)
-        return
+        return None
 
-    def pKa_switchstate(self, amb, stateID):
+    @classmethod
+    def pka_switchstate(cls, amb, state_id_):
         """Switch a residue to a new state by first removing all hydrogens.
         This routine is used in pKa calculations only!
 
         Args:
             amb   : The amibiguity to switch (tuple)
-            stateID    : The state id to switch to (list)
+            state_id    : The state id to switch to (list)
         """
         # TODO - This titration dictionary should not be buried in the code
         titrationdict = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4', 'ASP': '0',
@@ -1886,11 +1887,11 @@ class HydrogenRoutines(object):
                          'HSD': '1', 'HSE': '2', 'HSP': '1+2',
                          'H3': '1', 'H2': '2', 'H3+H2': '1+2',
                          'CTR01c': '1', 'CTR01t': '2', 'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
-        stateID = titrationdict[stateID]
-        stateID = stateID.split('+')
-        new_stateID = []
-        for i in stateID:
-            new_stateID.append(int(i))
+        state_id = titrationdict[state_id_]
+        state_id = state_id.split('+')
+        new_state_id = []
+        for i in state_id:
+            new_state_id.append(int(i))
         residue = getattr(amb, "residue")
         hdef = getattr(amb, "hdef")
         for conf in hdef.conformations:
@@ -1902,10 +1903,10 @@ class HydrogenRoutines(object):
             residue.get_atom(boundname).hdonor = 0
 
         # Update the IntraBonds
-        for stateID in new_stateID:
-            if stateID == 0:
+        for state_id in new_state_id:
+            if state_id == 0:
                 continue
-            conf = hdef.conformations[stateID-1]
+            conf = hdef.conformations[state_id-1]
             refcoords = []
             defcoords = []
             defatomcoords = []
@@ -1930,7 +1931,7 @@ class HydrogenRoutines(object):
                         refcoords.append(resatom.getCoords())
                         defcoords.append(atom.getCoords())
                     else:
-                        raise PDBInternalError("Could not find necessary atom!")
+                        raise KeyError("Could not find necessary atom!")
 
                 newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
                 residue.create_atom(hname, newcoords)
@@ -1970,7 +1971,7 @@ class HydrogenRoutines(object):
                 if residue.has_atom("HD1") and residue.has_atom("HD2"):
                     residue.removeAtom("HD1")
 
-    def isOptimizeable(self, residue):
+    def is_optimizeable(self, residue):
         """Check to see if the given residue is optimizeable
         There are three ways to identify a residue:
 
@@ -1987,7 +1988,7 @@ class HydrogenRoutines(object):
                             corresponds to the residue.
         """
         optinstance = None
-        if not (isinstance(residue, Amino) or isinstance(residue, WAT)):
+        if not isinstance(residue, (Amino, WAT)):
             return optinstance
 
         if residue.name in self.map:
@@ -2009,7 +2010,7 @@ class HydrogenRoutines(object):
 
         return optinstance
 
-    def setOptimizeableHydrogens(self):
+    def set_optimizeable_hydrogens(self):
         """Set any hydrogen listed in HYDROGENS.xml that is optimizeable.
         Used BEFORE hydrogen optimization to label atoms so that they won't be
         debumped - i.e. if SER HG is too close to another atom, don't debump
@@ -2017,13 +2018,14 @@ class HydrogenRoutines(object):
         optimization is not taking place.
         """
         for residue in self.protein.get_residues():
-            optinstance = self.isOptimizeable(residue)
-            if optinstance is None: continue
+            optinstance = self.is_optimizeable(residue)
+            if optinstance is None:
+                continue
             for atom in residue.get_atoms():
                 if atom.name in optinstance.map:
                     atom.optimizeable = 1
 
-    def initializeFullOptimization(self):
+    def initialize_full_optimization(self):
         """Initialize the full optimization.
         Detects all optimizeable donors and acceptors and sets the internal
         optlist.
@@ -2042,7 +2044,7 @@ class HydrogenRoutines(object):
 
         # First initialize the various types
         for residue in self.protein.get_residues():
-            optinstance = self.isOptimizeable(residue)
+            optinstance = self.is_optimizeable(residue)
             if isinstance(residue, Amino):
                 if False in residue.stateboolean.values():
                     residue.fixed = 1
@@ -2052,18 +2054,18 @@ class HydrogenRoutines(object):
                 continue
 
             type_ = optinstance.opttype
-            command = "%s(residue, optinstance, self.routines)" % type_
             if residue.fixed == 1:
                 pass
             else:
-                myobj = eval(command)
+                klass = globals()[type_]
+                myobj = klass(residue, optinstance, self.routines)
                 self.atomlist += myobj.atomlist
                 self.optlist.append(myobj)
                 self.resmap[residue] = myobj
 
         _LOGGER.debug("Done.")
 
-    def initializeWaterOptimization(self):
+    def initialize_wat_optimization(self):
         """Initialize optimization for waters only.
 
         Detects all optimizeable donors and acceptors and sets the internal
@@ -2082,37 +2084,34 @@ class HydrogenRoutines(object):
 
         # First initialize the various types
         for residue in self.protein.get_residues():
-            optinstance = self.isOptimizeable(residue)
+            optinstance = self.is_optimizeable(residue)
             if optinstance is None:
                 continue
 
-            type = optinstance.opttype
-            if type == "Water":
-                command = "%s(residue, optinstance, self.routines)" % type
-                myobj = eval(command)
+            type_ = optinstance.opttype
+            if type_ == "Water":
+                klass = globals()[type_]
+                myobj = klass(residue, optinstance, self.routines)
                 self.atomlist += myobj.atomlist
                 self.optlist.append(myobj)
                 self.resmap[residue] = myobj
 
         _LOGGER.debug("Done.")
 
-    def optimizeHydrogens(self):
+    def optimize_hydrogens(self):
         """The main driver for the optimization.
         Should be called only after the optlist has been initialized.
         """
         _LOGGER.debug("Optimization progress:")
 
         optlist = self.optlist
-        resmap = {}
         connectivity = {}
 
         # Initialize the detection progress
         if len(optlist) == 0:
             return
 
-        _LOGGER.debug("  Detecting potential hydrogen bonds:")
-        _LOGGER.debug("0% |                    | 100%", 1)
-        _LOGGER.debug("    ", 1)
+        _LOGGER.debug("  Detecting potential hydrogen bonds")
         progress = 0.0
         increment = 1.0/len(optlist)
 
@@ -2150,7 +2149,6 @@ class HydrogenRoutines(object):
 
             progress += increment
             while progress >= 0.0499:
-                _LOGGER.debug("*")
                 progress -= 0.05
 
         # Some residues might have no nearby hbonds - if so, place at
@@ -2159,27 +2157,26 @@ class HydrogenRoutines(object):
             if len(obj.hbonds) == 0:
                 if obj.residue.fixed:
                     continue
-                _LOGGER.debug("%s has no nearby partners - fixing." % obj.residue)
+                _LOGGER.debug("%s has no nearby partners - fixing.", obj.residue)
                 obj.finalize()
 
         # Determine the distinct networks
         networks = []
         seen = []
-        for obj in optlist:
-            if obj.residue.fixed:
+        for obj1 in optlist:
+            if obj1.residue.fixed:
                 continue
-            if obj in seen:
+            if obj1 in seen:
                 continue
-            network = analyzeConnectivity(connectivity, obj)
-            for obj in network:
-                if obj not in seen: seen.append(obj)
+            network = analyzeConnectivity(connectivity, obj1)
+            for obj2 in network:
+                if obj2 not in seen:
+                    seen.append(obj2)
             networks.append(network)
 
         # Initialize the output progress
         if len(networks) > 0:
-            _LOGGER.debug("  Optimizing hydrogen bonds:")
-            _LOGGER.debug("0% |                    | 100%", 1)
-            _LOGGER.debug("    ", 1)
+            _LOGGER.debug("Optimizing hydrogen bonds")
             progress = 0.0
             increment = 1.0/len(networks)
 
@@ -2188,7 +2185,7 @@ class HydrogenRoutines(object):
             txt = ""
             for obj in network:
                 txt += "%s, " % obj
-            _LOGGER.debug("Starting network %s" % txt[:-2])
+            _LOGGER.debug("Starting network %s", txt[:-2])
 
             ###  FIRST:  Only optimizeable to backbone atoms
             _LOGGER.debug("* Optimizeable to backbone *")
@@ -2222,7 +2219,7 @@ class HydrogenRoutines(object):
                         if not isinstance(hbond.atom1.residue, WAT):
                             if not isinstance(hbond.atom2.residue, WAT):
                                 # Only get one hbond pair
-                                if not (hbond.atom2, hbond.atom1) in seenlist:
+                                if (hbond.atom2, hbond.atom1) not in seenlist:
                                     hbondmap[hbond] = hbond.dist
                                     seenlist.append((hbond.atom1, hbond.atom2))
 
@@ -2236,8 +2233,10 @@ class HydrogenRoutines(object):
                 obj2 = self.resmap[atom2.residue]
 
                 # Atoms may no longer exist if already optimized
-                if not atom.residue.has_atom(atom.name): continue
-                if not atom2.residue.has_atom(atom2.name): continue
+                if not atom.residue.has_atom(atom.name):
+                    continue
+                if not atom2.residue.has_atom(atom2.name):
+                    continue
 
                 res = 0
                 if atom.hdonor and atom2.hacceptor:
@@ -2255,7 +2254,7 @@ class HydrogenRoutines(object):
                     residue = hbond.atom1.residue
                     if isinstance(residue, WAT):
                         if isinstance(hbond.atom2.residue, WAT):
-                            if not (hbond.atom2, hbond.atom1) in seenlist:
+                            if (hbond.atom2, hbond.atom1) not in seenlist:
                                 hbondmap[hbond] = hbond.dist
                                 seenlist.append((hbond.atom1, hbond.atom2))
 
@@ -2282,10 +2281,9 @@ class HydrogenRoutines(object):
             # STEP 5:  Update progress meter
             progress += 100.0 * increment
             while progress >= 5.0:
-                _LOGGER.debug("*")
                 progress -= 5.0
 
-    def parseHydrogen(self, res):
+    def parse_hydrogen(self, res):
         """Parse a list of lines in order to make a hydrogen definition
 
         Args:
@@ -2298,7 +2296,7 @@ class HydrogenRoutines(object):
         # TODO - I don't think files should be loaded so deep in this module
         toppath = getDatFile(TOPOLOGYPATH)
         if toppath == "":
-            raise PDBInternalError("Could not find %s!" % TOPOLOGYPATH)
+            raise KeyError("Could not find %s!" % TOPOLOGYPATH)
 
         with open(toppath) as topfile:
             top = topology.Topology(topfile)
@@ -2309,7 +2307,6 @@ class HydrogenRoutines(object):
         map_ = self.map[res].map
 
         mydef = HydrogenDefinition(name, opttype, optangle, map_)
-        conf = []
         patchmap = []
         refmap = {}
         titrationstatemap = {}
@@ -2318,11 +2315,11 @@ class HydrogenRoutines(object):
         atommap = {}
 
         # reference map from TOPOLOGY.xml
-        for res in top.residues:
-            refmap[res.name] = res.reference
-            for atom in refmap[res.name].atoms:
-                atommap[res.name, atom.name] = atom
-            for titrationstate in res.titrationStates:
+        for res_ in top.residues:
+            refmap[res_.name] = res_.reference
+            for atom in refmap[res_.name].atoms:
+                atommap[res_.name, atom.name] = atom
+            for titrationstate in res_.titrationStates:
                 titrationstatemap[titrationstate.name] = titrationstate
                 for tautomer in titrationstate.tautomers:
                     tautomermap[tautomer.name] = tautomer
@@ -2330,30 +2327,30 @@ class HydrogenRoutines(object):
                         conformermap[conformer.name] = conformer
 
         if name == 'CYS':
-            reference = refmap['CYS']
+            _ = refmap['CYS']
             atoms = ['HG']
             refatoms = ['SG', 'CB']
 
         elif name == 'HIS':
-            reference = refmap['HIS']
+            _ = refmap['HIS']
             atoms = ['HD1', 'HE2']
             for atom in atoms:
                 refatoms = ['ND1', 'CG', 'CE1']
 
         elif name == 'LYS':
-            reference = self.routines.protein.referencemap[name]
+            _ = self.routines.protein.referencemap[name]
             patchmap = self.routines.protein.patchmap['LYN']
             atoms = patchmap.remove
             refatoms = ['HZ1', 'HZ2', 'NZ']
 
         elif name == 'TYR':
-            reference = self.routines.protein.referencemap[name]
+            _ = self.routines.protein.referencemap[name]
             patchmap = self.routines.protein.patchmap['TYM']
             atoms = patchmap.remove
             refatoms = ['OH', 'CZ', 'CE2']
 
         elif name == 'WAT':
-            reference = self.routines.protein.referencemap[name]
+            _ = self.routines.protein.referencemap[name]
             patchmap = self.routines.protein.patchmap['HOH']
             atoms = ['H1', 'H2']
             refatoms = None
@@ -2388,7 +2385,7 @@ class HydrogenRoutines(object):
             refatoms = ['O', 'C', 'OXT']
 
         elif name in ['SER', 'GLN', 'THR', 'ARG', 'ASN']:
-            reference = refmap[name]
+            _ = refmap[name]
             if name == 'SER':
                 atoms = ['HG']
                 refatoms = ['OG', 'CB']
@@ -2410,7 +2407,7 @@ class HydrogenRoutines(object):
             hmap = {}    # map for h atoms
             nonhmap = {}    # map for refatoms
             conformernames = []
-            reference = refmap['ASP']
+            _ = refmap['ASP']
             for tautomer in titrationstatemap["ASH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     for conformeradds in conformermap[conformer.name].conformerAdds:
@@ -2424,7 +2421,7 @@ class HydrogenRoutines(object):
             hmap = {} # map for h atoms
             nonhmap = {} # map for refatoms
             conformernames = []
-            reference = refmap['GLU']
+            _ = refmap['GLU']
             for tautomer in titrationstatemap["GLH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     for conformeradds in conformermap[conformer.name].conformerAdds:
@@ -2452,19 +2449,18 @@ class HydrogenRoutines(object):
                 myconf.add_atom(atom)
 
                 # TODO - lots of arbitrary undefined numbers in this section
-                for atom in refatoms:
-                    if atom == 'N':
-                        natom = DefinitionAtom(atom, 1.201, 0.847, 0.0)
+                for atom_ in refatoms:
+                    if atom_ == 'N':
+                        natom = DefinitionAtom(atom_, 1.201, 0.847, 0.0)
                         myconf.add_atom(natom)
-                    elif atom == 'CA':
-                        caatom = DefinitionAtom(atom, 0.0, 0.0, 0.0)
+                    elif atom_ == 'CA':
+                        caatom = DefinitionAtom(atom_, 0.0, 0.0, 0.0)
                         myconf.add_atom(caatom)
-                    elif atom == 'H':
-                        caatom = DefinitionAtom(atom, 1.201, 1.847, 0.000)
+                    elif atom_ == 'H':
+                        caatom = DefinitionAtom(atom_, 1.201, 1.847, 0.000)
                         myconf.add_atom(caatom)
                     else: pass
-                mydef.addConf(myconf)
-            conf = []
+                mydef.add_conf(myconf)
 
         elif name in ['CTR']:
             for conformer in conformernames:
@@ -2479,19 +2475,19 @@ class HydrogenRoutines(object):
                     atom = DefinitionAtom(hname, x, y, z)
                     myconf.add_atom(atom)
 
-                    for atom in refatoms:
-                        if atom == 'C':
-                            catom = DefinitionAtom(atom, -1.250, 0.881, 0.000)
+                    # TODO - the following code is almost nonsensical
+                    for atom_ in refatoms:
+                        if atom_ == 'C':
+                            catom = DefinitionAtom(atom_, -1.250, 0.881, 0.000)
                             myconf.add_atom(catom)
                         else:
-                            atomname = atom
-                            x = nonhmap[atom].x
-                            y = nonhmap[atom].y
-                            z = nonhmap[atom].z
-                            atom = DefinitionAtom(atomname, x, y, z)
-                            myconf.add_atom(atom)
-                    mydef.addConf(myconf)
-            conf = []
+                            atomname = atom_
+                            x = nonhmap[atom_].x
+                            y = nonhmap[atom_].y
+                            z = nonhmap[atom_].z
+                            atom2 = DefinitionAtom(atomname, x, y, z)
+                            myconf.add_atom(atom2)
+                    mydef.add_conf(myconf)
 
         elif name in ['ASH', 'GLH']:
             for conformer in conformernames:
@@ -2507,19 +2503,18 @@ class HydrogenRoutines(object):
                         atom = DefinitionAtom(hname, x, y, z)
                         myconf.add_atom(atom)
 
-                        for atom in refatoms:
-                            atomname = atom
+                        for atom_ in refatoms:
+                            atomname = atom_
                             if name == 'ASH':
                                 refresname = 'ASP'
                             elif name == 'GLH':
                                 refresname = 'GLU'
-                            x = atommap[refresname, atom].x
-                            y = atommap[refresname, atom].y
-                            z = atommap[refresname, atom].z
-                            atom = DefinitionAtom(atomname, x, y, z)
-                            myconf.add_atom(atom)
-                        mydef.addConf(myconf)
-            conf = []
+                            x = atommap[refresname, atom_].x
+                            y = atommap[refresname, atom_].y
+                            z = atommap[refresname, atom_].z
+                            atom2 = DefinitionAtom(atomname, x, y, z)
+                            myconf.add_atom(atom2)
+                        mydef.add_conf(myconf)
 
         elif name in ['WAT']:
             pass
@@ -2548,20 +2543,19 @@ class HydrogenRoutines(object):
                         z = atommap[name, atomname].z
                         atom = DefinitionAtom(atomname, x, y, z)
                         myconf.add_atom(atom)
-                    mydef.addConf(myconf)
-            conf = []
+                    mydef.add_conf(myconf)
         return mydef
 
-    def readHydrogenDefinition(self):
+    def read_hydrogen_def(self):
         """Read the Hydrogen Definition file
 
         Returns
             hydrodef:  The hydrogen definition ()
         """
         self.hydrodefs = []
-        for m in self.map:
-            res = m
-            mydef = self.parseHydrogen(res)
+        for mapping in self.map:
+            res = mapping
+            mydef = self.parse_hydrogen(res)
             self.hydrodefs.append(mydef)
             res = ''
 
@@ -2586,7 +2580,7 @@ class OptimizationHolder(object):
         return text
 
 
-class HydrogenDefinition:
+class HydrogenDefinition(object):
     """HydrogenDefinition class
 
     The HydrogenDefinition class provides information on possible
@@ -2622,7 +2616,7 @@ class HydrogenDefinition:
         output += "*****************************************\n"
         return output
 
-    def addConf(self, conf):
+    def add_conf(self, conf):
         """Add a HydrogenConformation to the list of conformations
 
         Args:
@@ -2631,7 +2625,7 @@ class HydrogenDefinition:
         self.conformations.append(conf)
 
 
-class HydrogenConformation:
+class HydrogenConformation(object):
     """HydrogenConformation class
 
     The HydrogenConformation class contains data about possible

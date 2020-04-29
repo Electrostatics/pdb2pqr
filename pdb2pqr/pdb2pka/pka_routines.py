@@ -1205,11 +1205,11 @@ class pKaRoutines:
         myRoutines.debumpProtein()
 
         # Initialize H-bond optimization
-        self.HydrogenRoutines.setOptimizeableHydrogens()
-        self.HydrogenRoutines.initializeFullOptimization()
+        self.HydrogenRoutines.set_optimizeable_hydrogens()
+        self.HydrogenRoutines.initialize_full_optimization()
 
         # Full optimization
-        self.HydrogenRoutines.optimizeHydrogens()
+        self.HydrogenRoutines.optimize_hydrogens()
 
         # Clean up, debump
         self.HydrogenRoutines.cleanup()
@@ -2265,7 +2265,7 @@ class pKaRoutines:
         """Find the hydrogen ambiguity that controls the protonation state for the
         titratable group within the given residue"""
         amb = None
-        self.HydrogenRoutines.readHydrogenDefinition()
+        self.HydrogenRoutines.read_hydrogen_def()
         for hydrodef in self.HydrogenRoutines.hydrodefs:
             hydname = hydrodef.name
             if hydname == group: # or group in residue.patches: (for ASP/ASH, GLU/GLH)

@@ -419,9 +419,9 @@ def pre_init(pdbfilename=None,
     #
     # Here we should inject the info!!
     #
-    myhydRoutines.setOptimizeableHydrogens()
-    myhydRoutines.initializeFullOptimization()
-    myhydRoutines.optimizeHydrogens()
+    myhydRoutines.set_optimizeable_hydrogens()
+    myhydRoutines.initialize_full_optimization()
+    myhydRoutines.optimize_hydrogens()
     myhydRoutines.cleanup()
     myRoutines.set_states()
 

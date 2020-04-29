@@ -270,12 +270,12 @@ def process_residue_set(residueSet, routines, output, clean = False,
             routines.debumpProtein()  
 
         if opt:
-            hydRoutines.setOptimizeableHydrogens()
-            hydRoutines.initializeFullOptimization()
-            hydRoutines.optimizeHydrogens()
+            hydRoutines.set_optimizeable_hydrogens()
+            hydRoutines.initialize_full_optimization()
+            hydRoutines.optimize_hydrogens()
         else:
-            hydRoutines.initializeWaterOptimization()
-            hydRoutines.optimizeHydrogens()
+            hydRoutines.initialize_wat_optimization()
+            hydRoutines.optimize_hydrogens()
 
         # Special for GLH/ASH, since both conformations were added
         hydRoutines.cleanup()

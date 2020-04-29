@@ -1,177 +1,136 @@
+"""Utility to translate a DX file to CUBE format"""
+
 import argparse
 
-parser = argparse.ArgumentParser(description='Translate a dx file to cube format')
-parser.add_argument('dx_input',
-                   help='Name of the dx_input file (required arguement)')
-parser.add_argument('pqr_input',
-                   help='Name of the pqr_input file (required arguement)')
-parser.add_argument('output',
-                   help='Name of the output file (required arguement)')
+PARSER = argparse.ArgumentParser(description='Translate a dx file to cube format')
+PARSER.add_argument('dx_input',
+                    help='Name of the dx_input file (required arguement)')
+PARSER.add_argument('pqr_input',
+                    help='Name of the pqr_input file (required arguement)')
+PARSER.add_argument('output',
+                    help='Name of the output file (required arguement)')
 
-args = parser.parse_args()  
-counter = 0                 
+ARGS = PARSER.parse_args()
 
 #DX STUFF
-if args.dx_input.endswith('.dx'):
-    print "Success"
+if ARGS.dx_input.endswith('.dx'):
+    print("Success")
 else:
-    print "Error converting file"
+    print("Error converting file")
 
 try:
-    with open(args.dx_input, 'r') as in_f, open(args.output, 'w') as out_f, open(args.pqr_input, 'r') as in_pqr:
+    with open(ARGS.dx_input, 'r') as in_f,\
+         open(ARGS.output, 'w') as out_f,\
+         open(ARGS.pqr_input, 'r') as in_pqr:
         out_f.write("CPMD CUBE FILE.\n"
                     "OUTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z\n")
-        
-        #Discard comments at top of file.
-        line = in_f.readline()
-        newline = in_pqr.readline()
-        while line.startswith('#'):
-            line = in_f.readline()
-        while newline.startswith('REMARK'):
-            newline = in_pqr.readline()
-        
-        split_line = line.split()        
-        grid_sizes = [int(x)*-1 for x in split_line[-3:]]
-                    
-        split_line = in_f.readline().split()
-        
-        origin = [float(x) for x in split_line[-3:]]
-        
-        parameter_fmt = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f}\n"
-        try:    
-            while newline.startswith('ATOM'):
-                pqr_line =  in_pqr.readline()
-                new_split_line = pqr_line.split()
-                atom_num = new_split_line[1]
+
+        # Discard comments at top of file.
+        LINE = in_f.readline()
+        NEWLINE = in_pqr.readline()
+        while LINE.startswith('#'):
+            LINE = in_f.readline()
+        while NEWLINE.startswith('REMARK'):
+            NEWLINE = in_pqr.readline()
+
+        SPLIT_LINE = LINE.split()
+        GRID_SIZES = [int(x)*-1 for x in SPLIT_LINE[-3:]]
+
+        SPLIT_LINE = in_f.readline().split()
+
+        ORIGIN = [float(x) for x in SPLIT_LINE[-3:]]
+
+        PARAMETER_FMT = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f}\n"
+        try:
+            while NEWLINE.startswith('ATOM'):
+                PQR_LINE = in_pqr.readline()
+                NEW_SPLIT_LINE = PQR_LINE.split()
+                ATOM_NUM = NEW_SPLIT_LINE[1]
         except IndexError:
             pass
         in_pqr.seek(0)
-        newline = in_pqr.readline()
-        while newline.startswith('REMARK'):
-            newline = in_pqr.readline()
-        
-        origin_line = parameter_fmt.format(atom_num, *origin)
-        out_f.write(origin_line)
-        
-        
-        for x in xrange(3):
-            split_line = in_f.readline().split()
-            grid_dims = [float(item) for item in split_line[-3:]]
-            
-            dim_lin = parameter_fmt.format(grid_sizes[x], *grid_dims)
+        NEWLINE = in_pqr.readline()
+        while NEWLINE.startswith('REMARK'):
+            NEWLINE = in_pqr.readline()
+
+        ORIGIN_LINE = PARAMETER_FMT.format(ATOM_NUM, *ORIGIN)
+        out_f.write(ORIGIN_LINE)
+
+
+        for x in range(3):
+            SPLIT_LINE = in_f.readline().split()
+            grid_dims = [float(item) for item in SPLIT_LINE[-3:]]
+
+            dim_lin = PARAMETER_FMT.format(GRID_SIZES[x], *grid_dims)
             out_f.write(dim_lin)
-            
-        atoms_parameter_fmt = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f} {:>11.6f}\n"
-        a = True
-        xreal_center = []
-        yreal_center = []
-        zreal_center = []
+
+        ATOMS_PARAMETER_FMT = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f} {:>11.6f}\n"
+        A = True
+        XREAL_CENTER = []
+        YREAL_CENTER = []
+        ZREAL_CENTER = []
         try:
-            while a == True:
-                if not newline.startswith('TER'):
-                    new_split_line = newline.split()
-                    radius = new_split_line[-1]
-                    xyz = new_split_line[-5:-2]
-                    line_atom_num = new_split_line[1]
-                    atom_radius = new_split_line[-1]
-                    pqr_lin = atoms_parameter_fmt.format(int(line_atom_num), float(new_split_line[-2]), float(xyz[0]), float(xyz[1]), float(xyz[2]))
-                    out_f.write(pqr_lin)
-                    newline = in_pqr.readline()
-                    xreal_center.append(float(xyz[0]))
-                    yreal_center.append(float(xyz[1]))
-                    zreal_center.append(float(xyz[2]))                    
+            while A is True:
+                if not NEWLINE.startswith('TER'):
+                    NEW_SPLIT_LINE = NEWLINE.split()
+                    RADIUS = NEW_SPLIT_LINE[-1]
+                    XYZ = NEW_SPLIT_LINE[-5:-2]
+                    LINE_ATOM_NUM = NEW_SPLIT_LINE[1]
+                    ATOM_RADIUS = NEW_SPLIT_LINE[-1]
+                    PQR_LIN = ATOMS_PARAMETER_FMT.format(
+                        int(LINE_ATOM_NUM),
+                        float(NEW_SPLIT_LINE[-2]),
+                        float(XYZ[0]), float(XYZ[1]),
+                        float(XYZ[2]))
+                    out_f.write(PQR_LIN)
+                    NEWLINE = in_pqr.readline()
+                    XREAL_CENTER.append(float(XYZ[0]))
+                    YREAL_CENTER.append(float(XYZ[1]))
+                    ZREAL_CENTER.append(float(XYZ[2]))
                 else:
-                    a = False
+                    A = False
         except IndexError:
             pass
-            
-        x_avg = sum(xreal_center)/float(atom_num)
-        y_avg = sum(yreal_center)/float(atom_num)
-        z_avg = sum(zreal_center)/float(atom_num)       
-        print x_avg, y_avg, z_avg
-            
-        #print origin
-        #new_origin = []
-        #for item in origin:
+
+        X_AVG = sum(XREAL_CENTER)/float(ATOM_NUM)
+        Y_AVG = sum(YREAL_CENTER)/float(ATOM_NUM)
+        Z_AVG = sum(ZREAL_CENTER)/float(ATOM_NUM)
+        print(X_AVG, Y_AVG, Z_AVG)
+
+        # print origin
+        # new_origin = []
+        # for item in origin:
         #    newitem = item/0.529177
-            #new_new = item/2 + newitem/2
+        #    new_new = item/2 + newitem/2
         #    new_origin.append(newitem)
-        #print new_origin
+        # print new_origin
 
-        #Consume unneeded object lines.
+        # Consume unneeded object lines.
         in_f.readline()
         in_f.readline()
-        
-        ##TODO: put atoms here
-        
-        value_format = ["{:< 13.5E}"]
-        value_format = ' '.join(value_format * 6) + '\n'
-        print value_format 
-        group = []
-        line = in_f.readline()
-        while not line.startswith('attribute'):
-            values = [float(item) for item in line.split()]
-            group.extend(values)
-            
-            if len(group) >= 6:
-                out_f.write(value_format.format(*group))
-                group = []
-                
-            line = in_f.readline()
-            
-        if group:
-            group_strs = ["{:< 13.5E}".format(item) for item in group]
-            out_f.write(' '.join(group_strs))
-        
-            
+
+        ## TODO_OLD: put atoms here - This NOTE is over 5 years old
+
+        VALUE_FORMAT = ["{:< 13.5E}"]
+        VALUE_FORMAT = ' '.join(VALUE_FORMAT * 6) + '\n'
+        print(VALUE_FORMAT)
+        GROUP = []
+        LINE = in_f.readline()
+        while not LINE.startswith('attribute'):
+            VALUES = [float(ITEM) for ITEM in LINE.split()]
+            GROUP.extend(VALUES)
+
+            if len(GROUP) >= 6:
+                out_f.write(VALUE_FORMAT.format(*GROUP))
+                GROUP = []
+
+            LINE = in_f.readline()
+
+        if GROUP:
+            GROUP_STRS = ["{:< 13.5E}".format(ITEM) for ITEM in GROUP]
+            out_f.write(' '.join(GROUP_STRS))
+
+
 
 except IOError:
-    print "file doesn't exist"
-'''
-for line in dx_data:
-    dx_data_2 = dx_data
-    data_point = line.strip("\n")
-    dx_data_2.pop(0)
-    dx_data._2append(data_point)
-    
-
-for line in dx_data_2:
-    if line.startswith('#'):
-        dx_data_2.remove(line)
-        continue
-    elif "gridpositions" in line:
-        new_line = line.split()
-        grid_values = new_line[-3:]
-        #grid values for cube file, will need grid_valies[0]
-        break
-    elif line.startswith('delta'):
-        line.insert('0')
-        line.remove(delta)
-
-
-
-#PQR STUFF
-if args.pqr_input.endswith('.pqr'):
-    print "yay"
-else:
-    print "nay"
-
-try:
-    with open(args.pqr_input, 'r') as f:
-        pqr_data = f.readlines()
-        
-except IOError:
-    print "file doesn't exist"
-    
-for line in pqr_data:
-    data_point = line.strip("\n")
-    pqr_data.pop(0)
-    pqr_data.append(data_point)
-
-for line in pqr_data:
-    if line.startswith('REMARK'):
-        pqr_data.remove(line)
-        continue
-    counter +=1
-    #the number next to the origin in cube format
-'''
+    print("file doesn't exist")

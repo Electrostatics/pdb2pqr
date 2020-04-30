@@ -7,10 +7,9 @@ the classes is taken directly from the above PDB Format Description.
 
 Authors:  Todd Dolinsky, Yong Huang
 """
-import string
-import copy  ### PC
-from .errors import PDBInputError, PDBInternalError
+import copy
 import logging
+from .errors import PDBInputError
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -581,6 +580,7 @@ class Mol2Molecule(object):
             self.l_atoms[bond.bond_to_self-1].l_bonds.append(atbond)
 
     def create_pdb_line_from_mol2(self):
+        """Generate PDB line from MOL2."""
         fake_type = "HETATM"
         return ('%s%5i%5s%4s%2s%5s   %8.3f%8.3f%8.3f\n' %
                 (fake_type, self.serial, self.name, self.res_name, ' L',
@@ -1198,71 +1198,71 @@ class SHEET(BaseRecord):
         -------------------------------------------------
         8 - 10  int     strand      Strand number which starts at 1 for each
                                     strand within a sheet and increases by one.
-        12 - 14  string sheetID     Sheet identifier.
+        12 - 14  string sheet_id     Sheet identifier.
         15 - 16  int    num_strands  Number of strands in sheet.
         18 - 20  string init_res_name Residue name of initial residue.
-        22       string initChainID Chain identifier of initial residue in strand.
+        22       string init_chain_id Chain identifier of initial residue in strand.
         23 - 26  int    init_seq_num  Sequence number of initial residue in strand.
         27       string init_i_code   Insertion code of initial residue in strand.
         29 - 31  string end_res_name  Residue name of terminal residue.
-        33       string endChainID  Chain identifier of terminal residue.
+        33       string end_chain_id  Chain identifier of terminal residue.
         34 - 37  int    end_seq_num   Sequence number of terminal residue.
         38       string end_i_code    Insertion code of terminal residue.
         39 - 40  int    sense       Sense of strand with respect to previous strand
                                     in the sheet. 0 if first strand, 1 if parallel,
                                     -1 if anti-parallel.
         42 - 45  string cur_atom     Registration. Atom name in current strand.
-        46 - 48  string curResName  Registration. Residue name in current strand.
+        46 - 48  string curr_res_name  Registration. Residue name in current strand.
         50       string curChainId  Registration. Chain identifier in current strand.
-        51 - 54  int    curResSeq   Registration. Residue sequence number in current strand.
-        55       string curICode    Registration. Insertion code in current strand.
+        51 - 54  int    curr_res_seq   Registration. Residue sequence number in current strand.
+        55       string curr_ins_code    Registration. Insertion code in current strand.
         57 - 60  string prev_atom    Registration. Atom name in previous strand.
         61 - 63  string prev_res_name Registration. Residue name in previous strand.
         65       string prevChainId Registration. Chain identifier in previous strand.
-        66 - 69  int    prevResSeq  Registration. Residue sequence number in previous strand.
-        70       string prevICode   Registration. Insertion code in previous strand.
+        66 - 69  int    prev_res_seq  Registration. Residue sequence number in previous strand.
+        70       string prev_ins_code   Registration. Insertion code in previous strand.
         """
         super(SHEET, self).__init__(line)
         self.strand = int(str.strip(line[7:10]))
-        self.sheetID = str.strip(line[11:14])
+        self.sheet_id = str.strip(line[11:14])
         self.num_strands = int(str.strip(line[14:16]))
         self.init_res_name = str.strip(line[17:20])
-        self.initChainID = str.strip(line[21])
+        self.init_chain_id = str.strip(line[21])
         self.init_seq_num = int(str.strip(line[22:26]))
         self.init_i_code = str.strip(line[26])
         self.end_res_name = str.strip(line[28:31])
-        self.endChainID = str.strip(line[32])
+        self.end_chain_id = str.strip(line[32])
         self.end_seq_num = int(str.strip(line[33:37]))
         self.end_i_code = str.strip(line[37])
         self.sense = int(str.strip(line[38:40]))
         try:
             self.cur_atom = str.strip(line[41:45])
-            self.curResName = str.strip(line[45:48])
-            self.curChainID = str.strip(line[49])
+            self.curr_res_name = str.strip(line[45:48])
+            self.curr_chain_id = str.strip(line[49])
             try:
-                self.curResSeq = int(str.strip(line[50:54]))
+                self.curr_res_seq = int(str.strip(line[50:54]))
             except ValueError:
-                self.curResSeq = None
-            self.curICode = str.strip(line[54])
+                self.curr_res_seq = None
+            self.curr_ins_code = str.strip(line[54])
             self.prev_atom = str.strip(line[56:60])
             self.prev_res_name = str.strip(line[60:63])
             self.prev_chain_id = str.strip(line[64])
             try:
-                self.prevResSeq = int(str.strip(line[65:69]))
+                self.prev_res_seq = int(str.strip(line[65:69]))
             except ValueError:
-                self.prevResSeq = None
-            self.prevICode = str.strip(line[69])
+                self.prev_res_seq = None
+            self.prev_ins_code = str.strip(line[69])
         except IndexError:
             self.cur_atom = None
-            self.curResName = None
-            self.curChainID = None
-            self.curResSeq = None
-            self.curICode = None
+            self.curr_res_name = None
+            self.curr_chain_id = None
+            self.curr_res_seq = None
+            self.curr_ins_code = None
             self.prev_atom = None
             self.prev_res_name = None
             self.prev_chain_id = None
-            self.prevResSeq = None
-            self.prevICode = None
+            self.prev_res_seq = None
+            self.prev_ins_code = None
 
 
 @register_line_parser
@@ -1281,36 +1281,36 @@ class HELIX(BaseRecord):
         ------------------------------------------------------
         8-10     int    ser_num      Serial number of the helix.  This starts at
                                     1 and increases incrementally.
-        12-14    string helixID     Helix identifier.  In addition to a serial
+        12-14    string helix_id     Helix identifier.  In addition to a serial
                                     number, each helix is given an alphanumeric
                                     character helix identifier.
         16-18    string init_res_name Name of the initial residue.
-        20       string initChainID Chain identifier for the chain containing this helix.
+        20       string init_chain_id Chain identifier for the chain containing this helix.
         22-25    int    init_seq_num  Sequence number of the initial residue.
         26       string init_i_code   Insertion code of the initial residue.
         28-30    string end_res_name  Name of the terminal residue of the helix.
-        32       string endChainID  Chain identifier for the chain containing this helix.
+        32       string end_chain_id  Chain identifier for the chain containing this helix.
         34-37    int    end_seq_num   Sequence number of the terminal residue.
         38       string end_i_code    Insertion code of the terminal residue.
-        39-40    int    helixClass  Helix class (see below).
+        39-40    int    helix_class  Helix class (see below).
         41-70    string comment     Comment about this helix.
         72-76    int    length      Length of this helix.
         """
         super(HELIX, self).__init__(line)
         self.ser_num = int(str.strip(line[7:10]))
-        self.helixID = str.strip(line[11:14])
+        self.helix_id = str.strip(line[11:14])
         self.init_res_name = str.strip(line[15:18])
-        self.initChainID = str.strip(line[19])
+        self.init_chain_id = str.strip(line[19])
         self.init_seq_num = int(str.strip(line[21:25]))
         self.init_i_code = str.strip(line[25])
         self.end_res_name = str.strip(line[27:30])
-        self.endChainID = str.strip(line[31])
+        self.end_chain_id = str.strip(line[31])
         self.end_seq_num = int(str.strip(line[33:37]))
         self.end_i_code = str.strip(line[37])
         try:
-            self.helixClass = int(str.strip(line[38:40]))
+            self.helix_class = int(str.strip(line[38:40]))
         except ValueError:
-            self.helixClass = None
+            self.helix_class = None
         self.comment = str.strip(line[40:70])
         try:
             self.length = int(str.strip(line[71:76]))
@@ -1330,14 +1330,14 @@ class FORMUL(BaseRecord):
 
         COLUMNS  TYPE   FIELD    DEFINITION
         -----------------------------------------------------
-        9-10     int    compNum  Component number
-        13-15    string hetID    Het identifier
+        9-10     int    comp_num  Component number
+        13-15    string hetatm_id    Het identifier
         19       string asterisk * for water
         20-70    string text     Chemical formula
         """
         super(FORMUL, self).__init__(line)
-        self.compNum = int(str.strip(line[8:10]))
-        self.hetID = str.strip(line[12:15])
+        self.comp_num = int(str.strip(line[8:10]))
+        self.hetatm_id = str.strip(line[12:15])
         self.asterisk = str.strip(line[19])
         self.text = str.strip(line[19:70])
 
@@ -1347,7 +1347,7 @@ class HETSYN(BaseRecord):
     """HETSYN field
 
     This record provides synonyms, if any, for the compound in the
-    corresponding (i.e., same hetID) HETNAM record. This is to allow
+    corresponding (i.e., same hetatm_id) HETNAM record. This is to allow
     greater flexibility in searching for HET groups.
     """
 
@@ -1356,30 +1356,30 @@ class HETSYN(BaseRecord):
 
         COLUMNS  TYPE   FIELD         DEFINITION
         -----------------------------------------------------
-        12-14    string hetID         Het identifier, right-justified.
-        16-70    string hetSynonyms   List of synonyms
+        12-14    string hetatm_id         Het identifier, right-justified.
+        16-70    string hetatm_synonyms   List of synonyms
         """
         super(HETSYN, self).__init__(line)
-        self.hetID = str.strip(line[11:14])
-        self.hetSynonyms = str.strip(line[15:70])
+        self.hetatm_id = str.strip(line[11:14])
+        self.hetatm_synonyms = str.strip(line[15:70])
 
 
 @register_line_parser
 class HETNAM(BaseRecord):
     """HETNAM field
 
-    This record gives the chemical name of the compound with the given hetID. """
+    This record gives the chemical name of the compound with the given hetatm_id. """
 
     def __init__(self, line):
         """Initialize by parsing line
 
         COLUMNS  TYPE   FIELD  DEFINITION
         -----------------------------------------------------
-        12-14    string hetID  Het identifier, right-justified.
+        12-14    string hetatm_id  Het identifier, right-justified.
         16-70    string text   Chemical name.
         """
         super(HETNAM, self).__init__(line)
-        self.hetID = str.strip(line[11:14])
+        self.hetatm_id = str.strip(line[11:14])
         self.text = str.strip(line[15:70])
 
 
@@ -1397,7 +1397,7 @@ class HET(BaseRecord):
         - not an unknown amino acid or nucleic acid where UNK is used to
         indicate the unknown residue name.
     Het records also describe heterogens for which the chemical identity is
-    unknown, in which case the group is assigned the hetID UNK.
+    unknown, in which case the group is assigned the hetatm_id UNK.
     """
 
     def __init__(self, line):
@@ -1405,7 +1405,7 @@ class HET(BaseRecord):
 
         COLUMNS  TYPE   FIELD       DEFINITION
         --------------------------------------------------------
-        8-10     string hetID       Het identifier, right-justified.
+        8-10     string hetatm_id       Het identifier, right-justified.
         13       string ChainID     Chain identifier.
         14-17    int    seq_num      Sequence number.
         18       string ins_code       Insertion code.
@@ -1413,7 +1413,7 @@ class HET(BaseRecord):
         31-70    string text        Text describing Het group.
         """
         super(HET, self).__init__(line)
-        self.hetID = str.strip(line[7:10])
+        self.hetatm_id = str.strip(line[7:10])
         self.chain_id = str.strip(line[12])
         try:
             self.seq_num = int(str.strip(line[13]))
@@ -1536,9 +1536,9 @@ class SEQADV(BaseRecord):
         19-22    int    seq_num   PDB sequence number.
         23       string ins_code    PDB insertion code.
         25-28    string database Sequence database name.
-        30-38    string dbIdCode Sequence database accession number.
-        40-42    string dbRes    Sequence database residue name.
-        44-48    int    dbSeq    Sequence database sequence number.
+        30-38    string db_id_code Sequence database accession number.
+        40-42    string db_res    Sequence database residue name.
+        44-48    int    db_seq    Sequence database sequence number.
         50-70    string conflict Conflict comment.
         """
         super(SEQADV, self).__init__(line)
@@ -1551,9 +1551,9 @@ class SEQADV(BaseRecord):
             self.seq_num = None
         self.ins_code = str.strip(line[22])
         self.database = str.strip(line[24:28])
-        self.dbIdCode = str.strip(line[29:38])
-        self.dbRes = str.strip(line[39:42])
-        self.dbSeq = int(str.strip(line[43:48]))
+        self.db_id_code = str.strip(line[29:38])
+        self.db_res = str.strip(line[39:42])
+        self.db_seq = int(str.strip(line[43:48]))
         self.conflict = str.strip(line[49:70])
 
 
@@ -1576,40 +1576,40 @@ class DBREF(BaseRecord):
         ------------------------------------------------------
         8-11     string id_code      ID code of this entry.
         13       string chain_id     Chain identifier.
-        15-18    int    seqBegin    Initial sequence number of the PDB sequence segment.
-        19       string insertBegin Initial insertion code of the PDB sequence segment.
-        21-24    int    seqEnd      Ending sequence number of the PDB sequence segment.
-        25       string insertEnd   Ending insertion code of the PDB sequence segment.
+        15-18    int    seq_begin    Initial sequence number of the PDB sequence segment.
+        19       string insert_begin Initial insertion code of the PDB sequence segment.
+        21-24    int    seq_end      Ending sequence number of the PDB sequence segment.
+        25       string insert_end   Ending insertion code of the PDB sequence segment.
         27-32    string database    Sequence database name.  "PDB" when a corresponding
                                     sequence database entry has not been identified.
-        34-41    string dbAccession Sequence database accession code. For GenBank
+        34-41    string db_accession Sequence database accession code. For GenBank
                                     entries, this is the NCBI gi number.
-        43-54    string dbIdCode    Sequence database identification code.
+        43-54    string db_id_code    Sequence database identification code.
                                     For GenBank entries, this is the accession code.
-        56-60    int    dbseqBegin  Initial sequence number of the database seqment.
-        61       string dbinsBeg    Insertion code of initial residue of the segment,
+        56-60    int    db_seq_begin  Initial sequence number of the database seqment.
+        61       string db_ins_begin    Insertion code of initial residue of the segment,
                                     if PDB is the reference.
-        63-67    int    dbseqEnd    Ending sequence number of the database segment.
-        68       string dbinsEnd    Insertion code of the ending residue of the
+        63-67    int    dbseq_end    Ending sequence number of the database segment.
+        68       string db_ins_end    Insertion code of the ending residue of the
                                     segment, if PDB is the reference.
         """
         super(DBREF, self).__init__(line)
         self.id_code = str.strip(line[7:11])
         self.chain_id = str.strip(line[12])
-        self.seqBegin = int(str.strip(line[14:18]))
-        self.insertBegin = str.strip(line[18])
-        self.seqEnd = int(str.strip(line[20:24]))
-        self.insertEnd = str.strip(line[24])
+        self.seq_begin = int(str.strip(line[14:18]))
+        self.insert_begin = str.strip(line[18])
+        self.seq_end = int(str.strip(line[20:24]))
+        self.insert_end = str.strip(line[24])
         self.database = str.strip(line[26:32])
-        self.dbAccession = str.strip(line[33:41])
-        self.dbIdCode = str.strip(line[42:54])
-        self.dbseqBegin = int(str.strip(line[55:60]))
-        self.dbinsBeg = str.strip(line[60])
-        self.dbseqEnd = int(str.strip(line[62:67]))
+        self.db_accession = str.strip(line[33:41])
+        self.db_id_code = str.strip(line[42:54])
+        self.db_seq_begin = int(str.strip(line[55:60]))
+        self.db_ins_begin = str.strip(line[60])
+        self.dbseq_end = int(str.strip(line[62:67]))
         try:
-            self.dbinsEnd = str.strip(line[67])
+            self.db_ins_end = str.strip(line[67])
         except IndexError:
-            self.dbinsEnd = None
+            self.db_ins_end = None
 
 
 @register_line_parser
@@ -1627,33 +1627,33 @@ class REMARK(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line"""
         super(REMARK, self).__init__(line)
-        self.remarkNum = int(str.strip(line[7:10]))
-        self.remarkDict = {}
+        self.remark_num = int(str.strip(line[7:10]))
+        self.remark_dict = {}
 
-        if self.remarkNum == 1:
+        if self.remark_num == 1:
             subfield = str.strip(line[11:20])
             if subfield == "REFERENCE":
-                self.remarkDict["refNum"] = int(str.strip(line[21:70]))
+                self.remark_dict["refNum"] = int(str.strip(line[21:70]))
             elif subfield == "AUTH":
-                self.remarkDict["authorList"] = str.strip(line[19:70])
+                self.remark_dict["author_list"] = str.strip(line[19:70])
             elif subfield == "TITL":
-                self.remarkDict["title"] = str.strip(line[19:70])
+                self.remark_dict["title"] = str.strip(line[19:70])
             elif subfield == "EDIT":
-                self.remarkDict["editorList"] = str.strip(line[19:70])
+                self.remark_dict["editorList"] = str.strip(line[19:70])
             elif subfield == "REF":
-                self.remarkDict["ref"] = str.strip(line[19:66])
+                self.remark_dict["ref"] = str.strip(line[19:66])
             elif subfield == "PUBL":
-                self.remarkDict["pub"] = str.strip(line[19:70])
+                self.remark_dict["pub"] = str.strip(line[19:70])
             elif subfield == "REFN":
-                self.remarkDict["refn"] = str.strip(line[19:70])
-        elif self.remarkNum == 2:
+                self.remark_dict["refn"] = str.strip(line[19:70])
+        elif self.remark_num == 2:
             restr = str.strip(line[22:27])
             try:
-                self.remarkDict["resolution"] = float(restr)
+                self.remark_dict["resolution"] = float(restr)
             except ValueError:
-                self.remarkDict["comment"] = str.strip(line[11:70])
+                self.remark_dict["comment"] = str.strip(line[11:70])
         else:
-            self.remarkDict["text"] = str.strip(line[11:70])
+            self.remark_dict["text"] = str.strip(line[11:70])
 
 
 @register_line_parser
@@ -1693,29 +1693,29 @@ class SPRSDE(BaseRecord):
 
         COLUMNS  TYPE   FIELD      DEFINITION
         -----------------------------------------------
-        12-20    string sprsdeDate Date this entry superseded the listed entries.
+        12-20    string super_date Date this entry superseded the listed entries.
         22-25    string id_code     ID code of this entry.
-        32-35    string sIdCode    ID code of a superseded entry.
-        37-40    string sIdCode    ID code of a superseded entry.
-        42-45    string sIdCode    ID code of a superseded entry.
-        47-50    string sIdCode    ID code of a superseded entry.
-        52-55    string sIdCode    ID code of a superseded entry.
-        57-60    string sIdCode    ID code of a superseded entry.
-        62-65    string sIdCode    ID code of a superseded entry.
-        67-70    string sIdCode    ID code of a superseded entry.
+        32-35    string sid_code    ID code of a superseded entry.
+        37-40    string sid_code    ID code of a superseded entry.
+        42-45    string sid_code    ID code of a superseded entry.
+        47-50    string sid_code    ID code of a superseded entry.
+        52-55    string sid_code    ID code of a superseded entry.
+        57-60    string sid_code    ID code of a superseded entry.
+        62-65    string sid_code    ID code of a superseded entry.
+        67-70    string sid_code    ID code of a superseded entry.
         """
         super(SPRSDE, self).__init__(line)
-        self.sprsdeDate = str.strip(line[11:20])
+        self.super_date = str.strip(line[11:20])
         self.id_code = str.strip(line[21:25])
-        self.sIdCodes = []
-        self.sIdCodes.append(str.strip(line[31:35]))
-        self.sIdCodes.append(str.strip(line[36:40]))
-        self.sIdCodes.append(str.strip(line[41:45]))
-        self.sIdCodes.append(str.strip(line[46:50]))
-        self.sIdCodes.append(str.strip(line[51:55]))
-        self.sIdCodes.append(str.strip(line[56:60]))
-        self.sIdCodes.append(str.strip(line[61:65]))
-        self.sIdCodes.append(str.strip(line[66:70]))
+        self.super_id_codes = []
+        self.super_id_codes.append(str.strip(line[31:35]))
+        self.super_id_codes.append(str.strip(line[36:40]))
+        self.super_id_codes.append(str.strip(line[41:45]))
+        self.super_id_codes.append(str.strip(line[46:50]))
+        self.super_id_codes.append(str.strip(line[51:55]))
+        self.super_id_codes.append(str.strip(line[56:60]))
+        self.super_id_codes.append(str.strip(line[61:65]))
+        self.super_id_codes.append(str.strip(line[66:70]))
 
 
 @register_line_parser
@@ -1731,12 +1731,12 @@ class REVDAT(BaseRecord):
         COLUMNS  TYPE   FIELD  DEFINITION
         -------------------------------------------------------
         8-10     int    mod_num  Modification number.
-        14-22    string modDate Date of modification (or release for new entries).
-        24-28    string modId   Identifies this particular modification. It links
+        14-22    string mod_date Date of modification (or release for new entries).
+        24-28    string mod_id   Identifies this particular modification. It links
                                 to the archive used internally by PDB.
-        32       int    modType An integer identifying the type of modification.
+        32       int    mod_type An integer identifying the type of modification.
                                 In case of revisions with more than one possible
-                                modType, the highest value applicable will be assigned.
+                                mod_type, the highest value applicable will be assigned.
         40-45    string record  Name of the modified record.
         47-52    string record  Name of the modified record.
         54-59    string record  Name of the modified record.
@@ -1744,9 +1744,9 @@ class REVDAT(BaseRecord):
         """
         super(REVDAT, self).__init__(line)
         self.mod_num = int(str.strip(line[7:10]))
-        self.modDate = str.strip(line[13:22])
-        self.modId = str.strip(line[23:28])
-        self.modType = int(str.strip(line[31]))
+        self.mod_date = str.strip(line[13:22])
+        self.mod_id = str.strip(line[23:28])
+        self.mod_type = int(str.strip(line[31]))
         self.records = []
         self.records.append(str.strip(line[39:45]))
         self.records.append(str.strip(line[46:52]))
@@ -1766,10 +1766,10 @@ class AUTHOR(BaseRecord):
 
         COLUMNS  TYPE   FIELD      DEFINITION
         --------------------------------------------------
-        11-70    string authorList List of the author names, separated by commas
+        11-70    string author_list List of the author names, separated by commas
         """
         super(AUTHOR, self).__init__(line)
-        self.authorList = str.strip(line[10:70])
+        self.author_list = str.strip(line[10:70])
 
 
 @register_line_parser
@@ -1930,29 +1930,29 @@ class OBSLTE(BaseRecord):
 
         COLUMNS  TYPE   FIELD    DEFINITION
         -----------------------------------------------
-        12-20    string repDate  Date that this entry was replaced.
+        12-20    string replace_date  Date that this entry was replaced.
         22-25    string id_code   ID code of this entry.
-        32-35    string rIdCode  ID code of entry that replaced this one.
-        37-40    string rIdCode  ID code of entry that replaced this one.
-        42-45    string rIdCode  ID code of entry that replaced this one.
-        47-50    string rIdCode  ID code of entry that replaced this one.
-        52-55    string rIdCode  ID code of entry that replaced this one.
-        57-60    string rIdCode  ID code of entry that replaced this one.
-        62-65    string rIdCode  ID code of entry that replaced this one.
-        67-70    string rIdCode  ID code of entry that replaced this one.
+        32-35    string rid_code  ID code of entry that replaced this one.
+        37-40    string rid_code  ID code of entry that replaced this one.
+        42-45    string rid_code  ID code of entry that replaced this one.
+        47-50    string rid_code  ID code of entry that replaced this one.
+        52-55    string rid_code  ID code of entry that replaced this one.
+        57-60    string rid_code  ID code of entry that replaced this one.
+        62-65    string rid_code  ID code of entry that replaced this one.
+        67-70    string rid_code  ID code of entry that replaced this one.
         """
         super(OBSLTE, self).__init__(line)
-        self.repDate = str.strip(line[11:20])
+        self.replace_date = str.strip(line[11:20])
         self.id_code = str.strip(line[21:25])
-        self.rIdCodes = []
-        self.rIdCodes.append(str.strip(line[31:35]))
-        self.rIdCodes.append(str.strip(line[36:40]))
-        self.rIdCodes.append(str.strip(line[41:45]))
-        self.rIdCodes.append(str.strip(line[46:50]))
-        self.rIdCodes.append(str.strip(line[51:55]))
-        self.rIdCodes.append(str.strip(line[56:60]))
-        self.rIdCodes.append(str.strip(line[61:65]))
-        self.rIdCodes.append(str.strip(line[67:70]))
+        self.replace_id_codes = []
+        self.replace_id_codes.append(str.strip(line[31:35]))
+        self.replace_id_codes.append(str.strip(line[36:40]))
+        self.replace_id_codes.append(str.strip(line[41:45]))
+        self.replace_id_codes.append(str.strip(line[46:50]))
+        self.replace_id_codes.append(str.strip(line[51:55]))
+        self.replace_id_codes.append(str.strip(line[56:60]))
+        self.replace_id_codes.append(str.strip(line[61:65]))
+        self.replace_id_codes.append(str.strip(line[67:70]))
 
 
 @register_line_parser
@@ -1977,10 +1977,10 @@ class HEADER(BaseRecord):
         super(HEADER, self).__init__(line)
         self.classification = str.strip(line[10:50])
         self.dep_date = str.strip(line[50:59])
-        self.IDcode = str.strip(line[62:66])
+        self.id_code = str.strip(line[62:66])
 
 
-def readAtom(line):
+def read_atom(line):
     """If the ATOM/HETATM is not column-formatted, try to get some information
     by parsing whitespace from the right.  Look for five floating point numbers
     followed by the residue number.
@@ -1995,22 +1995,23 @@ def readAtom(line):
     for i in range(size):
         entry = words[size - i]
         try:
-            val = float(entry)
+            _ = float(entry)
             consec = consec + 1
             if consec == 5:
+                iword = i
                 break
         except ValueError:
             consec = 0
 
     record = str.strip(line[0:6])
     newline = line[0:22]
-    newline = newline + str.rjust(words[size-i-1], 4)
+    newline = newline + str.rjust(words[size-iword-1], 4)
     newline = newline + str.rjust("", 3)
-    newline = newline + str.rjust(words[size-i], 8)
-    newline = newline + str.rjust(words[size-i+1], 8)
-    newline = newline + str.rjust(words[size-i+2], 8)
-    newline = newline + str.rjust(words[size-i+3], 6)
-    newline = newline + str.rjust(words[size-i+4], 6)
+    newline = newline + str.rjust(words[size-iword], 8)
+    newline = newline + str.rjust(words[size-iword+1], 8)
+    newline = newline + str.rjust(words[size-iword+2], 8)
+    newline = newline + str.rjust(words[size-iword+3], 6)
+    newline = newline + str.rjust(words[size-iword+4], 6)
     klass = LINE_PARSERS[record]
     obj = klass(newline)
     return obj
@@ -2047,61 +2048,26 @@ def read_pdb(file_):
                 pdblist.append(obj)
         except KeyError as details:
             errlist.append(record)
-            _LOGGER.error("Error parsing line: %s\n" % details)
-            _LOGGER.error("<%s>\n" % line.strip())
-            _LOGGER.error("Truncating remaining errors for record type:%s\n" % record)
+            _LOGGER.error("Error parsing line: %s", details)
+            _LOGGER.error("<%s>", line.strip())
+            _LOGGER.error("Truncating remaining errors for record type:%s", record)
+        # TODO - need more specific exception handling here
         except Exception as details:
             if record == "ATOM" or record == "HETATM":
                 try:
-                    obj = readAtom(line)
+                    obj = read_atom(line)
                     pdblist.append(obj)
+                # TODO - need more specific exception handling here
                 except Exception as details:
-                    _LOGGER.error("Error parsing line: %s\n" % details)
-                    _LOGGER.error("<%s>\n" % line.strip())
+                    _LOGGER.error("Error parsing line: %s,", details)
+                    _LOGGER.error("<%s>", line.strip())
             elif record == "SITE" or record == "TURN":
                 pass
             elif record == "SSBOND" or record == "LINK":
-                _LOGGER.error("Warning -- ignoring record: \n")
-                _LOGGER.error("<%s>\n" % line.strip())
+                _LOGGER.error("Warning -- ignoring record:")
+                _LOGGER.error("<%s>", line.strip())
             else:
-                _LOGGER.error("Error parsing line: %s\n" % details)
-                _LOGGER.error("<%s>\n" % line.strip())
+                _LOGGER.error("Error parsing line: %s", details)
+                _LOGGER.error("<%s>", line.strip())
 
     return pdblist, errlist
-
-
-def getRandom():
-    """Download a random PDB and return the path name.
-
-    Returns:
-        path name of downloaded file
-    """
-    URL = "ftp://ftp.rcsb.org/pub/pdb/data/structures/all/pdb/"
-    pdblines = os.popen("ncftpls %s" % URL).readlines()
-    pdbline = str.join(pdblines)
-    pdbline = str.replace(pdbline, "\n", "")
-    pdbline = str.replace(pdbline, "@", "")
-    pdbline = str.strip(pdbline)
-    pdblist = str.split(pdbline)
-    pdbZ = random.choice(pdblist)
-    os.popen("ncftpget %s/%s" % (URL, pdbZ))
-    os.popen("uncompress %s" % pdbZ)
-    return pdbZ[:-2]
-
-
-def main():
-    """ Main driver for testing.  Parses set number of random PDBs """
-    npdb = 1
-    _LOGGER.info("Testing %d PDBs...\n" % npdb)
-    for i in range(0, npdb):
-        _LOGGER.info("Getting random PDB...\n")
-        path = getRandom()
-        _LOGGER.info("Parsing %s...\n" % path)
-        pdbdict, errlist = read_pdb(open(path, "rU"))
-        if len(errlist) > 0:
-            _LOGGER.warn("\tSkipped records: %s\n" % errlist)
-        _LOGGER.info("\tNo skipped records.\n")
-
-
-if __name__ == "__main__":
-    main()

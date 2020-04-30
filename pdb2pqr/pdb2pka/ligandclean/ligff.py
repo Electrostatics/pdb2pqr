@@ -34,7 +34,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     Lig.read(ligdesc)
     atomnamelist=[]
     duplicatesFound = False
-    for atom in Lig.lAtoms:
+    for atom in Lig.l_atoms:
         if atom.name in atomnamelist:
             duplicatesFound = True
             _LOGGER.error("Duplicate atom names (%s) found in ligand file!\n" % atom.name)
@@ -46,7 +46,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     # Create the ligand definition from the mol2 data
 
     MOL2FLAG = True
-    X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,True)
+    X=NEWligand_topology.get_ligand_topology(Lig.l_atoms,True)
 
     # Add it to the 'official' definition
 
@@ -114,8 +114,8 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
 
     # Now the ligand
 
-    for e in Lig.lAtoms:
-        e.resName = "LIG"
+    for e in Lig.l_atoms:
+        e.res_name = "LIG"
         newpdblist.append(e)
     newpdblist.append(TER)
     newpdblist.append(END)
@@ -123,19 +123,19 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     protein = Protein(newpdblist, definition)
     for rrres in  protein.chainmap['L'].residues:
         for aaat in rrres.atoms:
-            for ligatoms in Lig.lAtoms:
+            for ligatoms in Lig.l_atoms:
 
                 if ligatoms.name == aaat.name:
-                    aaat.sybylType = ligatoms.sybylType
+                    aaat.sybyl_type = ligatoms.sybyl_type
 
                     # setting the formal charges
 
-                    if ligatoms.sybylType == "O.co2":
+                    if ligatoms.sybyl_type == "O.co2":
                         aaat.formalcharge = -0.5
                     else:
                         aaat.formalcharge = 0.0
                     xxxlll = []
-                    #for xxx in ligatoms.lBondedAtoms:
+                    #for xxx in ligatoms.l_bonded_atoms:
                     for bond in ligresidue.get_atom(aaat.name).bonds:
                         xxxlll.append(bond)
 
@@ -207,7 +207,7 @@ class ligforcefield(Forcefield):
             #
         ### PC - charge assignment on ligand
         ###
-        #self.lig = MOL2MOLECULE()
+        #self.lig = Mol2Molecule()
         self.lig=lig_instance #lig_shit()
         #self.lig.read(ligfilename)
         return
@@ -233,7 +233,7 @@ class ligforcefield(Forcefield):
         atomname = ""
         #
         # PC - 230306 - we need to put the setting of formal charges in another place
-        #for at in self.lig.lAtoms:
+        #for at in self.lig.l_atoms:
         #    at.charge = 0.0
         if self.name == "amber" and residue.type != 2:
             resname, atomname = self.get_amber_params(residue, name)
@@ -281,7 +281,7 @@ ParseRadiiDict = {"C": 1.70,
 ParseRadiiDictLower = dict((key.lower(), value) for key, value in ParseRadiiDict.items())
 ParseRadiiDict.update(ParseRadiiDictLower)
 
-class ligand_charge_handler(MOL2MOLECULE):
+class ligand_charge_handler(Mol2Molecule):
     """Make sure that we are up to date with respect to the charge calculation"""
 
     def make_up2date(self,residue):
@@ -390,8 +390,8 @@ class ligand_charge_handler(MOL2MOLECULE):
         # Loop over all atoms
         #
         #print 'Atoms passed to Pauls routines'
-        for at in residue.atoms: # WAS: self.lAtoms:
-            ele = at.sybylType.split('.')[0]
+        for at in residue.atoms: # WAS: self.l_atoms:
+            ele = at.sybyl_type.split('.')[0]
             charge = at.charge
             if ele in ParseRadiiDict:
                 radius = ParseRadiiDict[ele]

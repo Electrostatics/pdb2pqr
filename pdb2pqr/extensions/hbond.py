@@ -62,7 +62,7 @@ def usage():
 #TODO: replace this with a ''.format() call.
 def _residueString(residue, name):
     return '%4d %-4s (%4d  ) %s     %-4s' % \
-        (residue.resSeq, residue.name, residue.resSeq, residue.chainID, name)
+        (residue.res_seq, residue.name, residue.res_seq, residue.chain_id, name)
 
 
 def create_hbond_output(routines, outfile, whatif=False, 
@@ -99,7 +99,7 @@ def create_hbond_output(routines, outfile, whatif=False,
                 continue
             
             #TODO: do we need to do this for plain hbond stuff?
-            if whatif and (donor.residue.chainID == acc.residue.chainID): 
+            if whatif and (donor.residue.chain_id == acc.residue.chain_id): 
                 continue
             
             # Do new style distance check
@@ -122,9 +122,9 @@ def create_hbond_output(routines, outfile, whatif=False,
                     continue
                 
                 if whatif:
-                    if (donor.tempFactor > 60.0): 
+                    if (donor.temp_factor > 60.0): 
                         continue
-                    if (acc.tempFactor > 60.0): 
+                    if (acc.temp_factor > 60.0): 
                         continue
                     
                     thisBstring='B' if donor.isBackbone() else 'S'
@@ -137,7 +137,7 @@ def create_hbond_output(routines, outfile, whatif=False,
                     _LOGGER.debug('Sym=   1 Val= %6.3lf  DA=%6.2f  DHA=%6.2f (%s-%s)\n' % 
                                  (score, dist, angle, thisBstring, thatBstring))
 #                    outfile.write("%4d %-4s (%4d  ) %s     %-4s-> %4d %-4s (%4d  ) %s     %-4sSym=   1 Val= %6.3lf  DA=%6.2f  DHA=%6.2f (%s-%s)\n" % \
-#                      (donor.residue.resSeq,donor.residue.name,donor.residue.resSeq, donor.residue.chainID,donor.name,acc.residue.resSeq,acc.residue.name,acc.residue.resSeq, acc.residue.chainID,acc.name, score, dist, angle, thisBstring, thatBstring)) 
+#                      (donor.residue.res_seq,donor.residue.name,donor.residue.res_seq, donor.residue.chain_id,donor.name,acc.residue.res_seq,acc.residue.name,acc.residue.res_seq, acc.residue.chain_id,acc.name, score, dist, angle, thisBstring, thatBstring)) 
 
                 else:
                     s = "Donor: %s %s\tAcceptor: %s %s\tdist: %.2f\tAngle: %.2f\n" % \

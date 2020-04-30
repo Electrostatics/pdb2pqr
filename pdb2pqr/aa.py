@@ -30,10 +30,10 @@ class Amino(Residue):
         sample_atom = atoms[-1]
 
         self.atoms = []
-        self.name = sample_atom.resName
-        self.chainID = sample_atom.chainID
-        self.resSeq = sample_atom.resSeq
-        self.iCode = sample_atom.iCode
+        self.name = sample_atom.res_name
+        self.chain_id = sample_atom.chain_id
+        self.res_seq = sample_atom.res_seq
+        self.ins_code = sample_atom.ins_code
 
         self.ffname = self.name
         self.map = {}
@@ -41,8 +41,8 @@ class Amino(Residue):
         self.patches = []
         self.peptide_c = None
         self.peptide_n = None
-        self.isNterm = 0
-        self.isCterm = 0
+        self.is_n_term = 0
+        self.is_c_term = 0
         self.is5term = 0
         self.is3term = 0
         self.missing = []
@@ -72,7 +72,7 @@ class Amino(Residue):
         newatom.set("z", newcoords[2])
         newatom.set("name", atomname)
         newatom.set("occupancy", 1.00)
-        newatom.set("tempFactor", 0.00)
+        newatom.set("temp_factor", 0.00)
         newatom.added = 1
         self.add_atom(newatom)
 
@@ -104,12 +104,12 @@ class Amino(Residue):
         """Set the name to use for the forcefield based on the current state.
         Uses N* and C* for termini.
         """
-        if self.isNterm:
+        if self.is_n_term:
             if "NEUTRAL-NTERM" in self.patches:
                 self.ffname = "NEUTRAL-N%s" % self.ffname
             else:
                 self.ffname = "N%s" % self.ffname
-        elif self.isCterm:
+        elif self.is_c_term:
             if "NEUTRAL-CTERM" in self.patches:
                 self.ffname = "NEUTRAL-C%s" % self.ffname
             else:
@@ -370,9 +370,9 @@ class PRO(Amino):
         """Set the name to use for the forcefield based on the current state.
         Uses N* and C* for termini.
         """
-        if self.isNterm:
+        if self.is_n_term:
             self.ffname = "N%s" % self.ffname
-        elif self.isCterm:
+        elif self.is_c_term:
             if "NEUTRAL-CTERM" in self.patches:
                 self.ffname = "NEUTRAL-C%s" % self.ffname
             else:
@@ -448,10 +448,10 @@ class WAT(Residue):
         sample_atom = atoms[-1]
 
         self.atoms = []
-        self.name = sample_atom.resName
-        self.chainID = sample_atom.chainID
-        self.resSeq = sample_atom.resSeq
-        self.iCode = sample_atom.iCode
+        self.name = sample_atom.res_name
+        self.chain_id = sample_atom.chain_id
+        self.res_seq = sample_atom.res_seq
+        self.ins_code = sample_atom.ins_code
 
         self.fixed = 0
         self.ffname = "WAT"
@@ -467,9 +467,9 @@ class WAT(Residue):
             atomname = atom.get("name")
             if atomname not in self.map:
                 self.add_atom(atom)
-            else: # Don't add duplicate atom with altLoc field
+            else: # Don't add duplicate atom with alt_loc field
                 oldatom = self.get_atom(atomname)
-                oldatom.set("altLoc", "")
+                oldatom.set("alt_loc", "")
 
     def create_atom(self, atomname, newcoords):
         """Create a water atom.  Note the HETATM field."""
@@ -480,7 +480,7 @@ class WAT(Residue):
         newatom.set("z", newcoords[2])
         newatom.set("name", atomname)
         newatom.set("occupancy", 1.00)
-        newatom.set("tempFactor", 0.00)
+        newatom.set("temp_factor", 0.00)
         newatom.added = 1
         self.add_atom(newatom)
 
@@ -512,10 +512,10 @@ class LIG(Residue):
         sample_atom = atoms[-1]
 
         self.atoms = []
-        self.name = sample_atom.resName
-        self.chainID = sample_atom.chainID
-        self.resSeq = sample_atom.resSeq
-        self.iCode = sample_atom.iCode
+        self.name = sample_atom.res_name
+        self.chain_id = sample_atom.chain_id
+        self.res_seq = sample_atom.res_seq
+        self.ins_code = sample_atom.ins_code
 
         self.fixed = 0
         # TODO - why is the ffname "WAT"?
@@ -523,8 +523,8 @@ class LIG(Residue):
         self.map = {}
         self.reference = ref
 
-        self.isNterm = 0
-        self.isCterm = 0
+        self.is_n_term = 0
+        self.is_c_term = 0
 
         # Create each atom
         for atom_ in atoms:
@@ -535,9 +535,9 @@ class LIG(Residue):
             atomname = atom.get("name")
             if atomname not in self.map:
                 self.add_atom(atom)
-            else: # Don't add duplicate atom with altLoc field
+            else: # Don't add duplicate atom with alt_loc field
                 oldatom = self.get_atom(atomname)
-                oldatom.set("altLoc", "")
+                oldatom.set("alt_loc", "")
 
     def create_atom(self, atomname, newcoords):
         oldatom = self.atoms[0]
@@ -547,7 +547,7 @@ class LIG(Residue):
         newatom.set("z", newcoords[2])
         newatom.set("name", atomname)
         newatom.set("occupancy", 1.00)
-        newatom.set("tempFactor", 0.00)
+        newatom.set("temp_factor", 0.00)
         newatom.added = 1
         self.add_atom(newatom)
 

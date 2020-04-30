@@ -261,7 +261,7 @@ def pre_init(pdbfilename=None,
     global pdbfile_name
     pdbfile_name=pdbfilename
     pdbfile = getPDBFile(pdbfilename)
-    pdblist, errlist = readPDB(pdbfile)
+    pdblist, errlist = read_pdb(pdbfile)
     #
 #     if len(pdblist) == 0 and len(errlist) == 0:
 #         print "Unable to find file %s!\n" % path
@@ -315,7 +315,7 @@ def pre_init(pdbfilename=None,
                 #import NEWligand_topology
                 #MOL2FLAG = True # somethign is rotten here
                 ##
-                #X=NEWligand_topology.get_ligand_topology(Lig.lAtoms,MOL2FLAG)
+                #X=NEWligand_topology.get_ligand_topology(Lig.l_atoms,MOL2FLAG)
                 #
                 # Add it to the 'official' definition
                 #
@@ -342,7 +342,7 @@ def pre_init(pdbfilename=None,
             #        continue
             #    newpdblist.append(line)
             ## Now the ligand
-            #for e in Lig.lAtoms:
+            #for e in Lig.l_atoms:
             #    newpdblist.append(e)
             #
             # Add a TER and an END record for good measure
@@ -354,21 +354,21 @@ def pre_init(pdbfilename=None,
             #
             #myProtein = Protein(newpdblist)
         #
-        # Post-Processing for adding sybylTypes to lig-atoms in myProtein
+        # Post-Processing for adding sybyl_types to lig-atoms in myProtein
         # Jens: that's the quick and easy solution
         #
         #for rrres in  myProtein.chainmap['L'].residues:
         #    for aaat in rrres.atoms:
-        #        for ligatoms in Lig.lAtoms:
+        #        for ligatoms in Lig.l_atoms:
         #            if ligatoms.name == aaat.name:
-        #                aaat.sybylType = ligatoms.sybylType
+        #                aaat.sybyl_type = ligatoms.sybyl_type
         #                #
         #                # setting the formal charges
-        #                if ligatoms.sybylType == "O.co2":
+        #                if ligatoms.sybyl_type == "O.co2":
         #                    aaat.formalcharge = -0.5
         #                else: aaat.formalcharge = 0.0
         #                xxxlll = []
-        #                for xxx in ligatoms.lBondedAtoms:
+        #                for xxx in ligatoms.l_bonded_atoms:
         #                    xxxlll.append(xxx.name)
         #                aaat.intrabonds = xxxlll
         #                #
@@ -389,7 +389,7 @@ def pre_init(pdbfilename=None,
     #
     if verbose:
         print("Created protein object -")
-        print("\tNumber of residues in protein: %s" % myProtein.numResidues())
+        print("\tNumber of residues in protein: %s" % myProtein.num_residues())
         print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
     #
     # Set up all other routines
@@ -399,7 +399,7 @@ def pre_init(pdbfilename=None,
     myRoutines.updateSSbridges()
     myRoutines.updateBonds()
     myRoutines.setTermini()
-    myRoutines.updateInternalBonds()
+    myRoutines.updateInternal_bonds()
 
     myRoutines.applyNameScheme(Forcefield(ff, myDefinition, None))
     myRoutines.findMissingHeavy()
@@ -413,7 +413,7 @@ def pre_init(pdbfilename=None,
     # We get this information from ligand_titratable_groups
     #
     from src.hydrogens import HydrogenRoutines
-    myRoutines.updateInternalBonds()
+    myRoutines.updateInternal_bonds()
     myRoutines.calculateDihedralAngles()
     myhydRoutines = HydrogenRoutines(myRoutines)
     #
@@ -494,7 +494,7 @@ def pre_init(pdbfilename=None,
 
     if verbose:
         print("Created protein object (after processing myRoutines) -")
-        print("\tNumber of residues in protein: %s" % myProtein.numResidues())
+        print("\tNumber of residues in protein: %s" % myProtein.num_residues())
         print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
     #
     # Create the APBS input file
@@ -713,4 +713,4 @@ if __name__ == "__main__":
 #                 for atom in residue.get("atoms"):
 #                     atomname = atom.get("name")
 #                     charge, radius = forcefield.get_params(residue, atomname)
-#                     print '%2s %4s %3d %4s %5.2f %5.2f' %(chain.chainID,residue.name,residue.resSeq,atomname,charge,radius)
+#                     print '%2s %4s %3d %4s %5.2f %5.2f' %(chain.chain_id,residue.name,residue.res_seq,atomname,charge,radius)

@@ -63,7 +63,7 @@ class get_ligand_topology:
                 if atom[0] in trivial_types:
                     if atom[0]!='H': # Get rid of all the hydrogens
                         self.atoms[atom]['type']=atom[0]
-                        self.atoms[atom]['sybylType']='Unknown'
+                        self.atoms[atom]['sybyl_type']='Unknown'
             #
             # Get the bonds
             # First approximation: Anything closer than 2.0 A is bonded
@@ -109,15 +109,15 @@ class get_ligand_topology:
                 name = line.name
                 #            self.atoms[name] = name
                 self.atoms[name] = {'coords': numpy.array([float(line.x),float(line.y),float(line.z)])}
-                self.atoms[name]['sybylType'] = line.sybylType
+                self.atoms[name]['sybyl_type'] = line.sybyl_type
                 #
                 # we don't have this information when coming from PDB!
-                self.atoms[name]['lBondedAtoms'] = line.lBondedAtoms
-                self.atoms[name]['lBonds'] = line.lBonds
+                self.atoms[name]['l_bonded_atoms'] = line.l_bonded_atoms
+                self.atoms[name]['l_bonds'] = line.l_bonds
                 ###PC
                 # one bond is lost!
                 self.atoms[name]['bonds']=[]
-                for BBonds in line.lBondedAtoms: #line.lBonds:
+                for BBonds in line.l_bonded_atoms: #line.l_bonds:
                     self.atoms[name]['bonds'].append(BBonds.name)
                 ###PC
                 # save the atomname & id
@@ -126,13 +126,13 @@ class get_ligand_topology:
                 #
                 # USEFUL information
                 # bonded heavy atoms
-                self.atoms[name]['nbhvy'] = len([x for x in self.atoms[name]['lBondedAtoms'] if x.sybylType != "H"])
+                self.atoms[name]['nbhvy'] = len([x for x in self.atoms[name]['l_bonded_atoms'] if x.sybyl_type != "H"])
                 # number of bonds (including hydrogens)
-                self.atoms[name]['nbds'] = len(self.atoms[name]['lBonds'])
+                self.atoms[name]['nbds'] = len(self.atoms[name]['l_bonds'])
                 # number of bonded hydrogens
                 self.atoms[name]['nbhyd'] = self.atoms[name]['nbds']- self.atoms[name]['nbhvy']
                 # element
-                self.atoms[name]['ele'] = self.atoms[name]['sybylType'].split('.')[0]
+                self.atoms[name]['ele'] = self.atoms[name]['sybyl_type'].split('.')[0]
             #
             # Get the torsion angles
             #
@@ -145,7 +145,7 @@ class get_ligand_topology:
                 self.atoms[atom]['torsions']=self.get_torsions(atom)
             self.lines=self.create_deflines()
         #
-        # we have the sybylType in self.atoms!!!
+        # we have the sybyl_type in self.atoms!!!
         return
 
 
@@ -222,7 +222,7 @@ class get_ligand_topology:
                 stype=O_types[sum_of_bondorder][number_of_bonds]
             else:
                 pass
-            self.atoms[atom]['sybylType']=stype
+            self.atoms[atom]['sybyl_type']=stype
             #print atom,stype
         #
         # Do some postchecks
@@ -230,7 +230,7 @@ class get_ligand_topology:
         #
         for atom in self.atoms.keys():
             at=self.atoms[atom]
-            if at['sybylType']=='C.2':
+            if at['sybyl_type']=='C.2':
                 #
                 # See if we have two oxygens bound + an extra bond
                 #
@@ -238,14 +238,14 @@ class get_ligand_topology:
                     Os=[]
                     for bound_atom_name in at['bonds']:
                         bound_atom=self.atoms[bound_atom_name]
-                        if bound_atom['sybylType']=='O.2':
+                        if bound_atom['sybyl_type']=='O.2':
                             Os.append(bound_atom_name)
                     #
                     # If we had two O.2s, then change their hybridisation to O.3
                     #
                     if len(Os)==2:
                         for O in Os:
-                            self.atoms[O]['sybylType']='O.3'
+                            self.atoms[O]['sybyl_type']='O.3'
         #
         # All Done
         #
@@ -253,7 +253,7 @@ class get_ligand_topology:
         atoms.sort()
         _LOGGER.info('\nFinal Sybyl type results')
         for atom in atoms:
-            _LOGGER.info(atom,self.atoms[atom]['sybylType'])
+            _LOGGER.info(atom,self.atoms[atom]['sybyl_type'])
         return
 
     #
@@ -513,10 +513,10 @@ class get_ligand_topology:
                 self.atoms[ligand_atoms]['alreadyvisited'] = False
             for ligand_atoms in l:
                 for template_atoms in t:
-                    if templates[current_template][template_atoms]['sybylType'] == self.atoms[ligand_atoms]['sybylType']:
+                    if templates[current_template][template_atoms]['sybyl_type'] == self.atoms[ligand_atoms]['sybyl_type']:
                         matched_type = Node(ligand_atoms,template_atoms)
                         nodes.append(matched_type)
-                        #print "matching ", self.atoms[ligand_atoms]['sybylType'], self.atoms[ligand_atoms]['atomname']
+                        #print "matching ", self.atoms[ligand_atoms]['sybyl_type'], self.atoms[ligand_atoms]['atomname']
                     else:
                         pass
             if len(nodes) != 0:
@@ -525,12 +525,12 @@ class get_ligand_topology:
                     for j in nodes:
                         AtomNameList = []
                         # the O.co2 atoms of the ligand can only match ONCE on EACH template O.co2 template atom
-                        if i.at_idx1 == j.at_idx1 and (i.at_idx2 == j.at_idx2) and (self.atoms[i.at_idx1]['sybylType'] != "O.co2"):
+                        if i.at_idx1 == j.at_idx1 and (i.at_idx2 == j.at_idx2) and (self.atoms[i.at_idx1]['sybyl_type'] != "O.co2"):
                             AtomNameList.append(i.at_idx1)
                             AtomNameList.append(i.at_idx2)
                             AtomNameListList.append(AtomNameList)
                         elif i.at_idx1 == j.at_idx1 and (i.at_idx2 == j.at_idx2) \
-                                 and (self.atoms[i.at_idx1]['sybylType'] == "O.co2")\
+                                 and (self.atoms[i.at_idx1]['sybyl_type'] == "O.co2")\
                                  and (self.atoms[i.at_idx1]['alreadyvisited'] != True)\
                                  and (templates[current_template][i.at_idx2]['alreadyvisited'] != True):
                             AtomNameList.append(i.at_idx1)

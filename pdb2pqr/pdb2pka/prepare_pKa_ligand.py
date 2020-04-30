@@ -83,7 +83,7 @@ class ligand_pKa:
         # Use the mol2 parser in pdb2pqr
         #
         import src.pdb
-        mol2object=src.pdb.MOL2MOLECULE()
+        mol2object=src.pdb.Mol2Molecule()
         mol2object.read(mol2fileobj)
         return mol2object
         

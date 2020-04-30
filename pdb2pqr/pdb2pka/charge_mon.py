@@ -43,8 +43,8 @@ class charge_mon(Frame):
                     fill='blue'
                 else:
                     fill='black'
-                self.cv.create_text(x_count,self.calc,text='%3d' %residue.resSeq,anchor='nw',fill=fill)
-                self.res_pos[residue.resSeq]=x_count
+                self.cv.create_text(x_count,self.calc,text='%3d' %residue.res_seq,anchor='nw',fill=fill)
+                self.res_pos[residue.res_seq]=x_count
                 x_count=x_count+int((self.width-100)/self.numres)
         self.calc=self.calc+15
         self.master.update()

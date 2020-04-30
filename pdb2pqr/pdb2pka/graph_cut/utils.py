@@ -44,8 +44,8 @@ def create_protein_complex_from_matrix(correct_matrix):
                             res1 = pKa1.residue
                             res2 = pKa2.residue
                             _add_state_pair(protein_complex, inter_avg,
-                                            pKa1.pKaGroup.name, res1.chainID, str(res1.resSeq), state1,
-                                            pKa2.pKaGroup.name, res2.chainID, str(res2.resSeq), state2)
+                                            pKa1.pKaGroup.name, res1.chain_id, str(res1.res_seq), state1,
+                                            pKa2.pKaGroup.name, res2.chain_id, str(res2.res_seq), state2)
 
 
 
@@ -54,8 +54,8 @@ def create_protein_complex_from_matrix(correct_matrix):
 def process_desolv_and_background(protein_complex, pKa):
     """Applies the background and desolvation energies from a pKa to a protein complex"""
     res_type = pKa.pKaGroup.name
-    chain = pKa.residue.chainID
-    location = str(pKa.residue.resSeq)
+    chain = pKa.residue.chain_id
+    location = str(pKa.residue.res_seq)
 
     if(version_info >= (3,0)):
         for state, energy in pKa.desolvation.items():
@@ -91,8 +91,8 @@ def _create_protein_complex_from_pKa(pKa):
     for state1 in states:
         for state2 in states:
             _add_state_pair(protein_complex, 0.0,
-                            group.name, res.chainID, str(res.resSeq), state1,
-                            group.name, res.chainID, str(res.resSeq), state2)
+                            group.name, res.chain_id, str(res.res_seq), state1,
+                            group.name, res.chain_id, str(res.res_seq), state2)
 
     return protein_complex
 

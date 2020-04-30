@@ -238,7 +238,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
         if newResidueName is None:
             continue
         
-        chain = routines.protein.chainmap[oldResidue.chainID]
+        chain = routines.protein.chainmap[oldResidue.chain_id]
         chainIndex = chain.residues.index(oldResidue)
         residueAtoms = oldResidue.atoms
         

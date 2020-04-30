@@ -102,7 +102,7 @@ def main(args):
         pdblist, errlist = cif.read_cif(pdb_file)
         args.isCIF = True
     else:
-        pdblist, errlist = pdb.readPDB(pdb_file)
+        pdblist, errlist = pdb.read_pdb(pdb_file)
 
     if len(pdblist) == 0 and len(errlist) == 0:
         raise RuntimeError("Unable to find file %s!" % path)

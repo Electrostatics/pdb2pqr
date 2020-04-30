@@ -25,11 +25,11 @@ def getWI_resid(line):
     last=string.split(line,'(')[1]
     number=string.split(last,')')[0]
     if len(string.strip(string.split(last,')')[1]))>0:
-        chainID=string.split(string.split(last,')')[1])[0]
+        chain_id=string.split(string.split(last,')')[1])[0]
     else:
-        chainID=''
+        chain_id=''
     number=string.strip(number)
-    resid='%s:%4s:%3s' %(chainID,string.zfill(number,4),residuename)
+    resid='%s:%4s:%3s' %(chain_id,string.zfill(number,4),residuename)
     return resid
 
 def getWI_resid2(line,format=None):
@@ -60,11 +60,11 @@ def getWI_resid2(line,format=None):
     last_part=string.strip(string.split(last,')')[1])
     last_split=string.split(last_part)
     if len(last_split)==1:
-        chainID=last_split[0]
+        chain_id=last_split[0]
     else:
-        chainID=''
+        chain_id=''
     number=string.strip(number)
-    resid='%s:%4s:%3s' %(chainID,string.zfill(number,4),residuename)
+    resid='%s:%4s:%3s' %(chain_id,string.zfill(number,4),residuename)
     return resid
 
 def getWI_resid3(line):
@@ -78,13 +78,13 @@ def getWI_resid3(line):
     residuename=split[2]
     number=split[3]
     cid=split[4]
-    chainID=''
+    chain_id=''
     if len(cid)==1:
-        chainID=cid
+        chain_id=cid
     else:
-        chainID=''
+        chain_id=''
     number=string.strip(number)
-    resid='%s:%4s:%3s' %(chainID,string.zfill(number,4),residuename)
+    resid='%s:%4s:%3s' %(chain_id,string.zfill(number,4),residuename)
     return resid
 
 def getWI_resid4(line):
@@ -111,10 +111,10 @@ def getWI_resid4(line):
     lastsplit=string.split(last,')')[1]
     split_lastsplit=string.split(lastsplit)
     if len(split_lastsplit)>1:
-        chainID=split_lastsplit[0]
+        chain_id=split_lastsplit[0]
     else:
-        chainID=''
-    resid='%s:%4s:%3s:%s' %(chainID,string.zfill(number,4),residuename,atomname)
+        chain_id=''
+    resid='%s:%4s:%3s:%s' %(chain_id,string.zfill(number,4),residuename,atomname)
     return resid
 
 #
@@ -208,10 +208,10 @@ def reformat_name(oldname,Nterm=None,format='WHAT IF'):
             residue=residue[1:]
         number=residue[:4]
         name=residue[4:7]
-        chainID=''
+        chain_id=''
         if len(residue)==8:
-            chainID=residue[7]
-        newname='%s:%4s:%3s' %(chainID,number,name)
+            chain_id=residue[7]
+        newname='%s:%4s:%3s' %(chain_id,number,name)
         if Tflag:
             #
             # Nterm is 1 for an Nterm and 0 for a Cterm

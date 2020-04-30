@@ -34,12 +34,12 @@ template['SimpleAliphaticAcid']={'C.2': ['C.3','O.co2','O.co2'],
                                  'O.3': ['C.3','C.ar'],
                                  'C.ar':['C.ar','C.ar','O.3'],
                                  'root_atoms': ['C.2','C.3','O.3','C.ar']}
-template['Acid_TypesNames']={'O1':{'sybylType':'O.co2','neighbours':['C3']},
-                             'O2':{'sybylType':'O.co2','neighbours':['C3']},
-                             'C3':{'sybylType':'C.2','neighbours':['O1','O2','C4']},
-                             'C4':{'sybylType':'C.3','neighbours':['C3','C5','H4A','H4B']},
-                             'O5':{'sybylType':'O.3','neighbours':['C4','C6']},
-                             'C6':{'sybylType':'C.ar','neighbours':['O5','C6A','C6B']},
+template['Acid_TypesNames']={'O1':{'sybyl_type':'O.co2','neighbours':['C3']},
+                             'O2':{'sybyl_type':'O.co2','neighbours':['C3']},
+                             'C3':{'sybyl_type':'C.2','neighbours':['O1','O2','C4']},
+                             'C4':{'sybyl_type':'C.3','neighbours':['C3','C5','H4A','H4B']},
+                             'O5':{'sybyl_type':'O.3','neighbours':['C4','C6']},
+                             'C6':{'sybyl_type':'C.ar','neighbours':['O5','C6A','C6B']},
                              
 #                             'O2':'O.co2',
 #                             'C3':'C.3',
@@ -52,9 +52,9 @@ template['Acid_TypesNames']={'O1':{'sybylType':'O.co2','neighbours':['C3']},
 
 ## template['AromaticMethoxyAceticAcid']={'atoms'       : ['O.co2','C.2','O.co2','C.2','O.3','C.ar'],
 ##                                        'atomnames'   : ['O1','C2','O3','C4','C5','O6'],
-##                                        'atoms_lBondedAtoms' : ['C.3','O.co2','O.co2'], # for 1st C.2
+##                                        'atoms_l_bonded_atoms' : ['C.3','O.co2','O.co2'], # for 1st C.2
 ##                                        'connectivity': [['atomnames'[0],'atomnames'[1]],['atomnames'[1],'atomnames'[2]]],
-##                                        'c_sybylType' : [['O.co2','C.2'],['O.co2','C.2'],['C.3','C.2'],['C.3','O.3']],
+##                                        'c_sybyl_type' : [['O.co2','C.2'],['O.co2','C.2'],['C.3','C.2'],['C.3','O.3']],
 ##                                        'id'          : [1,2,3,4,5,6],
 ##                                        'hyd_def_like': 'ASP',
 ##                                        'modelpK':2.90}

@@ -74,6 +74,6 @@ def run_extension(routines, outroot, options):
                 if (thatatom.isBackbone()): 
                     thatBstring='B'
                 outfile.write("%4d %4d %-4s (%4d  ) %s     %-4s<>%4d %-4s (%4d  ) %s     %-4s D=%6.2f  H-ene=%6.2f  Sym=  (%s-%s)\n" % \
-                  (count, thisatom.residue.resSeq,thisatom.residue.name,thisatom.residue.resSeq, thisatom.residue.chainID,thisatom.name,thatatom.residue.resSeq,thatatom.residue.name,thatatom.residue.resSeq, thatatom.residue.chainID,thatatom.name, thisdist, hscore, thisBstring, thatBstring)) 
+                  (count, thisatom.residue.res_seq,thisatom.residue.name,thisatom.residue.res_seq, thisatom.residue.chain_id,thisatom.name,thatatom.residue.res_seq,thatatom.residue.name,thatatom.residue.res_seq, thatatom.residue.chain_id,thatatom.name, thisdist, hscore, thisBstring, thatBstring)) 
 
     outfile.close()

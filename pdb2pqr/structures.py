@@ -22,16 +22,16 @@ class Chain:
     Protein object.
     """
 
-    def __init__(self, chainID):
+    def __init__(self, chain_id):
         """
             Initialize the class
 
             Parameters
-                chainID: The chainID for this chain as denoted in
+                chain_id: The chain_id for this chain as denoted in
                          the PDB file (string)
         """
 
-        self.chainID = chainID
+        self.chain_id = chain_id
         self.residues = []
 
     def get(self, name):
@@ -65,7 +65,7 @@ class Chain:
         """
         self.residues.append(residue)
 
-    def numResidues(self):
+    def num_residues(self):
         """
             Get the number of residues for the chain
 
@@ -79,7 +79,7 @@ class Chain:
 
     def renumberResidues(self):
         """
-            Renumber Atoms based on actual Residue number and not PDB resSeq
+            Renumber Atoms based on actual Residue number and not PDB res_seq
         """
         count = 1
         for residue in self.residues:
@@ -144,10 +144,10 @@ class Residue:
         sample_atom = atoms[-1]
 
         self.atoms = []
-        self.name = sample_atom.resName
-        self.chainID = sample_atom.chainID
-        self.resSeq = sample_atom.resSeq
-        self.iCode = sample_atom.iCode
+        self.name = sample_atom.res_name
+        self.chain_id = sample_atom.chain_id
+        self.res_seq = sample_atom.res_seq
+        self.ins_code = sample_atom.ins_code
         #
         #
         self.map = {}
@@ -166,18 +166,18 @@ class Residue:
                 self.add_atom(atom)
             else: # Don't add duplicate atom
                 oldatom = self.get_atom(atomname)
-                oldatom.set("altLoc", "")
+                oldatom.set("alt_loc", "")
 
         if self.name == "HOH":
             self.name = "WAT"
             for atom in self.atoms:
-                atom.set("resName", "WAT")
+                atom.set("res_name", "WAT")
 
     def __str__(self):
         """
             Basic string representation
         """
-        text = "%s %s %i%s" % (self.name, self.chainID, self.resSeq, self.iCode)
+        text = "%s %s %i%s" % (self.name, self.chain_id, self.res_seq, self.ins_code)
         return text
 
     #TODO: Kill this in a fire.
@@ -190,14 +190,14 @@ class Residue:
             Possible Values
                 atoms:         The atoms in the residue
                 name:          The name of the residue
-                chainID:       The chainID associated with the residue
-                resSeq:        The sequence number of the residue
-                icode:         The iCode of the residue
+                chain_id:       The chain_id associated with the residue
+                res_seq:        The sequence number of the residue
+                icode:         The ins_code of the residue
                 ss_bonded:      1 if the residue has a SS bond, 0 otherwise
                 SSbondpartner: The residue of the bond partner
                 type:          The type associated with this residue
-                isNterm:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
-                isCterm:       1 if the residue is the C-Terminus, 0 otherwise
+                is_n_term:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
+                is_c_term:       1 if the residue is the C-Terminus, 0 otherwise
                 missing:     List of missing atoms of the residue
             Returns
                 item:          The value of the member
@@ -219,22 +219,22 @@ class Residue:
             Possible Values
                 atoms:         The atoms in the residue
                 name:          The name of the residue
-                chain:         The chainID associated with the residue
-                resSeq:        The sequence number of the residue
-                icode:         The iCode of the residue
+                chain:         The chain_id associated with the residue
+                res_seq:        The sequence number of the residue
+                icode:         The ins_code of the residue
                 ss_bonded:      1 if the residue has a SS bond, 0 otherwise
                 SSbondpartner: The residue of the bond partner
                 type:          The type associated with this residue
-                isNterm:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
-                isCterm:       1 if the residue is the C-Terminus, 0 otherwise
+                is_n_term:       # of hydrogens if the residue is the N-Terminus, 0 otherwise
+                is_c_term:       1 if the residue is the C-Terminus, 0 otherwise
                 isDirty:       1 if the residue is not missing atoms,
                                0 otherwise
             Notes
-                resSeq points to the residue.setResSeq function
+                res_seq points to the residue.setResSeq function
             Returns
                 item:          The value of the member
         """
-        if name == "resSeq":
+        if name == "res_seq":
             self.setResSeq(value)
         else:
             try:
@@ -244,11 +244,11 @@ class Residue:
                 raise PDBInternalError(message)
 
     def update_terminus_status(self):
-        """Update the isNterms and isCterm flags"""
+        """Update the is_n_terms and is_c_term flags"""
         #
         # If Nterm then update counter of hydrogens
         #
-        if self.isNterm:
+        if self.is_n_term:
             count = 0
             atoms = ['H', 'H2', 'H3']
             for atom in atoms:
@@ -256,19 +256,19 @@ class Residue:
                     atomname = atom2.get('name')
                     if atom == atomname:
                         count = count+1
-            self.isNterm = count
+            self.is_n_term = count
         #
         # If Cterm then update counter
         #
-        if self.isCterm:
-            self.isCterm = None
+        if self.is_c_term:
+            self.is_c_term = None
             for atom in self.atoms:
                 atomname = atom.get('name')
                 if atomname == 'HO':
-                    self.isCterm = 2
+                    self.is_c_term = 2
                     break
-            if not self.isCterm:
-                self.isCterm = 1
+            if not self.is_c_term:
+                self.is_c_term = 1
         return
 
     def numAtoms(self):
@@ -282,26 +282,26 @@ class Residue:
 
     def setResSeq(self, value):
         """
-            Set the atom field resSeq to a certain value and
+            Set the atom field res_seq to a certain value and
             change the residue's information.  The icode field is no longer
             useful.
 
             Parameters
-                value:  The new value of resSeq (int)
+                value:  The new value of res_seq (int)
         """
-        self.iCode = ""
-        self.resSeq = value
+        self.ins_code = ""
+        self.res_seq = value
         for atom in self.atoms:
-            atom.set("resSeq", value)
-            #atom.set("iCode", "")
+            atom.set("res_seq", value)
+            #atom.set("ins_code", "")
 
     def setChainID(self, value):
         """
-           Set the chainID field to a certain value
+           Set the chain_id field to a certain value
         """
-        self.chainID = value
+        self.chain_id = value
         for atom in self.atoms:
-            atom.set("chainID", value)
+            atom.set("chain_id", value)
 
     def add_atom(self, atom):
         """
@@ -370,7 +370,7 @@ class Residue:
         newatom.set("z", newcoords[2])
         newatom.set("name", name)
         newatom.set("occupancy", 1.00)
-        newatom.set("tempFactor", 0.00)
+        newatom.set("temp_factor", 0.00)
         self.add_atom(newatom)
 
     def addMissing(self, value):
@@ -427,7 +427,7 @@ class Residue:
         """
         self.name = name
         for atom in self.atoms:
-            atom.resName = name
+            atom.res_name = name
 
     def rotateTetrahedral(self, atom1, atom2, angle):
         """
@@ -539,17 +539,17 @@ class Atom(ATOM):
             raise PDBInternalError("Invalid atom type %s (Atom Class IN structures.py)!" % type)
         self.serial = atom.serial
         self.name = atom.name
-        self.altLoc = atom.altLoc
-        self.resName = atom.resName
-        self.chainID = atom.chainID
-        self.resSeq = atom.resSeq
-        self.iCode = atom.iCode
+        self.alt_loc = atom.alt_loc
+        self.res_name = atom.res_name
+        self.chain_id = atom.chain_id
+        self.res_seq = atom.res_seq
+        self.ins_code = atom.ins_code
         self.x = atom.x
         self.y = atom.y
         self.z = atom.z
         self.occupancy = atom.occupancy
-        self.tempFactor = atom.tempFactor
-        self.segID = atom.segID
+        self.temp_factor = atom.temp_factor
+        self.seg_id = atom.seg_id
         self.element = atom.element
         self.charge = atom.charge
 
@@ -594,7 +594,7 @@ class Atom(ATOM):
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
 
-        tstr = self.resName
+        tstr = self.res_name
         if len(tstr) == 4:
             outstr += str.ljust(tstr, 4)[:4]
         else:
@@ -602,14 +602,14 @@ class Atom(ATOM):
 
         outstr += " "
         if chainflag:
-            tstr = self.chainID
+            tstr = self.chain_id
         else:
             tstr = ''
         outstr += str.ljust(tstr, 1)[:1]
-        tstr = "%d" % self.resSeq
+        tstr = "%d" % self.res_seq
         outstr += str.rjust(tstr, 4)[:4]
-        if self.iCode != "":
-            outstr += "%s   " % self.iCode
+        if self.ins_code != "":
+            outstr += "%s   " % self.ins_code
         else:
             outstr += "    "
         tstr = "%8.3f" % self.x
@@ -677,11 +677,11 @@ class Atom(ATOM):
 
         tstr = "%6.2f" % self.occupancy
         outstr += str.ljust(tstr, 6)[:6]
-        tstr = "%6.2f" % self.tempFactor
+        tstr = "%6.2f" % self.temp_factor
         outstr += str.rjust(tstr, 6)[:6]
-        #padding between temp factor and segID
+        #padding between temp factor and seg_id
         outstr += ' ' * 7
-        tstr = self.segID
+        tstr = self.seg_id
         outstr += str.ljust(tstr, 4)[:4]
         tstr = self.element
         outstr += str.ljust(tstr, 2)[:2]
@@ -704,17 +704,17 @@ class Atom(ATOM):
                 type:       The type of Atom (either ATOM or HETATM)
                 serial:     Atom serial number
                 name:       Atom name
-                altLoc:     Alternate location
-                resName:    Residue name
-                chainID:    Chain identifier
-                resSeq:     Residue sequence number
-                iCode:      Code for insertion of residues
+                alt_loc:     Alternate location
+                res_name:    Residue name
+                chain_id:    Chain identifier
+                res_seq:     Residue sequence number
+                ins_code:      Code for insertion of residues
                 x:          Orthogonal coordinates for X in Angstroms.
                 y:          Orthogonal coordinates for Y in Angstroms.
                 z:          Orthogonal coordinates for Z in Angstroms.
                 occupancy:  Occupancy
-                tempFactor: Temperature Factor
-                segID:      Segment identifier
+                temp_factor: Temperature Factor
+                seg_id:      Segment identifier
                 element:    Element symbol
                 charge:     Charge on the atom
                 bonds:      The bonds associated with the atom
@@ -746,17 +746,17 @@ class Atom(ATOM):
                 type:       The type of Atom (either ATOM or HETATM)
                 serial:     Atom serial number
                 name:       Atom name
-                altLoc:     Alternate location
-                resName:    Residue name
-                chainID:    Chain identifier
-                resSeq:     Residue sequence number
-                iCode:      Code for insertion of residues
+                alt_loc:     Alternate location
+                res_name:    Residue name
+                chain_id:    Chain identifier
+                res_seq:     Residue sequence number
+                ins_code:      Code for insertion of residues
                 x:          Orthogonal coordinates for X in Angstroms.
                 y:          Orthogonal coordinates for Y in Angstroms.
                 z:          Orthogonal coordinates for Z in Angstroms.
                 occupancy:  Occupancy
-                tempFactor: Temperature Factor
-                segID:      Segment identifier
+                temp_factor: Temperature Factor
+                seg_id:      Segment identifier
                 element:    Element symbol
                 charge:     Charge on the atom
                 residue:    The parent residue of the atom

@@ -421,9 +421,9 @@ class Forcefield(object):
             elif "HD2" in residue.get("map"):
                 resname = "ASH"
 
-        if residue.get("isCterm"):
+        if residue.get("is_c_term"):
             resname = "C" + resname
-        elif residue.get("isNterm"):
+        elif residue.get("is_n_term"):
             resname = "N" + resname
 
         # Atom Substitutions
@@ -445,9 +445,9 @@ class Forcefield(object):
             atomname = "HSG"
         if resname == "CYM" and atomname == "H":
             atomname = "HN"
-        if residue.get("isNterm") and resname == "NPRO" and atomname == "HN2":
+        if residue.get("is_n_term") and resname == "NPRO" and atomname == "HN2":
             atomname = "H2"
-        if residue.get("isNterm") and resname == "NPRO" and atomname == "HN1":
+        if residue.get("is_n_term") and resname == "NPRO" and atomname == "HN1":
             atomname = "H3"
         return resname, atomname
 
@@ -467,8 +467,8 @@ class Forcefield(object):
         resname = residue.name
 
         # Terminal/Water Substitutions
-        nterm = residue.get("isNterm")
-        cterm = residue.get("isCterm")
+        nterm = residue.get("is_n_term")
+        cterm = residue.get("is_c_term")
         if nterm and resname != "ACE":
             if resname == "PRO" and nterm == 2:
                 resname = "PR+"
@@ -684,7 +684,7 @@ class Forcefield(object):
                     resname = "3TER"
 
         # Terminal/Water Substitutions
-        if residue.get("isNterm"):
+        if residue.get("is_n_term"):
             if resname == "GLY" and atomname in ["N", "H", "H2", "H3", "CA", "HA2", "HA3"]:
                 resname = "GLYP"
                 if atomname == "H":
@@ -722,7 +722,7 @@ class Forcefield(object):
                         atomname = "HT2"
                     elif atomname == "H3":
                         atomname = "HT3"
-        elif residue.get("isCterm"):
+        elif residue.get("is_c_term"):
             if atomname in ["O", "OXT", "C"]:
                 resname = "CTER"
                 if atomname == "O":

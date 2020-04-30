@@ -161,17 +161,17 @@ class runAPBS:
                 self.z.append(atom.get("z"))
                 self.chg.append(atom.get("ffcharge"))
                 self.rad.append(atom.get("radius"))
-                self.cm_list.append([atom.resSeq,atom.name,atom.get("ffcharge")])
-                #if atom.resSeq!=old_res:
+                self.cm_list.append([atom.res_seq,atom.name,atom.get("ffcharge")])
+                #if atom.res_seq!=old_res:
                     #if old_res!=-1:
                     #    print '%4i %4s %6.4f' %(old_res,old_res_name,res_charge)
                 #    res_charge=atom.get('ffcharge')
-                #    old_res=atom.resSeq
-                #    old_res_name=atom.resName
+                #    old_res=atom.res_seq
+                #    old_res_name=atom.res_name
                 #else:
                 #    res_charge=res_charge+atom.get('ffcharge')
 
-                #print '%5s\t%4i\t%5s\t%6.4f\t%6.4f' %(atom.name,atom.resSeq,atom.resName,atom.get("ffcharge"),atom.get('radius'))
+                #print '%5s\t%4i\t%5s\t%6.4f\t%6.4f' %(atom.name,atom.res_seq,atom.res_name,atom.get("ffcharge"),atom.get('radius'))
             #print '%4i %4s %6.4f' %(old_res,old_res_name,res_charge)
             #
             # DEBUG
@@ -314,7 +314,7 @@ class runAPBS:
             self.z.append(atom.get("z"))
             self.chg.append(atom.get("ffcharge"))
             self.rad.append(atom.get("radius"))
-            #self.cm_list.append([atom.resSeq,atom.name,atom.get("ffcharge")])
+            #self.cm_list.append([atom.res_seq,atom.name,atom.get("ffcharge")])
         #
         # DEBUG
         #

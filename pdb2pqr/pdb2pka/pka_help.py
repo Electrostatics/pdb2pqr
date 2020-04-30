@@ -72,8 +72,8 @@ def dump_protein_no_hydrogens(pdb_list, pdb_out):
             if isinstance(record, HETATM):
                 ##check if the record is not a water in which case we will print a warning
                 from src.aa import WAT
-                if not record.resName in WAT.water_residue_names:
-                    _LOGGER.warn("Warning!: HETATM record %s " % record.resName + "%s that is not a water is being dropped\n  " % record.element)
+                if not record.res_name in WAT.water_residue_names:
+                    _LOGGER.warn("Warning!: HETATM record %s " % record.res_name + "%s that is not a water is being dropped\n  " % record.element)
                     ##raw_input("Press enter to continue...")
                 continue
             if isinstance(record, (ATOM, ANISOU, SIGUIJ, SIGATM)):
@@ -112,11 +112,11 @@ def is_sameatom(atom1,atom2):
     #
     # Compare atom1 and atom2
     #
-    properties=['name','resSeq','chainID']
+    properties=['name','res_seq','chain_id']
     for attr in properties:
         a1_prop=getattr(atom1,attr,None)
         a2_prop=getattr(atom2,attr,None)
-        if (attr!='chainID' and (not a1_prop or not a2_prop)) or a1_prop!=a2_prop:
+        if (attr!='chain_id' and (not a1_prop or not a2_prop)) or a1_prop!=a2_prop:
             return None
     return 1
 

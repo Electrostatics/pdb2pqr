@@ -57,7 +57,7 @@ class get_ligand_topology:
                 if atom[0] in trivial_types:
                     if atom[0]!='H': # Get rid of all the hydrogens
                         self.atoms[atom]['type']=atom[0]
-                        self.atoms[atom]['sybylType']='Unknown'
+                        self.atoms[atom]['sybyl_type']='Unknown'
             #
             # Get the bonds
             # First approximation: Anything closer than 2.0 A is bonded
@@ -103,15 +103,15 @@ class get_ligand_topology:
                 name = line.name
                 #            self.atoms[name] = name
                 self.atoms[name] = {'coords': Numeric.array([float(line.x),float(line.y),float(line.z)])}
-                self.atoms[name]['sybylType'] = line.sybylType
+                self.atoms[name]['sybyl_type'] = line.sybyl_type
                 #
                 # we don't have this information when coming from PDB!
-                self.atoms[name]['lBondedAtoms'] = line.lBondedAtoms
-                self.atoms[name]['lBonds'] = line.lBonds
+                self.atoms[name]['l_ondedAtoms'] = line.l_bonded_atoms
+                self.atoms[name]['l_bonds'] = line.l_bonds
                 ###PC
                 # one bond is lost!
                 self.atoms[name]['bonds']=[]
-                for BBonds in line.lBondedAtoms: #line.lBonds:
+                for BBonds in line.l_bonded_atoms: #line.l_bonds:
                     self.atoms[name]['bonds'].append(BBonds.name)
                 ###PC
                 # save the atomname & id
@@ -120,13 +120,13 @@ class get_ligand_topology:
                 #
                 # USEFUL information
                 # bonded heavy atoms
-                self.atoms[name]['nbhvy'] = len([x for x in self.atoms[name]['lBondedAtoms'] if x.sybylType != "H"])
+                self.atoms[name]['nbhvy'] = len([x for x in self.atoms[name]['l_bonded_atoms'] if x.sybyl_type != "H"])
                 # number of bonds (including hydrogens)
-                self.atoms[name]['nbds'] = len(self.atoms[name]['lBonds'])
+                self.atoms[name]['nbds'] = len(self.atoms[name]['l_bonds'])
                 # number of bonded hydrogens
                 self.atoms[name]['nbhyd'] = self.atoms[name]['nbds']- self.atoms[name]['nbhvy']
                 # element
-                self.atoms[name]['ele'] = self.atoms[name]['sybylType'].split('.')[0]
+                self.atoms[name]['ele'] = self.atoms[name]['sybyl_type'].split('.')[0]
             #
             # Get the torsion angles
             #
@@ -211,7 +211,7 @@ class get_ligand_topology:
                 stype=O_types[sum_of_bondorder][number_of_bonds]
             else:
                 pass
-            self.atoms[atom]['sybylType']=stype 
+            self.atoms[atom]['sybyl_type']=stype 
             #print atom,stype
         #
         # Do some postchecks
@@ -219,7 +219,7 @@ class get_ligand_topology:
         #
         for atom in self.atoms.keys():
             at=self.atoms[atom]
-            if at['sybylType']=='C.2':
+            if at['sybyl_type']=='C.2':
                 #
                 # See if we have two oxygens bound + an extra bond
                 #
@@ -227,14 +227,14 @@ class get_ligand_topology:
                     Os=[]
                     for bound_atom_name in at['bonds']:
                         bound_atom=self.atoms[bound_atom_name]
-                        if bound_atom['sybylType']=='O.2':
+                        if bound_atom['sybyl_type']=='O.2':
                             Os.append(bound_atom_name)
                     #
                     # If we had two O.2s, then change their hybridisation to O.3
                     #
                     if len(Os)==2:
                         for O in Os:
-                            self.atoms[O]['sybylType']='O.3'
+                            self.atoms[O]['sybyl_type']='O.3'
         #
         # All Done
         #
@@ -242,7 +242,7 @@ class get_ligand_topology:
         atoms.sort()
         _LOGGER.info('\nFinal Sybyl type results')
         for atom in atoms:
-            _LOGGER.info(atom,self.atoms[atom]['sybylType'])
+            _LOGGER.info(atom,self.atoms[atom]['sybyl_type'])
         return
 
     #
@@ -493,7 +493,7 @@ class get_ligand_topology:
             #
         # match ligand atom type with atom type from template
         for at in t.keys():
-            if t[at]['sybylType'] == self.atoms[atom2match]['sybylType']:
+            if t[at]['sybyl_type'] == self.atoms[atom2match]['sybyl_type']:
                 match_list.append(at)
             if len(match_list) != 0:
                 return match_list,t[at]['sybyl_neighbours']
@@ -510,21 +510,21 @@ class get_ligand_topology:
                     for entries in  matched_atom_in_template:
                         ligand_list = []
                         # Create sybyl_neighbors on-the-fly for ligand
-                        for sybyl_bonded_at in self.atoms[at_lig]['lBondedAtoms']:
-                            ligand_list.append(sybyl_bonded_at.sybylType)
+                        for sybyl_bonded_at in self.atoms[at_lig]['l_bonded_atoms']:
+                            ligand_list.append(sybyl_bonded_at.sybyl_type)
                             ligand_set = Set(ligand_list)
                             template_set = Set(nbs_in_template)
                             # Now match simultaneously atom_type and neighbouring atom_types for ligand AND template
                             if len(ligand_set.difference(template_set)) == 0 and len(ligand_list) == len(nbs_in_template):
                                 for entry in matched_atom_in_template:
                                     _LOGGER.info("%3d"%(counter),"  Ligand %4s %5s %28s " \
-                                          %(at_lig,self.atoms[at_lig]['sybylType'],ligand_list),\
+                                          %(at_lig,self.atoms[at_lig]['sybyl_type'],ligand_list),\
                                           "template %s %s %s %s" \
-                                          %(matched_atom_in_template,t[entry]['sybylType'],nbs_in_template,t[entry]['neighbours']))
+                                          %(matched_atom_in_template,t[entry]['sybyl_type'],nbs_in_template,t[entry]['neighbours']))
                                     for neighboured_template_atoms in t[entry]['neighbours']:
-                                        _LOGGER.info(neighboured_template_atoms,t[neighboured_template_atoms]['sybylType'],t[neighboured_template_atoms]['sybyl_neighbours'])
-                                    for neighboured_ligand_atoms in self.atoms[at_lig]['lBondedAtoms']:
-                                        _LOGGER.info(neighboured_ligand_atoms.name, neighboured_ligand_atoms.sybylType,neighboured_ligand_atoms.lBondedAtoms)
+                                        _LOGGER.info(neighboured_template_atoms,t[neighboured_template_atoms]['sybyl_type'],t[neighboured_template_atoms]['sybyl_neighbours'])
+                                    for neighboured_ligand_atoms in self.atoms[at_lig]['l_bonded_atoms']:
+                                        _LOGGER.info(neighboured_ligand_atoms.name, neighboured_ligand_atoms.sybyl_type,neighboured_ligand_atoms.l_bonded_atoms)
                                     stop
                 counter += 1
 
@@ -542,14 +542,14 @@ class get_ligand_topology:
                     atom2match = e
             for at in t.keys():
                 # TODO:matching ALL atom types in template => gives a match_list
-                if t[at]['sybylType'] == self.atoms[atom2match]['sybylType'] \
+                if t[at]['sybyl_type'] == self.atoms[atom2match]['sybyl_type'] \
                    and atom2match not in already_visited:
                     already_visited.append(self.atoms[atom2match]['atomname'])
                     Lig_nbs_SybylList = []
                     Lig_nbs_AtomnameList = []
                     # Create sybyl_neighbors on-the-fly for ligand
-                    for att in self.atoms[atom2match]['lBondedAtoms']:
-                        Lig_nbs_SybylList.append(att.sybylType)
+                    for att in self.atoms[atom2match]['l_bonded_atoms']:
+                        Lig_nbs_SybylList.append(att.sybyl_type)
                         Lig_nbs_AtomnameList.append(att.name)
                     ligand_set = Set(Lig_nbs_SybylList)
                     template_set = Set(t[at]['sybyl_neighbours'])
@@ -565,8 +565,8 @@ class get_ligand_topology:
                                     already_visited.append(bb)
                                     matching_template['MatchedFragments'][bb] = {}
                                     bb_list = []
-                                    for bat in self.atoms[bb]['lBondedAtoms']:
-                                        bb_list.append(bat.sybylType)
+                                    for bat in self.atoms[bb]['l_bonded_atoms']:
+                                        bb_list.append(bat.sybyl_type)
                                     matching_template['MatchedFragments'][bb]['sybyl_neighbours'] = bb_list
                                     #
                                     # here we call the routine by itself
@@ -589,7 +589,7 @@ class get_ligand_topology:
                         else:
                             matched_atom_types2(nbat,t)
                 else:
-                    _LOGGER.info("sybylType s don't match", atom2match)
+                    _LOGGER.info("sybyl_type s don't match", atom2match)
             # 2nd loop to go over to the neighboured atoms
             for at in t.keys():
                 if atom2match in already_visited:
@@ -614,8 +614,8 @@ class get_ligand_topology:
         def createsybyllistonthefly(lig_atom):
             # look in matched_atom_types2 - line 656
             sybyllist = []
-            for att in self.atoms[lig_atom]['lBondedAtoms']:
-                sybyllist.append(att.sybylType)
+            for att in self.atoms[lig_atom]['l_bonded_atoms']:
+                sybyllist.append(att.sybyl_type)
             return sybyllist
 
         def gothroughallnbsofmatchlistatom(stored_nbs_of_atom2match,t,already_visited,hit_list):
@@ -626,7 +626,7 @@ class get_ligand_topology:
                     already_visited.append(ent_lig)
                     # look for matching neighbours
                     for at in t.keys():
-                        if t[at]['sybylType'] == self.atoms[ent_lig]['sybylType'] and ent_lig not in matchlist:
+                        if t[at]['sybyl_type'] == self.atoms[ent_lig]['sybyl_type'] and ent_lig not in matchlist:
                             matchlist.append(at)
                     for matches in matchlist:
                         if len(Set(t[matches]['sybyl_neighbours']).difference(Set(createsybyllistonthefly(ent_lig)))) == 0:
@@ -661,7 +661,7 @@ class get_ligand_topology:
                     matchatomtypeintemplateandgetliglist(next_at,t,been_here_flag=True)
             matchlist = []
             for at in t.keys():
-                if t[at]['sybylType'] == self.atoms[atom2match]['sybylType'] and atom2match not in already_visited:
+                if t[at]['sybyl_type'] == self.atoms[atom2match]['sybyl_type'] and atom2match not in already_visited:
                     already_visited.append(atom2match)
                     _LOGGER.info("we found a match for %4s " %(atom2match))
                     matchlist.append(at)

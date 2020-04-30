@@ -158,7 +158,7 @@ class Conformation_container:
         titrate_only = self.molecular_container.options.titrate_only
         if titrate_only is not None:
             at = group.atom
-            if not (at.chainID, at.resNumb, at.icode) in titrate_only:
+            if not (at.chain_id, at.resNumb, at.icode) in titrate_only:
                 group.titratable = False
                 if group.residue_type == 'CYS':
                     group.exclude_cys_from_results = True
@@ -376,7 +376,7 @@ class Conformation_container:
         return [atom for atom in self.atoms if atom.type=='hetatm' and atom.element != 'H']
 
     def get_chain(self,chain):
-        return [atom for atom in self.atoms if atom.chainID != chain]
+        return [atom for atom in self.atoms if atom.chain_id != chain]
 
 
     def add_atom(self, atom):
@@ -388,8 +388,8 @@ class Conformation_container:
             atom.molecular_container = self.molecular_container
 
         # store chain id for bookkeeping
-        if not atom.chainID in self.chains:
-            self.chains.append(atom.chainID)
+        if not atom.chain_id in self.chains:
+            self.chains.append(atom.chain_id)
 
         return
 
@@ -443,7 +443,7 @@ class Conformation_container:
         return
 
     def sort_atoms_key(self, atom):
-        key = ord(atom.chainID)*1e7
+        key = ord(atom.chain_id)*1e7
         key += atom.resNumb*1000
         if len(atom.name) > len(atom.element):
             key += ord(atom.name[len(atom.element)])

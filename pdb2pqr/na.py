@@ -15,10 +15,10 @@ class Nucleic(Residue):
         sample_atom = atoms[-1]
 
         self.atoms = []
-        self.name = sample_atom.resName
-        self.chainID = sample_atom.chainID
-        self.resSeq = sample_atom.resSeq
-        self.iCode = sample_atom.iCode
+        self.name = sample_atom.res_name
+        self.chain_id = sample_atom.chain_id
+        self.res_seq = sample_atom.res_seq
+        self.ins_code = sample_atom.ins_code
 
         self.ffname = self.name
         self.map = {}
@@ -26,8 +26,8 @@ class Nucleic(Residue):
         self.patches = []
         self.is3term = 0
         self.is5term = 0
-        self.isCterm = 0
-        self.isNterm = 0
+        self.is_c_term = 0
+        self.is_n_term = 0
         self.missing = []
         self.reference = ref
 
@@ -54,7 +54,7 @@ class Nucleic(Residue):
         newatom.set("z", newcoords[2])
         newatom.set("name", atomname)
         newatom.set("occupancy", 1.0)
-        newatom.set("tempFactor", 0.0)
+        newatom.set("temp_factor", 0.0)
         newatom.added = 1
         self.add_atom(newatom)
 

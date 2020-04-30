@@ -102,12 +102,12 @@ class Routines:
                 rname, aname = forcefield.get_names(resname, atom.name)
                 if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and rname != None:
                     try:
-                        if (residue.isNterm or residue.isCterm) and rname != residue.name:
+                        if (residue.is_n_term or residue.is_c_term) and rname != residue.name:
                             rname = residue.name
                     except AttributeError:
                         pass
                 if aname != None and rname != None:
-                    atom.resName = rname
+                    atom.res_name = rname
                     atom.name = aname
 
         _LOGGER.debug("Done applying naming scheme.")
@@ -206,7 +206,7 @@ class Routines:
                 _LOGGER.debug("%s is a free cysteine" % res1, 1)
         _LOGGER.debug("Done updating SS bridges.")
 
-    def updateInternalBonds(self):
+    def updateInternal_bonds(self):
         """
             Update the internal bonding network using the reference
             objects in each atom.
@@ -228,7 +228,7 @@ class Routines:
               1.  Applying the PEPTIDE patch to all Amino residues
                   so as to add reference for the N(i+1) and C(i-1)
                   atoms
-              2.  UpdateInternalBonds for inter-residue linking
+              2.  UpdateInternal_bonds for inter-residue linking
               3.  Set the links to the N(i+1) and C(i-1) atoms
         """
 
@@ -236,19 +236,19 @@ class Routines:
 
         for residue in self.protein.get_residues():
             if isinstance(residue, Amino):
-                if residue.isNterm or residue.isCterm:
+                if residue.is_n_term or residue.is_c_term:
                     continue
                 else:
                     self.applyPatch("PEPTIDE", residue)
 
         # Update all internal bonds
 
-        self.updateInternalBonds()
+        self.updateInternal_bonds()
 
         # Set the peptide bond pointers
 
         for chain in self.protein.getChains():
-            for i in range(chain.numResidues() - 1):
+            for i in range(chain.num_residues() - 1):
                 res1 = chain.residues[i]
                 res2 = chain.residues[i + 1]
                 if not isinstance(res1, Amino) or not isinstance(res2, Amino):
@@ -370,14 +370,14 @@ class Routines:
         """
 
         if len(chain.residues) == 0:
-            text = "Error: chain \"%s\" has 0 residues!" % chain.chainID
+            text = "Error: chain \"%s\" has 0 residues!" % chain.chain_id
             raise PDBInputError(text)
 
         # Set the N-Terminus/ 5' Terminus
 
         res0 = chain.residues[0]
         if isinstance(res0, Amino):
-            res0.set("isNterm", 1)
+            res0.set("is_n_term", 1)
             if isinstance(res0, PRO):
                 self.applyPatch("NEUTRAL-NTERM", res0)
             elif neutraln:
@@ -392,7 +392,7 @@ class Routines:
 
         reslast = chain.residues[-1]
         if isinstance(reslast, Amino):
-            reslast.set("isCterm", 1)
+            reslast.set("is_c_term", 1)
             if neutralc:
                 self.applyPatch("NEUTRAL-CTERM", reslast)
             else:
@@ -404,7 +404,7 @@ class Routines:
             for i in range(len(chain.residues)):
                 resthis = chain.residues[-1 - i]
                 if isinstance(resthis, Amino):
-                    resthis.set("isCterm", 1)
+                    resthis.set("is_c_term", 1)
                     if neutralc:
                         self.applyPatch("NEUTRAL-CTERM", resthis)
                     else:
@@ -448,13 +448,13 @@ class Routines:
 
             for residue in origlist:
                 reslist.append(residue)
-                oldid = residue.chainID
+                oldid = residue.chain_id
 
                 # Look for ending termini
 
                 fixflag = 0
                 if isinstance(residue, Amino):
-                    if (residue.has_atom("OXT") and not residue.isCterm):
+                    if (residue.has_atom("OXT") and not residue.is_c_term):
                         fixflag = 1
 
                 elif isinstance(residue, Nucleic):
@@ -498,7 +498,7 @@ class Routines:
 
             c += 1
 
-        # Update the final chain's chainID if it is "" unless it's all water
+        # Update the final chain's chain_id if it is "" unless it's all water
 
         if "" in self.protein.chainmap:
 
@@ -527,7 +527,7 @@ class Routines:
                 message = 'Warning: Reusing chain id: ' + chainid[0]
                 _LOGGER.warn(message)
 
-            # Use the new chainID
+            # Use the new chain_id
 
             self.protein.chainmap[chainid] = chain
             del self.protein.chainmap[""]
@@ -907,9 +907,9 @@ class Routines:
             for atom in residue.get_atoms():
                 if atom.isBackbone():
                     atom.refdistance = -1
-                elif residue.isCterm and atom.name == "HO":   # special case for HO in Cterm
+                elif residue.is_c_term and atom.name == "HO":   # special case for HO in Cterm
                     atom.refdistance = 3
-                elif residue.isNterm and (atom.name == "H3" or atom.name == "H2"):  # special case for H2 or H3 in Nterm
+                elif residue.is_n_term and (atom.name == "H3" or atom.name == "H2"):  # special case for H2 or H3 in Nterm
                     atom.refdistance = 2
                 else:
                     atom.refdistance = len(shortestPath(map, atom, caatom)) - 1
@@ -924,7 +924,7 @@ class Routines:
 
         self.calculateDihedralAngles()
         self.setDonorsAndAcceptors()
-        self.updateInternalBonds()
+        self.updateInternal_bonds()
         self.setReferenceDistance()
         bumpscore = 0.0
         #for residue in self.protein.get_residues():
@@ -1024,7 +1024,7 @@ class Routines:
 
         self.calculateDihedralAngles()
         self.setDonorsAndAcceptors()
-        self.updateInternalBonds()
+        self.updateInternal_bonds()
         self.setReferenceDistance()
 
         # Determine which residues to debump
@@ -1552,7 +1552,7 @@ class Routines:
         ##  pka_molecule.write_pka()
 
         for grp in pka_molecule.conformations['AVR'].groups:
-            key = str.strip('%s %s %s' % (grp.residue_type, grp.atom.resNumb, grp.atom.chainID))
+            key = str.strip('%s %s %s' % (grp.residue_type, grp.atom.resNumb, grp.atom.chain_id))
             pkadic[key] = grp.pka_value
 
         self.protein.pka_protein = pka_molecule
@@ -1596,11 +1596,11 @@ class Routines:
             if not isinstance(residue, Amino):
                 continue
             resname = residue.name
-            resnum = residue.resSeq
-            chainID = residue.chainID
+            resnum = residue.res_seq
+            chain_id = residue.chain_id
 
-            if residue.isNterm:
-                key = "N+ %i %s" % (resnum, chainID)
+            if residue.is_n_term:
+                key = "N+ %i %s" % (resnum, chain_id)
                 key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
@@ -1612,8 +1612,8 @@ class Routines:
                         else:
                             self.applyPatch("NEUTRAL-NTERM", residue)
 
-            if residue.isCterm:
-                key = "C- %i %s" % (resnum, chainID)
+            if residue.is_c_term:
+                key = "C- %i %s" % (resnum, chain_id)
                 key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
@@ -1625,7 +1625,7 @@ class Routines:
                         else:
                             self.applyPatch("NEUTRAL-CTERM", residue)
 
-            key = "%s %i %s" % (resname, resnum, chainID)
+            key = "%s %i %s" % (resname, resnum, chain_id)
             key = key.strip()
             if key in pkadic:
                 value = pkadic[key]
@@ -1638,10 +1638,10 @@ class Routines:
                         warn = (key, "neutral")
                         _LOGGER.warn(warn)
                 elif resname == "ASP" and ph < value:
-                    if residue.isCterm and ff in ["amber", "tyl06", "swanson"]:
+                    if residue.is_c_term and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
                         _LOGGER.warn(warn)
-                    elif residue.isNterm and ff in ["amber", "tyl06", "swanson"]:
+                    elif residue.is_n_term and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at N-Terminal")
                         _LOGGER.warn(warn)
                     else:
@@ -1653,10 +1653,10 @@ class Routines:
                     else:
                         self.applyPatch("CYM", residue)
                 elif resname == "GLU" and ph < value:
-                    if residue.isCterm and ff in ["amber", "tyl06", "swanson"]:
+                    if residue.is_c_term and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
                         _LOGGER.warn(warn)
-                    elif residue.isNterm and ff in ["amber", "tyl06", "swanson"]:
+                    elif residue.is_n_term and ff in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at N-Terminal")
                         _LOGGER.warn(warn)
                     else:
@@ -1667,10 +1667,10 @@ class Routines:
                     if ff == "charmm":
                         warn = (key, "neutral")
                         _LOGGER.warn(warn)
-                    elif ff in ["amber", "tyl06", "swanson"] and residue.get("isCterm"):
+                    elif ff in ["amber", "tyl06", "swanson"] and residue.get("is_c_term"):
                         warn = (key, "neutral at C-Terminal")
                         _LOGGER.warn(warn)
-                    elif ff == "tyl06" and residue.get("isNterm"):
+                    elif ff == "tyl06" and residue.get("is_n_term"):
                         warn = (key, "neutral at N-Terminal")
                         _LOGGER.warn(warn)
                     else:
@@ -1705,7 +1705,7 @@ class Routines:
 
         hlist_copy = hlist.copy()
         for residue in self.protein.get_residues():
-            reskey = (residue.resSeq, residue.chainID, residue.iCode)
+            reskey = (residue.res_seq, residue.chain_id, residue.ins_code)
             if reskey in hlist:
                 hlist.remove(reskey)
                 if isinstance(residue, Amino):

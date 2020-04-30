@@ -32,7 +32,7 @@ class pKa:
         #
         # Unique identifier
         #
-        self.uniqueid='%s_%s_%d_TITTYPE:%s' %(residue.name,residue.chainID,residue.resSeq,group.name)
+        self.uniqueid='%s_%s_%d_TITTYPE:%s' %(residue.name,residue.chain_id,residue.res_seq,group.name)
         return
 
     def __repr__(self):

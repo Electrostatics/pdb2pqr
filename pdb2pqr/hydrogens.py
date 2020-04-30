@@ -141,8 +141,8 @@ class HydrogenAmbiguity(object):
         self.routines = routines
 
     def __str__(self):
-        text = "%s %i %s (%s)" % (self.residue.name, self.residue.resSeq, \
-                                  self.residue.chainID, self.hdef.opttype)
+        text = "%s %i %s (%s)" % (self.residue.name, self.residue.res_seq, \
+                                  self.residue.chain_id, self.hdef.opttype)
         return text
 
 
@@ -684,7 +684,7 @@ class Flip(Optimize):
         pivot = dihedral.split()[2]
         moveablenames = self.routines.getMoveableNames(residue, pivot)
         # HO in CTERM shouldn't be in the list of flip atoms
-        if residue.isCterm:
+        if residue.is_c_term:
             newmoveablenames = []
             for name in moveablenames:
                 if name == "HO":
@@ -1819,7 +1819,7 @@ class HydrogenRoutines(object):
             hname = conf.hname
             boundname = conf.boundatom
             if residue.get_atom(hname) != None:
-                _LOGGER.debug('Removing %s %s %s', residue.name, residue.resSeq, hname)
+                _LOGGER.debug('Removing %s %s %s', residue.name, residue.res_seq, hname)
                 residue.removeAtom(hname)
             residue.get_atom(boundname).hacceptor = 1
             residue.get_atom(boundname).hdonor = 0
@@ -1859,7 +1859,7 @@ class HydrogenRoutines(object):
             residue.get_atom(boundname).hacceptor = 0
             residue.get_atom(boundname).hdonor = 1
             # Setting the SybylType for the newly built H
-            residue.get_atom(hname).sybylType = 'H'
+            residue.get_atom(hname).sybyl_type = 'H'
             # formal charge for PEOE_PB
             residue.get_atom(hname).formalcharge = 0.0
             # flag the added hydrogen
@@ -1912,7 +1912,7 @@ class HydrogenRoutines(object):
                 continue
             hname = conf.hname
             for atom in conf.atoms:
-                if residue.isNterm and residue.name == "PRO":
+                if residue.is_n_term and residue.name == "PRO":
                     if atom.name == "H":
                         atom.name = "CD"
                         atom.x = 1.874
@@ -1939,7 +1939,7 @@ class HydrogenRoutines(object):
             residue.get_atom(boundname).hdonor = 1
 
             # Setting the SybylType for the newly built H
-            residue.get_atom(hname).sybylType = 'H'
+            residue.get_atom(hname).sybyl_type = 'H'
 
             # formal charge for PEOE_PB
             residue.get_atom(hname).formalcharge = 0.0
@@ -1948,7 +1948,7 @@ class HydrogenRoutines(object):
             residue.get_atom(hname).titratableH = True
 
         # Update intrabonds again
-        if residue.isNterm and residue.name == "PRO":
+        if residue.is_n_term and residue.name == "PRO":
             for atom in residue.get_atoms():
                 if atom.name == "H":
                     residue.removeAtom("H")
@@ -2035,7 +2035,7 @@ class HydrogenRoutines(object):
         self.routines.cells.assignCells(self.protein)
         self.routines.calculateDihedralAngles()
         self.routines.setDonorsAndAcceptors()
-        self.routines.updateInternalBonds()
+        self.routines.updateInternal_bonds()
         self.routines.setReferenceDistance()
         self.optlist = []
         self.atomlist = []
@@ -2076,7 +2076,7 @@ class HydrogenRoutines(object):
         self.routines.cells.assignCells(self.protein)
         self.routines.calculateDihedralAngles()
         self.routines.setDonorsAndAcceptors()
-        self.routines.updateInternalBonds()
+        self.routines.updateInternal_bonds()
         self.routines.setReferenceDistance()
         self.optlist = []
 

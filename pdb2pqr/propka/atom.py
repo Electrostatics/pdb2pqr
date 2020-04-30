@@ -15,7 +15,7 @@ class Atom:
 
         self.set_properties(line)
 
-        self.residue_label = "%-3s%4d%2s" % (self.name,self.resNumb, self.chainID)
+        self.residue_label = "%-3s%4d%2s" % (self.name,self.resNumb, self.chain_id)
 
         self.groups_extracted = 0
         self.group = None
@@ -59,8 +59,8 @@ class Atom:
         self.y = 0.0
         self.z = 0.0
         self.resNumb = 0
-        self.resName = ''
-        self.chainID = 'A'
+        self.res_name = ''
+        self.chain_id = 'A'
         self.type = ''
         self.occ = '1.0'
         self.beta = '0.0'
@@ -74,14 +74,14 @@ class Atom:
             self.y = float( line[38:46].strip() )
             self.z = float( line[46:54].strip() )
             self.resNumb = int( line[22:26].strip() )
-            self.resName = "%-3s" % (line[17:20].strip())
-            self.chainID = line[21]
+            self.res_name = "%-3s" % (line[17:20].strip())
+            self.chain_id = line[21]
             # Set chain id to "_" if it is just white space.
-            if not self.chainID.strip():
-                self.chainID = '_'
+            if not self.chain_id.strip():
+                self.chain_id = '_'
             self.type = line[:6].strip().lower()
 
-            if self.resName in ['DA ','DC ','DG ','DT ']:
+            if self.res_name in ['DA ','DC ','DG ','DT ']:
                 self.type = 'hetatm'
 
             self.occ = line[55:60].strip()
@@ -136,8 +136,8 @@ class Atom:
     def setProperty(self,
                     numb    = None,
                     name    = None,
-                    resName = None,
-                    chainID = None,
+                    res_name = None,
+                    chain_id = None,
                     resNumb = None,
                     x       = None,
                     y       = None,
@@ -150,8 +150,8 @@ class Atom:
 
         if numb    != None: self.numb    = numb
         if name    != None: self.name    = name
-        if resName != None: self.resName = resName
-        if chainID != None: self.chainID = chainID
+        if res_name != None: self.res_name = res_name
+        if chain_id != None: self.chain_id = chain_id
         if resNumb != None: self.resNumb = resNumb
         if x       != None: self.x       = x
         if y       != None: self.y       = y
@@ -171,9 +171,9 @@ class Atom:
         newAtom.numb = self.numb
         newAtom.name = self.name
         newAtom.element = self.element
-        newAtom.resName = self.resName
+        newAtom.res_name = self.res_name
         newAtom.resNumb = self.resNumb
-        newAtom.chainID = self.chainID
+        newAtom.chain_id = self.chain_id
         newAtom.x = self.x
         newAtom.y = self.y
         newAtom.z = self.z
@@ -205,8 +205,8 @@ class Atom:
                                                                     self.numb,
                                                                     propka.lib.makeTidyAtomLabel(self.name,
                                                                                                  self.element),
-                                                                    self.resName,
-                                                                    self.chainID,
+                                                                    self.res_name,
+                                                                    self.chain_id,
                                                                     self.resNumb,
                                                                     self.x,
                                                                     self.y,
@@ -253,7 +253,7 @@ class Atom:
 
             # generic ions
             if self.occ in ['1P','2P','1N','2N']:
-                self.resName=self.occ
+                self.res_name=self.occ
                 self.occ='Ion'
 
             # correct the group type
@@ -292,8 +292,8 @@ class Atom:
                                                                    self.numb,
                                                                    propka.lib.makeTidyAtomLabel(self.name,
                                                                                                 self.element),
-                                                                   self.resName,
-                                                                   self.chainID,
+                                                                   self.res_name,
+                                                                   self.chain_id,
                                                                    self.resNumb,
                                                                    self.x,
                                                                    self.y,
@@ -317,7 +317,7 @@ class Atom:
                                                                          self.z,
                                                                          self.sybyl_type.replace('-',''),
                                                                          self.resNumb,
-                                                                         self.resName,
+                                                                         self.res_name,
                                                                          0.0)#self.charge)
 
 
@@ -328,8 +328,8 @@ class Atom:
     def makePDBLine(self,
                     numb    = None,
                     name    = None,
-                    resName = None,
-                    chainID = None,
+                    res_name = None,
+                    chain_id = None,
                     resNumb = None,
                     x       = None,
                     y       = None,
@@ -342,8 +342,8 @@ class Atom:
         """
         if numb    == None: numb    = self.numb
         if name    == None: name    = self.name
-        if resName == None: resName = self.resName
-        if chainID == None: chainID = self.chainID
+        if res_name == None: res_name = self.res_name
+        if chain_id == None: chain_id = self.chain_id
         if resNumb == None: resNumb = self.resNumb
         if x       == None: x       = self.x
         if y       == None: y       = self.y
@@ -355,8 +355,8 @@ class Atom:
         str  = "ATOM "
         str += "%6d" % (numb)
         str += " %s" % (propka.lib.makeTidyAtomLabel(name,self.element))
-        str += " %s" % (resName)
-        str += "%2s" % (chainID)
+        str += " %s" % (res_name)
+        str += "%2s" % (chain_id)
         str += "%4d" % (resNumb)
         str += "%12.3lf" % (x)
         str += "%8.3lf" % (y)
@@ -375,7 +375,7 @@ class Atom:
 
 
     def __str__(self):
-        return '%5d-%4s %5d-%3s (%1s) [%8.3f %8.3f %8.3f] %s' %(self.numb, self.name, self.resNumb, self.resName, self.chainID, self.x, self.y, self.z,self.element)
+        return '%5d-%4s %5d-%3s (%1s) [%8.3f %8.3f %8.3f] %s' %(self.numb, self.name, self.resNumb, self.res_name, self.chain_id, self.x, self.y, self.z,self.element)
 
 
 #    def get_element(self):

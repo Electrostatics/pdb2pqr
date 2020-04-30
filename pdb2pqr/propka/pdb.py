@@ -63,7 +63,7 @@ def protein_precheck(conformations, names):
                     atoms_by_residue[res_id] = [a]
 
         for res_id, res_atoms in atoms_by_residue.items():
-            resname = res_atoms[0].resName
+            resname = res_atoms[0].res_name
             residue_label = '%3s%5s'%(resname, res_id)
 
             # ignore ligand residues
@@ -83,7 +83,7 @@ def protein_precheck(conformations, names):
     return
 
 def resid_from_atom(a):
-    return '%4d %s %s'%(a.resNumb,a.chainID,a.icode)
+    return '%4d %s %s'%(a.resNumb,a.chain_id,a.icode)
 
 
 def get_atom_lines_from_pdb(pdb_file, ignore_residues = [], keep_protons=False, tags = ['ATOM  ', 'HETATM'], chains=None):
@@ -197,7 +197,7 @@ def write_mol2_for_atoms(atoms, filename):
 
     substructure_section = '@<TRIPOS>SUBSTRUCTURE\n\n'
     if len(atoms)>0:
-        substructure_section = '@<TRIPOS>SUBSTRUCTURE\n%-7d %10s %7d\n'%(atoms[0].resNumb,atoms[0].resName,atoms[0].numb)
+        substructure_section = '@<TRIPOS>SUBSTRUCTURE\n%-7d %10s %7d\n'%(atoms[0].resNumb,atoms[0].res_name,atoms[0].numb)
 
     out = propka.lib.open_file_for_writing(filename)
     out.write(header%(len(atoms),id-1))

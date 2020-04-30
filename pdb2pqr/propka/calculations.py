@@ -75,16 +75,16 @@ def protonate_30_style(molecular_container):
                     #backbone
                     [O, C]= addBackBoneHydrogen(residue,O,C)
                     #arginine
-                    if residue[0].resName == 'ARG':
+                    if residue[0].res_name == 'ARG':
                         addArgHydrogen(residue)
                     #histidine
-                    if residue[0].resName == 'HIS':
+                    if residue[0].res_name == 'HIS':
                         addHisHydrogen(residue)
                     #tryptophan
-                    if residue[0].resName == 'TRP':
+                    if residue[0].res_name == 'TRP':
                         addTrpHydrogen(residue)
                     #amides
-                    if residue[0].resName in ['GLN','ASN']:
+                    if residue[0].res_name in ['GLN','ASN']:
                         addAmdHydrogen(residue)
 
 
@@ -160,7 +160,7 @@ def addTrpHydrogen(residue):
         elif atom.name == "CE2":
             CE  = atom
     if CD == None or NE == None or CE == None:
-        str = "Did not find all atoms in %s%4d - in %s" % (self.resName, self.resNumb, "addTrpHydrogen()")
+        str = "Did not find all atoms in %s%4d - in %s" % (self.res_name, self.resNumb, "addTrpHydrogen()")
         info(str)
         exit(0)
 
@@ -177,15 +177,15 @@ def addAmdHydrogen(residue):
     O = None
     N = None
     for atom in residue:
-        if   (atom.resName == "GLN" and atom.name == "CD")  or (atom.resName == "ASN" and atom.name == "CG"):
+        if   (atom.res_name == "GLN" and atom.name == "CD")  or (atom.res_name == "ASN" and atom.name == "CG"):
             C = atom
-        elif (atom.resName == "GLN" and atom.name == "OE1") or (atom.resName == "ASN" and atom.name == "OD1"):
+        elif (atom.res_name == "GLN" and atom.name == "OE1") or (atom.res_name == "ASN" and atom.name == "OD1"):
             O = atom
-        elif (atom.resName == "GLN" and atom.name == "NE2") or (atom.resName == "ASN" and atom.name == "ND2"):
+        elif (atom.res_name == "GLN" and atom.name == "NE2") or (atom.res_name == "ASN" and atom.name == "ND2"):
             N = atom
 
     if C == None or O == None or N == None:
-        str = "Did not find N, C and/or O in %s%4d - in %s" % (atom.resName, atom.resNumb, "addAmdHydrogen()")
+        str = "Did not find N, C and/or O in %s%4d - in %s" % (atom.res_name, atom.resNumb, "addAmdHydrogen()")
         info(str)
         exit(0)
 
@@ -223,7 +223,7 @@ def addBackBoneHydrogen(residue, O, C):
         return [new_O,new_C]
 
 
-    if N.resName == "PRO":
+    if N.res_name == "PRO":
         """ PRO doesn't have an H-atom; do nothing """
     else:
         H = protonateDirection([N, O, C])
@@ -314,8 +314,8 @@ def make_new_H(atom, x,y,z):
     new_H = propka.atom.Atom()
     new_H.setProperty(numb    = None,
                       name    = 'H%s'%atom.name[1:],
-                      resName = atom.resName,
-                      chainID = atom.chainID,
+                      res_name = atom.res_name,
+                      chain_id = atom.chain_id,
                       resNumb = atom.resNumb,
                       x       = x,
                       y       = y,
@@ -358,7 +358,7 @@ def radial_volume_desolvation(parameters, group):
 
     for atom in all_atoms:
         # ignore atoms in the same residue
-        if atom.resNumb == group.atom.resNumb and atom.chainID == group.atom.chainID:
+        if atom.resNumb == group.atom.resNumb and atom.chain_id == group.atom.chain_id:
             continue
 
         sq_dist = squared_distance(group, atom)
@@ -410,15 +410,15 @@ def contactDesolvation(parameters, group):
                     'N+': 4.5}
 
     all_atoms = group.atom.conformation_container.get_non_hydrogen_atoms()
-    if residue.resName in version.desolvationRadii:
-        local_cutoff = version.desolvationRadii[residue.resName]
+    if residue.res_name in version.desolvationRadii:
+        local_cutoff = version.desolvationRadii[residue.res_name]
     else:
         local_cutoff = 0.00
     residue.Nmass = 0
     residue.Nlocl = 0
 
     for atom in all_atoms:
-        if atom.resNumb != group.atom.resNumb or atom.chainID != group.atom.chainID:
+        if atom.resNumb != group.atom.resNumb or atom.chain_id != group.atom.chain_id:
             dX = atom.x - residue.x
             dY = atom.y - residue.y
             dZ = atom.z - residue.z

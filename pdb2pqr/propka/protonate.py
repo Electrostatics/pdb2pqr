@@ -121,7 +121,7 @@ class Protonate:
     def set_charge(self, atom):
         # atom is a protein atom
         if atom.type=='atom':
-            key = '%3s-%s'%(atom.resName, atom.name)
+            key = '%3s-%s'%(atom.res_name, atom.name)
             if atom.terminal:
                 debug(atom.terminal)
                 key=atom.terminal
@@ -366,8 +366,8 @@ class Protonate:
         new_H = propka.atom.Atom()
         new_H.setProperty(numb    = None,
                           name    = 'H%s'%atom.name[1:],
-                          resName = atom.resName,
-                          chainID = atom.chainID,
+                          res_name = atom.res_name,
+                          chain_id = atom.chain_id,
                           resNumb = atom.resNumb,
                           x       = round(position.x,3), # round of to three digimal points
                           y       = round(position.y,3), # to avoid round-off differences
@@ -390,13 +390,13 @@ class Protonate:
         atom.conformation_container.add_atom(new_H)
 
         # update names of all protons on this atom
-        new_H.residue_label = "%-3s%4d%2s" % (new_H.name,new_H.resNumb, new_H.chainID)
+        new_H.residue_label = "%-3s%4d%2s" % (new_H.name,new_H.resNumb, new_H.chain_id)
         no_protons = atom.count_bonded_elements('H')
         if no_protons > 1:
             i = 1
             for proton in atom.get_bonded_elements('H'):
                 proton.name = 'H%s%d'%(atom.name[1:],i)
-                proton.residue_label = "%-3s%4d%2s" % (proton.name,proton.resNumb, proton.chainID)
+                proton.residue_label = "%-3s%4d%2s" % (proton.name,proton.resNumb, proton.chain_id)
                 i+=1
 
 
@@ -430,7 +430,7 @@ if __name__ == '__main__':
 
 
     p = Protonate()
-    pdblist = pdb.readPDB(filename)
+    pdblist = pdb.read_pdb(filename)
     my_protein = protein.Protein(pdblist,'test.pdb')
 
     p.remove_all_hydrogen_atoms_from_protein(my_protein)

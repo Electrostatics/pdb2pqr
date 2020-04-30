@@ -226,7 +226,7 @@ class ResInter(object):
             if newResidueName is None:
                 continue
             
-            chain = self.routines.protein.chainmap[oldResidue.chainID]
+            chain = self.routines.protein.chainmap[oldResidue.chain_id]
             chainIndex = chain.residues.index(oldResidue)
             residueAtoms = oldResidue.atoms
             

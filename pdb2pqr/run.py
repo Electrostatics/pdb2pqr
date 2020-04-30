@@ -95,7 +95,7 @@ def printPQRHeaderCIF(pdblist,
             header += "             %i %s in %s %i\n" % \
                       (atom.get("serial"), atom.get("name"), \
                        atom.get("residue").get("name"), \
-                       atom.get("residue").get("resSeq"))
+                       atom.get("residue").get("res_seq"))
         header += "This is usually due to the fat thtat this residue is not\n"
         header += "an amino acid or nucleic acid; or, there are no parameters\n"
         header += "available for the specific protonation state of this\n"
@@ -179,7 +179,7 @@ def printPQRHeader(pdblist,
             header += "REMARK   5              %i %s in %s %i\n" % \
                       (atom.get("serial"), atom.get("name"), \
                        atom.get("residue").get("name"), \
-                       atom.get("residue").get("resSeq"))
+                       atom.get("residue").get("res_seq"))
         header += "REMARK   5 This is usually due to the fact that this residue is not\n"
         header += "REMARK   5 an amino acid or nucleic acid; or, there are no parameters\n"
         header += "REMARK   5 available for the specific protonation state of this\n"
@@ -246,7 +246,7 @@ def runPDB2PQR(pdblist, options):
         for record in pdblist:
             if isinstance(record, (pdb.HETATM, pdb.ATOM, pdb.SIGATM,
                                    pdb.SEQADV)):
-                if record.resName in aa.WAT.water_residue_names:
+                if record.res_name in aa.WAT.water_residue_names:
                     continue
             pdblist_new.append(record)
 
@@ -265,7 +265,7 @@ def runPDB2PQR(pdblist, options):
         myProtein = protein.Protein(pdblist, myDefinition)
 
     _LOGGER.info("Created protein object:")
-    _LOGGER.info("  Number of residues in protein: %s", myProtein.numResidues())
+    _LOGGER.info("  Number of residues in protein: %s", myProtein.num_residues())
     _LOGGER.info("  Number of atoms in protein   : %s", myProtein.numAtoms())
 
     myRoutines = routines.Routines(myProtein)
@@ -273,7 +273,7 @@ def runPDB2PQR(pdblist, options):
     for residue in myProtein.get_residues():
         multoccupancy = 0
         for atom in residue.get_atoms():
-            if atom.altLoc != "":
+            if atom.alt_loc != "":
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s." % (atom.name, residue)
                 _LOGGER.warn(txt)
@@ -427,8 +427,8 @@ def runPDB2PQR(pdblist, options):
     for atom in misslist:
         if isinstance(atom.residue, (aa.Amino, na.Nucleic)):
             continue
-        if atom.resName not in missedligandresidues:
-            missedligandresidues.append(atom.resName)
+        if atom.res_name not in missedligandresidues:
+            missedligandresidues.append(atom.res_name)
 
     # Process the extensions
     for ext in options.active_extensions:

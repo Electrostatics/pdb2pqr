@@ -271,7 +271,7 @@ if __name__ == "__main__":
 
     size = psize.Psize()
     size.parse_string(PQR)
-    size.setAll()
+    size.set_all()
    
     # The actual name doesn't matter since we're loading from the string!
     input = inputgen.Input("dummy.pqr", size, "mg-auto", 0)

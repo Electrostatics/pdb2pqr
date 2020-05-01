@@ -243,7 +243,7 @@ class pKaRoutines:
 
         self.zeroAllRadiiCharges()
         self.setCharges(residue, atomnames)
-        self.setAllRadii()
+        self.set_allRadii()
         self.getAPBSPotentials(pKa,titration,state)
 
         self.apbs_setup.maps = 1
@@ -423,7 +423,7 @@ class pKaRoutines:
                     self.hbondOptimization()
                     self.dump_protein_file(pdb_file)
                     self.zeroAllRadiiCharges()
-                    self.setAllRadii()
+                    self.set_allRadii()
                     self.setCharges(residue, atomnames)
                 #
                 # get_interaction_energies get the potential at all titratable groups due the charges
@@ -596,7 +596,7 @@ class pKaRoutines:
                     #
                     potentials=self.getmoreAPBSPotentials()
                     self.zeroAllRadiiCharges()
-                    self.setAllRadii()
+                    self.set_allRadii()
                     self.setCharges(residue, atomnames)
                     #
                     # Get atoms for potential
@@ -1325,7 +1325,7 @@ class pKaRoutines:
                     #residue.stateboolean[self.get_state_name(titration.name, state)] = True
 
                     self.zeroAllRadiiCharges()
-                    self.setAllRadii()
+                    self.set_allRadii()
 
                     pqr_file_name = os.path.join(self.pdb_dumps_dir, name+'_background_input.pqr')
                     self.dump_protein_file(pqr_file_name, pdbfile=False)
@@ -1549,7 +1549,7 @@ class pKaRoutines:
                     #
                     # Now we set all radii (= in protein)
                     #
-                    self.setAllRadii()
+                    self.set_allRadii()
                     #
                     # Run APBS again, - this time for the state in the protein
                     #
@@ -1721,7 +1721,7 @@ class pKaRoutines:
 #                         #
 #                         # Now we set all radii (= in protein)
 #                         #
-#                         self.setAllRadii()
+#                         self.set_allRadii()
 #                         #
 #                         # Run APBS again, - this time for the state in the protein
 #                         #
@@ -1741,7 +1741,7 @@ class pKaRoutines:
 #                         # Set charges on all other residues
 #                         #
 #                         self.zeroAllRadiiCharges()
-#                         self.setAllRadii()
+#                         self.set_allRadii()
 #                         #
 #                         # Here we should define the protonation state we want to use
 #                         #
@@ -1971,7 +1971,7 @@ class pKaRoutines:
     # ----------------------------
     #
 
-    def setAllRadii(self):
+    def set_allRadii(self):
         """
             Set all radii for the entire protein
         """

@@ -131,7 +131,7 @@ class Input(object):
             size.run_pize(/path/to/pqr) or
 
             size.parse_string(string)
-            size.setAll()
+            size.set_all()
 
         Args:
             pqrpath:   The path to the PQR file (string)

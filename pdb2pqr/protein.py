@@ -85,7 +85,7 @@ class Protein(object):
                 if residue == []: continue
                 if num_models > 1:
                     my_residue = self.create_residue(residue,
-                                                    previous_atom.res_name)
+                                                     previous_atom.res_name)
                     chain_dict[previous_atom.chain_id].addResidue(my_residue)
                     break
 

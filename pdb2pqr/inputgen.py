@@ -22,7 +22,7 @@ class Elec(object):
         self.dime = size.getFineGridPoints()
         gmem = 200.0 * self.dime[0] * self.dime[1] * self.dime[2] / 1024.0 / 1024.0
         if method == "": # method not named - use ceiling
-            if gmem > size.getConstant("gmemceil"):
+            if gmem > size.gmemceil:
                 method = "mg-para"
             else:
                 method = "mg-auto"
@@ -35,7 +35,7 @@ class Elec(object):
         self.glen = size.getCoarseGridDims()
         self.cglen = size.getCoarseGridDims()
         self.fglen = size.getFineGridDims()
-        self.pdime = size.getProcGrid()
+        self.pdime = size.proc_grid
 
         self.label = ""
         self.nlev = 4
@@ -128,9 +128,9 @@ class Input(object):
         Users can edit the elec statements and the print statements.
 
         This assumes you have already run psize, either by
-            size.runPsize(/path/to/pqr) or
+            size.run_pize(/path/to/pqr) or
 
-            size.parseString(string)
+            size.parse_string(string)
             size.setAll()
 
         Args:
@@ -293,7 +293,7 @@ def main():
     if args.split:
         split_input(filename)
     else:
-        size.runPsize(filename)
+        size.run_pize(filename)
         input_ = Input(filename, size, args.method, args.async, args.istrng,
                        args.potdx)
         input_.print_input_files()

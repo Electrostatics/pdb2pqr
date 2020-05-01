@@ -160,8 +160,8 @@ def main(args):
     if args.apbs_input:
         method = "mg-auto"
         size = psize.Psize()
-        size.parseInput(args.output_pqr)
-        size.runPsize(args.output_pqr)
+        size.parse_input(args.output_pqr)
+        size.run_pize(args.output_pqr)
         input_ = inputgen.Input(args.output_pqr, size, method, 0, potdx=True)
         input_.print_input_files()
         input_.dump_pickle()

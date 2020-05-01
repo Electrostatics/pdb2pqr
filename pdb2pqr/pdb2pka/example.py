@@ -90,7 +90,7 @@ def runAPBS(PQR, INPUT):
     # Parse the input file
     nosh = NOsh_ctor(rank, size)
 
-    if not parseInputFromString(nosh, INPUT):
+    if not parse_inputFromString(nosh, INPUT):
         _LOGGER.error("main:  Error while parsing input file.\n")
         raise(APBSError, "Error occurred!")
 
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     PQR = "ATOM      1  I   ION     1       0.000   0.000  0.000  1.00  3.00"
 
     size = psize.Psize()
-    size.parseString(PQR)
+    size.parse_string(PQR)
     size.setAll()
    
     # The actual name doesn't matter since we're loading from the string!

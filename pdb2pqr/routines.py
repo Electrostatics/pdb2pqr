@@ -153,7 +153,7 @@ class Routines:
             Find the type of residue as notated in the Amino Acid definition
         """
         _LOGGER.info("Updating residue types... ")
-        for chain in self.protein.getChains():
+        for chain in self.protein.get_chains():
             for residue in chain.get("residues"):
                 name = residue.get("name")
                 if name in AAS:
@@ -247,7 +247,7 @@ class Routines:
 
         # Set the peptide bond pointers
 
-        for chain in self.protein.getChains():
+        for chain in self.protein.get_chains():
             for i in range(chain.num_residues() - 1):
                 res1 = chain.residues[i]
                 res2 = chain.residues[i + 1]
@@ -427,7 +427,7 @@ class Routines:
 
         # First assign the known termini
 
-        for chain in self.protein.getChains():
+        for chain in self.protein.get_chains():
             self.assignTermini(chain, neutraln, neutralc)
 
         # Now determine if there are any hidden chains
@@ -435,7 +435,7 @@ class Routines:
         letters = string.ascii_uppercase + string.ascii_lowercase
         c = 0
 
-        while c < len(self.protein.getChains()):
+        while c < len(self.protein.get_chains()):
             chain = self.protein.chains[c]
             reslist = []
 

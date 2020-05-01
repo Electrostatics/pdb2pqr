@@ -215,7 +215,7 @@ class Psize:
 
     def getMax(self): return self.maxlen
     def getMin(self): return self.minlen
-    def getCharge(self): return self.q
+    def get_charge(self): return self.q
     def getLength(self): return self.olen
     def getCoarseGridDims(self): return self.clen
     def getFineGridDims(self): return self.flen
@@ -239,7 +239,7 @@ class Psize:
 
             maxlen = self.getMax()
             minlen = self.getMin()
-            q = self.getCharge()
+            q = self.get_charge()
             olen = self.getLength()
             clen = self.getCoarseGridDims()
             flen = self.getFineGridDims()

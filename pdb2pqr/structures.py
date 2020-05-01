@@ -86,7 +86,7 @@ class Chain:
             residue.setResSeq(count)
             count += 1
 
-    def numAtoms(self):
+    def num_atoms(self):
         """
             Get the number of atoms for the chain
 
@@ -116,7 +116,7 @@ class Chain:
                 atomlist.append(atom)
         return atomlist
 
-    def getSummary(self):
+    def get_summary(self):
         output = []
         for residue in self.residues:
             output.append(residue.letterCode())
@@ -271,7 +271,7 @@ class Residue:
                 self.is_c_term = 1
         return
 
-    def numAtoms(self):
+    def num_atoms(self):
         """
             Get the number of atoms for the residue
 
@@ -397,7 +397,7 @@ class Residue:
     def has_atom(self, name):
         return name in self.map
 
-    def getCharge(self):
+    def get_charge(self):
         """
             Get the total charge of the residue.  In order to get rid
             of floating point rounding error, do the string

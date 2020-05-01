@@ -529,7 +529,7 @@ class Group:
 
 
 
-    def getSummaryString(self, remove_penalised_group=False):
+    def get_summaryString(self, remove_penalised_group=False):
         if self.coupled_titrating_group and remove_penalised_group:
             return ''
 

@@ -106,7 +106,7 @@ def printPQRHeaderCIF(pdblist,
         header += "the following residues:\n"
         for residue in reslist:
             header += "              %s - Residue Charge: %.4f\n" % \
-                      (residue, residue.getCharge())
+                      (residue, residue.get_charge())
     header += ";\n"
     header += "3\n"
     header += ";\n"
@@ -190,7 +190,7 @@ def printPQRHeader(pdblist,
         header += "REMARK   5          the following residues:\n"
         for residue in reslist:
             header += "REMARK   5              %s - Residue Charge: %.4f\n" % \
-                      (residue, residue.getCharge())
+                      (residue, residue.get_charge())
         header += "REMARK   5\n"
     header += "REMARK   6 Total charge on this protein: %.4f e\n" % charge
     header += "REMARK   6\n"
@@ -266,7 +266,7 @@ def runPDB2PQR(pdblist, options):
 
     _LOGGER.info("Created protein object:")
     _LOGGER.info("  Number of residues in protein: %s", myProtein.num_residues())
-    _LOGGER.info("  Number of atoms in protein   : %s", myProtein.numAtoms())
+    _LOGGER.info("  Number of atoms in protein   : %s", myProtein.num_atoms())
 
     myRoutines = routines.Routines(myProtein)
 
@@ -285,7 +285,7 @@ def runPDB2PQR(pdblist, options):
 
     if options.clean:
         header = ""
-        lines = myProtein.printAtoms(myProtein.get_atoms(), options.chain)
+        lines = myProtein.print_atoms(myProtein.get_atoms(), options.chain)
 
         # Process the extensions
         for ext in options.active_extensions:
@@ -370,15 +370,15 @@ def runPDB2PQR(pdblist, options):
                         misslist.pop(misslist.index(atom))
                         templist.append(atom)
 
-                charge = residue.getCharge()
+                charge = residue.get_charge()
                 if abs(charge - int(charge)) > 0.001:
                     # Ligand parameterization failed
                     _LOGGER.warn("WARNING: PDB2PQR could not successfully parameterize the desired ligand; it has been left out of the PQR file.")
 
                     # remove the ligand
                     myProtein.residues.remove(residue)
-                    for myChain in myProtein.chains:
-                        if residue in myChain.residues: myChain.residues.remove(residue)
+                    for my_chain in myProtein.chains:
+                        if residue in my_chain.residues: my_chain.residues.remove(residue)
                 else:
                     ligsuccess = 1
                     # Mark these atoms as hits
@@ -395,10 +395,10 @@ def runPDB2PQR(pdblist, options):
     # Create the Typemap
     if options.typemap:
         typemapname = "%s-typemap.html" % outroot
-        myProtein.createHTMLTypeMap(myDefinition, typemapname)
+        myProtein.create_html_typemap(myDefinition, typemapname)
 
     # Grab the protein charge
-    reslist, charge = myProtein.getCharge()
+    reslist, charge = myProtein.get_charge()
 
     # If we want a different naming scheme, use that
 
@@ -420,7 +420,7 @@ def runPDB2PQR(pdblist, options):
                             options.pka_method, options.ph, options.ffout,
                             include_old_header=options.include_header)
 
-    lines = myProtein.printAtoms(hitlist, options.chain)
+    lines = myProtein.print_atoms(hitlist, options.chain)
 
     # Determine if any of the atoms in misslist were ligands
     missedligandresidues = []

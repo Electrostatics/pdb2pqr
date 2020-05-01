@@ -69,14 +69,14 @@ def writePKA(protein, parameters, filename=None, conformation ='1A',reference="n
     str += getDeterminantSection(protein,conformation, parameters)
 
     # writing pKa summary section
-    str += getSummarySection(protein,conformation,parameters)
+    str += get_summarySection(protein,conformation,parameters)
     str += "%s\n" % ( getTheLine() )
 
     # printing Folding Profile
     str += getFoldingProfileSection(protein, conformation=conformation, reference=reference, direction=direction, window=[0., 14., 1.0], options=options)
 
     # printing Protein Charge Profile
-    str += getChargeProfileSection(protein, conformation=conformation)
+    str += get_chargeProfileSection(protein, conformation=conformation)
 
     # now, writing the pka text to file
     file.write(str)
@@ -114,7 +114,7 @@ def printPKASection(protein, conformation, parameters):
     str = getDeterminantSection(protein, conformation, parameters)
     info(str)
 
-    str = getSummarySection(protein,conformation,parameters)
+    str = get_summarySection(protein,conformation,parameters)
     info(str)
 
 
@@ -139,16 +139,16 @@ def getDeterminantSection(protein, conformation, parameters):
     return str
 
 
-def getSummarySection(protein, conformation, parameters):
+def get_summarySection(protein, conformation, parameters):
     """
     prints out the pka-section of the result
     """
-    str  = "%s\n" % ( getSummaryHeader() )
+    str  = "%s\n" % ( get_summaryHeader() )
     # printing pKa summary
     for residue_type in parameters.write_out_order:
         for group in protein.conformations[conformation].groups:
           if group.residue_type == residue_type:
-            str += "%s" % ( group.getSummaryString(parameters.remove_penalised_group) )
+            str += "%s" % ( group.get_summaryString(parameters.remove_penalised_group) )
 
     return str
 
@@ -192,13 +192,13 @@ def getFoldingProfileSection(protein, conformation='AVR', direction="folding", r
 
 
 
-def getChargeProfileSection(protein, conformation='AVR', options=None):
+def get_chargeProfileSection(protein, conformation='AVR', options=None):
     """
     returns the protein-folding-profile section
     """
     str  = "Protein charge of folded and unfolded state as a function of pH\n"
 
-    profile = protein.getChargeProfile(conformation=conformation,grid=[0., 14., 1.])
+    profile = protein.get_chargeProfile(conformation=conformation,grid=[0., 14., 1.])
     if profile == None:
       str += "Could not determine charge profile\n"
     else:
@@ -335,7 +335,7 @@ def getDeterminantsHeader():
     return str
 
 
-def getSummaryHeader():
+def get_summaryHeader():
     """
     returns the summary header
     """

@@ -243,7 +243,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
         residueAtoms = oldResidue.atoms
         
         #Create the replacement residue
-        newResidue = routines.protein.createResidue(residueAtoms, newResidueName)
+        newResidue = routines.protein.create_residue(residueAtoms, newResidueName)
         
         #Make sure our names are cleaned up for output.
         newResidue.renameResidue(newResidueName)

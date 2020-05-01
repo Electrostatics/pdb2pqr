@@ -231,7 +231,7 @@ class ResInter(object):
             residueAtoms = oldResidue.atoms
             
             #Create the replacement residue
-            newResidue = self.routines.protein.createResidue(residueAtoms, newResidueName)
+            newResidue = self.routines.protein.create_residue(residueAtoms, newResidueName)
             
             #Make sure our names are cleaned up for output.
             newResidue.renameResidue(newResidueName)

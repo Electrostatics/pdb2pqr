@@ -173,7 +173,7 @@ class pKaRoutines:
         return
 
     def dump_protein_file(self, file_name, pdbfile=True):
-        lines = self.protein.printAtoms(self.protein.get_atoms(), chainflag=True, pdbfile=pdbfile)
+        lines = self.protein.print_atoms(self.protein.get_atoms(), chainflag=True, pdbfile=pdbfile)
         with open(file_name,'w') as fd:
             _LOGGER.info( 'dumping protein state to '+ fd.name)
             for line in lines:
@@ -1333,7 +1333,7 @@ class pKaRoutines:
                     #
                     # Set charges on all other residues
                     #
-                    for chain in self.protein.getChains():
+                    for chain in self.protein.get_chains():
                         for otherresidue in chain.get("residues"):
                             if residue == otherresidue:
                                 continue
@@ -1621,7 +1621,7 @@ class pKaRoutines:
 #         #
 #         calc_residues=residues[:]
 #         for calc_res in calc_residues:
-#             for chain in self.protein.getChains():
+#             for chain in self.protein.get_chains():
 #                 for residue in chain.get("residues"):
 #                     resname = residue.get("name")
 #                     name='%s:%s:%s' %(chain.chain_id,string.zfill(residue.res_seq,4),resname)
@@ -1745,7 +1745,7 @@ class pKaRoutines:
 #                         #
 #                         # Here we should define the protonation state we want to use
 #                         #
-#                         for chain in self.protein.getChains():
+#                         for chain in self.protein.get_chains():
 #                             for otherresidue in chain.get("residues"):
 #                                 if residue == otherresidue:
 #                                     continue
@@ -1975,7 +1975,7 @@ class pKaRoutines:
         """
             Set all radii for the entire protein
         """
-        for chain in self.protein.getChains():
+        for chain in self.protein.get_chains():
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
                     atomname = atom.get("name")
@@ -2003,7 +2003,7 @@ class pKaRoutines:
         """
             Set all charges and radii for the protein to zero
         """
-        for chain in self.protein.getChains():
+        for chain in self.protein.get_chains():
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
                     atom.set("ffcharge",0.0)
@@ -2212,7 +2212,7 @@ class pKaRoutines:
         #
         pKagroupList=self.pKagroups.keys()
         #
-        for chain in self.protein.getChains():
+        for chain in self.protein.get_chains():
             for residue in chain.get("residues"):
                 resname = residue.get("name")
                 for group in pKagroupList:

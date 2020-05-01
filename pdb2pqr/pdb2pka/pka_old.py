@@ -390,7 +390,7 @@ def pre_init(pdbfilename=None,
     if verbose:
         print("Created protein object -")
         print("\tNumber of residues in protein: %s" % myProtein.num_residues())
-        print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
+        print("\tNumber of atoms in protein   : %s" % myProtein.num_atoms())
     #
     # Set up all other routines
     #
@@ -407,7 +407,7 @@ def pre_init(pdbfilename=None,
     myRoutines.debumpProtein()
 
     #myRoutines.randomizeWaters()
-    myProtein.reSerialize()
+    myProtein.reserialize()
     #
     # Inject the information on hydrogen conformations in the HYDROGENS.DAT arrays
     # We get this information from ligand_titratable_groups
@@ -469,7 +469,7 @@ def pre_init(pdbfilename=None,
                     #
                     #
 
-                charge = residue.getCharge()
+                charge = residue.get_charge()
                 if abs(charge - round(charge)) > 0.01:
                     # Ligand parameterization failed
                     myProtein.residues.remove(residue)
@@ -495,7 +495,7 @@ def pre_init(pdbfilename=None,
     if verbose:
         print("Created protein object (after processing myRoutines) -")
         print("\tNumber of residues in protein: %s" % myProtein.num_residues())
-        print("\tNumber of atoms in protein   : %s" % myProtein.numAtoms())
+        print("\tNumber of atoms in protein   : %s" % myProtein.num_atoms())
     #
     # Create the APBS input file
     #
@@ -708,7 +708,7 @@ if __name__ == "__main__":
 #         # Just assign charges
 #         #
 #         (protein, routines, forcefield,apbs_setup, ligand_titratable_groups,maps,sd),options = startpKa()
-#         for chain in protein.getChains():
+#         for chain in protein.get_chains():
 #             for residue in chain.get("residues"):
 #                 for atom in residue.get("atoms"):
 #                     atomname = atom.get("name")

@@ -244,7 +244,7 @@ class ligforcefield(Forcefield):
         defresidue = self.get_residue(resname)
         ### This is a rather quick and dirty solution
         if residue.type == 2:
-            charge,radius = self.getChargeAndRadius(residue,name)
+            charge,radius = self.get_chargeAndRadius(residue,name)
         if defresidue != None:
             atom = defresidue.get_atom(atomname)
         else:
@@ -255,7 +255,7 @@ class ligforcefield(Forcefield):
             radius = atom.get("radius")
         return charge, radius
 
-    def getChargeAndRadius(self,residue,atomname):
+    def get_chargeAndRadius(self,residue,atomname):
         self.lig.make_up2date(residue)
         return self.lig.ligand_props[atomname]['charge'],self.lig.ligand_props[atomname]['radius']
 

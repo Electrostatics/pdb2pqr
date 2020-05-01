@@ -217,7 +217,7 @@ class Molecular_container:
         return profile, opt, range_80pct, stability_range
 
 
-    def getChargeProfile(self, conformation='AVR', grid=[0., 14., .1]):
+    def get_chargeProfile(self, conformation='AVR', grid=[0., 14., .1]):
         charge_profile = []
         for ph in propka.lib.make_grid(*grid):
             q_unfolded, q_folded = self.conformations[conformation].calculate_charge(self.version.parameters, pH=ph)
@@ -228,7 +228,7 @@ class Molecular_container:
     def getPI(self, conformation='AVR', grid=[0., 14., 1], iteration=0):
         #info('staring',grid, iteration)
         # search
-        charge_profile = self.getChargeProfile(conformation=conformation, grid=grid)
+        charge_profile = self.get_chargeProfile(conformation=conformation, grid=grid)
         pi = []
         pi_folded = pi_unfolded = [None, 1e6,1e6]
         for point in charge_profile:

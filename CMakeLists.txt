@@ -1,45 +1,74 @@
-#set(CMAKE_VERBOSE_MAKEFILE ON)
+cmake_minimum_required(VERSION 3.12)
+
+project(pdb2pqr)
+
+include(CMakePrintHelpers)
+
+# set(CMAKE_VERBOSE_MAKEFILE ON)
+
+###############################################################################
+###  CMAKE_FIND_FRAMEWORK by default looks in MACOSX Frameworks FIRST whenever
+###  find_package is used. This allows cmake to find other version of packages
+###  if they are installed (e.g. /usr/local or $HOME/.anaconda3)
+###############################################################################
 set(CMAKE_FIND_FRAMEWORK NEVER)
 
-find_package(Python3 COMPONENTS Interpreter Development)
+###############################################################################
+###  We need to find python3 so that we can install a virtual environment
+###  with all the packages required.
+###############################################################################
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
 if(${Python3_FOUND})
-    message(STATUS "***** Python3 FOUND")
-    message(STATUS "***** Python3 include path is: ${Python3_INCLUDE_DIRS}")
-    message(STATUS "***** Python3 library path is: ${Python3_LIBRARIES}")
-    message(STATUS "***** Python3 library dir  is: ${Python3_LIBRARY_DIRS}")
+    message(STATUS "***** Python3 FOUND          : ${Python3_EXECUTABLE}")
 endif()
 
+###############################################################################
+###  Set up a python3 virtual environment so we don't polute the user's
+###  default python environment and so their environment doesn't interfere
+###  with pdb3pqr
+###############################################################################
 find_program(VIRTUALENV virtualenv)
 if(NOT VIRTUALENV)
     message(FATAL_ERROR "Could not find `virtualenv` in PATH")
 endif()
-set(VIRTUALENV ${VIRTUALENV} -p ${Python3_EXECUTABLE})
 
-# Generate the virtualenv and ensure it's up to date.
-add_custom_command(
-    OUTPUT venv
-    COMMAND ${VIRTUALENV} venv
-)
-add_custom_command(
-    OUTPUT venv.stamp
-    DEPENDS venv requirements.txt
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt requirements.txt
-    COMMAND ./venv/bin/pip install -r requirements.txt --upgrade
-)
+###############################################################################
+###  Generate the virtualenv and ensure it's up to date.
+###############################################################################
+if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/venv")
+    execute_process(
+        COMMAND ${VIRTUALENV} -p ${Python3_EXECUTABLE} venv
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        RESULT_VARIABLE VIRTUALENV_RESULT)
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt requirements.txt
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        RESULT_VARIABLE COPY_RESULT)
+    set(ENV{VIRTURAL_ENV} ${CMAKE_CURRENT_BINARY_DIR}/venv)
+    execute_process(
+        COMMAND pip3 install -r requirements.txt --upgrade
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        RESULT_VARIABLE PIP_RESULT)
+endif()
 
 #
 #  Now that we have setup the virtual environment with NumPy, we want to find the
 #  the NumPy include files using the new virtual environment
 #
-set(Python3_ROOT_DIR ${CMAKE_BINARY_DIR}/pdb2pqr/venv)
-find_package(Python3 COMPONENTS Interpreter Development NumPy)
+unset(Python3_FOUND) 
+set(Python3_ROOT_DIR "${CMAKE_CURRENT_BINARY_DIR}/venv")
+find_package(Python3 COMPONENTS Interpreter Development NumPy REQUIRED)
 if(${Python3_FOUND})
-    message(STATUS "***** VENV Python3 FOUND")
+    message(STATUS "***** VENV Python3 FOUND          : ${Python3_EXECUTABLE}")
     message(STATUS "***** VENV Python3 include path is: ${Python3_INCLUDE_DIRS}")
     message(STATUS "***** VENV Python3 library path is: ${Python3_LIBRARIES}")
     message(STATUS "***** VENV Python3 library dir  is: ${Python3_LIBRARY_DIRS}")
     message(STATUS "***** VENV Python3 NumPy   path is: ${Python3_NumPy_INCLUDE_DIRS}")
 endif()
+
+# TODO: This is only for debugging
+return()
+message(STATUS "***** THIS SHOULD NOT HAPPEN")
 
 add_library(Algorithms
     ${CMAKE_CURRENT_SOURCE_DIR}/pdb2pqr/pdb2pka/substruct/Algorithms.cpp

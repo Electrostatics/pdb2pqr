@@ -40,6 +40,7 @@ class Nucleic(Residue):
                 atom_ = Atom(atom, "ATOM", self)
                 self.add_atom(atom_)
 
+    # TODO - here's some more code that's duplicated all over the place.
     def create_atom(self, atomname, newcoords):
         """Create an atom.  Overrides the generic residue's create_atom().
 
@@ -49,12 +50,12 @@ class Nucleic(Residue):
         """
         oldatom = self.atoms[0]
         newatom = Atom(oldatom, "ATOM", self)
-        newatom.set("x", newcoords[0])
-        newatom.set("y", newcoords[1])
-        newatom.set("z", newcoords[2])
-        newatom.set("name", atomname)
-        newatom.set("occupancy", 1.0)
-        newatom.set("temp_factor", 0.0)
+        newatom.x = newcoords[0]
+        newatom.y = newcoords[1]
+        newatom.z = newcoords[2]
+        newatom.name = atomname
+        newatom.occupancy = 1.0
+        newatom.temp_factor = 0.0
         newatom.added = 1
         self.add_atom(newatom)
 

@@ -584,9 +584,10 @@ class Mol2Molecule(object):
     def create_pdb_line_from_mol2(self):
         """Generate PDB line from MOL2."""
         fake_type = "HETATM"
-        return ('%s%5i%5s%4s%2s%5s   %8.3f%8.3f%8.3f\n' %
-                (fake_type, self.serial, self.name, self.res_name, ' L',
-                 self.res_seq, self.x, self.y, self.z))
+        rstr = "%s%5i%5s%4s%2s%5s   %8.3f%8.3f%8.3f\n" % (fake_type, self.serial,
+                                                          self.name, self.res_name, ' L',
+                                                          self.res_seq, self.x, self.y, self.z)
+        return rstr
 
 
 @register_line_parser

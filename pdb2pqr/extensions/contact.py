@@ -45,7 +45,7 @@ def run_extension(routines, outroot, options):
             continue
         thisatomhs = []
         for bond in thisatom.bonds:
-            if bond.isHydrogen(): 
+            if bond.is_hydrogen: 
                 thisatomhs.append(bond)
         if thisatomhs == []: 
             continue
@@ -57,9 +57,9 @@ def run_extension(routines, outroot, options):
         for thatatom in closeatoms:
             if (thisatom.residue == thatatom.residue): 
                 continue  # comment this out to include interresidue contacts
-            if (thatatom.isHydrogen()): 
+            if (thatatom.is_hydrogen): 
                 continue
-            thisdist = distance(thisatom.getCoords(), thatatom.getCoords())
+            thisdist = distance(thisatom.coords, thatatom.coords)
             if (thisdist <= DIST_CUTOFF): 
                 count = count+1
                 thisBstring='S'
@@ -69,9 +69,9 @@ def run_extension(routines, outroot, options):
                     hscore = 1.0
                 if (thisatom.hacceptor & thatatom.hdonor): 
                     hscore = 1.0
-                if (thisatom.isBackbone()): 
+                if (thisatom.is_backbone): 
                     thisBstring='B'
-                if (thatatom.isBackbone()): 
+                if (thatatom.is_backbone): 
                     thatBstring='B'
                 outfile.write("%4d %4d %-4s (%4d  ) %s     %-4s<>%4d %-4s (%4d  ) %s     %-4s D=%6.2f  H-ene=%6.2f  Sym=  (%s-%s)\n" % \
                   (count, thisatom.residue.res_seq,thisatom.residue.name,thisatom.residue.res_seq, thisatom.residue.chain_id,thisatom.name,thatatom.residue.res_seq,thatatom.residue.name,thatatom.residue.res_seq, thatatom.residue.chain_id,thatatom.name, thisdist, hscore, thisBstring, thatBstring)) 

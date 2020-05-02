@@ -177,9 +177,9 @@ class Optimize(object):
         Returns:
             angle:  The angle between the atoms (float)
         """
-        atom_coords = atom2.getCoords()
-        coords1 = subtract(atom3.getCoords(), atom_coords)
-        coords2 = subtract(atom1.getCoords(), atom_coords)
+        atom_coords = atom2.coords
+        coords1 = subtract(atom3.coords, atom_coords)
+        coords2 = subtract(atom1.coords, atom_coords)
         norm1 = normalize(coords1)
         norm2 = normalize(coords2)
         dotted = dot(norm1, norm2)
@@ -196,23 +196,23 @@ class Optimize(object):
     def is_hbond(self, donor, acc):
         """Determine whether this donor acceptor pair is a hydrogen bond"""
         for donorhatom in donor.bonds:
-            if not donorhatom.isHydrogen():
+            if not donorhatom.is_hydrogen:
                 continue
 
             # Check the H(D)-A distance
-            dist = distance(donorhatom.getCoords(), acc.getCoords())
+            dist = distance(donorhatom.coords, acc.coords)
             if dist > DIST_CUTOFF:
                 continue
 
             # Ensure no conflicts if H(A)s if present
             flag = 1
             for acchatom in acc.bonds:
-                if not acchatom.isHydrogen():
+                if not acchatom.is_hydrogen:
                     continue
                 flag = 0
 
                 # Check the H(D)-H(A) distance
-                hdist = distance(donorhatom.getCoords(), acchatom.getCoords())
+                hdist = distance(donorhatom.coords, acchatom.coords)
                 if hdist < 1.5:
                     continue
 
@@ -260,10 +260,10 @@ class Optimize(object):
             return energy
 
         # See if hydrogens are presently bonded to the acceptor and donor
-        donorhs = (bond for bond in donor.bonds if bond.isHydrogen())
-        acceptorhs = [bond for bond in acceptor.bonds if bond.isHydrogen()]
+        donorhs = (bond for bond in donor.bonds if bond.is_hydrogen)
+        acceptorhs = [bond for bond in acceptor.bonds if bond.is_hydrogen]
         for donorhatom in donorhs:
-            dist = distance(donorhatom.getCoords(), acceptor.getCoords())
+            dist = distance(donorhatom.coords, acceptor.coords)
             if dist > max_dha_dist and dist < max_ele_dist:
                 energy += max_ele_energy/(dist*dist)
                 continue
@@ -271,7 +271,7 @@ class Optimize(object):
             # Case 1: Both donor and acceptor hydrogens are present
             for acceptorhatom in acceptorhs:
                 # Penalize if H(D) is too close to H(A)
-                hdist = distance(donorhatom.getCoords(), acceptorhatom.getCoords())
+                hdist = distance(donorhatom.coords, acceptorhatom.coords)
                 if hdist < bump_distance:
                     energy += bump_energy
                     continue
@@ -313,11 +313,11 @@ class Optimize(object):
         residue = atom.residue
 
         # Place along line, 1 A away
-        vec = subtract(closeatom.getCoords(), atom.getCoords())
-        dist = distance(atom.getCoords(), closeatom.getCoords())
+        vec = subtract(closeatom.coords, atom.coords)
+        dist = distance(atom.coords, closeatom.coords)
 
         for i in range(3):
-            newcoords.append(vec[i]/dist + atom.getCoords()[i])
+            newcoords.append(vec[i]/dist + atom.coords[i])
 
         residue.create_atom(addname, newcoords)
         newatom = residue.get_atom(addname)
@@ -337,10 +337,10 @@ class Optimize(object):
         """
         residue = atom.residue
         nextatom = atom.bonds[0]
-        coords = [atom.getCoords(), nextatom.getCoords()]
-        refcoords = [residue.reference.map[atom.name].getCoords(), \
-                     residue.reference.map["H1"].getCoords()]
-        refatomcoords = residue.reference.map["H2"].getCoords()
+        coords = [atom.coords, nextatom.coords]
+        refcoords = [residue.reference.map[atom.name].coords, \
+                     residue.reference.map["H1"].coords]
+        refatomcoords = residue.reference.map["H2"].coords
 
         # Make the atom
         newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
@@ -359,10 +359,10 @@ class Optimize(object):
 
         residue = atom.residue
         nextatom = atom.bonds[0]
-        coords = [atom.getCoords(), nextatom.getCoords()]
-        refcoords = [residue.reference.map[atom.name].getCoords(), \
-                     residue.reference.map[nextatom.name].getCoords()]
-        refatomcoords = residue.reference.map[addname].getCoords()
+        coords = [atom.coords, nextatom.coords]
+        refcoords = [residue.reference.map[atom.name].coords, \
+                     residue.reference.map[nextatom.name].coords]
+        refatomcoords = residue.reference.map[addname].coords
 
         # Make the atom
         newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
@@ -380,10 +380,10 @@ class Optimize(object):
                 break
 
         nextatom = atom.bonds[0]
-        coords = [atom.getCoords(), nextatom.getCoords()]
-        refcoords = [residue.reference.map[atom.name].getCoords(),
-                     residue.reference.map[nextatom.name].getCoords()]
-        refatomcoords = residue.reference.map[the_refname].getCoords()
+        coords = [atom.coords, nextatom.coords]
+        refcoords = [residue.reference.map[atom.name].coords,
+                     residue.reference.map[nextatom.name].coords]
+        refatomcoords = residue.reference.map[the_refname].coords
 
         # Make the atom
         newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
@@ -413,7 +413,7 @@ class Optimize(object):
             if self.is_hbond(donor, acc):
                 energy = self.get_pair_energy(donor, acc)
                 if energy < besten:
-                    bestcoords = newatom.getCoords()
+                    bestcoords = newatom.coords
                     besten = energy
 
         # If a hydrogen bond was made, set at best coordinates
@@ -447,7 +447,7 @@ class Optimize(object):
         # Grab the H(D) that caused the bond
 
         for donorhatom in donor.bonds:
-            if donorhatom.isHydrogen():
+            if donorhatom.is_hydrogen:
                 if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
@@ -458,7 +458,7 @@ class Optimize(object):
             angle = abs(self.get_hbond_angle(the_donorhatom, acc, newatom))
             if angle < bestangle:
                 bestangle = angle
-                bestcoords = newatom.getCoords()
+                bestcoords = newatom.coords
 
         # Remove if geometry does not work
         if bestangle > (ANGLE_CUTOFF * 2.0):
@@ -486,9 +486,9 @@ class Optimize(object):
 
         # Rotate by 120 degrees twice
         residue.rotate_tetrahedral(fixed, atom, 120)
-        loc1 = rotate.getCoords()
+        loc1 = rotate.coords
         residue.rotate_tetrahedral(fixed, atom, 120)
-        loc2 = rotate.getCoords()
+        loc2 = rotate.coords
 
         # Set rotate back to original by one more rotation
         residue.rotate_tetrahedral(fixed, atom, 120)
@@ -549,7 +549,7 @@ class Optimize(object):
 
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.isHydrogen():
+            if donorhatom.is_hydrogen:
                 if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
@@ -604,13 +604,13 @@ class Optimize(object):
 
         # Find the two new positions
         residue.rotate_tetrahedral(pivot, atom, 120)
-        newcoords1 = rot1.getCoords()
+        newcoords1 = rot1.coords
         residue.rotate_tetrahedral(pivot, atom, 120)
-        newcoords2 = rot1.getCoords()
+        newcoords2 = rot1.coords
         residue.rotate_tetrahedral(pivot, atom, 120)
 
         # Determine which is unoccupied
-        if distance(rot2.getCoords(), newcoords1) > 0.1:
+        if distance(rot2.coords, newcoords1) > 0.1:
             return newcoords1
         return newcoords2
 
@@ -634,7 +634,7 @@ class Optimize(object):
 
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.isHydrogen():
+            if donorhatom.is_hydrogen:
                 if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
@@ -700,7 +700,7 @@ class Flip(Optimize):
         # Cache current coordinates
         for name in moveablenames:
             atom = residue.get_atom(name)
-            map_[name] = atom.getCoords()
+            map_[name] = atom.coords
 
         # Flip the residue about the angle
         anglenum = residue.reference.dihedrals.index(dihedral)
@@ -743,13 +743,13 @@ class Flip(Optimize):
 
             # Get the atom
             atom = residue.get_atom(name)
-            if not atom.isHydrogen():
+            if not atom.is_hydrogen:
                 if atom.hdonor or atom.hacceptor:
                     self.atomlist.append(atom)
 
             # And the FLIP
             atom = residue.get_atom("%sFLIP" % name)
-            if not atom.isHydrogen():
+            if not atom.is_hydrogen:
                 if atom.hdonor or atom.hacceptor:
                     self.atomlist.append(atom)
 
@@ -1044,7 +1044,7 @@ class Alcoholic(Optimize):
                     energy += self.get_pair_energy(atom, catom) + self.get_pair_energy(catom, atom)
                 if energy < bestenergy:
                     bestenergy = energy
-                    bestcoords = newatom.getCoords()
+                    bestcoords = newatom.coords
 
             if bestcoords != []:
                 newatom.x = bestcoords[0]
@@ -1180,9 +1180,9 @@ class Water(Optimize):
             if self.is_hbond(donor, acc):
 
                 # Find the best donor hydrogen and use that
-                bestdist = distance(acc.getCoords(), donor.getCoords())
+                bestdist = distance(acc.coords, donor.coords)
                 for donorh in donor.bonds:
-                    dist = distance(acc.getCoords(), donorh.getCoords())
+                    dist = distance(acc.coords, donorh.coords)
                     if dist < bestdist:
                         bestdist = dist
 
@@ -1282,14 +1282,14 @@ class Water(Optimize):
             # Build hydrogen away from closest atom
             closeatom = self.routines.get_closest_atom(atom)
             if closeatom != None:
-                vec = subtract(atom.getCoords(), closeatom.getCoords())
-                dist = distance(atom.getCoords(), closeatom.getCoords())
+                vec = subtract(atom.coords, closeatom.coords)
+                dist = distance(atom.coords, closeatom.coords)
 
                 for i in range(3):
-                    newcoords.append(vec[i]/dist + atom.getCoords()[i])
+                    newcoords.append(vec[i]/dist + atom.coords[i])
 
             else:
-                newcoords = add(atom.getCoords(), [1.0, 0.0, 0.0])
+                newcoords = add(atom.coords, [1.0, 0.0, 0.0])
 
             residue.create_atom(addname, newcoords)
             self.routines.cells.add_cell(residue.get_atom(addname))
@@ -1316,11 +1316,11 @@ class Water(Optimize):
                 if nearatom is None:
                     continue
 
-                dist = distance(nearatom.getCoords(), newatom.getCoords())
+                dist = distance(nearatom.coords, newatom.coords)
 
                 if dist > bestdist:
                     bestdist = dist
-                    bestcoords = newatom.getCoords()
+                    bestcoords = newatom.coords
 
             if bestcoords != []:
                 newatom.x = bestcoords[0]
@@ -1342,7 +1342,7 @@ class Water(Optimize):
             # Debump residue if necessary by trying the other location
             nearatom = self.routines.get_closest_atom(newatom)
             if nearatom != None:
-                dist1 = distance(newatom.getCoords(), nearatom.getCoords())
+                dist1 = distance(newatom.coords, nearatom.coords)
 
                 # Place at other location
                 self.routines.cells.remove_cell(atom)
@@ -1355,7 +1355,7 @@ class Water(Optimize):
                 if nearatom != None:
 
                     # If this is worse, switch back
-                    if distance(newatom.getCoords(), nearatom.getCoords()) < dist1:
+                    if distance(newatom.coords, nearatom.coords) < dist1:
                         self.routines.cells.remove_cell(atom)
                         newatom.x = loc1[0]
                         newatom.y = loc1[1]
@@ -1430,12 +1430,12 @@ class Carboxylic(Optimize):
         # If one bond in the group is significantly (0.05 A)
         # longer than the other, use that group only
         for pivotatom in bondatom1.bonds:
-            if not pivotatom.isHydrogen():
+            if not pivotatom.is_hydrogen:
                 the_pivatom = pivotatom
                 break
 
-        dist1 = distance(the_pivatom.getCoords(), bondatom1.getCoords())
-        dist2 = distance(the_pivatom.getCoords(), bondatom2.getCoords())
+        dist1 = distance(the_pivatom.coords, bondatom1.coords)
+        dist2 = distance(the_pivatom.coords, bondatom2.coords)
 
         order = [hname1, hname2]
 
@@ -1468,7 +1468,7 @@ class Carboxylic(Optimize):
             self.routines.set_dihedral_angle(residue, anglenum, newangle)
 
             hatom = residue.get_atom(hname)
-            newcoords = hatom.getCoords()
+            newcoords = hatom.coords
 
             # Flip back to return original atom
             newangle = 180.0 + residue.dihedrals[anglenum]
@@ -1529,11 +1529,11 @@ class Carboxylic(Optimize):
     def is_carboxylic_hbond(self, donor, acc):
         """Determine whether this donor acceptor pair is a hydrogen bond"""
         for donorhatom in donor.bonds:
-            if not donorhatom.isHydrogen():
+            if not donorhatom.is_hydrogen:
                 continue
 
             # Check the H(D)-A distance
-            dist = distance(donorhatom.getCoords(), acc.getCoords())
+            dist = distance(donorhatom.coords, acc.coords)
             if dist > DIST_CUTOFF:
                 continue
 
@@ -1565,14 +1565,14 @@ class Carboxylic(Optimize):
             dist = None
             donorhatom = None
             for hatom in self.hlist:
-                if hatom.isHydrogen():
+                if hatom.is_hydrogen:
                     hyds.append(hatom)
 
             if len(hyds) < 2:
                 return 1
 
-            dist = distance(hyds[0].getCoords(), donor.getCoords())
-            dist2 = distance(hyds[1].getCoords(), donor.getCoords())
+            dist = distance(hyds[0].coords, donor.coords)
+            dist2 = distance(hyds[1].coords, donor.coords)
             # Eliminate hyds[0]
             if dist < dist2:
                 self.hlist.remove(hyds[0])
@@ -1616,7 +1616,7 @@ class Carboxylic(Optimize):
 
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.isHydrogen():
+            if donorhatom.is_hydrogen:
                 if self.get_hbond_angle(acc, donor, donorhatom) <= ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
@@ -1844,10 +1844,10 @@ class HydrogenRoutines(object):
                 atomname = atom.get("name")
                 resatom = residue.get_atom(atomname)
                 if atomname == hname:
-                    defatomcoords = atom.getCoords()
+                    defatomcoords = atom.coords
                 elif resatom != None:
-                    refcoords.append(resatom.getCoords())
-                    defcoords.append(atom.getCoords())
+                    refcoords.append(resatom.coords)
+                    defcoords.append(atom.coords)
                 else:
                     raise KeyError("Could not find necessary atom!")
 
@@ -1924,10 +1924,10 @@ class HydrogenRoutines(object):
                     atomname = atom.get("name")
                     resatom = residue.get_atom(atomname)
                     if atomname == hname:
-                        defatomcoords = atom.getCoords()
+                        defatomcoords = atom.coords
                     elif resatom != None:
-                        refcoords.append(resatom.getCoords())
-                        defcoords.append(atom.getCoords())
+                        refcoords.append(resatom.coords)
+                        defcoords.append(atom.coords)
                     else:
                         raise KeyError("Could not find necessary atom!")
 
@@ -2131,7 +2131,7 @@ class HydrogenRoutines(object):
                         if not atom.hdonor and not closeatom.hdonor:
                             continue
 
-                    dist = distance(atom.getCoords(), closeatom.getCoords())
+                    dist = distance(atom.coords, closeatom.coords)
                     if dist < 4.3:
                         residue = atom.residue
                         hbond = PotentialBond(atom, closeatom, dist)

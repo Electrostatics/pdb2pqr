@@ -96,7 +96,7 @@ class ADE(Nucleic):
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
-    def letterCode(self):
+    def letter_code(self):
         return 'A'
 
     def set_state(self):
@@ -114,7 +114,7 @@ class CYT(Nucleic):
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
-    def letterCode(self):
+    def letter_code(self):
         return 'C'
 
     def set_state(self):
@@ -132,7 +132,7 @@ class GUA(Nucleic):
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
-    def letterCode(self):
+    def letter_code(self):
         return 'G'
 
     def set_state(self):
@@ -150,7 +150,7 @@ class THY(Nucleic):
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
-    def letterCode(self):
+    def letter_code(self):
         return 'T'
 
     def set_state(self):
@@ -165,7 +165,7 @@ class URA(Nucleic):
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
-    def letterCode(self):
+    def letter_code(self):
         return 'U'
 
     def set_state(self):

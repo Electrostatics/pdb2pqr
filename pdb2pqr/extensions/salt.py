@@ -73,7 +73,7 @@ def run_extension(routines, outroot, options):
             elif anion.name not in negatomList: 
                     continue
             # Do distance check
-            dist = distance(cation.getCoords(), anion.getCoords())
+            dist = distance(cation.coords, anion.coords)
             if dist > DIST_CUTOFF: 
                 continue
             outfile.write("Cation: %s %s\tAnion: %s %s\tsaltdist: %.2f\n" % \

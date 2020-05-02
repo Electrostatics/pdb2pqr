@@ -164,7 +164,7 @@ class Routines(object):
             for partner in sg_partners:
                 if atom == partner or sg_partners[atom] != []:
                     continue
-                dist = distance(atom.getCoords(), partner.getCoords())
+                dist = distance(atom.coords, partner.coords)
                 if dist < BONDED_SS_LIMIT:
                     sg_partners[atom].append(partner)
                     sg_partners[partner].append(atom)
@@ -192,14 +192,14 @@ class Routines(object):
         for residue in self.protein.residues:
             if isinstance(residue, (Amino, WAT, Nucleic)):
                 for atom in residue.atoms:
-                    if not atom.hasReference():
+                    if not atom.has_reference:
                         continue
                     for bond in atom.reference.bonds:
                         if not residue.has_atom(bond):
                             continue
                         bondatom = residue.get_atom(bond)
                         if bondatom not in atom.bonds:
-                            atom.addBond(bondatom)
+                            atom.add_bond(bondatom)
 
     def update_bonds(self):
         """Update the bonding network of the protein.
@@ -238,7 +238,7 @@ class Routines(object):
                 if atom1 is None or atom2 is None:
                     continue
 
-                if distance(atom1.getCoords(), atom2.getCoords()) > PEPTIDE_DIST:
+                if distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
                     text = "Gap in backbone detected between %s and %s!" % \
                            (res1, res2)
                     _LOGGER.warn(text)
@@ -440,7 +440,7 @@ class Routines(object):
                     self.protein.chains.insert(ch_num, newchain)
 
                     for res in reslist:
-                        newchain.addResidue(res)
+                        newchain.add_residue(res)
                         chain.residues.remove(res)
                         res.set_chain_id(chainid[0])
 
@@ -595,10 +595,10 @@ class Routines(object):
         if numbonds == 1:
 
             # Place according to two atoms
-            coords = [bondatom.getCoords(), nextatom.getCoords()]
-            refcoords = [residue.reference.map[bondname].getCoords(), \
-                         residue.reference.map[nextatomname].getCoords()]
-            refatomcoords = atomref.getCoords()
+            coords = [bondatom.coords, nextatom.coords]
+            refcoords = [residue.reference.map[bondname].coords, \
+                         residue.reference.map[nextatomname].coords]
+            refatomcoords = atomref.coords
             newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
             residue.create_atom(atomname, newcoords)
 
@@ -607,8 +607,8 @@ class Routines(object):
             if isinstance(residue, LEU):
                 hcoords = newcoords
                 cbatom = residue.get_atom('CB')
-                ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(),
-                                  bondatom.getCoords(), hcoords)
+                ang = getDihedral(cbatom.coords, nextatom.coords,
+                                  bondatom.coords, hcoords)
                 diffangle = 60 - ang
                 residue.rotate_tetrahedral(nextatom, bondatom, diffangle)
 
@@ -617,14 +617,14 @@ class Routines(object):
                 cg1atom = residue.get_atom('CG1')
                 cbatom = residue.get_atom('CB')
                 if bondatom.name == 'CD1':
-                    ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(),
-                                      bondatom.getCoords(), hcoords)
+                    ang = getDihedral(cbatom.coords, nextatom.coords,
+                                      bondatom.coords, hcoords)
                 elif bondatom.name == 'CG2':
-                    ang = getDihedral(cg1atom.getCoords(), nextatom.getCoords(),
-                                      bondatom.getCoords(), hcoords)
+                    ang = getDihedral(cg1atom.coords, nextatom.coords,
+                                      bondatom.coords, hcoords)
                 else:
-                    ang = getDihedral(cbatom.getCoords(), nextatom.getCoords(),
-                                      bondatom.getCoords(), hcoords)
+                    ang = getDihedral(cbatom.coords, nextatom.coords,
+                                      bondatom.coords, hcoords)
 
                 diffangle = 60 - ang
                 residue.rotate_tetrahedral(nextatom, bondatom, diffangle)
@@ -641,7 +641,7 @@ class Routines(object):
 
             # Use the existing hydrogen and rotate about the bond
             residue.rotate_tetrahedral(nextatom, bondatom, 120)
-            newcoords = hatom.getCoords()
+            newcoords = hatom.coords
             residue.rotate_tetrahedral(nextatom, bondatom, -120)
             residue.create_atom(atomname, newcoords)
 
@@ -661,13 +661,13 @@ class Routines(object):
 
             # Use the existing hydrogen and rotate about the bond
             residue.rotate_tetrahedral(nextatom, bondatom, 120)
-            newcoords1 = hatoms[0].getCoords()
+            newcoords1 = hatoms[0].coords
             residue.rotate_tetrahedral(nextatom, bondatom, 120)
-            newcoords2 = hatoms[0].getCoords()
+            newcoords2 = hatoms[0].coords
             residue.rotate_tetrahedral(nextatom, bondatom, 120)
 
             # Determine which one hatoms[1] is not in
-            if distance(hatoms[1].getCoords(), newcoords1) > 0.1:
+            if distance(hatoms[1].coords, newcoords1) > 0.1:
                 residue.create_atom(atomname, newcoords1)
             else:
                 residue.create_atom(atomname, newcoords2)
@@ -706,7 +706,7 @@ class Routines(object):
                 coords = []
                 refcoords = []
 
-                refatomcoords = residue.reference.map[atomname].getCoords()
+                refatomcoords = residue.reference.map[atomname].coords
                 bondlist = residue.reference.get_nearest_bonds(atomname)
 
                 for bond in bondlist:
@@ -721,8 +721,8 @@ class Routines(object):
                         continue
 
                     # Get coordinates, reference coordinates
-                    coords.append(atom.getCoords())
-                    refcoords.append(residue.reference.map[bond].getCoords())
+                    coords.append(atom.coords)
+                    refcoords.append(residue.reference.map[bond].coords)
 
                     # Exit if we have enough atoms
                     if len(coords) == 3:
@@ -743,7 +743,7 @@ class Routines(object):
             if not isinstance(residue, (Amino, Nucleic)):
                 continue
             for atom in residue.atoms[:]:
-                if atom.isHydrogen():
+                if atom.is_hydrogen:
                     residue.remove_atom(atom.name)
 
     def repair_heavy(self):
@@ -771,7 +771,7 @@ class Routines(object):
                 refcoords = []
 
                 atomname = missing.pop(0)
-                refatomcoords = residue.reference.map[atomname].getCoords()
+                refatomcoords = residue.reference.map[atomname].coords
                 bondlist = residue.reference.get_nearest_bonds(atomname)
 
                 for bond in bondlist:
@@ -785,8 +785,8 @@ class Routines(object):
                         continue
 
                     # Get coordinates, reference coordinates
-                    coords.append(atom.getCoords())
-                    refcoords.append(residue.reference.map[bond].getCoords())
+                    coords.append(atom.coords)
+                    refcoords.append(residue.reference.map[bond].coords)
 
                     # Exit if we have enough atoms
                     if len(coords) == 3:
@@ -842,7 +842,7 @@ class Routines(object):
 
             # Run the algorithm
             for atom in residue.atoms:
-                if atom.isBackbone():
+                if atom.is_backbone:
                     atom.refdistance = -1
                 elif residue.is_c_term and atom.name == "HO":
                     atom.refdistance = 3
@@ -889,7 +889,7 @@ class Routines(object):
         """
         # Initialize some variables
         residue = atom.residue
-        atom_size = BUMP_HYDROGEN_SIZE if atom.isHydrogen() else BUMP_HEAVY_SIZE
+        atom_size = BUMP_HYDROGEN_SIZE if atom.is_hydrogen else BUMP_HEAVY_SIZE
 
         # Get atoms from nearby cells
         closeatoms = self.cells.get_near_cells(atom)
@@ -909,16 +909,16 @@ class Routines(object):
 
             # Also ignore if this is a donor/acceptor pair
             pair_ignored = False
-            if atom.isHydrogen() and len(atom.bonds) != 0 and atom.bonds[0].hdonor \
+            if atom.is_hydrogen and len(atom.bonds) != 0 and atom.bonds[0].hdonor \
                and closeatom.hacceptor:
                 continue
 
-            if closeatom.isHydrogen() and len(closeatom.bonds) != 0 and closeatom.bonds[0].hdonor \
+            if closeatom.is_hydrogen and len(closeatom.bonds) != 0 and closeatom.bonds[0].hdonor \
                    and atom.hacceptor:
                 continue
 
-            dist = distance(atom.getCoords(), closeatom.getCoords())
-            other_size = BUMP_HYDROGEN_SIZE if closeatom.isHydrogen() else BUMP_HEAVY_SIZE
+            dist = distance(atom.coords, closeatom.coords)
+            other_size = BUMP_HYDROGEN_SIZE if closeatom.is_hydrogen else BUMP_HEAVY_SIZE
             cutoff = atom_size + other_size
             if dist < cutoff:
                 bumpscore = bumpscore + 1000.0
@@ -1085,7 +1085,7 @@ class Routines(object):
                 for i in range(4):
                     atomname = atoms[i]
                     if residue.has_atom(atomname):
-                        coords.append(residue.get_atom(atomname).getCoords())
+                        coords.append(residue.get_atom(atomname).coords)
 
                 if len(coords) == 4:
                     angle = getDihedral(coords[0], coords[1], coords[2], coords[3])
@@ -1128,12 +1128,12 @@ class Routines(object):
                     continue
 
             # Also ignore if this is a donor/acceptor pair
-            if atom.isHydrogen() and atom.bonds[0].hdonor and closeatom.hacceptor:
+            if atom.is_hydrogen and atom.bonds[0].hdonor and closeatom.hacceptor:
                 continue
-            if closeatom.isHydrogen() and closeatom.bonds[0].hdonor and atom.hacceptor:
+            if closeatom.is_hydrogen and closeatom.bonds[0].hdonor and atom.hacceptor:
                 continue
 
-            dist = distance(atom.getCoords(), closeatom.getCoords())
+            dist = distance(atom.coords, closeatom.coords)
 
             if isinstance(closeresidue, WAT):
                 if dist < bestwatdist:
@@ -1168,7 +1168,7 @@ class Routines(object):
         # Initialize some variables
         nearatoms = {}
         residue = atom.residue
-        atom_size = BUMP_HYDROGEN_SIZE if atom.isHydrogen() else BUMP_HEAVY_SIZE
+        atom_size = BUMP_HYDROGEN_SIZE if atom.is_hydrogen else BUMP_HEAVY_SIZE
 
         # Get atoms from nearby cells
         closeatoms = self.cells.get_near_cells(atom)
@@ -1185,16 +1185,16 @@ class Routines(object):
                 continue
 
             # Also ignore if this is a donor/acceptor pair
-            if (atom.isHydrogen() and len(atom.bonds) != 0 and \
+            if (atom.is_hydrogen and len(atom.bonds) != 0 and \
                 atom.bonds[0].hdonor and closeatom.hacceptor):
                 continue
 
-            if (closeatom.isHydrogen() and len(closeatom.bonds) != 0 and \
+            if (closeatom.is_hydrogen and len(closeatom.bonds) != 0 and \
                 closeatom.bonds[0].hdonor and atom.hacceptor):
                 continue
 
-            dist = distance(atom.getCoords(), closeatom.getCoords())
-            other_size = BUMP_HYDROGEN_SIZE if closeatom.isHydrogen() else BUMP_HEAVY_SIZE
+            dist = distance(atom.coords, closeatom.coords)
+            other_size = BUMP_HYDROGEN_SIZE if closeatom.is_hydrogen else BUMP_HEAVY_SIZE
             cutoff = atom_size + other_size
             if dist < cutoff:
                 nearatoms[closeatom] = cutoff - dist
@@ -1281,7 +1281,7 @@ class Routines(object):
         pivot = atomnames[2]
         for atomname in atomnames:
             if residue.has_atom(atomname):
-                coordlist.append(residue.get_atom(atomname).getCoords())
+                coordlist.append(residue.get_atom(atomname).coords)
             else:
                 raise ValueError("Error occurred while trying to debump!")
 
@@ -1291,7 +1291,7 @@ class Routines(object):
 
         for name in moveablenames:
             atom = residue.get_atom(name)
-            movecoords.append(subtract(atom.getCoords(), coordlist[1]))
+            movecoords.append(subtract(atom.coords, coordlist[1]))
 
         newcoords = qchichange(initcoords, movecoords, diff)
 
@@ -1310,7 +1310,7 @@ class Routines(object):
         coordlist = []
         for atomname in atomnames:
             if residue.has_atom(atomname):
-                coordlist.append(residue.get_atom(atomname).getCoords())
+                coordlist.append(residue.get_atom(atomname).coords)
             else:
                 raise ValueError("Error occurred while trying to debump!")
 
@@ -1411,8 +1411,8 @@ class Routines(object):
         # column and hydrogens. This does not seem to be necessary in propKa 3.1 .
         with tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb") as h_free_file:
             for atom in self.protein.atoms:
-                if not atom.isHydrogen():
-                    atomtxt = atom.getPDBString()
+                if not atom.is_hydrogen:
+                    atomtxt = atom.get_pdb_string()
                     h_free_file.write(atomtxt + '\n')
 
             # Run PropKa 3.1 -------------

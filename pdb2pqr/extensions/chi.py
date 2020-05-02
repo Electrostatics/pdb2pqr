@@ -40,26 +40,26 @@ def run_extension(routines, outroot, options):
 
     for residue in protein.residues:
         if residue.has_atom("N"): 
-            ncoords = residue.get_atom("N").getCoords()
+            ncoords = residue.get_atom("N").coords
         else: 
             continue
 
         if residue.has_atom("CA"):
-            cacoords = residue.get_atom("CA").getCoords()
+            cacoords = residue.get_atom("CA").coords
         else: 
             continue
 
         if residue.has_atom("CB"): 
-            cbcoords = residue.get_atom("CB").getCoords()
+            cbcoords = residue.get_atom("CB").coords
         else: 
             continue
 
         if residue.has_atom("CG"): 
-            gcoords = residue.get_atom("CG").getCoords()
+            gcoords = residue.get_atom("CG").coords
         elif residue.has_atom("OG"): 
-            gcoords = residue.get_atom("OG").getCoords()
+            gcoords = residue.get_atom("OG").coords
         elif residue.has_atom("SG"): 
-            gcoords = residue.get_atom("SG").getCoords()
+            gcoords = residue.get_atom("SG").coords
         else: 
             continue
 

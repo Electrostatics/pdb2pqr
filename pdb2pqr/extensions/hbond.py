@@ -85,7 +85,7 @@ def create_hbond_output(routines, outfile, whatif=False,
             continue
         donorhs = []
         for bond in donor.bonds:
-            if bond.isHydrogen(): 
+            if bond.is_hydrogen: 
                 donorhs.append(bond)
         if donorhs == []: 
             continue
@@ -104,7 +104,7 @@ def create_hbond_output(routines, outfile, whatif=False,
             
             # Do new style distance check
             if not oldDistanceMethod:
-                dist = distance(donor.getCoords(), acc.getCoords())
+                dist = distance(donor.coords, acc.coords)
                 if dist > distanceCutoff:
                     continue
             
@@ -112,12 +112,12 @@ def create_hbond_output(routines, outfile, whatif=False,
 
                 # Do old style distance check       
                 if oldDistanceMethod:
-                    dist = distance(donorh.getCoords(), acc.getCoords())
+                    dist = distance(donorh.coords, acc.coords)
                     if dist > distanceCutoff: 
                         continue
                     
                 # Do angle check
-                angle = getAngle(acc.getCoords(), donor.getCoords(), donorh.getCoords())
+                angle = getAngle(acc.coords, donor.coords, donorh.coords)
                 if angle > angleCutoff: 
                     continue
                 
@@ -127,8 +127,8 @@ def create_hbond_output(routines, outfile, whatif=False,
                     if (acc.temp_factor > 60.0): 
                         continue
                     
-                    thisBstring='B' if donor.isBackbone() else 'S'
-                    thatBstring='B' if acc.isBackbone() else 'S'
+                    thisBstring='B' if donor.is_backbone else 'S'
+                    thatBstring='B' if acc.is_backbone else 'S'
 
                     score= (1.7/dist) * cos(angle * 3.142 / 180.0)
                     _LOGGER.debug(_residueString(donor.residue, donor.name))

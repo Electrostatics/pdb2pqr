@@ -43,28 +43,28 @@ def create_rama_output(routines, outfile, outputtype='rama'):
 
     for residue in protein.residues:
         if residue.has_atom("N"): 
-            ncoords = residue.get_atom("N").getCoords()
+            ncoords = residue.get_atom("N").coords
         else: 
             continue
 
         if residue.has_atom("CA"): 
-            cacoords = residue.get_atom("CA").getCoords()
+            cacoords = residue.get_atom("CA").coords
         else: 
             continue
 
         if residue.has_atom("C"): 
-            ccoords = residue.get_atom("C").getCoords()
+            ccoords = residue.get_atom("C").coords
         else: 
             continue
 
         try:
             if residue.peptide_n != None:
-                pepncoords = residue.peptide_n.getCoords()
+                pepncoords = residue.peptide_n.coords
             else: 
                 continue
 
             if residue.peptide_c != None:
-                pepccoords = residue.peptide_c.getCoords()
+                pepccoords = residue.peptide_c.coords
             else: 
                 continue
         except AttributeError: # Non amino acids

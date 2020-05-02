@@ -69,7 +69,7 @@ class Protein(object):
                       ins_code != previous_atom.ins_code or \
                       chain_id != previous_atom.chain_id:
                     my_residue = self.create_residue(residue, previous_atom.res_name)
-                    chain_dict[previous_atom.chain_id].addResidue(my_residue)
+                    chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     residue = []
 
                 residue.append(record)
@@ -77,7 +77,7 @@ class Protein(object):
 
             elif isinstance(record, END):
                 my_residue = self.create_residue(residue, previous_atom.res_name)
-                chain_dict[previous_atom.chain_id].addResidue(my_residue)
+                chain_dict[previous_atom.chain_id].add_residue(my_residue)
                 residue = []
 
             elif isinstance(record, MODEL):
@@ -86,7 +86,7 @@ class Protein(object):
                 if num_models > 1:
                     my_residue = self.create_residue(residue,
                                                      previous_atom.res_name)
-                    chain_dict[previous_atom.chain_id].addResidue(my_residue)
+                    chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     break
 
             elif isinstance(record, TER):
@@ -94,7 +94,7 @@ class Protein(object):
 
         if residue != [] and num_models <= 1:
             my_residue = self.create_residue(residue, previous_atom.res_name)
-            chain_dict[previous_atom.chain_id].addResidue(my_residue)
+            chain_dict[previous_atom.chain_id].add_residue(my_residue)
 
         # Keep a map for accessing chains via chain_id
         self.chainmap = chain_dict.copy()
@@ -160,9 +160,9 @@ class Protein(object):
                 text.append("TER\n")
 
             if pdbfile is True:
-                text.append("%s\n" % atom.getPDBString())
+                text.append("%s\n" % atom.get_pdb_string())
             else:
-                text.append("%s\n" % atom.getPQRString(chainflag=chainflag))
+                text.append("%s\n" % atom.get_pqr_string(chainflag=chainflag))
         text.append("TER\nEND")
         return text
 
@@ -220,7 +220,7 @@ class Protein(object):
         """Generate new serial numbers for atoms in the protein"""
         count = 1
         for atom in self.atoms:
-            atom.set("serial", count)
+            atom.serial = count
             count += 1
 
     @property

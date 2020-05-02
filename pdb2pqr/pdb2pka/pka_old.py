@@ -320,7 +320,7 @@ def pre_init(pdbfilename=None,
                 # Add it to the 'official' definition
                 #
                 #ligresidue=my_definition.parseDefinition(X.lines, 'LIG', 2)
-                #my_definition.AAdef.addResidue(ligresidue)
+                #my_definition.AAdef.add_residue(ligresidue)
                 #
                 # Look for titratable groups in the ligand
                 #

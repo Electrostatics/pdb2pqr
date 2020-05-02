@@ -232,14 +232,14 @@ class pKaRoutines:
 
         self.apbs_setup.set_type('desolv')
 
-        myRoutines = Routines(self.protein, self.routines.verbose)
-        myRoutines.update_residue_types()
-        myRoutines.update_ss_bridges()
-        myRoutines.update_bonds()
-        myRoutines.update_internal_bonds()
+        my_routines = Routines(self.protein, self.routines.verbose)
+        my_routines.update_residue_types()
+        my_routines.update_ss_bridges()
+        my_routines.update_bonds()
+        my_routines.update_internal_bonds()
         pKa.residue.fixed = 2
 
-        myRoutines.debump_protein()
+        my_routines.debump_protein()
 
         self.zeroAllRadiiCharges()
         self.setCharges(residue, atomnames)
@@ -1195,14 +1195,14 @@ class pKaRoutines:
         #
         """
         # Setting up
-        myRoutines = Routines(self.protein, self.routines.verbose)
-        myRoutines.update_residue_types()
+        my_routines = Routines(self.protein, self.routines.verbose)
+        my_routines.update_residue_types()
 
-        myRoutines.update_bonds()
-        #myRoutines.update_internal_bonds()
-        myRoutines.update_ss_bridges()
+        my_routines.update_bonds()
+        #my_routines.update_internal_bonds()
+        my_routines.update_ss_bridges()
 
-        myRoutines.debump_protein()
+        my_routines.debump_protein()
 
         # Initialize H-bond optimization
         self.HydrogenRoutines.set_optimizeable_hydrogens()
@@ -1213,8 +1213,8 @@ class pKaRoutines:
 
         # Clean up, debump
         self.HydrogenRoutines.cleanup()
-        myRoutines.set_states() # this identifies the protonation states to pdb2pqr
-        #myRoutines.debump_protein() # why do we debump after setting the states?
+        my_routines.set_states() # this identifies the protonation states to pdb2pqr
+        #my_routines.debump_protein() # why do we debump after setting the states?
 
         return
 

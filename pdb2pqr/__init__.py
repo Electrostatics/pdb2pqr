@@ -97,10 +97,10 @@ def main(args):
     path = Path(args.input_pdb)
     pdb_file = utilities.getPDBFile(args.input_pdb)
 
-    args.isCIF = False
+    args.is_cif = False
     if path.suffix.lower() == "cif":
         pdblist, errlist = cif.read_cif(pdb_file)
-        args.isCIF = True
+        args.is_cif = True
     else:
         pdblist, errlist = pdb.read_pdb(pdb_file)
 
@@ -108,7 +108,7 @@ def main(args):
         raise RuntimeError("Unable to find file %s!" % path)
 
     if len(errlist) != 0:
-        if args.isCIF:
+        if args.is_cif:
             _LOGGER.warn("Warning: %s is a non-standard CIF file.\n", path)
         else:
             _LOGGER.warn("Warning: %s is a non-standard PDB file.\n", path)
@@ -125,7 +125,7 @@ def main(args):
     _ = args
 
     try:
-        results_dict = run.runPDB2PQR(pdblist, args)
+        results_dict = run.run_pdb2pqr(pdblist, args)
         _ = results_dict["header"]
         lines = results_dict["lines"]
         _ = results_dict["missed_ligands"]
@@ -147,14 +147,14 @@ def main(args):
                     newline = line[0:6] + ' ' + line[6:16] + ' ' + \
                         line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
                     outfile.write(newline)
-                elif line[0:3] == "TER" and args.isCIF:
+                elif line[0:3] == "TER" and args.is_cif:
                     pass
             else:
-                if line[0:3] == "TER" and args.isCIF:
+                if line[0:3] == "TER" and args.is_cif:
                     pass
                 else:
                     outfile.write(line)
-        if args.isCIF:
+        if args.is_cif:
             outfile.write("#\n")
 
     if args.apbs_input:

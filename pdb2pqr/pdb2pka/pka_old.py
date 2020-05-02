@@ -277,7 +277,7 @@ def pre_init(pdbfilename=None,
     #
     # Read the definition file
     #
-    myDefinition = Definition()
+    my_definition = Definition()
     ligand_titratable_groups=None
     #
     #
@@ -289,7 +289,7 @@ def pre_init(pdbfilename=None,
     MOL2FLAG = False
     if not options.ligand:
         dummydef = Definition()
-        myProtein = Protein(pdblist, dummydef)
+        my_protein = Protein(pdblist, dummydef)
     else:
         #
         # Mol2 ligands and PDB ligands are treated differently
@@ -308,7 +308,7 @@ def pre_init(pdbfilename=None,
                 # Read the ligand into Paul's code
                 #
                 from ligandclean import ligff
-                myProtein, myDefinition, Lig = ligff.initialize(myDefinition, ligfd, pdblist, verbose)
+                my_protein, my_definition, Lig = ligff.initialize(my_definition, ligfd, pdblist, verbose)
                 #
                 # Create the ligand definition from the mol2 data
                 #
@@ -319,8 +319,8 @@ def pre_init(pdbfilename=None,
                 #
                 # Add it to the 'official' definition
                 #
-                #ligresidue=myDefinition.parseDefinition(X.lines, 'LIG', 2)
-                #myDefinition.AAdef.addResidue(ligresidue)
+                #ligresidue=my_definition.parseDefinition(X.lines, 'LIG', 2)
+                #my_definition.AAdef.addResidue(ligresidue)
                 #
                 # Look for titratable groups in the ligand
                 #
@@ -352,12 +352,12 @@ def pre_init(pdbfilename=None,
             #
             # Let PDB2PQR parse the entire file
             #
-            #myProtein = Protein(newpdblist)
+            #my_protein = Protein(newpdblist)
         #
-        # Post-Processing for adding sybyl_types to lig-atoms in myProtein
+        # Post-Processing for adding sybyl_types to lig-atoms in my_protein
         # Jens: that's the quick and easy solution
         #
-        #for rrres in  myProtein.chainmap['L'].residues:
+        #for rrres in  my_protein.chainmap['L'].residues:
         #    for aaat in rrres.atoms:
         #        for ligatoms in Lig.l_atoms:
         #            if ligatoms.name == aaat.name:
@@ -389,54 +389,54 @@ def pre_init(pdbfilename=None,
     #
     if verbose:
         print("Created protein object -")
-        print("\tNumber of residues in protein: %s" % myProtein.num_residues())
-        print("\tNumber of atoms in protein   : %s" % myProtein.num_atoms())
+        print("\tNumber of residues in protein: %s" % my_protein.num_residues())
+        print("\tNumber of atoms in protein   : %s" % my_protein.num_atoms())
     #
     # Set up all other routines
     #
-    myRoutines = Routines(myProtein, verbose) #myDefinition)
-    myRoutines.update_residue_types()
-    myRoutines.update_ss_bridges()
-    myRoutines.update_bonds()
-    myRoutines.set_termini()
-    myRoutines.update_internal_bonds()
+    my_routines = Routines(my_protein, verbose) #my_definition)
+    my_routines.update_residue_types()
+    my_routines.update_ss_bridges()
+    my_routines.update_bonds()
+    my_routines.set_termini()
+    my_routines.update_internal_bonds()
 
-    myRoutines.apply_name_scheme(Forcefield(ff, myDefinition, None))
-    myRoutines.find_missing_heavy()
-    myRoutines.add_hydrogens()
-    myRoutines.debump_protein()
+    my_routines.apply_name_scheme(Forcefield(ff, my_definition, None))
+    my_routines.find_missing_heavy()
+    my_routines.add_hydrogens()
+    my_routines.debump_protein()
 
-    #myRoutines.randomizeWaters()
-    myProtein.reserialize()
+    #my_routines.randomizeWaters()
+    my_protein.reserialize()
     #
     # Inject the information on hydrogen conformations in the HYDROGENS.DAT arrays
     # We get this information from ligand_titratable_groups
     #
     from src.hydrogens import HydrogenRoutines
-    myRoutines.update_internal_bonds()
-    myRoutines.calculate_dihedral_angles()
-    myhydRoutines = HydrogenRoutines(myRoutines)
+    my_routines.update_internal_bonds()
+    my_routines.calculate_dihedral_angles()
+    my_hydrogen_routines = HydrogenRoutines(my_routines)
     #
     # Here we should inject the info!!
     #
-    myhydRoutines.set_optimizeable_hydrogens()
-    myhydRoutines.initialize_full_optimization()
-    myhydRoutines.optimize_hydrogens()
-    myhydRoutines.cleanup()
-    myRoutines.set_states()
+    my_hydrogen_routines.set_optimizeable_hydrogens()
+    my_hydrogen_routines.initialize_full_optimization()
+    my_hydrogen_routines.optimize_hydrogens()
+    my_hydrogen_routines.cleanup()
+    my_routines.set_states()
 
     #
     # Choose the correct forcefield
     #
-    myForcefield = Forcefield(ff, myDefinition, None)
+    my_forcefield = Forcefield(ff, my_definition, None)
     if Lig:
-        hitlist, misslist = myRoutines.apply_force_field(myForcefield)
+        hitlist, misslist = my_routines.apply_force_field(my_forcefield)
         #
         # Can we get charges for the ligand?
         #
         templist=[]
         ligsuccess=False
-        for residue in myProtein.get_residues():
+        for residue in my_protein.get_residues():
             if isinstance(residue, LIG):
                 templist = []
                 Lig.make_up2date(residue)
@@ -472,7 +472,7 @@ def pre_init(pdbfilename=None,
                 charge = residue.get_charge()
                 if abs(charge - round(charge)) > 0.01:
                     # Ligand parameterization failed
-                    myProtein.residues.remove(residue)
+                    my_protein.residues.remove(residue)
                     raise Exception('Non-integer charge on ligand: %8.5f' %charge)
                 else:
                     ligsuccess = 1
@@ -493,9 +493,9 @@ def pre_init(pdbfilename=None,
                 misslist.remove(atom)
 
     if verbose:
-        print("Created protein object (after processing myRoutines) -")
-        print("\tNumber of residues in protein: %s" % myProtein.num_residues())
-        print("\tNumber of atoms in protein   : %s" % myProtein.num_atoms())
+        print("Created protein object (after processing my_routines) -")
+        print("\tNumber of residues in protein: %s" % my_protein.num_residues())
+        print("\tNumber of atoms in protein   : %s" % my_protein.num_atoms())
     #
     # Create the APBS input file
     #
@@ -554,7 +554,7 @@ def pre_init(pdbfilename=None,
     #
     # Return all we need
     #
-    return myProtein, myRoutines, myForcefield,igen, ligand_titratable_groups, maps, sd
+    return my_protein, my_routines, my_forcefield,igen, ligand_titratable_groups, maps, sd
 
 #
 # --------------

@@ -275,7 +275,7 @@ def build_parser():
                              "(which require more parallelism)"))
     parse.add_argument("--ofrac", type=float, default=psize.OFRAC,
                        help="Overlap factor between mesh partitions (parallel)")
-    parse.add_argument("--redfac", type=float, default=psize.REDFRAC,
+    parse.add_argument("--redfac", type=float, default=psize.REDFAC,
                        help=("The maximum factor by which a domain dimension can "
                              "be reduced during focusing"))
     parse.add_argument("--istrng", help="Ionic strength (M). Na+ anc Cl- ions will be used")

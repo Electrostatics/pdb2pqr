@@ -43,8 +43,8 @@ def run_extension(routines, outroot, options):
     # forcefield and are not necessarily exhaustive).
     posresList = ["LYS","ARG","HIP"]
     negresList = ["GLU","ASP","CYM"]
-    posatomList = ["NE","NH1","NH2","NZ","ND1","NE2",]
-    negatomList = ["SG","OE1","OE2","OD1","OD2"]
+    posatom_list = ["NE","NH1","NH2","NZ","ND1","NE2",]
+    negatom_list = ["SG","OE1","OE2","OD1","OD2"]
 
     # Initialize - set nearby cells
     # The cell size adds one for the salt bridge distance, and rounds up
@@ -61,7 +61,7 @@ def run_extension(routines, outroot, options):
             _LOGGER.info("YES NMET")
         if cation.residue.name not in posresList: 
             continue
-        elif cation.name not in posatomList: 
+        elif cation.name not in posatom_list: 
                 continue
         # For each cation, grab all potential anions in nearby cells
         closeatoms = routines.cells.get_near_cells(cation)
@@ -70,7 +70,7 @@ def run_extension(routines, outroot, options):
                 continue
             if anion.residue.name not in negresList: 
                 continue
-            elif anion.name not in negatomList: 
+            elif anion.name not in negatom_list: 
                     continue
             # Do distance check
             dist = distance(cation.coords, anion.coords)

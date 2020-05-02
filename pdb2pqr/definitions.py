@@ -310,7 +310,8 @@ class DefinitionAtom(structures.Atom):
             text += " %s" % bond
         return text
 
-    def isBackbone(self):
+    @property
+    def is_backbone(self):
         """Return true if atom name is in backbone, otherwise false"""
         if self.name in structures.BACKBONE:
             return True

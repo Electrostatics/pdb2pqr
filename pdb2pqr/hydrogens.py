@@ -2317,7 +2317,7 @@ class HydrogenRoutines(object):
             refmap[res_.name] = res_.reference
             for atom in refmap[res_.name].atoms:
                 atommap[res_.name, atom.name] = atom
-            for titrationstate in res_.titrationStates:
+            for titrationstate in res_.titration_states:
                 titrationstatemap[titrationstate.name] = titrationstate
                 for tautomer in titrationstate.tautomers:
                     tautomermap[tautomer.name] = tautomer
@@ -2357,7 +2357,7 @@ class HydrogenRoutines(object):
             ntrmap = {}    # map for N-TERM
             for tautomer in titrationstatemap["NTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformerAdds:
+                    for conformeradds in conformermap[conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             ntrmap[atom.name] = atom
             atoms = ['H3', 'H2']
@@ -2369,13 +2369,13 @@ class HydrogenRoutines(object):
             conformernames = []
             for tautomer in titrationstatemap["CTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformerAdds:
+                    for conformeradds in conformermap[conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             nonhmap[atom.name] = atom
             for tautomer in titrationstatemap["CTER0"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     conformernames.append(conformer.name)
-                    for conformeradds in conformermap[conformer.name].conformerAdds:
+                    for conformeradds in conformermap[conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
 
@@ -2408,7 +2408,7 @@ class HydrogenRoutines(object):
             _ = refmap['ASP']
             for tautomer in titrationstatemap["ASH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformerAdds:
+                    for conformeradds in conformermap[conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
                             conformernames.append(conformer.name)
@@ -2422,7 +2422,7 @@ class HydrogenRoutines(object):
             _ = refmap['GLU']
             for tautomer in titrationstatemap["GLH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformerAdds:
+                    for conformeradds in conformermap[conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
                             conformernames.append(conformer.name)

@@ -20,96 +20,88 @@ class TopologyHandler(sax.ContentHandler):
                |-->conformer
     """
     def __init__(self):
-        self.currentElement = None
-        self.currentAtom = None
-        self.currentDihedral = None
-        self.currentReference = None
-        self.currentResidue = None
-        self.currentTitrationState = None
-        self.currentTautomer = None
-        self.currentConformer = None
-        self.currentConformerAdd = None
-        self.currentConformerRemove = None
+        self.curr_element = None
+        self.curr_atom = None
+        self.curr_dihedral = None
+        self.curr_reference = None
+        self.curr_residue = None
+        self.curr_titration_state = None
+        self.curr_tautomer = None
+        self.curr_conformer = None
+        self.curr_conformer_add = None
+        self.curr_conformer_remove = None
         self.residues = []
         self.incomplete = 0
-        
-    def startElement(self, tagName, attributes):
-        if not self.incomplete: 
-            #print "Processing %s start tag" % tagName
+
+    def startElement(self, tagName, _):
+        """Start element parsing."""
+        if not self.incomplete:
             if tagName == "topology":
                 pass
             elif tagName == "residue":
-                if self.currentResidue != None:
-                    _LOGGER.info("** Overwriting current TopologyResidue object!")
-                self.currentResidue = TopologyResidue(self)
+                if self.curr_residue != None:
+                    _LOGGER.info("** Overwriting current topology_residue object!")
+                self.curr_residue = TopologyResidue(self)
             elif tagName == "reference":
-                if self.currentReference != None:
+                if self.curr_reference != None:
                     _LOGGER.info("** Overwriting current TopologyReference object!")
-                self.currentReference = TopologyReference(self.currentResidue)
+                self.curr_reference = TopologyReference(self.curr_residue)
             elif tagName == "titrationstate":
-                if self.currentTitrationState != None:
-                    _LOGGER.info("** Overwriting current TopologyTitrationState object!")
-                self.currentTitrationState = TopologyTitrationState(self.currentResidue)
+                if self.curr_titration_state != None:
+                    _LOGGER.info("** Overwriting current topology_titration_state object!")
+                self.curr_titration_state = TopologyTitrationState(self.curr_residue)
             elif tagName == "tautomer":
-                if self.currentTautomer != None:
+                if self.curr_tautomer != None:
                     _LOGGER.info("** Overwriting current Tautomer object!")
-                self.currentTautomer = TopologyTautomer(self.currentTitrationState)
+                self.curr_tautomer = TopologyTautomer(self.curr_titration_state)
             elif tagName == "conformer":
-                if self.currentConformer != None:
+                if self.curr_conformer != None:
                     _LOGGER.info("** Overwriting current Conformer object!")
-                self.currentConformer = TopologyConformer(self.currentTautomer)
+                self.curr_conformer = TopologyConformer(self.curr_tautomer)
             elif tagName == "name":
-                self.currentElement = tagName
+                self.curr_element = tagName
             elif tagName == "atom":
-                if self.currentConformerAdd != None:
-                    #print "    Adding atom to conformerAdd..."
-                    self.currentAtom = TopologyAtom(self.currentConformerAdd)
-                elif self.currentConformerRemove != None:
-                    #print "    Adding atom to conformerRemove..."
-                    self.currentAtom = TopologyAtom(self.currentConformerRemove)
-                elif self.currentReference != None:
-                    #print "    Adding atom to reference..."
-                    self.currentAtom = TopologyAtom(self.currentReference)
+                if self.curr_conformer_add != None:
+                    self.curr_atom = TopologyAtom(self.curr_conformer_add)
+                elif self.curr_conformer_remove != None:
+                    self.curr_atom = TopologyAtom(self.curr_conformer_remove)
+                elif self.curr_reference != None:
+                    self.curr_atom = TopologyAtom(self.curr_reference)
                 else:
                     _LOGGER.info("** Don't know what to do with this atom!")
             elif tagName == "x":
-                self.currentElement = tagName
+                self.curr_element = tagName
             elif tagName == "y":
-                self.currentElement = tagName
+                self.curr_element = tagName
             elif tagName == "z":
-                self.currentElement = tagName
+                self.curr_element = tagName
             elif tagName == "bond":
-                self.currentElement = tagName
+                self.curr_element = tagName
             elif tagName == "altname":
-                self.currentElement = tagName
+                self.curr_element = tagName
             elif tagName == "dihedral":
-                self.currentElement = tagName
-                if self.currentConformerAdd != None:
-                    #print "    Adding dihedral to conformerAdd..."
-                    self.currentDihedral = TopologyDihedral(self.currentConformerAdd)
-                elif self.currentConformerRemove != None:
-                    #print "    Adding dihedral to conformerRemove..."
-                    self.currentDihedral = TopologyDihedral(self.currentConformerRemove)
-                elif self.currentReference != None:
-                    #print "    Adding dihedral to reference..."
-                    self.currentDihedral = TopologyDihedral(self.currentReference)
+                self.curr_element = tagName
+                if self.curr_conformer_add != None:
+                    self.curr_dihedral = TopologyDihedral(self.curr_conformer_add)
+                elif self.curr_conformer_remove != None:
+                    self.curr_dihedral = TopologyDihedral(self.curr_conformer_remove)
+                elif self.curr_reference != None:
+                    self.curr_dihedral = TopologyDihedral(self.curr_reference)
                 else:
                     _LOGGER.info("** Don't know what to do with this dihedral!")
             elif tagName == "add":
-                self.currentConformerAdd = TopologyConformerAdd(self.currentConformer)
+                self.curr_conformer_add = TopologyConformerAdd(self.curr_conformer)
             elif tagName == "remove":
-                #print "currentConformer: %s" % (self.currentConformer)
-                self.currentConformerRemove = TopologyConformerRemove(self.currentConformer)
+                self.curr_conformer_remove = TopologyConformerRemove(self.curr_conformer)
             elif tagName == "incomplete":
-                #print "incomplete state encounted, skipping!"
                 self.incomplete = 1
             else:
-                _LOGGER.info("** NOT handling %s start tag" % tagName)
-            
+                _LOGGER.info("** NOT handling %s start tag", tagName)
+
     def endElement(self, tagName):
+        """End parsing element"""
         if not self.incomplete:
-            #print "Processing %s end tag" % tagName
-            self.currentElement is None
+            self.curr_element = None
             if tagName == "x":
                 pass
             elif tagName == "y":
@@ -123,110 +115,97 @@ class TopologyHandler(sax.ContentHandler):
             elif tagName == "altname":
                 pass
             elif tagName == "atom":
-                self.currentAtom = None
+                self.curr_atom = None
             elif tagName == "dihedral":
-                self.currentDihedral = None
+                self.curr_dihedral = None
             elif tagName == "reference":
-                self.currentReference = None
+                self.curr_reference = None
             elif tagName == "add":
-                self.currentConformerAdd = None
+                self.curr_conformer_add = None
             elif tagName == "remove":
-                self.currentConformerRemove = None
+                self.curr_conformer_remove = None
             elif tagName == "titrationstate":
-                residue = self.currentTitrationState.topologyResidue
-                #print "Residue %s has titration states:  %s" % (residue.name, residue.titrationStates)
-                self.currentTitrationState = None
+                self.curr_titration_state = None
             elif tagName == "conformer":
-                tautomer = self.currentConformer.topologyTautomer
-                #print "Tautomer %s has conformers:  %s" % (tautomer.name, tautomer.conformers)
-                self.currentConformer = None
+                self.curr_conformer = None
             elif tagName == "tautomer":
-                titrationState = self.currentTautomer.topologyTitrationState
-                #print "Titration state %s has tautomers:  %s" % (titrationState.name, titrationState.tautomers)
-                self.currentTautomer = None
+                self.curr_tautomer = None
             elif tagName == "residue":
-                self.currentResidue = None
+                self.curr_residue = None
             elif tagName == "topology":
                 pass
             else:
-                _LOGGER.info("** NOT handling %s end tag" % tagName)
+                _LOGGER.info("** NOT handling %s end tag", tagName)
         else:
             if tagName == "incomplete":
                 self.incomplete = 0
 
-            
     def characters(self, text):
-        if text.isspace():  return
-        
+        """Parse characters in topology file."""
+        if text.isspace():
+            return
         if not self.incomplete:
-            if self.currentElement == "name":
-                # Processing a name based on current context
-                if self.currentAtom != None:
-                    #print "    Setting atom name to %s" % text
-                    self.currentAtom.name = text
-                elif self.currentConformer != None:
-                    #print "    Setting conformer name to %s" % text
-                    self.currentConformer.name = text
-                elif self.currentTautomer != None:
-                    #print "    Setting tautomer name to %s" % text
-                    self.currentTautomer.name = text
-                elif self.currentTitrationState != None:
-                    #print "    Setting titration state name to %s" % text
-                    self.currentTitrationState.name = text
-                elif self.currentResidue != None:
-                    #print "    Setting residue name to %s" % text
-                    self.currentResidue.name = text
+            if self.curr_element == "name":
+                if self.curr_atom != None:
+                    self.curr_atom.name = text
+                elif self.curr_conformer != None:
+                    self.curr_conformer.name = text
+                elif self.curr_tautomer != None:
+                    self.curr_tautomer.name = text
+                elif self.curr_titration_state != None:
+                    self.curr_titration_state.name = text
+                elif self.curr_residue != None:
+                    self.curr_residue.name = text
                 else:
-                    _LOGGER.info("    *** Don't know what to do with name %s!" % text)
-            elif self.currentElement == "x":
-                #print "    Setting atom x coordinate to %s" % text
-                self.currentAtom.x = float(text)
-            elif self.currentElement == "y":
-                #print "    Setting atom y coordinate to %s" % text
-                self.currentAtom.y = float(text)
-            elif self.currentElement == "z":
-                #print "    Setting atom z coordinate to %s" % text
-                self.currentAtom.z = float(text)
-            elif self.currentElement == "bond":
-                #print "    Setting bond text to %s" % text
-                self.currentAtom.bonds.append(text)
-            elif self.currentElement == "altname":
-                #print "    Setting altname text to %s" % text
-                self.currentAtom.altname = text
-            elif self.currentElement == "dihedral":
-                #print "    Setting dihedral text to %s" % text
-                self.currentDihedral.atomList = text
+                    _LOGGER.info("    *** Don't know what to do with name %s!", text)
+            elif self.curr_element == "x":
+                self.curr_atom.x = float(text)
+            elif self.curr_element == "y":
+                self.curr_atom.y = float(text)
+            elif self.curr_element == "z":
+                self.curr_atom.z = float(text)
+            elif self.curr_element == "bond":
+                self.curr_atom.bonds.append(text)
+            elif self.curr_element == "altname":
+                self.curr_atom.altname = text
+            elif self.curr_element == "dihedral":
+                self.curr_dihedral.atom_list = text
             else:
-                _LOGGER.info("** NOT handling character text:  %s" % text)
-            
+                _LOGGER.info("** NOT handling character text:  %s", text)
 
-class TopologyResidue:
+
+# TODO - lots of repeated code that could be eliminated with better inheritance
+class TopologyResidue(object):
     """ A class for residue topology information """
-    def __init__(self, topology):
+    def __init__(self, topology_):
         """ Initialize with a Topology object """
         self.name = None
         self.reference = None
-        self.titrationStates = []
-        self.topology = topology
+        self.titration_states = []
+        self.topology = topology_
         self.topology.residues.append(self)
+
     def __str__(self):
         return self.name
-        
-class TopologyDihedral:
+
+
+class TopologyDihedral(object):
     """ A class for dihedral topology information.  """
     def __init__(self, parent):
         """ Needs a parent that has a dihedral list. """
         self.parent = parent
         self.parent.dihedrals.append(self)
-        self.atomList = None
+        self.atom_list = None
+
     def __str__(self):
-        return self.atomList
-        
-class TopologyAtom:
+        return self.atom_list
+
+
+class TopologyAtom(object):
     """ A class for atom topology information """
     def __init__(self, parent):
-        """ Needs to be intialized with an upper-level class that contains an atoms array (e.g., TopologyReference
-        or TopologyConformerAddition)"""
+        """ Needs to be intialized with an upper-level class that contains an
+        atoms array (e.g., TopologyReference or TopologyConformerAddition)"""
         self.parent = parent
         self.parent.atoms.append(self)
         self.name = None
@@ -235,118 +214,94 @@ class TopologyAtom:
         self.z = None
         self.bonds = []
         self.altname = None
+
     def __str__(self):
         return self.name
 
-class TopologyTitrationState:
+
+class TopologyTitrationState(object):
     """ A class for the titration state of a residue """
-    def __init__(self, topologyResidue):
-        """ Initialize with a TopologyResidue object """
-        self.topologyResidue = topologyResidue
-        self.topologyResidue.titrationStates.append(self)
+    def __init__(self, topology_residue):
+        """ Initialize with a topology_residue object """
+        self.topology_residue = topology_residue
+        self.topology_residue.titration_states.append(self)
         self.tautomers = []
         self.name = None
+
     def __str__(self):
         return self.name
 
-class TopologyTautomer:
+
+class TopologyTautomer(object):
     """ A class for topology tautomer information """
-    def __init__(self, topologyTitrationState):
-        """ Initialize with a TopologyTitrationState object """
-        self.topologyTitrationState = topologyTitrationState
-        self.topologyTitrationState.tautomers.append(self)
+    def __init__(self, topology_titration_state):
+        """ Initialize with a topology_titration_state object """
+        self.topology_titration_state = topology_titration_state
+        self.topology_titration_state.tautomers.append(self)
         self.conformers = []
         self.name = None
-    def __str__(self):
-        return self.name		
-        
-class TopologyConformer:
-    """ A class for topology conformer information """
-    def __init__(self, topologyTautomer):
-        """ Initialize with a TopologyTautomer object """
-        self.topologyTautomer = topologyTautomer
-        self.topologyTautomer.conformers.append(self)
-        self.name = None
-        self.conformerAdds = []
-        self.conformerRemoves = []
+
     def __str__(self):
         return self.name
-                    
-class TopologyReference:
+
+
+class TopologyConformer(object):
+    """ A class for topology conformer information """
+    def __init__(self, topology_tautomer):
+        """ Initialize with a TopologyTautomer object """
+        self.topology_tautomer = topology_tautomer
+        self.topology_tautomer.conformers.append(self)
+        self.name = None
+        self.conformer_adds = []
+        self.conformer_removes = []
+
+    def __str__(self):
+        return self.name
+
+
+class TopologyReference(object):
     """ A class for the reference structure of a residue """
-    def __init__(self, topologyResidue):
-        """ Initialize with a TopologyResidue object """
-        self.topologyResidue = topologyResidue
-        self.topologyResidue.reference = self
+    def __init__(self, topology_residue):
+        """ Initialize with a topology_residue object """
+        self.topology_residue = topology_residue
+        self.topology_residue.reference = self
         self.atoms = []
         self.dihedrals = []
-        
-class TopologyConformerAdd:
+
+
+class TopologyConformerAdd(object):
     """ A class for adding atoms to a conformer """
-    def __init__(self, topologyConformer):
+    def __init__(self, topology_conformer):
         """ Initialize with a TopologyConformer object """
-        self.topologyConformer = topologyConformer
-        self.topologyConformer.conformerAdds.append(self)
+        self.topology_conformer = topology_conformer
+        self.topology_conformer.conformer_adds.append(self)
         self.atoms = []
         self.name = None
         self.dihedrals = []
 
-class TopologyConformerRemove:
+
+class TopologyConformerRemove(object):
     """ A class for removing atoms to a conformer """
-    def __init__(self, topologyConformer):
+    def __init__(self, topology_conformer):
         """ Initialize with a TopologyConformer object """
-        self.topologyConformer = topologyConformer
-        self.topologyConformer.conformerRemoves.append(self)
+        self.topology_conformer = topology_conformer
+        self.topology_conformer.conformer_removes.append(self)
         self.atoms = []
         self.name = None
-        
-class Topology:
-    """ Contains the structured definitions of residue reference coordinates as well as alternate titration, 
-    conformer, and tautomer states.
+
+
+class Topology(object):
+    """ Contains the structured definitions of residue reference coordinates
+    as well as alternate titration, conformer, and tautomer states.
     """
-    def __init__(self, topologyFile):
+    def __init__(self, topology_file):
         """ Initialize with the topology file reference ready for reading """
         handler = TopologyHandler()
         sax.make_parser()
-        sax.parseString(topologyFile.read(), handler)
+        sax.parseString(topology_file.read(), handler)
         self.residues = handler.residues
-        
+
+
 if __name__ == "__main__":
-    topologyFile = open(TOPOLOGYPATH, "r")
-    topology = Topology(topologyFile)
-    
-"""
-    print "####### SUMMARY ########"
-    print "Topology has %d residues:" % len(topology.residues)
-    for residue in topology.residues:
-        print "-- Residue %s has 1 reference and %d titration states" % (residue.name, len(residue.titrationStates))
-        reference = residue.reference
-        print "---- Reference %s has %d atoms and %d dihedrals" % (reference, len(reference.atoms), len(reference.dihedrals))
-        for atom in reference.atoms:
-            print "------ Atom %s" % atom.name
-            print "-------- Alt name %s" % atom.altname
-            print "-------- Coordinate %g %g %g" % (atom.x, atom.y, atom.z)
-        for dihedral in reference.dihedrals:
-            print "------ Dihedral %s" % dihedral
-        for titrationState in residue.titrationStates:
-            print "---- Titration state %s has %d tautomers" % (titrationState.name, len(titrationState.tautomers))
-            for tautomer in titrationState.tautomers:
-                print "-------- Tautomer %s has %d conformers" % (tautomer.name, len(tautomer.conformers))
-                for conformer in tautomer.conformers:
-                    print "---------- Conformer %s has %d removes" % (conformer.name, len(conformer.conformerRemoves))
-                    for remove in conformer.conformerRemoves:
-                        print "------------ Remove %d atoms" % (len(remove.atoms))
-                        for atom in remove.atoms:
-                            print "-------------- Atom %s" % (atom.name)
-                    print "---------- Conformer %s has %d adds" % (conformer.name, len(conformer.conformerAdds))
-                    for add in conformer.conformerAdds:
-                        print "------------ Add %d atoms and %d dihedrals" % (len(add.atoms), len(add.dihedrals))
-                        for atom in add.atoms:
-                            print "-------------- Atom %s/%s (%g, %g, %g) bonded to %s" % (atom.name, atom.altname, atom.x, atom.y, atom.z, atom.bonds)
-                        for dihedral in add.dihedrals:
-                            print "-------------- Dihedral %s" % dihedral
-"""
-                
-        
-    
-    
+    with open(TOPOLOGYPATH, "r") as tfile_:
+        Topology(tfile_)

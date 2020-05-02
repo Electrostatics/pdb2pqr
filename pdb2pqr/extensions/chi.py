@@ -38,7 +38,7 @@ def run_extension(routines, outroot, options):
 
     protein = routines.protein
 
-    for residue in protein.get_residues():
+    for residue in protein.residues:
         if residue.has_atom("N"): 
             ncoords = residue.get_atom("N").getCoords()
         else: 

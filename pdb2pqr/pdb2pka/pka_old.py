@@ -389,8 +389,8 @@ def pre_init(pdbfilename=None,
     #
     if verbose:
         print("Created protein object -")
-        print("\tNumber of residues in protein: %s" % my_protein.num_residues())
-        print("\tNumber of atoms in protein   : %s" % my_protein.num_atoms())
+        print("\tNumber of residues in protein: %s" % len(my_protein.residues)
+        print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms)
     #
     # Set up all other routines
     #
@@ -436,14 +436,14 @@ def pre_init(pdbfilename=None,
         #
         templist=[]
         ligsuccess=False
-        for residue in my_protein.get_residues():
+        for residue in my_protein.residues:
             if isinstance(residue, LIG):
                 templist = []
                 Lig.make_up2date(residue)
                 net_charge=0.0
                 print('Ligand',residue)
                 print('Atom\tCharge\tRadius')
-                for atom in residue.get_atoms():
+                for atom in residue.atoms():
                     if atom.mol2charge:
                         atom.ffcharge=atom.mol2charge
                     else:
@@ -469,7 +469,7 @@ def pre_init(pdbfilename=None,
                     #
                     #
 
-                charge = residue.get_charge()
+                charge = residue.charge
                 if abs(charge - round(charge)) > 0.01:
                     # Ligand parameterization failed
                     my_protein.residues.remove(residue)
@@ -494,8 +494,8 @@ def pre_init(pdbfilename=None,
 
     if verbose:
         print("Created protein object (after processing my_routines) -")
-        print("\tNumber of residues in protein: %s" % my_protein.num_residues())
-        print("\tNumber of atoms in protein   : %s" % my_protein.num_atoms())
+        print("\tNumber of residues in protein: %s" % len(my_protein.residues)
+        print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms)
     #
     # Create the APBS input file
     #
@@ -708,7 +708,7 @@ if __name__ == "__main__":
 #         # Just assign charges
 #         #
 #         (protein, routines, forcefield,apbs_setup, ligand_titratable_groups,maps,sd),options = startpKa()
-#         for chain in protein.get_chains():
+#         for chain in protein.chains:
 #             for residue in chain.get("residues"):
 #                 for atom in residue.get("atoms"):
 #                     atomname = atom.get("name")

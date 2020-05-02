@@ -131,7 +131,7 @@ class runAPBS:
             # Load the molecules using Valist_load routine
 
             self.alist = new_valist(NOSH_MAXMOL)
-            self.atoms = protein.get_atoms()
+            self.atoms = protein.atoms
             self.protsize = len(self.atoms)
 
             # SETUP CALCULATIONS
@@ -303,7 +303,7 @@ class runAPBS:
 
         delete_valist(self.alist)
         self.alist = new_valist(NOSH_MAXMOL)
-        self.atoms = protein.get_atoms()
+        self.atoms = protein.atoms
         self.protsize = len(self.atoms)
         proteincopy = copy.copy(protein)
 

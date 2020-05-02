@@ -173,7 +173,7 @@ class pKaRoutines:
         return
 
     def dump_protein_file(self, file_name, pdbfile=True):
-        lines = self.protein.print_atoms(self.protein.get_atoms(), chainflag=True, pdbfile=pdbfile)
+        lines = self.protein.print_atoms(self.protein.atoms, chainflag=True, pdbfile=pdbfile)
         with open(file_name,'w') as fd:
             _LOGGER.info( 'dumping protein state to '+ fd.name)
             for line in lines:
@@ -282,7 +282,7 @@ class pKaRoutines:
             titgroup='%s:%s:%s' %(residue.chain_id, string.zfill(residue.res_seq,4),pKaGroup.name)
             if not potentialDifference.has_key(titgroup):
                 potentialDifference[titgroup]={}
-                for atom in self.protein.get_atoms():
+                for atom in self.protein.atoms:
                     if atom.name in ['N','H','C']:
                         atom_uniqueid=atom.chain_id+':'+string.zfill(atom.res_seq,4)+':'+atom.name
                         potentialDifference[titgroup][atom_uniqueid]=0.00
@@ -298,7 +298,7 @@ class pKaRoutines:
                 # Loop over each state
                 #
                 for state in possiblestates:
-                    for atom in self.protein.get_atoms():
+                    for atom in self.protein.atoms:
                         if atom.name in ['N','H','C']:
                             atom_uniqueid=atom.chain_id+':'+string.zfill(atom.res_seq,4)+':'+atom.name
                             if state in startstates:
@@ -608,7 +608,7 @@ class pKaRoutines:
 
                     energy=0.0
                     count=0
-                    for atom in self.protein.get_atoms():
+                    for atom in self.protein.atoms:
                         for atom2 in atomlist:
                             if is_sameatom(atom,atom2):
                                 energy=energy+potentials[count]*atom.get("ffcharge")
@@ -650,7 +650,7 @@ class pKaRoutines:
                     #
                     if mode=='pKD':
                         count=0
-                        for atom in self.protein.get_atoms():
+                        for atom in self.protein.atoms:
                             atom_uniqueid=atom.chain_id+':'+string.zfill(atom.res_seq,4)+':'+atom.name
                             all_potentials[pKa][titration][state][atom_uniqueid]=potentials[count]
                             count=count+1
@@ -1048,7 +1048,7 @@ class pKaRoutines:
         residue = pKa.residue
         pKaGroup = pKa.pKaGroup
         sum=0.0
-        for atom in residue.get_atoms():
+        for atom in residue.atoms:
             atomname = atom.get("name")
             if atomname.find('FLIP')!=-1:
                 continue
@@ -1333,7 +1333,7 @@ class pKaRoutines:
                     #
                     # Set charges on all other residues
                     #
-                    for chain in self.protein.get_chains():
+                    for chain in self.protein.chains:
                         for otherresidue in chain.get("residues"):
                             if residue == otherresidue:
                                 continue
@@ -1621,7 +1621,7 @@ class pKaRoutines:
 #         #
 #         calc_residues=residues[:]
 #         for calc_res in calc_residues:
-#             for chain in self.protein.get_chains():
+#             for chain in self.protein.chains:
 #                 for residue in chain.get("residues"):
 #                     resname = residue.get("name")
 #                     name='%s:%s:%s' %(chain.chain_id,string.zfill(residue.res_seq,4),resname)
@@ -1634,7 +1634,7 @@ class pKaRoutines:
 #                         #
 #                         atomlist=[]
 #                         atomnames=[]
-#                         for atom in residue.get_atoms():
+#                         for atom in residue.atoms:
 #                             atomlist.append(atom)
 #                             atomnames.append(atom.name)
 #                         #
@@ -1745,7 +1745,7 @@ class pKaRoutines:
 #                         #
 #                         # Here we should define the protonation state we want to use
 #                         #
-#                         for chain in self.protein.get_chains():
+#                         for chain in self.protein.chains:
 #                             for otherresidue in chain.get("residues"):
 #                                 if residue == otherresidue:
 #                                     continue
@@ -1835,7 +1835,7 @@ class pKaRoutines:
         #
         # Get the potentials
         #
-        for atom in self.protein.get_atoms():
+        for atom in self.protein.atoms:
             if not atom:
                 continue
             for atom_2 in atomlist:
@@ -1926,7 +1926,7 @@ class pKaRoutines:
                 residue:  The residue to set (residue)
                 atomlist: A list of atomnames (list)
         """
-        for atom in residue.get_atoms():
+        for atom in residue.atoms:
             atomname = atom.get("name")
             if atomname not in atomlist: continue
             charge, radius = self.forcefield.get_params1(residue, atomname)
@@ -1951,7 +1951,7 @@ class pKaRoutines:
                 residue:  The residue to set (residue)
                 atomlist: A list of atomnames (list)
         """
-        for atom in residue.get_atoms():
+        for atom in residue.atoms:
             atomname = atom.get("name")
             if atomname not in atomlist:
                 continue
@@ -1975,7 +1975,7 @@ class pKaRoutines:
         """
             Set all radii for the entire protein
         """
-        for chain in self.protein.get_chains():
+        for chain in self.protein.chains:
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
                     atomname = atom.get("name")
@@ -2003,7 +2003,7 @@ class pKaRoutines:
         """
             Set all charges and radii for the protein to zero
         """
-        for chain in self.protein.get_chains():
+        for chain in self.protein.chains:
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
                     atom.set("ffcharge",0.0)
@@ -2036,8 +2036,8 @@ class pKaRoutines:
         start_state=self.get_state_name(titration.name,start_state)
         self.HydrogenRoutines.switchstate('pKa', ambiguity, start_state)
         sum=0.0
-        for atom in residue.get_atoms():
-            atomname = atom.get("name")
+        for atom in residue.atoms:
+            atomname = atom.name
             if atomname.find('FLIP')!=-1:
                 continue
 
@@ -2061,7 +2061,7 @@ class pKaRoutines:
             # Check that no charges changed and that no atoms were added
             #
             sum=0.0
-            for atom in residue.get_atoms():
+            for atom in residue.atoms:
                 atomname = atom.get("name")
                 if atomname.find('FLIP')!=-1:
                     continue
@@ -2212,7 +2212,7 @@ class pKaRoutines:
         #
         pKagroupList=self.pKagroups.keys()
         #
-        for chain in self.protein.get_chains():
+        for chain in self.protein.chains:
             for residue in chain.get("residues"):
                 resname = residue.get("name")
                 for group in pKagroupList:

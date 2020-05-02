@@ -28,7 +28,7 @@ def create_summary_output(routines, outfile):
     
     output.write(routines.protein.get_summary() + '\n')
     
-    for residue in routines.protein.get_residues():
+    for residue in routines.protein.residues:
         output.write(str(residue)+'\n')
 
 

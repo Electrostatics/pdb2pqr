@@ -111,7 +111,7 @@ class Protein(object):
             self.chains.append(chain_dict[key])
 
         for chain in self.chains:
-            for residue in chain.get_residues():
+            for residue in chain.residues:
                 self.residues.append(residue)
 
     def create_residue(self, residue, resname):
@@ -177,7 +177,7 @@ class Protein(object):
         """
         # Cache the initial atom numbers
         numcache = {}
-        for atom in self.get_atoms():
+        for atom in self.atoms:
             numcache[atom] = atom.serial
         self.reserialize()
 
@@ -197,7 +197,7 @@ class Protein(object):
                          "Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>"
                          "CHARMM Atom Type</th></tr>\n"))
 
-            for atom in self.get_atoms():
+            for atom in self.atoms:
                 if isinstance(atom.residue, (Amino, WAT, Nucleic)):
                     resname = atom.residue.ffname
                 else:
@@ -213,36 +213,18 @@ class Protein(object):
             file_.write("</BODY></HTML>\n")
 
         # Return the original numbers back
-        for atom in self.get_atoms():
+        for atom in self.atoms:
             atom.serial = numcache[atom]
 
     def reserialize(self):
         """Generate new serial numbers for atoms in the protein"""
         count = 1
-        for atom in self.get_atoms():
+        for atom in self.atoms:
             atom.set("serial", count)
             count += 1
 
-    def get_residues(self):
-        """Return the list of residues in the entire protein"""
-        return self.residues
-
-    def num_residues(self):
-        """Get the number of residues for the entire protein (including
-        multiple chains)
-
-        Returns:
-            count:  Number of residues in the protein (int)
-        """
-        return len(self.get_residues())
-
-    def num_atoms(self):
-        """Get the number of atoms for the entire protein (including multiple
-        chains)
-        """
-        return len(self.get_atoms())
-
-    def get_atoms(self):
+    @property
+    def atoms(self):
         """Return all Atom objects in list format
 
         Returns:
@@ -250,11 +232,12 @@ class Protein(object):
         """
         atomlist = []
         for chain in self.chains:
-            for atom in chain.get_atoms():
+            for atom in chain.atoms:
                 atomlist.append(atom)
         return atomlist
 
-    def get_charge(self):
+    @property
+    def charge(self):
         """Get the total charge on the protein
 
         NOTE:  Since the misslist is used to identify incorrect charge
@@ -269,8 +252,8 @@ class Protein(object):
         charge = 0.0
         misslist = []
         for chain in self.chains:
-            for residue in chain.get("residues"):
-                rescharge = residue.get_charge()
+            for residue in chain.residues:
+                rescharge = residue.charge
                 charge += rescharge
                 if isinstance(residue, Nucleic):
                     if residue.is3term or residue.is5term:
@@ -279,16 +262,7 @@ class Protein(object):
                     misslist.append(residue)
         return misslist, charge
 
-    def get_chains(self):
-        """Get the chains object
-
-        Returns
-            chains:  The list of chains in the protein (chain)
-        """
-        return self.chains
-
-    def get_summary(self):
-        """Some sort of undefined text output."""
+    def __str__(self):
         output = []
         for chain in self.chains:
             output.append(chain.get_summary())

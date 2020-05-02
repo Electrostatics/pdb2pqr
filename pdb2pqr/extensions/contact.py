@@ -39,7 +39,7 @@ def run_extension(routines, outroot, options):
     routines.cells = Cells(cellsize)
     routines.cells.assign_cells(protein)
 
-    for thisatom in protein.get_atoms():
+    for thisatom in protein.atoms:
         # Grab the list of thisatoms
         if not thisatom.hdonor: 
             continue

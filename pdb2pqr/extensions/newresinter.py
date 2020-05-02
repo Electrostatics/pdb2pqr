@@ -88,7 +88,7 @@ class ResInter(object):
         Writes out the residue interaction energy for each possible
         residue pair in the protein.
         """
-        residuepairs = permutations(self.routines.protein.get_residues(), 2)
+        residuepairs = permutations(self.routines.protein.residues, 2)
         
         for pair in residuepairs:
             self.save_interation_energy(pair[0], pair[1])
@@ -98,7 +98,7 @@ class ResInter(object):
         Writes out the residue interaction energy for each possible
         residue pair in the protein.
         """
-        residues = list(self.routines.protein.get_residues())
+        residues = list(self.routines.protein.residues)
         target = residues[i]
         del residues[i]        
         
@@ -111,13 +111,13 @@ class ResInter(object):
         Writes out the residue interaction energy for each possible
         residue pair in the protein.
         """
-        residues = list(self.routines.protein.get_residues())
+        residues = list(self.routines.protein.residues)
 
         self.save_interation_energy(residues[i], residues[j])
         self.save_interation_energy(residues[j], residues[i])
             
     def create_all_protonated(self):
-        residueSet = get_residue_titration_set_protonated(self.routines.protein.get_residues())
+        residueSet = get_residue_titration_set_protonated(self.routines.protein.residues)
         self.process_residue_set(residueSet, 
                                 clean = self.options.clean,
                                 neutraln = self.options.neutraln,
@@ -131,7 +131,7 @@ class ResInter(object):
         self.save_all_residue_interaction_energies()
         
     def create_all_single_unprotonated(self):
-        combinations = residue_set_single_unprotonated_combinations(self.routines.protein.get_residues())
+        combinations = residue_set_single_unprotonated_combinations(self.routines.protein.residues)
         for residueSet, i in combinations:
             self.process_residue_set(residueSet, 
                                      clean = self.options.clean,
@@ -146,7 +146,7 @@ class ResInter(object):
             self.save_one_with_all_interaction_energies(i)
             
     def create_all_pair_unprotonated(self):
-        combinations = residue_set_pair_unprotonated_combinations(self.routines.protein.get_residues())
+        combinations = residue_set_pair_unprotonated_combinations(self.routines.protein.residues)
         for residueSet, i, j in combinations:
             self.process_residue_set(residueSet, 
                                      clean = self.options.clean,
@@ -164,7 +164,7 @@ class ResInter(object):
         n = 0 # total iterable residues
         k = 0 # total iterable residues with two possible choices.
         
-        allProtonated = get_residue_titration_set_protonated(self.routines.protein.get_residues())
+        allProtonated = get_residue_titration_set_protonated(self.routines.protein.residues)
         
         for name in allProtonated:
             if name in _titrationSetsMap:
@@ -222,7 +222,7 @@ class ResInter(object):
         
         self.routines.remove_hydrogens()
         
-        for newResidueName, oldResidue, index in zip(residueSet, self.routines.protein.get_residues(), count()):
+        for newResidueName, oldResidue, index in zip(residueSet, self.routines.protein.residues, count()):
             if newResidueName is None:
                 continue
             
@@ -234,7 +234,7 @@ class ResInter(object):
             newResidue = self.routines.protein.create_residue(residueAtoms, newResidueName)
             
             #Make sure our names are cleaned up for output.
-            newResidue.renameResidue(newResidueName)
+            newResidue.rename_residue(newResidueName)
             
             #Drop it in
             self.routines.protein.residues[index] = newResidue
@@ -348,7 +348,7 @@ def get_residue_interaction_energy(residue1, residue2):
     residue1 and residue2 will not always produce the same result.
     """
     energy = 0.0
-    for pair in product(residue1.get_atoms(), residue2.get_atoms()):
+    for pair in product(residue1.atoms, residue2.atoms):
         energy += Optimize.get_pair_energy(pair[0], pair[1])
         
     return energy

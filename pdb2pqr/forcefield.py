@@ -880,10 +880,6 @@ class ForcefieldResidue(object):
         atomname = atom.get("name")
         self.atoms[atomname] = atom
 
-    def get_atoms(self):
-        """Return the list of atoms in this residue."""
-        return self.atoms
-
     def has_atom(self, atomname):
         """Check to see if the atomname is in the current residue.
 

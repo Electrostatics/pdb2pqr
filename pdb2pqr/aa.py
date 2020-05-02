@@ -269,16 +269,16 @@ class HIS(Amino):
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
             if self.get_atom("ND1").hdonor and not self.get_atom("ND1").hacceptor:
                 if self.has_atom("HE2"):
-                    self.removeAtom("HE2")
+                    self.remove_atom("HE2")
             elif self.get_atom("NE2").hdonor and not self.get_atom("NE2").hacceptor:
                 if self.has_atom("HD1"):
-                    self.removeAtom("HD1")
+                    self.remove_atom("HD1")
             elif self.get_atom("ND1").hacceptor and not self.get_atom("ND1").hdonor:
                 if self.has_atom("HD1"):
-                    self.removeAtom("HD1")
+                    self.remove_atom("HD1")
             else: # Default to HID
                 if self.has_atom("HE2"):
-                    self.removeAtom("HE2")
+                    self.remove_atom("HE2")
 
         if self.has_atom("HD1") and self.has_atom("HE2"):
             self.ffname = "HIP"

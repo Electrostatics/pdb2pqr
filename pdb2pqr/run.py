@@ -80,10 +80,10 @@ def print_pqr_header_cif(atomlist, reslist, charge, force_field,
         header += "Warning: PDB2PQR was unable to assign charges\n"
         header += "to the following atoms (omitted below):\n"
         for atom in atomlist:
-            header += "             %i %s in %s %i\n" % (atom.get("serial"),
-                                                         atom.get("name"),
-                                                         atom.get("residue").get("name"),
-                                                         atom.get("residue").get("res_seq"))
+            header += "             %i %s in %s %i\n" % (atom.serial,
+                                                         atom.name,
+                                                         atom.residue.name,
+                                                         atom.residue.res_seq)
         header += "This is usually due to the fat thtat this residue is not\n"
         header += "an amino acid or nucleic acid; or, there are no parameters\n"
         header += "available for the specific protonation state of this\n"
@@ -94,7 +94,7 @@ def print_pqr_header_cif(atomlist, reslist, charge, force_field,
         header += "the following residues:\n"
         for residue in reslist:
             header += "              %s - Residue Charge: %.4f\n" % (residue,
-                                                                     residue.get_charge())
+                                                                     residue.charge)
     header += ";\n"
     header += "3\n"
     header += ";\n"
@@ -154,10 +154,9 @@ def print_pqr_header(pdblist, atomlist, reslist, charge, force_field, ph_calc_me
         header += "REMARK   5 WARNING: PDB2PQR was unable to assign charges\n"
         header += "REMARK   5          to the following atoms (omitted below):\n"
         for atom in atomlist:
-            header += "REMARK   5              %i %s in %s %i\n" % \
-                      (atom.get("serial"), atom.get("name"), \
-                       atom.get("residue").get("name"), \
-                       atom.get("residue").get("res_seq"))
+            header += "REMARK   5              %i %s in %s %i\n" % (atom.serial, atom.name,
+                                                                    atom.residue.name,
+                                                                    atom.residue.res_seq)
         header += "REMARK   5 This is usually due to the fact that this residue is not\n"
         header += "REMARK   5 an amino acid or nucleic acid; or, there are no parameters\n"
         header += "REMARK   5 available for the specific protonation state of this\n"
@@ -168,7 +167,7 @@ def print_pqr_header(pdblist, atomlist, reslist, charge, force_field, ph_calc_me
         header += "REMARK   5          the following residues:\n"
         for residue in reslist:
             header += "REMARK   5              %s - Residue Charge: %.4f\n" % \
-                      (residue, residue.get_charge())
+                      (residue, residue.charge)
         header += "REMARK   5\n"
     header += "REMARK   6 Total charge on this protein: %.4f e\n" % charge
     header += "REMARK   6\n"
@@ -231,20 +230,20 @@ def run_pdb2pqr(pdblist, options):
         my_protein, my_definition, ligand = ligff.initialize(my_definition,
                                                              options.ligand,
                                                              pdblist)
-        for atom in my_protein.get_atoms():
+        for atom in my_protein.atoms:
             if atom.type == "ATOM":
                 atomcount += 1
     else:
         my_protein = protein.Protein(pdblist, my_definition)
 
     _LOGGER.info("Created protein object:")
-    _LOGGER.info("  Number of residues in protein: %s", my_protein.num_residues())
-    _LOGGER.info("  Number of atoms in protein   : %s", my_protein.num_atoms())
+    _LOGGER.info("  Number of residues in protein: %s", len(my_protein.residues))
+    _LOGGER.info("  Number of atoms in protein   : %s", len(my_protein.atoms))
 
     my_routines = routines.Routines(my_protein)
-    for residue in my_protein.get_residues():
+    for residue in my_protein.residues:
         multoccupancy = 0
-        for atom in residue.get_atoms():
+        for atom in residue.atoms:
             if atom.alt_loc != "":
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s." % (atom.name,
@@ -259,7 +258,7 @@ def run_pdb2pqr(pdblist, options):
 
     if options.clean:
         header = ""
-        lines = my_protein.print_atoms(my_protein.get_atoms(), options.chain)
+        lines = my_protein.print_atoms(my_protein.atoms, options.chain)
 
         # Process the extensions
         # TODO - extension handling is messed up.
@@ -321,7 +320,7 @@ def run_pdb2pqr(pdblist, options):
         my_hydrogen_routines.cleanup()
 
     else:  # Special case for HIS if using assign-only
-        for residue in my_protein.get_residues():
+        for residue in my_protein.residues:
             if isinstance(residue, aa.HIS):
                 my_routines.apply_patch("HIP", residue)
 
@@ -333,18 +332,18 @@ def run_pdb2pqr(pdblist, options):
     ligsuccess = 0
     if options.ligand is not None:
         # If this is independent, we can assign charges and radii here
-        for residue in my_protein.get_residues():
+        for residue in my_protein.residues:
             if isinstance(residue, aa.LIG):
                 templist = []
                 ligand.make_up2date(residue)
-                for atom in residue.get_atoms():
+                for atom in residue.atoms:
                     atom.ffcharge = ligand.ligand_props[atom.name]["charge"]
                     atom.radius = ligand.ligand_props[atom.name]["radius"]
                     if atom in misslist:
                         misslist.pop(misslist.index(atom))
                         templist.append(atom)
 
-                charge = residue.get_charge()
+                charge = residue.charge
                 if abs(charge - int(charge)) > 0.001:
                     # Ligand parameterization failed
                     _LOGGER.warn(("WARNING: PDB2PQR could not successfully "
@@ -375,7 +374,7 @@ def run_pdb2pqr(pdblist, options):
         my_protein.create_html_typemap(my_definition, typemapname)
 
     # Grab the protein charge
-    reslist, charge = my_protein.get_charge()
+    reslist, charge = my_protein.charge
 
     # If we want a different naming scheme, use that
     if options.ffout is not None:

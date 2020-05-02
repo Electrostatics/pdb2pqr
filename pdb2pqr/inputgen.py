@@ -19,7 +19,7 @@ class Elec(object):
     def __init__(self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
         # If this is an async or parallel calc, we want to use
         # the per-grid dime rather than the global dime.
-        self.dime = size.getFineGridPoints()
+        self.dime = size.ngrid
         gmem = 200.0 * self.dime[0] * self.dime[1] * self.dime[2] / 1024.0 / 1024.0
         if method == "": # method not named - use ceiling
             if gmem > size.gmemceil:
@@ -32,9 +32,9 @@ class Elec(object):
 
         self.method = method
         self.istrng = istrng
-        self.glen = size.getCoarseGridDims()
-        self.cglen = size.getCoarseGridDims()
-        self.fglen = size.getFineGridDims()
+        self.glen = size.coarse_length
+        self.cglen = size.coarse_length
+        self.fglen = size.fine_length
         self.pdime = size.proc_grid
 
         self.label = ""

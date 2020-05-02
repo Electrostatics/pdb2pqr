@@ -5,7 +5,6 @@ Get dimensions and other information from a PQR file.
 
 Authors:  Dave Sept, Nathan Baker, Todd Dolinksy, Yong Huang
 """
-import string
 from math import log
 import logging
 import argparse
@@ -17,14 +16,14 @@ SPACE = 0.50
 GMEMFAC = 200
 GMEMCEIL = 400
 OFRAC = 0.1
-REDFRAC = 0.25
+REDFAC = 0.25
 _LOGGER = logging.getLogger(__name__)
 
 
 class Psize(object):
     """Master class for parsing input files and suggesting settings"""
     def __init__(self, cfac=CFAC, fadd=FADD, space=SPACE, gmemfac=GMEMFAC,
-                 gmemceil=GMEMCEIL, ofrac=OFRAC, redfac=REDFRAC):
+                 gmemceil=GMEMCEIL, ofrac=OFRAC, redfac=REDFAC):
         """Initialize Psize.
 
         Args:
@@ -43,6 +42,13 @@ class Psize(object):
         """
         self.minlen = [None, None, None]
         self.maxlen = [None, None, None]
+        self.cfac = cfac
+        self.fadd = fadd
+        self.space = space
+        self.gmemfac = gmemfac
+        self.gmemceil = gmemceil
+        self.ofrac = ofrac
+        self.redfac = redfac
         self.charge = 0.0
         self.gotatom = 0
         self.gothet = 0
@@ -69,6 +75,8 @@ class Psize(object):
     def parse_lines(self, lines):
         """ Parse the lines """
         for line in lines:
+            # TODO -- This is messed up.
+            # Why are we parsing the PQR manually here when we have routines to do that?
             if str.find(line, "ATOM") == 0:
                 subline = str.replace(line[30:], "-", " -")
                 words = str.split(subline)
@@ -81,9 +89,9 @@ class Psize(object):
                 for word in words[0:3]:
                     center.append(float(word))
                 for i in range(3):
-                    if self.minlen[i] == None or center[i]-rad < self.minlen[i]:
+                    if self.minlen[i] is None or center[i]-rad < self.minlen[i]:
                         self.minlen[i] = center[i]-rad
-                    if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
+                    if self.maxlen[i] is None or center[i]+rad > self.maxlen[i]:
                         self.maxlen[i] = center[i]+rad
             elif str.find(line, "HETATM") == 0:
                 self.gothet = self.gothet + 1
@@ -99,9 +107,9 @@ class Psize(object):
                     for word in words[0:3]:
                         center.append(float(word))
                     for i in range(3):
-                        if self.minlen[i] == None or center[i]-rad < self.minlen[i]:
+                        if self.minlen[i] is None or center[i]-rad < self.minlen[i]:
                             self.minlen[i] = center[i]-rad
-                        if self.maxlen[i] == None or center[i]+rad > self.maxlen[i]:
+                        if self.maxlen[i] is None or center[i]+rad > self.maxlen[i]:
                             self.maxlen[i] = center[i]+rad
 
     def set_length(self, maxlen, minlen):
@@ -115,13 +123,13 @@ class Psize(object):
     def set_coarse_grid_dims(self, mol_length):
         """ Compute coarse mesh dimensions """
         for i in range(3):
-            self.coarse_length[i] = self.constants["cfac"] * mol_length[i]
+            self.coarse_length[i] = self.cfac * mol_length[i]
         return self.coarse_length
 
     def set_fine_grid_dims(self, mol_length, coarse_length):
         """ Compute fine mesh dimensions """
         for i in range(3):
-            self.fine_length[i] = mol_length[i] + self.constants["fadd"]
+            self.fine_length[i] = mol_length[i] + self.fadd
             if self.fine_length[i] > coarse_length[i]:
                 self.fine_length[i] = coarse_length[i]
         return self.fine_length
@@ -134,55 +142,58 @@ class Psize(object):
 
     def set_fine_grid_points(self, fine_length):
         """ Compute mesh grid points, assuming 4 levels in MG hierarchy """
-        tn = [0, 0, 0]
+        temp_num = [0, 0, 0]
         for i in range(3):
-            tn[i] = int(fine_length[i]/self.constants["space"] + 0.5)
-            self.ngrid[i] = 32*(int((tn[i] - 1) / 32.0 + 0.5)) + 1
+            temp_num[i] = int(fine_length[i]/self.space + 0.5)
+            self.ngrid[i] = 32*(int((temp_num[i] - 1) / 32.0 + 0.5)) + 1
             if self.ngrid[i] < 33:
                 self.ngrid[i] = 33
         return self.ngrid
 
-    def set_smallest(self, n):
+    def set_smallest(self, ngrid):
         """ Compute parallel division in case memory requirement above ceiling
         Find the smallest dimension and see if the number of grid points in
         that dimension will fit below the memory ceiling
         Reduce nsmall until an nsmall^3 domain will fit into memory """
         nsmall = []
         for i in range(3):
-            nsmall.append(n[i])
+            nsmall.append(ngrid[i])
         while 1:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
-            if nsmem < self.constants["gmemceil"]: break
+            if nsmem < self.gmemceil:
+                break
             else:
                 i = nsmall.index(max(nsmall))
                 nsmall[i] = 32 * ((nsmall[i] - 1)/32 - 1) + 1
                 if nsmall[i] <= 0:
                     _LOGGER.error("You picked a memory ceiling that is too small")
                     raise ValueError(nsmall[i])
-
         self.nsmall = nsmall
         return nsmall
 
-    def set_proc_grid(self, n, nsmall):
+    def set_proc_grid(self, ngrid, nsmall):
         """ Calculate the number of processors required to span each
         dimension """
-
-        zofac = 1 + 2 * self.constants["ofrac"]
+        zofac = 1 + 2 * self.ofrac
         for i in range(3):
-            self.proc_grid[i] = n[i]/float(nsmall[i])
-            if self.proc_grid[i] > 1: self.proc_grid[i] = int(zofac*n[i]/nsmall[i] + 1.0)
+            self.proc_grid[i] = ngrid[i]/float(nsmall[i])
+            if self.proc_grid[i] > 1:
+                self.proc_grid[i] = int(zofac*ngrid[i]/nsmall[i] + 1.0)
         return self.proc_grid
 
-    def set_focus(self, fine_length, np, coarse_length):
+    def set_focus(self, fine_length, nproc, coarse_length):
         """ Calculate the number of levels of focusing required for each
         processor subdomain """
         nfoc = [0, 0, 0]
         for i in range(3):
-            nfoc[i] = int(log((fine_length[i]/np[i])/coarse_length[i])/log(self.constants["redfac"]) + 1.0)
+            nfoc[i] = int(log((fine_length[i]/nproc[i])/coarse_length[i])/log(self.redfac) + 1.0)
         nfocus = nfoc[0]
-        if nfoc[1] > nfocus: nfocus = nfoc[1]
-        if nfoc[2] > nfocus: nfocus = nfoc[2]
-        if nfocus > 0: nfocus = nfocus + 1
+        if nfoc[1] > nfocus:
+            nfocus = nfoc[1]
+        if nfoc[2] > nfocus:
+            nfocus = nfoc[2]
+        if nfocus > 0:
+            nfocus = nfocus + 1
         self.nfocus = nfocus
 
     def set_all(self):
@@ -199,7 +210,6 @@ class Psize(object):
         fine_length = self.fine_length
 
         self.set_center(maxlen, minlen)
-        center = self.center
 
         self.set_fine_grid_points(fine_length)
         ngrid = self.ngrid
@@ -219,14 +229,11 @@ class Psize(object):
 
     def __str__(self):
         """ Return a string with the formatted results """
-
         str_ = "\n"
-
         if self.gotatom > 0:
-
             maxlen = self.maxlen
             minlen = self.minlen
-            q = self.charge
+            charge = self.charge
             mol_length = self.mol_length
             coarse_length = self.coarse_length
             fine_length = self.fine_length
@@ -245,31 +252,40 @@ class Psize(object):
             str_ = str_ + "################# MOLECULE INFO ####################\n"
             str_ = str_ + "Number of ATOM entries = %i\n" % self.gotatom
             str_ = str_ + "Number of HETATM entries (ignored) = %i\n" % self.gothet
-            str_ = str_ + "Total charge = %.3f e\n" % q
-            str_ = str_ + "Dimensions = %.3f x %.3f x %.3f A\n" % (mol_length[0], mol_length[1],
+            str_ = str_ + "Total charge = %.3f e\n" % charge
+            str_ = str_ + "Dimensions = %.3f x %.3f x %.3f A\n" % (mol_length[0],
+                                                                   mol_length[1],
                                                                    mol_length[2])
             str_ = str_ + "Center = %.3f x %.3f x %.3f A\n" % (center[0], center[1], center[2])
-            str_ = str_ + "Lower corner = %.3f x %.3f x %.3f A\n" % (minlen[0], minlen[1],
+            str_ = str_ + "Lower corner = %.3f x %.3f x %.3f A\n" % (minlen[0],
+                                                                     minlen[1],
                                                                      minlen[2])
-            str_ = str_ + "Upper corner = %.3f x %.3f x %.3f A\n" % (maxlen[0], maxlen[1],
+            str_ = str_ + "Upper corner = %.3f x %.3f x %.3f A\n" % (maxlen[0],
+                                                                     maxlen[1],
                                                                      maxlen[2])
 
             str_ = str_ + "\n"
             str_ = str_ + "############## GENERAL CALCULATION INFO #############\n"
-            str_ = str_ + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (coarse_length[0], coarse_length[1], coarse_length[2])
-            str_ = str_ + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (fine_length[0], fine_length[1], fine_length[2])
-            str_ = str_ + "Num. fine grid pts. = %i x %i x %i\n" % (ngrid[0], ngrid[1], ngrid[2])
+            str_ = str_ + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (coarse_length[0],
+                                                                         coarse_length[1],
+                                                                         coarse_length[2])
+            str_ = str_ + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (fine_length[0],
+                                                                       fine_length[1],
+                                                                       fine_length[2])
+            str_ = str_ + "Num. fine grid pts. = %i x %i x %i\n" % (ngrid[0],
+                                                                    ngrid[1],
+                                                                    ngrid[2])
 
-            if gmem > self.constants["gmemceil"]:
+            if gmem > self.gmemceil:
                 str_ = str_ + ("Parallel solve required "
-                               "(%.3f MB > %.3f MB)\n") % (gmem, self.constants["gmemceil"])
+                               "(%.3f MB > %.3f MB)\n") % (gmem, self.gmemceil)
                 str_ = str_ + "Total processors required = %i\n" % (nproc[0]*nproc[1]*nproc[2])
                 str_ = str_ + "Proc. grid = %i x %i x %i\n" % (nproc[0], nproc[1], nproc[2])
                 str_ = str_ + ("Grid pts. on each proc. = "
                                "%i x %i x %i\n") % (nsmall[0], nsmall[1], nsmall[2])
-                xglob = nproc[0]*round(nsmall[0]/(1 + 2*self.constants["ofrac"]) - .001)
-                yglob = nproc[1]*round(nsmall[1]/(1 + 2*self.constants["ofrac"]) - .001)
-                zglob = nproc[2]*round(nsmall[2]/(1 + 2*self.constants["ofrac"]) - .001)
+                xglob = nproc[0]*round(nsmall[0]/(1 + 2*self.ofrac - 0.001))
+                yglob = nproc[1]*round(nsmall[1]/(1 + 2*self.ofrac - 0.001))
+                zglob = nproc[2]*round(nsmall[2]/(1 + 2*self.ofrac - 0.001))
                 if nproc[0] == 1:
                     xglob = nsmall[0]
                 if nproc[1] == 1:
@@ -287,7 +303,7 @@ class Psize(object):
                                                                         fine_length[1]/(ngrid[1]-1),
                                                                         fine_length[2]/(ngrid[2]-1))
                 str_ = str_ + "Estimated mem. required for sequential solve = %.3f MB\n" % gmem
-                ntot = n[0]*n[1]*n[2]
+                ntot = ngrid[0]*ngrid[1]*ngrid[2]
 
             str_ = str_ + "Number of focusing operations = %i\n" % nfocus
             str_ = str_ + "\n"
@@ -297,7 +313,7 @@ class Psize(object):
                            "= %.3f MB\n") % (8.0*12*nproc[0]*nproc[1]*nproc[2]*ntot/1024/1024)
             str_ = str_ + "\n"
         else:
-            str_ = str_ + "No ATOM entires in file!\n\n"
+            str_ = str_ + "No ATOM entries in file!\n\n"
         return str_
 
 
@@ -325,7 +341,7 @@ def build_parser():
                               "calculations (which require more parallelism)."))
     parser.add_argument("--ofrac", default=OFRAC, type=float,
                         help="Overlap factor between mesh partitions")
-    parser.add_argument("--redfac", default=REDFRAC, type=float,
+    parser.add_argument("--redfac", default=REDFAC, type=float,
                         help=("The maximum factor by which a domain dimension "
                               "can be reduced during focusing"))
     parser.add_argument("mol_path", help="Path to PQR file.")
@@ -340,12 +356,7 @@ def main():
     psize = Psize(cfac=args.cfac, fadd=args.fadd, space=args.space,
                   gmemfac=args.gmemfac, gmemceil=args.gmemceil,
                   ofrac=args.ofrac, redfac=args.redfac)
-
-    # TODO - fix this
-    _LOGGER.info("# Constants used: \n")
-    for key in psize.constants.keys():
-        _LOGGER.info("# \t%s: %s\n" % (key, psize.constants[key]))
-    _LOGGER.info(psize.printResults())
+    print(psize)
 
 
 if __name__ == "__main__":

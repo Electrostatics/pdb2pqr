@@ -15,7 +15,7 @@ from pprint import pformat
 from .aa import Amino, PRO, WAT, CYS, LEU, ILE
 from .na import Nucleic
 from .utilities import distance, getDihedral, shortestPath, subtract
-from .quatfit import findCoordinates, qchichange
+from .quatfit import find_coordinates, qchichange
 from .errors import PDBInputError, PDBInternalError, PDB2PKAError
 
 
@@ -654,7 +654,7 @@ class Routines:
             refcoords = [residue.reference.map[bondname].getCoords(), \
                          residue.reference.map[nextatomname].getCoords()]
             refatomcoords = atomref.getCoords()
-            newcoords = findCoordinates(2, coords, refcoords, refatomcoords)
+            newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
             residue.create_atom(atomname, newcoords)
 
             # For LEU and ILE residues only: make sure the Hydrogens are in staggered conformation instead of eclipsed.
@@ -790,7 +790,7 @@ class Routines:
                         break
 
                 if len(coords) == 3:
-                    newcoords = findCoordinates(3, coords, refcoords, refatomcoords)
+                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
                     residue.create_atom(atomname, newcoords)
                     count += 1
                 else:
@@ -871,7 +871,7 @@ class Routines:
                         raise PDBInputError(text)
 
                 else: # Rebuild the atom
-                    newcoords = findCoordinates(3, coords, refcoords, refatomcoords)
+                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
                     residue.create_atom(atomname, newcoords)
                     _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)
                     _LOGGER.debug(" %.3f %.3f %.3f", newcoords[0], newcoords[1], newcoords[2])

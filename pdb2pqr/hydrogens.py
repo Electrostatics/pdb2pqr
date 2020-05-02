@@ -10,7 +10,7 @@ from xml import sax
 from . import topology
 from .utilities import getDatFile, distance, subtract, normalize, dot, add
 from .utilities import analyzeConnectivity, sortDictByValue
-from .quatfit import findCoordinates
+from .quatfit import find_coordinates
 from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS
 from .routines import Cells, Routines
@@ -339,7 +339,7 @@ class Optimize(object):
         refatomcoords = residue.reference.map["H2"].getCoords()
 
         # Make the atom
-        newcoords = findCoordinates(2, coords, refcoords, refatomcoords)
+        newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
         # Set the bonds (since not in reference structure)
@@ -361,7 +361,7 @@ class Optimize(object):
         refatomcoords = residue.reference.map[addname].getCoords()
 
         # Make the atom
-        newcoords = findCoordinates(2, coords, refcoords, refatomcoords)
+        newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
     @classmethod
@@ -382,7 +382,7 @@ class Optimize(object):
         refatomcoords = residue.reference.map[the_refname].getCoords()
 
         # Make the atom
-        newcoords = findCoordinates(2, coords, refcoords, refatomcoords)
+        newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
         # Set the bonds (since not in reference structure)
@@ -1851,7 +1851,7 @@ class HydrogenRoutines(object):
                 else:
                     raise KeyError("Could not find necessary atom!")
 
-            newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
+            newcoords = find_coordinates(3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
             residue.create_atom(hname, newcoords, "ATOM")
             residue.addDebumpAtom(residue.get_atom(hname))
@@ -1931,7 +1931,7 @@ class HydrogenRoutines(object):
                     else:
                         raise KeyError("Could not find necessary atom!")
 
-                newcoords = findCoordinates(3, refcoords, defcoords, defatomcoords)
+                newcoords = find_coordinates(3, refcoords, defcoords, defatomcoords)
                 residue.create_atom(hname, newcoords)
 
             boundname = conf.boundatom

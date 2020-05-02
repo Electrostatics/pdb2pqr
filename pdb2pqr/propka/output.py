@@ -21,9 +21,9 @@ def writePDB(protein, file=None, filename=None, include_hydrogens=False, options
     Write the residue to the new pdbfile
     """
 
-    if file == None:
+    if file is None:
       # opening file if not given
-      if filename == None:
+      if filename is None:
         filename = "%s.pdb" % (protein.name)
       file = open(filename, 'w')
       info("writing pdbfile %s" % (filename))
@@ -54,7 +54,7 @@ def writePKA(protein, parameters, filename=None, conformation ='1A',reference="n
     Write the pka-file based on the given protein
     """
     verbose = True
-    if filename == None:
+    if filename is None:
       filename = "%s.pka" % (protein.name)
     file = open(filename, 'w')
     if verbose == True:
@@ -89,7 +89,7 @@ def printTmProfile(protein, reference="neutral", window=[0., 14., 1.], Tm=[0.,0.
     prints Tm profile
     """
     profile = protein.getTmProfile(reference=reference, grid=[0., 14., 0.1], Tms=Tms, ref=ref, options=options)
-    if profile == None:
+    if profile is None:
       str  = "Could not determine Tm-profile\n"
     else:
       str  = " suggested Tm-profile for %s\n" % (protein.name)
@@ -164,7 +164,7 @@ def getFoldingProfileSection(protein, conformation='AVR', direction="folding", r
     profile, [pH_opt, dG_opt], [dG_min, dG_max], [pH_min, pH_max] = protein.getFoldingProfile(conformation=conformation,
                                                                                  reference=reference,
                                                                                  direction=direction, grid=[0., 14., 0.1], options=options)
-    if profile == None:
+    if profile is None:
       str += "Could not determine folding profile\n"
     else:
       for (pH, dG) in profile:
@@ -172,17 +172,17 @@ def getFoldingProfileSection(protein, conformation='AVR', direction="folding", r
           str += "%6.2lf%10.2lf\n" % (pH, dG)
       str += "\n"
 
-    if pH_opt == None or dG_opt == None:
+    if pH_opt is None or dG_opt is None:
       str += "Could not determine pH optimum\n"
     else:
       str += "The pH of optimum stability is %4.1lf for which the free energy is%6.1lf kcal/mol at 298K\n" % (pH_opt, dG_opt)
 
-    if dG_min == None or dG_max == None:
+    if dG_min is None or dG_max is None:
       str += "Could not determine pH values where the free energy is within 80 %s of minimum\n" % ("%")
     else:
       str += "The free energy is within 80 %s of maximum at pH %4.1lf to %4.1lf\n" % ("%", dG_min, dG_max)
 
-    if pH_min == None or pH_max == None:
+    if pH_min is None or pH_max is None:
       str += "Could not determine the pH-range where the free energy is negative\n\n"
     else:
       str += "The free energy is negative in the range %4.1lf - %4.1lf\n\n" % (pH_min, pH_max)
@@ -199,7 +199,7 @@ def get_chargeProfileSection(protein, conformation='AVR', options=None):
     str  = "Protein charge of folded and unfolded state as a function of pH\n"
 
     profile = protein.get_chargeProfile(conformation=conformation,grid=[0., 14., 1.])
-    if profile == None:
+    if profile is None:
       str += "Could not determine charge profile\n"
     else:
       str += "%6s%10s%8s\n" % ("pH", "unfolded", "folded")
@@ -208,7 +208,7 @@ def get_chargeProfileSection(protein, conformation='AVR', options=None):
 
 
     pI_pro, pI_mod = protein.getPI(conformation=conformation)
-    if pI_pro == None or pI_mod == None:
+    if pI_pro is None or pI_mod is None:
       str += "Could not determine the pI\n\n"
     else:
       str += "The pI is %5.2lf (folded) and %5.2lf (unfolded)\n" % (pI_pro, pI_mod)

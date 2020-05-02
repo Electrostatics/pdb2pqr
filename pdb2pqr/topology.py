@@ -109,7 +109,7 @@ class TopologyHandler(sax.ContentHandler):
     def endElement(self, tagName):
         if not self.incomplete:
             #print "Processing %s end tag" % tagName
-            self.currentElement == None
+            self.currentElement is None
             if tagName == "x":
                 pass
             elif tagName == "y":

@@ -200,7 +200,7 @@ class ligforcefield(Forcefield):
                 atom = ForcefieldAtom(atomname, charge, radius)
 
                 my_residue = self.get_residue(resname)
-                if my_residue == None:
+                if my_residue is None:
                     my_residue = ForcefieldResidue(resname)
                     self.residues[resname] = my_residue
                 my_residue.add_atom(atom)

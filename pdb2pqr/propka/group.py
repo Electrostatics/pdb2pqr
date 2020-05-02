@@ -561,9 +561,9 @@ class Group:
         """
         returning the electrostatic energy of this residue at pH 'pH'
         """
-        if pH == None:
+        if pH is None:
             pH = parameters.pH
-        if reference == None:
+        if reference is None:
             reference = parameters.reference
 
         # If not titratable, the contribution is zero

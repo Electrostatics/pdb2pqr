@@ -395,16 +395,16 @@ def pre_init(pdbfilename=None,
     # Set up all other routines
     #
     myRoutines = Routines(myProtein, verbose) #myDefinition)
-    myRoutines.updateResidueTypes()
-    myRoutines.updateSSbridges()
-    myRoutines.updateBonds()
-    myRoutines.setTermini()
-    myRoutines.updateInternal_bonds()
+    myRoutines.update_residue_types()
+    myRoutines.update_ss_bridges()
+    myRoutines.update_bonds()
+    myRoutines.set_termini()
+    myRoutines.update_internal_bonds()
 
-    myRoutines.applyNameScheme(Forcefield(ff, myDefinition, None))
-    myRoutines.findMissingHeavy()
-    myRoutines.addHydrogens()
-    myRoutines.debumpProtein()
+    myRoutines.apply_name_scheme(Forcefield(ff, myDefinition, None))
+    myRoutines.find_missing_heavy()
+    myRoutines.add_hydrogens()
+    myRoutines.debump_protein()
 
     #myRoutines.randomizeWaters()
     myProtein.reserialize()
@@ -413,8 +413,8 @@ def pre_init(pdbfilename=None,
     # We get this information from ligand_titratable_groups
     #
     from src.hydrogens import HydrogenRoutines
-    myRoutines.updateInternal_bonds()
-    myRoutines.calculateDihedralAngles()
+    myRoutines.update_internal_bonds()
+    myRoutines.calculate_dihedral_angles()
     myhydRoutines = HydrogenRoutines(myRoutines)
     #
     # Here we should inject the info!!
@@ -430,7 +430,7 @@ def pre_init(pdbfilename=None,
     #
     myForcefield = Forcefield(ff, myDefinition, None)
     if Lig:
-        hitlist, misslist = myRoutines.applyForcefield(myForcefield)
+        hitlist, misslist = myRoutines.apply_force_field(myForcefield)
         #
         # Can we get charges for the ligand?
         #

@@ -159,7 +159,7 @@ def addTrpHydrogen(residue):
             NE  = atom
         elif atom.name == "CE2":
             CE  = atom
-    if CD == None or NE == None or CE == None:
+    if CD is None or NE is None or CE is None:
         str = "Did not find all atoms in %s%4d - in %s" % (self.res_name, self.resNumb, "addTrpHydrogen()")
         info(str)
         exit(0)
@@ -184,7 +184,7 @@ def addAmdHydrogen(residue):
         elif (atom.res_name == "GLN" and atom.name == "NE2") or (atom.res_name == "ASN" and atom.name == "ND2"):
             N = atom
 
-    if C == None or O == None or N == None:
+    if C is None or O is None or N is None:
         str = "Did not find N, C and/or O in %s%4d - in %s" % (atom.res_name, atom.resNumb, "addAmdHydrogen()")
         info(str)
         exit(0)
@@ -546,7 +546,7 @@ def AngleFactorX(atom1=None, atom2=None, atom3=None, center=None):
     dY_32 = dY_32/distance_23
     dZ_32 = dZ_32/distance_23
 
-    if atom1 == None:
+    if atom1 is None:
         dX_21 = center[0] - atom2.x
         dY_21 = center[1] - atom2.y
         dZ_21 = center[2] - atom2.z

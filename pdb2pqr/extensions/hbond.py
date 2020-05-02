@@ -74,9 +74,9 @@ def create_hbond_output(routines, outfile, whatif=False,
     
     cellsize = int(distanceCutoff + 1.0 + 1.0) 
     protein = routines.protein
-    routines.setDonorsAndAcceptors()
+    routines.set_donors_acceptors()
     routines.cells = Cells(cellsize)
-    routines.cells.assignCells(protein)
+    routines.cells.assign_cells(protein)
 
     for donor in protein.get_atoms():
 
@@ -91,7 +91,7 @@ def create_hbond_output(routines, outfile, whatif=False,
             continue
 
         # For each donor, grab all acceptors
-        closeatoms = routines.cells.getNearCells(donor)
+        closeatoms = routines.cells.get_near_cells(donor)
         for acc in closeatoms:
             if not acc.hacceptor: 
                 continue

@@ -232,7 +232,7 @@ def process_residue_set(residueSet, routines, output, clean = False,
                                                       opt = True):
     _LOGGER.debug(str(residueSet))
     
-    routines.removeHydrogens()
+    routines.remove_hydrogens()
     
     for newResidueName, oldResidue, index in zip(residueSet, routines.protein.get_residues(), count()):
         if newResidueName is None:
@@ -253,21 +253,21 @@ def process_residue_set(residueSet, routines, output, clean = False,
         chain.residues[chainIndex] = newResidue
     
     #Run the meaty bits of PDB2PQR  
-    routines.setTermini(neutraln, neutralc)
-    routines.updateBonds()
+    routines.set_termini(neutraln, neutralc)
+    routines.update_bonds()
     
     if not clean and not assign_only:
-        routines.updateSSbridges()
+        routines.update_ss_bridges()
 
         if debump:
-            routines.debumpProtein()
+            routines.debump_protein()
             
-        routines.addHydrogens()
+        routines.add_hydrogens()
 
         hydRoutines = HydrogenRoutines(routines)
 
         if debump:
-            routines.debumpProtein()  
+            routines.debump_protein()  
 
         if opt:
             hydRoutines.set_optimizeable_hydrogens()

@@ -220,7 +220,7 @@ class ResInter(object):
         
         _LOGGER.debug(str(residueSet))
         
-        self.routines.removeHydrogens()
+        self.routines.remove_hydrogens()
         
         for newResidueName, oldResidue, index in zip(residueSet, self.routines.protein.get_residues(), count()):
             if newResidueName is None:
@@ -241,21 +241,21 @@ class ResInter(object):
             chain.residues[chainIndex] = newResidue
         
         #Run the meaty bits of PDB2PQR  
-        self.routines.setTermini(neutraln, neutralc)
-        self.routines.updateBonds()
+        self.routines.set_termini(neutraln, neutralc)
+        self.routines.update_bonds()
         
         if not clean and not assign_only:
-            self.routines.updateSSbridges()
+            self.routines.update_ss_bridges()
     
             if debump:
-                self.routines.debumpProtein()
+                self.routines.debump_protein()
                 
-            self.routines.addHydrogens()
+            self.routines.add_hydrogens()
     
             hydRoutines = HydrogenRoutines(self.routines)
     
             if debump:
-                self.routines.debumpProtein()  
+                self.routines.debump_protein()  
     
             if opt:
                 hydRoutines.set_optimizeable_hydrogens()

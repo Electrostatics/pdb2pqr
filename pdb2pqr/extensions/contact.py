@@ -35,9 +35,9 @@ def run_extension(routines, outroot, options):
     
     cellsize = int(DIST_CUTOFF + 1.0 + 1.0) 
     protein = routines.protein
-    routines.setDonorsAndAcceptors()
+    routines.set_donors_acceptors()
     routines.cells = Cells(cellsize)
-    routines.cells.assignCells(protein)
+    routines.cells.assign_cells(protein)
 
     for thisatom in protein.get_atoms():
         # Grab the list of thisatoms
@@ -53,7 +53,7 @@ def run_extension(routines, outroot, options):
         # For each thisatom, grab all thatatomeptors
             
         count = 0
-        closeatoms = routines.cells.getNearCells(thisatom)
+        closeatoms = routines.cells.get_near_cells(thisatom)
         for thatatom in closeatoms:
             if (thisatom.residue == thatatom.residue): 
                 continue  # comment this out to include interresidue contacts

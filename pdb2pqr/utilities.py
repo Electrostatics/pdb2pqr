@@ -10,15 +10,42 @@ import os
 import io
 import requests
 import logging
+from collections import Counter
 from os.path import splitext
 from sys import path as sys_path
 
 
 SMALL = 1.0e-7
 DIHEDRAL = 57.2958
+FILTER_WARNINGS_LIMIT = 30
+FILTER_WARNINGS = ["Skipped atom during water optimization",
+                   "The best donorH was not picked"]
+
+
+class DuplicateFilter(logging.Filter):
+    """Filter duplicate messages."""
+    def __init__(self):
+        super().__init__()
+        self.warn_count = Counter()
+
+    def filter(self, record):
+        """Filter current record."""
+        if record.levelname == "WARNING":
+            for fwarn in FILTER_WARNINGS:
+                if record.getMessage().startswith(fwarn):
+                    self.warn_count.update([fwarn])
+                    if self.warn_count[fwarn] > FILTER_WARNINGS_LIMIT:
+                        return False
+                    elif self.warn_count[fwarn] == FILTER_WARNINGS_LIMIT:
+                        _LOGGER.warning("Suppressing further '%s' messages", fwarn)
+                        return False
+                    else:
+                        return True
+        return True
 
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.addFilter(DuplicateFilter())
 
 
 class ExtraOptions(object):

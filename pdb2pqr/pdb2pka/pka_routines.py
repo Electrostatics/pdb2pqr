@@ -233,13 +233,13 @@ class pKaRoutines:
         self.apbs_setup.set_type('desolv')
 
         myRoutines = Routines(self.protein, self.routines.verbose)
-        myRoutines.updateResidueTypes()
-        myRoutines.updateSSbridges()
-        myRoutines.updateBonds()
-        myRoutines.updateInternal_bonds()
+        myRoutines.update_residue_types()
+        myRoutines.update_ss_bridges()
+        myRoutines.update_bonds()
+        myRoutines.update_internal_bonds()
         pKa.residue.fixed = 2
 
-        myRoutines.debumpProtein()
+        myRoutines.debump_protein()
 
         self.zeroAllRadiiCharges()
         self.setCharges(residue, atomnames)
@@ -587,9 +587,9 @@ class pKaRoutines:
                     self.hbondOptimization() # Optimize the hydrogens to actually put the hydrogen in the right position
                     self.dump_protein_file(pdb_file)
 
-                    if self.routines.getbumpscore(pKa_center.residue)>100:
+                    if self.routines.get_bump_score(pKa_center.residue)>100:
                         bump=True
-                    elif self.routines.getbumpscore(pKa.residue)>100:
+                    elif self.routines.get_bump_score(pKa.residue)>100:
                         bump=True
                     #
                     #
@@ -1196,13 +1196,13 @@ class pKaRoutines:
         """
         # Setting up
         myRoutines = Routines(self.protein, self.routines.verbose)
-        myRoutines.updateResidueTypes()
+        myRoutines.update_residue_types()
 
-        myRoutines.updateBonds()
-        #myRoutines.updateInternal_bonds()
-        myRoutines.updateSSbridges()
+        myRoutines.update_bonds()
+        #myRoutines.update_internal_bonds()
+        myRoutines.update_ss_bridges()
 
-        myRoutines.debumpProtein()
+        myRoutines.debump_protein()
 
         # Initialize H-bond optimization
         self.HydrogenRoutines.set_optimizeable_hydrogens()
@@ -1214,7 +1214,7 @@ class pKaRoutines:
         # Clean up, debump
         self.HydrogenRoutines.cleanup()
         myRoutines.set_states() # this identifies the protonation states to pdb2pqr
-        #myRoutines.debumpProtein() # why do we debump after setting the states?
+        #myRoutines.debump_protein() # why do we debump after setting the states?
 
         return
 
@@ -1377,13 +1377,13 @@ class pKaRoutines:
                     #
                     # We use the bumpscore to effectively exclude a state
                     #
-                    if self.routines.getbumpscore(pKa.residue) > 100:
+                    if self.routines.get_bump_score(pKa.residue) > 100:
                         energy=100000.0 # State will never be visited
                         _LOGGER.debug('Excluded state')
                         _LOGGER.debug(str(pKa.residue)+' '+str(titration)+' '+str(state))
                         _LOGGER.debug(self.get_state_name(titration.name,state))
 
-                    #energy=energy+self.routines.getbumpscore()
+                    #energy=energy+self.routines.get_bump_score()
                     #
                     # Add corrections for Asp and Glu trans states.
                     # His tautomers etc.
@@ -2273,12 +2273,12 @@ class pKaRoutines:
             elif group == 'ASP':
                 if hydname == 'ASH':
                     amb = HydrogenAmbiguity(residue, hydrodef,self.routines)
-                    self.routines.applyPatch('ASH', residue)
+                    self.routines.apply_patch('ASH', residue)
             elif group == 'GLU':
                 if hydname == 'GLH':
                     amb = HydrogenAmbiguity(residue, hydrodef,self.routines)
-                    self.routines.applyPatch('GLH', residue)
-        if amb == None:
+                    self.routines.apply_patch('GLH', residue)
+        if amb is None:
             text = "Could not find hydrogen ambiguity "
             text += "for titratable group %s!" % group
             raise(ValueError, text)

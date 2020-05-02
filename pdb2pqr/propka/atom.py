@@ -340,16 +340,16 @@ class Atom:
         returns a pdb ATOM-line for various purposes;
         specifying arguments over-writes.
         """
-        if numb    == None: numb    = self.numb
-        if name    == None: name    = self.name
-        if res_name == None: res_name = self.res_name
-        if chain_id == None: chain_id = self.chain_id
-        if resNumb == None: resNumb = self.resNumb
-        if x       == None: x       = self.x
-        if y       == None: y       = self.y
-        if z       == None: z       = self.z
-        if occ     == None: occ     = self.occ
-        if beta    == None: beta    = self.beta
+        if numb    is None: numb    = self.numb
+        if name    is None: name    = self.name
+        if res_name is None: res_name = self.res_name
+        if chain_id is None: chain_id = self.chain_id
+        if resNumb is None: resNumb = self.resNumb
+        if x       is None: x       = self.x
+        if y       is None: y       = self.y
+        if z       is None: z       = self.z
+        if occ     is None: occ     = self.occ
+        if beta    is None: beta    = self.beta
 
         # making string
         str  = "ATOM "
@@ -387,7 +387,7 @@ class Atom:
 
     def set_residue(self, residue):
         """ Makes a references to the parent residue"""
-        if self.residue == None:
+        if self.residue is None:
             self.residue = residue
 
 

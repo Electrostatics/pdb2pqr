@@ -462,7 +462,7 @@ class Residue:
             atom.set("z", z)
 
 
-    def setDonorsAndAcceptors(self):
+    def set_donors_acceptors(self):
         """
             Set the donors and acceptors within the residue
         """

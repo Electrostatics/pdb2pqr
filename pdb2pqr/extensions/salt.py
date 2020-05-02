@@ -52,7 +52,7 @@ def run_extension(routines, outroot, options):
     cellsize = int(DIST_CUTOFF + 1.0 + 1.0) 
     protein = routines.protein
     routines.cells = Cells(cellsize)
-    routines.cells.assignCells(protein)
+    routines.cells.assign_cells(protein)
 
     # Loop over all the atoms
     for cation in protein.get_atoms():
@@ -64,7 +64,7 @@ def run_extension(routines, outroot, options):
         elif cation.name not in posatomList: 
                 continue
         # For each cation, grab all potential anions in nearby cells
-        closeatoms = routines.cells.getNearCells(cation)
+        closeatoms = routines.cells.get_near_cells(cation)
         for anion in closeatoms:
             if cation.residue.name == anion.residue.name: 
                 continue

@@ -280,8 +280,8 @@ def runPDB2PQR(pdblist, options):
         if multoccupancy == 1:
             _LOGGER.warn("WARNING: multiple occupancies found in %s at least one of the instances is being ignored.", residue)
 
-    myRoutines.setTermini(options.neutraln, options.neutralc)
-    myRoutines.updateBonds()
+    myRoutines.set_termini(options.neutraln, options.neutralc)
+    myRoutines.update_bonds()
 
     if options.clean:
         header = ""
@@ -312,28 +312,28 @@ def runPDB2PQR(pdblist, options):
         if atomcount == 0 and Lig != None:
             pass
         else:
-            myRoutines.findMissingHeavy()
-        myRoutines.updateSSbridges()
+            myRoutines.find_missing_heavy()
+        myRoutines.update_ss_bridges()
 
         if options.debump:
-            myRoutines.debumpProtein()
+            myRoutines.debump_protein()
 
         if options.pka_method == 'propka':
-            myRoutines.runPROPKA(ph, ff, outroot, pkaname, ph_calc_options, version=31)
+            myRoutines.run_propka(ph, ff, ph_calc_options, version=31)
         elif options.pka_method == 'pdb2pka':
-            myRoutines.runPDB2PKA(ph, ff, pdblist, ligand, ph_calc_options)
+            myRoutines.run_pdb2pka(ph, ff, pdblist, ligand, ph_calc_options)
 
-        myRoutines.addHydrogens()
+        myRoutines.add_hydrogens()
 
         myhydRoutines = hydrogens.HydrogenRoutines(myRoutines)
 
         if options.debump:
-            myRoutines.debumpProtein()
+            myRoutines.debump_protein()
 
         if options.opt:
             myhydRoutines.set_optimizeable_hydrogens()
             # TONI fixing residues - myhydRoutines has a reference to myProtein, so i'm altering it in place
-            myRoutines.holdResidues(None)
+            myRoutines.hold_residues(None)
             myhydRoutines.initialize_full_optimization()
             myhydRoutines.optimize_hydrogens()
         else:
@@ -347,13 +347,13 @@ def runPDB2PQR(pdblist, options):
     else:  # Special case for HIS if using assign-only
         for residue in myProtein.get_residues():
             if isinstance(residue, aa.HIS):
-                myRoutines.applyPatch("HIP", residue)
+                myRoutines.apply_patch("HIP", residue)
 
     myRoutines.set_states()
 
     myForcefield = forcefield.Forcefield(ff, myDefinition, options.userff,
                                          options.usernames)
-    hitlist, misslist = myRoutines.applyForcefield(myForcefield)
+    hitlist, misslist = myRoutines.apply_force_field(myForcefield)
 
     ligsuccess = 0
 
@@ -409,7 +409,7 @@ def runPDB2PQR(pdblist, options):
             myNameScheme = Forcefield(scheme, myDefinition, userff)
         else:
             myNameScheme = myForcefield
-        myRoutines.applyNameScheme(myNameScheme)
+        myRoutines.apply_name_scheme(myNameScheme)
 
     if(options.isCIF):
         header = printPQRHeaderCIF(pdblist, misslist, reslist, charge, ff,

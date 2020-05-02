@@ -536,7 +536,7 @@ class Mol2Molecule(object):
                 try:
                     this_atom.mol2charge = float(charge)
                 except TypeError:
-                    _LOGGER.warn('Warning. Non-float charge (%s) in mol2 file.', charge)
+                    _LOGGER.warning('Warning. Non-float charge (%s) in mol2 file.', charge)
                     this_atom.mol2charge = None
             self.l_pdb_atoms.append(mol2pdb)
             self.l_atoms.append(this_atom)

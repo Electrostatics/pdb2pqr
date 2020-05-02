@@ -227,7 +227,7 @@ def jacobi(amat, nrot):
         vmat[j][j] = 1.0
         dvec[j] = amat[j][j]
 
-    for l in range(nrot):
+    for lrot in range(nrot):
         dnorm = 0.0
         onorm = 0.0
         for j in range(4):
@@ -237,7 +237,7 @@ def jacobi(amat, nrot):
 
         if dnorm != 0:
             if onorm/dnorm <= 1e-12:
-                the_l = l
+                the_lrot = lrot
                 break
 
         for j in range(1, 4):
@@ -277,7 +277,7 @@ def jacobi(amat, nrot):
                         +  2.0 * cscl * sscl * bscl
                     dvec[i] = dtemp
 
-    nrot = the_l
+    nrot = the_lrot
     for j in range(3):
         k = j
         dtemp = dvec[k]

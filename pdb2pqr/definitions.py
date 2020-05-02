@@ -7,7 +7,7 @@ import copy
 import re
 from xml import sax
 from . import structures
-from .utilities import getDatFile
+from .utilities import test_dat_file
 from .errors import PDBInternalError
 
 
@@ -124,9 +124,9 @@ class Definition(object):
 
         for path in [AAPATH, NAPATH]:
             # TODO - I don't think files should be loaded so deep in this module
-            defpath = getDatFile(path)
+            defpath = test_dat_file(path)
             if defpath == "":
-                raise PDBInternalError("%s not found!" % path)
+                raise FileNotFoundError("%s not found!" % path)
 
             acid_file = open(defpath)
             sax.parseString(acid_file.read(), handler)
@@ -136,9 +136,9 @@ class Definition(object):
 
         # Now handle patches
         # TODO - I don't think files should be loaded so deep in this module
-        defpath = getDatFile(PATCHPATH)
+        defpath = test_dat_file(PATCHPATH)
         if defpath == "":
-            raise PDBInternalError("%s not found!" % PATCHPATH)
+            raise FileNotFoundError("%s not found!" % PATCHPATH)
 
         handler.map = {}
         patch_file = open(defpath)

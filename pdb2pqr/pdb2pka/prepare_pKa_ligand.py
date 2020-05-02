@@ -248,9 +248,9 @@ if __name__=='__main__':
                         failed.append([mol2file,sys.exc_info()[0]])
                         _LOGGER.error('FAILED')
                         _LOGGER.error(sys.exc_info()[0])
-        _LOGGER.warn(failed)
+        _LOGGER.warning(failed)
         _LOGGER.info('OK',len(ok))
-        _LOGGER.warn('FAILED',len(failed))
+        _LOGGER.warning('FAILED',len(failed))
                         
 
     

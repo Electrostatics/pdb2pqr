@@ -3,9 +3,9 @@
 Authors: Todd Dolinsky based on original sed script by Nathan Baker
 """
 import pickle
-import os.path
 import logging
 import argparse
+from pathlib import Path
 from . import psize
 from . import utilities
 
@@ -139,7 +139,8 @@ class Input(object):
             method:    The method (para, auto, manual, async) to use
             asyncflag: 1 if async is desired, 0 otherwise
         """
-        self.pqrpath = pqrpath
+        self.pqrpath = Path(pqrpath)
+        self.pqrname = self.pqrpath.name
         self.asyncflag = asyncflag
 
         # Initialize variables to default elec values
@@ -151,8 +152,6 @@ class Input(object):
         else:
             elec2 = ""
         self.elecs = [elec1, elec2]
-
-        self.pqrname = os.path.basename(pqrpath)
 
         if not potdx:
             self.prints = ["print elecEnergy 2 - 1 end"]
@@ -172,7 +171,7 @@ class Input(object):
 
     def print_input_files(self):
         """Make the input file(s) associated with this object"""
-        base_pqr_name = utilities.getPQRBaseFileName(self.pqrpath)
+        base_pqr_name = self.pqrpath.stem
         if self.asyncflag == 1:
             outname = base_pqr_name + "-para.in"
 
@@ -204,7 +203,7 @@ class Input(object):
     def dump_pickle(self):
         """Make a Python pickle associated with the APBS input parameters"""
         # TODO - is this function still useful?
-        base_pqr_name = utilities.getPQRBaseFileName(self.pqrpath)
+        base_pqr_name = self.pqrpath.stem
         outname = base_pqr_name + "-input.p"
         pfile = open(outname, "wb")
         pickle.dump(self, pfile)
@@ -235,7 +234,7 @@ def split_input(filename):
         errstr = errstr + "The inputgen script was unable to asynchronize this file!"
         raise RuntimeError(errstr)
 
-    base_pqr_name = utilities.getPQRBaseFileName(filename)
+    base_pqr_name = Path(filename).stem
     for iproc in range(nproc):
         outname = base_pqr_name + "-PE%i.in" % iproc
         outtext = text.replace("mg-para\n", "mg-para\n    async %i\n" % iproc)
@@ -250,7 +249,7 @@ def build_parser():
                                                  "files or split an existing parallel input "
                                                  "file into multiple async files"),
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parse.add_argument("--asynch", action="store_true", 
+    parse.add_argument("--asynch", action="store_true",
                        help="Perform an asynchronous parallel calculation.")
     parse.add_argument("--split", action="store_true",
                        help=("Split an existing parallel input file to multiple "

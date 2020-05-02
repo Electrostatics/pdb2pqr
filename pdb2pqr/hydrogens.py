@@ -8,8 +8,8 @@ import logging
 import math
 from xml import sax
 from . import topology
-from .utilities import getDatFile, distance, subtract, normalize, dot, add
-from .utilities import analyzeConnectivity, sortDictByValue, DuplicateFilter
+from .utilities import test_dat_file, distance, subtract, normalize, dot, add
+from .utilities import analyze_connectivity, sort_dict_by_value, DuplicateFilter
 from .quatfit import find_coordinates
 from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS
@@ -1189,7 +1189,7 @@ class Water(Optimize):
                 # Point the LP to the best H
                 # TODO - this looks like a bug...
                 # donorh ends up being the last item in donor.bonds
-                # This may be fixed by setting a best_donorh to go with bestdist 
+                # This may be fixed by setting a best_donorh to go with bestdist
                 # and using best_donorh in the function below
                 self.make_atom_with_no_bonds(acc, donorh, newname)
                 _LOGGER.warning("The best donorH was not picked (BUG?).")
@@ -1788,7 +1788,7 @@ class HydrogenRoutines(object):
         sax.make_parser()
 
         # TODO - I don't think files should be loaded so deep in this module
-        defpath = getDatFile(HYDPATH)
+        defpath = test_dat_file(HYDPATH)
         if defpath == "":
             raise KeyError("Could not find %s!" % HYDPATH)
 
@@ -2166,7 +2166,7 @@ class HydrogenRoutines(object):
                 continue
             if obj1 in seen:
                 continue
-            network = analyzeConnectivity(connectivity, obj1)
+            network = analyze_connectivity(connectivity, obj1)
             for obj2 in network:
                 if obj2 not in seen:
                     seen.append(obj2)
@@ -2192,7 +2192,7 @@ class HydrogenRoutines(object):
                 for hbond in obj.hbonds:
                     if hbond.atom2 not in self.atomlist:
                         hbondmap[hbond] = hbond.dist
-            hbondlist = sortDictByValue(hbondmap)
+            hbondlist = sort_dict_by_value(hbondmap)
             hbondlist.reverse()
 
             for hbond in hbondlist:
@@ -2221,7 +2221,7 @@ class HydrogenRoutines(object):
                                     hbondmap[hbond] = hbond.dist
                                     seenlist.append((hbond.atom1, hbond.atom2))
 
-            hbondlist = sortDictByValue(hbondmap)
+            hbondlist = sort_dict_by_value(hbondmap)
             hbondlist.reverse()
 
             for hbond in hbondlist:
@@ -2256,7 +2256,7 @@ class HydrogenRoutines(object):
                                 hbondmap[hbond] = hbond.dist
                                 seenlist.append((hbond.atom1, hbond.atom2))
 
-            hbondlist = sortDictByValue(hbondmap)
+            hbondlist = sort_dict_by_value(hbondmap)
             hbondlist.reverse()
 
             for hbond in hbondlist:
@@ -2292,7 +2292,7 @@ class HydrogenRoutines(object):
         This is the current definition:  Name Ttyp  A R # Stdconf   HT Chi OPTm
         """
         # TODO - I don't think files should be loaded so deep in this module
-        toppath = getDatFile(TOPOLOGYPATH)
+        toppath = test_dat_file(TOPOLOGYPATH)
         if toppath == "":
             raise KeyError("Could not find %s!" % TOPOLOGYPATH)
 

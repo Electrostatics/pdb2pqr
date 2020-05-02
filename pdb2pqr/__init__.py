@@ -60,7 +60,7 @@ def main(args):
             _ = open(args.userff, "rt", encoding="utf-8")
             if args.usernames is None:
                 raise RuntimeError('--usernames must be specified if using --userff')
-        elif utilities.getFFfile(args.ff) == "":
+        elif utilities.test_dat_file(args.ff) == "":
             raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
         if (args.ph < 0) or (args.ph > 14):
             raise RuntimeError(("Specified pH (%s) is outside the range [1, 14] "
@@ -95,7 +95,7 @@ def main(args):
 
 
     path = Path(args.input_pdb)
-    pdb_file = utilities.getPDBFile(args.input_pdb)
+    pdb_file = utilities.get_pdb_file(args.input_pdb)
 
     args.is_cif = False
     if path.suffix.lower() == "cif":
@@ -109,9 +109,9 @@ def main(args):
 
     if len(errlist) != 0:
         if args.is_cif:
-            _LOGGER.warn("Warning: %s is a non-standard CIF file.\n", path)
+            _LOGGER.warning("Warning: %s is a non-standard CIF file.\n", path)
         else:
-            _LOGGER.warn("Warning: %s is a non-standard PDB file.\n", path)
+            _LOGGER.warning("Warning: %s is a non-standard PDB file.\n", path)
         _LOGGER.error(errlist)
 
     args.outname = args.output_pqr

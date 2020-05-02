@@ -25,7 +25,7 @@ Authors:  Todd Dolinsky, Michael J Bradley, Julie Mitchell, and Kyle Monson
 
 
 import logging
-from ..utilities import distance, getAngle
+from ..utilities import distance, angle
 from ..routines import Cells
 from math import cos
 
@@ -117,7 +117,7 @@ def create_hbond_output(routines, outfile, whatif=False,
                         continue
                     
                 # Do angle check
-                angle = getAngle(acc.coords, donor.coords, donorh.coords)
+                angle = angle(acc.coords, donor.coords, donorh.coords)
                 if angle > angleCutoff: 
                     continue
                 

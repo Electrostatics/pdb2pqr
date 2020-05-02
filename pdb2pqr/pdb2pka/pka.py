@@ -16,7 +16,7 @@ import os
 from src.definitions import Definition
 from src.forcefield import Forcefield
 from src.routines import Routines
-from src.protein import getPDBFile, readPDB, Protein, Amino, Nucleic
+from src.protein import get_pdb_file, readPDB, Protein, Amino, Nucleic
 from src.aa import LIG
 from src.errors import PDB2PKAError
 from pdb2pka import inputgen_pKa
@@ -190,7 +190,7 @@ def startpKa():
     #In the standalone version of pdb2pka this is redundent but needed so we emulate the
     #interface needed by pdb2pqr
 
-    pdbfile = getPDBFile(input_path)
+    pdbfile = get_pdb_file(input_path)
     pdblist, errlist = readPDB(pdbfile)
     if len(errlist) != 0 and verbose:
         print("Warning: %s is a non-standard PDB file.\n" %input_path)
@@ -274,7 +274,7 @@ def pre_init(original_pdb_list=None,
     #
     # Get the PDBfile
     #
-    pdbfile = getPDBFile(working_pdb_filename)
+    pdbfile = get_pdb_file(working_pdb_filename)
     pdblist, errlist = readPDB(pdbfile)
 
     if verbose:

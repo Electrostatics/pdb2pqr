@@ -2,7 +2,7 @@
 import logging
 import time
 import io
-import os.path
+from pathlib import Path
 from . import utilities
 from . import definitions
 from . import protein
@@ -199,13 +199,13 @@ def run_pdb2pqr(pdblist, options):
     lines = []
     ligand = None
     atomcount = 0   # Count the number of ATOM records in pdb
-    outroot = utilities.getPQRBaseFileName(options.output_pqr)
+    output_pqr = Path(options.output_pqr)
+    outroot = output_pqr.stem
 
     if options.pka_method == 'propka':
-        pkaname = outroot + ".propka"
-        #TODO: What? Shouldn't it be up to propka on how to handle this?
-        if os.path.isfile(pkaname):
-            os.remove(pkaname)
+        pkaname = Path(outroot + ".propka")
+        if pkaname.is_file():
+            _LOGGER.warning("PROPKA file already exists: %s", pkaname)
 
     start = time.time()
     _LOGGER.info("Beginning PDB2PQR...")
@@ -248,10 +248,10 @@ def run_pdb2pqr(pdblist, options):
                 multoccupancy = 1
                 txt = "Warning: multiple occupancies found: %s in %s." % (atom.name,
                                                                           residue)
-                _LOGGER.warn(txt)
+                _LOGGER.warning(txt)
         if multoccupancy == 1:
-            _LOGGER.warn(("WARNING: multiple occupancies found in %s at least "
-                          "one of the instances is being ignored."), residue)
+            _LOGGER.warning(("WARNING: multiple occupancies found in %s at least "
+                             "one of the instances is being ignored."), residue)
 
     my_routines.set_termini(options.neutraln, options.neutralc)
     my_routines.update_bonds()
@@ -346,9 +346,9 @@ def run_pdb2pqr(pdblist, options):
                 charge = residue.charge
                 if abs(charge - int(charge)) > 0.001:
                     # Ligand parameterization failed
-                    _LOGGER.warn(("WARNING: PDB2PQR could not successfully "
-                                  "parameterize the desired ligand; it has "
-                                  "been left out of the PQR file."))
+                    _LOGGER.warning(("WARNING: PDB2PQR could not successfully "
+                                     "parameterize the desired ligand; it has "
+                                     "been left out of the PQR file."))
 
                     # remove the ligand
                     my_protein.residues.remove(residue)

@@ -7,7 +7,7 @@ atoms (if available).
 Author:  Todd Dolinsky
 """
 import logging
-from ..utilities import getDihedral
+from ..utilities import dihedral
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ def run_extension(routines, outroot, options):
         else: 
             continue
 
-        chi = getDihedral(ncoords, cacoords, cbcoords, gcoords)
+        chi = dihedral(ncoords, cacoords, cbcoords, gcoords)
         _LOGGER.debug("%s\t%.4f" % (residue, chi))
         outfile.write("%s\t%.4f\n" % (residue, chi))
         

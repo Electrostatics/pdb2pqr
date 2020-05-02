@@ -562,7 +562,7 @@ class Group:
         returning the electrostatic energy of this residue at pH 'pH'
         """
         if pH is None:
-            pH = parameters.pH
+            pH = parameters.ph
         if reference is None:
             reference = parameters.reference
 

@@ -456,14 +456,14 @@ class pKaRoutines:
                         allsavedict=cPickle.load(fd)
                     read_allpots=1
                 except EOFError:
-                    _LOGGER.warn('File %s is corrupt.', allpots_file_name)
-                    _LOGGER.warn('Deleting file and continuing')
+                    _LOGGER.warning('File %s is corrupt.', allpots_file_name)
+                    _LOGGER.warning('Deleting file and continuing')
                     os.unlink(allpots_file_name)
                     allsavedict={}
             else:
                 allsavedict={}
         else:
-            _LOGGER.warn('Not found '+intene_file_name)
+            _LOGGER.warning('Not found '+intene_file_name)
             savedict={}
             allsavedict={}
         #
@@ -861,10 +861,10 @@ class pKaRoutines:
 
             if (True,False) not in side_pairs:
                 warning =  "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR".format(name=name)
-                _LOGGER.warn(warning)
+                _LOGGER.warning(warning)
 
                 warning = "WARNING: {name} TITRATION CURVE IS BACKWARDS".format(name=name, calc=curve_calc_point)
-                _LOGGER.warn(warning)
+                _LOGGER.warning(warning)
                 cross_index = charge_side.index(True)
                 bad_curve = True
             else:
@@ -874,9 +874,9 @@ class pKaRoutines:
             #(False, True) means we've crossed back over the line and therefore our PKA value is in question.
             if (True,False) in side_pairs and (False,True) in side_pairs:
                 warning =  "WARNING: {name} DOES NOT EXHIBIT Henderson-Hasselbalch BEHAVIOR".format(name=name)
-                _LOGGER.warn(warning)
+                _LOGGER.warning(warning)
                 warning = "WARNING: {name} TITRATION CURVE CROSSES {calc} AT LEAST TWICE".format(name=name, calc=curve_calc_point)
-                _LOGGER.warn(warning)
+                _LOGGER.warning(warning)
 
                 bad_curve = True
 
@@ -891,7 +891,7 @@ class pKaRoutines:
                 pH_results[name] = ph_at_0_5
             except ZeroDivisionError:
                 warning = "WARNING: UNABLE TO CACLCULATE pH FOR {name}, Divide by zero.".format(name=name)
-                _LOGGER.warn(warning)
+                _LOGGER.warning(warning)
 
             if not bad_curve:
                 _LOGGER.info("{name} exhibits Henderson-Hasselbalch behavior.".format(name=name))
@@ -906,7 +906,7 @@ class pKaRoutines:
                 pKa_value = sum(pkas)/float(len(pkas))
             except ZeroDivisionError:
                 warning = "WARNING: UNABLE TO CACLCULATE PKA FOR {name}, Divide by zero.".format(name=name)
-                _LOGGER.warn(warning)
+                _LOGGER.warning(warning)
 
             pKa_results[name] = pKa_value
 

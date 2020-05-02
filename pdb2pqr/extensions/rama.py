@@ -7,7 +7,7 @@
     Author:  Mike Bradley and Todd Dolinsky
 """
 import logging
-from ..utilities import getDihedral
+from ..utilities import dihedral
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -73,11 +73,11 @@ def create_rama_output(routines, outfile, outputtype='rama'):
         _LOGGER.debug(str(residue))
         
         if outputtype in ('rama', 'phi'):
-            phi = getDihedral(pepccoords, ncoords, cacoords, ccoords)
+            phi = dihedral(pepccoords, ncoords, cacoords, ccoords)
             _LOGGER.debug("\t%.4f" % phi)
             
         if outputtype in ('rama', 'psi'):
-            psi = getDihedral(ncoords, cacoords, ccoords, pepncoords)
+            psi = dihedral(ncoords, cacoords, ccoords, pepncoords)
             _LOGGER.debug("\t%.4f" % psi)
             
 

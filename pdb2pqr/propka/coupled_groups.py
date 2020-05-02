@@ -34,8 +34,8 @@ class non_covalently_couple_groups:
             if not hasattr(group, 'intrinsic_pKa'):
                 group.calculate_intrinsic_pka()
 
-        use_pH = self.parameters.pH
-        if self.parameters.pH == 'variable':
+        use_pH = self.parameters.ph
+        if self.parameters.ph == 'variable':
             use_pH = min(group1.pka_value, group2.pka_value)
 
         default_energy = energy_method(pH=use_pH, reference=self.parameters.reference)

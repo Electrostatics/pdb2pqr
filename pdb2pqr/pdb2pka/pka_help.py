@@ -73,7 +73,7 @@ def dump_protein_no_hydrogens(pdb_list, pdb_out):
                 ##check if the record is not a water in which case we will print a warning
                 from src.aa import WAT
                 if not record.res_name in WAT.water_residue_names:
-                    _LOGGER.warn("Warning!: HETATM record %s " % record.res_name + "%s that is not a water is being dropped\n  " % record.element)
+                    _LOGGER.warning("Warning!: HETATM record %s " % record.res_name + "%s that is not a water is being dropped\n  " % record.element)
                     ##raw_input("Press enter to continue...")
                 continue
             if isinstance(record, (ATOM, ANISOU, SIGUIJ, SIGATM)):

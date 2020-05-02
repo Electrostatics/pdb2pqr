@@ -14,7 +14,7 @@ import tempfile
 from pprint import pformat
 from .aa import Amino, PRO, WAT, CYS, LEU, ILE
 from .na import Nucleic
-from .utilities import distance, getDihedral, shortestPath, subtract
+from .utilities import distance, dihedral, shortest_path, subtract
 from .utilities import DuplicateFilter
 from .quatfit import find_coordinates, qchichange
 from .structures import Chain
@@ -182,7 +182,7 @@ class Routines(object):
             elif numpartners > 1:
                 error = "WARNING: %s has multiple potential " % res1
                 error += "SS-bridge partners"
-                _LOGGER.warn(error)
+                _LOGGER.warning(error)
             elif numpartners == 0:
                 _LOGGER.debug("%s is a free cysteine", res1)
         _LOGGER.debug("Done updating SS bridges.")
@@ -241,7 +241,7 @@ class Routines(object):
                 if distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
                     text = "Gap in backbone detected between %s and %s!" % \
                            (res1, res2)
-                    _LOGGER.warn(text)
+                    _LOGGER.warning(text)
                     res2.peptide_c = None
                     res1.peptide_n = None
 
@@ -296,8 +296,8 @@ class Routines(object):
                 del newreference.map[bond].bonds[index]
 
         # Add the new dihedrals
-        for dihedral in patch.dihedrals:
-            newreference.dihedrals.append(dihedral)
+        for dihedral_ in patch.dihedrals:
+            newreference.dihedrals.append(dihedral_)
 
         # Point at the new reference
         residue.reference = newreference
@@ -431,7 +431,7 @@ class Routines(object):
 
                     if id_length > 1:
                         message = 'Warning: Reusing chain id: ' + chainid[0] + ''
-                        _LOGGER.warn(message)
+                        _LOGGER.warning(message)
 
                     # Make a new chain with these residues
                     newchain = Chain(chainid[0])
@@ -476,7 +476,7 @@ class Routines(object):
 
             if id_length > 1:
                 message = 'Warning: Reusing chain id: ' + chainid[0]
-                _LOGGER.warn(message)
+                _LOGGER.warning(message)
 
             # Use the new chain_id
             self.protein.chainmap[chainid] = chain
@@ -607,8 +607,8 @@ class Routines(object):
             if isinstance(residue, LEU):
                 hcoords = newcoords
                 cbatom = residue.get_atom('CB')
-                ang = getDihedral(cbatom.coords, nextatom.coords,
-                                  bondatom.coords, hcoords)
+                ang = dihedral(cbatom.coords, nextatom.coords,
+                               bondatom.coords, hcoords)
                 diffangle = 60 - ang
                 residue.rotate_tetrahedral(nextatom, bondatom, diffangle)
 
@@ -617,14 +617,14 @@ class Routines(object):
                 cg1atom = residue.get_atom('CG1')
                 cbatom = residue.get_atom('CB')
                 if bondatom.name == 'CD1':
-                    ang = getDihedral(cbatom.coords, nextatom.coords,
-                                      bondatom.coords, hcoords)
+                    ang = dihedral(cbatom.coords, nextatom.coords,
+                                   bondatom.coords, hcoords)
                 elif bondatom.name == 'CG2':
-                    ang = getDihedral(cg1atom.coords, nextatom.coords,
-                                      bondatom.coords, hcoords)
+                    ang = dihedral(cg1atom.coords, nextatom.coords,
+                                   bondatom.coords, hcoords)
                 else:
-                    ang = getDihedral(cbatom.coords, nextatom.coords,
-                                      bondatom.coords, hcoords)
+                    ang = dihedral(cbatom.coords, nextatom.coords,
+                                   bondatom.coords, hcoords)
 
                 diffangle = 60 - ang
                 residue.rotate_tetrahedral(nextatom, bondatom, diffangle)
@@ -733,7 +733,7 @@ class Routines(object):
                     residue.create_atom(atomname, newcoords)
                     count += 1
                 else:
-                    _LOGGER.warn("Couldn't rebuild %s in %s!", atomname, residue)
+                    _LOGGER.warning("Couldn't rebuild %s in %s!", atomname, residue)
         _LOGGER.debug(" Added %i hydrogen atoms.", count)
 
     def remove_hydrogens(self):
@@ -822,7 +822,7 @@ class Routines(object):
         """Set the distance to the CA atom in the residue.
 
         This is necessary for determining which atoms are allowed to move during
-        rotations.  Uses the shortestPath algorithm found in utilities.py.
+        rotations.  Uses the shortest_path algorithm found in utilities.py.
         """
         for residue in self.protein.residues:
             if not isinstance(residue, Amino):
@@ -849,7 +849,7 @@ class Routines(object):
                 elif residue.is_n_term and (atom.name == "H3" or atom.name == "H2"):
                     atom.refdistance = 2
                 else:
-                    atom.refdistance = len(shortestPath(map_, atom, caatom)) - 1
+                    atom.refdistance = len(shortest_path(map_, atom, caatom)) - 1
 
     def get_bump_score(self, residue):
         """Get an bump score for the current structure"""
@@ -964,7 +964,7 @@ class Routines(object):
                 _LOGGER.debug("Debumping Successful!")
             else:
                 text = "WARNING: Unable to debump %s", residue
-                _LOGGER.warn(text)
+                _LOGGER.warning(text)
 
         _LOGGER.debug("Done checking if we must debump any residues.")
 
@@ -1088,7 +1088,7 @@ class Routines(object):
                         coords.append(residue.get_atom(atomname).coords)
 
                 if len(coords) == 4:
-                    angle = getDihedral(coords[0], coords[1], coords[2], coords[3])
+                    angle = dihedral(coords[0], coords[1], coords[2], coords[3])
                 else:
                     angle = None
 
@@ -1314,7 +1314,7 @@ class Routines(object):
             else:
                 raise ValueError("Error occurred while trying to debump!")
 
-        dihed = getDihedral(coordlist[0], coordlist[1], coordlist[2], coordlist[3])
+        dihed = dihedral(coordlist[0], coordlist[1], coordlist[2], coordlist[3])
         residue.dihedrals[anglenum] = dihed
 
     @classmethod
@@ -1361,7 +1361,7 @@ class Routines(object):
         # _LOGGER.info('Doing full pKa calculation')
         # mypkaRoutines.runpKa()
         # pdb2pka_warnings = mypkaRoutines.warnings[:]
-        # _LOGGER.warn(pdb2pka_warnings)
+        # _LOGGER.warning(pdb2pka_warnings)
 
         # residue_ph = {}
         # for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.items():
@@ -1397,7 +1397,7 @@ class Routines(object):
         """
         # See https://github.com/jensengroup/propka-3.1/blob/master/scripts/propka31.py
 
-        ph = pka_options.pH
+        ph = pka_options.ph
         _LOGGER.info("Running propka 3.1 at pH %.2f... ", ph)
 
         # Initialize some variables
@@ -1475,7 +1475,7 @@ class Routines(object):
                     if ph >= value:
                         if force_field in ["amber", "charmm", "tyl06", "peoepb", "swanson"]:
                             warn = ("N-terminal %s" % key, "neutral")
-                            _LOGGER.warn(warn)
+                            _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-NTERM", residue)
 
@@ -1488,7 +1488,7 @@ class Routines(object):
                     if ph < value:
                         if force_field in ["amber", "charmm", "tyl06", "peoepb", "swanson"]:
                             warn = ("C-terminal %s" % key, "neutral")
-                            _LOGGER.warn(warn)
+                            _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-CTERM", residue)
 
@@ -1500,33 +1500,33 @@ class Routines(object):
                 if resname == "ARG" and ph >= value:
                     if force_field == "parse":
                         self.apply_patch("AR0", residue)
-                        _LOGGER.warn(("Neutral arginines are very rare. Please "
-                                      "double-check your setup."))
+                        _LOGGER.warning(("Neutral arginines are very rare. Please "
+                                         "double-check your setup."))
                     else:
                         warn = (key, "neutral")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                 elif resname == "ASP" and ph < value:
                     if residue.is_c_term and force_field in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     elif residue.is_n_term and force_field in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at N-Terminal")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     else:
                         self.apply_patch("ASH", residue)
                 elif resname == "CYS" and ph >= value:
                     if force_field == "charmm":
                         warn = (key, "negative")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     else:
                         self.apply_patch("CYM", residue)
                 elif resname == "GLU" and ph < value:
                     if residue.is_c_term and force_field in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     elif residue.is_n_term and force_field in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at N-Terminal")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     else:
                         self.apply_patch("GLH", residue)
                 elif resname == "HIS" and ph < value:
@@ -1534,29 +1534,29 @@ class Routines(object):
                 elif resname == "LYS" and ph >= value:
                     if force_field == "charmm":
                         warn = (key, "neutral")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     elif force_field in ["amber", "tyl06", "swanson"] and residue.is_c_term:
                         warn = (key, "neutral at C-Terminal")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     elif force_field == "tyl06" and residue.is_n_term:
                         warn = (key, "neutral at N-Terminal")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     else:
                         self.apply_patch("LYN", residue)
                 elif resname == "TYR" and ph >= value:
                     if force_field in ["charmm", "amber", "tyl06", "peoepb", "swanson"]:
                         warn = (key, "negative")
-                        _LOGGER.warn(warn)
+                        _LOGGER.warning(warn)
                     else:
                         self.apply_patch("TYM", residue)
 
         if len(pkadic) > 0:
             warn = ("PDB2PQR could not identify the following residues and residue "
                     "numbers as returned by PROPKA or PDB2PKA")
-            _LOGGER.warn(warn)
+            _LOGGER.warning(warn)
             for item in pkadic:
                 text = "             %s" % item
-                _LOGGER.warn(text)
+                _LOGGER.warning(text)
 
     def hold_residues(self, hlist):
         """Set the stateboolean dictionary to residues in hlist."""
@@ -1572,11 +1572,11 @@ class Routines(object):
                     _LOGGER.debug("Setting residue {:s} as fixed.".format(str(residue)))
                 else:
                     err = "Matched residue {:s} but not subclass of Amino."
-                    _LOGGER.warn(err.format(str(residue)))
+                    _LOGGER.warning(err.format(str(residue)))
 
         if len(hlist) > 0:
             err = "The following fixed residues were not matched (possible internal error): {:s}."
-            _LOGGER.warn(err.format(str(hlist)))
+            _LOGGER.warning(err.format(str(hlist)))
 
 
 class Cells(object):

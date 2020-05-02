@@ -260,7 +260,7 @@ def pre_init(pdbfilename=None,
     #
     global pdbfile_name
     pdbfile_name=pdbfilename
-    pdbfile = getPDBFile(pdbfilename)
+    pdbfile = get_pdb_file(pdbfilename)
     pdblist, errlist = read_pdb(pdbfile)
     #
 #     if len(pdblist) == 0 and len(errlist) == 0:

@@ -567,9 +567,11 @@ class Mol2Molecule(object):
         This becomes one attribute of MOL2ATOM!
         """
         for bond in self.l_bonds:
-            self.l_atoms[bond.bond_from_self-1].l_bonded_atoms.append(self.l_atoms[bond.bond_to_self-1])
+            self.l_atoms[bond.bond_from_self-1].l_bonded_atoms\
+                .append(self.l_atoms[bond.bond_to_self-1])
 
-            self.l_atoms[bond.bond_to_self-1].l_bonded_atoms.append(self.l_atoms[bond.bond_from_self-1])
+            self.l_atoms[bond.bond_to_self-1].l_bonded_atoms\
+                .append(self.l_atoms[bond.bond_from_self-1])
 
             atbond = copy.deepcopy(bond)
             atbond.other_atom = self.l_atoms[bond.bond_to_self-1]

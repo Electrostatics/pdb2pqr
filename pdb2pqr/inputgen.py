@@ -250,6 +250,8 @@ def build_parser():
                                                  "files or split an existing parallel input "
                                                  "file into multiple async files"),
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parse.add_argument("--asynch", action="store_true", 
+                       help="Perform an asynchronous parallel calculation.")
     parse.add_argument("--split", action="store_true",
                        help=("Split an existing parallel input file to multiple "
                              "async input files."))
@@ -294,7 +296,7 @@ def main():
         split_input(filename)
     else:
         size.run_pize(filename)
-        input_ = Input(filename, size, args.method, args.async, args.istrng,
+        input_ = Input(filename, size, args.method, args.asynch, args.istrng,
                        args.potdx)
         input_.print_input_files()
 

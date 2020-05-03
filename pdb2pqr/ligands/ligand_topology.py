@@ -9,7 +9,7 @@ from sys import version_info
 from operator import itemgetter
 #from sets import Set
 # TODO - fix import *
-from .trial_templates import *
+from .templates import *
 from .lookuptable import *
 try:
     from ..substruct import Algorithms

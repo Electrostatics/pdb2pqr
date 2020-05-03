@@ -7,7 +7,6 @@ import logging
 import argparse
 from pathlib import Path
 from . import psize
-from . import utilities
 
 
 _LOGGER = logging.getLogger(__name__)

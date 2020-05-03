@@ -182,26 +182,8 @@ if env['BUILD_PDB2PKA']:
 
         env.Append(CPPPATH=[distutils.sysconfig.get_python_inc(), numpy.get_include()])
 
-        alg_srcs = ['pdb2pqr/substruct/Algorithms.cpp']
-
-        algorithms_pyc = env.LoadableModule('pdb2pqr/substruct/Algorithms', ['pdb2pqr/substruct/Algorithms.cpp'])
-
-        Default(algorithms_pyc)
-        Alias('algorithms', algorithms_pyc)
-        compile_targets.append(algorithms_pyc)
-
         if os.name == 'nt':
             
-            alg_msvs_env = env.Clone(MSVSBUILDCOM='cd .. && '+pythonBin+' scons/scons.py algorithms DEBUG=True',
-                                     MSVSCLEANCOM='cd .. && '+pythonBin+' scons/scons.py -c algorithms',
-                                     MSVSREBUILDCOM='cd .. && '+pythonBin+' scons/scons.py -c algorithms && '+pythonBin+' scons/scons.py algorithms DEBUG=True')
-
-            algorithms_project = alg_msvs_env.MSVSProject(target = 'msvs/Algorithms' + env['MSVSPROJECTSUFFIX'],
-                                                          auto_build_solution=0,
-                                                          srcs = ['../pdb2pqr/substruct/Algorithms.cpp'],
-                                                          buildtarget = algorithms_pyc[0],
-                                                          variant = 'Debug|x64')
-            Alias('msvs', algorithms_project)
 
         pmc_srcs = ['pdb2pqr/pdb2pka/pMC_mult.cpp', 'pdb2pqr/pdb2pka/pMC_mult_wrap.cpp']
 
@@ -231,7 +213,7 @@ if env['BUILD_PDB2PKA']:
             Alias('msvs', pmc_mult_project)
 
             pdb2pqr_sln = env.MSVSSolution(target = 'msvs/pdb2pqr' + env['MSVSSOLUTIONSUFFIX'],
-                            projects = [pmc_mult_project, algorithms_project],
+                            projects = [pmc_mult_project],
                             variant = 'Debug|x64')
 
             Alias('msvs', pdb2pqr_sln)
@@ -294,7 +276,7 @@ def print_default_message(target_list):
     print("")
     # print('To setup a web service create a symbolic link to', env['PREFIX'], 'that enables you to view', env['URL'],'after running "scons/scons.py install"')
     # print("")
-    print('Run "python scons/scons.py msvs" to build Visual Studio projects for the Algorithms and pMC_mult modules.')
+    print('Run "python scons/scons.py msvs" to build Visual Studio projects for the pMC_mult modules.')
     print('VS project generation is not well supported in scons. Resulting projects should build using NMAKE but cannot be used for debugging.')
     print('The resulting projects will need to modified to use VS natively to compile the code or debug.')
 

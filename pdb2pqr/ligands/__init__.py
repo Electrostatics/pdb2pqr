@@ -1,3 +1,0 @@
-#
-# ligandclean routines
-#

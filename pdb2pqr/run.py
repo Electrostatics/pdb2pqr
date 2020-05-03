@@ -12,7 +12,6 @@ from . import forcefield
 from . import aa
 from . import na
 from . import pdb
-from .ligands import ligff
 from . import __version__
 
 
@@ -227,6 +226,7 @@ def run_pdb2pqr(pdblist, options):
 
     # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
     if options.ligand is not None:
+        raise NotImplementedError("Ligand functionality is temporarily disabled.")
         with open(options.ligand, "rt", encoding="utf-8") as ligand_file:
             my_protein, my_definition, ligand = ligff.initialize(my_definition,
                                                                  ligand_file,

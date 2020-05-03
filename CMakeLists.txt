@@ -70,13 +70,6 @@ endif()
 return()
 message(STATUS "***** THIS SHOULD NOT HAPPEN")
 
-add_library(Algorithms
-    ${CMAKE_CURRENT_SOURCE_DIR}/pdb2pqr/substruct/Algorithms.cpp
-)
-target_include_directories(Algorithms PUBLIC ${Python3_INCLUDE_DIRS} ${Python3_NumPy_INCLUDE_DIRS})
-target_link_libraries(Algorithms ${Python3_LIBRARIES})
-#Python3_add_library(Algorithms MODULE ${CMAKE_CURRENT_SOURCE_DIR}/pdb2pqr/substruct/Algorithms.cpp)
-
 # Build command line to run py.test.
 set(PYTEST
     ${CMAKE_CURRENT_BINARY_DIR}/venv/bin/python

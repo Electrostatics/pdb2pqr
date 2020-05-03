@@ -13,7 +13,6 @@ from pathlib import Path
 from . import run
 from . import pdb, cif, utilities, structures
 from .propka import lib as propka_lib
-from .ligands import ligff
 from . import inputgen, psize
 
 

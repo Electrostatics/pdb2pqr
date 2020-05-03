@@ -74,11 +74,11 @@ def main(args):
         if not ligand.is_file():
             error = "Unable to find ligand file: %s" % ligand
             raise FileNotFoundError(error)
-        if args.pka_method != "propka":
-            error = ("Ligand support only available with PROPKA.  Enabling PROPKA "
-                     "for pH=%4.2f.") % (args.ph)
-            _LOGGER.warning(error)
-            args.pka_method = "propka"
+        # if args.pka_method != "propka":
+        #     error = ("Ligand support only available with PROPKA.  Enabling PROPKA "
+        #              "for pH=%4.2f.") % (args.ph)
+        #     _LOGGER.warning(error)
+        #     args.pka_method = "propka"
 
     # TODO - it appears none of the following code is actually used
     # if args.pka_method == 'propka':

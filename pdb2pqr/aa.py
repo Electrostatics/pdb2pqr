@@ -552,7 +552,7 @@ class LIG(Residue):
 
     def add_atom(self, atom):
         self.atoms.append(atom)
-        atomname = atom.get("name")
+        atomname = atom.name
         self.map[atomname] = atom
         try:
             atom.reference = self.reference.map[atomname]

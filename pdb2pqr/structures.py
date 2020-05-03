@@ -104,12 +104,12 @@ class Residue(object):
                 self.add_atom(atom)
             else: # Don't add duplicate atom
                 oldatom = self.get_atom(atomname)
-                oldatom.set("alt_loc", "")
+                oldatom.alt_loc = ""
 
         if self.name == "HOH":
             self.name = "WAT"
             for atom in self.atoms:
-                atom.set("res_name", "WAT")
+                atom.res_name = "WAT"
 
     def __str__(self):
         text = "%s %s %i%s" % (self.name, self.chain_id, self.res_seq, self.ins_code)

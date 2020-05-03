@@ -1825,7 +1825,7 @@ class HydrogenRoutines(object):
             residue.get_atom(boundname).hdonor = 0
 
         # Update the IntraBonds
-        name = residue.get("name")
+        name = residue.name
         defresidue = self.routines.aadef.get_residue(name)
         residue.updateIntraBonds(defresidue)
 
@@ -1841,7 +1841,7 @@ class HydrogenRoutines(object):
             hname = conf.hname
             for atom in conf.atoms:
                 #print confatoms
-                atomname = atom.get("name")
+                atomname = atom.name
                 resatom = residue.get_atom(atomname)
                 if atomname == hname:
                     defatomcoords = atom.coords
@@ -1921,7 +1921,7 @@ class HydrogenRoutines(object):
 
             if not Routines.rebuild_tetrahedral(residue, hname):
                 for atom in conf.atoms:
-                    atomname = atom.get("name")
+                    atomname = atom.name
                     resatom = residue.get_atom(atomname)
                     if atomname == hname:
                         defatomcoords = atom.coords

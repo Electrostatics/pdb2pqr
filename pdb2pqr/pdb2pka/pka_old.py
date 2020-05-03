@@ -711,6 +711,6 @@ if __name__ == "__main__":
 #         for chain in protein.chains:
 #             for residue in chain.get("residues"):
 #                 for atom in residue.get("atoms"):
-#                     atomname = atom.get("name")
+#                     atomname = atom.name
 #                     charge, radius = forcefield.get_params(residue, atomname)
 #                     print '%2s %4s %3d %4s %5.2f %5.2f' %(chain.chain_id,residue.name,residue.res_seq,atomname,charge,radius)

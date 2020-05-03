@@ -1049,7 +1049,7 @@ class pKaRoutines:
         pKaGroup = pKa.pKaGroup
         sum=0.0
         for atom in residue.atoms:
-            atomname = atom.get("name")
+            atomname = atom.name
             if atomname.find('FLIP')!=-1:
                 continue
             charge, radius = self.forcefield.get_params1(residue, atomname)
@@ -1342,7 +1342,7 @@ class pKaRoutines:
                                 if not atom:
                                     continue
                                 if atom.get('name').find('FLIP')==-1:
-                                    otherlist.append(atom.get("name"))
+                                    otherlist.append(atom.name)
                             self.setCharges(otherresidue, otherlist)
 
                     #
@@ -1623,7 +1623,7 @@ class pKaRoutines:
 #         for calc_res in calc_residues:
 #             for chain in self.protein.chains:
 #                 for residue in chain.get("residues"):
-#                     resname = residue.get("name")
+#                     resname = residue.name
 #                     name='%s:%s:%s' %(chain.chain_id,string.zfill(residue.res_seq,4),resname)
 #                     #
 #                     # Do we have a match?
@@ -1757,7 +1757,7 @@ class pKaRoutines:
 #                                     if not atom:
 #                                         continue
 #                                     if atom.get('name').find('FLIP')==-1:
-#                                         otherlist.append(atom.get("name"))
+#                                         otherlist.append(atom.name)
 #                                 self.setCharges(otherresidue, otherlist)
 #                         #
 #                         # Center the map on our residue
@@ -1914,10 +1914,6 @@ class pKaRoutines:
             PDB2PKAError( 'APBS instance killed')
         return self.APBS.get_potentials(self.protein)
 
-    #
-    # ----------------------
-    #
-
     def setRadii(self, residue, atomlist):
         """
             Set the radii for specific atoms in a residue
@@ -1927,21 +1923,18 @@ class pKaRoutines:
                 atomlist: A list of atomnames (list)
         """
         for atom in residue.atoms:
-            atomname = atom.get("name")
+            atomname = atom.name
             if atomname not in atomlist: continue
             charge, radius = self.forcefield.get_params1(residue, atomname)
             if hasattr(atom,'secret_radius'):
-                atom.set('radius',atom.secret_radius)
+                atom.radius = atom.secret_radius
             elif radius != None:
-                atom.set("radius", radius)
+                atom.radius = radius
             else:
                 text = "Could not find radius for atom %s" % atomname
                 text += " in residue %s %i" % (residue.name, residue.res_seq)
                 text += " while attempting to set radius!"
                 raise(ValueError, text)
-    #
-    # ------------------------------------
-    #
 
     def setCharges(self, residue, atomlist):
         """
@@ -1952,15 +1945,15 @@ class pKaRoutines:
                 atomlist: A list of atomnames (list)
         """
         for atom in residue.atoms:
-            atomname = atom.get("name")
+            atomname = atom.name
             if atomname not in atomlist:
                 continue
             charge, radius = self.forcefield.get_params1(residue, atomname)
 
             if hasattr(atom,'secret_charge'):
-                atom.set("ffcharge",atom.secret_charge)
+                atom.ffcharge = atom.secret_charge
             elif charge != None:
-                atom.set("ffcharge", charge)
+                atom.ffcharge = charge
             else:
                 text = "Could not find charge for atom %s" % atomname
                 text += " in residue %s %i" % (residue.name, residue.res_seq)
@@ -1978,7 +1971,7 @@ class pKaRoutines:
         for chain in self.protein.chains:
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
-                    atomname = atom.get("name")
+                    atomname = atom.name
                     if atomname.find('FLIP')!=-1:
                         continue
                     else:
@@ -1986,18 +1979,15 @@ class pKaRoutines:
                     ###PC
 
                     if hasattr(atom,'secret_radius'):
-                        atom.set("radius",atom.secret_radius)
+                        atom.radius = atom.secret_radius
                     elif radius != None:
-                        atom.set("radius", radius)
+                        atom.radius = radius
                     else:
                         if residue.type != 2:
                             text = "Could not find radius for atom %s " % atomname
                             text +="in residue %s %i" % (residue.name, residue.res_seq)
                             text += " while attempting to set all radii!"
                             raise PDB2PKAError(text)
-    #
-    # -------------------------------
-    #
 
     def zeroAllRadiiCharges(self):
         """
@@ -2006,11 +1996,8 @@ class pKaRoutines:
         for chain in self.protein.chains:
             for residue in chain.get("residues"):
                 for atom in residue.get("atoms"):
-                    atom.set("ffcharge",0.0)
-                    atom.set("radius",0.0)
-    #
-    # --------------------------------
-    #
+                    atom.ffcharge = 0.0
+                    atom.radius = 0.0
 
     def get_atomsForPotential(self, pKa,titration, get_neutral_state=None):
         """
@@ -2062,7 +2049,7 @@ class pKaRoutines:
             #
             sum=0.0
             for atom in residue.atoms:
-                atomname = atom.get("name")
+                atomname = atom.name
                 if atomname.find('FLIP')!=-1:
                     continue
 
@@ -2111,7 +2098,7 @@ class pKaRoutines:
                 #
                 this_sum=0.0
                 for atom in residue.atoms:
-                    atomname = atom.get("name")
+                    atomname = atom.name
                     if atomname.find('FLIP')!=-1:
                         continue
                     if not atomname in atomnames:
@@ -2214,7 +2201,7 @@ class pKaRoutines:
         #
         for chain in self.protein.chains:
             for residue in chain.get("residues"):
-                resname = residue.get("name")
+                resname = residue.name
                 for group in pKagroupList:
                     if resname == group:
                         amb=self.find_hydrogen_amb_for_titgroup(residue,group)

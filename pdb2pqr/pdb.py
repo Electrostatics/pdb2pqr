@@ -2054,13 +2054,11 @@ def read_pdb(file_):
             _LOGGER.error("Error parsing line: %s", details)
             _LOGGER.error("<%s>", line.strip())
             _LOGGER.error("Truncating remaining errors for record type:%s", record)
-        # TODO - need more specific exception handling here
-        except Exception as details:
+        except IndexError as details:
             if record == "ATOM" or record == "HETATM":
                 try:
                     obj = read_atom(line)
                     pdblist.append(obj)
-                # TODO - need more specific exception handling here
                 except Exception as details:
                     _LOGGER.error("Error parsing line: %s,", details)
                     _LOGGER.error("<%s>", line.strip())

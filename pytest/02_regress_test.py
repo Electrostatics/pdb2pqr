@@ -168,4 +168,4 @@ def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
 
 @pytest.mark.slow
 def test_slow():
-    _LOGGER.error("Need to add slow tests")
+    _LOGGER.warning("Need to add/mark slow tests")

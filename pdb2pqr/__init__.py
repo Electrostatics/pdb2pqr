@@ -6,8 +6,8 @@ yielding a new PDB-style file as output.
 For more information, see http://www.poissonboltzmann.org/
 """
 __version__ = "3.0"
-
-
+from sys import version_info
+assert version_info >= (3, 5)
 import logging
 from pathlib import Path
 from . import run
@@ -30,6 +30,7 @@ CITE_TEXTS = [
 
 _LOGGER = logging.getLogger(__name__)
 logging.captureWarnings(True)
+
 
 
 def main(args):

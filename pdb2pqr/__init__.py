@@ -14,7 +14,7 @@ from . import run
 from . import pdb, cif, utilities, structures
 from .propka import lib as propka_lib
 from . import extensions
-from .pdb2pka.ligandclean import ligff
+from .ligands import ligff
 from . import inputgen, psize
 
 
@@ -74,11 +74,6 @@ def main(args):
         if not ligand.is_file():
             error = "Unable to find ligand file: %s" % ligand
             raise FileNotFoundError(error)
-        # if args.pka_method != "propka":
-        #     error = ("Ligand support only available with PROPKA.  Enabling PROPKA "
-        #              "for pH=%4.2f.") % (args.ph)
-        #     _LOGGER.warning(error)
-        #     args.pka_method = "propka"
 
     # TODO - it appears none of the following code is actually used
     # if args.pka_method == 'propka':

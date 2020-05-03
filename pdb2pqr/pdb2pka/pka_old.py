@@ -312,10 +312,10 @@ def pre_init(pdbfilename=None,
                 #
                 # Create the ligand definition from the mol2 data
                 #
-                #import NEWligand_topology
+                #import ligand_topology
                 #MOL2FLAG = True # somethign is rotten here
                 ##
-                #X=NEWligand_topology.get_ligand_topology(Lig.l_atoms,MOL2FLAG)
+                #X=ligand_topology.get_ligand_topology(Lig.l_atoms,MOL2FLAG)
                 #
                 # Add it to the 'official' definition
                 #

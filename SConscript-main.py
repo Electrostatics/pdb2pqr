@@ -182,9 +182,9 @@ if env['BUILD_PDB2PKA']:
 
         env.Append(CPPPATH=[distutils.sysconfig.get_python_inc(), numpy.get_include()])
 
-        alg_srcs = ['pdb2pqr/pdb2pka/substruct/Algorithms.cpp']
+        alg_srcs = ['pdb2pqr/substruct/Algorithms.cpp']
 
-        algorithms_pyc = env.LoadableModule('pdb2pqr/pdb2pka/substruct/Algorithms', ['pdb2pqr/pdb2pka/substruct/Algorithms.cpp'])
+        algorithms_pyc = env.LoadableModule('pdb2pqr/substruct/Algorithms', ['pdb2pqr/substruct/Algorithms.cpp'])
 
         Default(algorithms_pyc)
         Alias('algorithms', algorithms_pyc)
@@ -198,7 +198,7 @@ if env['BUILD_PDB2PKA']:
 
             algorithms_project = alg_msvs_env.MSVSProject(target = 'msvs/Algorithms' + env['MSVSPROJECTSUFFIX'],
                                                           auto_build_solution=0,
-                                                          srcs = ['../pdb2pqr/pdb2pka/substruct/Algorithms.cpp'],
+                                                          srcs = ['../pdb2pqr/substruct/Algorithms.cpp'],
                                                           buildtarget = algorithms_pyc[0],
                                                           variant = 'Debug|x64')
             Alias('msvs', algorithms_project)

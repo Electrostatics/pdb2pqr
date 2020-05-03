@@ -3,10 +3,11 @@ from sys import version_info
 import string
 import logging
 from .peoe_PDB2PQR import PEOE as calc_charges
-from .. import NEWligand_topology
-from ...forcefield import *
-from ...pdb import *
-from ...definitions import *
+from ..protein import Protein
+from . import ligand_topology
+from .. import forcefield
+from .. import pdb
+from .. import definitions
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,22 +46,22 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     # Create the ligand definition from the mol2 data
 
     MOL2FLAG = True
-    X=NEWligand_topology.get_ligand_topology(Lig.l_atoms,True)
+    X=ligand_topology.get_ligand_topology(Lig.l_atoms,True)
 
     # Add it to the 'official' definition
 
-    ligresidue = DefinitionResidue()
+    ligresidue = definitions.DefinitionResidue()
     ligresidue.name = "LIG"
     i = 1
     atommap = {}
     for line in X.lines[:-2]:
-        obj = DefinitionAtom()
+        obj = definitions.DefinitionAtom()
         if(version_info >= (3,0)):
-            entries = line.split();
+            entries = line.split()
         else:
             entries = string.split(line)
         if len(entries) != 4:
-            raise PDBInputError("Invalid line for MOL2 definition!")
+            raise IndexError("Invalid line for MOL2 definition!")
         name = entries[0]
         obj.name = name
         obj.x = float(entries[1])
@@ -104,8 +105,8 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     # First the protein
     nummodels = 0
     for line in pdblist:
-        if isinstance(line, END) or isinstance(line,MASTER): continue
-        elif isinstance(line, MODEL):
+        if isinstance(line, pdb.END) or isinstance(line, pdb.MASTER): continue
+        elif isinstance(line, pdb.MODEL):
             nummodels += 1
             if nummodels > 1: break
         else:
@@ -116,8 +117,8 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
     for e in Lig.l_atoms:
         e.res_name = "LIG"
         newpdblist.append(e)
-    newpdblist.append(TER)
-    newpdblist.append(END)
+    newpdblist.append(pdb.TER)
+    newpdblist.append(pdb.END)
 
     protein = Protein(newpdblist, definition)
     for rrres in  protein.chainmap['L'].residues:
@@ -151,7 +152,7 @@ def initialize(definition, ligdesc, pdblist, verbose=0):
 # -----
 #
 
-class ligforcefield(Forcefield):
+class ligforcefield(forcefield.Forcefield):
     """
     Derived class of  forcefield.py for charge assignment on ligands
     """
@@ -280,7 +281,7 @@ ParseRadiiDict = {"C": 1.70,
 ParseRadiiDictLower = dict((key.lower(), value) for key, value in ParseRadiiDict.items())
 ParseRadiiDict.update(ParseRadiiDictLower)
 
-class ligand_charge_handler(Mol2Molecule):
+class ligand_charge_handler(pdb.Mol2Molecule):
     """Make sure that we are up to date with respect to the charge calculation"""
 
     def make_up2date(self,residue):

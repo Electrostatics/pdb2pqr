@@ -9,13 +9,12 @@ from sys import version_info
 from operator import itemgetter
 #from sets import Set
 # TODO - fix import *
-from .ligandclean.trial_templates import *
-from .ligandclean.lookuptable import *
-from .substruct import Algorithms
+from .trial_templates import *
+from .lookuptable import *
 try:
-    from .substruct import Algorithms
+    from ..substruct import Algorithms
 except ImportError:
-    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage!"
+    txt = "Cannot import Algorithms, this may be the result of disabling pdb2pka at configure stage."
     raise ImportError(txt)
 from types import *
 import logging

@@ -12,7 +12,7 @@ from . import forcefield
 from . import aa
 from . import na
 from . import pdb
-from .pdb2pka.ligandclean import ligff
+from .ligands import ligff
 from . import __version__
 
 

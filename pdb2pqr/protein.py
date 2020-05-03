@@ -7,7 +7,7 @@ Authors:  Todd Dolinsky, Yong Huang
 import string
 import logging
 from .aa import ALA, ARG, ASN, ASP, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
-from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT
+from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT, Amino
 from .na import Nucleic
 from .structures import Chain, Residue
 from .pdb import TER, ATOM, HETATM, END, MODEL
@@ -138,7 +138,7 @@ class Protein(object):
             else:
                 klass = globals()[resname]
                 residue = klass(residue, refobj)
-        except (KeyError, NameError) as err:
+        except (KeyError, NameError):
             _LOGGER.debug("Parsing %s as new residue", resname)
             residue = Residue(residue)
         return residue

@@ -8,11 +8,16 @@ Authors:  Todd Dolinsky, Yong Huang
 # the globals()[] statements below.  However, there are other strange items that
 # get included in the import * that shouldn't matter for functionality... but do.
 import string
-from .aa import *
+import logging
+from .aa import ALA, ARG, ASN, ASP, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
+from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT
 from .na import Nucleic
 from .structures import Chain, Residue
 from .pdb import TER, ATOM, HETATM, END, MODEL
 from .forcefield import Forcefield
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Protein(object):
@@ -136,7 +141,8 @@ class Protein(object):
             else:
                 klass = globals()[resname]
                 residue = klass(residue, refobj)
-        except (KeyError, NameError):
+        except (KeyError, NameError) as err:
+            _LOGGER.debug("Parsing %s as new residue", resname)
             residue = Residue(residue)
         return residue
 

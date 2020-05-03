@@ -5,9 +5,7 @@ This module contains the base amino acid structures for pdb2pqr.
 Author:  Todd Dolinsky
 """
 import logging
-# TODO - remove import * statement
-# from .structures import Residue
-from .structures import *
+from .structures import Residue, Atom
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -469,7 +467,7 @@ class WAT(Residue):
                 self.add_atom(atom)
             else: # Don't add duplicate atom with alt_loc field
                 oldatom = self.get_atom(atomname)
-                oldatom.set("alt_loc", "")
+                oldatom.alt_loc = ""
 
     def create_atom(self, atomname, newcoords):
         """Create a water atom.  Note the HETATM field."""
@@ -538,7 +536,7 @@ class LIG(Residue):
                 self.add_atom(atom)
             else: # Don't add duplicate atom with alt_loc field
                 oldatom = self.get_atom(atomname)
-                oldatom.set("alt_loc", "")
+                oldatom.alt_loc = ""
 
     def create_atom(self, atomname, newcoords):
         oldatom = self.atoms[0]

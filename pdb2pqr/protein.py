@@ -4,9 +4,6 @@ This module contains the protein object used in PDB2PQR and associated methods
 
 Authors:  Todd Dolinsky, Yong Huang
 """
-# TODO - Remove import * from this module.  Some of the * is needed to deal with
-# the globals()[] statements below.  However, there are other strange items that
-# get included in the import * that shouldn't matter for functionality... but do.
 import string
 import logging
 from .aa import ALA, ARG, ASN, ASP, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU

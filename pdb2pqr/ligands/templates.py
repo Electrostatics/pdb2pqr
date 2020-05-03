@@ -1,3 +1,4 @@
+"""There aren't many templates here..."""
 templates = {}
 ## templates['CarboxyGroup']={'O10':{'sybyl_type':'O.co2','neighbours':['C3'],'alreadyvisited':False},
 ##                            'O20':{'sybyl_type':'O.co2','neighbours':['C3'],'alreadyvisited':False},

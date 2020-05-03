@@ -9,7 +9,6 @@ Authors:  Todd Dolinsky, Yong Huang
 """
 import copy
 import logging
-from .errors import PDBInputError
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -484,9 +483,9 @@ class Mol2Molecule(object):
 
         # Do some error checking
         if start == -1:
-            raise PDBInputError("Unable to find '@<TRIPOS>ATOM' in MOL2 file!")
+            raise ValueError("Unable to find '@<TRIPOS>ATOM' in MOL2 file!")
         elif stop == -1:
-            raise PDBInputError("Unable to find '@<TRIPOS>BOND' in MOL2 file!")
+            raise ValueError("Unable to find '@<TRIPOS>BOND' in MOL2 file!")
 
         atoms = data[start+14:stop-2].split("\n")
         # BOND section
@@ -495,7 +494,7 @@ class Mol2Molecule(object):
 
         # More error checking
         if stop == -1:
-            raise PDBInputError("Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!")
+            raise ValueError("Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!")
 
         bonds = data[start+14:stop-1].split("\n")
         self.parse_atoms(atoms)
@@ -514,7 +513,7 @@ class Mol2Molecule(object):
 
             # Error checking
             if len(separated_atom_line) < 8:
-                raise PDBInputError("Bad atom entry in MOL2 file: %s" % atom_line)
+                raise ValueError("Bad atom entry in MOL2 file: %s" % atom_line)
 
             fake_record = "HETATM"
             fake_chain = " L"
@@ -528,7 +527,7 @@ class Mol2Molecule(object):
                      float(separated_atom_line[4]))
 
             except ValueError:
-                raise PDBInputError("Bad atom entry in MOL2 file: %s" % atom_line)
+                raise ValueError("Bad atom entry in MOL2 file: %s" % atom_line)
 
             this_atom = HETATM(mol2pdb, separated_atom_line[5], [], [])
             if len(separated_atom_line) > 8:
@@ -549,7 +548,7 @@ class Mol2Molecule(object):
             if len(separated_bond_line) == 0:
                 continue
             if len(separated_bond_line) < 4:
-                raise PDBInputError("Bad bond entry in MOL2 file: %s" % bond_line)
+                raise ValueError("Bad bond entry in MOL2 file: %s" % bond_line)
             try:
                 this_bond = MOL2BOND(
                     int(separated_bond_line[1]), # bond frm
@@ -558,7 +557,7 @@ class Mol2Molecule(object):
                     int(separated_bond_line[0])  # bond id
                     )
             except ValueError:
-                raise PDBInputError("Bad bond entry in MOL2 file: %s" % bond_line)
+                raise ValueError("Bad bond entry in MOL2 file: %s" % bond_line)
             self.l_bonds.append(this_bond)
 
     def createl_bonded_atoms(self):

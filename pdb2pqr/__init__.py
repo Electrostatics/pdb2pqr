@@ -12,7 +12,6 @@ import logging
 from pathlib import Path
 from . import run
 from . import pdb, cif, utilities, structures
-from .errors import PDB2PQRError
 from .propka import lib as propka_lib
 from . import extensions
 from .pdb2pka.ligandclean import ligff
@@ -53,11 +52,15 @@ def main(args):
 
     if not args.clean:
         if args.usernames is not None:
-            # TODO - it makes me sad to open a file without a close() statement
-            _ = open(args.usernames, 'rt', encoding="utf-8")
+            usernames = Path(args.usernames)
+            if not usernames.is_file():
+                error = "User-provided names file does not exist: %s" % usernames
+                raise FileNotFoundError(error)
         if args.userff is not None:
-            # TODO - it makes me sad to open a file without a close() statement
-            _ = open(args.userff, "rt", encoding="utf-8")
+            userff = Path(args.userff)
+            if not userff.is_file():
+                error = "User-provided forcefield file does not exist: %s" % userff
+                raise FileNotFoundError(error)
             if args.usernames is None:
                 raise RuntimeError('--usernames must be specified if using --userff')
         elif utilities.test_dat_file(args.ff) == "":
@@ -65,6 +68,17 @@ def main(args):
         if (args.ph < 0) or (args.ph > 14):
             raise RuntimeError(("Specified pH (%s) is outside the range [1, 14] "
                                 "of this program") % args.ph)
+
+    if args.ligand is not None:
+        ligand = Path(args.ligand)
+        if not ligand.is_file():
+            error = "Unable to find ligand file: %s" % ligand
+            raise FileNotFoundError(error)
+        if args.pka_method != "propka":
+            error = ("Ligand support only available with PROPKA.  Enabling PROPKA "
+                     "for pH=%4.2f.") % (args.ph)
+            _LOGGER.warning(error)
+            args.pka_method = "propka"
 
     # TODO - it appears none of the following code is actually used
     # if args.pka_method == 'propka':
@@ -79,13 +93,6 @@ def main(args):
     #                        'pairene': args.pairene}
     # else:
     #     ph_calc_options = None
-
-    if args.ligand is not None:
-        try:
-            # TODO - it makes me sad to open a file without a close() statement
-            _ = open(args.ligand, 'rt', encoding="utf-8")
-        except IOError:
-            raise RuntimeError('Unable to find ligand file %s!' % args.ligand)
 
     if args.neutraln and (args.ff is None or args.ff.lower() != 'parse'):
         raise RuntimeError('--neutraln option only works with PARSE forcefield!')
@@ -124,17 +131,13 @@ def main(args):
         args.active_extensions = []
     _ = args
 
-    try:
-        results_dict = run.run_pdb2pqr(pdblist, args)
-        _ = results_dict["header"]
-        lines = results_dict["lines"]
-        _ = results_dict["missed_ligands"]
-    except PDB2PQRError as error:
-        _LOGGER.error(error)
-        raise PDB2PQRError(error)
+    results_dict = run.run_pdb2pqr(pdblist, args)
+    _ = results_dict["header"]
+    lines = results_dict["lines"]
+    _ = results_dict["missed_ligands"]
 
     # Print the PQR file
-    # TODO - move this to another function... this function is already way too long.
+    # TODO - move this to another module.
     with open(args.output_pqr, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
         for line in lines:

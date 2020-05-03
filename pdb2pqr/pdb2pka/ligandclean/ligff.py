@@ -4,7 +4,6 @@ import string
 import logging
 from .peoe_PDB2PQR import PEOE as calc_charges
 from .. import NEWligand_topology
-from ...errors import PDBInputError
 from ...forcefield import *
 from ...pdb import *
 from ...definitions import *

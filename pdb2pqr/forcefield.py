@@ -7,7 +7,6 @@ Authors:  Todd Dolinsky, Yong Huang
 """
 import re
 from xml import sax
-from .errors import PDBInputError, PDBInternalError
 from .utilities import test_dat_file, test_names_file
 
 
@@ -175,7 +174,7 @@ class Forcefield(object):
             # TODO - why are files being loaded so deep in this function?
             defpath = test_dat_file(ff_name)
             if defpath == "":
-                raise PDBInputError("Unable to find forcefield parameter file %s!" % self.name)
+                raise FileNotFoundError("Unable to find forcefield parameter file %s!" % self.name)
         else:
             defpath = userff
 
@@ -198,7 +197,7 @@ class Forcefield(object):
                         else:
                             txt += "!"
                         txt += " Please use a valid parameter file."
-                        raise PDBInputError(txt)
+                        raise ValueError(txt)
 
                     try:
                         group = fields[4]
@@ -946,7 +945,7 @@ class ForcefieldAtom(object):
             return item
         except AttributeError:
             message = "Unable to access object \"%s\" in class ForcefieldAtom" % name
-            raise PDBInternalError(message)
+            raise KeyError(message)
 
     def __str__(self):
         """

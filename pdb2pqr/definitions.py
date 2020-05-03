@@ -8,7 +8,6 @@ import re
 from xml import sax
 from . import structures
 from .utilities import test_dat_file
-from .errors import PDBInternalError
 
 
 AAPATH = "dat/AA.xml"
@@ -48,10 +47,10 @@ class DefinitionHandler(sax.ContentHandler):
         if name == "residue": # Complete Residue object
             residue = self.curholder
             if not isinstance(residue, DefinitionResidue):
-                raise PDBInternalError("Internal error parsing XML!")
+                raise RuntimeError("Internal error parsing XML!")
             resname = residue.name
             if resname == "":
-                raise PDBInternalError("Residue name not set in XML!")
+                raise KeyError("Residue name not set in XML!")
             else:
                 self.map[resname] = residue
                 self.curholder = None
@@ -60,10 +59,10 @@ class DefinitionHandler(sax.ContentHandler):
         elif name == "patch": # Complete patch object
             patch = self.curholder
             if not isinstance(patch, Patch):
-                raise PDBInternalError("Internal error parsing XML!")
+                raise RuntimeError("Internal error parsing XML!")
             patchname = patch.name
             if patchname == "":
-                raise PDBInternalError("Residue name not set in XML!")
+                raise KeyError("Residue name not set in XML!")
             else:
                 self.patches.append(patch)
                 self.curholder = None
@@ -72,10 +71,10 @@ class DefinitionHandler(sax.ContentHandler):
         elif name == "atom": # Complete atom object
             atom = self.curatom
             if not isinstance(atom, DefinitionAtom):
-                raise PDBInternalError("Internal error parsing XML!")
+                raise RuntimeError("Internal error parsing XML!")
             atomname = atom.name
             if atomname == "":
-                raise PDBInternalError("Atom name not set in XML!")
+                raise KeyError("Atom name not set in XML!")
             else:
                 self.curholder.map[atomname] = atom
                 self.curatom = None

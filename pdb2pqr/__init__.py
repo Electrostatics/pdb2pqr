@@ -13,7 +13,6 @@ from pathlib import Path
 from . import run
 from . import pdb, cif, utilities, structures
 from .propka import lib as propka_lib
-from . import extensions
 from .ligands import ligff
 from . import inputgen, psize
 
@@ -117,14 +116,6 @@ def main(args):
         _LOGGER.error(errlist)
 
     args.outname = args.output_pqr
-
-    # In case no extensions were specified or no extensions exist.
-    # TODO - there are no command line options for extensions so I'm not sure what this does
-    if not hasattr(args, 'active_extensions'):
-        args.active_extensions = []
-    elif args.active_extensions is None:
-        args.active_extensions = []
-    _ = args
 
     results_dict = run.run_pdb2pqr(pdblist, args)
     _ = results_dict["header"]

@@ -261,13 +261,6 @@ def run_pdb2pqr(pdblist, options):
         header = ""
         lines = my_protein.print_atoms(my_protein.atoms, options.chain)
 
-        # Process the extensions
-        # TODO - extension handling is messed up.
-        for ext in options.active_extensions:
-            _LOGGER.error("Ignoring extension: %s", ext)
-            # module = extensions.extDict[ext]
-            # module.run_extension(my_routines, outroot, extensionOptions)
-
         _LOGGER.debug("Total time taken: %.2f seconds", (time.time() - start))
 
         #Be sure to include None for missed ligand residues
@@ -406,12 +399,6 @@ def run_pdb2pqr(pdblist, options):
         if atom.res_name not in missedligandresidues:
             missedligandresidues.append(atom.res_name)
 
-    # Process the extensions
-    # TODO - extensions are messed up
-    for ext in options.active_extensions:
-        _LOGGER.error("Unable to run extension: %s", ext)
-        # module = extensions.extDict[ext]
-        # module.run_extension(my_routines, outroot, extensionOptions)
     _LOGGER.debug("Total time taken: %.2f seconds", (time.time() - start))
     result_dict = {}
     result_dict["header"] = header

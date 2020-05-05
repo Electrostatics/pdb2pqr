@@ -3,7 +3,6 @@ import logging
 import time
 import io
 from pathlib import Path
-from . import utilities
 from . import definitions
 from . import protein
 from . import routines
@@ -12,19 +11,21 @@ from . import forcefield
 from . import aa
 from . import na
 from . import pdb
+from .utilities import print_pqr_header_cif, print_pqr_header
 from . import __version__
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def run_pdb2pqr(pdblist, options):
+def run_pdb2pqr(pdblist, options, is_cif):
     """Run the PDB2PQR Suite
 
     Args:
         pdblist: The list of objects that was read from the PDB file given as
                  input (list)
         options: The name of the forcefield (string)
+        is_cif:  Boolean indicating whether input is CIF
 
     Returns
         A dictionary with the following elements:
@@ -140,8 +141,6 @@ def run_pdb2pqr(pdblist, options):
             #                        'pairene': args.pairene}
             # else:
             #     ph_calc_options = None
-            import sys
-            _LOGGER.error("%s", sys.path)
             my_routines.run_propka(options.ph, options.ff)
         elif options.pka_method == 'pdb2pka':
             raise NotImplementedError("PROPKA is broken.")
@@ -232,7 +231,7 @@ def run_pdb2pqr(pdblist, options):
             my_name_scheme = my_forcefield
         my_routines.apply_name_scheme(my_name_scheme)
 
-    if options.is_cif:
+    if is_cif:
         header = print_pqr_header_cif(misslist, reslist, charge, force_field,
                                       options.pka_method, options.ph, options.ffout,
                                       include_old_header=options.include_header)

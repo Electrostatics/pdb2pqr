@@ -13,6 +13,11 @@ from pathlib import Path
 from sys import path as sys_path
 import numpy as np
 import requests
+from . import pdb
+from . import cif
+from . import inputgen
+from . import psize
+from . import __version__
 
 
 SMALL = 1.0e-7
@@ -24,6 +29,7 @@ FILTER_WARNINGS = ["Skipped atom during water optimization",
 TEST_FORCEFIELDS = ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]
 
 
+# TODO - move to separate module dealing with I/O
 class DuplicateFilter(logging.Filter):
     """Filter duplicate messages."""
     def __init__(self):
@@ -50,6 +56,23 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(DuplicateFilter())
 
 
+# TODO - move to separate module dealing with I/O
+def dump_apbs(output_pqr):
+    """Generate and dump APBS input files related to output_pqr.
+
+    Args:
+        output_pqr:  path to output PQR file.
+    """
+    method = "mg-auto"
+    size = psize.Psize()
+    size.parse_input(output_pqr)
+    size.run_pize(output_pqr)
+    input_ = inputgen.Input(output_pqr, size, method, 0, potdx=True)
+    input_.print_input_files()
+    input_.dump_pickle()
+
+
+# TODO - move to separate module dealing with I/O
 def get_old_header(pdblist):
     """Get old header from list of PDBs.
 
@@ -70,6 +93,7 @@ def get_old_header(pdblist):
     return old_header.getvalue()
 
 
+# TODO - move to separate module dealing with I/O
 def print_pqr_header_cif(atomlist, reslist, charge, force_field,
                          ph_calc_method, ph, ffout, include_old_header=False):
     """Print the header for the PQR file in cif format.
@@ -151,6 +175,7 @@ def print_pqr_header_cif(atomlist, reslist, charge, force_field,
     return header
 
 
+# TODO - move to separate module dealing with I/O
 def print_pqr_header(pdblist, atomlist, reslist, charge, force_field, ph_calc_method,
                      ph, ffout, include_old_header=False):
     """Print the header for the PQR file
@@ -210,7 +235,6 @@ def print_pqr_header(pdblist, atomlist, reslist, charge, force_field, ph_calc_me
     return header
 
 
-
 def sort_dict_by_value(inputdict):
     """Sort a dictionary by its values
 
@@ -226,6 +250,7 @@ def sort_dict_by_value(inputdict):
     return items
 
 
+# TODO - move to separate module dealing with math
 def shortest_path(graph, start, end, path=[]):
     """Uses recursion to find the shortest path from one node to another in an
     unweighted graph.  Adapted from http://www.python.org/doc/essays/graphs.html
@@ -257,6 +282,7 @@ def shortest_path(graph, start, end, path=[]):
     return shortest
 
 
+# TODO - move to separate module dealing with math
 def analyze_connectivity(map_, key):
     """Analyze the connectivity of a given map using the key value.
 
@@ -280,6 +306,7 @@ def analyze_connectivity(map_, key):
     return clist
 
 
+# TODO - move to separate module dealing with I/O
 def test_for_file(name, type_):
     """Test for the existence of a file with a few name permutations.
 
@@ -310,6 +337,7 @@ def test_for_file(name, type_):
     return ""
 
 
+# TODO - move to separate module dealing with I/O
 def test_dat_file(name):
     """Test for the existence of the forcefield file with a few name permutations.
 
@@ -321,6 +349,7 @@ def test_dat_file(name):
     return test_for_file(name, "DAT")
 
 
+# TODO - move to separate module dealing with I/O
 def test_names_file(name):
     """Test for the *.names file that contains the XML mapping.
 
@@ -332,6 +361,7 @@ def test_names_file(name):
     return test_for_file(name, "NAMES")
 
 
+# TODO - move to separate module dealing with I/O
 def get_pdb_file(name):
     """Obtain a PDB file.
 
@@ -359,6 +389,41 @@ def get_pdb_file(name):
         return io.StringIO(resp.text)
 
 
+# TODO - move to separate module dealing with I/O
+def get_molecule(input_path):
+    """Get molecular structure information.
+
+    Args:
+        input_path:  structure file PDB ID or path
+    Returns:
+        list of molecule records (lines)
+        Boolean indicating whether entry is CIF
+    Raises:
+        RuntimeError:  problems with structure file
+    """
+    path = Path(input_path)
+    input_file = get_pdb_file(input_path)
+    is_cif = False
+
+    if path.suffix.lower() == "cif":
+        pdblist, errlist = cif.read_cif(input_file)
+        is_cif = True
+    else:
+        pdblist, errlist = pdb.read_pdb(input_file)
+
+    if len(pdblist) == 0 and len(errlist) == 0:
+        raise RuntimeError("Unable to find file %s!" % path)
+
+    if len(errlist) != 0:
+        if is_cif:
+            _LOGGER.warning("Warning: %s is a non-standard CIF file.\n", path)
+        else:
+            _LOGGER.warning("Warning: %s is a non-standard PDB file.\n", path)
+        _LOGGER.error(errlist)
+    return pdblist, is_cif
+
+
+# TODO - move to separate module dealing with math
 # TODO - upgrade with numpy
 def angle(coords1, coords2, coords3):
     """Get the angle between three coordinates
@@ -384,6 +449,7 @@ def angle(coords1, coords2, coords3):
     return value
 
 
+# TODO - move to separate module dealing with math
 def distance(coords1, coords2):
     """Calculate the distance between two coordinates, as denoted by
 
@@ -400,6 +466,7 @@ def distance(coords1, coords2):
     return np.linalg.norm(coords1 - coords2)
 
 
+# TODO - move to separate module dealing with math
 # TODO - eliminate and replace with numpy in code
 def add(coords1, coords2):
     """Add one 3-dimensional point to another
@@ -413,6 +480,7 @@ def add(coords1, coords2):
     return np.array(coords1) + np.array(coords2)
 
 
+# TODO - move to separate module dealing with math
 # TODO - eliminate and replace with numpy in code
 def subtract(coords1, coords2):
     """Subtract one 3-dimensional point from another
@@ -426,6 +494,7 @@ def subtract(coords1, coords2):
     return np.array(coords1) - np.array(coords2)
 
 
+# TODO - move to separate module dealing with math
 # TODO - eliminate and replace with numpy in code
 def cross(coords1, coords2):
     """Find the cross product of two 3-dimensional points
@@ -439,6 +508,7 @@ def cross(coords1, coords2):
     return np.cross(np.array(coords1), np.array(coords2))
 
 
+# TODO - move to separate module dealing with math
 # TODO - eliminate and replace with numpy in code
 def dot(coords1, coords2):
     """Find the dot product of two 3-dimensional points
@@ -452,6 +522,7 @@ def dot(coords1, coords2):
     return np.inner(np.array(coords1), np.array(coords2))
 
 
+# TODO - move to separate module dealing with math
 # TODO - enhance with numpy
 def normalize(coords):
     """Normalize a set of coordinates
@@ -464,6 +535,7 @@ def normalize(coords):
     return coords/np.linalg.norm(coords)
 
 
+# TODO - move to separate module dealing with math
 def factorial(num):
     """Returns the factorial of the given number n"""
     if num <= 1:
@@ -471,6 +543,7 @@ def factorial(num):
     return num*factorial(num-1)
 
 
+# TODO - move to separate module dealing with math
 def dihedral(coords1, coords2, coords3, coords4):
     """Calculate the angle using the four atoms
 

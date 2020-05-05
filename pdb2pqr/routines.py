@@ -12,13 +12,13 @@ import logging
 import os
 import tempfile
 from pprint import pformat
+import propka
 from .aa import Amino, PRO, WAT, CYS, LEU, ILE
 from .na import Nucleic
 from .utilities import distance, dihedral, shortest_path, subtract
 from .utilities import DuplicateFilter
 from .quatfit import find_coordinates, qchichange
 from .structures import Chain
-from . import propka
 # TODO - PDB2PKA is still broken
 # from .pdb2pka import pka
 

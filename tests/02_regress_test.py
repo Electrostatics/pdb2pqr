@@ -10,19 +10,19 @@ _LOGGER = logging.getLogger(__name__)
 PARSER = cli.build_parser()
 
 
-def run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path_):
+def run_pdb2pqr(args, input_path, output_pqr, expected_pqr, tmp_path_):
     """Basic code for invoking PDB2PQR."""
     arg_str = args + " {inp} {out}"
     output_pqr = tmp_path_ / output_pqr
     _LOGGER.debug("Writing output to %s", output_pqr)
-    arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
+    arg_str = arg_str.format(inp=input_path, out=output_pqr)
     args = PARSER.parse_args(arg_str.split())
     main(args)
     common.compare_pqr(output_pqr, expected_pqr)
 
 
 @pytest.mark.parametrize(
-    "args, input_pdb, output_pqr, expected_pqr",
+    "args, input_path, output_pqr, expected_pqr",
     [
         pytest.param(
             "--log-level=INFO --ff=AMBER",
@@ -40,13 +40,13 @@ def run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path_):
         )
     ]
 )
-def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
+def test_basic(args, input_path, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS."""
-    run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path)
+    run_pdb2pqr(args, input_path, output_pqr, expected_pqr, tmp_path)
 
 
 @pytest.mark.parametrize(
-    "args, input_pdb, output_pqr, expected_pqr",
+    "args, input_path, output_pqr, expected_pqr",
     [
         pytest.param(
             "--log-level=INFO --whitespace --ff=AMBER",
@@ -92,13 +92,13 @@ def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
         )
     ]
 )
-def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
+def test_forcefields(args, input_path, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace for different forcefields."""
-    run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path)
+    run_pdb2pqr(args, input_path, output_pqr, expected_pqr, tmp_path)
 
 
 @pytest.mark.parametrize(
-    "args, input_pdb, output_pqr, expected_pqr",
+    "args, input_path, output_pqr, expected_pqr",
     [
         pytest.param(
             "--log-level=INFO --whitespace --clean",
@@ -160,9 +160,9 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
         )
     ]
 )
-def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
+def test_other_options(args, input_path, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace."""
-    run_pdb2pqr(args, input_pdb, output_pqr, expected_pqr, tmp_path)
+    run_pdb2pqr(args, input_path, output_pqr, expected_pqr, tmp_path)
 
 
 @pytest.mark.slow

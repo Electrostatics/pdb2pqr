@@ -10,34 +10,34 @@ _LOGGER = logging.getLogger(__name__)
 PARSER = cli.build_parser()
 
 
-def run_pdb2pqr(args, input_pdb, output_pqr, tmp_path_):
+def run_pdb2pqr(args, input_path, output_pqr, tmp_path_):
     """Basic code for invoking PDB2PQR."""
     arg_str = args + " {inp} {out}"
     output_pqr = tmp_path_ / output_pqr
     _LOGGER.debug("Writing output to %s", output_pqr)
-    arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
+    arg_str = arg_str.format(inp=input_path, out=output_pqr)
     args = PARSER.parse_args(arg_str.split())
     main(args)
 
 
-@pytest.mark.parametrize("input_pdb", ["1K1I", "1FAS"], ids=str)
-def test_basic_apo(input_pdb, tmp_path):
+@pytest.mark.parametrize("input_path", ["1K1I", "1FAS"], ids=str)
+def test_basic_apo(input_path, tmp_path):
     """Basic routines on proteins without ligands."""
     args = "--log-level=INFO --ff=AMBER --drop-water"
-    output_pqr = Path(input_pdb).stem + ".pqr"
-    run_pdb2pqr(args, input_pdb, output_pqr, tmp_path)
+    output_pqr = Path(input_path).stem + ".pqr"
+    run_pdb2pqr(args, input_path, output_pqr, tmp_path)
 
 
-@pytest.mark.parametrize("input_pdb", ["1K1I", "1FAS"], ids=str)
-def test_propka_apo(input_pdb, tmp_path):
+@pytest.mark.parametrize("input_path", ["1K1I", "1FAS"], ids=str)
+def test_propka_apo(input_path, tmp_path):
     """PROPKA titration of proteins without ligands."""
     args = "--log-level=INFO --ff=AMBER --drop-water --titration-state-method=propka"
-    output_pqr = Path(input_pdb).stem + ".pqr"
-    run_pdb2pqr(args, input_pdb, output_pqr, tmp_path)
+    output_pqr = Path(input_path).stem + ".pqr"
+    run_pdb2pqr(args, input_path, output_pqr, tmp_path)
 
 
 # @pytest.mark.parametrize(
-#     "args, input_pdb, input_mol2, output_pqr",
+#     "args, input_path, input_mol2, output_pqr",
 #     [
 #         pytest.param(
 #             "--log-level=INFO --ff=AMBER",
@@ -62,8 +62,8 @@ def test_propka_apo(input_pdb, tmp_path):
 #         ),
 #     ]
 # )
-# def test_ligand(args, input_pdb, input_mol2, output_pqr, tmp_path):
+# def test_ligand(args, input_path, input_mol2, output_pqr, tmp_path):
 #     """Test ligand handling."""
 #     args_ = "{args} --ligand={ligand}".format(args=args, ligand=input_mol2)
-#     run_pdb2pqr(args_, input_pdb, output_pqr, tmp_path)
+#     run_pdb2pqr(args_, input_path, output_pqr, tmp_path)
 #     _LOGGER.warning("This test needs better checking to avoid silent failure.")

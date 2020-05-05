@@ -23,7 +23,7 @@ def build_parser():
     desc = desc.format(version=__version__)
     pars = argparse.ArgumentParser(description=desc,
                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    pars.add_argument("input_pdb",
+    pars.add_argument("input_path",
                       help="Input PDB path or ID (to be retrieved from RCSB database")
     pars.add_argument("output_pqr", help="Output PQR path")
     pars.add_argument("--log-level", help="Logging level", default="INFO",

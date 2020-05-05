@@ -8,7 +8,7 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-DATA_DIR = Path("pytest/data")
+DATA_DIR = Path("tests/data")
 POS_CUT = 1e-2
 Q_CUT = 1e-2
 R_CUT = 1e-2

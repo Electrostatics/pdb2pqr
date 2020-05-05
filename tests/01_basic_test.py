@@ -1,24 +1,21 @@
 """Test of basic PDB2PQR functionality"""
-import pytest
-import pathlib
 import logging
+import importlib
+import pytest
 import common
 
 
 _LOGGER = logging.getLogger(__name__)
-TEST_PQRs = common.DATA_DIR.glob("*.pqr")
+TEST_PQRS = list(common.DATA_DIR.glob("*.pqr"))
 
 
-def test_import():
+@pytest.mark.parametrize("module", ["pdb2pqr", "propka"], ids=str)
+def test_import(module):
     """Test module import"""
-    import pdb2pqr
-
-def pqr_ids(pqr):
-    return str(pqr)
+    importlib.import_module(module)
 
 
-@pytest.mark.parametrize("pqr", TEST_PQRs, ids=pqr_ids)
-def test_compare(pqr):
-    _LOGGER.info("Testing comparison for %s" % pqr)
+@pytest.mark.parametrize("pqr", TEST_PQRS, ids=str)
+def test_pqr_compare(pqr):
+    """Test comparison of PQRs."""
     common.compare_pqr(pqr, pqr)
-

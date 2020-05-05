@@ -1,7 +1,7 @@
 """Command line option parser for PDB2PQR"""
 import logging
 import argparse
-from . import __version__
+from . import CONFIG
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # TODO - seems like these FIELD_NAMES should be defined at the module level.
 # These names are used in multiple places.
-FIELD_NAMES = ('amber', 'charmm', 'parse', 'tyl06', 'peoepb', 'swanson')
+FIELD_NAMES = CONFIG["force_fields"]
 
 
 def build_parser():
@@ -20,7 +20,7 @@ def build_parser():
     """
 
     desc = "PDB2PQR {version}.  Wields awesome powers to turn PDBs into PQRs."
-    desc = desc.format(version=__version__)
+    desc = desc.format(version=CONFIG["version"])
     pars = argparse.ArgumentParser(description=desc,
                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     pars.add_argument("input_path",

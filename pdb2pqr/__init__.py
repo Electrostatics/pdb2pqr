@@ -12,7 +12,6 @@ import logging
 from pathlib import Path
 from . import run
 from . import pdb, cif, utilities, structures
-from .propka import lib as propka_lib
 from . import inputgen, psize
 
 
@@ -73,20 +72,6 @@ def main(args):
         if not ligand.is_file():
             error = "Unable to find ligand file: %s" % ligand
             raise FileNotFoundError(error)
-
-    # TODO - it appears none of the following code is actually used
-    # if args.pka_method == 'propka':
-    #     ph_calc_options, _ = propka_lib.loadOptions('--quiet')
-    # elif args.pka_method == 'pdb2pka':
-    #     if args.ff.lower() != 'parse':
-    #         raise RuntimeError('PDB2PKA requires the PARSE force field.')
-    #     ph_calc_options = {'output_dir': args.output_pqr,
-    #                        'clean_output': not args.pdb2pka_resume,
-    #                        'pdie': args.pdie,
-    #                        'sdie': args.sdie,
-    #                        'pairene': args.pairene}
-    # else:
-    #     ph_calc_options = None
 
     if args.neutraln and (args.ff is None or args.ff.lower() != 'parse'):
         raise RuntimeError('--neutraln option only works with PARSE forcefield!')

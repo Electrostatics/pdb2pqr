@@ -290,6 +290,19 @@ def run_pdb2pqr(pdblist, options):
         # TODO - both PROPKA and PDB2PKA are messed up
         if options.pka_method == 'propka':
             raise NotImplementedError("PROPKA is broken.")
+            # TODO - it appears none of the following code is actually used
+            # if args.pka_method == 'propka':
+            #     ph_calc_options, _ = propka_lib.loadOptions('--quiet')
+            # elif args.pka_method == 'pdb2pka':
+            #     if args.ff.lower() != 'parse':
+            #         raise RuntimeError('PDB2PKA requires the PARSE force field.')
+            #     ph_calc_options = {'output_dir': args.output_pqr,
+            #                        'clean_output': not args.pdb2pka_resume,
+            #                        'pdie': args.pdie,
+            #                        'sdie': args.sdie,
+            #                        'pairene': args.pairene}
+            # else:
+            #     ph_calc_options = None
             # my_routines.run_propka(options.ph, options.ff, ph_calc_options, version=31)
         elif options.pka_method == 'pdb2pka':
             raise NotImplementedError("PROPKA is broken.")

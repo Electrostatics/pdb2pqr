@@ -2,13 +2,8 @@
 import logging
 from pathlib import Path
 import pytest
-# TODO - this is a hack to get PROPKA testing to work without installing it as package
-import sys
-sys.path.append(str(Path("propka31").absolute()))
 import common
 from pdb2pqr import cli, main
-
-
 
 
 _LOGGER = logging.getLogger(__name__)

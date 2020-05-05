@@ -23,9 +23,9 @@ if(${Python3_FOUND})
 endif()
 
 ###############################################################################
-###  Set up a python3 virtual environment so we don't polute the user's
+###  Set up a python3 virtual environment so we don't pollute the user's
 ###  default python environment and so their environment doesn't interfere
-###  with pdb3pqr
+###  with pdb2pqr
 ###############################################################################
 find_program(VIRTUALENV virtualenv)
 if(NOT VIRTUALENV)

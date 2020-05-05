@@ -34,46 +34,25 @@ Networkx is now required for pdb2pka support.
 https://networkx.github.io/
 
 # Configuration and Build
-PDB2PQR will need to be configured and compiled in order to run:
 
-	$ python scons/scons.py (see python scons/scons.py --help for more options)
+Configuration and build happens from the top-level of the apbs-pdb2pqr repository; e.g.
 
-This should configure pdb2pqr and compile the pdb2pka wrappers necessary to interface with PDB2PQR and ligand support.
+```
+$ mkdir build
+$ cd build
+$ cmake -DENABLE_PYTHON=ON -DCMAKE_C_FLAGS="-fPIC" ..
+$ cmake --build .
+```
 
-### Configuration File
-Compilation and installation can be configured by editing the build_config.py file.
-This is the preferred way to configure the program.
-Instructions and examples for each setting are included in the file.
+# Testing
 
-### Configuration Command Line Parameters
-These will override any setting in build_config.py.
+Testing can happen from this directory:
 
-	PREFIX=<DIR>                	Set install directory. Default is ~/pdb2pqr
-	APBS=<APBS_BINARY>            Location of APBS binary.
-	MAX_ATOMS=<MAX_ATOMS>			Sets the maximum number of atoms in a protein for non-Opal job submission. Only affects web tools. Default is 10000
-	BUILD_PDB2PKA=False           Disable pkb2pka compilation. Needed if no C++ compiler is installed or numpy is not installed. pdb2pka is required for ligand support.
+```
+$ PYTHONPATH=propka31 python -m pytest
+```
 
-## Installation
-Installing is only needed if you plan to set up the web service or to make the install available to all users.
-The installation location is specified by the <code>PREFIX</code> setting above.
-
- 	$ python scons/scons.py install
-
-## Using pdb2pka
-If you are planning to invoke the flag,
-
-	--titration-state-method=pdb2pka
-
-you will need to build the python APBS libraries and set your library path to point to them.  For APBS build instructions see the documention provided [here](../apbs/README.md).
-
-## Using a different python.
-pdb2pqr will be configured to use whichever python was used to run the build script.
-If you would like to use a different installed python to run pdb2pqr run the scons/scons.py script with that python.
-For example:
-
- 	$ /opt/python3/python scons/scons.py
-
-If ligand support is required Numpy must be installed on the python used to build pdb2pqr.
+# Old documentation is that is probably no longer relevant
 
 ## Windows Support
 Compilation of pdb2pka on Windows requires that VS2008 or VS Express 2008 and Windows SDK 10.0A installed in the default location.

@@ -50,26 +50,6 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(DuplicateFilter())
 
 
-class PROPKAoptions(object):
-    """Namespace class for PROPKA options."""
-    def __init__(self, ph, verbose=False, reference="neutral"):
-        self.ph = ph
-        self.reference = reference
-        self.chains = None
-        self.thermophiles = None
-        self.alignment = None
-        self.mutations = None
-        self.verbose = verbose
-        self.protonation = "old-school"
-        self.window = (0.0, 14.0, 1.0)
-        self.grid = (0.0, 14.0, 0.1)
-        self.mutator = None
-        self.mutator_options = None
-        self.display_coupled_residues = None
-        self.print_iterations = None
-        self.version_label = "Nov30"
-
-
 def get_old_header(pdblist):
     """Get old header from list of PDBs.
 

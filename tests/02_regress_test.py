@@ -1,10 +1,9 @@
 """Regression tests for PDB2PQR behavior."""
-import pytest
 import logging
-import common
-from pdb2pqr import cli
-from pdb2pqr import main
 from pathlib import Path
+import pytest
+import common
+from pdb2pqr import cli, main
 
 
 _LOGGER = logging.getLogger(__name__)

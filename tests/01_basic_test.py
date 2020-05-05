@@ -1,6 +1,7 @@
 """Test of basic PDB2PQR functionality"""
 import logging
 import importlib
+from pathlib import Path
 import pytest
 import common
 

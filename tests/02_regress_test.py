@@ -3,11 +3,11 @@ import logging
 from pathlib import Path
 import pytest
 import common
-from pdb2pqr import cli, main
+from pdb2pqr.main import build_parser, main
 
 
 _LOGGER = logging.getLogger(__name__)
-PARSER = cli.build_parser()
+PARSER = build_parser()
 
 
 def run_pdb2pqr(args, input_path, output_pqr, expected_pqr, tmp_path_):

@@ -9,8 +9,8 @@ import argparse
 from pathlib import Path
 from . import run
 from . import utilities
+from .routines import drop_water
 from .io import get_molecule, get_definitions, test_dat_file, dump_apbs, DuplicateFilter
-from .definitions import Definition
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 
 
@@ -250,7 +250,10 @@ def main(args):
     check_options(args)
 
     definition = get_definitions()
-    pdblist, is_cif = get_molecule(args.input_path)
+    pdblist, is_cif = get_molecule(args.input_path, args.drop_water)
+    if args.drop_water:
+        pdblist = drop_water(pdblist)
+
     results = run.run_pdb2pqr(pdblist=pdblist, my_definition=definition,
                               options=args, is_cif=is_cif)
 

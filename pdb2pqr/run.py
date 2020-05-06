@@ -50,8 +50,6 @@ def run_pdb2pqr(pdblist, my_definition, options, is_cif):
     _LOGGER.info("Beginning PDB2PQR...")
 
 
-    if options.drop_water:
-        pdblist = routines.drop_water(pdblist)
 
     # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
     if options.ligand is not None:

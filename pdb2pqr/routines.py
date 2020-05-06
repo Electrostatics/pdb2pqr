@@ -49,6 +49,7 @@ def drop_water(pdblist):
         pdblist_new.append(record)
     return pdblist_new
 
+
 class Routines(object):
     """Grab bag of random stuff that apparently didn't fit elsewhere.
 

@@ -272,11 +272,12 @@ def get_pdb_file(name):
         return io.StringIO(resp.text)
 
 
-def get_molecule(input_path):
+def get_molecule(input_path, drop_water):
     """Get molecular structure information.
 
     Args:
         input_path:  structure file PDB ID or path
+        drop_water:  Boolean indicating whether to drop water
     Returns:
         list of molecule records (lines)
         Boolean indicating whether entry is CIF
@@ -302,6 +303,7 @@ def get_molecule(input_path):
         else:
             _LOGGER.warning("Warning: %s is a non-standard PDB file.\n", path)
         _LOGGER.error(errlist)
+
     return pdblist, is_cif
 
 

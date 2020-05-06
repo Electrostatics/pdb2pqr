@@ -7,8 +7,6 @@ import copy
 import re
 from xml import sax
 from . import structures
-from .io import test_dat_file
-from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
 
 
 class DefinitionHandler(sax.ContentHandler):
@@ -111,35 +109,26 @@ class Definition(object):
     files and several mappings for easy access to the information.
     """
 
-    def __init__(self):
+    def __init__(self, aa_file, na_file, patch_file):
+        """Initialize object.
+
+        Args:
+            aa_file:  file object with amino acid definitions
+            na_file:  file object with nucleic acid definitions
+            patch_file:  file object with patch definitions
+        """
         self.map = {}
         self.patches = {}
 
         handler = DefinitionHandler()
         sax.make_parser()
 
-        for path in [AA_DEF_PATH, NA_DEF_PATH]:
-            # TODO - I don't think files should be loaded so deep in this module
-            defpath = test_dat_file(path)
-            if defpath == "":
-                raise FileNotFoundError("%s not found!" % path)
-
-            acid_file = open(defpath)
-            sax.parseString(acid_file.read(), handler)
-            acid_file.close()
-
+        for def_file in [aa_file, na_file]:
+            sax.parseString(def_file.read(), handler)
             self.map.update(handler.map)
 
-        # Now handle patches
-        # TODO - I don't think files should be loaded so deep in this module
-        defpath = test_dat_file(PATCH_DEF_PATH)
-        if defpath == "":
-            raise FileNotFoundError("%s not found!" % PATCH_DEF_PATH)
-
         handler.map = {}
-        patch_file = open(defpath)
         sax.parseString(patch_file.read(), handler)
-        patch_file.close()
 
         # Apply specific patches to the reference object, allowing users
         # to specify protonation states in the PDB file

@@ -9,7 +9,7 @@ import argparse
 from pathlib import Path
 from . import run
 from . import utilities
-from .io import get_molecule, test_dat_file, dump_apbs, DuplicateFilter
+from .io import get_molecule, get_definitions, test_dat_file, dump_apbs, DuplicateFilter
 from .definitions import Definition
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 
@@ -249,8 +249,10 @@ def main(args):
     check_files(args)
     check_options(args)
 
+    definition = get_definitions()
     pdblist, is_cif = get_molecule(args.input_path)
-    results = run.run_pdb2pqr(pdblist, args, is_cif)
+    results = run.run_pdb2pqr(pdblist=pdblist, my_definition=definition,
+                              options=args, is_cif=is_cif)
 
     print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
               missing_lines=results["missed_ligands"], is_cif=is_cif)

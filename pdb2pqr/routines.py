@@ -47,7 +47,7 @@ class Routines(object):
         self.definition = definition
         self.aadef = None
         self.cells = {}
-        if definition != None:
+        if definition is not None:
             self.aadef = definition.getAA()
             self.nadef = definition.getNA()
 

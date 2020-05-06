@@ -17,7 +17,7 @@ from .io import print_pqr_header_cif, print_pqr_header
 _LOGGER = logging.getLogger(__name__)
 
 
-def run_pdb2pqr(pdblist, options, is_cif):
+def run_pdb2pqr(pdblist, my_definition, options, is_cif):
     """Run the PDB2PQR Suite
 
     Args:
@@ -49,8 +49,6 @@ def run_pdb2pqr(pdblist, options, is_cif):
     start = time.time()
     _LOGGER.info("Beginning PDB2PQR...")
 
-    my_definition = definitions.Definition()
-    _LOGGER.info("Parsed Amino Acid definition file.")
 
     if options.drop_water:
         # Remove the waters

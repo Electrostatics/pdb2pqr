@@ -9,8 +9,10 @@ from . import psize
 from . import inputgen
 from . import cif
 from . import pdb
+from .definitions import Definition
 from .config import FORCE_FIELDS, TITLE_FORMAT_STRING, VERSION
-from. config import FILTER_WARNINGS_LIMIT, FILTER_WARNINGS
+from .config import FILTER_WARNINGS_LIMIT, FILTER_WARNINGS
+from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -301,3 +303,32 @@ def get_molecule(input_path):
             _LOGGER.warning("Warning: %s is a non-standard PDB file.\n", path)
         _LOGGER.error(errlist)
     return pdblist, is_cif
+
+
+def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
+                    patch_path=PATCH_DEF_PATH):
+    """Get topology definition files.
+
+    Args:
+        aa_path:  likely location of amino acid topology definitions
+        na_path:  likely location of nucleic acid topology definitions
+        patch_path:  likely location of patch topology definitions
+    
+    Returns:
+        Definitions object.
+    """
+    aa_path_ = test_dat_file(aa_path)
+    if not aa_path_:
+        raise FileNotFoundError("Unable to locate %s" % aa_path)
+    na_path_ = test_dat_file(na_path)
+    if not na_path_:
+        raise FileNotFoundError("Unable to locate %s" % na_path)
+    patch_path_ = test_dat_file(patch_path)
+    if not patch_path_:
+        raise FileNotFoundError("Unable to locate %s" % patch_path)
+    with open(aa_path_, "rt") as aa_file:
+        with open(na_path_, "rt") as na_file:
+            with open(patch_path_, "rt") as patch_file:
+                definitions = Definition(aa_file=aa_file, na_file=na_file,
+                                          patch_file=patch_file)
+    return definitions

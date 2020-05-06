@@ -38,6 +38,10 @@ class BaseRecord(object):
     def __str__(self):
         return self.original_text
 
+    def record_type(self):
+        """Return PDB record type as string."""
+        return self.original_text.split()[0]
+
 
 @register_line_parser
 class END(BaseRecord):
@@ -1555,7 +1559,10 @@ class SEQADV(BaseRecord):
         self.database = str.strip(line[24:28])
         self.db_id_code = str.strip(line[29:38])
         self.db_res = str.strip(line[39:42])
-        self.db_seq = int(str.strip(line[43:48]))
+        try:
+            self.db_seq = int(str.strip(line[43:48]))
+        except ValueError:
+            self.db_seq = None
         self.conflict = str.strip(line[49:70])
 
 

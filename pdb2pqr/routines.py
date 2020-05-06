@@ -29,6 +29,26 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(DuplicateFilter())
 
 
+def drop_water(pdblist):
+    """Drop waters from a list of PDB records.
+
+    TODO - this module is already too long but this function fits better here.
+    Other possible place would be utilities.
+
+    Args:
+        pdb_list:  list of PDB records as returned by io.get_molecule
+    Returns:
+        new list of PDB records with waters removed.
+    """
+    pdblist_new = []
+    for record in pdblist:
+        record_type = record.record_type()
+        if record_type in ["HETATM", "ATOM", "SIGATM", "SEQADV"]:
+            if record.res_name in WAT.water_residue_names:
+                continue
+        pdblist_new.append(record)
+    return pdblist_new
+
 class Routines(object):
     """Grab bag of random stuff that apparently didn't fit elsewhere.
 

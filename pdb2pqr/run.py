@@ -51,15 +51,7 @@ def run_pdb2pqr(pdblist, my_definition, options, is_cif):
 
 
     if options.drop_water:
-        # Remove the waters
-        pdblist_new = []
-        for record in pdblist:
-            if isinstance(record, (pdb.HETATM, pdb.ATOM, pdb.SIGATM,
-                                   pdb.SEQADV)):
-                if record.res_name in aa.WAT.water_residue_names:
-                    continue
-            pdblist_new.append(record)
-        pdblist = pdblist_new
+        pdblist = routines.drop_water(pdblist)
 
     # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
     if options.ligand is not None:

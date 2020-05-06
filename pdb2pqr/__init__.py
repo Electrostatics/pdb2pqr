@@ -121,6 +121,22 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             outfile.write("#\n")
 
 
+def transform_arguments(args):
+    """Transform arguments with logic not provided by argparse.
+
+    TODO - I wish this could be done with argparse.
+
+    Args:
+        args:  argparse namespace
+    Returns:
+        argparse namespace
+    """
+    if args.assign_only or args.clean:
+        args.debump = False
+        args.opt = False
+    return args
+
+
 def main(args):
     """Main driver for running program from the command line.
 
@@ -130,14 +146,10 @@ def main(args):
         args:  argument namespace object (e.g., as returned by argparse).
     """
     logging.basicConfig(level=getattr(logging, args.log_level))
+    args = transform_arguments(args)
     print_splash_screen(args)
     check_files(args)
     pdblist, is_cif = utilities.get_molecule(args.input_path)
-
-    # TODO - I wish this could be handled by argparse logic
-    if args.assign_only or args.clean:
-        args.debump = False
-        args.opt = False
     check_options(args)
 
     results = run.run_pdb2pqr(pdblist, args, is_cif)

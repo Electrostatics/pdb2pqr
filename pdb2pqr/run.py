@@ -12,7 +12,6 @@ from . import aa
 from . import na
 from . import pdb
 from .utilities import print_pqr_header_cif, print_pqr_header
-from . import __version__
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -141,7 +140,7 @@ def run_pdb2pqr(pdblist, options, is_cif):
             #                        'pairene': args.pairene}
             # else:
             #     ph_calc_options = None
-            my_routines.run_propka(options.ph, options.ff)
+            my_routines.run_propka(options.ph, options.ff, options={})
         elif options.pka_method == 'pdb2pka':
             raise NotImplementedError("PROPKA is broken.")
             # my_routines.run_pdb2pka(options.ph, options.ff, pdblist, ligand, ph_calc_options)

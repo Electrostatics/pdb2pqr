@@ -8,14 +8,11 @@ import re
 from xml import sax
 from . import structures
 from .utilities import test_dat_file
-
-
-AAPATH = "dat/AA.xml"
-NAPATH = "dat/NA.xml"
-PATCHPATH = "dat/PATCHES.xml"
+from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
 
 
 class DefinitionHandler(sax.ContentHandler):
+    """Handle definition XML file content."""
 
     def __init__(self):
         self.curelement = ""
@@ -121,7 +118,7 @@ class Definition(object):
         handler = DefinitionHandler()
         sax.make_parser()
 
-        for path in [AAPATH, NAPATH]:
+        for path in [AA_DEF_PATH, NA_DEF_PATH]:
             # TODO - I don't think files should be loaded so deep in this module
             defpath = test_dat_file(path)
             if defpath == "":
@@ -135,9 +132,9 @@ class Definition(object):
 
         # Now handle patches
         # TODO - I don't think files should be loaded so deep in this module
-        defpath = test_dat_file(PATCHPATH)
+        defpath = test_dat_file(PATCH_DEF_PATH)
         if defpath == "":
-            raise FileNotFoundError("%s not found!" % PATCHPATH)
+            raise FileNotFoundError("%s not found!" % PATCH_DEF_PATH)
 
         handler.map = {}
         patch_file = open(defpath)

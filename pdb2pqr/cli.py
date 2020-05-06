@@ -1,15 +1,10 @@
 """Command line option parser for PDB2PQR"""
 import logging
 import argparse
-from . import CONFIG
+from .config import VERSION, TITLE_FORMAT_STRING, FORCE_FIELDS
 
 
 _LOGGER = logging.getLogger(__name__)
-
-
-# TODO - seems like these FIELD_NAMES should be defined at the module level.
-# These names are used in multiple places.
-FIELD_NAMES = CONFIG["force_fields"]
 
 
 def build_parser():
@@ -19,8 +14,7 @@ def build_parser():
         ArgumentParser() object
     """
 
-    desc = "PDB2PQR {version}.  Wields awesome powers to turn PDBs into PQRs."
-    desc = desc.format(version=CONFIG["version"])
+    desc = TITLE_FORMAT_STRING.format(version=VERSION)
     pars = argparse.ArgumentParser(description=desc,
                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     pars.add_argument("input_path",
@@ -30,7 +24,7 @@ def build_parser():
                       choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
     grp1 = pars.add_argument_group(title="Mandatory options",
                                    description="One of the following options must be used")
-    grp1.add_argument("--ff", choices=[x.upper() for x in FIELD_NAMES],
+    grp1.add_argument("--ff", choices=[x.upper() for x in FORCE_FIELDS],
                       help="The forcefield to use.")
     grp1.add_argument("--userff",
                       help=("The user-created forcefield file to use. Requires "
@@ -49,18 +43,16 @@ def build_parser():
     grp2.add_argument('--assign-only', action='store_true', default=False,
                       help=("Only assign charges and radii - do not add atoms, "
                             "debump, or optimize."))
-    grp2.add_argument('--ffout', choices=[x.upper() for x in FIELD_NAMES],
+    grp2.add_argument('--ffout', choices=[x.upper() for x in FORCE_FIELDS],
                       help=('Instead of using the standard canonical naming '
                             'scheme for residue and atom names, use the names '
                             'from the given forcefield'))
     grp2.add_argument('--usernames',
                       help=('The user-created names file to use. Required if '
                             'using --userff'))
-    # TODO - do we still want to generate a Python pickle with apbs-input?
     grp2.add_argument('--apbs-input', action='store_true', default=False,
                       help=('Create a template APBS input file based on the '
-                            'generated PQR file.  Also creates a Python pickle '
-                            'for using these parameters in other programs.'))
+                            'generated PQR file.'))
     grp2.add_argument('--ligand',
                       help=('Calculate the parameters for the specified '
                             'MOL2-format ligand at the path specified by this '

@@ -6,7 +6,9 @@ Authors:  Todd Dolinsky, Yong Huang
 """
 import string
 import logging
-from .aa import ALA, ARG, ASN, ASP, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
+# NOTE - ignore the warnings pylint gives about these imports.
+# They're used dynamically in parsing text so not caught in static analysis.
+from .aa import ALA, ARG, ASN, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
 from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT, Amino
 from .na import Nucleic
 from .structures import Chain, Residue

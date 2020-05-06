@@ -9,17 +9,12 @@ from sys import version_info
 assert version_info >= (3, 5)
 import logging
 from pathlib import Path
-CONFIG_PATH = Path("config.json")
-with open(CONFIG_PATH, "rt") as config_file:
-    CONFIG = json.load(config_file)
-from . import config
 from . import run
 from . import utilities
+from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS
 
 
-
-
-_LOGGER = logging.getLogger("PDB2PQR"+CONFIG["version"])
+_LOGGER = logging.getLogger("PDB2PQR" + VERSION)
 logging.captureWarnings(True)
 
 
@@ -30,8 +25,8 @@ def print_splash_screen(args):
         args:  argparse namespace
     """
     _LOGGER.debug("Args:  %s", args)
-    _LOGGER.info(CONFIG["title_format_string"].format(version=CONFIG["version"]))
-    for citation in CONFIG["citations"]:
+    _LOGGER.info("%s", TITLE_FORMAT_STRING.format(version=VERSION))
+    for citation in CITATIONS:
         _LOGGER.info(citation)
 
 

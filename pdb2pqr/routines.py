@@ -19,37 +19,14 @@ from .utilities import distance, dihedral, shortest_path, subtract
 from .utilities import DuplicateFilter
 from .quatfit import find_coordinates, qchichange
 from .structures import Chain
-# TODO - PDB2PKA is still broken
-# from .pdb2pka import pka
+from .config import AA_NAMES, NA_NAMES
+from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS, DEBUMP_ANGLE_TEST_COUNT
+from .config import SMALL_NUMBER, CELL_SIZE, BUMP_HYDROGEN_SIZE, BUMP_HEAVY_SIZE
+from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(DuplicateFilter())
-
-
-ANGLE_STEPS = 72
-ANGLE_STEP_SIZE = float(360 // ANGLE_STEPS)
-ANGLE_TEST_COUNT = 10
-EPSILON = 0.0000001
-CELL_SIZE = 2
-BUMP_DIST = 2.0
-BUMP_HDIST = 1.5
-BUMP_HYDROGEN_SIZE = 0.5
-BUMP_HEAVY_SIZE = 1.0
-BONDED_SS_LIMIT = 2.5
-PEPTIDE_DIST = 1.7
-REPAIR_LIMIT = 10
-
-
-# TODO -- seems like AAS should go in aa module.
-AAS = ["ALA", "ARG", "ASH", "ASN", "ASP", "CYS", "CYM", "GLN", "GLU", "GLH", "GLY", \
-       "HIS", "HID", "HIE", "HIP", "HSD", "HSE", "HSP", "ILE", "LEU", "LYS", "LYN", \
-       "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "TYM", "VAL"]
-
-
-# TODO -- seems like NAS should go in aa module.
-NAS = ["A", "A5", "A3", "C", "C5", "C3", "G", "G5", "G3", "T", "T5", "T3", "U", \
-       "U5", "U3", "RA", "RG", "RC", "RU", "DA", "DG", "DC", "DT"]
 
 
 class Routines(object):
@@ -140,11 +117,11 @@ class Routines(object):
             for residue in chain.residues:
                 # TODO - why are we setting residue types to numeric values?
                 name = residue.name
-                if name in AAS:
+                if name in AA_NAMES:
                     residue.type = 1
                 elif name == "WAT":
                     residue.type = 3
-                elif name in NAS:
+                elif name in NA_NAMES:
                     residue.type = 4
                 else: # Residue is a ligand or unknown
                     residue.type = 2
@@ -1021,7 +998,7 @@ class Routines(object):
         curr_conflict_names = conflict_names
 
         # Try to find a workable solution
-        for _ in range(ANGLE_TEST_COUNT):
+        for _ in range(DEBUMP_ANGLE_TEST_COUNT):
             anglenum = self.pick_dihedral_angle(residue, curr_conflict_names, anglenum)
             if anglenum == -1:
                 return False
@@ -1032,8 +1009,8 @@ class Routines(object):
             bestangle = orig_angle = residue.dihedrals[anglenum]
 
             # Skip the first angle as it's already known.
-            for i in range(1, ANGLE_STEPS):
-                newangle = orig_angle + (ANGLE_STEP_SIZE * i)
+            for i in range(1, DEBUMP_ANGLE_STEPS):
+                newangle = orig_angle + (DEBUMP_ANGLE_STEP_SIZE * i)
                 self.set_dihedral_angle(residue, anglenum, newangle)
 
                 # Check for conflicts
@@ -1052,7 +1029,7 @@ class Routines(object):
                 elif score < bestscore:
                     diff = abs(bestscore - score)
                     #Don't update if it's effectively a tie
-                    if diff > EPSILON:
+                    if diff > SMALL_NUMBER:
                         bestscore = score
                         bestangle = newangle
                         found_improved = True

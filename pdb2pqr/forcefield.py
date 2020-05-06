@@ -7,7 +7,7 @@ Authors:  Todd Dolinsky, Yong Huang
 """
 import re
 from xml import sax
-from .utilities import test_dat_file, test_names_file
+from .io import test_dat_file, test_names_file
 
 
 class ForcefieldHandler(sax.ContentHandler):

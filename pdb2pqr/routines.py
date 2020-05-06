@@ -16,7 +16,7 @@ import propka
 from .aa import Amino, PRO, WAT, CYS, LEU, ILE
 from .na import Nucleic
 from .utilities import distance, dihedral, shortest_path, subtract
-from .utilities import DuplicateFilter
+from .io import DuplicateFilter
 from .quatfit import find_coordinates, qchichange
 from .structures import Chain
 from .config import AA_NAMES, NA_NAMES

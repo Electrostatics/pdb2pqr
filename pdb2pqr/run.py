@@ -11,7 +11,7 @@ from . import forcefield
 from . import aa
 from . import na
 from . import pdb
-from .utilities import print_pqr_header_cif, print_pqr_header
+from .io import print_pqr_header_cif, print_pqr_header
 
 
 _LOGGER = logging.getLogger(__name__)

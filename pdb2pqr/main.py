@@ -9,10 +9,13 @@ import argparse
 from pathlib import Path
 from . import run
 from . import utilities
+from .io import get_molecule, test_dat_file, dump_apbs, DuplicateFilter
+from .definitions import Definition
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.addFilter(DuplicateFilter())
 
 
 def build_parser():
@@ -148,7 +151,7 @@ def check_files(args):
         if args.usernames is None:
             raise RuntimeError('--usernames must be specified if using --userff')
     elif args.ff is not None:
-        if utilities.test_dat_file(args.ff) == "":
+        if test_dat_file(args.ff) == "":
             raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
 
     if args.ligand is not None:
@@ -244,15 +247,13 @@ def main(args):
     args = transform_arguments(args)
     print_splash_screen(args)
     check_files(args)
-    pdblist, is_cif = utilities.get_molecule(args.input_path)
     check_options(args)
 
+    pdblist, is_cif = get_molecule(args.input_path)
     results = run.run_pdb2pqr(pdblist, args, is_cif)
 
     print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
               missing_lines=results["missed_ligands"], is_cif=is_cif)
 
     if args.apbs_input:
-        utilities.dump_apbs(args.output_pqr)
-
-
+        dump_apbs(args.output_pqr)

@@ -8,8 +8,9 @@ import logging
 import math
 from xml import sax
 from . import topology
-from .utilities import test_dat_file, distance, subtract, normalize, dot, add
-from .utilities import analyze_connectivity, sort_dict_by_value, DuplicateFilter
+from .io import test_dat_file, DuplicateFilter
+from .utilities import distance, subtract, normalize, dot, add
+from .utilities import analyze_connectivity, sort_dict_by_value
 from .quatfit import find_coordinates
 from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS

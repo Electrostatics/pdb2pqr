@@ -7,7 +7,7 @@ import copy
 import re
 from xml import sax
 from . import structures
-from .utilities import test_dat_file
+from .io import test_dat_file
 from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
 
 

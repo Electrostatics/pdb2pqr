@@ -17,39 +17,39 @@ set(CMAKE_FIND_FRAMEWORK NEVER)
 ###  We need to find python3 so that we can install a virtual environment
 ###  with all the packages required.
 ###############################################################################
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-if(${Python3_FOUND})
-    message(STATUS "***** Python3 FOUND          : ${Python3_EXECUTABLE}")
-endif()
+#find_package(Python3 COMPONENTS Interpreter REQUIRED)
+#if(${Python3_FOUND})
+#    message(STATUS "***** Python3 FOUND          : ${Python3_EXECUTABLE}")
+#endif()
 
 ###############################################################################
 ###  Set up a python3 virtual environment so we don't pollute the user's
 ###  default python environment and so their environment doesn't interfere
 ###  with pdb2pqr
 ###############################################################################
-find_program(VIRTUALENV virtualenv)
-if(NOT VIRTUALENV)
-    message(FATAL_ERROR "Could not find `virtualenv` in PATH")
-endif()
+#find_program(VIRTUALENV virtualenv)
+#if(NOT VIRTUALENV)
+#    message(FATAL_ERROR "Could not find `virtualenv` in PATH")
+#endif()
 
 ###############################################################################
 ###  Generate the virtualenv and ensure it's up to date.
 ###############################################################################
-if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/venv")
-    execute_process(
-        COMMAND ${VIRTUALENV} -p ${Python3_EXECUTABLE} venv
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        RESULT_VARIABLE VIRTUALENV_RESULT)
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt requirements.txt
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        RESULT_VARIABLE COPY_RESULT)
-    set(ENV{VIRTURAL_ENV} ${CMAKE_CURRENT_BINARY_DIR}/venv)
-    execute_process(
-        COMMAND pip3 install -r requirements.txt --upgrade
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        RESULT_VARIABLE PIP_RESULT)
-endif()
+#if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/venv")
+#    execute_process(
+#        COMMAND ${VIRTUALENV} -p ${Python3_EXECUTABLE} venv
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#        RESULT_VARIABLE VIRTUALENV_RESULT)
+#    execute_process(
+#        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt requirements.txt
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#        RESULT_VARIABLE COPY_RESULT)
+#    set(ENV{VIRTURAL_ENV} ${CMAKE_CURRENT_BINARY_DIR}/venv)
+#    execute_process(
+#        COMMAND pip3 install -r requirements.txt --upgrade
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#        RESULT_VARIABLE PIP_RESULT)
+#endif()
 
 #
 #  Now that we have setup the virtual environment with NumPy, we want to find the

@@ -402,7 +402,7 @@ def pre_init(pdbfilename=None,
     my_protein.update_internal_bonds()
 
     my_protein.apply_name_scheme(Forcefield(ff, my_definition, None))
-    my_routines.find_missing_heavy()
+    my_protein.find_missing_heavy()
     my_routines.add_hydrogens()
     my_routines.debump_protein()
 

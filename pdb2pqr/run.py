@@ -51,11 +51,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
     #remove any future need to convert to lower case
 
     if not options.assign_only:
-        # It is OK to process ligands with no ATOM records in the pdb
-        if atomcount == 0 and ligand is not None:
-            pass
-        else:
-            my_routines.find_missing_heavy()
+
         my_protein.update_ss_bridges()
 
         if options.debump:

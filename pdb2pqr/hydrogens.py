@@ -2306,7 +2306,7 @@ class HydrogenRoutines(object):
         map_ = self.map[res].map
 
         mydef = HydrogenDefinition(name, opttype, optangle, map_)
-        patchmap = []
+        patch_map = []
         refmap = {}
         titrationstatemap = {}
         tautomermap = {}
@@ -2337,20 +2337,20 @@ class HydrogenRoutines(object):
                 refatoms = ['ND1', 'CG', 'CE1']
 
         elif name == 'LYS':
-            _ = self.routines.protein.referencemap[name]
-            patchmap = self.routines.protein.patchmap['LYN']
-            atoms = patchmap.remove
+            _ = self.routines.protein.reference_map[name]
+            patch_map = self.routines.protein.patch_map['LYN']
+            atoms = patch_map.remove
             refatoms = ['HZ1', 'HZ2', 'NZ']
 
         elif name == 'TYR':
-            _ = self.routines.protein.referencemap[name]
-            patchmap = self.routines.protein.patchmap['TYM']
-            atoms = patchmap.remove
+            _ = self.routines.protein.reference_map[name]
+            patch_map = self.routines.protein.patch_map['TYM']
+            atoms = patch_map.remove
             refatoms = ['OH', 'CZ', 'CE2']
 
         elif name == 'WAT':
-            _ = self.routines.protein.referencemap[name]
-            patchmap = self.routines.protein.patchmap['HOH']
+            _ = self.routines.protein.reference_map[name]
+            patch_map = self.routines.protein.patch_map['HOH']
             atoms = ['H1', 'H2']
             refatoms = None
 
@@ -2431,8 +2431,8 @@ class HydrogenRoutines(object):
             refatoms = ['OE1', 'CD', 'OE2']
 
         else:
-            patchmap = self.routines.protein.patchmap[name]
-            atoms = list(patchmap.map.keys())
+            patch_map = self.routines.protein.patch_map[name]
+            atoms = list(patch_map.map.keys())
             atoms.sort()
 
         if name in ['NTR']:

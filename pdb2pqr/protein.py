@@ -2,6 +2,8 @@
 
 This module contains the protein object used in PDB2PQR and associated methods
 
+TODO - this module should be broken into separate files.
+
 Authors:  Todd Dolinsky, Yong Huang
 """
 import string
@@ -16,7 +18,9 @@ from .utilities import distance
 from .structures import Chain, Residue
 from .pdb import TER, ATOM, HETATM, END, MODEL
 from .forcefield import Forcefield
+from .quatfit import find_coordinates
 from .config import AA_NAMES, NA_NAMES, BONDED_SS_LIMIT, PEPTIDE_DIST
+from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -123,14 +127,67 @@ class Protein(object):
                 self.residues.append(residue)
 
     @property
-    def referencemap(self):
+    def num_missing_heavy(self):
+        """Return number of missing biomolecular heavy atoms in structure."""
+        natom = 0
+        for residue in self.residues:
+            if not isinstance(residue, (Amino, Nucleic)):
+                continue
+            residue.missing = []
+            for refatomname in residue.reference.map:
+                if refatomname.startswith("H"):
+                    continue
+                if refatomname in ["N+1", "C-1"]:
+                    continue
+                if refatomname in ["O1P", "O2P"]:
+                    if residue.has_atom("OP1") and residue.has_atom("OP2"):
+                        continue
+                if not residue.has_atom(refatomname):
+                    _LOGGER.debug("Missing %s in %s", refatomname, residue)
+                    natom += 1
+                    residue.missing.append(refatomname)
+        return natom
+
+    @property
+    def num_heavy(self):
+        """Return number of biomolecular heavy atoms in structure.
+
+        TODO - figure out if this is redundant with self.num_bio_atoms
+        num_bio_atoms include hydrogens but those are stripped off eventually
+        """
+        natom = 0
+        for residue in self.residues:
+            if not isinstance(residue, (Amino, Nucleic)):
+                continue
+            for refatomname in residue.reference.map:
+                if refatomname.startswith("H"):
+                    continue
+                if refatomname in ["N+1", "C-1"]:
+                    continue
+                if refatomname in ["O1P", "O2P"]:
+                    if residue.has_atom("OP1") and residue.has_atom("OP2"):
+                        continue
+                natom += 1
+        return natom
+
+    @property
+    def reference_map(self):
         """Return definition reference map."""
         return self.definition.map
 
     @property
-    def patchmap(self):
+    def patch_map(self):
         """Return definition patch map."""
         return self.definition.patches
+
+    @property
+    def num_bio_atoms(self):
+        """Return the number of ATOM (not HETATM) records protein."""
+        natom = 0
+        for atom in self.atoms:
+            if atom.type == "ATOM":
+                natom += 1
+        return natom
 
     def set_termini(self, neutraln=False, neutralc=False):
         """Set the termini for the protein.
@@ -144,9 +201,6 @@ class Protein(object):
             neutraln:  whether N-terminus is neutral
             neutralc:  whether C-terminus is neutral
         """
-        # TODO - this function does a lot more than just set termini...
-        _LOGGER.info("Setting the termini...")
-
         # First assign the known termini
         for chain in self.chains:
             self.assign_termini(chain, neutraln, neutralc)
@@ -380,7 +434,7 @@ class Protein(object):
         in definitions.py - that version is needed for residue level subtitutions
         so certain protonation states (i.e. CYM, HSE) are detectatble on input.
 
-        This version looks up the particular patch name in the patchmap stored
+        This version looks up the particular patch name in the patch_map stored
         in the protein, and then applies the various commands to the reference
         and actual residue structures.
 
@@ -390,7 +444,7 @@ class Protein(object):
             patchname:  The name of the patch (string)
             residue:    The residue to apply the patch to (residue)
         """
-        if patchname not in self.patchmap:
+        if patchname not in self.patch_map:
             raise KeyError("Unable to find patch %s!" % patchname)
 
         _LOGGER.debug('PATCH INFO: %s patched with %s', residue, patchname)
@@ -400,7 +454,7 @@ class Protein(object):
         else:
             newreference = copy.deepcopy(residue.reference)
 
-        patch = self.patchmap[patchname]
+        patch = self.patch_map[patchname]
 
         # Add atoms from patch
         for atomname in patch.map:
@@ -569,6 +623,85 @@ class Protein(object):
             _LOGGER.debug("Parsing %s as new residue", resname)
             residue = Residue(residue)
         return residue
+
+    def repair_heavy(self):
+        """Repair all heavy atoms.
+
+        Unfortunately the first time we get to an atom we might not be able to
+        rebuild it - it might depend on other atoms to be rebuild first (think
+        side chains).  As such a 'seenmap' is used to keep track of what we've
+        already seen and subsequent attempts to rebuild the atom.
+        """
+        total_missing = self.num_missing_heavy
+        if total_missing == 0:
+            _LOGGER.warning("No heavy atoms need to be repaired.")
+            return 
+        for residue in self.residues:
+            if not isinstance(residue, (Amino, Nucleic)):
+                continue
+            atomlist = list(residue.atoms)
+            for atom in atomlist:
+                atomname = atom.name
+                if atomname in ["OP1", "OP2"] and residue.reference.has_atom("O1P") \
+                    and residue.reference.has_atom("O2P"):
+                    continue
+                if not residue.reference.has_atom(atomname):
+                    _LOGGER.warning("Extra atom %s in %s! - ", atomname, residue)
+                    residue.remove_atom(atomname)
+                    _LOGGER.warning("Deleted this atom.")
+
+            missing = residue.missing
+            if missing == []:
+                continue
+            seenmap = {}
+            nummissing = len(missing)
+            while len(missing) > 0:
+                coords = []
+                refcoords = []
+                atomname = missing.pop(0)
+                refatomcoords = residue.reference.map[atomname].coords
+                bondlist = residue.reference.get_nearest_bonds(atomname)
+
+                for bond in bondlist:
+                    if bond == "N+1":
+                        atom = residue.peptide_n
+                    elif bond == "C-1":
+                        atom = residue.peptide_c
+                    else:
+                        atom = residue.get_atom(bond)
+                    if atom is None:
+                        continue
+                    # Get coordinates, reference coordinates
+                    coords.append(atom.coords)
+                    refcoords.append(residue.reference.map[bond].coords)
+                    # Exit if we have enough atoms
+                    if len(coords) == 3:
+                        break
+
+                # We might need other atoms to be rebuilt first
+                if len(coords) < 3:
+                    try:
+                        seenmap[atomname] += 1
+                    except KeyError:
+                        seenmap[atomname] = 1
+
+                    missing.append(atomname)
+                    if seenmap[atomname] > nummissing:
+                        text = "Too few atoms present to reconstruct or cap "
+                        text += "residue %s in structure! " % (residue)
+                        text += "This error is generally caused by missing backbone "
+                        text += "atoms in this protein; "
+                        text += "you must use an external program to complete gaps "
+                        text += "in the protein backbone. "
+                        text += "Heavy atoms missing from %s: " % (residue)
+                        text += ' '.join(missing)
+                        raise ValueError(text)
+
+                else: # Rebuild the atom
+                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
+                    residue.create_atom(atomname, newcoords)
+                    _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)
+                    _LOGGER.debug(" %.3f %.3f %.3f", newcoords[0], newcoords[1], newcoords[2])
 
     def create_html_typemap(self, definition, outfilename):
         """Create an HTML typemap file at the desired location.

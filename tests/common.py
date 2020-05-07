@@ -116,17 +116,17 @@ def compare_pqr(pqr1_path, pqr2_path):
     """
     with open(pqr1_path, "rt", encoding="utf-8") as pqr1_file:
         df1 = pqr_to_dict(pqr1_file)
-        _LOGGER.info("PQR 1 has shape %s", df1.shape)
+        _LOGGER.debug("PQR 1 has shape %s", df1.shape)
     
     with open(pqr2_path, "rt", encoding="utf-8") as pqr2_file:
         df2 = pqr_to_dict(pqr2_file)
-        _LOGGER.info("PQR 2 has shape %s", df2.shape)
+        _LOGGER.debug("PQR 2 has shape %s", df2.shape)
     
     df = pqr_distance(df1, df2)
-    _LOGGER.info("Merged df has shape %s", df.shape)
+    _LOGGER.debug("Merged df has shape %s", df.shape)
 
     grouped = df.groupby(["res_name", "res_name", "atom_name"])
-    _LOGGER.info("Have %d unique atoms", len(grouped))
+    _LOGGER.debug("Have %d unique atoms", len(grouped))
     df_min = grouped.min()
 
     for col, what, cut in [("dp", "position", POS_CUT),

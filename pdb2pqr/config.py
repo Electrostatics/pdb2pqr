@@ -77,5 +77,5 @@ BONDED_SS_LIMIT = 2.5
 # Peptide bond distance limit
 PEPTIDE_DIST = 1.7
 
-# Limit on biomolecular repairs
-REPAIR_LIMIT = 10
+# Limit on fraction of molecule missing before giving up on repairs
+REPAIR_LIMIT = 0.1

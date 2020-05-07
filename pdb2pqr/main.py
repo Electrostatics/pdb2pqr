@@ -13,6 +13,7 @@ from .routines import drop_water
 from .io import get_molecule, get_definitions, test_dat_file, dump_apbs
 from .io import print_protein_atoms, DuplicateFilter
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
+from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -278,6 +279,48 @@ def setup_molecule(pdblist, definition, ligand_path):
     return protein, definition, ligand
 
 
+def is_repairable(protein, has_ligand):
+    """Determine if the protein can be (or needs to be) repaired.
+
+    Args:
+        protein:  protein object
+        has_ligand:  does the system contain a ligand? (bool)
+    Returns:
+        Boolean
+    Raises:
+        ValueError if there are insufficient heavy atoms or a significant part of
+        the protein is missing
+    """
+    num_heavy = protein.num_heavy
+    num_missing = protein.num_missing_heavy
+    if num_heavy == 0:
+        if not has_ligand:
+            raise ValueError(("No biomolecule heavy atoms found and no ligand "
+                              "present.  Unable to proceed.  You may also see "
+                              "this message if PDB2PQR does not have parameters "
+                              "for any residue in your protein."))
+        else:
+            _LOGGER.warning(("No heavy atoms found but a ligand is present. "
+                             "Proceeding with caution."))
+            return False
+    
+    if num_missing == 0:
+        _LOGGER.info("This biomolecule is clean.  No repair needed.")
+        return False
+
+    miss_frac = float(num_missing) / float(num_heavy)
+    if miss_frac > REPAIR_LIMIT:
+        error = "This PDB file is missing too many (%i out of " % num_missing
+        error += "%i, %g) heavy atoms to accurately repair the file.  " % \
+                    (num_heavy, miss_frac)
+        error += "The current repair limit is set at %g. " % REPAIR_LIMIT
+        error += "You may also see this message if PDB2PQR does not have "
+        error += "parameters for enough residues in your protein."
+        _LOGGER.error(error)
+        return False
+    return True
+
+
 def main(args):
     """Main driver for running program from the command line.
 
@@ -314,6 +357,10 @@ def main(args):
         results = {"header": "", "missed_ligands": None, "protein": protein,
                    "lines": print_protein_atoms(protein.atoms, args.chain)}
     else:
+        if is_repairable(protein, args.ligand is not None):
+            _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
+                         protein.num_missing_heavy)
+            protein.repair_heavy()
         results = run.run_pdb2pqr(pdblist=pdblist, my_protein=protein,
                                 my_definition=definition, options=args, is_cif=is_cif)
 

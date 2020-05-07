@@ -28,12 +28,12 @@ def test_basic_apo(input_path, tmp_path):
     run_pdb2pqr(args, input_path, output_pqr, tmp_path)
 
 
-@pytest.mark.parametrize("input_path", ["1K1I", "1FAS"], ids=str)
-def test_propka_apo(input_path, tmp_path):
-    """PROPKA titration of proteins without ligands."""
-    args = "--log-level=INFO --ff=AMBER --drop-water --titration-state-method=propka"
-    output_pqr = Path(input_path).stem + ".pqr"
-    run_pdb2pqr(args, input_path, output_pqr, tmp_path)
+# @pytest.mark.parametrize("input_path", ["1K1I", "1FAS"], ids=str)
+# def test_propka_apo(input_path, tmp_path):
+#     """PROPKA titration of proteins without ligands."""
+#     args = "--log-level=INFO --ff=AMBER --drop-water --titration-state-method=propka"
+#     output_pqr = Path(input_path).stem + ".pqr"
+#     run_pdb2pqr(args, input_path, output_pqr, tmp_path)
 
 
 # @pytest.mark.parametrize(

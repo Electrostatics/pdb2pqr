@@ -40,6 +40,33 @@ class DuplicateFilter(logging.Filter):
         return True
 
 
+def print_protein_atoms(atomlist, chainflag=False, pdbfile=False):
+    """Get text lines for specified atoms
+
+    Args:
+        atomlist:  The list of atoms to include (list)
+        chainflag:  Flag whether to print chainid or not
+    Returns:
+        text:  list of (stringed) atoms (list)
+    """
+    text = []
+    currentchain_id = None
+    for atom in atomlist:
+        # Print the "TER" records between chains
+        if currentchain_id is None:
+            currentchain_id = atom.chain_id
+        elif atom.chain_id != currentchain_id:
+            currentchain_id = atom.chain_id
+            text.append("TER\n")
+
+        if pdbfile is True:
+            text.append("%s\n" % atom.get_pdb_string())
+        else:
+            text.append("%s\n" % atom.get_pqr_string(chainflag=chainflag))
+    text.append("TER\nEND")
+    return text
+
+
 def get_old_header(pdblist):
     """Get old header from list of PDBs.
 
@@ -272,12 +299,11 @@ def get_pdb_file(name):
         return io.StringIO(resp.text)
 
 
-def get_molecule(input_path, drop_water):
+def get_molecule(input_path):
     """Get molecular structure information.
 
     Args:
         input_path:  structure file PDB ID or path
-        drop_water:  Boolean indicating whether to drop water
     Returns:
         list of molecule records (lines)
         Boolean indicating whether entry is CIF

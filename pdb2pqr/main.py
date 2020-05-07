@@ -8,9 +8,10 @@ import logging
 import argparse
 from pathlib import Path
 from . import run
-from . import utilities
+from .protein import Protein
 from .routines import drop_water
-from .io import get_molecule, get_definitions, test_dat_file, dump_apbs, DuplicateFilter
+from .io import get_molecule, get_definitions, test_dat_file, dump_apbs
+from .io import print_protein_atoms, DuplicateFilter
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 
 
@@ -232,7 +233,49 @@ def transform_arguments(args):
     if args.assign_only or args.clean:
         args.debump = False
         args.opt = False
+    if args.userff is not None:
+        args.userff = args.userff.lower()
+    elif args.ff is not None:
+        args.ff = args.ff.lower()
+    if args.ffout is not None:
+        args.ffout = args.ffout.lower()
     return args
+
+
+def setup_molecule(pdblist, definition, ligand_path):
+    """Set up the molecular system.
+
+    Args:
+        pdblist:  list of PDB records
+        definition:  topology definition
+        ligand_path:  path to ligand (may be None)
+    Returns:
+        protein:  protein object
+        definition:  definition object (revised if ligand was parsed)
+        ligand:  ligand object (may be None)
+    """
+    if ligand_path is not None:
+        with open(ligand_path, "rt", encoding="utf-8") as ligand_file:
+            raise NotImplementedError("Ligand functionality is temporarily disabled.")
+            # TODO - check to see if ligff updates copy of definition stored with protein
+            protein, definition, ligand = ligff.initialize(definition, ligand_file, pdblist)
+    else:
+        protein = Protein(pdblist, definition)
+        ligand = None
+    _LOGGER.info("Created protein object with %d residues and %d atoms.",
+                 len(protein.residues), len(protein.atoms))
+    for residue in protein.residues:
+        multoccupancy = False
+        for atom in residue.atoms:
+            if atom.alt_loc != "":
+                multoccupancy = True
+                txt = "Multiple occupancies found: %s in %s." % (atom.name,
+                                                                          residue)
+                _LOGGER.warning(txt)
+        if multoccupancy:
+            _LOGGER.warning(("Multiple occupancies found in %s. At least "
+                             "one of the instances is being ignored."), residue)
+    return protein, definition, ligand
 
 
 def main(args):
@@ -244,21 +287,38 @@ def main(args):
         args:  argument namespace object (e.g., as returned by argparse).
     """
     logging.basicConfig(level=getattr(logging, args.log_level))
-    args = transform_arguments(args)
+    _LOGGER.debug("Invoked with arguments: %s", args)
     print_splash_screen(args)
+    _LOGGER.info("Checking and transforming input arguments.")
+    args = transform_arguments(args)
     check_files(args)
     check_options(args)
 
+    _LOGGER.info("Loading topology files.")
     definition = get_definitions()
-    pdblist, is_cif = get_molecule(args.input_path, args.drop_water)
-    if args.drop_water:
-        pdblist = drop_water(pdblist)
+    _LOGGER.info("Loading molecule: %s", args.input_path)
+    pdblist, is_cif = get_molecule(args.input_path)
 
-    results = run.run_pdb2pqr(pdblist=pdblist, my_definition=definition,
-                              options=args, is_cif=is_cif)
+    if args.drop_water:
+        _LOGGER.info("Dropping water from structure.")
+        pdblist = drop_water(pdblist)
+    _LOGGER.info("Setting up molecule.")
+    protein, definition, ligand = setup_molecule(pdblist, definition, args.ligand)
+
+    _LOGGER.info("Setting termini states for protein chains.")
+    protein.set_termini(args.neutraln, args.neutralc)
+    protein.update_bonds()
+
+    if args.clean:
+        _LOGGER.info("Arguments specified cleaning only; skipping remaining steps.")
+        results = {"header": "", "missed_ligands": None, "protein": protein,
+                   "lines": print_protein_atoms(protein.atoms, args.chain)}
+    else:
+        results = run.run_pdb2pqr(pdblist=pdblist, my_protein=protein,
+                                my_definition=definition, options=args, is_cif=is_cif)
 
     print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
-              missing_lines=results["missed_ligands"], is_cif=is_cif)
+            missing_lines=results["missed_ligands"], is_cif=is_cif)
 
     if args.apbs_input:
         dump_apbs(args.output_pqr)

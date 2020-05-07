@@ -12,14 +12,12 @@ import logging
 import os
 import tempfile
 from pprint import pformat
-import propka
 from .aa import Amino, PRO, WAT, CYS, LEU, ILE
 from .na import Nucleic
 from .utilities import distance, dihedral, shortest_path, subtract
 from .io import DuplicateFilter
 from .quatfit import find_coordinates, qchichange
 from .structures import Chain
-from .config import AA_NAMES, NA_NAMES
 from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS, DEBUMP_ANGLE_TEST_COUNT
 from .config import SMALL_NUMBER, CELL_SIZE, BUMP_HYDROGEN_SIZE, BUMP_HEAVY_SIZE
 from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, REPAIR_LIMIT
@@ -71,418 +69,6 @@ class Routines(object):
         if definition is not None:
             self.aadef = definition.getAA()
             self.nadef = definition.getNA()
-
-    def apply_name_scheme(self, forcefield):
-        """Apply the naming scheme of the given forcefield to the atoms within the protein
-
-        Parameters
-            forcefield: The forcefield object (forcefield)
-        """
-        _LOGGER.info("Applying the naming scheme to the protein...")
-        for residue in self.protein.residues:
-            if isinstance(residue, (Amino, WAT, Nucleic)):
-                resname = residue.ffname
-            else:
-                resname = residue.name
-
-            for atom in residue.atoms:
-                rname, aname = forcefield.get_names(resname, atom.name)
-                if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and rname != None:
-                    try:
-                        if (residue.is_n_term or residue.is_c_term) and rname != residue.name:
-                            rname = residue.name
-                    except AttributeError:
-                        pass
-                if aname != None and rname != None:
-                    atom.res_name = rname
-                    atom.name = aname
-
-        _LOGGER.debug("Done applying naming scheme.")
-
-    def apply_force_field(self, forcefield):
-        """Apply the forcefield to the atoms within the protein
-
-        Parameters
-            forcefield: The forcefield object (forcefield)
-        Returns
-            hitlist:    A list of atoms that were found in the forcefield (list)
-            misslist:   A list of atoms that were not found in the forcefield (list)
-        """
-        _LOGGER.info("Applying the forcefield to the protein...")
-        misslist = []
-        hitlist = []
-        for residue in self.protein.residues:
-            if isinstance(residue, (Amino, WAT, Nucleic)):
-                resname = residue.ffname
-            else:
-                resname = residue.name
-
-            # Apply the parameters
-            for atom in residue.atoms:
-                atomname = atom.name
-                charge, radius = forcefield.get_params(resname, atomname)
-                if charge != None and radius != None:
-                    atom.ffcharge = charge
-                    atom.radius = radius
-                    hitlist.append(atom)
-                else:
-                    misslist.append(atom)
-
-        _LOGGER.debug("Done applying forcefield.")
-        return hitlist, misslist
-
-    def update_residue_types(self):
-        """Find the type of residue as notated in the Amino Acid definition"""
-        _LOGGER.info("Updating residue types... ")
-        for chain in self.protein.chains:
-            for residue in chain.residues:
-                # TODO - why are we setting residue types to numeric values?
-                name = residue.name
-                if name in AA_NAMES:
-                    residue.type = 1
-                elif name == "WAT":
-                    residue.type = 3
-                elif name in NA_NAMES:
-                    residue.type = 4
-                else: # Residue is a ligand or unknown
-                    residue.type = 2
-        _LOGGER.debug("Done updating residue types.")
-
-    def update_ss_bridges(self):
-        """Check for SS-bridge partners, and if present, set appropriate partners."""
-        _LOGGER.info("Updating SS bridges...")
-        sg_partners = {}
-        for residue in self.protein.residues:
-            if isinstance(residue, CYS):
-                atom = residue.get_atom("SG")
-                if atom != None:
-                    sg_partners[atom] = []
-
-        for atom in sg_partners:
-            for partner in sg_partners:
-                if atom == partner or sg_partners[atom] != []:
-                    continue
-                dist = distance(atom.coords, partner.coords)
-                if dist < BONDED_SS_LIMIT:
-                    sg_partners[atom].append(partner)
-                    sg_partners[partner].append(atom)
-
-        for atom in sg_partners:
-            res1 = atom.residue
-            numpartners = len(sg_partners[atom])
-            if numpartners == 1:
-                partner = sg_partners[atom][0]
-                res2 = partner.residue
-                res1.ss_bonded = True
-                res1.ss_bonded_partner = partner
-                self.apply_patch("CYX", res1)
-                _LOGGER.debug("%s - %s", res1, res2)
-            elif numpartners > 1:
-                error = "WARNING: %s has multiple potential " % res1
-                error += "SS-bridge partners"
-                _LOGGER.warning(error)
-            elif numpartners == 0:
-                _LOGGER.debug("%s is a free cysteine", res1)
-        _LOGGER.debug("Done updating SS bridges.")
-
-    def update_internal_bonds(self):
-        """Update the internal bonding network using the reference objects in each atom."""
-        for residue in self.protein.residues:
-            if isinstance(residue, (Amino, WAT, Nucleic)):
-                for atom in residue.atoms:
-                    if not atom.has_reference:
-                        continue
-                    for bond in atom.reference.bonds:
-                        if not residue.has_atom(bond):
-                            continue
-                        bondatom = residue.get_atom(bond)
-                        if bondatom not in atom.bonds:
-                            atom.add_bond(bondatom)
-
-    def update_bonds(self):
-        """Update the bonding network of the protein.
-
-        This happens in 3 steps:
-            1.  Applying the PEPTIDE patch to all Amino residues so as to add
-                reference for the N(i+1) and C(i-1) atoms
-            2.  UpdateInternal_bonds for inter-residue linking
-            3.  Set the links to the N(i+1) and C(i-1) atoms
-        """
-        # Apply the peptide patch
-        for residue in self.protein.residues:
-            if isinstance(residue, Amino):
-                if residue.is_n_term or residue.is_c_term:
-                    continue
-                else:
-                    self.apply_patch("PEPTIDE", residue)
-
-        # Update all internal bonds
-        self.update_internal_bonds()
-
-        # Set the peptide bond pointers
-        for chain in self.protein.chains:
-            for i in range(len(chain.residues) - 1):
-                res1 = chain.residues[i]
-                res2 = chain.residues[i + 1]
-                if not isinstance(res1, Amino) or not isinstance(res2, Amino):
-                    continue
-                atom1 = res1.get_atom("C")
-                atom2 = res2.get_atom("N")
-
-                if atom1 is not None:
-                    res2.peptide_c = atom1
-                if atom2 is not None:
-                    res1.peptide_n = atom2
-                if atom1 is None or atom2 is None:
-                    continue
-
-                if distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
-                    text = "Gap in backbone detected between %s and %s!" % \
-                           (res1, res2)
-                    _LOGGER.warning(text)
-                    res2.peptide_c = None
-                    res1.peptide_n = None
-
-    def apply_patch(self, patchname, residue):
-        """Apply a patch to the given residue.
-
-        This is one of the key functions in PDB2PQR.  A similar function appears
-        in definitions.py - that version is needed for residue level subtitutions
-        so certain protonation states (i.e. CYM, HSE) are detectatble on input.
-
-        This version looks up the particular patch name in the patchmap stored
-        in the protein, and then applies the various commands to the reference
-        and actual residue structures.
-
-        See the inline comments for a more detailed explanation.
-
-        Parameters
-            patchname:  The name of the patch (string)
-            residue:    The residue to apply the patch to (residue)
-        """
-        if patchname not in self.protein.patchmap:
-            raise KeyError("Unable to find patch %s!" % patchname)
-
-        _LOGGER.debug('PATCH INFO: %s patched with %s', residue, patchname)
-
-        if patchname == "PEPTIDE":
-            newreference = residue.reference
-        else:
-            newreference = copy.deepcopy(residue.reference)
-
-        patch = self.protein.patchmap[patchname]
-
-        # Add atoms from patch
-        for atomname in patch.map:
-            newreference.map[atomname] = patch.map[atomname]
-            for bond in patch.map[atomname].bonds:
-                if bond not in newreference.map:
-                    continue
-                if atomname not in newreference.map[bond].bonds:
-                    newreference.map[bond].bonds.append(atomname)
-
-        # Remove atoms as directed by patch
-        for remove in patch.remove:
-            if remove in residue.map:
-                residue.remove_atom(remove)
-            if remove not in newreference.map:
-                continue
-            removebonds = newreference.map[remove].bonds
-            del newreference.map[remove]
-            for bond in removebonds:
-                index = newreference.map[bond].bonds.index(remove)
-                del newreference.map[bond].bonds[index]
-
-        # Add the new dihedrals
-        for dihedral_ in patch.dihedrals:
-            newreference.dihedrals.append(dihedral_)
-
-        # Point at the new reference
-        residue.reference = newreference
-        residue.patches.append(patchname)
-
-        # Rename atoms as directed by patch
-        for atom in residue.atoms:
-            if atom.name in patch.altnames:
-                residue.rename_atom(atom.name, patch.altnames[atom.name])
-
-        # Replace each atom's reference with the new one
-        for atomname in residue.map:
-            if newreference.has_atom(atomname):
-                atom = residue.get_atom(atomname)
-                atom.reference = newreference.map[atomname]
-
-    def set_states(self):
-        """Set the state of each residue.
-
-        This is the last step before assigning the forcefield, but is necessary
-        so as to distinguish between various protonation states.
-
-        See aa.py for residue-specific functions.
-        """
-        for residue in self.protein.residues:
-            if isinstance(residue, (Amino, Nucleic)):
-                residue.set_state()
-
-    def assign_termini(self, chain, neutraln=False, neutralc=False):
-        """Assign the termini for the given chain by looking at the start and
-        end residues.
-        """
-
-        if len(chain.residues) == 0:
-            text = "Error: chain \"%s\" has 0 residues!" % chain.chain_id
-            raise IndexError(text)
-
-        # Set the N-Terminus/ 5' Terminus
-        res0 = chain.residues[0]
-        if isinstance(res0, Amino):
-            res0.is_n_term = True
-            if isinstance(res0, PRO):
-                self.apply_patch("NEUTRAL-NTERM", res0)
-            elif neutraln:
-                self.apply_patch("NEUTRAL-NTERM", res0)
-            else:
-                self.apply_patch("NTERM", res0)
-        elif isinstance(res0, Nucleic):
-            res0.is5term = True
-            self.apply_patch("5TERM", res0)
-
-        # Set the C-Terminus/ 3' Terminus
-        reslast = chain.residues[-1]
-        if isinstance(reslast, Amino):
-            reslast.is_c_term = True
-            if neutralc:
-                self.apply_patch("NEUTRAL-CTERM", reslast)
-            else:
-                self.apply_patch("CTERM", reslast)
-        elif isinstance(reslast, Nucleic):
-            reslast.is3term = True
-            self.apply_patch("3TERM", reslast)
-        else:
-            for i in range(len(chain.residues)):
-                resthis = chain.residues[-1 - i]
-                if isinstance(resthis, Amino):
-                    resthis.is_c_term = True
-                    if neutralc:
-                        self.apply_patch("NEUTRAL-CTERM", resthis)
-                    else:
-                        self.apply_patch("CTERM", resthis)
-                    break
-                elif resthis.name in ["NH2", "NME"]:
-                    break
-                elif isinstance(resthis, Nucleic):
-                    resthis.is3term = True
-                    self.apply_patch("3TERM", resthis)
-                    break
-
-    def set_termini(self, neutraln=False, neutralc=False):
-        """Set the termini for the protein.
-
-        First set all known termini by looking at the ends of the chain. Then
-        examine each residue, looking for internal chain breaks.
-        """
-        # TODO - this function does a lot more than just set termini...
-        _LOGGER.info("Setting the termini...")
-
-        # First assign the known termini
-        for chain in self.protein.chains:
-            self.assign_termini(chain, neutraln, neutralc)
-
-        # Now determine if there are any hidden chains
-        letters = string.ascii_uppercase + string.ascii_lowercase
-        ch_num = 0
-
-        while ch_num < len(self.protein.chains):
-            chain = self.protein.chains[ch_num]
-            reslist = []
-            origlist = []
-
-            # origlist holds the original residue list for the chain
-            for residue in chain.residues:
-                origlist.append(residue)
-
-            for residue in origlist:
-                reslist.append(residue)
-
-                # Look for ending termini
-                fixflag = 0
-                if isinstance(residue, Amino):
-                    if (residue.has_atom("OXT") and not residue.is_c_term):
-                        fixflag = 1
-
-                elif isinstance(residue, Nucleic):
-                    if ((residue.has_atom("H3T") or residue.name.endswith("3"))\
-                      and not residue.is3term):
-                        fixflag = 1
-
-                if fixflag:
-                    # Get an available chain ID
-                    chainid = letters[0]
-                    id_ = 0
-                    id_length = 1
-                    while chainid in self.protein.chainmap:
-                        id_ += 1
-                        if id_ >= len(letters):
-                            id_length += 1
-                            id_ = 0
-                        chainid = letters[id_] * id_length
-
-                    if id_length > 1:
-                        message = 'Warning: Reusing chain id: ' + chainid[0] + ''
-                        _LOGGER.warning(message)
-
-                    # Make a new chain with these residues
-                    newchain = Chain(chainid[0])
-
-                    self.protein.chainmap[chainid] = newchain
-                    self.protein.chains.insert(ch_num, newchain)
-
-                    for res in reslist:
-                        newchain.add_residue(res)
-                        chain.residues.remove(res)
-                        res.set_chain_id(chainid[0])
-
-                    self.assign_termini(chain, neutraln, neutralc)
-                    self.assign_termini(newchain, neutraln, neutralc)
-
-                    reslist = []
-                    ch_num += 1
-            ch_num += 1
-
-        # Update the final chain's chain_id if it is "" unless it's all water
-        if "" in self.protein.chainmap:
-            notwat = 0
-            for res in chain.residues:
-                if not isinstance(res, WAT):
-                    notwat = 1
-                    break
-
-            if notwat == 0:
-                _LOGGER.debug("Done setting termini.")
-                return
-
-            chain = self.protein.chainmap[""]
-            chainid = letters[0]
-            id_ = 0
-            id_length = 1
-            while chainid in self.protein.chainmap:
-                id_ += 1
-                if id_ >= len(letters):
-                    id_length += 1
-                    id_ = 0
-                chainid = letters[id_] * id_length
-
-            if id_length > 1:
-                message = 'Warning: Reusing chain id: ' + chainid[0]
-                _LOGGER.warning(message)
-
-            # Use the new chain_id
-            self.protein.chainmap[chainid] = chain
-            del self.protein.chainmap[""]
-
-            for res in chain.residues:
-                res.set_chain_id(chainid[0])
-        _LOGGER.debug("Done setting termini.")
 
     def find_missing_heavy(self):
         """Repair residues that contain missing heavy (non-Hydrogen) atoms"""
@@ -858,7 +444,7 @@ class Routines(object):
 
         self.calculate_dihedral_angles()
         self.set_donors_acceptors()
-        self.update_internal_bonds()
+        self.protein.update_internal_bonds()
         self.set_reference_distance()
         bumpscore = 0.0
         if not isinstance(residue, Amino):
@@ -937,7 +523,7 @@ class Routines(object):
 
         self.calculate_dihedral_angles()
         self.set_donors_acceptors()
-        self.update_internal_bonds()
+        self.protein.update_internal_bonds()
         self.set_reference_distance()
 
         # Determine which residues to debump
@@ -1475,7 +1061,7 @@ class Routines(object):
                             warn = ("N-terminal %s" % key, "neutral")
                             _LOGGER.warning(warn)
                         else:
-                            self.apply_patch("NEUTRAL-NTERM", residue)
+                            self.protein.apply_patch("NEUTRAL-NTERM", residue)
 
             if residue.is_c_term:
                 key = "C- %i %s" % (resnum, chain_id)
@@ -1488,7 +1074,7 @@ class Routines(object):
                             warn = ("C-terminal %s" % key, "neutral")
                             _LOGGER.warning(warn)
                         else:
-                            self.apply_patch("NEUTRAL-CTERM", residue)
+                            self.protein.apply_patch("NEUTRAL-CTERM", residue)
 
             key = "%s %i %s" % (resname, resnum, chain_id)
             key = key.strip()
@@ -1497,7 +1083,7 @@ class Routines(object):
                 del pkadic[key]
                 if resname == "ARG" and ph >= value:
                     if force_field == "parse":
-                        self.apply_patch("AR0", residue)
+                        self.protein.apply_patch("AR0", residue)
                         _LOGGER.warning(("Neutral arginines are very rare. Please "
                                          "double-check your setup."))
                     else:
@@ -1511,13 +1097,13 @@ class Routines(object):
                         warn = (key, "Protonated at N-Terminal")
                         _LOGGER.warning(warn)
                     else:
-                        self.apply_patch("ASH", residue)
+                        self.protein.apply_patch("ASH", residue)
                 elif resname == "CYS" and ph >= value:
                     if force_field == "charmm":
                         warn = (key, "negative")
                         _LOGGER.warning(warn)
                     else:
-                        self.apply_patch("CYM", residue)
+                        self.protein.apply_patch("CYM", residue)
                 elif resname == "GLU" and ph < value:
                     if residue.is_c_term and force_field in ["amber", "tyl06", "swanson"]:
                         warn = (key, "Protonated at C-Terminal")
@@ -1526,9 +1112,9 @@ class Routines(object):
                         warn = (key, "Protonated at N-Terminal")
                         _LOGGER.warning(warn)
                     else:
-                        self.apply_patch("GLH", residue)
+                        self.protein.apply_patch("GLH", residue)
                 elif resname == "HIS" and ph < value:
-                    self.apply_patch("HIP", residue)
+                    self.protein.apply_patch("HIP", residue)
                 elif resname == "LYS" and ph >= value:
                     if force_field == "charmm":
                         warn = (key, "neutral")
@@ -1540,13 +1126,13 @@ class Routines(object):
                         warn = (key, "neutral at N-Terminal")
                         _LOGGER.warning(warn)
                     else:
-                        self.apply_patch("LYN", residue)
+                        self.protein.apply_patch("LYN", residue)
                 elif resname == "TYR" and ph >= value:
                     if force_field in ["charmm", "amber", "tyl06", "peoepb", "swanson"]:
                         warn = (key, "negative")
                         _LOGGER.warning(warn)
                     else:
-                        self.apply_patch("TYM", residue)
+                        self.protein.apply_patch("TYM", residue)
 
         if len(pkadic) > 0:
             warn = ("PDB2PQR could not identify the following residues and residue "

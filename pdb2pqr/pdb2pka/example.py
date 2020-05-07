@@ -266,7 +266,7 @@ if __name__ == "__main__":
 
     # This would really be something like
     #   atoms = protein.atoms
-    #   PQR = protein.print_atoms(atoms)
+    #   PQR = protein.print_protein_atoms(atoms)
     PQR = "ATOM      1  I   ION     1       0.000   0.000  0.000  1.00  3.00"
 
     size = psize.Psize()

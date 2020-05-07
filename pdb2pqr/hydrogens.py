@@ -2036,7 +2036,7 @@ class HydrogenRoutines(object):
         self.routines.cells.assign_cells(self.protein)
         self.routines.calculate_dihedral_angles()
         self.routines.set_donors_acceptors()
-        self.routines.update_internal_bonds()
+        self.protein.update_internal_bonds()
         self.routines.set_reference_distance()
         self.optlist = []
         self.atomlist = []
@@ -2077,7 +2077,7 @@ class HydrogenRoutines(object):
         self.routines.cells.assign_cells(self.protein)
         self.routines.calculate_dihedral_angles()
         self.routines.set_donors_acceptors()
-        self.routines.update_internal_bonds()
+        self.protein.update_internal_bonds()
         self.routines.set_reference_distance()
         self.optlist = []
 

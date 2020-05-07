@@ -1,28 +1,25 @@
 """Routines for running the code with a given set of options and PDB files."""
 import logging
 import time
-import io
 from pathlib import Path
-from . import definitions
-from . import protein
 from . import routines
 from . import hydrogens
 from . import forcefield
 from . import aa
 from . import na
-from . import pdb
-from .io import print_pqr_header_cif, print_pqr_header
+from .io import print_pqr_header_cif, print_pqr_header, print_protein_atoms
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def run_pdb2pqr(pdblist, my_definition, options, is_cif):
+def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
     """Run the PDB2PQR Suite
 
     Args:
         pdblist: The list of objects that was read from the PDB file given as
                  input (list)
+        my_protein: Protein object
         options: The name of the forcefield (string)
         is_cif:  Boolean indicating whether input is CIF
 
@@ -47,60 +44,11 @@ def run_pdb2pqr(pdblist, my_definition, options, is_cif):
             _LOGGER.warning("PROPKA file already exists: %s", pkaname)
 
     start = time.time()
-    _LOGGER.info("Beginning PDB2PQR...")
-
-
-
-    # Check for the presence of a ligand!  This code is taken from pdb2pka/pka.py
-    if options.ligand is not None:
-        raise NotImplementedError("Ligand functionality is temporarily disabled.")
-        with open(options.ligand, "rt", encoding="utf-8") as ligand_file:
-            my_protein, my_definition, ligand = ligff.initialize(my_definition,
-                                                                 ligand_file,
-                                                                 pdblist)
-        for atom in my_protein.atoms:
-            if atom.type == "ATOM":
-                atomcount += 1
-    else:
-        my_protein = protein.Protein(pdblist, my_definition)
-
-    _LOGGER.info("Created protein object:")
-    _LOGGER.info("  Number of residues in protein: %s", len(my_protein.residues))
-    _LOGGER.info("  Number of atoms in protein   : %s", len(my_protein.atoms))
 
     my_routines = routines.Routines(my_protein)
-    for residue in my_protein.residues:
-        multoccupancy = 0
-        for atom in residue.atoms:
-            if atom.alt_loc != "":
-                multoccupancy = 1
-                txt = "Warning: multiple occupancies found: %s in %s." % (atom.name,
-                                                                          residue)
-                _LOGGER.warning(txt)
-        if multoccupancy == 1:
-            _LOGGER.warning(("WARNING: multiple occupancies found in %s at least "
-                             "one of the instances is being ignored."), residue)
 
-    my_routines.set_termini(options.neutraln, options.neutralc)
-    my_routines.update_bonds()
-
-    if options.clean:
-        header = ""
-        lines = my_protein.print_atoms(my_protein.atoms, options.chain)
-        _LOGGER.debug("Total time taken: %.2f seconds", (time.time() - start))
-
-        #Be sure to include None for missed ligand residues
-        results_dict = {"header": header, "lines": lines,
-                        "missed_ligands": None, "protein": my_protein}
-        return results_dict
 
     #remove any future need to convert to lower case
-    if options.userff is not None:
-        force_field = options.userff.lower()
-    elif options.ff is not None:
-        force_field = options.ff.lower()
-    if options.ffout is not None:
-        ffout = options.ffout.lower()
 
     if not options.assign_only:
         # It is OK to process ligands with no ATOM records in the pdb
@@ -108,7 +56,7 @@ def run_pdb2pqr(pdblist, my_definition, options, is_cif):
             pass
         else:
             my_routines.find_missing_heavy()
-        my_routines.update_ss_bridges()
+        my_protein.update_ss_bridges()
 
         if options.debump:
             my_routines.debump_protein()
@@ -154,12 +102,12 @@ def run_pdb2pqr(pdblist, my_definition, options, is_cif):
     else:  # Special case for HIS if using assign-only
         for residue in my_protein.residues:
             if isinstance(residue, aa.HIS):
-                my_routines.apply_patch("HIP", residue)
+                my_protein.apply_patch("HIP", residue)
 
-    my_routines.set_states()
-    my_forcefield = forcefield.Forcefield(force_field, my_definition, options.userff,
+    my_protein.set_states()
+    my_forcefield = forcefield.Forcefield(options.ff, my_definition, options.userff,
                                           options.usernames)
-    hitlist, misslist = my_routines.apply_force_field(my_forcefield)
+    hitlist, misslist = my_protein.apply_force_field(my_forcefield)
 
     ligsuccess = 0
     if options.ligand is not None:
@@ -210,24 +158,24 @@ def run_pdb2pqr(pdblist, my_definition, options, is_cif):
 
     # If we want a different naming scheme, use that
     if options.ffout is not None:
-        scheme = ffout
+        scheme = options.ffout
         userff = None # Currently not supported
-        if scheme != force_field:
+        if scheme != options.ff:
             my_name_scheme = forcefield.Forcefield(scheme, my_definition, userff)
         else:
             my_name_scheme = my_forcefield
-        my_routines.apply_name_scheme(my_name_scheme)
+        my_protein.apply_name_scheme(my_name_scheme)
 
     if is_cif:
-        header = print_pqr_header_cif(misslist, reslist, charge, force_field,
+        header = print_pqr_header_cif(misslist, reslist, charge, options.ff,
                                       options.pka_method, options.ph, options.ffout,
                                       include_old_header=options.include_header)
     else:
-        header = print_pqr_header(pdblist, misslist, reslist, charge, force_field,
+        header = print_pqr_header(pdblist, misslist, reslist, charge, options.ff,
                                   options.pka_method, options.ph, options.ffout,
                                   include_old_header=options.include_header)
 
-    lines = my_protein.print_atoms(hitlist, options.chain)
+    lines = print_protein_atoms(hitlist, options.chain)
 
     # Determine if any of the atoms in misslist were ligands
     missedligandresidues = []

@@ -37,11 +37,12 @@ DIHEDRAL_WTF = 57.2958
 
 # The start of warning strings to be filtered.
 FILTER_WARNINGS = ["Skipped atom during water optimization",
-                   "The best donorH was not picked"]
+                   "The best donorH was not picked",
+                   "Multiple occupancies found"]
 
 # The number of times one of the warning strings should be printed before
 # supressing further output.
-FILTER_WARNINGS_LIMIT = 30
+FILTER_WARNINGS_LIMIT = 20
 
 # Expected location for amino acid topology definition file
 AA_DEF_PATH = "dat/AA.xml"

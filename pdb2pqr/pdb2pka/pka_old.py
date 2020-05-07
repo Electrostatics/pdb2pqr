@@ -389,19 +389,19 @@ def pre_init(pdbfilename=None,
     #
     if verbose:
         print("Created protein object -")
-        print("\tNumber of residues in protein: %s" % len(my_protein.residues)
-        print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms)
+        print("\tNumber of residues in protein: %s" % len(my_protein.residues))
+        print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms))
     #
     # Set up all other routines
     #
     my_routines = Routines(my_protein, verbose) #my_definition)
     my_routines.update_residue_types()
-    my_routines.update_ss_bridges()
-    my_routines.update_bonds()
-    my_routines.set_termini()
-    my_routines.update_internal_bonds()
+    my_protein.update_ss_bridges()
+    my_protein.update_bonds()
+    my_protein.set_termini()
+    my_protein.update_internal_bonds()
 
-    my_routines.apply_name_scheme(Forcefield(ff, my_definition, None))
+    my_protein.apply_name_scheme(Forcefield(ff, my_definition, None))
     my_routines.find_missing_heavy()
     my_routines.add_hydrogens()
     my_routines.debump_protein()
@@ -413,7 +413,7 @@ def pre_init(pdbfilename=None,
     # We get this information from ligand_titratable_groups
     #
     from src.hydrogens import HydrogenRoutines
-    my_routines.update_internal_bonds()
+    my_protein.update_internal_bonds()
     my_routines.calculate_dihedral_angles()
     my_hydrogen_routines = HydrogenRoutines(my_routines)
     #
@@ -423,14 +423,14 @@ def pre_init(pdbfilename=None,
     my_hydrogen_routines.initialize_full_optimization()
     my_hydrogen_routines.optimize_hydrogens()
     my_hydrogen_routines.cleanup()
-    my_routines.set_states()
+    my_protein.set_states()
 
     #
     # Choose the correct forcefield
     #
     my_forcefield = Forcefield(ff, my_definition, None)
     if Lig:
-        hitlist, misslist = my_routines.apply_force_field(my_forcefield)
+        hitlist, misslist = protein.apply_force_field(my_protein, my_forcefield)
         #
         # Can we get charges for the ligand?
         #

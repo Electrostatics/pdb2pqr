@@ -173,7 +173,7 @@ class pKaRoutines:
         return
 
     def dump_protein_file(self, file_name, pdbfile=True):
-        lines = self.protein.print_atoms(self.protein.atoms, chainflag=True, pdbfile=pdbfile)
+        lines = io.print_protein_atoms(self.protein.atoms, chainflag=True, pdbfile=pdbfile)
         with open(file_name,'w') as fd:
             _LOGGER.info( 'dumping protein state to '+ fd.name)
             for line in lines:
@@ -234,9 +234,9 @@ class pKaRoutines:
 
         my_routines = Routines(self.protein, self.routines.verbose)
         my_routines.update_residue_types()
-        my_routines.update_ss_bridges()
-        my_routines.update_bonds()
-        my_routines.update_internal_bonds()
+        self.protein.update_ss_bridges()
+        my_protein.update_bonds()
+        my_protein.update_internal_bonds()
         pKa.residue.fixed = 2
 
         my_routines.debump_protein()
@@ -1198,9 +1198,9 @@ class pKaRoutines:
         my_routines = Routines(self.protein, self.routines.verbose)
         my_routines.update_residue_types()
 
-        my_routines.update_bonds()
-        #my_routines.update_internal_bonds()
-        my_routines.update_ss_bridges()
+        self.protein.update_bonds()
+        #my_protein.update_internal_bonds()
+        self.protein.update_ss_bridges()
 
         my_routines.debump_protein()
 
@@ -1213,7 +1213,7 @@ class pKaRoutines:
 
         # Clean up, debump
         self.HydrogenRoutines.cleanup()
-        my_routines.set_states() # this identifies the protonation states to pdb2pqr
+        my_protein.set_states() # this identifies the protonation states to pdb2pqr
         #my_routines.debump_protein() # why do we debump after setting the states?
 
         return

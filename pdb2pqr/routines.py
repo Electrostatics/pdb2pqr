@@ -5,8 +5,6 @@ correct, analyze, and optimize that protein.
 
 Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """
-import copy
-import string
 import logging
 # TODO - replace os with pathlib
 import os
@@ -17,7 +15,7 @@ from .na import Nucleic
 from .utilities import distance, dihedral, shortest_path, subtract
 from .io import DuplicateFilter
 from .quatfit import find_coordinates, qchichange
-from .structures import Chain
+from .cells import Cells
 from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS, DEBUMP_ANGLE_TEST_COUNT
 from .config import SMALL_NUMBER, CELL_SIZE, BUMP_HYDROGEN_SIZE, BUMP_HEAVY_SIZE
 from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, REPAIR_LIMIT
@@ -70,237 +68,6 @@ class Routines(object):
             self.aadef = definition.getAA()
             self.nadef = definition.getNA()
 
-    @staticmethod
-    def rebuild_tetrahedral(residue, atomname):
-        """Rebuild a tetrahedral hydrogen group.
-
-        This is necessary due to the shortcomings of the quatfit routine - given
-        a tetrahedral geometry and two existing hydrogens, the quatfit routines
-        have two potential solutions.  This function uses basic tetrahedral
-        geometry to fix this issue.
-
-        Parameters
-            residue:  The residue in question (residue)
-            atomname: The atomname to add (string)
-        Returns
-            True if successful, False otherwise
-        """
-        hcount = 0
-        nextatomname = None
-
-        atomref = residue.reference.map.get(atomname)
-        if atomref is None:
-            return False
-        bondname = atomref.bonds[0]
-
-        # Return if the bonded atom does not exist
-        if not residue.has_atom(bondname):
-            return False
-
-        # This group is tetrahedral if bondatom has 4 bonds,
-        #  3 of which are hydrogens
-        for bond in residue.reference.map[bondname].bonds:
-            if bond.startswith("H"):
-                hcount += 1
-            elif bond != 'C-1' and bond != 'N+1':
-                nextatomname = bond
-
-        # Check if this is a tetrahedral group
-        if hcount != 3 or nextatomname is None:
-            return False
-
-        # Now rebuild according to the tetrahedral geometry
-        bondatom = residue.get_atom(bondname)
-        nextatom = residue.get_atom(nextatomname)
-        numbonds = len(bondatom.bonds)
-
-        if numbonds == 1:
-
-            # Place according to two atoms
-            coords = [bondatom.coords, nextatom.coords]
-            refcoords = [residue.reference.map[bondname].coords, \
-                         residue.reference.map[nextatomname].coords]
-            refatomcoords = atomref.coords
-            newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
-            residue.create_atom(atomname, newcoords)
-
-            # For LEU and ILE residues only: make sure the Hydrogens are in
-            # staggered conformation instead of eclipsed.
-            if isinstance(residue, LEU):
-                hcoords = newcoords
-                cbatom = residue.get_atom('CB')
-                ang = dihedral(cbatom.coords, nextatom.coords,
-                               bondatom.coords, hcoords)
-                diffangle = 60 - ang
-                residue.rotate_tetrahedral(nextatom, bondatom, diffangle)
-
-            elif isinstance(residue, ILE):
-                hcoords = newcoords
-                cg1atom = residue.get_atom('CG1')
-                cbatom = residue.get_atom('CB')
-                if bondatom.name == 'CD1':
-                    ang = dihedral(cbatom.coords, nextatom.coords,
-                                   bondatom.coords, hcoords)
-                elif bondatom.name == 'CG2':
-                    ang = dihedral(cg1atom.coords, nextatom.coords,
-                                   bondatom.coords, hcoords)
-                else:
-                    ang = dihedral(cbatom.coords, nextatom.coords,
-                                   bondatom.coords, hcoords)
-
-                diffangle = 60 - ang
-                residue.rotate_tetrahedral(nextatom, bondatom, diffangle)
-            return True
-
-        elif numbonds == 2:
-
-            # Get the single hydrogen coordinates
-            hatom = None
-            for bond in bondatom.reference.bonds:
-                if residue.has_atom(bond) and bond.startswith("H"):
-                    hatom = residue.get_atom(bond)
-                    break
-
-            # Use the existing hydrogen and rotate about the bond
-            residue.rotate_tetrahedral(nextatom, bondatom, 120)
-            newcoords = hatom.coords
-            residue.rotate_tetrahedral(nextatom, bondatom, -120)
-            residue.create_atom(atomname, newcoords)
-
-            return True
-
-        elif numbonds == 3:
-
-            # Find the one spot the atom can be
-            hatoms = []
-            for bond in bondatom.reference.bonds:
-                if residue.has_atom(bond) and bond.startswith("H"):
-                    hatoms.append(residue.get_atom(bond))
-
-            # If this is more than two something is wrong
-            if len(hatoms) != 2:
-                return False
-
-            # Use the existing hydrogen and rotate about the bond
-            residue.rotate_tetrahedral(nextatom, bondatom, 120)
-            newcoords1 = hatoms[0].coords
-            residue.rotate_tetrahedral(nextatom, bondatom, 120)
-            newcoords2 = hatoms[0].coords
-            residue.rotate_tetrahedral(nextatom, bondatom, 120)
-
-            # Determine which one hatoms[1] is not in
-            if distance(hatoms[1].coords, newcoords1) > 0.1:
-                residue.create_atom(atomname, newcoords1)
-            else:
-                residue.create_atom(atomname, newcoords2)
-
-            return True
-        return False
-
-    def add_hydrogens(self):
-        """Add the hydrogens to the protein.
-
-        This requires either the rebuild_tetrahedral function for tetrahedral
-        geometries or the standard quatfit methods.  These methods use three
-        nearby bonds to rebuild the atom; the closer the bonds, the more
-        accurate the results.  As such the peptide bonds are used when available.
-        """
-        count = 0
-        _LOGGER.info("Adding hydrogens to the protein...")
-        for residue in self.protein.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
-                continue
-            for atomname in residue.reference.map:
-                if not atomname.startswith("H"):
-                    continue
-                if residue.has_atom(atomname):
-                    continue
-                if isinstance(residue, CYS) and residue.ss_bonded and atomname == "HG":
-                    continue
-
-                # If this hydrogen is part of a tetrahedral group,
-                # follow a different codepath
-                if Routines.rebuild_tetrahedral(residue, atomname):
-                    count += 1
-                    continue
-
-                # Otherwise use the standard quatfit methods
-                coords = []
-                refcoords = []
-
-                refatomcoords = residue.reference.map[atomname].coords
-                bondlist = residue.reference.get_nearest_bonds(atomname)
-
-                for bond in bondlist:
-                    if bond == "N+1":
-                        atom = residue.peptide_n
-                    elif bond == "C-1":
-                        atom = residue.peptide_c
-                    else:
-                        atom = residue.get_atom(bond)
-
-                    if atom is None:
-                        continue
-
-                    # Get coordinates, reference coordinates
-                    coords.append(atom.coords)
-                    refcoords.append(residue.reference.map[bond].coords)
-
-                    # Exit if we have enough atoms
-                    if len(coords) == 3:
-                        break
-
-                if len(coords) == 3:
-                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
-                    residue.create_atom(atomname, newcoords)
-                    count += 1
-                else:
-                    _LOGGER.warning("Couldn't rebuild %s in %s!", atomname, residue)
-        _LOGGER.debug(" Added %i hydrogen atoms.", count)
-
-    def remove_hydrogens(self):
-        """Remove hydrogens from the protein."""
-        _LOGGER.info("Stripping hydrogens from the protein...")
-        for residue in self.protein.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
-                continue
-            for atom in residue.atoms[:]:
-                if atom.is_hydrogen:
-                    residue.remove_atom(atom.name)
-
-    def set_reference_distance(self):
-        """Set the distance to the CA atom in the residue.
-
-        This is necessary for determining which atoms are allowed to move during
-        rotations.  Uses the shortest_path algorithm found in utilities.py.
-        """
-        for residue in self.protein.residues:
-            if not isinstance(residue, Amino):
-                continue
-
-            # Initialize some variables
-            map_ = {}
-            caatom = residue.get_atom("CA")
-
-            if caatom is None:
-                text = "Cannot set references to %s without CA atom!"
-                raise ValueError(text)
-
-            # Set up the linked map
-            for atom in residue.atoms:
-                map_[atom] = atom.bonds
-
-            # Run the algorithm
-            for atom in residue.atoms:
-                if atom.is_backbone:
-                    atom.refdistance = -1
-                elif residue.is_c_term and atom.name == "HO":
-                    atom.refdistance = 3
-                elif residue.is_n_term and (atom.name == "H3" or atom.name == "H2"):
-                    atom.refdistance = 2
-                else:
-                    atom.refdistance = len(shortest_path(map_, atom, caatom)) - 1
-
     def get_bump_score(self, residue):
         """Get an bump score for the current structure"""
 
@@ -308,10 +75,10 @@ class Routines(object):
         self.cells = Cells(CELL_SIZE)
         self.cells.assign_cells(self.protein)
 
-        self.calculate_dihedral_angles()
+        self.protein.calculate_dihedral_angles()
         self.set_donors_acceptors()
         self.protein.update_internal_bonds()
-        self.set_reference_distance()
+        self.protein.set_reference_distance()
         bumpscore = 0.0
         if not isinstance(residue, Amino):
             return 0.0
@@ -387,10 +154,10 @@ class Routines(object):
         self.cells = Cells(CELL_SIZE)
         self.cells.assign_cells(self.protein)
 
-        self.calculate_dihedral_angles()
-        self.set_donors_acceptors()
+        self.protein.calculate_dihedral_angles()
+        self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
-        self.set_reference_distance()
+        self.protein.set_reference_distance()
 
         # Determine which residues to debump
         for residue in self.protein.residues:
@@ -446,7 +213,7 @@ class Routines(object):
         score = 0
         atomnames = residue.reference.dihedrals[anglenum].split()
         pivot = atomnames[2]
-        moveablenames = self.get_moveable_names(residue, pivot)
+        moveablenames = residue.get_moveable_names(pivot)
         for name in moveablenames:
             nearatoms = self.find_nearby_atoms(residue.get_atom(name))
             for value in nearatoms.values():
@@ -520,29 +287,6 @@ class Routines(object):
 
         # If we're here, debumping was unsuccessful
         return False
-
-    def calculate_dihedral_angles(self):
-        """Calculate the dihedral angle for every residue within the protein"""
-        for residue in self.protein.residues:
-            if not isinstance(residue, Amino):
-                continue
-            residue.dihedrals = []
-
-            refangles = residue.reference.dihedrals
-            for dihed in refangles:
-                coords = []
-                atoms = dihed.split()
-                for i in range(4):
-                    atomname = atoms[i]
-                    if residue.has_atom(atomname):
-                        coords.append(residue.get_atom(atomname).coords)
-
-                if len(coords) == 4:
-                    angle = dihedral(coords[0], coords[1], coords[2], coords[3])
-                else:
-                    angle = None
-
-                residue.add_dihedral_angle(angle)
 
     def get_closest_atom(self, atom):
         """Get the closest atom that does not form a donor/acceptor pair.
@@ -691,7 +435,7 @@ class Routines(object):
             atomnames = residue.reference.dihedrals[i].split()
             pivot = atomnames[2]
 
-            moveablenames = self.get_moveable_names(residue, pivot)
+            moveablenames = residue.get_moveable_names(pivot)
 
             # If this pivot only moves the conflict atoms, pick it
             if conflict_names == moveablenames:
@@ -737,7 +481,7 @@ class Routines(object):
 
         initcoords = subtract(coordlist[2], coordlist[1])
 
-        moveablenames = self.get_moveable_names(residue, pivot)
+        moveablenames = residue.get_moveable_names(pivot)
 
         for name in moveablenames:
             atom = residue.get_atom(name)
@@ -766,26 +510,6 @@ class Routines(object):
 
         dihed = dihedral(coordlist[0], coordlist[1], coordlist[2], coordlist[3])
         residue.dihedrals[anglenum] = dihed
-
-    @classmethod
-    def get_moveable_names(cls, residue, pivot):
-        """Return all atomnames that are further away than the pivot atom.
-
-        Parameters
-            residue:  The residue to use
-            pivot:    The pivot atomname
-        """
-        movenames = []
-        refdist = residue.get_atom(pivot).refdistance
-        for atom in residue.atoms:
-            if atom.refdistance > refdist:
-                movenames.append(atom.name)
-        return movenames
-
-    def set_donors_acceptors(self):
-        """Set the donors and acceptors within the protein"""
-        for residue in self.protein.residues:
-            residue.set_donors_acceptors()
 
     def run_pdb2pka(self, ph, force_field, pdb_list, ligand, pdb2pka_params):
         """Run PDB2PKA"""
@@ -1029,108 +753,3 @@ class Routines(object):
             _LOGGER.warning(err.format(str(hlist)))
 
 
-class Cells(object):
-    """The cells object provides a better way to search for nearby atoms.
-
-    A pure all versus all search is O(n^2) - for every atom, every other atom
-    must be searched.  This is rather inefficient, especially for large proteins
-    where cells may be tens of angstroms apart.  The cell class breaks down the
-    xyz protein space into several 3-D cells of desired size - then by simply
-    examining atoms that fall into the adjacent cells one can quickly find nearby
-    cells.
-
-    NOTE:  Ideally this should be somehow separated from the routines
-            object...
-    """
-
-    def __init__(self, cellsize):
-        """Initialize the cells.
-
-        Parameters
-            cellsize:  The size of each cell (int)
-        """
-        self.cellmap = {}
-        self.cellsize = cellsize
-
-    def assign_cells(self, protein):
-        """Place each atom in a virtual cell for easy neighbor comparison."""
-        for atom in protein.atoms:
-            atom.cell = None
-            self.add_cell(atom)
-
-    def add_cell(self, atom):
-        """Add an atom to the cell
-
-        Parameters
-            atom:  The atom to add (atom)
-        """
-        size = self.cellsize
-
-        x = atom.x
-        if x < 0:
-            x = (int(x) - 1) // size * size
-        else:
-            x = int(x) // size * size
-
-        y = atom.y
-        if y < 0:
-            y = (int(y) - 1) // size * size
-        else:
-            y = int(y) // size * size
-
-        z = atom.z
-        if z < 0:
-            z = (int(z) - 1) // size * size
-        else:
-            z = int(z) // size * size
-
-        key = (x, y, z)
-        try:
-            self.cellmap[key].append(atom)
-        except KeyError:
-            self.cellmap[key] = [atom]
-        atom.cell = key
-
-    def remove_cell(self, atom):
-        """Remove the atom from a cell
-
-        Parameters
-            atom:   The atom to add (atom)
-        """
-        oldcell = atom.cell
-        if oldcell is None:
-            return
-        atom.cell = None
-        self.cellmap[oldcell].remove(atom)
-
-    def get_near_cells(self, atom):
-        """Find all atoms in bordering cells to an atom
-
-        Parameters
-            atom:  The atom to use (atom)
-        Returns
-            closeatoms:  A list of nearby atoms (list)
-        """
-        size = self.cellsize
-        closeatoms = []
-        cell = atom.cell
-        if cell is None:
-            return closeatoms
-        else:
-            x = cell[0]
-            y = cell[1]
-            z = cell[2]
-            for i in range(-1 * size, 2 * size, size):
-                for j in range(-1 * size, 2 * size, size):
-                    for k in range(-1 * size, 2 * size, size):
-                        newkey = (x + i, y + j, z + k)
-                        try:
-                            newatoms = self.cellmap[newkey]
-                            for atom2 in newatoms:
-                                if atom == atom2:
-                                    continue
-                                closeatoms.append(atom2)
-                        except KeyError:
-                            pass
-
-            return closeatoms

@@ -6,6 +6,8 @@ Author:  Todd Dolinsky
 """
 import logging
 from .structures import Residue, Atom
+from .utilities import distance, dihedral
+from .quatfit import find_coordinates
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -113,6 +115,131 @@ class Amino(Residue):
             else:
                 self.ffname = "C%s" % self.ffname
         return
+
+    def rebuild_tetrahedral(self, atomname):
+        """Rebuild a tetrahedral hydrogen group.
+
+        This is necessary due to the shortcomings of the quatfit routine - given
+        a tetrahedral geometry and two existing hydrogens, the quatfit routines
+        have two potential solutions.  This function uses basic tetrahedral
+        geometry to fix this issue.
+
+        Parameters
+            atomname: The atomname to add (string)
+        Returns
+            True if successful, False otherwise
+        """
+        hcount = 0
+        nextatomname = None
+
+        atomref = self.reference.map.get(atomname)
+        if atomref is None:
+            return False
+        bondname = atomref.bonds[0]
+
+        # Return if the bonded atom does not exist
+        if not self.has_atom(bondname):
+            return False
+
+        # This group is tetrahedral if bondatom has 4 bonds,
+        #  3 of which are hydrogens
+        for bond in self.reference.map[bondname].bonds:
+            if bond.startswith("H"):
+                hcount += 1
+            elif bond != 'C-1' and bond != 'N+1':
+                nextatomname = bond
+
+        # Check if this is a tetrahedral group
+        if hcount != 3 or nextatomname is None:
+            return False
+
+        # Now rebuild according to the tetrahedral geometry
+        bondatom = self.get_atom(bondname)
+        nextatom = self.get_atom(nextatomname)
+        numbonds = len(bondatom.bonds)
+
+        if numbonds == 1:
+
+            # Place according to two atoms
+            coords = [bondatom.coords, nextatom.coords]
+            refcoords = [self.reference.map[bondname].coords, \
+                         self.reference.map[nextatomname].coords]
+            refatomcoords = atomref.coords
+            newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
+            self.create_atom(atomname, newcoords)
+
+            # For LEU and ILE residues only: make sure the Hydrogens are in
+            # staggered conformation instead of eclipsed.
+            if isinstance(self, LEU):
+                hcoords = newcoords
+                cbatom = self.get_atom('CB')
+                ang = dihedral(cbatom.coords, nextatom.coords,
+                               bondatom.coords, hcoords)
+                diffangle = 60 - ang
+                self.rotate_tetrahedral(nextatom, bondatom, diffangle)
+
+            elif isinstance(self, ILE):
+                hcoords = newcoords
+                cg1atom = self.get_atom('CG1')
+                cbatom = self.get_atom('CB')
+                if bondatom.name == 'CD1':
+                    ang = dihedral(cbatom.coords, nextatom.coords,
+                                   bondatom.coords, hcoords)
+                elif bondatom.name == 'CG2':
+                    ang = dihedral(cg1atom.coords, nextatom.coords,
+                                   bondatom.coords, hcoords)
+                else:
+                    ang = dihedral(cbatom.coords, nextatom.coords,
+                                   bondatom.coords, hcoords)
+
+                diffangle = 60 - ang
+                self.rotate_tetrahedral(nextatom, bondatom, diffangle)
+            return True
+
+        elif numbonds == 2:
+
+            # Get the single hydrogen coordinates
+            hatom = None
+            for bond in bondatom.reference.bonds:
+                if self.has_atom(bond) and bond.startswith("H"):
+                    hatom = self.get_atom(bond)
+                    break
+
+            # Use the existing hydrogen and rotate about the bond
+            self.rotate_tetrahedral(nextatom, bondatom, 120)
+            newcoords = hatom.coords
+            self.rotate_tetrahedral(nextatom, bondatom, -120)
+            self.create_atom(atomname, newcoords)
+
+            return True
+
+        elif numbonds == 3:
+
+            # Find the one spot the atom can be
+            hatoms = []
+            for bond in bondatom.reference.bonds:
+                if self.has_atom(bond) and bond.startswith("H"):
+                    hatoms.append(self.get_atom(bond))
+
+            # If this is more than two something is wrong
+            if len(hatoms) != 2:
+                return False
+
+            # Use the existing hydrogen and rotate about the bond
+            self.rotate_tetrahedral(nextatom, bondatom, 120)
+            newcoords1 = hatoms[0].coords
+            self.rotate_tetrahedral(nextatom, bondatom, 120)
+            newcoords2 = hatoms[0].coords
+            self.rotate_tetrahedral(nextatom, bondatom, 120)
+
+            # Determine which one hatoms[1] is not in
+            if distance(hatoms[1].coords, newcoords1) > 0.1:
+                self.create_atom(atomname, newcoords1)
+            else:
+                self.create_atom(atomname, newcoords2)
+
+            return True
+        return False
 
 
 class ALA(Amino):

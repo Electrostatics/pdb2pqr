@@ -140,7 +140,7 @@ def compare_pqr(pqr1_path, pqr2_path):
                 _LOGGER.warning(result)
                 df_c = df_min[df_min[col] > cut_].sort_values(col, ascending=False)
                 summary = ["%s: %.3E" % (key, val) for (key, val) in df_c[col].describe().to_dict().items()]
-                _LOGGER.info(summary)
+                _LOGGER.debug(summary)
                 if cut_ > 0:
                     raise ValueError(result)
             else:

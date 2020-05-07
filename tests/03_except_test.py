@@ -20,7 +20,7 @@ def run_pdb2pqr(args, input_path, output_pqr, tmp_path_):
     main(args)
 
 
-@pytest.mark.parametrize("input_path", ["1K1I", "1FAS", "5DV8", "5D8V"], ids=str)
+@pytest.mark.parametrize("input_path", ["1K1I", "1AFS", "1FAS", "5DV8", "5D8V"], ids=str)
 def test_basic_apo(input_path, tmp_path):
     """Basic routines on proteins without ligands."""
     args = "--log-level=INFO --ff=AMBER --drop-water"

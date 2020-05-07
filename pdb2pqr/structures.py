@@ -67,6 +67,8 @@ class Chain(object):
 class Residue(object):
     """Residue class
 
+    TODO - move this class to a separate file
+
     The residue class contains a list of Atom objects associated with that
     residue and other helper functions.
     """
@@ -111,6 +113,20 @@ class Residue(object):
     def __str__(self):
         text = "%s %s %i%s" % (self.name, self.chain_id, self.res_seq, self.ins_code)
         return text
+
+    def get_moveable_names(self, pivot):
+        """Return all atomnames that are further away than the pivot atom.
+
+        Parameters
+            residue:  The residue to use
+            pivot:    The pivot atomname
+        """
+        movenames = []
+        refdist = self.get_atom(pivot).refdistance
+        for atom in self.atoms:
+            if atom.refdistance > refdist:
+                movenames.append(atom.name)
+        return movenames
 
     def update_terminus_status(self):
         """Update the is_n_terms and is_c_term flags"""

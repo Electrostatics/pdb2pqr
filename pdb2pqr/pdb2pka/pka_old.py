@@ -403,7 +403,7 @@ def pre_init(pdbfilename=None,
 
     my_protein.apply_name_scheme(Forcefield(ff, my_definition, None))
     my_protein.find_missing_heavy()
-    my_routines.add_hydrogens()
+    my_protein.add_hydrogens()
     my_routines.debump_protein()
 
     #my_routines.randomizeWaters()
@@ -414,7 +414,7 @@ def pre_init(pdbfilename=None,
     #
     from src.hydrogens import HydrogenRoutines
     my_protein.update_internal_bonds()
-    my_routines.calculate_dihedral_angles()
+    my_protein.calculate_dihedral_angles()
     my_hydrogen_routines = HydrogenRoutines(my_routines)
     #
     # Here we should inject the info!!

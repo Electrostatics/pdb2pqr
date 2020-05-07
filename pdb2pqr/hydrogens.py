@@ -14,7 +14,7 @@ from .utilities import analyze_connectivity, sort_dict_by_value
 from .quatfit import find_coordinates
 from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS
-from .routines import Cells, Routines
+from .cells import Cells
 
 # TODO - This module is insane... so many lines!
 
@@ -687,7 +687,7 @@ class Flip(Optimize):
         # Get all moveable names for this angle/residue pair
         dihedral = optinstance.optangle
         pivot = dihedral.split()[2]
-        moveablenames = self.routines.get_moveable_names(residue, pivot)
+        moveablenames = residue.get_moveable_names(pivot)
         # HO in CTERM shouldn't be in the list of flip atoms
         if residue.is_c_term:
             newmoveablenames = []
@@ -1920,7 +1920,7 @@ class HydrogenRoutines(object):
                         atom.y = 0.862
                         atom.z = 1.306
 
-            if not Routines.rebuild_tetrahedral(residue, hname):
+            if not residue.rebuild_tetrahedral(hname):
                 for atom in conf.atoms:
                     atomname = atom.name
                     resatom = residue.get_atom(atomname)
@@ -2029,15 +2029,14 @@ class HydrogenRoutines(object):
         Detects all optimizeable donors and acceptors and sets the internal
         optlist.
         """
-        _LOGGER.info("Initializing full optimization...")
 
         # Do some setup
         self.routines.cells = Cells(5)
         self.routines.cells.assign_cells(self.protein)
-        self.routines.calculate_dihedral_angles()
-        self.routines.set_donors_acceptors()
+        self.protein.calculate_dihedral_angles()
+        self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
-        self.routines.set_reference_distance()
+        self.protein.set_reference_distance()
         self.optlist = []
         self.atomlist = []
 
@@ -2075,10 +2074,10 @@ class HydrogenRoutines(object):
         # Do some setup
         self.routines.cells = Cells(5)
         self.routines.cells.assign_cells(self.protein)
-        self.routines.calculate_dihedral_angles()
-        self.routines.set_donors_acceptors()
+        self.protein.calculate_dihedral_angles()
+        self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
-        self.routines.set_reference_distance()
+        self.protein.set_reference_distance()
         self.optlist = []
 
         # First initialize the various types

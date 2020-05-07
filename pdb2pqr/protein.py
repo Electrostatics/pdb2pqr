@@ -9,18 +9,17 @@ Authors:  Todd Dolinsky, Yong Huang
 import string
 import logging
 import copy
-# NOTE - ignore the warnings pylint gives about these imports.
+# NOTE - ignore the warnings pylint gives about these aa and na imports.
 # They're used dynamically in parsing text so not caught in static analysis.
 from .aa import ALA, ARG, ASN, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
 from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT, Amino
 from .na import Nucleic
-from .utilities import distance
+from .utilities import distance, dihedral, shortest_path
 from .structures import Chain, Residue
 from .pdb import TER, ATOM, HETATM, END, MODEL
 from .forcefield import Forcefield
 from .quatfit import find_coordinates
 from .config import AA_NAMES, NA_NAMES, BONDED_SS_LIMIT, PEPTIDE_DIST
-from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -189,6 +188,12 @@ class Protein(object):
                 natom += 1
         return natom
 
+    def set_hip(self):
+        """Set all HIS states to HIP."""
+        for residue in self.residues:
+            if isinstance(residue, HIS):
+                self.apply_patch("HIP", residue)
+
     def set_termini(self, neutraln=False, neutralc=False):
         """Set the termini for the protein.
 
@@ -312,6 +317,136 @@ class Protein(object):
         for residue in self.residues:
             if isinstance(residue, (Amino, Nucleic)):
                 residue.set_state()
+
+    def add_hydrogens(self):
+        """Add the hydrogens to the protein.
+
+        This requires either the rebuild_tetrahedral function for tetrahedral
+        geometries or the standard quatfit methods.  These methods use three
+        nearby bonds to rebuild the atom; the closer the bonds, the more
+        accurate the results.  As such the peptide bonds are used when available.
+        """
+        count = 0
+        for residue in self.residues:
+            if not isinstance(residue, (Amino, Nucleic)):
+                continue
+            for atomname in residue.reference.map:
+                if not atomname.startswith("H"):
+                    continue
+                if residue.has_atom(atomname):
+                    continue
+                if isinstance(residue, CYS) and residue.ss_bonded and atomname == "HG":
+                    continue
+
+                # If this hydrogen is part of a tetrahedral group,
+                # follow a different codepath
+                if residue.rebuild_tetrahedral(atomname):
+                    count += 1
+                    continue
+
+                # Otherwise use the standard quatfit methods
+                coords = []
+                refcoords = []
+
+                refatomcoords = residue.reference.map[atomname].coords
+                bondlist = residue.reference.get_nearest_bonds(atomname)
+
+                for bond in bondlist:
+                    if bond == "N+1":
+                        atom = residue.peptide_n
+                    elif bond == "C-1":
+                        atom = residue.peptide_c
+                    else:
+                        atom = residue.get_atom(bond)
+
+                    if atom is None:
+                        continue
+
+                    # Get coordinates, reference coordinates
+                    coords.append(atom.coords)
+                    refcoords.append(residue.reference.map[bond].coords)
+
+                    # Exit if we have enough atoms
+                    if len(coords) == 3:
+                        break
+
+                if len(coords) == 3:
+                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
+                    residue.create_atom(atomname, newcoords)
+                    count += 1
+                else:
+                    _LOGGER.warning("Couldn't rebuild %s in %s!", atomname, residue)
+        _LOGGER.debug(" Added %i hydrogen atoms.", count)
+
+    def set_donors_acceptors(self):
+        """Set the donors and acceptors within the protein"""
+        for residue in self.residues:
+            residue.set_donors_acceptors()
+
+    def calculate_dihedral_angles(self):
+        """Calculate the dihedral angle for every residue within the protein"""
+        for residue in self.residues:
+            if not isinstance(residue, Amino):
+                continue
+            residue.dihedrals = []
+
+            refangles = residue.reference.dihedrals
+            for dihed in refangles:
+                coords = []
+                atoms = dihed.split()
+                for i in range(4):
+                    atomname = atoms[i]
+                    if residue.has_atom(atomname):
+                        coords.append(residue.get_atom(atomname).coords)
+
+                if len(coords) == 4:
+                    angle = dihedral(coords[0], coords[1], coords[2], coords[3])
+                else:
+                    angle = None
+
+                residue.add_dihedral_angle(angle)
+
+    def set_reference_distance(self):
+        """Set the distance to the CA atom in the residue.
+
+        This is necessary for determining which atoms are allowed to move during
+        rotations.  Uses the shortest_path algorithm found in utilities.py.
+        """
+        for residue in self.residues:
+            if not isinstance(residue, Amino):
+                continue
+
+            # Initialize some variables
+            map_ = {}
+            caatom = residue.get_atom("CA")
+
+            if caatom is None:
+                text = "Cannot set references to %s without CA atom!"
+                raise ValueError(text)
+
+            # Set up the linked map
+            for atom in residue.atoms:
+                map_[atom] = atom.bonds
+
+            # Run the algorithm
+            for atom in residue.atoms:
+                if atom.is_backbone:
+                    atom.refdistance = -1
+                elif residue.is_c_term and atom.name == "HO":
+                    atom.refdistance = 3
+                elif residue.is_n_term and (atom.name == "H3" or atom.name == "H2"):
+                    atom.refdistance = 2
+                else:
+                    atom.refdistance = len(shortest_path(map_, atom, caatom)) - 1
+
+    def remove_hydrogens(self):
+        """Remove hydrogens from the protein."""
+        for residue in self.residues:
+            if not isinstance(residue, (Amino, Nucleic)):
+                continue
+            for atom in residue.atoms[:]:
+                if atom.is_hydrogen:
+                    residue.remove_atom(atom.name)
 
     def assign_termini(self, chain, neutraln=False, neutralc=False):
         """Assign the termini for the given chain by looking at the start and

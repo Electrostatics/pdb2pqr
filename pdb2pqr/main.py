@@ -357,10 +357,16 @@ def main(args):
         results = {"header": "", "missed_ligands": None, "protein": protein,
                    "lines": print_protein_atoms(protein.atoms, args.chain)}
     else:
-        if is_repairable(protein, args.ligand is not None):
-            _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
-                         protein.num_missing_heavy)
-            protein.repair_heavy()
+        if args.assign_only:
+            # TODO - I don't understand why HIS needs to be set to HIP for assign-only
+            protein.set_hip()
+        else:
+            if is_repairable(protein, args.ligand is not None):
+                _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
+                            protein.num_missing_heavy)
+                protein.repair_heavy()
+            protein.update_ss_bridges()
+
         results = run.run_pdb2pqr(pdblist=pdblist, my_protein=protein,
                                 my_definition=definition, options=args, is_cif=is_cif)
 

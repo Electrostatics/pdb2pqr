@@ -47,15 +47,11 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
     my_routines = routines.Routines(my_protein)
 
-
-    #remove any future need to convert to lower case
-
     if not options.assign_only:
-
-        my_protein.update_ss_bridges()
 
         if options.debump:
             my_routines.debump_protein()
+
 
         # TODO - both PROPKA and PDB2PKA are messed up
         if options.pka_method == 'propka':
@@ -77,7 +73,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
             raise NotImplementedError("PROPKA is broken.")
             # my_routines.run_pdb2pka(options.ph, options.ff, pdblist, ligand, ph_calc_options)
 
-        my_routines.add_hydrogens()
+        my_protein.add_hydrogens()
         my_hydrogen_routines = hydrogens.HydrogenRoutines(my_routines)
 
         if options.debump:
@@ -94,11 +90,6 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
         # Special for GLH/ASH, since both conformations were added
         my_hydrogen_routines.cleanup()
-
-    else:  # Special case for HIS if using assign-only
-        for residue in my_protein.residues:
-            if isinstance(residue, aa.HIS):
-                my_protein.apply_patch("HIP", residue)
 
     my_protein.set_states()
     my_forcefield = forcefield.Forcefield(options.ff, my_definition, options.userff,

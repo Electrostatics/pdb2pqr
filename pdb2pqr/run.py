@@ -7,7 +7,7 @@ from . import hydrogens
 from . import forcefield
 from . import aa
 from . import na
-from .io import print_pqr_header_cif, print_pqr_header, print_protein_atoms
+from . import io
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -266,15 +266,15 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
         my_protein.apply_name_scheme(my_name_scheme)
 
     if is_cif:
-        header = print_pqr_header_cif(misslist, reslist, charge, options.ff,
+        header = io.print_pqr_header_cif(misslist, reslist, charge, options.ff,
                                       options.pka_method, options.ph, options.ffout,
                                       include_old_header=options.include_header)
     else:
-        header = print_pqr_header(pdblist, misslist, reslist, charge, options.ff,
+        header = io.print_pqr_header(pdblist, misslist, reslist, charge, options.ff,
                                   options.pka_method, options.ph, options.ffout,
                                   include_old_header=options.include_header)
 
-    lines = print_protein_atoms(hitlist, options.chain)
+    lines = io.print_protein_atoms(hitlist, options.chain)
 
     # Determine if any of the atoms in misslist were ligands
     missedligandresidues = []

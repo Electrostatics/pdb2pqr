@@ -189,7 +189,7 @@ class Protein(object):
     def set_hip(self):
         """Set all HIS states to HIP."""
         for residue in self.residues:
-            if isinstance(residue, HIS):
+            if isinstance(residue, aa.HIS):
                 self.apply_patch("HIP", residue)
 
     def set_termini(self, neutraln=False, neutralc=False):

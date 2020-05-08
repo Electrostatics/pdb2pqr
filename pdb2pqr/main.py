@@ -376,7 +376,7 @@ def main(args):
     if args.clean:
         _LOGGER.info("Arguments specified cleaning only; skipping remaining steps.")
         results = {"header": "", "missed_ligands": None, "protein": protein,
-                   "lines": print_protein_atoms(protein.atoms, args.chain)}
+                   "lines": io.print_protein_atoms(protein.atoms, args.chain)}
     else:
         if args.assign_only:
             # TODO - I don't understand why HIS needs to be set to HIP for assign-only

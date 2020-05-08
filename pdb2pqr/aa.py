@@ -5,7 +5,8 @@ This module contains the base amino acid structures for pdb2pqr.
 Author:  Todd Dolinsky
 """
 import logging
-from .structures import Residue, Atom
+from . import residue
+from .structures import Atom
 from .utilities import distance, dihedral
 from .quatfit import find_coordinates
 
@@ -13,7 +14,7 @@ from .quatfit import find_coordinates
 _LOGGER = logging.getLogger(__name__)
 
 
-class Amino(Residue):
+class Amino(residue.Residue):
     """Amino class
 
     This class provides standard features of the amino acids
@@ -565,7 +566,7 @@ class VAL(Amino):
         return 'V'
 
 
-class WAT(Residue):
+class WAT(residue.Residue):
     """Water class"""
     water_residue_names = ['HOH', 'WAT']
 
@@ -631,7 +632,7 @@ class WAT(Residue):
             atom.reference = None
 
 
-class LIG(Residue):
+class LIG(residue.Residue):
     """Generic ligand class"""
 
     def __init__(self, atoms, ref):

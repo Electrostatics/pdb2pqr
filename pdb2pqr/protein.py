@@ -9,13 +9,14 @@ Authors:  Todd Dolinsky, Yong Huang
 import string
 import logging
 import copy
+from . import residue as residue_
 # NOTE - ignore the warnings pylint gives about these aa and na imports.
 # They're used dynamically in parsing text so not caught in static analysis.
 from .aa import ALA, ARG, ASN, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
 from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT, Amino
 from .na import Nucleic
 from .utilities import distance, dihedral, shortest_path
-from .structures import Chain, Residue
+from .structures import Chain
 from .pdb import TER, ATOM, HETATM, END, MODEL
 from .forcefield import Forcefield
 from .quatfit import find_coordinates
@@ -756,7 +757,7 @@ class Protein(object):
                 residue = klass(residue, refobj)
         except (KeyError, NameError):
             _LOGGER.debug("Parsing %s as new residue", resname)
-            residue = Residue(residue)
+            residue = residue_.Residue(residue)
         return residue
 
     def repair_heavy(self):

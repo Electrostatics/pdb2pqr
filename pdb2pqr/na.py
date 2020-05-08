@@ -4,10 +4,11 @@ This module contains the base nucleic acid structures for pdb2pqr.
 
 Author:  Todd Dolinsky
 """
-from .structures import Residue, Atom
+from . import residue
+from .structures import Atom
 
 
-class Nucleic(Residue):
+class Nucleic(residue.Residue):
     """This class provides standard features of the nucleic acids listed
     below.
     """

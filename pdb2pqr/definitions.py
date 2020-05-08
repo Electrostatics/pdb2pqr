@@ -7,6 +7,7 @@ import copy
 import re
 from xml import sax
 from . import structures
+from . import residue
 
 
 class DefinitionHandler(sax.ContentHandler):
@@ -224,7 +225,7 @@ class Patch(object):
         return text
 
 
-class DefinitionResidue(structures.Residue):
+class DefinitionResidue(residue.Residue):
     """The DefinitionResidue class extends the Residue class to allow for a
     trimmed down initializing function."""
     def __init__(self):

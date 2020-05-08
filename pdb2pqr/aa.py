@@ -6,9 +6,9 @@ Author:  Todd Dolinsky
 """
 import logging
 from . import residue
-from .structures import Atom
-from .utilities import distance, dihedral
-from .quatfit import find_coordinates
+from . import structures as struct
+from . import utilities as util
+from . import quatfit as quat
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ class Amino(residue.Residue):
             if atom_.name in ref.altnames: # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
             if atom_.name not in self.map:
-                atom = Atom(atom_, "ATOM", self)
+                atom = struct.Atom(atom_, "ATOM", self)
                 self.add_atom(atom)
             else:
                 _LOGGER.debug("Ignoring atom %s", atom_.name)
@@ -67,7 +67,7 @@ class Amino(residue.Residue):
         """
         # TODO - OK to add a default type=ATOM argument like superclass?
         oldatom = self.atoms[0]
-        newatom = Atom(oldatom, "ATOM", self)
+        newatom = struct.Atom(oldatom, "ATOM", self)
         newatom.x = newcoords[0]
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]
@@ -166,7 +166,7 @@ class Amino(residue.Residue):
             refcoords = [self.reference.map[bondname].coords, \
                          self.reference.map[nextatomname].coords]
             refatomcoords = atomref.coords
-            newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
+            newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
             self.create_atom(atomname, newcoords)
 
             # For LEU and ILE residues only: make sure the Hydrogens are in
@@ -174,7 +174,7 @@ class Amino(residue.Residue):
             if isinstance(self, LEU):
                 hcoords = newcoords
                 cbatom = self.get_atom('CB')
-                ang = dihedral(cbatom.coords, nextatom.coords,
+                ang = util.dihedral(cbatom.coords, nextatom.coords,
                                bondatom.coords, hcoords)
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)
@@ -184,13 +184,13 @@ class Amino(residue.Residue):
                 cg1atom = self.get_atom('CG1')
                 cbatom = self.get_atom('CB')
                 if bondatom.name == 'CD1':
-                    ang = dihedral(cbatom.coords, nextatom.coords,
+                    ang = util.dihedral(cbatom.coords, nextatom.coords,
                                    bondatom.coords, hcoords)
                 elif bondatom.name == 'CG2':
-                    ang = dihedral(cg1atom.coords, nextatom.coords,
+                    ang = util.dihedral(cg1atom.coords, nextatom.coords,
                                    bondatom.coords, hcoords)
                 else:
-                    ang = dihedral(cbatom.coords, nextatom.coords,
+                    ang = util.dihedral(cbatom.coords, nextatom.coords,
                                    bondatom.coords, hcoords)
 
                 diffangle = 60 - ang
@@ -234,7 +234,7 @@ class Amino(residue.Residue):
             self.rotate_tetrahedral(nextatom, bondatom, 120)
 
             # Determine which one hatoms[1] is not in
-            if distance(hatoms[1].coords, newcoords1) > 0.1:
+            if util.distance(hatoms[1].coords, newcoords1) > 0.1:
                 self.create_atom(atomname, newcoords1)
             else:
                 self.create_atom(atomname, newcoords2)
@@ -589,7 +589,7 @@ class WAT(residue.Residue):
             if atom_.name in ref.altnames: # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
 
-            atom = Atom(atom_, "HETATM", self)
+            atom = struct.Atom(atom_, "HETATM", self)
             atomname = atom.name
             if atomname not in self.map:
                 self.add_atom(atom)
@@ -601,7 +601,7 @@ class WAT(residue.Residue):
         """Create a water atom.  Note the HETATM field."""
         # TODO - there is a huge amount of duplicated code in this module.
         oldatom = self.atoms[0]
-        newatom = Atom(oldatom, "HETATM", self)
+        newatom = struct.Atom(oldatom, "HETATM", self)
         newatom.x = newcoords[0]
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]
@@ -658,7 +658,7 @@ class LIG(residue.Residue):
             if atom_.name in ref.altnames: # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
 
-            atom = Atom(atom_, "HETATM", self)
+            atom = struct.Atom(atom_, "HETATM", self)
             atomname = atom.name
             if atomname not in self.map:
                 self.add_atom(atom)
@@ -668,7 +668,7 @@ class LIG(residue.Residue):
 
     def create_atom(self, atomname, newcoords):
         oldatom = self.atoms[0]
-        newatom = Atom(oldatom, "HETATM", self)
+        newatom = struct.Atom(oldatom, "HETATM", self)
         newatom.x = newcoords[0]
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]

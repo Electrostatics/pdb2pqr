@@ -2,6 +2,8 @@
 
 This is an module for hydrogen optimization routines.
 
+TODO - This module is insane... so many lines!
+
 Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 """
 import logging
@@ -16,7 +18,7 @@ from .definitions import DefinitionAtom
 from .aa import Amino, WAT, HIS
 from .cells import Cells
 
-# TODO - This module is insane... so many lines!
+
 
 
 _LOGGER = logging.getLogger(__name__)

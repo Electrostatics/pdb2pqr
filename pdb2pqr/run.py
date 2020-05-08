@@ -13,6 +13,118 @@ from .io import print_pqr_header_cif, print_pqr_header, print_protein_atoms
 _LOGGER = logging.getLogger(__name__)
 
 
+def run_propka_31(protein, pka_options):
+    """Run PROPKA 3.1 on the current protein, setting protonation states to
+    the correct values. pH is set in pka_options
+
+    Parameters
+        pka_options: Options for propKa 3.1, including pH
+
+    Returns
+        pka_molecule: pKa's internal molecule object (including pKa's, etc)
+        not_found:    dict of residues found in pka_molecule but not in PDB2PQR (with pKa)
+    """
+    # See https://github.com/jensengroup/propka-3.1/blob/master/scripts/propka31.py
+
+    ph = pka_options.ph
+    _LOGGER.info("Running propka 3.1 at pH %.2f... ", ph)
+
+    # Initialize some variables
+    pkadic = {}
+
+    # Reorder the atoms in each residue to start with N - TONI is this necessary?
+    for residue in protein.residues:
+        residue.reorder()
+
+    # TONI Make a string with all non-hydrogen atoms. Previously it was removing the "element"
+    # column and hydrogens. This does not seem to be necessary in propKa 3.1 .
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb") as h_free_file:
+        for atom in protein.atoms:
+            if not atom.is_hydrogen:
+                atomtxt = atom.get_pdb_string()
+                h_free_file.write(atomtxt + '\n')
+
+        # Run PropKa 3.1 -------------
+        # Creating protein object. Annoyingly, at this stage propka generates a
+        # *.propka_input file in PWD and does not delete it (irrespective of the original
+        # .pdb location)
+        pka_molecule = propka.molecular_container.Molecular_container(h_free_file.name,
+                                                                        pka_options)
+
+    # calculating pKa values for ionizable residues -
+    pka_molecule.calculate_pka()
+
+    ##  pka_molecule.write_pka()
+    for grp in pka_molecule.conformations['AVR'].groups:
+        key = str.strip('%s %s %s' % (grp.residue_type, grp.atom.resNumb, grp.atom.chain_id))
+        pkadic[key] = grp.pka_value
+
+    protein.pka_protein = pka_molecule
+    return pkadic
+
+
+def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
+    """Run PDB2PKA"""
+    # TODO - we are not ready to deal with PDB2PKA yet
+    raise NotImplementedError("TODO - fix and re-enable PDB2PKA")
+    # if force_field.lower() != 'parse':
+    #     PDB2PKAError('PDB2PKA can only be run with the PARSE force field.')
+
+    # _LOGGER.info("Running PDB2PKA and applying at pH %.2f... ", ph)
+    # init_params = pdb2pka_params.copy()
+    # init_params.pop('pairene')
+    # init_params.pop('clean_output')
+    # results = pka.pre_init(original_pdb_list=pdb_list, ff=force_field, ligand=ligand,
+    #                        **init_params)
+    # TODO - this is a messed-up variable unpacking:
+    # output_dir, protein, routines, forcefield, apbs_setup, \
+    #     ligand_titratable_groups, maps, sd = results
+    # mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield,
+    #                                          apbs_setup, output_dir, maps, sd,
+    #                                          restart=pdb2pka_params.get('clean_output'),
+    #                                          pairene=pdb2pka_params.get('pairene'))
+
+    # _LOGGER.info('Doing full pKa calculation')
+    # mypkaRoutines.runpKa()
+    # pdb2pka_warnings = mypkaRoutines.warnings[:]
+    # _LOGGER.warning(pdb2pka_warnings)
+
+    # residue_ph = {}
+    # for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.items():
+    #     tit_type, chain_id, number_str = pka_residue_tuple
+    #     if tit_type == 'NTR':
+    #         tit_type = 'N+'
+    #     elif tit_type == 'CTR':
+    #         tit_type = 'C-'
+
+    #     key = ' '.join([tit_type, number_str, chain_id])
+    #     residue_ph[key] = calc_ph
+    # pformat(residue_ph)
+    # protein.apply_pka_values(ff, ph, residue_ph)
+    # _LOGGER.debug('Finished running PDB2PKA.')
+
+
+def run_propka(protein, ph, force_field, options, version=30):
+    """Run PROPKA on the current protein, setting protonation states to the correct values
+
+    Parameters
+        ph:  The desired pH of the system
+        force_field:  The forcefield name to be used
+        outname: The name of the PQR outfile
+        options: Options to propka
+        version: may be 30 or 31 (uses external propka 3.1)
+    """
+    _LOGGER.info("Running PROPKA v%d and applying at pH %.2f... ", version, ph)
+    pkadic = self.run_propka_31(options)
+
+    if len(pkadic) == 0:
+        raise ValueError("PROPKA returned empty results!")
+
+    # Now apply each pka to the appropriate residue
+    protein.apply_pka_values(force_field, ph, pkadic)
+    _LOGGER.debug("Done running PROPKA")
+
+
 def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
     """Run the PDB2PQR Suite
 
@@ -81,7 +193,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
         if options.opt:
             my_hydrogen_routines.set_optimizeable_hydrogens()
-            my_routines.hold_residues(None)
+            my_protein.hold_residues(None)
             my_hydrogen_routines.initialize_full_optimization()
             my_hydrogen_routines.optimize_hydrogens()
         else:

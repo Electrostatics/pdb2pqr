@@ -243,6 +243,59 @@ class Residue(object):
             atom.y = y
             atom.z = z
 
+    def pick_dihedral_angle(self, conflict_names, oldnum=None):
+        """Choose an angle number to use in debumping
+
+        Algorithm
+            Instead of simply picking a random chiangle, this function
+            uses a more intelligent method to improve efficiency.
+            The algorithm uses the names of the conflicting atoms
+            within the residue to determine which angle number
+            has the best chance of fixing the problem(s). The method
+            also insures that the same chiangle will not be run twice
+            in a row.
+
+        Parameters
+            residue:  The residue that is being debumped (Residue)
+            conflict_names: A list of atom names that are currently conflicts (list)
+            oldnum:  The old dihedral angle number (int)
+        Returns
+            bestnum:  The new dihedral angle number (int)
+        """
+        bestnum = -1
+        best = 0
+        ilist = list(range(len(self.dihedrals)))
+
+        if oldnum is not None and oldnum >= 0 and len(ilist) > 0:
+            del ilist[oldnum]
+            test_dihedral_indices = ilist[oldnum:] + ilist[:oldnum]
+        else:
+            test_dihedral_indices = ilist
+
+        for i in test_dihedral_indices:
+            if i == oldnum:
+                continue
+            if self.dihedrals[i] is None:
+                continue
+
+            score = 0
+            atomnames = self.reference.dihedrals[i].split()
+            pivot = atomnames[2]
+
+            moveablenames = self.get_moveable_names(pivot)
+
+            if conflict_names == moveablenames:
+                return i
+
+            for name in conflict_names:
+                if name in moveablenames:
+                    score += 1
+                    if score > best:
+                        best = score
+                        bestnum = i
+
+        return bestnum
+
     def set_donors_acceptors(self):
         """Set the donors and acceptors within the residue"""
         if self.reference is None:

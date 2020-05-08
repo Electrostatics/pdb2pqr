@@ -8,16 +8,16 @@ import logging
 import argparse
 from pathlib import Path
 from . import run
-from .protein import Protein
-from .routines import drop_water
-from .io import get_molecule, get_definitions, test_dat_file, dump_apbs
-from .io import print_protein_atoms, DuplicateFilter
+from . import utilities as util
+from . import aa
+from . import protein as prot
+from . import io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.addFilter(DuplicateFilter())
+_LOGGER.addFilter(io.DuplicateFilter())
 
 
 def build_parser():
@@ -153,7 +153,7 @@ def check_files(args):
         if args.usernames is None:
             raise RuntimeError('--usernames must be specified if using --userff')
     elif args.ff is not None:
-        if test_dat_file(args.ff) == "":
+        if io.test_dat_file(args.ff) == "":
             raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
 
     if args.ligand is not None:
@@ -261,7 +261,7 @@ def setup_molecule(pdblist, definition, ligand_path):
             # TODO - check to see if ligff updates copy of definition stored with protein
             protein, definition, ligand = ligff.initialize(definition, ligand_file, pdblist)
     else:
-        protein = Protein(pdblist, definition)
+        protein = prot.Protein(pdblist, definition)
         ligand = None
     _LOGGER.info("Created protein object with %d residues and %d atoms.",
                  len(protein.residues), len(protein.atoms))
@@ -321,6 +321,27 @@ def is_repairable(protein, has_ligand):
     return True
 
 
+def drop_water(pdblist):
+    """Drop waters from a list of PDB records.
+
+    TODO - this module is already too long but this function fits better here.
+    Other possible place would be utilities.
+
+    Args:
+        pdb_list:  list of PDB records as returned by io.get_molecule
+    Returns:
+        new list of PDB records with waters removed.
+    """
+    pdblist_new = []
+    for record in pdblist:
+        record_type = record.record_type()
+        if record_type in ["HETATM", "ATOM", "SIGATM", "SEQADV"]:
+            if record.res_name in aa.WAT.water_residue_names:
+                continue
+        pdblist_new.append(record)
+    return pdblist_new
+
+
 def main(args):
     """Main driver for running program from the command line.
 
@@ -338,9 +359,9 @@ def main(args):
     check_options(args)
 
     _LOGGER.info("Loading topology files.")
-    definition = get_definitions()
+    definition = io.get_definitions()
     _LOGGER.info("Loading molecule: %s", args.input_path)
-    pdblist, is_cif = get_molecule(args.input_path)
+    pdblist, is_cif = io.get_molecule(args.input_path)
 
     if args.drop_water:
         _LOGGER.info("Dropping water from structure.")

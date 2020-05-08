@@ -734,6 +734,129 @@ class Protein(object):
                     atom.res_name = rname
                     atom.name = aname
 
+    def apply_pka_values(self, force_field, ph, pkadic):
+        """Apply calculated pKa values to assign titration states."""
+        _LOGGER.info('Applying pKa values at a pH of %.2f:', ph)
+        formatted_pkadict = pformat(pkadic)
+        _LOGGER.debug("%s", formatted_pkadict)
+
+        for residue in self.residues:
+            if not isinstance(residue, aa.Amino):
+                continue
+            resname = residue.name
+            resnum = residue.res_seq
+            chain_id = residue.chain_id
+
+            if residue.is_n_term:
+                key = "N+ %i %s" % (resnum, chain_id)
+                key = key.strip()
+                if key in pkadic:
+                    value = pkadic[key]
+                    del pkadic[key]
+                    if ph >= value:
+                        if force_field in ["amber", "charmm", "tyl06", "peoepb", "swanson"]:
+                            warn = ("N-terminal %s" % key, "neutral")
+                            _LOGGER.warning(warn)
+                        else:
+                            self.apply_patch("NEUTRAL-NTERM", residue)
+
+            if residue.is_c_term:
+                key = "C- %i %s" % (resnum, chain_id)
+                key = key.strip()
+                if key in pkadic:
+                    value = pkadic[key]
+                    del pkadic[key]
+                    if ph < value:
+                        if force_field in ["amber", "charmm", "tyl06", "peoepb", "swanson"]:
+                            warn = ("C-terminal %s" % key, "neutral")
+                            _LOGGER.warning(warn)
+                        else:
+                            self.apply_patch("NEUTRAL-CTERM", residue)
+
+            key = "%s %i %s" % (resname, resnum, chain_id)
+            key = key.strip()
+            if key in pkadic:
+                value = pkadic[key]
+                del pkadic[key]
+                if resname == "ARG" and ph >= value:
+                    if force_field == "parse":
+                        self.apply_patch("AR0", residue)
+                        _LOGGER.warning(("Neutral arginines are very rare. Please "
+                                         "double-check your setup."))
+                    else:
+                        warn = (key, "neutral")
+                        _LOGGER.warning(warn)
+                elif resname == "ASP" and ph < value:
+                    if residue.is_c_term and force_field in ["amber", "tyl06", "swanson"]:
+                        warn = (key, "Protonated at C-Terminal")
+                        _LOGGER.warning(warn)
+                    elif residue.is_n_term and force_field in ["amber", "tyl06", "swanson"]:
+                        warn = (key, "Protonated at N-Terminal")
+                        _LOGGER.warning(warn)
+                    else:
+                        self.apply_patch("ASH", residue)
+                elif resname == "CYS" and ph >= value:
+                    if force_field == "charmm":
+                        warn = (key, "negative")
+                        _LOGGER.warning(warn)
+                    else:
+                        self.apply_patch("CYM", residue)
+                elif resname == "GLU" and ph < value:
+                    if residue.is_c_term and force_field in ["amber", "tyl06", "swanson"]:
+                        warn = (key, "Protonated at C-Terminal")
+                        _LOGGER.warning(warn)
+                    elif residue.is_n_term and force_field in ["amber", "tyl06", "swanson"]:
+                        warn = (key, "Protonated at N-Terminal")
+                        _LOGGER.warning(warn)
+                    else:
+                        self.apply_patch("GLH", residue)
+                elif resname == "HIS" and ph < value:
+                    self.apply_patch("HIP", residue)
+                elif resname == "LYS" and ph >= value:
+                    if force_field == "charmm":
+                        warn = (key, "neutral")
+                        _LOGGER.warning(warn)
+                    elif force_field in ["amber", "tyl06", "swanson"] and residue.is_c_term:
+                        warn = (key, "neutral at C-Terminal")
+                        _LOGGER.warning(warn)
+                    elif force_field == "tyl06" and residue.is_n_term:
+                        warn = (key, "neutral at N-Terminal")
+                        _LOGGER.warning(warn)
+                    else:
+                        self.apply_patch("LYN", residue)
+                elif resname == "TYR" and ph >= value:
+                    if force_field in ["charmm", "amber", "tyl06", "peoepb", "swanson"]:
+                        warn = (key, "negative")
+                        _LOGGER.warning(warn)
+                    else:
+                        self.apply_patch("TYM", residue)
+
+        if len(pkadic) > 0:
+            warn = ("PDB2PQR could not identify the following residues and residue "
+                    "numbers as returned by PROPKA or PDB2PKA")
+            _LOGGER.warning(warn)
+            for item in pkadic:
+                text = "             %s" % item
+                _LOGGER.warning(text)
+
+    def hold_residues(self, hlist):
+        """Set the stateboolean dictionary to residues in hlist."""
+        if not hlist:
+            return
+        for residue in self.residues:
+            reskey = (residue.res_seq, residue.chain_id, residue.ins_code)
+            if reskey in hlist:
+                hlist.remove(reskey)
+                if isinstance(residue, aa.Amino):
+                    residue.stateboolean = {'FIXEDSTATE': False}
+                    _LOGGER.debug("Setting residue {:s} as fixed.".format(str(residue)))
+                else:
+                    err = "Matched residue {:s} but not subclass of Amino."
+                    _LOGGER.warning(err.format(str(residue)))
+        if len(hlist) > 0:
+            err = "The following fixed residues were not matched (possible internal error): {:s}."
+            _LOGGER.warning(err.format(str(hlist)))
+
     def create_residue(self, residue, resname):
         """Create a residue object.
 

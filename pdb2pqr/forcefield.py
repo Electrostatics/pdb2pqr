@@ -7,7 +7,7 @@ Authors:  Todd Dolinsky, Yong Huang
 """
 import re
 from xml import sax
-from .io import test_dat_file, test_names_file
+from . import io
 
 
 class ForcefieldHandler(sax.ContentHandler):
@@ -172,7 +172,7 @@ class Forcefield(object):
 
         if userff is None:
             # TODO - why are files being loaded so deep in this function?
-            defpath = test_dat_file(ff_name)
+            defpath = io.test_dat_file(ff_name)
             if defpath == "":
                 raise FileNotFoundError("Unable to find forcefield parameter file %s!" % self.name)
         else:
@@ -214,7 +214,7 @@ class Forcefield(object):
         # Now parse the XML file, associating with FF objects -
         # This is not necessary (if canonical names match ff names)
         # TODO - why are files being loaded this deep in the module?
-        defpath = test_names_file(ff_name)
+        defpath = io.test_names_file(ff_name)
         if usernames:
             names_path = usernames
         elif defpath:

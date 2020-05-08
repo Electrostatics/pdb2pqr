@@ -10,19 +10,16 @@ import logging
 import math
 from xml import sax
 from . import topology
-from .io import test_dat_file, DuplicateFilter
-from .utilities import distance, subtract, normalize, dot, add
-from .utilities import analyze_connectivity, sort_dict_by_value
-from .quatfit import find_coordinates
-from .definitions import DefinitionAtom
-from .aa import Amino, WAT, HIS
-from .cells import Cells
-
-
+from . import io
+from . import utilities as util
+from . import quatfit as quat
+from . import definitions as defns
+from . import aa
+from . import cells
 
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.addFilter(DuplicateFilter())
+_LOGGER.addFilter(io.DuplicateFilter())
 
 
 HDEBUG = 0
@@ -52,7 +49,7 @@ class HydrogenHandler(sax.ContentHandler):
             self.curholder = obj
             self.curobj = obj
         elif name == "atom":
-            obj = DefinitionAtom()
+            obj = defns.DefinitionAtom()
             self.curatom = obj
             self.curobj = obj
         else:
@@ -74,7 +71,7 @@ class HydrogenHandler(sax.ContentHandler):
 
         elif name == "atom": # Complete atom object
             atom = self.curatom
-            if not isinstance(atom, DefinitionAtom):
+            if not isinstance(atom, defns.DefinitionAtom):
                 raise ValueError("Internal error parsing XML!")
 
             atomname = atom.name
@@ -181,11 +178,11 @@ class Optimize(object):
             angle:  The angle between the atoms (float)
         """
         atom_coords = atom2.coords
-        coords1 = subtract(atom3.coords, atom_coords)
-        coords2 = subtract(atom1.coords, atom_coords)
-        norm1 = normalize(coords1)
-        norm2 = normalize(coords2)
-        dotted = dot(norm1, norm2)
+        coords1 = util.subtract(atom3.coords, atom_coords)
+        coords2 = util.subtract(atom1.coords, atom_coords)
+        norm1 = util.normalize(coords1)
+        norm2 = util.normalize(coords2)
+        dotted = util.dot(norm1, norm2)
         if dotted > 1.0: # If normalized, this is due to rounding error
             dotted = 1.0
         elif dotted < -1.0: # If normalized, this is due to rounding error
@@ -203,7 +200,7 @@ class Optimize(object):
                 continue
 
             # Check the H(D)-A distance
-            dist = distance(donorhatom.coords, acc.coords)
+            dist = util.distance(donorhatom.coords, acc.coords)
             if dist > DIST_CUTOFF:
                 continue
 
@@ -215,7 +212,7 @@ class Optimize(object):
                 flag = 0
 
                 # Check the H(D)-H(A) distance
-                hdist = distance(donorhatom.coords, acchatom.coords)
+                hdist = util.distance(donorhatom.coords, acchatom.coords)
                 if hdist < 1.5:
                     continue
 
@@ -266,7 +263,7 @@ class Optimize(object):
         donorhs = (bond for bond in donor.bonds if bond.is_hydrogen)
         acceptorhs = [bond for bond in acceptor.bonds if bond.is_hydrogen]
         for donorhatom in donorhs:
-            dist = distance(donorhatom.coords, acceptor.coords)
+            dist = util.distance(donorhatom.coords, acceptor.coords)
             if dist > max_dha_dist and dist < max_ele_dist:
                 energy += max_ele_energy/(dist*dist)
                 continue
@@ -274,7 +271,7 @@ class Optimize(object):
             # Case 1: Both donor and acceptor hydrogens are present
             for acceptorhatom in acceptorhs:
                 # Penalize if H(D) is too close to H(A)
-                hdist = distance(donorhatom.coords, acceptorhatom.coords)
+                hdist = util.distance(donorhatom.coords, acceptorhatom.coords)
                 if hdist < bump_distance:
                     energy += bump_energy
                     continue
@@ -316,8 +313,8 @@ class Optimize(object):
         residue = atom.residue
 
         # Place along line, 1 A away
-        vec = subtract(closeatom.coords, atom.coords)
-        dist = distance(atom.coords, closeatom.coords)
+        vec = util.subtract(closeatom.coords, atom.coords)
+        dist = util.distance(atom.coords, closeatom.coords)
 
         for i in range(3):
             newcoords.append(vec[i]/dist + atom.coords[i])
@@ -346,7 +343,7 @@ class Optimize(object):
         refatomcoords = residue.reference.map["H2"].coords
 
         # Make the atom
-        newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
+        newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
         # Set the bonds (since not in reference structure)
@@ -368,7 +365,7 @@ class Optimize(object):
         refatomcoords = residue.reference.map[addname].coords
 
         # Make the atom
-        newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
+        newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
     @classmethod
@@ -389,7 +386,7 @@ class Optimize(object):
         refatomcoords = residue.reference.map[the_refname].coords
 
         # Make the atom
-        newcoords = find_coordinates(2, coords, refcoords, refatomcoords)
+        newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
         # Set the bonds (since not in reference structure)
@@ -613,7 +610,7 @@ class Optimize(object):
         residue.rotate_tetrahedral(pivot, atom, 120)
 
         # Determine which is unoccupied
-        if distance(rot2.coords, newcoords1) > 0.1:
+        if util.distance(rot2.coords, newcoords1) > 0.1:
             return newcoords1
         return newcoords2
 
@@ -757,7 +754,7 @@ class Flip(Optimize):
                     self.atomlist.append(atom)
 
         # Special case: Neutral unassigned HIS can be acceptors
-        if isinstance(residue, HIS):
+        if isinstance(residue, aa.HIS):
             if residue.name == "HIS" and len(residue.patches) == 1:
                 for atom in self.atomlist:
                     if atom.name.startswith("N"):
@@ -1183,9 +1180,9 @@ class Water(Optimize):
             if self.is_hbond(donor, acc):
 
                 # Find the best donor hydrogen and use that
-                bestdist = distance(acc.coords, donor.coords)
+                bestdist = util.distance(acc.coords, donor.coords)
                 for donorh in donor.bonds:
-                    dist = distance(acc.coords, donorh.coords)
+                    dist = util.distance(acc.coords, donorh.coords)
                     if dist < bestdist:
                         bestdist = dist
 
@@ -1285,14 +1282,14 @@ class Water(Optimize):
             # Build hydrogen away from closest atom
             closeatom = self.routines.get_closest_atom(atom)
             if closeatom != None:
-                vec = subtract(atom.coords, closeatom.coords)
-                dist = distance(atom.coords, closeatom.coords)
+                vec = util.subtract(atom.coords, closeatom.coords)
+                dist = util.distance(atom.coords, closeatom.coords)
 
                 for i in range(3):
                     newcoords.append(vec[i]/dist + atom.coords[i])
 
             else:
-                newcoords = add(atom.coords, [1.0, 0.0, 0.0])
+                newcoords = util.add(atom.coords, [1.0, 0.0, 0.0])
 
             residue.create_atom(addname, newcoords)
             self.routines.cells.add_cell(residue.get_atom(addname))
@@ -1319,7 +1316,7 @@ class Water(Optimize):
                 if nearatom is None:
                     continue
 
-                dist = distance(nearatom.coords, newatom.coords)
+                dist = util.distance(nearatom.coords, newatom.coords)
 
                 if dist > bestdist:
                     bestdist = dist
@@ -1345,7 +1342,7 @@ class Water(Optimize):
             # Debump residue if necessary by trying the other location
             nearatom = self.routines.get_closest_atom(newatom)
             if nearatom != None:
-                dist1 = distance(newatom.coords, nearatom.coords)
+                dist1 = util.distance(newatom.coords, nearatom.coords)
 
                 # Place at other location
                 self.routines.cells.remove_cell(atom)
@@ -1358,7 +1355,7 @@ class Water(Optimize):
                 if nearatom != None:
 
                     # If this is worse, switch back
-                    if distance(newatom.coords, nearatom.coords) < dist1:
+                    if util.distance(newatom.coords, nearatom.coords) < dist1:
                         self.routines.cells.remove_cell(atom)
                         newatom.x = loc1[0]
                         newatom.y = loc1[1]
@@ -1437,8 +1434,8 @@ class Carboxylic(Optimize):
                 the_pivatom = pivotatom
                 break
 
-        dist1 = distance(the_pivatom.coords, bondatom1.coords)
-        dist2 = distance(the_pivatom.coords, bondatom2.coords)
+        dist1 = util.distance(the_pivatom.coords, bondatom1.coords)
+        dist2 = util.distance(the_pivatom.coords, bondatom2.coords)
 
         order = [hname1, hname2]
 
@@ -1536,7 +1533,7 @@ class Carboxylic(Optimize):
                 continue
 
             # Check the H(D)-A distance
-            dist = distance(donorhatom.coords, acc.coords)
+            dist = util.distance(donorhatom.coords, acc.coords)
             if dist > DIST_CUTOFF:
                 continue
 
@@ -1574,8 +1571,8 @@ class Carboxylic(Optimize):
             if len(hyds) < 2:
                 return 1
 
-            dist = distance(hyds[0].coords, donor.coords)
-            dist2 = distance(hyds[1].coords, donor.coords)
+            dist = util.distance(hyds[0].coords, donor.coords)
+            dist2 = util.distance(hyds[1].coords, donor.coords)
             # Eliminate hyds[0]
             if dist < dist2:
                 self.hlist.remove(hyds[0])
@@ -1791,7 +1788,7 @@ class HydrogenRoutines(object):
         sax.make_parser()
 
         # TODO - I don't think files should be loaded so deep in this module
-        defpath = test_dat_file(HYDPATH)
+        defpath = io.test_dat_file(HYDPATH)
         if defpath == "":
             raise KeyError("Could not find %s!" % HYDPATH)
 
@@ -1854,7 +1851,7 @@ class HydrogenRoutines(object):
                 else:
                     raise KeyError("Could not find necessary atom!")
 
-            newcoords = find_coordinates(3, refcoords, defcoords, defatomcoords)
+            newcoords = quat.find_coordinates(3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
             residue.create_atom(hname, newcoords, "ATOM")
             residue.addDebumpAtom(residue.get_atom(hname))
@@ -1934,7 +1931,7 @@ class HydrogenRoutines(object):
                     else:
                         raise KeyError("Could not find necessary atom!")
 
-                newcoords = find_coordinates(3, refcoords, defcoords, defatomcoords)
+                newcoords = quat.find_coordinates(3, refcoords, defcoords, defatomcoords)
                 residue.create_atom(hname, newcoords)
 
             boundname = conf.boundatom
@@ -1963,7 +1960,7 @@ class HydrogenRoutines(object):
         This may occur when no optimization is chosen
         """
         for residue in self.routines.protein.residues:
-            if not isinstance(residue, Amino):
+            if not isinstance(residue, aa.Amino):
                 continue
             if residue.name == "GLH" or "GLH" in residue.patches:
                 if residue.has_atom("HE1") and residue.has_atom("HE2"):
@@ -1989,7 +1986,7 @@ class HydrogenRoutines(object):
                             corresponds to the residue.
         """
         optinstance = None
-        if not isinstance(residue, (Amino, WAT)):
+        if not isinstance(residue, (aa.Amino, aa.WAT)):
             return optinstance
 
         if residue.name in self.map:
@@ -2033,7 +2030,7 @@ class HydrogenRoutines(object):
         """
 
         # Do some setup
-        self.routines.cells = Cells(5)
+        self.routines.cells = cells.Cells(5)
         self.routines.cells.assign_cells(self.protein)
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
@@ -2045,7 +2042,7 @@ class HydrogenRoutines(object):
         # First initialize the various types
         for residue in self.protein.residues:
             optinstance = self.is_optimizeable(residue)
-            if isinstance(residue, Amino):
+            if isinstance(residue, aa.Amino):
                 if False in residue.stateboolean.values():
                     residue.fixed = 1
                 else:
@@ -2074,7 +2071,7 @@ class HydrogenRoutines(object):
         _LOGGER.info("Initializing water bonding optimization...")
 
         # Do some setup
-        self.routines.cells = Cells(5)
+        self.routines.cells = cells.Cells(5)
         self.routines.cells.assign_cells(self.protein)
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
@@ -2133,7 +2130,7 @@ class HydrogenRoutines(object):
                         if not atom.hdonor and not closeatom.hdonor:
                             continue
 
-                    dist = distance(atom.coords, closeatom.coords)
+                    dist = util.distance(atom.coords, closeatom.coords)
                     if dist < 4.3:
                         residue = atom.residue
                         hbond = PotentialBond(atom, closeatom, dist)
@@ -2168,7 +2165,7 @@ class HydrogenRoutines(object):
                 continue
             if obj1 in seen:
                 continue
-            network = analyze_connectivity(connectivity, obj1)
+            network = util.analyze_connectivity(connectivity, obj1)
             for obj2 in network:
                 if obj2 not in seen:
                     seen.append(obj2)
@@ -2194,7 +2191,7 @@ class HydrogenRoutines(object):
                 for hbond in obj.hbonds:
                     if hbond.atom2 not in self.atomlist:
                         hbondmap[hbond] = hbond.dist
-            hbondlist = sort_dict_by_value(hbondmap)
+            hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
 
             for hbond in hbondlist:
@@ -2216,14 +2213,14 @@ class HydrogenRoutines(object):
             for obj in network:
                 for hbond in obj.hbonds:
                     if hbond.atom2 in self.atomlist:
-                        if not isinstance(hbond.atom1.residue, WAT):
-                            if not isinstance(hbond.atom2.residue, WAT):
+                        if not isinstance(hbond.atom1.residue, aa.WAT):
+                            if not isinstance(hbond.atom2.residue, aa.WAT):
                                 # Only get one hbond pair
                                 if (hbond.atom2, hbond.atom1) not in seenlist:
                                     hbondmap[hbond] = hbond.dist
                                     seenlist.append((hbond.atom1, hbond.atom2))
 
-            hbondlist = sort_dict_by_value(hbondmap)
+            hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
 
             for hbond in hbondlist:
@@ -2252,13 +2249,13 @@ class HydrogenRoutines(object):
             for obj in network:
                 for hbond in obj.hbonds:
                     residue = hbond.atom1.residue
-                    if isinstance(residue, WAT):
-                        if isinstance(hbond.atom2.residue, WAT):
+                    if isinstance(residue, aa.WAT):
+                        if isinstance(hbond.atom2.residue, aa.WAT):
                             if (hbond.atom2, hbond.atom1) not in seenlist:
                                 hbondmap[hbond] = hbond.dist
                                 seenlist.append((hbond.atom1, hbond.atom2))
 
-            hbondlist = sort_dict_by_value(hbondmap)
+            hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
 
             for hbond in hbondlist:
@@ -2294,7 +2291,7 @@ class HydrogenRoutines(object):
         This is the current definition:  Name Ttyp  A R # Stdconf   HT Chi OPTm
         """
         # TODO - I don't think files should be loaded so deep in this module
-        toppath = test_dat_file(TOPOLOGYPATH)
+        toppath = io.test_dat_file(TOPOLOGYPATH)
         if toppath == "":
             raise KeyError("Could not find %s!" % TOPOLOGYPATH)
 
@@ -2445,19 +2442,19 @@ class HydrogenRoutines(object):
                 bondatom = ntrmap[hname].bonds[0]
                 bondlength = 1.0
                 myconf = HydrogenConformation(hname, bondatom, bondlength)
-                atom = DefinitionAtom(hname, x, y, z)
+                atom = defns.DefinitionAtom(hname, x, y, z)
                 myconf.add_atom(atom)
 
                 # TODO - lots of arbitrary undefined numbers in this section
                 for atom_ in refatoms:
                     if atom_ == 'N':
-                        natom = DefinitionAtom(atom_, 1.201, 0.847, 0.0)
+                        natom = defns.DefinitionAtom(atom_, 1.201, 0.847, 0.0)
                         myconf.add_atom(natom)
                     elif atom_ == 'CA':
-                        caatom = DefinitionAtom(atom_, 0.0, 0.0, 0.0)
+                        caatom = defns.DefinitionAtom(atom_, 0.0, 0.0, 0.0)
                         myconf.add_atom(caatom)
                     elif atom_ == 'H':
-                        caatom = DefinitionAtom(atom_, 1.201, 1.847, 0.000)
+                        caatom = defns.DefinitionAtom(atom_, 1.201, 1.847, 0.000)
                         myconf.add_atom(caatom)
                     else: pass
                 mydef.add_conf(myconf)
@@ -2472,20 +2469,20 @@ class HydrogenRoutines(object):
                     bondatom = hmap[conformer, hname].bonds[0]
                     bondlength = 1.0
                     myconf = HydrogenConformation(hname, bondatom, bondlength)
-                    atom = DefinitionAtom(hname, x, y, z)
+                    atom = defns.DefinitionAtom(hname, x, y, z)
                     myconf.add_atom(atom)
 
                     # TODO - the following code is almost nonsensical
                     for atom_ in refatoms:
                         if atom_ == 'C':
-                            catom = DefinitionAtom(atom_, -1.250, 0.881, 0.000)
+                            catom = defns.DefinitionAtom(atom_, -1.250, 0.881, 0.000)
                             myconf.add_atom(catom)
                         else:
                             atomname = atom_
                             x = nonhmap[atom_].x
                             y = nonhmap[atom_].y
                             z = nonhmap[atom_].z
-                            atom2 = DefinitionAtom(atomname, x, y, z)
+                            atom2 = defns.DefinitionAtom(atomname, x, y, z)
                             myconf.add_atom(atom2)
                     mydef.add_conf(myconf)
 
@@ -2500,7 +2497,7 @@ class HydrogenRoutines(object):
                         bondatom = hmap[conformer, hname].bonds[0]
                         bondlength = 1.0
                         myconf = HydrogenConformation(hname, bondatom, bondlength)
-                        atom = DefinitionAtom(hname, x, y, z)
+                        atom = defns.DefinitionAtom(hname, x, y, z)
                         myconf.add_atom(atom)
 
                         for atom_ in refatoms:
@@ -2512,7 +2509,7 @@ class HydrogenRoutines(object):
                             x = atommap[refresname, atom_].x
                             y = atommap[refresname, atom_].y
                             z = atommap[refresname, atom_].z
-                            atom2 = DefinitionAtom(atomname, x, y, z)
+                            atom2 = defns.DefinitionAtom(atomname, x, y, z)
                             myconf.add_atom(atom2)
                         mydef.add_conf(myconf)
 
@@ -2528,7 +2525,7 @@ class HydrogenRoutines(object):
                 bondatom = atommap[name, hname].bonds[0]
                 bondlength = 1.0
                 myconf = HydrogenConformation(hname, bondatom, bondlength)
-                atom = DefinitionAtom(hname, x, y, z)
+                atom = defns.DefinitionAtom(hname, x, y, z)
                 myconf.add_atom(atom)
 
                 if refatoms != None:
@@ -2541,7 +2538,7 @@ class HydrogenRoutines(object):
                         x = atommap[name, atomname].x
                         y = atommap[name, atomname].y
                         z = atommap[name, atomname].z
-                        atom = DefinitionAtom(atomname, x, y, z)
+                        atom = defns.DefinitionAtom(atomname, x, y, z)
                         myconf.add_atom(atom)
                     mydef.add_conf(myconf)
         return mydef

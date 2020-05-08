@@ -394,7 +394,7 @@ def pre_init(pdbfilename=None,
     #
     # Set up all other routines
     #
-    my_routines = Routines(my_protein, verbose) #my_definition)
+    my_routines = Debump(my_protein, verbose) #my_definition)
     my_routines.update_residue_types()
     my_protein.update_ss_bridges()
     my_protein.update_bonds()

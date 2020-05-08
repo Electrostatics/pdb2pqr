@@ -157,7 +157,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
     start = time.time()
 
-    my_routines = routines.Routines(my_protein)
+    my_routines = routines.Debump(my_protein)
 
     if not options.assign_only:
 

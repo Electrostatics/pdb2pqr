@@ -15,7 +15,7 @@ import os
 
 from src.definitions import Definition
 from src.forcefield import Forcefield
-from src.routines import Routines
+from src.routines import Debump
 from src.protein import get_pdb_file, readPDB, Protein, Amino, Nucleic
 from src.aa import LIG
 from src.errors import PDB2PKAError
@@ -310,7 +310,7 @@ def pre_init(original_pdb_list=None,
     #
     # Set up all other routines
     #
-    my_routines = Routines(my_protein, verbose) #my_definition)
+    my_routines = Debump(my_protein, verbose) #my_definition)
     my_routines.updateResidueTypes()
     my_routines.updateSSbridges()
     my_routines.updateBonds()

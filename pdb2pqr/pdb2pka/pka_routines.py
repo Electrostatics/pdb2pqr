@@ -20,7 +20,7 @@ import math
 import copy
 import string
 import shutil
-from src.routines import Routines
+from src.routines import Debump
 from src.hydrogens import HydrogenRoutines, HydrogenAmbiguity
 
 
@@ -232,7 +232,7 @@ class pKaRoutines:
 
         self.apbs_setup.set_type('desolv')
 
-        my_routines = Routines(self.protein, self.routines.verbose)
+        my_routines = Debump(self.protein, self.routines.verbose)
         my_routines.update_residue_types()
         self.protein.update_ss_bridges()
         my_protein.update_bonds()
@@ -1195,7 +1195,7 @@ class pKaRoutines:
         #
         """
         # Setting up
-        my_routines = Routines(self.protein, self.routines.verbose)
+        my_routines = Debump(self.protein, self.routines.verbose)
         my_routines.update_residue_types()
 
         self.protein.update_bonds()

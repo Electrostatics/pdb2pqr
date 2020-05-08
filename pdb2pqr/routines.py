@@ -1,14 +1,10 @@
 """Routines for PDB2PQR
 
-This module contains the protein object used in PDB2PQR and methods used to
-correct, analyze, and optimize that protein.
+This module contains debumping routines to optimize the biomolecule.
 
 Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """
 import logging
-# TODO - replace os with pathlib
-import os
-import tempfile
 from . import aa
 from . import utilities as util
 from . import io
@@ -16,21 +12,20 @@ from . import quatfit as quat
 from . import cells
 from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS, DEBUMP_ANGLE_TEST_COUNT
 from .config import SMALL_NUMBER, CELL_SIZE, BUMP_HYDROGEN_SIZE, BUMP_HEAVY_SIZE
-from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
-class Routines(object):
+class Debump(object):
     """Grab bag of random stuff that apparently didn't fit elsewhere.
 
     TODO - needs to be susbtantially refactored in to multiple classes with clear
     responsibilities.
     """
     def __init__(self, protein, definition=None):
-        """Initialize the Routines class.
+        """Initialize the Debump class.
 
         The class contains most of the main routines that run PDB2PQR
 

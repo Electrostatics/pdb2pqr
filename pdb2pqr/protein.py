@@ -10,16 +10,13 @@ import string
 import logging
 import copy
 from . import residue as residue_
-# NOTE - ignore the warnings pylint gives about these aa and na imports.
-# They're used dynamically in parsing text so not caught in static analysis.
-from .aa import ALA, ARG, ASN, ASP, CYS, GLN, GLU, GLY, HIS, ILE, LEU
-from .aa import LIG, LYS, MET, PHE, PRO, SER, THR, TRP, TYR, VAL, WAT, Amino
-from .na import Nucleic
-from .utilities import distance, dihedral, shortest_path
-from .structures import Chain
-from .pdb import TER, ATOM, HETATM, END, MODEL
-from .forcefield import Forcefield
-from .quatfit import find_coordinates
+from . import aa
+from . import na
+from . import utilities as util
+from . import structures as struct
+from . import pdb
+from . import forcefield
+from . import quatfit as quat
 from .config import AA_NAMES, NA_NAMES, BONDED_SS_LIMIT, PEPTIDE_DIST
 
 
@@ -55,11 +52,11 @@ class Protein(object):
         count = 0
 
         for record in pdblist: # Find number of chains
-            if isinstance(record, TER):
+            if isinstance(record, pdb.TER):
                 num_chains += 1
 
         for record in pdblist:
-            if isinstance(record, (ATOM, HETATM)):
+            if isinstance(record, (pdb.ATOM, pdb.HETATM)):
                 if record.chain_id == "":
                     if num_chains > 1 and record.res_name not in ["WAT", "HOH"]:
                         # Assign a chain ID
@@ -73,7 +70,7 @@ class Protein(object):
                     previous_atom = record
 
                 if chain_id not in chain_dict:
-                    my_chain = Chain(chain_id)
+                    my_chain = struct.Chain(chain_id)
                     chain_dict[chain_id] = my_chain
 
                 if res_seq != previous_atom.res_seq or \
@@ -86,12 +83,12 @@ class Protein(object):
                 residue.append(record)
                 previous_atom = record
 
-            elif isinstance(record, END):
+            elif isinstance(record, pdb.END):
                 my_residue = self.create_residue(residue, previous_atom.res_name)
                 chain_dict[previous_atom.chain_id].add_residue(my_residue)
                 residue = []
 
-            elif isinstance(record, MODEL):
+            elif isinstance(record, pdb.MODEL):
                 num_models += 1
                 if residue == []:
                     continue
@@ -101,7 +98,7 @@ class Protein(object):
                     chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     break
 
-            elif isinstance(record, TER):
+            elif isinstance(record, pdb.TER):
                 count += 1
 
         if residue != [] and num_models <= 1:
@@ -131,7 +128,7 @@ class Protein(object):
         """Return number of missing biomolecular heavy atoms in structure."""
         natom = 0
         for residue in self.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
+            if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
             residue.missing = []
             for refatomname in residue.reference.map:
@@ -157,7 +154,7 @@ class Protein(object):
         """
         natom = 0
         for residue in self.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
+            if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
             for refatomname in residue.reference.map:
                 if refatomname.startswith("H"):
@@ -229,11 +226,11 @@ class Protein(object):
 
                 # Look for ending termini
                 fixflag = 0
-                if isinstance(residue, Amino):
+                if isinstance(residue, aa.Amino):
                     if (residue.has_atom("OXT") and not residue.is_c_term):
                         fixflag = 1
 
-                elif isinstance(residue, Nucleic):
+                elif isinstance(residue, na.Nucleic):
                     if ((residue.has_atom("H3T") or residue.name.endswith("3"))\
                       and not residue.is3term):
                         fixflag = 1
@@ -255,7 +252,7 @@ class Protein(object):
                         _LOGGER.warning(message)
 
                     # Make a new chain with these residues
-                    newchain = Chain(chainid[0])
+                    newchain = struct.Chain(chainid[0])
 
                     self.chainmap[chainid] = newchain
                     self.chains.insert(ch_num, newchain)
@@ -276,7 +273,7 @@ class Protein(object):
         if "" in self.chainmap:
             notwat = 0
             for res in chain.residues:
-                if not isinstance(res, WAT):
+                if not isinstance(res, aa.WAT):
                     notwat = 1
                     break
 
@@ -316,7 +313,7 @@ class Protein(object):
         See aa.py for residue-specific functions.
         """
         for residue in self.residues:
-            if isinstance(residue, (Amino, Nucleic)):
+            if isinstance(residue, (aa.Amino, na.Nucleic)):
                 residue.set_state()
 
     def add_hydrogens(self):
@@ -329,14 +326,14 @@ class Protein(object):
         """
         count = 0
         for residue in self.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
+            if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
             for atomname in residue.reference.map:
                 if not atomname.startswith("H"):
                     continue
                 if residue.has_atom(atomname):
                     continue
-                if isinstance(residue, CYS) and residue.ss_bonded and atomname == "HG":
+                if isinstance(residue, aa.CYS) and residue.ss_bonded and atomname == "HG":
                     continue
 
                 # If this hydrogen is part of a tetrahedral group,
@@ -372,7 +369,7 @@ class Protein(object):
                         break
 
                 if len(coords) == 3:
-                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
+                    newcoords = quat.find_coordinates(3, coords, refcoords, refatomcoords)
                     residue.create_atom(atomname, newcoords)
                     count += 1
                 else:
@@ -387,7 +384,7 @@ class Protein(object):
     def calculate_dihedral_angles(self):
         """Calculate the dihedral angle for every residue within the protein"""
         for residue in self.residues:
-            if not isinstance(residue, Amino):
+            if not isinstance(residue, aa.Amino):
                 continue
             residue.dihedrals = []
 
@@ -401,7 +398,7 @@ class Protein(object):
                         coords.append(residue.get_atom(atomname).coords)
 
                 if len(coords) == 4:
-                    angle = dihedral(coords[0], coords[1], coords[2], coords[3])
+                    angle = util.dihedral(coords[0], coords[1], coords[2], coords[3])
                 else:
                     angle = None
 
@@ -414,7 +411,7 @@ class Protein(object):
         rotations.  Uses the shortest_path algorithm found in utilities.py.
         """
         for residue in self.residues:
-            if not isinstance(residue, Amino):
+            if not isinstance(residue, aa.Amino):
                 continue
 
             # Initialize some variables
@@ -438,12 +435,12 @@ class Protein(object):
                 elif residue.is_n_term and (atom.name == "H3" or atom.name == "H2"):
                     atom.refdistance = 2
                 else:
-                    atom.refdistance = len(shortest_path(map_, atom, caatom)) - 1
+                    atom.refdistance = len(util.shortest_path(map_, atom, caatom)) - 1
 
     def remove_hydrogens(self):
         """Remove hydrogens from the protein."""
         for residue in self.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
+            if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
             for atom in residue.atoms[:]:
                 if atom.is_hydrogen:
@@ -465,33 +462,33 @@ class Protein(object):
 
         # Set the N-Terminus/ 5' Terminus
         res0 = chain.residues[0]
-        if isinstance(res0, Amino):
+        if isinstance(res0, aa.Amino):
             res0.is_n_term = True
-            if isinstance(res0, PRO):
+            if isinstance(res0, aa.PRO):
                 self.apply_patch("NEUTRAL-NTERM", res0)
             elif neutraln:
                 self.apply_patch("NEUTRAL-NTERM", res0)
             else:
                 self.apply_patch("NTERM", res0)
-        elif isinstance(res0, Nucleic):
+        elif isinstance(res0, na.Nucleic):
             res0.is5term = True
             self.apply_patch("5TERM", res0)
 
         # Set the C-Terminus/ 3' Terminus
         reslast = chain.residues[-1]
-        if isinstance(reslast, Amino):
+        if isinstance(reslast, aa.Amino):
             reslast.is_c_term = True
             if neutralc:
                 self.apply_patch("NEUTRAL-CTERM", reslast)
             else:
                 self.apply_patch("CTERM", reslast)
-        elif isinstance(reslast, Nucleic):
+        elif isinstance(reslast, na.Nucleic):
             reslast.is3term = True
             self.apply_patch("3TERM", reslast)
         else:
             for i in range(len(chain.residues)):
                 resthis = chain.residues[-1 - i]
-                if isinstance(resthis, Amino):
+                if isinstance(resthis, aa.Amino):
                     resthis.is_c_term = True
                     if neutralc:
                         self.apply_patch("NEUTRAL-CTERM", resthis)
@@ -500,7 +497,7 @@ class Protein(object):
                     break
                 elif resthis.name in ["NH2", "NME"]:
                     break
-                elif isinstance(resthis, Nucleic):
+                elif isinstance(resthis, na.Nucleic):
                     resthis.is3term = True
                     self.apply_patch("3TERM", resthis)
                     break
@@ -508,7 +505,7 @@ class Protein(object):
     def update_internal_bonds(self):
         """Update the internal bonding network using the reference objects in each atom."""
         for residue in self.residues:
-            if isinstance(residue, (Amino, WAT, Nucleic)):
+            if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 for atom in residue.atoms:
                     if not atom.has_reference:
                         continue
@@ -530,7 +527,7 @@ class Protein(object):
         """
         # Apply the peptide patch
         for residue in self.residues:
-            if isinstance(residue, Amino):
+            if isinstance(residue, aa.Amino):
                 if residue.is_n_term or residue.is_c_term:
                     continue
                 else:
@@ -544,7 +541,7 @@ class Protein(object):
             for i in range(len(chain.residues) - 1):
                 res1 = chain.residues[i]
                 res2 = chain.residues[i + 1]
-                if not isinstance(res1, Amino) or not isinstance(res2, Amino):
+                if not isinstance(res1, aa.Amino) or not isinstance(res2, aa.Amino):
                     continue
                 atom1 = res1.get_atom("C")
                 atom2 = res2.get_atom("N")
@@ -556,7 +553,7 @@ class Protein(object):
                 if atom1 is None or atom2 is None:
                     continue
 
-                if distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
+                if util.distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
                     text = "Gap in backbone detected between %s and %s!" % \
                            (res1, res2)
                     _LOGGER.warning(text)
@@ -636,7 +633,7 @@ class Protein(object):
         """Check for SS-bridge partners, and if present, set appropriate partners."""
         sg_partners = {}
         for residue in self.residues:
-            if isinstance(residue, CYS):
+            if isinstance(residue, aa.CYS):
                 atom = residue.get_atom("SG")
                 if atom != None:
                     sg_partners[atom] = []
@@ -645,7 +642,7 @@ class Protein(object):
             for partner in sg_partners:
                 if atom == partner or sg_partners[atom] != []:
                     continue
-                dist = distance(atom.coords, partner.coords)
+                dist = util.distance(atom.coords, partner.coords)
                 if dist < BONDED_SS_LIMIT:
                     sg_partners[atom].append(partner)
                     sg_partners[partner].append(atom)
@@ -694,7 +691,7 @@ class Protein(object):
         misslist = []
         hitlist = []
         for residue in self.residues:
-            if isinstance(residue, (Amino, WAT, Nucleic)):
+            if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 resname = residue.ffname
             else:
                 resname = residue.name
@@ -717,7 +714,7 @@ class Protein(object):
             forcefield: forcefield object (forcefield)
         """
         for residue in self.residues:
-            if isinstance(residue, (Amino, WAT, Nucleic)):
+            if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 resname = residue.ffname
             else:
                 resname = residue.name
@@ -872,11 +869,11 @@ class Protein(object):
         try:
             refobj = self.definition.map[resname]
             if refobj.name != resname:
-                klass = globals()[refobj.name]
+                klass = getattr(aa, refobj.name)
                 residue = klass(residue, refobj)
                 residue.reference = refobj
             else:
-                klass = globals()[resname]
+                klass = getattr(aa, resname)
                 residue = klass(residue, refobj)
         except (KeyError, NameError):
             _LOGGER.debug("Parsing %s as new residue", resname)
@@ -896,7 +893,7 @@ class Protein(object):
             _LOGGER.warning("No heavy atoms need to be repaired.")
             return 
         for residue in self.residues:
-            if not isinstance(residue, (Amino, Nucleic)):
+            if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
             atomlist = list(residue.atoms)
             for atom in atomlist:
@@ -957,7 +954,7 @@ class Protein(object):
                         raise ValueError(text)
 
                 else: # Rebuild the atom
-                    newcoords = find_coordinates(3, coords, refcoords, refatomcoords)
+                    newcoords = quat.find_coordinates(3, coords, refcoords, refatomcoords)
                     residue.create_atom(atomname, newcoords)
                     _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)
                     _LOGGER.debug(" %.3f %.3f %.3f", newcoords[0], newcoords[1], newcoords[2])
@@ -977,8 +974,8 @@ class Protein(object):
             numcache[atom] = atom.serial
         self.reserialize()
 
-        amberff = Forcefield("amber", definition, None)
-        charmmff = Forcefield("charmm", definition, None)
+        amberff = forcefield.Forcefield("amber", definition, None)
+        charmmff = forcefield.Forcefield("charmm", definition, None)
 
         with open(outfilename, "w") as file_:
             file_.write("<HTML>\n")
@@ -994,7 +991,7 @@ class Protein(object):
                          "CHARMM Atom Type</th></tr>\n"))
 
             for atom in self.atoms:
-                if isinstance(atom.residue, (Amino, WAT, Nucleic)):
+                if isinstance(atom.residue, (aa.Amino, aa.WAT, na.Nucleic)):
                     resname = atom.residue.ffname
                 else:
                     resname = atom.residue.name
@@ -1051,7 +1048,7 @@ class Protein(object):
             for residue in chain.residues:
                 rescharge = residue.charge
                 charge += rescharge
-                if isinstance(residue, Nucleic):
+                if isinstance(residue, na.Nucleic):
                     if residue.is3term or residue.is5term:
                         continue
                 if float("%i" % rescharge) != rescharge:

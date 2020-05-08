@@ -9,7 +9,7 @@ from . import psize
 from . import inputgen
 from . import cif
 from . import pdb
-from .definitions import Definition
+from . import definitions as defns
 from .config import FORCE_FIELDS, TITLE_FORMAT_STRING, VERSION
 from .config import FILTER_WARNINGS_LIMIT, FILTER_WARNINGS
 from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
@@ -357,6 +357,6 @@ def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
     with open(aa_path_, "rt") as aa_file:
         with open(na_path_, "rt") as na_file:
             with open(patch_path_, "rt") as patch_file:
-                definitions = Definition(aa_file=aa_file, na_file=na_file,
+                definitions = defns.Definition(aa_file=aa_file, na_file=na_file,
                                           patch_file=patch_file)
     return definitions

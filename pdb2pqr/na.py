@@ -5,7 +5,7 @@ This module contains the base nucleic acid structures for pdb2pqr.
 Author:  Todd Dolinsky
 """
 from . import residue
-from .structures import Atom
+from . import structures as struct
 
 
 class Nucleic(residue.Residue):
@@ -38,7 +38,7 @@ class Nucleic(residue.Residue):
                 atom.name = ref.altnames[atom.name]
 
             if atom.name not in self.map:
-                atom_ = Atom(atom, "ATOM", self)
+                atom_ = struct.Atom(atom, "ATOM", self)
                 self.add_atom(atom_)
 
     # TODO - here's some more code that's duplicated all over the place.
@@ -50,7 +50,7 @@ class Nucleic(residue.Residue):
             newcoords: The coordinates of the atom (list)
         """
         oldatom = self.atoms[0]
-        newatom = Atom(oldatom, "ATOM", self)
+        newatom = struct.Atom(oldatom, "ATOM", self)
         newatom.x = newcoords[0]
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]

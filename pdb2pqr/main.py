@@ -395,4 +395,4 @@ def main(args):
             missing_lines=results["missed_ligands"], is_cif=is_cif)
 
     if args.apbs_input:
-        dump_apbs(args.output_pqr)
+        io.dump_apbs(args.output_pqr)

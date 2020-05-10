@@ -7,7 +7,7 @@ Authors:  Todd Dolinsky, Yong Huang
 """
 import re
 from xml import sax
-from . import io
+from . import input_output as io
 
 
 class ForcefieldHandler(sax.ContentHandler):

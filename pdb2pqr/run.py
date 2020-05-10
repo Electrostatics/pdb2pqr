@@ -1,13 +1,14 @@
 """Routines for running the code with a given set of options and PDB files."""
 import logging
 import time
+import tempfile
 from pathlib import Path
 from . import debump
 from . import hydrogens
 from . import forcefield
 from . import aa
 from . import na
-from . import io
+from . import input_output as io
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ def run_propka_31(protein, pka_options):
         # *.propka_input file in PWD and does not delete it (irrespective of the original
         # .pdb location)
         pka_molecule = propka.molecular_container.Molecular_container(h_free_file.name,
-                                                                        pka_options)
+                                                                      pka_options)
 
     # calculating pKa values for ionizable residues -
     pka_molecule.calculate_pka()
@@ -180,7 +181,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
             #                        'pairene': args.pairene}
             # else:
             #     ph_calc_options = None
-            debumper.run_propka(options.ph, options.ff, options={})
+            run_propka(options.ph, options.ff, options={})
         elif options.pka_method == 'pdb2pka':
             raise NotImplementedError("PROPKA is broken.")
             # debumper.run_pdb2pka(options.ph, options.ff, pdblist, ligand, ph_calc_options)
@@ -267,12 +268,12 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
     if is_cif:
         header = io.print_pqr_header_cif(misslist, reslist, charge, options.ff,
-                                      options.pka_method, options.ph, options.ffout,
-                                      include_old_header=options.include_header)
+                                         options.pka_method, options.ph, options.ffout,
+                                         include_old_header=options.include_header)
     else:
         header = io.print_pqr_header(pdblist, misslist, reslist, charge, options.ff,
-                                  options.pka_method, options.ph, options.ffout,
-                                  include_old_header=options.include_header)
+                                     options.pka_method, options.ph, options.ffout,
+                                     include_old_header=options.include_header)
 
     lines = io.print_protein_atoms(hitlist, options.chain)
 

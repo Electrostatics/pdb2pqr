@@ -9,16 +9,27 @@ Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 import logging
 import math
 from xml import sax
-from .. import io
+from .. import input_output as io
 from .. import aa
 from .. import cells
+from .. import topology
+from .. import definitions as defns
 from .. import utilities as util
-from ..config import HYD_DEF_PATH
+from .. import quatfit as quat
 from . import structures
 
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
+
+
+TITRATION_DICT = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4',
+                  'ASP': '0', 'GLH1c': '1', 'GLH1t': '2', 'GLH2c': '3',
+                  'GLH2t': '4', 'GLU': '0', 'ARG0': '1+2+3+4',
+                  'ARG': '1+2+3+4+5', 'LYS': '1', 'LYS0': '0', 'TYR': '1',
+                  'TYR-': '0', 'HSD': '1', 'HSE': '2', 'HSP': '1+2', 'H3': '1',
+                  'H2': '2', 'H3+H2': '1+2', 'CTR01c': '1', 'CTR01t': '2',
+                  'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
 
 
 class HydrogenRoutines(object):
@@ -28,9 +39,15 @@ class HydrogenRoutines(object):
 
     This could potentially be extended from the routines object."""
 
-    def __init__(self, routines):
-        self.routines = routines
-        self.protein = routines.protein
+    def __init__(self, debumper, hyd_def_file):
+        """Initialize
+
+        Args:
+            dembumper:  Debump object
+            hyd_def_file:  file object for hydrogen definitions
+        """
+        self.debumper = debumper
+        self.protein = debumper.protein
         self.optlist = []
         self.atomlist = []
         self.resmap = {}
@@ -39,14 +56,7 @@ class HydrogenRoutines(object):
         handler = structures.HydrogenHandler()
         sax.make_parser()
 
-        # TODO - I don't think files should be loaded so deep in this module
-        defpath = io.test_dat_file(HYD_DEF_PATH)
-        if defpath == "":
-            raise KeyError("Could not find %s!" % HYD_DEF_PATH)
-
-        hydrogen_file = open(defpath)
-        sax.parseString(hydrogen_file.read(), handler)
-        hydrogen_file.close()
+        sax.parseString(hyd_def_file.read(), handler)
 
         self.map = handler.map
 
@@ -78,7 +88,7 @@ class HydrogenRoutines(object):
 
         # Update the IntraBonds
         name = residue.name
-        defresidue = self.routines.aadef.get_residue(name)
+        defresidue = self.debumper.aadef.get_residue(name)
         residue.updateIntraBonds(defresidue)
 
         # Now build appropriate atoms
@@ -128,15 +138,7 @@ class HydrogenRoutines(object):
             amb   : The amibiguity to switch (tuple)
             state_id    : The state id to switch to (list)
         """
-        # TODO - This titration dictionary should not be buried in the code
-        titrationdict = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4', 'ASP': '0',
-                         'GLH1c': '1', 'GLH1t': '2', 'GLH2c': '3', 'GLH2t': '4', 'GLU': '0',
-                         'ARG0': '1+2+3+4', 'ARG': '1+2+3+4+5',
-                         'LYS': '1', 'LYS0': '0',
-                         'TYR': '1', 'TYR-': '0',
-                         'HSD': '1', 'HSE': '2', 'HSP': '1+2',
-                         'H3': '1', 'H2': '2', 'H3+H2': '1+2',
-                         'CTR01c': '1', 'CTR01t': '2', 'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
+        titrationdict = TITRATION_DICT
         state_id = titrationdict[state_id_]
         state_id = state_id.split('+')
         new_state_id = []
@@ -211,7 +213,7 @@ class HydrogenRoutines(object):
         """If there are any extra carboxlyic *1 atoms, delete them.
         This may occur when no optimization is chosen
         """
-        for residue in self.routines.protein.residues:
+        for residue in self.debumper.protein.residues:
             if not isinstance(residue, aa.Amino):
                 continue
             if residue.name == "GLH" or "GLH" in residue.patches:
@@ -282,8 +284,8 @@ class HydrogenRoutines(object):
         """
 
         # Do some setup
-        self.routines.cells = cells.Cells(5)
-        self.routines.cells.assign_cells(self.protein)
+        self.debumper.cells = cells.Cells(5)
+        self.debumper.cells.assign_cells(self.protein)
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
@@ -307,7 +309,7 @@ class HydrogenRoutines(object):
                 pass
             else:
                 klass = getattr(structures, type_)
-                myobj = klass(residue, optinstance, self.routines)
+                myobj = klass(residue, optinstance, self.debumper)
                 self.atomlist += myobj.atomlist
                 self.optlist.append(myobj)
                 self.resmap[residue] = myobj
@@ -323,8 +325,8 @@ class HydrogenRoutines(object):
         _LOGGER.info("Initializing water bonding optimization...")
 
         # Do some setup
-        self.routines.cells = cells.Cells(5)
-        self.routines.cells.assign_cells(self.protein)
+        self.debumper.cells = cells.Cells(5)
+        self.debumper.cells.assign_cells(self.protein)
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
@@ -340,7 +342,7 @@ class HydrogenRoutines(object):
             type_ = optinstance.opttype
             if type_ == "Water":
                 klass = globals()[type_]
-                myobj = klass(residue, optinstance, self.routines)
+                myobj = klass(residue, optinstance, self.debumper)
                 self.atomlist += myobj.atomlist
                 self.optlist.append(myobj)
                 self.resmap[residue] = myobj
@@ -367,7 +369,7 @@ class HydrogenRoutines(object):
         for obj in optlist:
             connectivity[obj] = []
             for atom in obj.atomlist:
-                closeatoms = self.routines.cells.get_near_cells(atom)
+                closeatoms = self.debumper.cells.get_near_cells(atom)
                 for closeatom in closeatoms:
 
                     # Conditions for continuing
@@ -532,30 +534,23 @@ class HydrogenRoutines(object):
             while progress >= 5.0:
                 progress -= 5.0
 
-    def parse_hydrogen(self, res):
+    def parse_hydrogen(self, res, topo):
         """Parse a list of lines in order to make a hydrogen definition
 
         Args:
-            lines:  The lines to parse (list)
+            res:  The lines to parse (list)
+            topo:  Topology object
         Returns:
             mydef:  The hydrogen definition object (HydrogenDefinition)
 
         This is the current definition:  Name Ttyp  A R # Stdconf   HT Chi OPTm
         """
-        # TODO - I don't think files should be loaded so deep in this module
-        toppath = io.test_dat_file(TOPOLOGYPATH)
-        if toppath == "":
-            raise KeyError("Could not find %s!" % TOPOLOGYPATH)
-
-        with open(toppath) as topfile:
-            top = topology.Topology(topfile)
-
         name = self.map[res].name
         opttype = self.map[res].opttype
         optangle = self.map[res].optangle
         map_ = self.map[res].map
 
-        mydef = HydrogenDefinition(name, opttype, optangle, map_)
+        mydef = structures.HydrogenDefinition(name, opttype, optangle, map_)
         patch_map = []
         refmap = {}
         titrationstatemap = {}
@@ -564,7 +559,7 @@ class HydrogenRoutines(object):
         atommap = {}
 
         # reference map from TOPOLOGY.xml
-        for res_ in top.residues:
+        for res_ in topo.residues:
             refmap[res_.name] = res_.reference
             for atom in refmap[res_.name].atoms:
                 atommap[res_.name, atom.name] = atom
@@ -587,20 +582,20 @@ class HydrogenRoutines(object):
                 refatoms = ['ND1', 'CG', 'CE1']
 
         elif name == 'LYS':
-            _ = self.routines.protein.reference_map[name]
-            patch_map = self.routines.protein.patch_map['LYN']
+            _ = self.debumper.protein.reference_map[name]
+            patch_map = self.debumper.protein.patch_map['LYN']
             atoms = patch_map.remove
             refatoms = ['HZ1', 'HZ2', 'NZ']
 
         elif name == 'TYR':
-            _ = self.routines.protein.reference_map[name]
-            patch_map = self.routines.protein.patch_map['TYM']
+            _ = self.debumper.protein.reference_map[name]
+            patch_map = self.debumper.protein.patch_map['TYM']
             atoms = patch_map.remove
             refatoms = ['OH', 'CZ', 'CE2']
 
         elif name == 'WAT':
-            _ = self.routines.protein.reference_map[name]
-            patch_map = self.routines.protein.patch_map['HOH']
+            _ = self.debumper.protein.reference_map[name]
+            patch_map = self.debumper.protein.patch_map['HOH']
             atoms = ['H1', 'H2']
             refatoms = None
 
@@ -681,7 +676,7 @@ class HydrogenRoutines(object):
             refatoms = ['OE1', 'CD', 'OE2']
 
         else:
-            patch_map = self.routines.protein.patch_map[name]
+            patch_map = self.debumper.protein.patch_map[name]
             atoms = list(patch_map.map.keys())
             atoms.sort()
 
@@ -795,8 +790,11 @@ class HydrogenRoutines(object):
                     mydef.add_conf(myconf)
         return mydef
 
-    def read_hydrogen_def(self):
+    def read_hydrogen_def(self, topo):
         """Read the Hydrogen Definition file
+
+        Args:
+            topo:  Topology object
 
         Returns
             hydrodef:  The hydrogen definition ()
@@ -804,6 +802,6 @@ class HydrogenRoutines(object):
         self.hydrodefs = []
         for mapping in self.map:
             res = mapping
-            mydef = self.parse_hydrogen(res)
+            mydef = self.parse_hydrogen(res, topo)
             self.hydrodefs.append(mydef)
             res = ''

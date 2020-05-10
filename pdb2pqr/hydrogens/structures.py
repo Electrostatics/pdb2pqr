@@ -4,6 +4,7 @@ from xml import sax
 from .. import definitions as defns
 from .. import utilities as util
 from .. import aa
+from ..config import ANGLE_CUTOFF, DIST_CUTOFF
 from . import optimize
 
 

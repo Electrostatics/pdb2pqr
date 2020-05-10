@@ -175,7 +175,7 @@ class Amino(residue.Residue):
                 hcoords = newcoords
                 cbatom = self.get_atom('CB')
                 ang = util.dihedral(cbatom.coords, nextatom.coords,
-                               bondatom.coords, hcoords)
+                                    bondatom.coords, hcoords)
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)
 
@@ -185,13 +185,13 @@ class Amino(residue.Residue):
                 cbatom = self.get_atom('CB')
                 if bondatom.name == 'CD1':
                     ang = util.dihedral(cbatom.coords, nextatom.coords,
-                                   bondatom.coords, hcoords)
+                                        bondatom.coords, hcoords)
                 elif bondatom.name == 'CG2':
                     ang = util.dihedral(cg1atom.coords, nextatom.coords,
-                                   bondatom.coords, hcoords)
+                                        bondatom.coords, hcoords)
                 else:
                     ang = util.dihedral(cbatom.coords, nextatom.coords,
-                                   bondatom.coords, hcoords)
+                                        bondatom.coords, hcoords)
 
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)

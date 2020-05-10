@@ -11,7 +11,7 @@ from . import run
 from . import utilities as util
 from . import aa
 from . import protein as prot
-from . import io
+from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
@@ -259,7 +259,7 @@ def setup_molecule(pdblist, definition, ligand_path):
         with open(ligand_path, "rt", encoding="utf-8") as ligand_file:
             raise NotImplementedError("Ligand functionality is temporarily disabled.")
             # TODO - check to see if ligff updates copy of definition stored with protein
-            protein, definition, ligand = ligff.initialize(definition, ligand_file, pdblist)
+            # protein, definition, ligand = ligff.initialize(definition, ligand_file, pdblist)
     else:
         protein = prot.Protein(pdblist, definition)
         ligand = None
@@ -270,8 +270,7 @@ def setup_molecule(pdblist, definition, ligand_path):
         for atom in residue.atoms:
             if atom.alt_loc != "":
                 multoccupancy = True
-                txt = "Multiple occupancies found: %s in %s." % (atom.name,
-                                                                          residue)
+                txt = "Multiple occupancies found: %s in %s." % (atom.name, residue)
                 _LOGGER.warning(txt)
         if multoccupancy:
             _LOGGER.warning(("Multiple occupancies found in %s. At least "
@@ -303,7 +302,7 @@ def is_repairable(protein, has_ligand):
             _LOGGER.warning(("No heavy atoms found but a ligand is present. "
                              "Proceeding with caution."))
             return False
-    
+
     if num_missing == 0:
         _LOGGER.info("This biomolecule is clean.  No repair needed.")
         return False
@@ -384,15 +383,15 @@ def main(args):
         else:
             if is_repairable(protein, args.ligand is not None):
                 _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
-                            protein.num_missing_heavy)
+                             protein.num_missing_heavy)
                 protein.repair_heavy()
             protein.update_ss_bridges()
 
         results = run.run_pdb2pqr(pdblist=pdblist, my_protein=protein,
-                                my_definition=definition, options=args, is_cif=is_cif)
+                                  my_definition=definition, options=args, is_cif=is_cif)
 
     print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
-            missing_lines=results["missed_ligands"], is_cif=is_cif)
+              missing_lines=results["missed_ligands"], is_cif=is_cif)
 
     if args.apbs_input:
         io.dump_apbs(args.output_pqr)

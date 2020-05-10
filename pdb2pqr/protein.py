@@ -9,6 +9,7 @@ Authors:  Todd Dolinsky, Yong Huang
 import string
 import logging
 import copy
+import pprint
 from . import residue as residue_
 from . import aa
 from . import na
@@ -679,7 +680,7 @@ class Protein(object):
                 else: # Residue is a ligand or unknown
                     residue.type = 2
 
-    def apply_force_field(self, forcefield):
+    def apply_force_field(self, forcefield_):
         """Apply the forcefield to the atoms within the protein
 
         Parameters
@@ -698,7 +699,7 @@ class Protein(object):
 
             for atom in residue.atoms:
                 atomname = atom.name
-                charge, radius = forcefield.get_params(resname, atomname)
+                charge, radius = forcefield_.get_params(resname, atomname)
                 if charge is not None and radius is not None:
                     atom.ffcharge = charge
                     atom.radius = radius
@@ -707,7 +708,7 @@ class Protein(object):
                     misslist.append(atom)
         return hitlist, misslist
 
-    def apply_name_scheme(self, forcefield):
+    def apply_name_scheme(self, forcefield_):
         """Apply the naming scheme of the given forcefield to the atoms within the protein
 
         Args:
@@ -720,7 +721,7 @@ class Protein(object):
                 resname = residue.name
 
             for atom in residue.atoms:
-                rname, aname = forcefield.get_names(resname, atom.name)
+                rname, aname = forcefield_.get_names(resname, atom.name)
                 if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and rname != None:
                     try:
                         if (residue.is_n_term or residue.is_c_term) and rname != residue.name:
@@ -734,7 +735,7 @@ class Protein(object):
     def apply_pka_values(self, force_field, ph, pkadic):
         """Apply calculated pKa values to assign titration states."""
         _LOGGER.info('Applying pKa values at a pH of %.2f:', ph)
-        formatted_pkadict = pformat(pkadic)
+        formatted_pkadict = pprint.pformat(pkadic)
         _LOGGER.debug("%s", formatted_pkadict)
 
         for residue in self.residues:
@@ -891,7 +892,7 @@ class Protein(object):
         total_missing = self.num_missing_heavy
         if total_missing == 0:
             _LOGGER.warning("No heavy atoms need to be repaired.")
-            return 
+            return
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue

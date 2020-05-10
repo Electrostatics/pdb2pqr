@@ -41,14 +41,14 @@ class DefinitionHandler(sax.ContentHandler):
 
     def endElement(self, name):
         if name == "residue": # Complete Residue object
-            residue = self.curholder
-            if not isinstance(residue, DefinitionResidue):
+            residue_ = self.curholder
+            if not isinstance(residue_, DefinitionResidue):
                 raise RuntimeError("Internal error parsing XML!")
-            resname = residue.name
+            resname = residue_.name
             if resname == "":
                 raise KeyError("Residue name not set in XML!")
             else:
-                self.map[resname] = residue
+                self.map[resname] = residue_
                 self.curholder = None
                 self.curobj = None
 

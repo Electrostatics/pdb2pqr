@@ -7,7 +7,7 @@ Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 import logging
 from . import aa
 from . import utilities as util
-from . import io
+from . import input_output as io
 from . import quatfit as quat
 from . import cells
 from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS, DEBUMP_ANGLE_TEST_COUNT
@@ -48,7 +48,7 @@ class Debump(object):
         self.cells.assign_cells(self.protein)
 
         self.protein.calculate_dihedral_angles()
-        self.set_donors_acceptors()
+        self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
         self.protein.set_reference_distance()
         bumpscore = 0.0

@@ -232,14 +232,14 @@ class pKaRoutines:
 
         self.apbs_setup.set_type('desolv')
 
-        my_routines = Debump(self.protein, self.routines.verbose)
-        my_routines.update_residue_types()
+        debumper = Debump(self.protein, self.routines.verbose)
+        debumper.update_residue_types()
         self.protein.update_ss_bridges()
         my_protein.update_bonds()
         my_protein.update_internal_bonds()
         pKa.residue.fixed = 2
 
-        my_routines.debump_protein()
+        debumper.debump_protein()
 
         self.zeroAllRadiiCharges()
         self.setCharges(residue, atomnames)
@@ -1195,14 +1195,14 @@ class pKaRoutines:
         #
         """
         # Setting up
-        my_routines = Debump(self.protein, self.routines.verbose)
-        my_routines.update_residue_types()
+        debumper = Debump(self.protein, self.routines.verbose)
+        debumper.update_residue_types()
 
         self.protein.update_bonds()
         #my_protein.update_internal_bonds()
         self.protein.update_ss_bridges()
 
-        my_routines.debump_protein()
+        debumper.debump_protein()
 
         # Initialize H-bond optimization
         self.HydrogenRoutines.set_optimizeable_hydrogens()
@@ -1214,7 +1214,7 @@ class pKaRoutines:
         # Clean up, debump
         self.HydrogenRoutines.cleanup()
         my_protein.set_states() # this identifies the protonation states to pdb2pqr
-        #my_routines.debump_protein() # why do we debump after setting the states?
+        #debumper.debump_protein() # why do we debump after setting the states?
 
         return
 

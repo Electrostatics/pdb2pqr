@@ -394,8 +394,8 @@ def pre_init(pdbfilename=None,
     #
     # Set up all other routines
     #
-    my_routines = Debump(my_protein, verbose) #my_definition)
-    my_routines.update_residue_types()
+    debumper = Debump(my_protein, verbose) #my_definition)
+    debumper.update_residue_types()
     my_protein.update_ss_bridges()
     my_protein.update_bonds()
     my_protein.set_termini()
@@ -404,9 +404,9 @@ def pre_init(pdbfilename=None,
     my_protein.apply_name_scheme(Forcefield(ff, my_definition, None))
     my_protein.find_missing_heavy()
     my_protein.add_hydrogens()
-    my_routines.debump_protein()
+    debumper.debump_protein()
 
-    #my_routines.randomizeWaters()
+    #debumper.randomizeWaters()
     my_protein.reserialize()
     #
     # Inject the information on hydrogen conformations in the HYDROGENS.DAT arrays
@@ -415,7 +415,7 @@ def pre_init(pdbfilename=None,
     from src.hydrogens import HydrogenRoutines
     my_protein.update_internal_bonds()
     my_protein.calculate_dihedral_angles()
-    my_hydrogen_routines = HydrogenRoutines(my_routines)
+    my_hydrogen_routines = HydrogenRoutines(debumper)
     #
     # Here we should inject the info!!
     #
@@ -493,7 +493,7 @@ def pre_init(pdbfilename=None,
                 misslist.remove(atom)
 
     if verbose:
-        print("Created protein object (after processing my_routines) -")
+        print("Created protein object (after processing debumper) -")
         print("\tNumber of residues in protein: %s" % len(my_protein.residues)
         print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms)
     #
@@ -554,7 +554,7 @@ def pre_init(pdbfilename=None,
     #
     # Return all we need
     #
-    return my_protein, my_routines, my_forcefield,igen, ligand_titratable_groups, maps, sd
+    return my_protein, debumper, my_forcefield,igen, ligand_titratable_groups, maps, sd
 
 #
 # --------------

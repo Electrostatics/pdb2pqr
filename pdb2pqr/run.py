@@ -157,12 +157,12 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
     start = time.time()
 
-    my_routines = debump.Debump(my_protein)
+    debumper = debump.Debump(my_protein)
 
     if not options.assign_only:
 
         if options.debump:
-            my_routines.debump_protein()
+            debumper.debump_protein()
 
 
         # TODO - both PROPKA and PDB2PKA are messed up
@@ -180,16 +180,16 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
             #                        'pairene': args.pairene}
             # else:
             #     ph_calc_options = None
-            my_routines.run_propka(options.ph, options.ff, options={})
+            debumper.run_propka(options.ph, options.ff, options={})
         elif options.pka_method == 'pdb2pka':
             raise NotImplementedError("PROPKA is broken.")
-            # my_routines.run_pdb2pka(options.ph, options.ff, pdblist, ligand, ph_calc_options)
+            # debumper.run_pdb2pka(options.ph, options.ff, pdblist, ligand, ph_calc_options)
 
         my_protein.add_hydrogens()
-        my_hydrogen_routines = hydrogens.HydrogenRoutines(my_routines)
+        my_hydrogen_routines = hydrogens.HydrogenRoutines(debumper)
 
         if options.debump:
-            my_routines.debump_protein()
+            debumper.debump_protein()
 
         if options.opt:
             my_hydrogen_routines.set_optimizeable_hydrogens()

@@ -14,9 +14,6 @@ class Cells(object):
     xyz protein space into several 3-D cells of desired size - then by simply
     examining atoms that fall into the adjacent cells one can quickly find nearby
     cells.
-
-    NOTE:  Ideally this should be somehow separated from the routines
-            object...
     """
 
     def __init__(self, cellsize):

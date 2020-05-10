@@ -2,7 +2,7 @@
 import logging
 import time
 from pathlib import Path
-from . import routines
+from . import debump
 from . import hydrogens
 from . import forcefield
 from . import aa
@@ -157,7 +157,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 
     start = time.time()
 
-    my_routines = routines.Debump(my_protein)
+    my_routines = debump.Debump(my_protein)
 
     if not options.assign_only:
 

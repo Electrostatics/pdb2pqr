@@ -20,7 +20,7 @@ import math
 import copy
 import string
 import shutil
-from src.routines import Debump
+from ..debump import Debump
 from src.hydrogens import HydrogenRoutines, HydrogenAmbiguity
 
 

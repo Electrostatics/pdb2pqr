@@ -15,7 +15,7 @@ import os
 
 from src.definitions import Definition
 from src.forcefield import Forcefield
-from src.routines import Debump
+from ..debump import Debump
 from src.protein import get_pdb_file, readPDB, Protein, Amino, Nucleic
 from src.aa import LIG
 from src.errors import PDB2PKAError
@@ -310,28 +310,28 @@ def pre_init(original_pdb_list=None,
     #
     # Set up all other routines
     #
-    my_routines = Debump(my_protein, verbose) #my_definition)
-    my_routines.updateResidueTypes()
-    my_routines.updateSSbridges()
-    my_routines.updateBonds()
-    my_routines.setTermini()
-    my_routines.updateInternalBonds()
+    debumper = Debump(my_protein, verbose) #my_definition)
+    debumper.updateResidueTypes()
+    debumper.updateSSbridges()
+    debumper.updateBonds()
+    debumper.setTermini()
+    debumper.updateInternalBonds()
 
-    my_routines.applyNameScheme(Forcefield(ff, my_definition, None))
-    my_routines.findMissingHeavy()
-    my_routines.addHydrogens()
-    my_routines.debumpProtein()
+    debumper.applyNameScheme(Forcefield(ff, my_definition, None))
+    debumper.findMissingHeavy()
+    debumper.addHydrogens()
+    debumper.debumpProtein()
 
-    #my_routines.randomizeWaters()
+    #debumper.randomizeWaters()
     my_protein.reSerialize()
     #
     # Inject the information on hydrogen conformations in the HYDROGENS.DAT arrays
     # We get this information from ligand_titratable_groups
     #
     from src.hydrogens import hydrogenRoutines
-    my_routines.updateInternalBonds()
-    my_routines.calculateDihedralAngles()
-    my_hydrogen_routines = hydrogenRoutines(my_routines)
+    debumper.updateInternalBonds()
+    debumper.calculateDihedralAngles()
+    my_hydrogen_routines = hydrogenRoutines(debumper)
     #
     # Here we should inject the info!!
     #
@@ -339,14 +339,14 @@ def pre_init(original_pdb_list=None,
     my_hydrogen_routines.initializeFullOptimization()
     my_hydrogen_routines.optimizeHydrogens()
     my_hydrogen_routines.cleanup()
-    my_routines.setStates()
+    debumper.setStates()
 
     #
     # Choose the correct forcefield
     #
     my_forcefield = Forcefield(ff, my_definition, None)
     if Lig:
-        hitlist, misslist = my_routines.applyForcefield(my_forcefield)
+        hitlist, misslist = debumper.applyForcefield(my_forcefield)
         #
         # Can we get charges for the ligand?
         #
@@ -410,7 +410,7 @@ def pre_init(original_pdb_list=None,
                 misslist.remove(atom)
 
     if verbose:
-        print("Created protein object (after processing my_routines) -")
+        print("Created protein object (after processing debumper) -")
         print("\tNumber of residues in protein: %s" % my_protein.numResidues())
         print("\tNumber of atoms in protein   : %s" % my_protein.numAtoms())
     #
@@ -463,7 +463,7 @@ def pre_init(original_pdb_list=None,
     #
     # Return all we need
     #
-    return output_dir, my_protein, my_routines, my_forcefield,igen, ligand_titratable_groups, maps, sd
+    return output_dir, my_protein, debumper, my_forcefield,igen, ligand_titratable_groups, maps, sd
 
 #
 # --------------

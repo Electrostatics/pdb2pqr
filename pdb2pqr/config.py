@@ -44,11 +44,17 @@ FILTER_WARNINGS = ["Skipped atom during water optimization",
 # supressing further output.
 FILTER_WARNINGS_LIMIT = 20
 
+# Expected location for topology definition file
+TOPOLOGY_DEF_PATH = "dat/TOPOLOGY.xml"
+
 # Expected location for amino acid topology definition file
 AA_DEF_PATH = "dat/AA.xml"
 
 # Expected location for nucleic acid topology definition file
 NA_DEF_PATH = "dat/NA.xml"
+
+# Expected location for hydrogens topology definition file
+HYD_DEF_PATH = "dat/HYDROGENS.xml"
 
 # Expected location for topology patch definition file
 PATCH_DEF_PATH = "dat/PATCHES.xml"
@@ -79,3 +85,9 @@ PEPTIDE_DIST = 1.7
 
 # Limit on fraction of molecule missing before giving up on repairs
 REPAIR_LIMIT = 0.1
+
+# Cutoff for A - D - H(D) hydrogen bond angle
+ANGLE_CUTOFF = 20.0
+
+# Cutoff for H(D) to A hydrogen bond distance
+DIST_CUTOFF = 3.3

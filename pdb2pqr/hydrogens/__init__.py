@@ -353,7 +353,7 @@ class HydrogenRoutines(object):
 
             type_ = optinstance.opttype
             if type_ == "Water":
-                klass = globals()[type_]
+                klass = getattr(structures, type_)
                 myobj = klass(residue, optinstance, self.debumper)
                 self.atomlist += myobj.atomlist
                 self.optlist.append(myobj)

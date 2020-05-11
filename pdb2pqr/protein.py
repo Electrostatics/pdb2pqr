@@ -44,6 +44,7 @@ class Protein(object):
         self.chains = []
         self.residues = []
         self.definition = definition
+        self.pdblist = pdblist
 
         chain_dict = {}
         previous_atom = None

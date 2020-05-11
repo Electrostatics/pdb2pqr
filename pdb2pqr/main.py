@@ -342,6 +342,101 @@ def drop_water(pdblist):
     return pdblist_new
 
 
+def non_trivial(args, protein, definition, is_cif):
+    """Perform a non-trivial PDB2PQR run.
+
+    Args:
+        args:  argparse namespace.
+        protein:  Protein object.  This is not actually specific to proteins...
+                  Nucleic acids are biomolecules, too!
+        definition:  Definition object for topology.
+        is_cif:  Boolean indicating whether file is CIF format.
+    Returns:
+        Dictionary with results.
+        TODO - replace this with a more robust return option
+    """
+    _LOGGER.info("Loading forcefield.")
+    forcefield_ = forcefield.Forcefield(args.ff, definition, args.userff,
+                                        args.usernames)
+    _LOGGER.info("Loading hydrogen topology definitions.")
+    hydrogen_handler = hydrogens.create_handler()
+    debumper = debump.Debump(protein)
+
+    if args.assign_only:
+        # TODO - I don't understand why HIS needs to be set to HIP for assign-only
+        protein.set_hip()
+    else:
+        if is_repairable(protein, args.ligand is not None):
+            _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
+                            protein.num_missing_heavy)
+            protein.repair_heavy()
+
+        _LOGGER.info("Updating disulfide bridges.")
+        protein.update_ss_bridges()
+
+        if args.debump:
+            _LOGGER.info("Debumping biomolecule.")
+            debumper.debump_protein()
+
+        if args.pka_method == "propka":
+            _LOGGER.info("Assigning titration states with PROPKA.")
+            raise NotImplementedError("PROPKA not implemented.")
+        elif args.pka_method == "pdb2pka":
+            _LOGGER.info("Assigning titration states with PDB2PKA.")
+            raise NotImplementedError("PDB2PKA not implemented.")
+
+        _LOGGER.info("Adding hydrogens to biomolecule.")
+        protein.add_hydrogens()
+
+        if args.debump:
+            _LOGGER.info("Debumping biomolecule (again).")
+            debumper.debump_protein()
+
+        _LOGGER.info("Optimizing hydrogen bonds")
+        hydrogen_routines = hydrogens.HydrogenRoutines(debumper, hydrogen_handler)
+        if args.opt:
+            hydrogen_routines.set_optimizeable_hydrogens()
+            protein.hold_residues(None)
+            hydrogen_routines.initialize_full_optimization()
+            hydrogen_routines.optimize_hydrogens()
+        else:
+            hydrogen_routines.initialize_wat_optimization()
+            hydrogen_routines.optimize_hydrogens()
+        hydrogen_routines.cleanup()
+
+    _LOGGER.info("Applying force field to biomolecule states.")
+    protein.set_states()
+    hitlist, misslist = protein.apply_force_field(forcefield_)
+
+    if args.ligand is not None:
+        _LOGGER.info("Processing ligand.")
+        raise NotImplementedError("Ligand support not implemented.")
+
+    if args.ffout is not None:
+        _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
+        if args.ffout != args.ff:
+            name_scheme = forcefield.Forcefield(scheme, definition, None)
+        else:
+            name_scheme = forcefield_
+        protein.apply_name_scheme(name_scheme)
+
+    _LOGGER.info("Regenerating headers.")
+    reslist, charge = protein.charge
+    if is_cif:
+        header = io.print_pqr_header_cif(misslist, reslist, charge, args.ff,
+                                         args.pka_method, args.ph, args.ffout,
+                                         include_old_header=args.include_header)
+    else:
+        header = io.print_pqr_header(protein.pdblist, misslist, reslist, charge,
+                                     args.ff, args.pka_method, args.ph, args.ffout,
+                                     include_old_header=args.include_header)
+
+    _LOGGER.info("Regenerating PDB lines.")
+    lines = io.print_protein_atoms(hitlist, args.chain)
+
+    return {"lines": lines, "header": header, "missed_residues": misslist}
+
+
 def main(args):
     """Main driver for running program from the command line.
 
@@ -361,7 +456,6 @@ def main(args):
 
     _LOGGER.info("Loading topology files.")
     definition = io.get_definitions()
-    hydrogen_handler = hydrogens.create_handler()
 
     _LOGGER.info("Loading molecule: %s", args.input_path)
     pdblist, is_cif = io.get_molecule(args.input_path)
@@ -371,7 +465,6 @@ def main(args):
         pdblist = drop_water(pdblist)
     _LOGGER.info("Setting up molecule.")
     protein, definition, ligand = setup_molecule(pdblist, definition, args.ligand)
-    debumper = debump.Debump(protein)
 
     _LOGGER.info("Setting termini states for protein chains.")
     protein.set_termini(args.neutraln, args.neutralc)
@@ -382,83 +475,8 @@ def main(args):
         results = {"header": "", "missed_residues": None, "protein": protein,
                    "lines": io.print_protein_atoms(protein.atoms, args.chain)}
     else:
-        _LOGGER.info("Loading forcefield.")
-        forcefield_ = forcefield.Forcefield(args.ff, definition, args.userff,
-                                            args.usernames)
-
-        if args.assign_only:
-            # TODO - I don't understand why HIS needs to be set to HIP for assign-only
-            protein.set_hip()
-        else:
-            if is_repairable(protein, args.ligand is not None):
-                _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
-                             protein.num_missing_heavy)
-                protein.repair_heavy()
-
-            _LOGGER.info("Updating disulfide bridges.")
-            protein.update_ss_bridges()
-
-            if args.debump:
-                _LOGGER.info("Debumping biomolecule.")
-                debumper.debump_protein()
-
-            if args.pka_method == "propka":
-                _LOGGER.info("Assigning titration states with PROPKA.")
-                raise NotImplementedError("PROPKA not implemented.")
-            elif args.pka_method == "pdb2pka":
-                _LOGGER.info("Assigning titration states with PDB2PKA.")
-                raise NotImplementedError("PDB2PKA not implemented.")
-
-            _LOGGER.info("Adding hydrogens to biomolecule.")
-            protein.add_hydrogens()
-
-            if args.debump:
-                _LOGGER.info("Debumping biomolecule (again).")
-                debumper.debump_protein()
-
-            _LOGGER.info("Optimizing hydrogen bonds")
-            hydrogen_routines = hydrogens.HydrogenRoutines(debumper, hydrogen_handler)
-            if args.opt:
-                hydrogen_routines.set_optimizeable_hydrogens()
-                protein.hold_residues(None)
-                hydrogen_routines.initialize_full_optimization()
-                hydrogen_routines.optimize_hydrogens()
-            else:
-                hydrogen_routines.initialize_wat_optimization()
-                hydrogen_routines.optimize_hydrogens()
-            hydrogen_routines.cleanup()
-
-        _LOGGER.info("Applying force field to biomolecule states.")
-        protein.set_states()
-        hitlist, misslist = protein.apply_force_field(forcefield_)
-
-        if args.ligand is not None:
-            _LOGGER.info("Processing ligand.")
-            raise NotImplementedError("Ligand support not implemented.")
-
-        if args.ffout is not None:
-            _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
-            if args.ffout != args.ff:
-                name_scheme = forcefield.Forcefield(scheme, definition, None)
-            else:
-                name_scheme = forcefield_
-            protein.apply_name_scheme(name_scheme)
-
-        _LOGGER.info("Regenerating headers.")
-        reslist, charge = protein.charge
-        if is_cif:
-            header = io.print_pqr_header_cif(misslist, reslist, charge, args.ff,
-                                             args.pka_method, args.ph, args.ffout,
-                                             include_old_header=args.include_header)
-        else:
-            header = io.print_pqr_header(pdblist, misslist, reslist, charge, args.ff,
-                                         args.pka_method, args.ph, args.ffout,
-                                         include_old_header=args.include_header)
-
-        _LOGGER.info("Regenerating PDB lines.")
-        lines = io.print_protein_atoms(hitlist, args.chain)
-
-        results = {"lines": lines, "header": header, "missed_residues": misslist}
+        results = non_trivial(args=args, protein=protein, definition=definition,
+                              is_cif=is_cif)
 
     print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
               missing_lines=results["missed_residues"], is_cif=is_cif)

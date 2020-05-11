@@ -120,8 +120,6 @@ class Debump(object):
         """Make sure that none of the added atoms were rebuilt on top of existing
         atoms.  See each called function for more information.
         """
-        _LOGGER.info("Checking if we must debump any residues... ")
-
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
         self.cells.assign_cells(self.protein)

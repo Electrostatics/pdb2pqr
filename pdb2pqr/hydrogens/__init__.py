@@ -16,6 +16,7 @@ from .. import topology
 from .. import definitions as defns
 from .. import utilities as util
 from .. import quatfit as quat
+from ..config import HYD_DEF_PATH
 from . import structures
 
 
@@ -32,19 +33,36 @@ TITRATION_DICT = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4',
                   'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
 
 
+def create_handler(hyd_path=HYD_DEF_PATH):
+    """Create and populate a hydrogen handler.
+
+    Args:
+        hyd_def_file:  hydrogens definition file.
+    Returns:
+        HydrogenHandler object.
+    """
+    handler = structures.HydrogenHandler()
+    hyd_path = io.test_dat_file(hyd_path)
+    with open(hyd_path, "rt") as hyd_file:
+        sax.make_parser()
+        sax.parseString(hyd_file.read(), handler)
+    return handler
+
+
 class HydrogenRoutines(object):
     """The main routines for hydrogen optimization.
 
     TODO - this class really needs to be refactored.
 
-    This could potentially be extended from the routines object."""
+    This could potentially be extended from the routines object.
+    """
 
-    def __init__(self, debumper, hyd_def_file):
+    def __init__(self, debumper, handler):
         """Initialize
 
         Args:
             dembumper:  Debump object
-            hyd_def_file:  file object for hydrogen definitions
+            handler:  HydrogenHandler object
         """
         self.debumper = debumper
         self.protein = debumper.protein
@@ -52,12 +70,6 @@ class HydrogenRoutines(object):
         self.atomlist = []
         self.resmap = {}
         self.hydrodefs = []
-
-        handler = structures.HydrogenHandler()
-        sax.make_parser()
-
-        sax.parseString(hyd_def_file.read(), handler)
-
         self.map = handler.map
 
     def switchstate(self, states, amb, state_id):

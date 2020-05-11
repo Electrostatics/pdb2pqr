@@ -360,3 +360,4 @@ def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
                 definitions = defns.Definition(aa_file=aa_file, na_file=na_file,
                                                patch_file=patch_file)
     return definitions
+

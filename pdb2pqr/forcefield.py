@@ -6,8 +6,12 @@ forcefield is considered a chain of residues of atoms.
 Authors:  Todd Dolinsky, Yong Huang
 """
 import re
+import logging
 from xml import sax
 from . import input_output as io
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class ForcefieldHandler(sax.ContentHandler):
@@ -157,7 +161,7 @@ class Forcefield(object):
     """
 
     # TODO - pass ff and ff names file like objects.
-    # Instead of sorting out whetherto use user-created files here.
+    # Instead of sorting out whether to use user-created files here.
     def __init__(self, ff_name, definition, userff, usernames=None):
         """Initialize the class by parsing the definition file
 
@@ -174,7 +178,8 @@ class Forcefield(object):
             # TODO - why are files being loaded so deep in this function?
             defpath = io.test_dat_file(ff_name)
             if defpath == "":
-                raise FileNotFoundError("Unable to find forcefield parameter file %s!" % self.name)
+                _LOGGER.error("%s", locals())
+                raise FileNotFoundError("Unable to find forcefield parameter file %s!" % ff_name)
         else:
             defpath = userff
 

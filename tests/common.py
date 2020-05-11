@@ -13,7 +13,7 @@ PARSER = build_parser()
 
 
 # This is a list of legit FF names
-FF_LIST = ["AMBER", "CHARMM", "PARSE", "TYL06", "PEOPB", "SWANSON"]
+FF_LIST = ["AMBER", "CHARMM", "PARSE", "TYL06", "PEOEPB", "SWANSON"]
 # Where the test data lives
 DATA_DIR = Path("tests/data")
 # Tolerable error for positions

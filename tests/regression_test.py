@@ -1,6 +1,5 @@
 """Regression tests for PDB2PQR behavior."""
 import logging
-from pathlib import Path
 import pytest
 import common
 
@@ -9,7 +8,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize(
-    "args, input_path, output_pqr, expected_pqr",
+    "args, input_pdb, output_pqr, expected_pqr",
     [
         pytest.param(
             "--log-level=INFO --ff=AMBER",
@@ -27,14 +26,14 @@ _LOGGER = logging.getLogger(__name__)
         )
     ]
 )
-def test_basic(args, input_path, output_pqr, expected_pqr, tmp_path):
+def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS."""
-    common.run_pdb2pqr(args=args, input_path=input_path, output_pqr=output_pqr,
+    common.run_pdb2pqr(args=args, input_pdb=input_pdb, output_pqr=output_pqr,
                        expected_pqr=expected_pqr, tmp_path=tmp_path)
 
 
 @pytest.mark.parametrize(
-    "args, input_path, output_pqr, expected_pqr",
+    "args, input_pdb, output_pqr, expected_pqr",
     [
         pytest.param(
             "--log-level=INFO --whitespace --ff=AMBER",
@@ -80,14 +79,14 @@ def test_basic(args, input_path, output_pqr, expected_pqr, tmp_path):
         )
     ]
 )
-def test_forcefields(args, input_path, output_pqr, expected_pqr, tmp_path):
+def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace for different forcefields."""
-    common.run_pdb2pqr(args=args, input_path=input_path, output_pqr=output_pqr,
+    common.run_pdb2pqr(args=args, input_pdb=input_pdb, output_pqr=output_pqr,
                        expected_pqr=expected_pqr, tmp_path=tmp_path)
 
 
 @pytest.mark.parametrize(
-    "args, input_path, output_pqr, expected_pqr",
+    "args, input_pdb, output_pqr, expected_pqr",
     [
         pytest.param(
             "--log-level=INFO --whitespace --clean",
@@ -142,13 +141,13 @@ def test_forcefields(args, input_path, output_pqr, expected_pqr, tmp_path):
         )
     ]
 )
-def test_other_options(args, input_path, output_pqr, expected_pqr, tmp_path):
+def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace."""
-    common.run_pdb2pqr(args=args, input_path=input_path, output_pqr=output_pqr,
+    common.run_pdb2pqr(args=args, input_pdb=input_pdb, output_pqr=output_pqr,
                        expected_pqr=expected_pqr, tmp_path=tmp_path)
 
 # @pytest.mark.parametrize(
-#     "args, input_path, output_pqr, expected_pqr",
+#     "args, input_pdb, output_pqr, expected_pqr",
 
 #         pytest.param(
 #             "--ff=AMBER --apbs-input --whitespace --include-header",

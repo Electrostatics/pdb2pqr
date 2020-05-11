@@ -7,12 +7,10 @@ file.
 import logging
 import argparse
 from pathlib import Path
-from . import run
 from . import aa
 from . import debump
 from . import hydrogens
 from . import forcefield
-from . import utilities as util
 from . import protein as prot
 from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
@@ -41,6 +39,7 @@ def build_parser():
     grp1 = pars.add_argument_group(title="Mandatory options",
                                    description="One of the following options must be used")
     grp1.add_argument("--ff", choices=[x.upper() for x in FORCE_FIELDS],
+                      default="PARSE",
                       help="The forcefield to use.")
     grp1.add_argument("--userff",
                       help=("The user-created forcefield file to use. Requires "

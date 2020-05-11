@@ -222,7 +222,7 @@ class Psize(object):
 
         self.set_focus(fine_length, nproc, coarse_length)
 
-    def run_pize(self, filename):
+    def run_psize(self, filename):
         """ Parse input PQR file and set parameters """
         self.parse_input(filename)
         self.set_all()

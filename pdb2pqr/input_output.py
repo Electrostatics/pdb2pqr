@@ -204,20 +204,19 @@ def print_pqr_header_cif(atomlist, reslist, charge, force_field,
     return header
 
 
-def dump_apbs(output_pqr):
+def dump_apbs(output_pqr, output_path):
     """Generate and dump APBS input files related to output_pqr.
 
     Args:
-        output_pqr:  path to output PQR file.
+        output_pqr:  path to PQR file used to generate APBS input file
+        output_path:  path for APBS input file output
     """
     method = "mg-auto"
     size = psize.Psize()
     size.parse_input(output_pqr)
-    size.run_pize(output_pqr)
+    size.run_psize(output_pqr)
     input_ = inputgen.Input(output_pqr, size, method, 0, potdx=True)
-    input_.print_input_files()
-    # TODO - do we still want to dump a pickle?
-    input_.dump_pickle()
+    input_.print_input_files(output_path)
 
 
 def test_for_file(name, type_):

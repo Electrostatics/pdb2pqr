@@ -66,9 +66,9 @@ def build_parser():
     grp2.add_argument('--usernames',
                       help=('The user-created names file to use. Required if '
                             'using --userff'))
-    grp2.add_argument('--apbs-input', action='store_true', default=False,
+    grp2.add_argument('--apbs-input', 
                       help=('Create a template APBS input file based on the '
-                            'generated PQR file.'))
+                            'generated PQR file at the specified location.'))
     grp2.add_argument('--ligand',
                       help=('Calculate the parameters for the specified '
                             'MOL2-format ligand at the path specified by this '
@@ -100,6 +100,8 @@ def build_parser():
                       default=7.0,
                       help=('pH values to use when applying the results of the '
                             'selected pH calculation method.'))
+    # TODO - need separate argparse groups for PDB2PKA and PROPKA
+    # These exist but need real options
     grp4 = pars.add_argument_group(title="PDB2PKA method options")
     grp4.add_argument('--pdb2pka-out', default='pdb2pka_output',
                       help='Output directory for PDB2PKA results.')

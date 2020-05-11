@@ -127,7 +127,7 @@ class Input(object):
         Users can edit the elec statements and the print statements.
 
         This assumes you have already run psize, either by
-            size.run_pize(/path/to/pqr) or
+            size.run_psize(/path/to/pqr) or
 
             size.parse_string(string)
             size.set_all()
@@ -168,36 +168,36 @@ class Input(object):
         text += "\nquit\n"
         return text
 
-    def print_input_files(self):
-        """Make the input file(s) associated with this object"""
-        base_pqr_name = self.pqrpath.stem
-        if self.asyncflag == 1:
-            outname = base_pqr_name + "-para.in"
+    def print_input_files(self, output_path):
+        """Generate the input file(s) associated with this object.
+        
+        Args:
+            output_path:  location for generated files.
+        """
+        path = Path(output_path)
+        base_name = path.stem
+        if self.asyncflag:
+            outname = base_name + "-para.in"
 
             # Temporarily disable async flag
             for elec in self.elecs:
-                elec.asyncflag = 0
-            file_ = open(outname, "w")
-            file_.write(str(self))
-            file_.close()
+                elec.asyncflag = False
+            with open(outname, "wt") as out_file:
+                out_file.write(str(self))
 
             # Now make the async files
             elec = self.elecs[0]
             nproc = elec.pdime[0] * elec.pdime[1] * elec.pdime[2]
             for i in range(int(nproc)):
-                outname = base_pqr_name + "-PE%i.in" % i
+                outname = base_name + "-PE%i.in" % i
                 for elec in self.elecs:
-                    elec.asyncflag = 1
+                    elec.asyncflag = True
                     elec.async_ = i
-                file_ = open(outname, "w")
-                file_.write(str(self))
-                file_.close()
-
+                with open(outname, "wt") as out_file:
+                    out_file.write(str(self))
         else:
-            outname = base_pqr_name + ".in"
-            file_ = open(outname, "w")
-            file_.write(str(self))
-            file_.close()
+            with open(path, "wt") as out_file:
+                out_file.write(str(self))
 
     def dump_pickle(self):
         """Make a Python pickle associated with the APBS input parameters"""
@@ -293,7 +293,7 @@ def main():
     if args.split:
         split_input(filename)
     else:
-        size.run_pize(filename)
+        size.run_psize(filename)
         input_ = Input(filename, size, args.method, args.asynch, args.istrng,
                        args.potdx)
         input_.print_input_files()

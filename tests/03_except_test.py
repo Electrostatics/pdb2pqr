@@ -3,21 +3,15 @@ import logging
 from pathlib import Path
 import pytest
 import common
-from pdb2pqr import build_parser, main
 
 
 _LOGGER = logging.getLogger(__name__)
-PARSER = build_parser()
 
 
-def run_pdb2pqr(args, input_path, output_pqr, tmp_path_):
-    """Basic code for invoking PDB2PQR."""
-    arg_str = args + " {inp} {out}"
-    output_pqr = tmp_path_ / output_pqr
-    _LOGGER.debug("Writing output to %s", output_pqr)
-    arg_str = arg_str.format(inp=input_path, out=output_pqr)
-    args = PARSER.parse_args(arg_str.split())
-    main(args)
+_LOGGER.error("Need test coverage for --userff")
+_LOGGER.error("Need test coverage for --usernames")
+_LOGGER.error("Need test coverage for --ligand")
+_LOGGER.error("Need test coverage (with expected results) for --apbs-input")
 
 
 @pytest.mark.parametrize("input_path", ["1K1I", "1AFS", "1FAS", "5DV8", "5D8V"], ids=str)
@@ -25,7 +19,8 @@ def test_basic_apo(input_path, tmp_path):
     """Basic routines on proteins without ligands."""
     args = "--log-level=INFO --ff=AMBER --drop-water"
     output_pqr = Path(input_path).stem + ".pqr"
-    run_pdb2pqr(args, input_path, output_pqr, tmp_path)
+    commmon.run_pdb2pqr(args=args, input_path=input_path, output_pqr=output_pqr,
+                        tmp_path=tmp_path)
 
 
 # @pytest.mark.parametrize("input_path", ["1K1I", "1FAS"], ids=str)

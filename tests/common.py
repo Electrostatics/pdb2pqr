@@ -3,15 +3,18 @@ from pathlib import Path
 import numpy
 import pandas
 import logging
+from pdb2pqr.main import build_parser, main
 
 
 _LOGGER = logging.getLogger(__name__)
+PARSER = build_parser()
 
 
 DATA_DIR = Path("tests/data")
 POS_CUT = 1e-2
 Q_CUT = 1e-2
 R_CUT = 1e-2
+
 
 def pqr_to_dict(pqr_file):
     """Convert PQR to dictionary.
@@ -145,3 +148,15 @@ def compare_pqr(pqr1_path, pqr2_path):
                     raise ValueError(result)
             else:
                 _LOGGER.info(result)
+
+
+def run_pdb2pqr(args, input_path, output_pqr, tmp_path, expected_pqr=None):
+    """Basic code for invoking PDB2PQR."""
+    arg_str = args + " {inp} {out}"
+    output_pqr = tmp_path / output_pqr
+    _LOGGER.debug("Writing output to %s", output_pqr)
+    arg_str = arg_str.format(inp=input_path, out=output_pqr)
+    args = PARSER.parse_args(arg_str.split())
+    main(args)
+    if expected_pqr is not None:
+        compare_pqr(output_pqr, expected_pqr)

@@ -19,7 +19,7 @@ def test_basic_apo(input_path, tmp_path):
     """Basic routines on proteins without ligands."""
     args = "--log-level=INFO --ff=AMBER --drop-water"
     output_pqr = Path(input_path).stem + ".pqr"
-    commmon.run_pdb2pqr(args=args, input_path=input_path, output_pqr=output_pqr,
+    common.run_pdb2pqr(args=args, input_path=input_path, output_pqr=output_pqr,
                         tmp_path=tmp_path)
 
 

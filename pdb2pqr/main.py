@@ -416,7 +416,7 @@ def non_trivial(args, protein, definition, is_cif):
     if args.ffout is not None:
         _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
         if args.ffout != args.ff:
-            name_scheme = forcefield.Forcefield(scheme, definition, None)
+            name_scheme = forcefield.Forcefield(args.ffout, definition, None)
         else:
             name_scheme = forcefield_
         protein.apply_name_scheme(name_scheme)

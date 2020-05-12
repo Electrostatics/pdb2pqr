@@ -39,7 +39,7 @@ _LOGGER.info("Found %d force field option combinations", len(FF_COMBOS))
 FAST_OPTIONS = ["--clean", "--nodebump", "--noopt"]
 # These are other options to test
 SIMPLE_OPTIONS = ["--whitespace", "--neutraln", "--neutralc", "--drop-water",
-                  "--include-header"] + FAST_OPTIONS
+                  "--include-header", "--keep-chain"] + FAST_OPTIONS
 SIMPLE_COMBOS = common.generate_combinations(SIMPLE_OPTIONS)
 _LOGGER.info("Found %d simple option combinations", len(SIMPLE_COMBOS))
 

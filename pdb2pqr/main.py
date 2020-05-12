@@ -54,7 +54,7 @@ def build_parser():
                       default=True, help='Do not perform the debumping operation')
     grp2.add_argument('--noopt', dest='opt', action='store_false', default=True,
                       help='Do not perform hydrogen optimization')
-    grp2.add_argument('--chain', action='store_true', default=False,
+    grp2.add_argument('--keep-chain', action='store_true', default=False,
                       help='Keep the chain ID in the output PQR file')
     grp2.add_argument('--assign-only', action='store_true', default=False,
                       help=("Only assign charges and radii - do not add atoms, "
@@ -113,11 +113,6 @@ def build_parser():
                       help='Solvent dielectric constant.')
     grp4.add_argument('--pairene', default=1.0,
                       help='Cutoff energy in kT for pairwise pKa interaction energies.')
-    grp5 = pars.add_argument_group(title="PROPKA method options")
-    grp5.add_argument("--propka-reference", default="neutral",
-                      choices=('neutral', 'low-pH'),
-                      help=("Setting which reference to use for stability "
-                            "calculations. See PROPKA 3.0 documentation."))
     pars = propka.lib.build_parser(pars)
     return pars
 
@@ -435,7 +430,7 @@ def non_trivial(args, protein, definition, is_cif):
                                      include_old_header=args.include_header)
 
     _LOGGER.info("Regenerating PDB lines.")
-    lines = io.print_protein_atoms(hitlist, args.chain)
+    lines = io.print_protein_atoms(hitlist, args.keep_chain)
 
     return {"lines": lines, "header": header, "missed_residues": misslist}
 
@@ -476,7 +471,7 @@ def main(args):
     if args.clean:
         _LOGGER.info("Arguments specified cleaning only; skipping remaining steps.")
         results = {"header": "", "missed_residues": None, "protein": protein,
-                   "lines": io.print_protein_atoms(protein.atoms, args.chain)}
+                   "lines": io.print_protein_atoms(protein.atoms, args.keep_chain)}
     else:
         results = non_trivial(args=args, protein=protein, definition=definition,
                               is_cif=is_cif)
@@ -485,4 +480,5 @@ def main(args):
               missing_lines=results["missed_residues"], is_cif=is_cif)
 
     if args.apbs_input:
+        raise NotImplementedError("Missing argument for APBS input file.")
         io.dump_apbs(args.output_pqr)

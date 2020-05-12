@@ -7,6 +7,7 @@ file.
 import logging
 import argparse
 from pathlib import Path
+import propka.lib
 from . import aa
 from . import debump
 from . import hydrogens
@@ -38,7 +39,7 @@ def build_parser():
                       choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
     grp1 = pars.add_argument_group(title="Mandatory options",
                                    description="One of the following options must be used")
-    grp1.add_argument("--ff", choices=[x.upper() for x in FORCE_FIELDS],
+    grp1.add_argument("--ff", choices=[ff.upper() for ff in FORCE_FIELDS],
                       default="PARSE",
                       help="The forcefield to use.")
     grp1.add_argument("--userff",
@@ -58,7 +59,7 @@ def build_parser():
     grp2.add_argument('--assign-only', action='store_true', default=False,
                       help=("Only assign charges and radii - do not add atoms, "
                             "debump, or optimize."))
-    grp2.add_argument('--ffout', choices=[x.upper() for x in FORCE_FIELDS],
+    grp2.add_argument('--ffout', choices=[ff.upper() for ff in FORCE_FIELDS],
                       help=('Instead of using the standard canonical naming '
                             'scheme for residue and atom names, use the names '
                             'from the given forcefield'))
@@ -117,6 +118,7 @@ def build_parser():
                       choices=('neutral', 'low-pH'),
                       help=("Setting which reference to use for stability "
                             "calculations. See PROPKA 3.0 documentation."))
+    pars = propka.lib.build_parser(pars)
     return pars
 
 
@@ -369,7 +371,7 @@ def non_trivial(args, protein, definition, is_cif):
     else:
         if is_repairable(protein, args.ligand is not None):
             _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
-                            protein.num_missing_heavy)
+                         protein.num_missing_heavy)
             protein.repair_heavy()
 
         _LOGGER.info("Updating disulfide bridges.")

@@ -48,7 +48,7 @@ _LOGGER.info("Found %d simple option combinations", len(SIMPLE_COMBOS))
 OPTION_LIST = []
 for ff_opts in FF_COMBOS:
     for simp_opts in SIMPLE_COMBOS:
-        if "--ff=PARSE" not in ff_opts:
+        if "--ff=PARSE" in ff_opts:
             opts = ff_opts + list(simp_opts)
         else:
             opts = ff_opts + list(set(simp_opts) - {"--neutralc", "--neutraln"})

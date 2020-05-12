@@ -110,7 +110,7 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
             id="1A1P nodebump noopt whitespace AMBER"
         ),
         pytest.param(
-            "--ff=AMBER --chain --whitespace",
+            "--ff=AMBER --keep-chain --whitespace",
             common.DATA_DIR / "1AFS.pdb",
             "output.pqr",
             common.DATA_DIR / '1AFS_chain_whitespace_ff=AMBER.pqr',

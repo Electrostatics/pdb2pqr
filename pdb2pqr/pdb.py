@@ -1454,13 +1454,13 @@ class MODRES(BaseRecord):
         30-70    string comment Description of the residue modification.
         """
         super(MODRES, self).__init__(line)
-        str.id_code = str.strip(line[7:11])
-        str.res_name = str.strip(line[12:15])
-        str.chain_id = str.strip(line[16])
-        str.seq_num = int(str.strip(line[18:22]))
-        str.ins_code = str.strip(line[22])
-        str.stdRes = str.strip(line[24:27])
-        str.comment = str.strip(line[29:70])
+        self.id_code = str.strip(line[7:11])
+        self.res_name = str.strip(line[12:15])
+        self.chain_id = str.strip(line[16])
+        self.seq_num = int(str.strip(line[18:22]))
+        self.ins_code = str.strip(line[22])
+        self.stdRes = str.strip(line[24:27])
+        self.comment = str.strip(line[29:70])
 
 
 @register_line_parser

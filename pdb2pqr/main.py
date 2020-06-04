@@ -6,14 +6,20 @@ file.
 """
 import logging
 import argparse
+from collections import OrderedDict
+from tempfile import NamedTemporaryFile
 from pathlib import Path
+import pandas
 import propka.lib
+from propka.parameters import Parameters
+from propka.molecular_container import MolecularContainer
+from propka.input import read_parameter_file, read_molecule_file
 from . import aa
 from . import debump
 from . import hydrogens
 from . import forcefield
 from . import protein as prot
-from . import input_output as io
+from . import input_output as io 
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
@@ -340,6 +346,51 @@ def drop_water(pdblist):
     return pdblist_new
 
 
+def run_propka(args, protein):
+    """Run a PROPKA calculation.
+
+    Args:
+        args:  argparse namespace
+        protein:  protein object
+    Returns:
+        1. DataFrame of assigned pKa values
+        2. string with filename of PROPKA-created pKa file
+    """
+    # TODO - eliminate need to write temporary file
+    lines = io.print_protein_atoms(
+        atomlist=protein.atoms, chainflag=args.keep_chain,
+        pdbfile=True)
+    with NamedTemporaryFile(
+            "wt", suffix=".pdb", delete=False) as pdb_file:
+        for line in lines:
+            pdb_file.write(line)
+        pdb_path = pdb_file.name
+    parameters = read_parameter_file(args.parameters, Parameters())
+    molecule = MolecularContainer(parameters, args)
+    molecule = read_molecule_file(pdb_path, molecule)
+    molecule.calculate_pka()
+    pka_filename = molecule.write_pka()
+    conformation = molecule.conformations["AVR"]
+    rows = []
+    for group in conformation.groups:
+        row_dict = OrderedDict()
+        atom = group.atom
+        row_dict["res_num"] = atom.res_num
+        row_dict["res_name"] = atom.res_name
+        row_dict["chain_id"] = atom.chain_id
+        row_dict["group_label"] = group.label
+        row_dict["group_type"] = getattr(group, "type", None)
+        row_dict["pKa"] = group.pka_value
+        row_dict["model_pKa"] = group.model_pka
+        if group.coupled_titrating_group:
+            row_dict["coupled_group"] = group.coupled_titrating_group.label
+        else:
+            row_dict["coupled_group"] = None
+        rows.append(row_dict)
+    df = pandas.DataFrame(rows)
+    return df, pka_filename
+
+
 def non_trivial(args, protein, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
@@ -378,7 +429,11 @@ def non_trivial(args, protein, definition, is_cif):
 
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
-            raise NotImplementedError("PROPKA not implemented.")
+            protein.remove_hydrogens()
+            pka_df, pka_filename = run_propka(args, protein)
+            _LOGGER.error("\n" + str(pka_df))
+            raise NotImplementedError(
+                "PROPKA not implemented. See %s" % pka_filename)
         elif args.pka_method == "pdb2pka":
             _LOGGER.info("Assigning titration states with PDB2PKA.")
             raise NotImplementedError("PDB2PKA not implemented.")

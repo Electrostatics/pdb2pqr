@@ -233,7 +233,9 @@ def test_for_file(name, type_):
     test_names = [name, name.upper(), name.lower()]
     test_suffixes = ["", ".%s" % type_.upper(), ".%s" % type_.lower()]
 
-    test_dirs = sys_path + ["dat", "."]
+    dat_dir = Path.joinpath(Path(__file__).parents[1], "dat")
+    test_dirs = sys_path + [dat_dir, "."]
+
     if name.lower() in FORCE_FIELDS:
         name = name.upper()
 
@@ -359,4 +361,3 @@ def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
                 definitions = defns.Definition(aa_file=aa_file, na_file=na_file,
                                                patch_file=patch_file)
     return definitions
-

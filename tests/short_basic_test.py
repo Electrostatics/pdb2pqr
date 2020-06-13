@@ -32,6 +32,10 @@ def test_propka_apo(input_pdb, tmp_path):
                         tmp_path=tmp_path)
 
 
+def test_ligand_import():
+    """Testing basic aspects of code breaking."""
+    from pdb2pqr.ligand import mol2
+
 # @pytest.mark.parametrize("input_pdb", ["1K1I", "1FAS"], ids=str)
 # def test_propka_apo(input_pdb, tmp_path):
 #     """PROPKA titration of proteins without ligands."""

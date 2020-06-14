@@ -3,6 +3,8 @@ import logging
 from .mol2 import Mol2Molecule
 from .peoe import equilibrate
 from . import PARSE_RADII
+from ..forcefield import ForcefieldAtom
+from ..forcefield import ForcefieldResidue
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -28,6 +30,23 @@ class ParameterizedMolecule(Mol2Molecule):
                 atom.formal_charge = 0.0
             self.reparameterize(ligand)
 
+    def read(self, mol2_file):
+        """Routines for reading MOL2 file.
+
+        Args:
+            mol2_file:  file-like object with MOL2 data.
+        """
+        super().read(mol2_file)
+        atom_names = set()
+        duplicates = set()
+        for atom in self.atoms:
+            if atom.name in atom_names:
+                duplicates.add(atom.name)
+            else:
+                atom_names.add(atom.name)
+        if len(duplicates) > 0:
+            err = "Found duplicate atom names: %s" % duplicates
+            raise KeyError(err)
 
     def reparameterize(self, ligand):
         """Reassign parameters given new ligand.

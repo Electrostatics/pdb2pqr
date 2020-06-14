@@ -1,0 +1,171 @@
+"""Implements the PEOE method described in:
+
+Paul Czodrowski  Ingo Dramburg  Christoph A. Sotriffer  Gerhard Klebe.
+Development, validation, and application of adapted PEOE charges to estimate
+pKa values of functional groups in protein–ligand complexes.
+Proteins, 65, 424-437, 2006.
+https://doi.org/10.1002/prot.21110
+"""
+import logging
+from math import isclose
+
+
+_LOGGER = logging.getLogger(__name__)
+
+
+# The terms of the third-order polynomial fit for the electronegativity.
+# See https://doi.org/10.1002/prot.21110 for more information.
+# NOTE - this data has no meaning outside of this module; do not move.
+POLY_TERMS = {
+    'H': (7.17, 6.24, -0.56, 12.85),
+    'C.3': (7.98, 9.18, 1.88, 19.04),
+    'C.CAT': (7.98, 9.18, 1.88, 19.04),
+    'C.2': (8.79 + 0.5, 9.32, 1.51, 19.62),
+    'C.AR': (7.98 + 0.55, 9.18, 1.88, 19.04),
+    'C.1': (10.39, 9.45, 0.73, 20.57),
+    'N.3': (11.54 + 6.0, 10.28, 1.36, 28.00),
+    'N.4': (11.54 + 6.0, 10.28, 1.36, 28.00),
+    'N.AR': (12.87 - 1.29, 11.15, 0.85, 24.87),
+    'N.2': (12.87, 11.15, 0.85, 24.87),
+    'N.PL3': (12.87 + 0.5, 11.15, 0.85, 24.87),
+    'N.AM': (12.87 + 3.5, 11.15, 0.85, 24.87),
+    'N.1': (15.68, 11.70, -0.27, 27.11),
+    'O.OH': (14.18 + 0.8, 12.92, 1.39, 28.49),
+    'O.3': (14.18 - 3.1, 12.92, 1.39, 28.49),
+    'O.2': (14.18, 12.92, 1.39, 28.49),
+    'O.CO2': (15.25, 13.79, 0.47, 31.33),
+    'F': (12.36, 13.85, 2.31, 30.82),
+    'CL':  (9.38 + 1.0, 9.69, 1.35, 22.04),
+    'BR': (10.08 + 0.8, 8.47, 1.16, 19.71),
+    'I': (9.90 + 1.0, 7.96, 0.96, 18.82),
+    'S.3': (10.13 + 0.5, 9.13, 1.38, 20.65),
+    'S.2': (10.13 + 0.5, 9.13, 1.38, 20.65),
+    'S.O2': (10.13 + 0.5, 9.13, 1.38, 20.65),
+    'P.3': (10.13 + 0.5, 9.13, 1.38, 20.65)
+    }
+# Maximum (absolute) value of charge after which contribution to polynomial 
+# is capped
+MAX_CHARGE = 1.1
+DEFAULT_H_ELECTRONEG = 20.02
+DEFAULT_H_CHARGE = 1.0
+# These next values are from the "Adaptation of the PEOE Procedure" section of
+# https://doi.org/10.1002/prot.21110.
+DAMPING_FACTOR = 0.778
+SCALING_FACTOR = 1.56
+NUM_CYCLES = 6
+
+
+def electronegativity(charge, poly_terms, atom_type):
+    """Calculate the electronegativity.
+
+    Calculation is based on a third-order polynomial in the atomic charge as
+    described in Equation 2 of https://doi.org/10.1002/prot.21110.
+
+    Args:
+        charge:  charge of atom
+        poly_terms:  polynomial terms ordered from 0th- to 3rd-order
+        atom_type:  string with atom type
+    Returns:
+        electronegativity value
+    Raises:
+        IndexError if incorrect number of poly_terms given
+    """
+    chi = None
+    if abs(charge) > MAX_CHARGE:
+        if charge < 0:
+            charge = -1.0 * MAX_CHARGE
+        else:
+            charge = MAX_CHARGE
+    if (atom_type == "H") and isclose(charge, DEFAULT_H_CHARGE):
+        chi = DEFAULT_H_ELECTRONEG
+    else:
+        if len(poly_terms) == 4:
+            chi = (
+                poly_terms[0] + poly_terms[1]*charge
+                + poly_terms[2]*charge*charge
+                + poly_terms[3]*charge*charge*charge)
+        elif len(poly_terms) == 3:
+            chi = (
+                poly_terms[0] + poly_terms[1]*charge
+                + poly_terms[2]*charge*charge
+            )
+        else:
+            err = "Cannot parse length-%d polynomial" % len(poly_terms)
+            raise IndexError(err)
+    return chi
+
+
+def assign_terms(atoms, term_dict):
+    """Assign polynomial terms to each atom.
+
+    Args:
+        atoms:  list of Mol2Atom atoms
+        term_dict:  dictionary of polynomial terms
+    Returns:
+        modified list of atoms
+    """
+    for atom in atoms:
+        atom_type = atom.atom_type.upper()
+        if atom_type == 'O.3':
+            atom_type = 'O.OH'
+        try:
+            atom.poly_terms = term_dict[atom_type]
+        except KeyError:
+            raise KeyError(
+                "Unable to find polynomial terms for atom type %s" % atom_type)
+    return atoms
+
+
+def equilibrate(
+        atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
+        num_cycles=NUM_CYCLES, term_dict=POLY_TERMS):
+    """Equilibrate the atomic charges.
+
+    Args:
+        atoms:  list of Mol2Atom atoms to equilibrate
+        damp:  damping factor for equilibration process
+        scale:  scaling factor for equilibration process
+        num_cycles:  number of PEOE cycles
+        term_dict:  dictionary of polynomial terms
+    Returns:
+        revised list of atoms
+    """
+    atoms = assign_terms(atoms, term_dict)
+    # Reset or accumulate charges
+    abs_qges = 0.0
+    for atom in atoms:
+        if isclose(atom.charge, 0.0):
+            atom.formal_charge = 0.0
+        else:
+            atom.formal_charge = atom.charge*(1.0/scale)
+            abs_qges += abs(atom.charge)
+
+    for icycle in range(num_cycles):
+        for atom1 in atoms:
+            atom1.chi = electronegativity(
+                atom1.charge, atom1.poly_terms, atom1.atom_type)
+            atom1.delta_charge = 0.0
+            for bonded_atom in atom1.bonded_atoms:
+                for atom2 in atoms:
+                    if atom2.name == bonded_atom.name:
+                        chi2 = electronegativity(
+                            atom2.charge, atom2.poly_terms,
+                            atom2.atom_type)
+                        chi_diff = chi2 - atom1.chi
+                        if chi_diff > 0:
+                            chi_norm = electronegativity(
+                                +1, atom1.poly_terms, atom1.atom_type)
+                        else:
+                            chi_norm = electronegativity(
+                                +1, atom2.poly_terms, atom2.atom_type)
+                        atom1.delta_charge += (
+                            (chi_diff/chi_norm)*(damp**icycle))
+        for atom1 in atoms:
+            if isclose(abs_qges, 0.0):
+                atom1.charge += atom1.delta_charge
+            else:
+                atom1.charge += (
+                    atom1.delta_charge + (1.0/6.0) * atom1.formal_charge)
+    for atom1 in atoms:
+        atom1.charge = scale * atom1.charge
+    return atoms

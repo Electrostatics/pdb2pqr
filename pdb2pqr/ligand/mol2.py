@@ -49,6 +49,7 @@ class Mol2Atom:
         self.element = None
         self.charge = None
         self.formal_charge = None
+        self.radius = None
         self.bonded_atoms = []
         # Terms for calculating atom electronegativity
         self.poly_terms = None

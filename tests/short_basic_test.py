@@ -3,8 +3,8 @@ import logging
 import random
 from pathlib import Path
 import pytest
-from pdb2pqr.ligand import mol2
 from pdb2pqr.ligand import peoe
+from pdb2pqr.ligand import parameterize
 import common
 
 
@@ -39,14 +39,15 @@ def test_propka_apo(input_pdb, tmp_path):
     "1HPX-ligand.mol2", "1QBS-ligand.mol2", "1US0-ligand.mol2", "adp.mol2"])
 def test_ligand(input_mol2):
     """Testing basic aspects of code breaking."""
-    ligand = mol2.Mol2Molecule()
+    _LOGGER.warning("Ideally, this would be a regression test.")
+    ligand = parameterize.ParameterizedMolecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
         for atom in ligand.atoms:
             atom.charge = random.uniform(-1, 1)
             atom.old_charge = atom.charge
-        ligand.atoms = peoe.equilibrate(ligand.atoms)
+        ligand.update(ligand)
         for atom in ligand.atoms:
             fmt = "{a!s} -- {a.old_charge:5.2f} -> {a.charge:5.2f}"
             _LOGGER.info(fmt.format(a=atom))

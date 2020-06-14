@@ -38,28 +38,35 @@ class Mol2Atom:
         self.x = None
         self.y = None
         self.z = None
-        self.sybyl_type = None
+        self.atom_type = None
         self.radius = None
         self.is_c_term = False
         self.is_n_term = False
         self.mol2charge = None
         self.occupancy = 0.00
         self.temp_factor = 0.00
-        self.seg_id = ""
-        self.element = ""
-        self.charge = ""
+        self.seg_id = None
+        self.element = None
+        self.charge = None
+        self.formal_charge = None
         self.bonded_atoms = []
+        # Terms for calculating atom electronegativity
+        self.poly_terms = None
+        # Atom electronegativity
+        self.chi = None
+        # Atom charge change during equilibration
+        self.delta_charge = None
 
     def __str__(self):
         """Generate PDB line from MOL2."""
         pdb_fmt = (
             "HETATM{a.serial:5d}{a.name:>5s}{a.res_name:>4s} L"
-            "{self.res_seq:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
+            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
         )
-        return pdb_fmt.format(self)
+        return pdb_fmt.format(a=self)
 
 
-class Mol2Molecule(object):
+class Mol2Molecule:
     """Tripos MOL2 molecule"""
     def __init__(self):
         self.atoms = []
@@ -111,7 +118,7 @@ class Mol2Molecule(object):
                 raise ValueError(err)
             atom = Mol2Atom()
             atom.name = words[1]
-            atom.sybyl_type = words[5]
+            atom.atom_type = words[5]
             atom.chain_id = "L"
             try:
                 atom.serial = int(words[0])

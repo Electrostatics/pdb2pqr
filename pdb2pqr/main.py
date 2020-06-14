@@ -20,6 +20,7 @@ from . import hydrogens
 from . import forcefield
 from . import protein as prot
 from . import input_output as io 
+from .ligand.parameterize import ParameterizedMolecule
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
@@ -261,10 +262,10 @@ def setup_molecule(pdblist, definition, ligand_path):
         ligand:  ligand object (may be None)
     """
     if ligand_path is not None:
+        ligand = ParameterizedMolecule()
         with open(ligand_path, "rt", encoding="utf-8") as ligand_file:
-            raise NotImplementedError("Ligand functionality is temporarily disabled.")
-            # TODO - check to see if ligff updates copy of definition stored with protein
-            # protein, definition, ligand = ligff.initialize(definition, ligand_file, pdblist)
+            ligand.read(ligand_file)
+        raise NotImplementedError("Where do initial ligand charges come from?")
     else:
         protein = prot.Protein(pdblist, definition)
         ligand = None
@@ -463,7 +464,9 @@ def non_trivial(args, protein, definition, is_cif):
 
     if args.ligand is not None:
         _LOGGER.info("Processing ligand.")
-        raise NotImplementedError("Ligand support not implemented.")
+        raise NotImplementedError(
+            "Got argument --ligand=%s but ligand support not implemented" %
+            args.ligand)
 
     if args.ffout is not None:
         _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)

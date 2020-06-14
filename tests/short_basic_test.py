@@ -37,7 +37,7 @@ def test_propka_apo(input_pdb, tmp_path):
 
 @pytest.mark.parametrize("input_mol2", [
     "1HPX-ligand.mol2", "1QBS-ligand.mol2", "1US0-ligand.mol2", "adp.mol2"])
-def test_ligand(input_mol2):
+def test_ligand_parameterization(input_mol2):
     """Testing basic aspects of code breaking."""
     _LOGGER.warning("Ideally, this would be a regression test.")
     ligand = parameterize.ParameterizedMolecule()
@@ -51,6 +51,17 @@ def test_ligand(input_mol2):
         for atom in ligand.atoms:
             fmt = "{a!s} -- {a.old_charge:5.2f} -> {a.charge:5.2f}"
             _LOGGER.info(fmt.format(a=atom))
+
+
+@pytest.mark.parametrize("input_pdb", ["1HPX", "1QBS", "1US0"], ids=str)
+def test_ligand(input_pdb, tmp_path):
+    """PROPKA non-regression tests on proteins without ligands."""
+    ligand = Path("tests/data") / ("%s-ligand.mol2" % input_pdb)
+    args = "--log-level=INFO --ff=AMBER --drop-water --ligand=%s" % ligand
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr(args=args, input_pdb=input_pdb, output_pqr=output_pqr,
+                        tmp_path=tmp_path)
+
 
 
 # @pytest.mark.parametrize("input_pdb", ["1K1I", "1FAS"], ids=str)

@@ -1,18 +1,20 @@
 """Basic tests to see if the code raises exceptions."""
 import logging
+import random
 from pathlib import Path
 import pytest
 from pdb2pqr.ligand import mol2
+from pdb2pqr.ligand import peoe
 import common
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
-_LOGGER.error("Need functional and regression test coverage for --userff")
-_LOGGER.error("Need functional and regression test coverage for --usernames")
-_LOGGER.error("Need functional and regression test coverage for --ligand")
-_LOGGER.error("Need functional and regression test coverage for --apbs-input")
+_LOGGER.warning("Need functional and regression test coverage for --userff")
+_LOGGER.warning("Need functional and regression test coverage for --usernames")
+_LOGGER.warning("Need functional and regression test coverage for --ligand")
+_LOGGER.warning("Need functional and regression test coverage for --apbs-input")
 
 
 @pytest.mark.parametrize("input_pdb", ["1K1I", "1AFS", "1FAS", "5DV8", "5D8V"], ids=str)
@@ -35,12 +37,19 @@ def test_propka_apo(input_pdb, tmp_path):
 
 @pytest.mark.parametrize("input_mol2", [
     "1HPX-ligand.mol2", "1QBS-ligand.mol2", "1US0-ligand.mol2", "adp.mol2"])
-def test_ligand_read(input_mol2):
+def test_ligand(input_mol2):
     """Testing basic aspects of code breaking."""
     ligand = mol2.Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
+        for atom in ligand.atoms:
+            atom.charge = random.uniform(-1, 1)
+            atom.old_charge = atom.charge
+        ligand.atoms = peoe.equilibrate(ligand.atoms)
+        for atom in ligand.atoms:
+            fmt = "{a!s} -- {a.old_charge:5.2f} -> {a.charge:5.2f}"
+            _LOGGER.info(fmt.format(a=atom))
 
 
 # @pytest.mark.parametrize("input_pdb", ["1K1I", "1FAS"], ids=str)

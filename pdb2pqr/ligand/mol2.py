@@ -4,28 +4,66 @@
     http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
 """
 import logging
-import copy
-from ..pdb import HETATM
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Mol2Bond(object):
-    """Bonding of MOL2 files"""
-    def __init__(self, frm, to, type_, bond_id=0):
-        self.bond_to_self = to # bond to this atom
-        self.bond_from_self = frm # bond from atom
-        self.type = type_ # 1=single, 2=double, ar=aromatic
-        self.bond_id = bond_id # bond_id
+class Mol2Bond:
+    """MOL2 molecule bonds."""
+    def __init__(self, bond_from, bond_to, bond_type, bond_id=0):
+        """Initialize bond.
+
+        Args:
+            bond_from:  bond from this atom
+            bond_to:  bond to this atom
+            bond_type:  type of bond:  1 (single), 2 (double), or ar (aromatic)
+            bond_id:  integer ID of bond
+        """
+        self.bond_to_self = bond_to
+        self.bond_from_self = bond_from
+        self.type = bond_type
+        self.bond_id = bond_id
+
+
+class Mol2Atom:
+    """MOL2 molecule atoms."""
+    def __init__(self):
+        self.serial = None
+        self.name = None
+        self.alt_loc = None
+        self.res_name = None
+        self.chain_id = None
+        self.res_seq = None
+        self.x = None
+        self.y = None
+        self.z = None
+        self.sybyl_type = None
+        self.radius = None
+        self.is_c_term = False
+        self.is_n_term = False
+        self.mol2charge = None
+        self.occupancy = 0.00
+        self.temp_factor = 0.00
+        self.seg_id = ""
+        self.element = ""
+        self.charge = ""
+        self.bonded_atoms = []
+
+    def __str__(self):
+        """Generate PDB line from MOL2."""
+        pdb_fmt = (
+            "HETATM{a.serial:5d}{a.name:>5s}{a.res_name:>4s} L"
+            "{self.res_seq:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
+        )
+        return pdb_fmt.format(self)
 
 
 class Mol2Molecule(object):
     """Tripos MOL2 molecule"""
     def __init__(self):
-        self.l_atoms = [] # all atoms of class <ATOM>
-        self.l_bonds = [] # all bonds of class <BOND>
-        self.l_pdb_atoms = [] # PDB-like list of all atoms
+        self.atoms = []
+        self.bonds = []
         self.serial = None
         self.name = None
         self.res_name = None
@@ -34,119 +72,105 @@ class Mol2Molecule(object):
         self.y = None
         self.z = None
 
-    def read(self, file_):
-        """Routines for reading MOL2 file"""
-        data = file_.read()
-        data = data.replace("\r\n", "\n")
-        data = data.replace("\r", "\n")
+    def read(self, mol2_file):
+        """Routines for reading MOL2 file.
 
-        # ATOM section
-        start = data.find("@<TRIPOS>ATOM")
-        stop = data.find("@<TRIPOS>BOND")
-
-        # Do some error checking
-        if start == -1:
-            raise ValueError("Unable to find '@<TRIPOS>ATOM' in MOL2 file!")
-        elif stop == -1:
-            raise ValueError("Unable to find '@<TRIPOS>BOND' in MOL2 file!")
-
-        atoms = data[start+14:stop-2].split("\n")
-        # BOND section
-        start = data.find("@<TRIPOS>BOND")
-        stop = data.find("@<TRIPOS>SUBSTRUCTURE")
-
-        # More error checking
-        if stop == -1:
-            raise ValueError("Unable to find '@<TRIPOS>SUBSTRUCTURE' in MOL2 file!")
-
-        bonds = data[start+14:stop-1].split("\n")
-        self.parse_atoms(atoms)
-        self.parse_bonds(bonds)
+        Args:
+            mol2_file:  file-like object with MOL2 data.
+        """
+        mol2_file = self.parse_atoms(mol2_file)
+        mol2_file = self.parse_bonds(mol2_file)
         self.create_bonded_atoms()
 
-    def parse_atoms(self, atom_list):
-        """For parsing @<TRIPOS>ATOM"""
-        for atom_line in atom_list:
-            separated_atom_line = atom_line.split()
+    def parse_atoms(self, mol2_file):
+        """Parse @<TRIPOS>ATOM section of file.
 
-            # Special handling for blank lines
-            if len(separated_atom_line) == 0:
+        Args:
+            mol2_file:  file-like object with MOL2 data.
+        Returns:
+            file object advanced to bonds section
+        Raises:
+            ValueError for bad MOL2 ATOM lines
+            TypeError for bad charge entries
+        """
+        # Skip material before atoms section
+        for line in mol2_file:
+            if "@<TRIPOS>ATOM" in line:
+                break
+            _LOGGER.debug("Skipping: %s", line.strip())
+
+        for line in mol2_file:
+            line = line.strip()
+            if not line:
                 continue
-
-            # Error checking
-            if len(separated_atom_line) < 8:
-                raise ValueError("Bad atom entry in MOL2 file: %s" % atom_line)
-
-            fake_record = "HETATM"
-            fake_chain = " L"
-
+            if "@<TRIPOS>BOND" in line:
+                break
+            words = line.split()
+            if len(words) < 8:
+                err = "Bad entry in MOL2 file: %s" % line
+                raise ValueError(err)
+            atom = Mol2Atom()
+            atom.name = words[1]
+            atom.sybyl_type = words[5]
+            atom.chain_id = "L"
             try:
-                mol2pdb = '%s%5i%5s%4s%2s%4i    %8.3f%8.3f%8.3f' % \
-                    (fake_record, int(separated_atom_line[0]),
-                     separated_atom_line[1], separated_atom_line[7][:4],
-                     fake_chain, int(separated_atom_line[6]),
-                     float(separated_atom_line[2]), float(separated_atom_line[3]),
-                     float(separated_atom_line[4]))
-
-            except ValueError:
-                raise ValueError("Bad atom entry in MOL2 file: %s" % atom_line)
-
-            this_atom = HETATM(mol2pdb, separated_atom_line[5], [], [])
-            if len(separated_atom_line) > 8:
-                charge = separated_atom_line[8]
+                atom.serial = int(words[0])
+                atom.res_name = words[7][:4]
+                atom.res_seq = int(words[6])
+                atom.x = float(words[2])
+                atom.y = float(words[3])
+                atom.z = float(words[4])
+            except ValueError as exc:
+                err = "Error (%s) parsing atom line: %s" % (exc, line)
+                raise ValueError(err)
+            if len(line) > 8:
                 try:
-                    this_atom.mol2charge = float(charge)
+                    atom.mol2charge = float(words[8])
                 except TypeError:
-                    _LOGGER.warning('Warning. Non-float charge (%s) in mol2 file.', charge)
-                    this_atom.mol2charge = None
-            self.l_pdb_atoms.append(mol2pdb)
-            self.l_atoms.append(this_atom)
+                    err = "Unable to parse %s as charge in atom line: %s" % (
+                        words[8], line)
+                    _LOGGER.warning(err)
+            self.atoms.append(atom)
+        return mol2_file
 
-    def parse_bonds(self, bond_list):
-        """For parsing @<TRIPOS>BOND"""
-        for bond_line in bond_list:
-            separated_bond_line = bond_line.split()
-            # Special handling for blank lines
-            if len(separated_bond_line) == 0:
+    def parse_bonds(self, mol2_file):
+        """Parse @<TRIPOS>BOND section of file.
+
+        Args:
+            mol2_file:  file-like object with MOL2 data.
+        Returns:
+            file object advanced to bonds section
+        Raises:
+            ValueError for problems parsing bond information
+        """
+        for line in mol2_file:
+            line = line.strip()
+            if not line:
                 continue
-            if len(separated_bond_line) < 4:
-                raise ValueError("Bad bond entry in MOL2 file: %s" % bond_line)
+            if "@<TRIPOS>SUBSTRUCTURE" in line:
+                break
+            words = line.split()
+            if len(words) < 4:
+                err = "Bond line too short: %s" % line
+                raise ValueError(err)
+            bond_type = words[3]
             try:
-                this_bond = Mol2Bond(
-                    int(separated_bond_line[1]), # bond frm
-                    int(separated_bond_line[2]), # bond to
-                    separated_bond_line[3],      # bond type
-                    int(separated_bond_line[0])  # bond id
-                    )
-            except ValueError:
-                raise ValueError("Bad bond entry in MOL2 file: %s" % bond_line)
-            self.l_bonds.append(this_bond)
+                bond_from = int(words[1])
+                bond_to = int(words[2])
+                bond_id = int(words[0])
+                bond = Mol2Bond(
+                    bond_from=bond_from, bond_to=bond_to, bond_type=bond_type,
+                    bond_id=bond_id)
+            except ValueError as exc:
+                err = "Got error (%s) when parsing bond line: %s" % (exc, line)
+                raise ValueError(err)
+            self.bonds.append(bond)
+        return mol2_file
 
     def create_bonded_atoms(self):
-        """Creates for each atom a list of the bonded Atoms
-
-        This becomes one attribute of MOL2ATOM!
-        """
-        for bond in self.l_bonds:
-            self.l_atoms[bond.bond_from_self-1].l_bonded_atoms\
-                .append(self.l_atoms[bond.bond_to_self-1])
-
-            self.l_atoms[bond.bond_to_self-1].l_bonded_atoms\
-                .append(self.l_atoms[bond.bond_from_self-1])
-
-            atbond = copy.deepcopy(bond)
-            atbond.other_atom = self.l_atoms[bond.bond_to_self-1]
-            self.l_atoms[bond.bond_from_self-1].l_bonds.append(atbond)
-
-            atbond = copy.deepcopy(bond)
-            atbond.other_atom = self.l_atoms[bond.bond_from_self-1]
-            self.l_atoms[bond.bond_to_self-1].l_bonds.append(atbond)
-
-    def create_pdb_line_from_mol2(self):
-        """Generate PDB line from MOL2."""
-        raise NotImplementedError("TODO - FIX THIS CODE")
-        # fake_type = "HETATM"
-        # rstr = "%s%5i%5s%4s%2s%5s   %8.3f%8.3f%8.3f\n" % (fake_type, self.serial,
-        #                                                   self.name, self.res_name, ' L',
-        #                                                   self.res_seq, self.x, self.y, self.z)
-        # return rstr
+        """Create a list of bonded atoms for each atom."""
+        for bond in self.bonds:
+            from_atom = self.atoms[bond.bond_from_self-1]
+            to_atom = self.atoms[bond.bond_to_self-1]
+            from_atom.bonded_atoms.append(to_atom)
+            to_atom.bonded_atoms.append(from_atom)

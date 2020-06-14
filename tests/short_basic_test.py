@@ -2,6 +2,7 @@
 import logging
 from pathlib import Path
 import pytest
+from pdb2pqr.ligand import mol2
 import common
 
 
@@ -32,9 +33,15 @@ def test_propka_apo(input_pdb, tmp_path):
                         tmp_path=tmp_path)
 
 
-def test_ligand_import():
+@pytest.mark.parametrize("input_mol2", [
+    "1HPX-ligand.mol2", "1QBS-ligand.mol2", "1US0-ligand.mol2", "adp.mol2"])
+def test_ligand_read(input_mol2):
     """Testing basic aspects of code breaking."""
-    from pdb2pqr.ligand import mol2
+    ligand = mol2.Mol2Molecule()
+    mol2_path = Path("tests/data") / input_mol2
+    with open(mol2_path, "rt") as mol2_file:
+        ligand.read(mol2_file)
+
 
 # @pytest.mark.parametrize("input_pdb", ["1K1I", "1FAS"], ids=str)
 # def test_propka_apo(input_pdb, tmp_path):

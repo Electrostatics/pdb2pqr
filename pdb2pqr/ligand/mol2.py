@@ -4,6 +4,8 @@
     http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
 """
 import logging
+from collections import OrderedDict
+import numpy
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,11 +48,11 @@ class Mol2Atom:
         self.occupancy = 0.00
         self.temp_factor = 0.00
         self.seg_id = None
-        self.element = None
         self.charge = None
         self.formal_charge = None
         self.radius = None
-        self.bonded_atoms = []
+        self.bonded_atoms = None
+        self.torsions = None
         # Terms for calculating atom electronegativity
         self.poly_terms = None
         # Atom electronegativity
@@ -66,11 +68,36 @@ class Mol2Atom:
         )
         return pdb_fmt.format(a=self)
 
+    @property
+    def coords(self):
+        """Return coordinates as numpy vector."""
+        return numpy.array([self.x, self.y, self.z])
+
+    @property
+    def bonded_atom_names(self):
+        """Return a list of bonded atom names."""
+        return [a.name for a in self.bonded_atoms]
+
+    @property
+    def num_bonded_heavy(self):
+        """Return the number of heavy atoms bonded to this atom."""
+        return len([a for a in self.bonded_atoms if a.atom_type != "H"])
+
+    @property
+    def num_bonded_hydrogen(self):
+        """Return the number of hydrogen atoms bonded to this atom."""
+        return len([a for a in self.bonded_atoms if a.atom_type == "H"])
+
+    @property
+    def element(self):
+        """Return a string with the element for this atom (uppercase)."""
+        return self.atom_type.split(".")[0].upper()
+
 
 class Mol2Molecule:
     """Tripos MOL2 molecule"""
     def __init__(self):
-        self.atoms = []
+        self.atoms = OrderedDict()
         self.bonds = []
         self.serial = None
         self.name = None
@@ -79,6 +106,25 @@ class Mol2Molecule:
         self.x = None
         self.y = None
         self.z = None
+
+    def get_torsions(self, start_atom):
+        """Get the torsion angles that start with this atom (name).
+
+        Args:
+            start_atom:  starting atom name
+        Returns:
+            list of 4-tuples containing atom names comprising torsions
+        """
+        torsions = []
+        for bonded1 in self.atoms[start_atom].bonded_atom_names:
+            for bonded2 in self.atoms[bonded1].bonded_atom_names:
+                if bonded2 == start_atom:
+                    continue
+                for end_atom in self.atoms[bonded2].bonded_atom_names:
+                    if end_atom == bonded1:
+                        continue
+                    torsions.append((start_atom, bonded1, bonded2, end_atom))
+        return torsions
 
     def read(self, mol2_file):
         """Routines for reading MOL2 file.
@@ -106,7 +152,7 @@ class Mol2Molecule:
             if "@<TRIPOS>ATOM" in line:
                 break
             _LOGGER.debug("Skipping: %s", line.strip())
-
+        duplicates = set()
         for line in mol2_file:
             line = line.strip()
             if not line:
@@ -138,7 +184,13 @@ class Mol2Molecule:
                     err = "Unable to parse %s as charge in atom line: %s" % (
                         words[8], line)
                     _LOGGER.warning(err)
-            self.atoms.append(atom)
+            if atom.name in self.atoms:
+                duplicates.add(atom.name)
+            else:
+                self.atoms[atom.name] = atom
+        if len(duplicates) > 0:
+            raise KeyError("Found duplicate atoms names in MOL2 file: %s" %
+                duplicates)
         return mol2_file
 
     def parse_bonds(self, mol2_file):
@@ -176,9 +228,20 @@ class Mol2Molecule:
         return mol2_file
 
     def create_bonded_atoms(self):
-        """Create a list of bonded atoms for each atom."""
+        """Create a list of bonded atoms and torsions for each atom."""
+        atom_names = list(self.atoms.keys())
         for bond in self.bonds:
-            from_atom = self.atoms[bond.bond_from_self-1]
-            to_atom = self.atoms[bond.bond_to_self-1]
-            from_atom.bonded_atoms.append(to_atom)
-            to_atom.bonded_atoms.append(from_atom)
+            from_atom_name = atom_names[bond.bond_from_self-1]
+            from_atom = self.atoms[from_atom_name]
+            to_atom_name = atom_names[bond.bond_to_self-1]
+            to_atom = self.atoms[to_atom_name]
+            if from_atom.bonded_atoms is None:
+                from_atom.bonded_atoms = [to_atom]
+            else:
+                from_atom.bonded_atoms.append(to_atom)
+            if to_atom.bonded_atoms is None:
+                to_atom.bonded_atoms = [from_atom]
+            else:
+                to_atom.bonded_atoms.append(from_atom)
+        for atom_name, atom in self.atoms.items():
+            atom.torsions = self.get_torsions(atom_name)

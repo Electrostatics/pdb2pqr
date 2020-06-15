@@ -24,29 +24,11 @@ class ParameterizedMolecule(Mol2Molecule):
             ligand:  latest version of ligand
         """
         prev_atom_names = set(self.ligand_properties)
-        curr_atom_names = {a.name for a in ligand.atoms}
+        curr_atom_names = set(self.atoms)
         if len(prev_atom_names ^ curr_atom_names) > 0:
-            for atom in ligand.atoms:
+            for atom in ligand.atoms.values():
                 atom.formal_charge = 0.0
             self.reparameterize(ligand)
-
-    def read(self, mol2_file):
-        """Routines for reading MOL2 file.
-
-        Args:
-            mol2_file:  file-like object with MOL2 data.
-        """
-        super().read(mol2_file)
-        atom_names = set()
-        duplicates = set()
-        for atom in self.atoms:
-            if atom.name in atom_names:
-                duplicates.add(atom.name)
-            else:
-                atom_names.add(atom.name)
-        if len(duplicates) > 0:
-            err = "Found duplicate atom names: %s" % duplicates
-            raise KeyError(err)
 
     def reparameterize(self, ligand):
         """Reassign parameters given new ligand.
@@ -55,11 +37,11 @@ class ParameterizedMolecule(Mol2Molecule):
             ligand:  latest version of ligand
         """
         self.ligand_properties = {}
-        for atom in ligand.atoms:
+        for atom in ligand.atoms.values():
             atom.charge = atom.formal_charge
-        ligand.atoms = equilibrate(ligand.atoms)
-        for atom in ligand.atoms:
-            elem = atom.atom_type.split(".")[0].upper()
+        equilibrate(ligand.atoms.values())
+        for atom in ligand.atoms.values():
+            elem = atom.element
             charge = atom.charge
             try:
                 radius = PARSE_RADII[elem]

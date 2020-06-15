@@ -13,19 +13,22 @@ _LOGGER = logging.getLogger(__name__)
 
 class Mol2Bond:
     """MOL2 molecule bonds."""
-    def __init__(self, bond_from, bond_to, bond_type, bond_id=0):
+    def __init__(self, atom1, atom2, bond_type, bond_id=0):
         """Initialize bond.
 
         Args:
-            bond_from:  bond from this atom
-            bond_to:  bond to this atom
+            atom1:  name of first atom in bond
+            atom2:  name of second atom in bond
             bond_type:  type of bond:  1 (single), 2 (double), or ar (aromatic)
             bond_id:  integer ID of bond
         """
-        self.bond_to_self = bond_to
-        self.bond_from_self = bond_from
+        self.atoms = (atom1, atom2)
         self.type = bond_type
-        self.bond_id = bond_id
+        self.bond_id = int(bond_id)
+
+    def __str__(self):
+        fmt = "{b.atoms[0]:s} {b.type:s}-bonded to {b.atoms[1]:s}"
+        return fmt.format(b=self)
 
 
 class Mol2Atom:
@@ -52,7 +55,9 @@ class Mol2Atom:
         self.formal_charge = None
         self.radius = None
         self.bonded_atoms = []
+        self.bonds = []
         self.torsions = []
+        self.rings = []
         # Terms for calculating atom electronegativity
         self.poly_terms = None
         # Atom electronegativity
@@ -100,15 +105,13 @@ class Mol2Molecule:
         self.atoms = OrderedDict()
         self.bonds = []
         self.torsions = set()
+        self.rings = set()
         self.serial = None
         self.name = None
         self.res_name = None
         self.res_seq = None
-        self.x = None
-        self.y = None
-        self.z = None
 
-    def set_torsions(self, start_atom):
+    def find_atom_torsions(self, start_atom):
         """Set the torsion angles that start with this atom (name).
 
         Args:
@@ -127,6 +130,23 @@ class Mol2Molecule:
                     torsions.append((start_atom, bonded1, bonded2, end_atom))
         return torsions
 
+    def set_torsions(self):
+        """Set all torsions in molecule."""
+        for atom_name, atom in self.atoms.items():
+            atom.torsions = self.find_atom_torsions(atom_name)
+            for torsion in atom.torsions:
+                self.torsions.add(torsion)
+
+    def set_rings(self):
+        """Set all rings in molecule.
+
+        Like many things, this was borrowed from StackOverflow:
+        https://stackoverflow.com/questions/12367801/finding-all-cycles-in-undirected-graphs
+        """
+        for bond in self.bonds:
+            _LOGGER.error(str(bond))
+            raise NotImplementedError()
+
     def read(self, mol2_file):
         """Routines for reading MOL2 file.
 
@@ -135,7 +155,6 @@ class Mol2Molecule:
         """
         mol2_file = self.parse_atoms(mol2_file)
         mol2_file = self.parse_bonds(mol2_file)
-        self.process_bonds()
 
     def parse_atoms(self, mol2_file):
         """Parse @<TRIPOS>ATOM section of file.
@@ -190,20 +209,22 @@ class Mol2Molecule:
             else:
                 self.atoms[atom.name] = atom
         if len(duplicates) > 0:
-            raise KeyError("Found duplicate atoms names in MOL2 file: %s" %
-                duplicates)
+            raise KeyError(
+                "Found duplicate atoms names in MOL2 file: %s" % duplicates)
         return mol2_file
 
     def parse_bonds(self, mol2_file):
         """Parse @<TRIPOS>BOND section of file.
 
+        Atoms must already have been parsed.
+        Also sets up torsions and rings.
+
         Args:
             mol2_file:  file-like object with MOL2 data.
         Returns:
-            file object advanced to bonds section
-        Raises:
-            ValueError for problems parsing bond information
+            file object advanced to SUBSTRUCTURE section
         """
+        atom_names = list(self.atoms.keys())
         for line in mol2_file:
             line = line.strip()
             if not line:
@@ -215,36 +236,23 @@ class Mol2Molecule:
                 err = "Bond line too short: %s" % line
                 raise ValueError(err)
             bond_type = words[3]
-            try:
-                bond_from = int(words[1])
-                bond_to = int(words[2])
-                bond_id = int(words[0])
-                bond = Mol2Bond(
-                    bond_from=bond_from, bond_to=bond_to, bond_type=bond_type,
-                    bond_id=bond_id)
-            except ValueError as exc:
-                err = "Got error (%s) when parsing bond line: %s" % (exc, line)
-                raise ValueError(err)
+            bond_id = int(words[0])
+            atom_id1 = int(words[1])
+            atom_id2 = int(words[2])
+            atom_name1 = atom_names[atom_id1-1]
+            atom1 = self.atoms[atom_name1]
+            atom_name2 = atom_names[atom_id2-1]
+            atom2 = self.atoms[atom_name2]
+            bond = Mol2Bond(
+                atom1=atom_name1, atom2=atom_name2, bond_type=bond_type,
+                bond_id=bond_id)
+            atom1.bonds.append(bond)
+            atom1.bonded_atom_names.append(atom_name2)
+            atom1.bonded_atoms.append(atom2)
+            atom2.bonds.append(bond)
+            atom2.bonded_atom_names.append(atom_name1)
+            atom2.bonded_atoms.append(atom1)
             self.bonds.append(bond)
+        self.set_torsions()
+        # self.set_rings()
         return mol2_file
-
-    def process_bonds(self):
-        """Create a list of bonded atoms and torsions for each atom."""
-        atom_names = list(self.atoms.keys())
-        for bond in self.bonds:
-            from_atom_name = atom_names[bond.bond_from_self-1]
-            from_atom = self.atoms[from_atom_name]
-            to_atom_name = atom_names[bond.bond_to_self-1]
-            to_atom = self.atoms[to_atom_name]
-            if from_atom.bonded_atoms is None:
-                from_atom.bonded_atoms = [to_atom]
-            else:
-                from_atom.bonded_atoms.append(to_atom)
-            if to_atom.bonded_atoms is None:
-                to_atom.bonded_atoms = [from_atom]
-            else:
-                to_atom.bonded_atoms.append(from_atom)
-        for atom_name, atom in self.atoms.items():
-            atom.torsions = self.set_torsions(atom_name)
-            for torsion in atom.torsions:
-                self.torsions.add(torsion)

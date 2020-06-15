@@ -51,8 +51,8 @@ class Mol2Atom:
         self.charge = None
         self.formal_charge = None
         self.radius = None
-        self.bonded_atoms = None
-        self.torsions = None
+        self.bonded_atoms = []
+        self.torsions = []
         # Terms for calculating atom electronegativity
         self.poly_terms = None
         # Atom electronegativity
@@ -99,6 +99,7 @@ class Mol2Molecule:
     def __init__(self):
         self.atoms = OrderedDict()
         self.bonds = []
+        self.torsions = set()
         self.serial = None
         self.name = None
         self.res_name = None
@@ -107,8 +108,8 @@ class Mol2Molecule:
         self.y = None
         self.z = None
 
-    def get_torsions(self, start_atom):
-        """Get the torsion angles that start with this atom (name).
+    def set_torsions(self, start_atom):
+        """Set the torsion angles that start with this atom (name).
 
         Args:
             start_atom:  starting atom name
@@ -134,7 +135,7 @@ class Mol2Molecule:
         """
         mol2_file = self.parse_atoms(mol2_file)
         mol2_file = self.parse_bonds(mol2_file)
-        self.create_bonded_atoms()
+        self.process_bonds()
 
     def parse_atoms(self, mol2_file):
         """Parse @<TRIPOS>ATOM section of file.
@@ -227,7 +228,7 @@ class Mol2Molecule:
             self.bonds.append(bond)
         return mol2_file
 
-    def create_bonded_atoms(self):
+    def process_bonds(self):
         """Create a list of bonded atoms and torsions for each atom."""
         atom_names = list(self.atoms.keys())
         for bond in self.bonds:
@@ -244,4 +245,6 @@ class Mol2Molecule:
             else:
                 to_atom.bonded_atoms.append(from_atom)
         for atom_name, atom in self.atoms.items():
-            atom.torsions = self.get_torsions(atom_name)
+            atom.torsions = self.set_torsions(atom_name)
+            for torsion in atom.torsions:
+                self.torsions.add(torsion)

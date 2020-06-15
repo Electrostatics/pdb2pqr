@@ -58,12 +58,9 @@ def test_torsions(input_mol2):
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-        torsions = set()
-        for name, atom in ligand.atoms.items():
-            torsions |= set(atom.torsions)
         try:
             benchmark = TORSION_RESULTS[input_mol2]
-            diff = torsions ^ benchmark
+            diff = ligand.torsions ^ benchmark
             if len(diff) > 0:
                 err = "Torsion test failed for %s: %s" % (
                     input_mol2, sorted(list(diff)))
@@ -71,7 +68,7 @@ def test_torsions(input_mol2):
         except KeyError:
             _LOGGER.warning(
                 "Skipping torsions for %s: %s", input_mol2,
-                sorted(list(torsions)))
+                sorted(list(ligand.torsions)))
 
 
 @pytest.mark.parametrize("input_pdb", ["1HPX", "1QBS", "1US0"], ids=str)

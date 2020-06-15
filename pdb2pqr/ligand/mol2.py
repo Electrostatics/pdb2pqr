@@ -5,6 +5,7 @@
 """
 import logging
 from collections import OrderedDict
+from itertools import combinations
 import numpy
 
 
@@ -137,15 +138,79 @@ class Mol2Molecule:
             for torsion in atom.torsions:
                 self.torsions.add(torsion)
 
+    @staticmethod
+    def rotate_to_smallest(path):
+        """Rotate cycle path so that it begins with the smallest node.
+
+        This was borrowed from StackOverflow: https://j.mp/2AHaukj
+
+        Args:
+            path:  list of atom names
+        Returns:
+            rotated path (list)
+        """
+        n = path.index(min(path))
+        return path[n:]+path[:n]
+
+    def find_new_rings(self, path, rings, level=0):
+        """Find new rings in molecule.
+
+        This was borrowed from StackOverflow: https://j.mp/2AHaukj
+
+        Args:
+            path:  list of atom names
+            rings:  current list of rings
+            level:  recursion level
+        Returns:
+            new list of rings
+        """
+        start_node = path[0]
+        next_node = None
+        sub_path = []
+        for bond in self.bonds:
+            atom1 = bond.atoms[0]
+            atom2 = bond.atoms[1]
+            if start_node in (atom1, atom2):
+                if atom1 == start_node:
+                    next_node = atom2
+                else:
+                    next_node = atom1
+                if next_node not in path:
+                    sub_path = [next_node]
+                    sub_path.extend(path)
+                    rings = self.find_new_rings(sub_path, rings, level+1)
+                elif len(path) > 2 and next_node == path[-1]:
+                    path_ = self.rotate_to_smallest(path)
+                    inv_path = tuple(self.rotate_to_smallest(path_[::-1]))
+                    path_ = tuple(path_)
+                    if (path_ not in rings) and (inv_path not in rings):
+                        rings.add(tuple(path_))
+        return rings
+
     def set_rings(self):
         """Set all rings in molecule.
 
-        Like many things, this was borrowed from StackOverflow:
-        https://stackoverflow.com/questions/12367801/finding-all-cycles-in-undirected-graphs
+        This was borrowed from StackOverflow: https://j.mp/2AHaukj
         """
+        self.rings = set()
+        rings = set()
+        # Generate all rings
         for bond in self.bonds:
-            _LOGGER.error(str(bond))
-            raise NotImplementedError()
+            for atom_name in bond.atoms:
+                rings = self.find_new_rings([atom_name], rings)
+        # Prune rings that are products of other rings
+        ring_sets = []
+        for i in range(2, len(rings)+1):
+            for combo in combinations(rings, i):
+                ring_set = set().union(*combo)
+                ring_sets.append(ring_set)
+        for ring in rings:
+            ring_set = set(ring)
+            if ring_set in ring_sets:
+                _LOGGER.debug("Fused ring: %s", ring)
+            else:
+                _LOGGER.debug("Unfused ring: %s", ring)
+                self.rings.add(ring)
 
     def read(self, mol2_file):
         """Routines for reading MOL2 file.
@@ -254,5 +319,5 @@ class Mol2Molecule:
             atom2.bonded_atoms.append(atom1)
             self.bonds.append(bond)
         self.set_torsions()
-        # self.set_rings()
+        self.set_rings()
         return mol2_file

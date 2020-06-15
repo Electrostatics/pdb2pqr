@@ -58,17 +58,53 @@ def test_torsions(input_mol2):
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-        try:
-            benchmark = TORSION_RESULTS[input_mol2]
-            diff = ligand.torsions ^ benchmark
-            if len(diff) > 0:
-                err = "Torsion test failed for %s: %s" % (
-                    input_mol2, sorted(list(diff)))
-                raise ValueError(err)
-        except KeyError:
-            _LOGGER.warning(
-                "Skipping torsions for %s: %s", input_mol2,
-                sorted(list(ligand.torsions)))
+    try:
+        benchmark = TORSION_RESULTS[input_mol2]
+        diff = ligand.torsions ^ benchmark
+        if len(diff) > 0:
+            err = "Torsion test failed for %s: %s" % (
+                input_mol2, sorted(list(diff)))
+            raise ValueError(err)
+    except KeyError:
+        _LOGGER.warning(
+            "Skipping torsion test for %s: %s", input_mol2,
+            sorted(list(ligand.torsions)))
+
+
+RING_RESULTS = {
+    "ethanol.mol2": set(),
+    "glycerol.mol2": set(),
+    "cyclohexane.mol2": {('CAA', 'CAD', 'CAE', 'CAF', 'CAC', 'CAB')},
+    "naphthalene.mol2": {
+        ('CAA', 'CAB', 'CAC', 'CAH', 'CAG', 'CAF'),
+        ('CAC', 'CAH', 'CAI', 'CAJ', 'CAE', 'CAD')},
+    "anthracene.mol2": {
+        ('CAC', 'CAJ', 'CAK', 'CAL', 'CAE', 'CAD'),
+        ('CAE', 'CAL', 'CAM', 'CAN', 'CAG', 'CAF'),
+        ('CAA', 'CAB', 'CAC', 'CAJ', 'CAI', 'CAH')
+    }
+}
+
+@pytest.mark.parametrize("input_mol2", [
+    "cyclohexane.mol2", "ethanol.mol2", "glycerol.mol2", "anthracene.mol2",
+    "naphthalene.mol2"])
+def test_rings(input_mol2):
+    """Test assignment of torsion angles."""
+    ligand = parameterize.ParameterizedMolecule()
+    mol2_path = Path("tests/data") / input_mol2
+    with open(mol2_path, "rt") as mol2_file:
+        ligand.read(mol2_file)
+    try:
+        benchmark = RING_RESULTS[input_mol2]
+        diff = ligand.rings ^ benchmark
+        if len(diff) > 0:
+            err = "Ring test failed for %s: %s" % (
+                input_mol2, sorted(list(diff)))
+            raise ValueError(err)
+    except KeyError:
+        _LOGGER.warning(
+            "Skipping ring test for %s: %s", input_mol2,
+            sorted(list(ligand.rings)))
 
 
 @pytest.mark.parametrize("input_pdb", ["1HPX", "1QBS", "1US0"], ids=str)

@@ -12,6 +12,10 @@ import numpy
 _LOGGER = logging.getLogger(__name__)
 
 
+# These are the allowed bond types
+BOND_TYPES = {"single", "double", "aromatic"}
+
+
 class Mol2Bond:
     """MOL2 molecule bonds."""
     def __init__(self, atom1, atom2, bond_type, bond_id=0):
@@ -24,8 +28,12 @@ class Mol2Bond:
             bond_id:  integer ID of bond
         """
         self.atoms = (atom1, atom2)
-        self.type = bond_type
         self.bond_id = int(bond_id)
+        if bond_type in BOND_TYPES:
+            self.type = bond_type
+        else:
+            err = "Unknown bond type: %s" % bond_type
+            raise ValueError(err)
 
     def __str__(self):
         fmt = "{b.atoms[0]:s} {b.type:s}-bonded to {b.atoms[1]:s}"
@@ -306,6 +314,15 @@ class Mol2Molecule:
                 err = "Bond line too short: %s" % line
                 raise ValueError(err)
             bond_type = words[3]
+            if bond_type == "1":
+                bond_type = "single"
+            elif bond_type == "2":
+                bond_type = "double"
+            elif bond_type == "ar":
+                bond_type = "aromatic"
+            else:
+                err = "Unknown bond type: %s" % bond_type
+                raise ValueError(err)
             bond_id = int(words[0])
             atom_id1 = int(words[1])
             atom_id2 = int(words[2])

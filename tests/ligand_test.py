@@ -81,13 +81,16 @@ RING_RESULTS = {
     "anthracene.mol2": {
         ('CAC', 'CAJ', 'CAK', 'CAL', 'CAE', 'CAD'),
         ('CAE', 'CAL', 'CAM', 'CAN', 'CAG', 'CAF'),
-        ('CAA', 'CAB', 'CAC', 'CAJ', 'CAI', 'CAH')
-    }
+        ('CAA', 'CAB', 'CAC', 'CAJ', 'CAI', 'CAH')},
+    "phenalene.mol2": {
+        ('CAA', 'CAE', 'CAF', 'CAG', 'CAC', 'CAB'),
+        ('CAD', 'CAI', 'CAJ', 'CAK', 'CAF', 'CAE'),
+        ('CAF', 'CAG', 'CAH', 'CAM', 'CAL', 'CAK')}
 }
 
 @pytest.mark.parametrize("input_mol2", [
     "cyclohexane.mol2", "ethanol.mol2", "glycerol.mol2", "anthracene.mol2",
-    "naphthalene.mol2"])
+    "naphthalene.mol2", "phenalene.mol2"])
 def test_rings(input_mol2):
     """Test assignment of torsion angles."""
     ligand = parameterize.ParameterizedMolecule()
@@ -101,6 +104,11 @@ def test_rings(input_mol2):
             err = "Ring test failed for %s: %s" % (
                 input_mol2, sorted(list(diff)))
             raise ValueError(err)
+        for atom_name in ligand.atoms:
+            atom = ligand.atoms[atom_name]
+            if atom.num_rings > 0:
+                str_ = "%d rings: %s" % (atom.num_rings, atom)
+                _LOGGER.debug(str_)
     except KeyError:
         _LOGGER.warning(
             "Skipping ring test for %s: %s", input_mol2,

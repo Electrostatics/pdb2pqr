@@ -54,6 +54,7 @@ class Mol2Atom:
         self.seg_id = None
         self.charge = None
         self.formal_charge = None
+        self.num_rings = 0
         self.radius = None
         self.bonded_atoms = []
         self.bonds = []
@@ -199,6 +200,7 @@ class Mol2Molecule:
             for atom_name in bond.atoms:
                 rings = self.find_new_rings([atom_name], rings)
         # Prune rings that are products of other rings
+        # TODO - testing on molecules like phenalene shows that this is broken
         ring_sets = []
         for i in range(2, len(rings)+1):
             for combo in combinations(rings, i):
@@ -211,6 +213,9 @@ class Mol2Molecule:
             else:
                 _LOGGER.debug("Unfused ring: %s", ring)
                 self.rings.add(ring)
+        for ring in self.rings:
+            for atom in ring:
+                self.atoms[atom].num_rings += 1
 
     def read(self, mol2_file):
         """Routines for reading MOL2 file.

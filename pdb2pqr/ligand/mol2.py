@@ -6,14 +6,18 @@
 import logging
 from collections import OrderedDict
 from itertools import combinations
-import numpy
+from numpy import array
+from numpy.linalg import norm
+from . import BOND_LENGTHS
 
 
 _LOGGER = logging.getLogger(__name__)
 
 
 # These are the allowed bond types
-BOND_TYPES = {"single", "double", "aromatic"}
+BOND_TYPES = {"single", "double", "triple", "aromatic"}
+# This is the maximum deviation from an ideal bond distance
+BOND_DIST = 2.0
 
 
 class Mol2Bond:
@@ -35,9 +39,39 @@ class Mol2Bond:
             err = "Unknown bond type: %s" % bond_type
             raise ValueError(err)
 
+    @property
+    def atom_names(self):
+        """Return tuple with names of atoms in bond."""
+        return (self.atoms[0].name, self.atoms[1].name)
+
+    @property
+    def length(self):
+        """Return bond length."""
+        return self.atoms[0].distance(self.atoms[1])
+
     def __str__(self):
-        fmt = "{b.atoms[0]:s} {b.type:s}-bonded to {b.atoms[1]:s}"
+        fmt = "{b.atoms[0].name:s} {b.type:s}-bonded to {b.atoms[1].name:s}"
         return fmt.format(b=self)
+
+    @property
+    def bond_order(self):
+        """Attempt to determine the order of this bond.
+
+        Return:
+            string with order of bond or None
+        """
+        types = sorted(
+            [self.atoms[0].atom_type[0], self.atoms[1].atom_type[0]])
+        bond_lengths = BOND_LENGTHS.loc[
+            (BOND_LENGTHS["atom1"] == types[0])
+            & (BOND_LENGTHS["atom2"] == types[1])]
+        best_type = None
+        best_fit = BOND_DIST
+        for _, row in bond_lengths.iterrows():
+            if abs(self.length - row["length"]) < best_fit:
+                best_fit = abs(self.length - row["length"])
+                best_type = row["type"]
+        return best_type
 
 
 class Mol2Atom:
@@ -75,6 +109,16 @@ class Mol2Atom:
         # Atom charge change during equilibration
         self.delta_charge = None
 
+    def distance(self, other):
+        """Get distance between two atoms.
+
+        Args:
+            other:  other atom object
+        Returns:
+            float with distance
+        """
+        return norm(other.coords - self.coords)
+
     def __str__(self):
         """Generate PDB line from MOL2."""
         pdb_fmt = (
@@ -86,7 +130,7 @@ class Mol2Atom:
     @property
     def coords(self):
         """Return coordinates as numpy vector."""
-        return numpy.array([self.x, self.y, self.z])
+        return array([self.x, self.y, self.z])
 
     @property
     def bonded_atom_names(self):
@@ -177,8 +221,8 @@ class Mol2Molecule:
         next_node = None
         sub_path = []
         for bond in self.bonds:
-            atom1 = bond.atoms[0]
-            atom2 = bond.atoms[1]
+            atom1 = bond.atoms[0].name
+            atom2 = bond.atoms[1].name
             if start_node in (atom1, atom2):
                 if atom1 == start_node:
                     next_node = atom2
@@ -205,7 +249,7 @@ class Mol2Molecule:
         rings = set()
         # Generate all rings
         for bond in self.bonds:
-            for atom_name in bond.atoms:
+            for atom_name in bond.atom_names:
                 rings = self.find_new_rings([atom_name], rings)
         # Prune rings that are products of other rings
         # TODO - testing on molecules like phenalene shows that this is broken
@@ -318,6 +362,8 @@ class Mol2Molecule:
                 bond_type = "single"
             elif bond_type == "2":
                 bond_type = "double"
+            elif bond_type == "3":
+                bond_type = "triple"
             elif bond_type == "ar":
                 bond_type = "aromatic"
             else:
@@ -331,8 +377,7 @@ class Mol2Molecule:
             atom_name2 = atom_names[atom_id2-1]
             atom2 = self.atoms[atom_name2]
             bond = Mol2Bond(
-                atom1=atom_name1, atom2=atom_name2, bond_type=bond_type,
-                bond_id=bond_id)
+                atom1=atom1, atom2=atom2, bond_type=bond_type, bond_id=bond_id)
             atom1.bonds.append(bond)
             atom1.bonded_atom_names.append(atom_name2)
             atom1.bonded_atoms.append(atom2)

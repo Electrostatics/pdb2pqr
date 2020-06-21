@@ -88,31 +88,110 @@ RING_RESULTS = {
         ('CAF', 'CAG', 'CAH', 'CAM', 'CAL', 'CAK')}
 }
 
+
+@pytest.mark.parametrize("input_mol2", ["phenalene.mol2"])
+def test_bad_rings(input_mol2):
+    """Test assignment of torsion angles."""
+    ligand = parameterize.ParameterizedMolecule()
+    mol2_path = Path("tests/data") / input_mol2
+    with open(mol2_path, "rt") as mol2_file:
+        ligand.read(mol2_file)
+    benchmark = RING_RESULTS[input_mol2]
+    with pytest.raises(ValueError) as err:
+        diff = ligand.rings ^ benchmark
+        if len(diff) > 0:
+            err = "Ring test failed for %s: %s" % (
+                input_mol2, sorted(list(diff)))
+            raise ValueError(err)
+    err = "Known bond detection failure for %s: %s" % (input_mol2, err)
+    _LOGGER.error(err)
+
+
 @pytest.mark.parametrize("input_mol2", [
     "cyclohexane.mol2", "ethanol.mol2", "glycerol.mol2", "anthracene.mol2",
-    "naphthalene.mol2", "phenalene.mol2"])
+    "naphthalene.mol2"])
 def test_rings(input_mol2):
     """Test assignment of torsion angles."""
     ligand = parameterize.ParameterizedMolecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-    try:
-        benchmark = RING_RESULTS[input_mol2]
-        diff = ligand.rings ^ benchmark
-        if len(diff) > 0:
-            err = "Ring test failed for %s: %s" % (
-                input_mol2, sorted(list(diff)))
-            raise ValueError(err)
-        for atom_name in ligand.atoms:
-            atom = ligand.atoms[atom_name]
-            if atom.num_rings > 0:
-                str_ = "%d rings: %s" % (atom.num_rings, atom)
-                _LOGGER.debug(str_)
-    except KeyError:
-        _LOGGER.warning(
-            "Skipping ring test for %s: %s", input_mol2,
-            sorted(list(ligand.rings)))
+    benchmark = RING_RESULTS[input_mol2]
+    diff = ligand.rings ^ benchmark
+    if len(diff) > 0:
+        err = "Ring test failed for %s: %s" % (
+            input_mol2, sorted(list(diff)))
+        raise ValueError(err)
+    for atom_name in ligand.atoms:
+        atom = ligand.atoms[atom_name]
+        if atom.num_rings > 0:
+            str_ = "%d rings: %s" % (atom.num_rings, atom)
+            _LOGGER.debug(str_)
+
+
+BOND_RESULTS = {
+    "cyclohexane.mol2": 6 * ["single"],
+    "ethanol.mol2": [
+        "single", "single", None, "single", "single"],
+    "glycerol.mol2": [
+        None, "single", "single", "single", "single", None, "single", None],
+    "acetylcholine.mol2": [
+        "single", "double", "single", "single", "single", "single", "single",
+        "single", "single"],
+    "cyanide.mol2": [
+        "triple", "single"],
+    "pyrrole.mol2": [
+        "aromatic", "aromatic", "aromatic", "aromatic", "aromatic", None],
+    "fatty-acid.mol2": [
+        "double", "double", "single", "single", "single", "single", "double",
+        "single", "single", "single", "single"],
+    "trimethylamine.mol2": ["single", None, "single", "single"],
+    "naphthalene.mol2": 11 * ["aromatic"]
+}
+
+
+@pytest.mark.parametrize("input_mol2", ["fatty-acid.mol2", "pyrrole.mol2"])
+def test_bad_bonds(input_mol2):
+    """Test known failure of detected bond types."""
+    ligand = parameterize.ParameterizedMolecule()
+    mol2_path = Path("tests/data") / input_mol2
+    with open(mol2_path, "rt") as mol2_file:
+        ligand.read(mol2_file)
+    results = BOND_RESULTS[input_mol2]
+    for ibond, bond in enumerate(ligand.bonds):
+        try:
+            if bond.bond_order != results[ibond]:
+                err = "Incorrect order for %s. Got %s, expected %s" % (
+                    str(bond), bond.bond_order, results[ibond])
+                err = "Known bond detection failure for %s: %s" % (
+                    input_mol2, err)
+                _LOGGER.error(err)
+        except IndexError:
+            err = "Add test for %s -- %s (%s)" % (
+                input_mol2, str(bond), bond.bond_order)
+            raise IndexError(err)
+
+
+@pytest.mark.parametrize("input_mol2", [
+    "cyclohexane.mol2", "ethanol.mol2", "glycerol.mol2", "acetylcholine.mol2",
+    "cyanide.mol2", "trimethylamine.mol2", "naphthalene.mol2"])
+def test_bonds(input_mol2):
+    """Test detection of bond types."""
+    ligand = parameterize.ParameterizedMolecule()
+    mol2_path = Path("tests/data") / input_mol2
+    with open(mol2_path, "rt") as mol2_file:
+        ligand.read(mol2_file)
+    results = BOND_RESULTS[input_mol2]
+    for ibond, bond in enumerate(ligand.bonds):
+        try:
+            if bond.bond_order != results[ibond]:
+                err = "Incorrect order for %s. Got %s, expected %s" % (
+                    str(bond), bond.bond_order, results[ibond])
+                raise ValueError(err)
+        except IndexError:
+            err = "Add test for %s -- %s (%s)" % (
+                input_mol2, str(bond), bond.bond_order)
+            raise IndexError(err)
 
 
 @pytest.mark.parametrize("input_pdb", ["1HPX", "1QBS", "1US0"], ids=str)

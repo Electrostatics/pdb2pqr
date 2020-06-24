@@ -45,19 +45,19 @@ FILTER_WARNINGS = ["Skipped atom during water optimization",
 FILTER_WARNINGS_LIMIT = 20
 
 # Expected location for topology definition file
-TOPOLOGY_DEF_PATH = "dat/TOPOLOGY.xml"
+TOPOLOGY_DEF_PATH = "TOPOLOGY.xml"
 
 # Expected location for amino acid topology definition file
-AA_DEF_PATH = "dat/AA.xml"
+AA_DEF_PATH = "AA.xml"
 
 # Expected location for nucleic acid topology definition file
-NA_DEF_PATH = "dat/NA.xml"
+NA_DEF_PATH = "NA.xml"
 
 # Expected location for hydrogens topology definition file
-HYD_DEF_PATH = "dat/HYDROGENS.xml"
+HYD_DEF_PATH = "HYDROGENS.xml"
 
 # Expected location for topology patch definition file
-PATCH_DEF_PATH = "dat/PATCHES.xml"
+PATCH_DEF_PATH = "PATCHES.xml"
 
 # Number of angle steps to scan when debumping
 DEBUMP_ANGLE_STEPS = 72

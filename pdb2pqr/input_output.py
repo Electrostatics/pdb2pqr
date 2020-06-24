@@ -233,9 +233,13 @@ def test_for_file(name, type_):
     test_names = [name, name.upper(), name.lower()]
     test_suffixes = ["", ".%s" % type_.upper(), ".%s" % type_.lower()]
 
+<<<<<<< HEAD
     dat_dir = Path.joinpath(Path(__file__).parents[1], "dat")
     test_dirs = sys_path + [dat_dir, "."]
 
+=======
+    test_dirs = [Path(p).joinpath("pdb2pqr", "dat") for p in sys_path + [Path.cwd()]]
+>>>>>>> setup_branc
     if name.lower() in FORCE_FIELDS:
         name = name.upper()
 
@@ -271,6 +275,16 @@ def test_dat_file(name):
         filename or empty string
     """
     return test_for_file(name, "DAT")
+
+def test_xml_file(name):
+    """Test for the existence of the forcefield file with a few name permutations.
+
+    Args:
+        name of the xml file
+    Returns:
+        filename or empty string
+    """
+    return test_for_file(name, "xml")
 
 
 def get_pdb_file(name):

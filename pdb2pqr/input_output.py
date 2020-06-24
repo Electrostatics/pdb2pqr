@@ -233,13 +233,8 @@ def test_for_file(name, type_):
     test_names = [name, name.upper(), name.lower()]
     test_suffixes = ["", ".%s" % type_.upper(), ".%s" % type_.lower()]
 
-<<<<<<< HEAD
-    dat_dir = Path.joinpath(Path(__file__).parents[1], "dat")
-    test_dirs = sys_path + [dat_dir, "."]
-
-=======
     test_dirs = [Path(p).joinpath("pdb2pqr", "dat") for p in sys_path + [Path.cwd()]]
->>>>>>> setup_branc
+
     if name.lower() in FORCE_FIELDS:
         name = name.upper()
 
@@ -360,13 +355,13 @@ def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
     Returns:
         Definitions object.
     """
-    aa_path_ = test_dat_file(aa_path)
+    aa_path_ = test_xml_file(aa_path)
     if not aa_path_:
         raise FileNotFoundError("Unable to locate %s" % aa_path)
-    na_path_ = test_dat_file(na_path)
+    na_path_ = test_xml_file(na_path)
     if not na_path_:
         raise FileNotFoundError("Unable to locate %s" % na_path)
-    patch_path_ = test_dat_file(patch_path)
+    patch_path_ = test_xml_file(patch_path)
     if not patch_path_:
         raise FileNotFoundError("Unable to locate %s" % patch_path)
     with open(aa_path_, "rt") as aa_file:

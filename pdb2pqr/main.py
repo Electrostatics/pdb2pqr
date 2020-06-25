@@ -19,7 +19,7 @@ from . import debump
 from . import hydrogens
 from . import forcefield
 from . import protein as prot
-from . import input_output as io 
+from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
@@ -72,7 +72,7 @@ def build_parser():
     grp2.add_argument('--usernames',
                       help=('The user-created names file to use. Required if '
                             'using --userff'))
-    grp2.add_argument('--apbs-input', 
+    grp2.add_argument('--apbs-input',
                       help=('Create a template APBS input file based on the '
                             'generated PQR file at the specified location.'))
     grp2.add_argument('--ligand',
@@ -369,7 +369,10 @@ def run_propka(args, protein):
     molecule = MolecularContainer(parameters, args)
     molecule = read_molecule_file(pdb_path, molecule)
     molecule.calculate_pka()
-    pka_filename = molecule.write_pka()
+
+    pka_filename = Path(pdb_path).stem + ".pka"
+    molecule.write_pka(filename = pka_filename)
+
     conformation = molecule.conformations["AVR"]
     rows = []
     for group in conformation.groups:
@@ -388,6 +391,7 @@ def run_propka(args, protein):
             row_dict["coupled_group"] = None
         rows.append(row_dict)
     df = pandas.DataFrame(rows)
+
     return df, pka_filename
 
 
@@ -431,9 +435,12 @@ def non_trivial(args, protein, definition, is_cif):
             _LOGGER.info("Assigning titration states with PROPKA.")
             protein.remove_hydrogens()
             pka_df, pka_filename = run_propka(args, protein)
-            _LOGGER.error("\n" + str(pka_df))
-            raise NotImplementedError(
-                "PROPKA not implemented. See %s" % pka_filename)
+
+            protein.apply_pka_values(forcefield_.name, args.ph, dict(zip(pka_df.group_label, pka_df.pKa)));
+
+            # _LOGGER.error("\n" + str(pka_df))
+            # raise NotImplementedError(
+            #     "PROPKA not implemented. See %s" % pka_filename)
         elif args.pka_method == "pdb2pka":
             _LOGGER.info("Assigning titration states with PDB2PKA.")
             raise NotImplementedError("PDB2PKA not implemented.")
@@ -537,4 +544,3 @@ def main(args):
     if args.apbs_input:
         raise NotImplementedError("Missing argument for APBS input file.")
         io.dump_apbs(args.output_pqr)
-

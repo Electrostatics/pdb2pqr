@@ -436,11 +436,10 @@ def non_trivial(args, protein, definition, is_cif):
             protein.remove_hydrogens()
             pka_df, pka_filename = run_propka(args, protein)
 
-            protein.apply_pka_values(forcefield_.name, args.ph, dict(zip(pka_df.group_label, pka_df.pKa)));
+            protein.apply_pka_values(
+                forcefield_.name, args.ph,
+                dict(zip(pka_df.group_label, pka_df.pKa)))
 
-            # _LOGGER.error("\n" + str(pka_df))
-            # raise NotImplementedError(
-            #     "PROPKA not implemented. See %s" % pka_filename)
         elif args.pka_method == "pdb2pka":
             _LOGGER.info("Assigning titration states with PDB2PKA.")
             raise NotImplementedError("PDB2PKA not implemented.")

@@ -30,28 +30,40 @@ MICRO = 0
 VERSION = "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 
 setuptools.setup(
-    name = "pdb2pqr",
-    version = VERSION,
-    author = "Baker, Nathan A. et al.",
-    author_email = "nathan.baker@pnnl.gov",
-    description = "Automates many of the common tasks of preparing structures for continuum solvation calculations as well as many other types of biomolecular structure modeling, analysis, and simulation.",
-    long_description = long_description,
-    install_requires = ["propka >= 3.2", "pandas >= 1.0", "pytest>=5.4.1"],
-    url = " https://github.com/Electrostatics/apbs-pdb2pqr/tree/master/pdb2pqr",
-    packages = setuptools.find_packages(exclude = ["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]),
-    package_data = {
-        "pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]
-    },
-    license = "BSD",
-    classifiers = [
-        "Programming Language :: Python :: 3",
-        "License :: BSD",
-        "Operating System :: Microsoft :: Windows",
+    name="pdb2pqr",
+    version=VERSION,
+    author="Jens Erik Nielsen, Nathan Baker, and many others.",
+    author_email="nathanandrewbaker@gmail.com",
+    description=(
+        "Automates many of the common tasks of preparing structures for "
+        "continuum solvation calculations as well as many other types of "
+        "biomolecular structure modeling, analysis, and simulation."),
+    long_description=long_description,
+    install_requires=["propka >= 3.2", "pandas >= 1.0", "pytest>=5.4.1"],
+    url="https://github.com/Electrostatics/apbs-pdb2pqr/tree/master/pdb2pqr",
+    packages=setuptools.find_packages(
+        exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]),
+    package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
+    python_requires=">=3.5",
+    license="BSD",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: English",
         "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
         "Operating System :: Linux",
+        "Operating System :: POSIX",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemestry"
     ],
-    keywords = "science chemestry modelcular biology",
-    entry_points = {"console_scripts": "pdb2pqr30 = pdb2pqr.main:main"}
+    keywords="science chemistry molecular biology",
+    entry_points={"console_scripts": "pdb2pqr30=pdb2pqr.main:main"}
 )

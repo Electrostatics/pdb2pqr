@@ -129,11 +129,23 @@ def test_rings(input_mol2):
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-    benchmark = RING_RESULTS[input_mol2]
-    diff = ligand.rings ^ benchmark
+    test = ligand.rings
+    try:
+        benchmark = RING_RESULTS[input_mol2]
+    except KeyError:
+        err = "Missing expected results for %s: %s" % (
+            input_mol2, test)
+        raise KeyError(err)
+    diff = test ^ benchmark
     if len(diff) > 0:
-        err = "Ring test failed for %s: %s" % (
-            input_mol2, sorted(list(diff)))
+        err = (
+            "Ring test failed for {mol}:\n"
+            "Got: {test}\n"
+            "Expected: {expected}\n"
+            "Difference: {diff}").format(
+                mol=input_mol2, test=sorted(list(test)),
+                expected=sorted(list(benchmark)),
+                diff=sorted(list(diff)))
         raise ValueError(err)
     for atom_name in ligand.atoms:
         atom = ligand.atoms[atom_name]

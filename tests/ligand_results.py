@@ -34,21 +34,38 @@ TORSION_RESULTS = {
 RING_RESULTS = {
     "ethanol.mol2": set(),
     "glycerol.mol2": set(),
-    "pyrrole.mol2": set(),
     "tetramethylammonium.mol2": set(),
     "naphthalene.mol2": set(),
+    "acetate.mol2": set(),
+    "acetonitrile.mol2": set(),
+    "acetylcholine.mol2": set(),
+    "fatty-acid.mol2": set(),
+    "pyrrole.mol2": {('CAA', 'CAD', 'CAE', 'CAC', 'NAB')},
+    "adp.mol2": {
+        ('C4', 'C5', 'N7', 'C8', 'N9'), ('C2', 'N1', 'C6', 'C5', 'C4', 'N3'),
+        ("C1'", "O4'", "C4'", "C3'", "C2'")},
     "cyclohexane.mol2": {('CAA', 'CAD', 'CAE', 'CAF', 'CAC', 'CAB')},
     "naphthalene.mol2": {
-        ('CAA', 'CAB', 'CAC', 'CAH', 'CAG', 'CAF'),
+        ('CAA', 'CAF', 'CAG', 'CAH', 'CAC', 'CAB'),
         ('CAC', 'CAH', 'CAI', 'CAJ', 'CAE', 'CAD')},
     "anthracene.mol2": {
+        ('CAA', 'CAH', 'CAI', 'CAJ', 'CAC', 'CAB'),
         ('CAC', 'CAJ', 'CAK', 'CAL', 'CAE', 'CAD'),
-        ('CAE', 'CAL', 'CAM', 'CAN', 'CAG', 'CAF'),
-        ('CAA', 'CAB', 'CAC', 'CAJ', 'CAI', 'CAH')},
-    "crown-ether.mol2": {
-        ('CAA', 'CAE', 'CAF', 'CAG', 'CAC', 'CAB'),
-        ('CAD', 'CAI', 'CAJ', 'CAK', 'CAF', 'CAE'),
-        ('CAF', 'CAG', 'CAH', 'CAM', 'CAL', 'CAK')}
+        ('CAE', 'CAL', 'CAM', 'CAN', 'CAG', 'CAF')},
+    "1HPX-ligand.mol2": {
+        ('C1', 'C2', 'C3', 'C4', 'C5', 'N1'),
+        ('C18', 'N4', 'C20', 'S2', 'C19'),
+        ('C3', 'C6', 'C7', 'C8', 'C9', 'C4'),
+        ('C28', 'C33', 'C32', 'C31', 'C30', 'C29')},
+    "1QBS-ligand.mol2": {
+        ('C1', 'N7', 'C6', 'C5', 'C4', 'C3', 'N2'),
+        ('C31', 'C36', 'C35', 'C34', 'C33', 'C32'),
+        ('C61', 'C66', 'C65', 'C64', 'C63', 'C62'),
+        ('C71', 'C76', 'C75', 'C74', 'C73', 'C72'),
+        ('C21', 'C26', 'C25', 'C24', 'C23', 'C22')},
+    "1US0-ligand.mol2": {
+        ('C24', 'C27', 'C28', 'C25', 'C29', 'C26'),
+        ('C2', 'C4', 'C7', 'C3', 'C6', 'C5')}
 }
 
 

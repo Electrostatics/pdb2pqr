@@ -15,19 +15,25 @@
 #       
 @<TRIPOS>MOLECULE
 DRG  
-    4    3    1
+    7    6    1
 SMALL
 USER_CHARGES
 
 PRODRG MOLECULE
 @<TRIPOS>ATOM
-     1  OAC        -1.420    -1.790   -17.890   O.co2     1 DRG      -0.360
-     2  CAB        -1.510    -2.970   -18.290   C.2       1 DRG       0.720
-     3  OAD        -1.200    -3.990   -17.640   O.co2     1 DRG      -0.360
-     4  CAA        -2.050    -3.180   -19.710   C.3       1 DRG       0.000
+     1  OAC        -1.960    -3.920    10.330   O.co2     1 DRG      -0.360
+     2  CAB        -2.270    -3.050    11.170   C.2       1 DRG       0.720
+     3  OAD        -2.300    -3.210    12.410   O.co2     1 DRG      -0.360
+     4  CAA        -2.640    -1.670    10.630   C.3       1 DRG       0.000
+     5  HAB        -2.571    -1.675     9.542   H         1 DRG       0.000
+     6  HAC        -1.953    -0.926    11.034   H         1 DRG       0.000
+     7  HAA        -3.662    -1.496    10.966   H         1 DRG       0.000
 @<TRIPOS>BOND
     1    2    1 2 
     2    2    3 2 
     3    2    4 1 
+    4    4    5 1 
+    5    4    6 1 
+    6    4    7 1 
 @<TRIPOS>SUBSTRUCTURE
   1  DRG    1  

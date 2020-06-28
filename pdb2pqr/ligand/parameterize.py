@@ -26,8 +26,6 @@ class ParameterizedMolecule(Mol2Molecule):
         prev_atom_names = set(self.ligand_properties)
         curr_atom_names = set(self.atoms)
         if len(prev_atom_names ^ curr_atom_names) > 0:
-            for atom in ligand.atoms.values():
-                atom.formal_charge = 0.0
             self.reparameterize(ligand)
 
     def reparameterize(self, ligand):

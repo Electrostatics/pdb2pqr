@@ -8,7 +8,7 @@ from collections import OrderedDict
 from itertools import combinations
 from numpy import array
 from numpy.linalg import norm
-from . import BOND_LENGTHS
+from . import BOND_LENGTHS, VALENCE_BY_ELEMENT, NONBONDED_BY_TYPE
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -54,14 +54,16 @@ class Mol2Bond:
         return fmt.format(b=self)
 
     @property
-    def bond_order(self):
+    def guess_bond_order(self):
         """Attempt to determine the order of this bond.
 
         Return:
             string with order of bond or None
         """
-        types = sorted(
-            [self.atoms[0].atom_type[0], self.atoms[1].atom_type[0]])
+        _LOGGER.warning("Ignoring bond type: %s", self.type)
+        type1 = self.atoms[0].type.split(".")[0]
+        type2 = self.atoms[1].type.split(".")[0]
+        types = sorted(type1, type2)
         bond_lengths = BOND_LENGTHS.loc[
             (BOND_LENGTHS["atom1"] == types[0])
             & (BOND_LENGTHS["atom2"] == types[1])]
@@ -86,7 +88,7 @@ class Mol2Atom:
         self.x = None
         self.y = None
         self.z = None
-        self.atom_type = None
+        self.type = None
         self.radius = None
         self.is_c_term = False
         self.is_n_term = False
@@ -95,7 +97,6 @@ class Mol2Atom:
         self.temp_factor = 0.00
         self.seg_id = None
         self.charge = None
-        self.formal_charge = None
         self.num_rings = 0
         self.radius = None
         self.bonded_atoms = []
@@ -140,17 +141,93 @@ class Mol2Atom:
     @property
     def num_bonded_heavy(self):
         """Return the number of heavy atoms bonded to this atom."""
-        return len([a for a in self.bonded_atoms if a.atom_type != "H"])
+        return len([a for a in self.bonded_atoms if a.type != "H"])
 
     @property
     def num_bonded_hydrogen(self):
         """Return the number of hydrogen atoms bonded to this atom."""
-        return len([a for a in self.bonded_atoms if a.atom_type == "H"])
+        return len([a for a in self.bonded_atoms if a.type == "H"])
 
     @property
     def element(self):
         """Return a string with the element for this atom (uppercase)."""
-        return self.atom_type.split(".")[0].upper()
+        return self.type.split(".")[0].upper()
+
+    @property
+    def bond_order(self):
+        """Return the total number of electrons in bonds with other atoms."""
+        order = 0
+        num_aromatic = 0
+        for bond in self.bonds:
+            if bond.type == "single":
+                order += 1
+            elif bond.type == "double":
+                order += 2
+            elif bond.type == "triple":
+                order += 3
+            elif bond.type == "aromatic":
+                num_aromatic += 1
+            else:
+                err = "Unknown bond type: %s" % bond.type
+                raise ValueError(err)
+        if num_aromatic > 0:
+            order = order + num_aromatic + 1
+        return order
+
+    @property
+    def formal_charge(self):
+        """Return an integer with the formal charge for this atom."""
+        element = self.type.split(".")[0]
+        valence = VALENCE_BY_ELEMENT[element]
+        nonbonded = NONBONDED_BY_TYPE[self.type]
+        bond_order = self.bond_order
+        formal_charge = valence - nonbonded - bond_order
+        if (self.type in ["N.pl3", "N.am"]) and (bond_order == 3) and (
+                formal_charge != 0):
+            # Planar nitrogen bond orders are not always correct in MOL2
+            _LOGGER.warning("Correcting planar/amide bond order.")
+            formal_charge = 0
+        elif (self.type in ["N.ar"]) and (bond_order == 4) and (
+                formal_charge != 0):
+            # Aromatic nitrogen bond orders are not always correct in MOL2
+            _LOGGER.warning("Correcting aromatic nitrogen bond order.")
+            formal_charge = 0
+        elif (self.type in ["C.ar"]) and (bond_order == 5) and (
+                formal_charge != 0):
+            # Aromatic carbon bond orders are not always correct in MOL2
+            _LOGGER.warning("Correcting aromatic carbon bond order.")
+            formal_charge = 0
+        elif (self.type in ["O.co2"]) and (bond_order == 1) and (
+                formal_charge != -0.5):
+            # CO2 bond orders are hardly ever set correctly in MOL2
+            formal_charge = -0.5
+        elif (self.type in ["C.2"]) and (bond_order == 5) and (
+                formal_charge == -1):
+            # CO2 bond orders are hardly ever set correctly in MOL2
+            formal_charge = 0
+        elif (self.type in ["N.3"]) and (bond_order == 4) and (
+                formal_charge == -1):
+            # Tetravalent nitrogen atom types are sometimes wrong in MOL2
+            _LOGGER.warning("Correcting ammonium atom type.")
+            formal_charge = 1
+        elif (self.type in ["O.3"]) and (bond_order == 1) and (
+                formal_charge == 1):
+            # Phosphate groups are sometimes confused in MOL2
+            # Assign negative charge to first O.3 with bond order 1
+            # attached to phosphorous
+            elements = [a.type[0] for a in self.bonds[0].atoms]
+            p_atom = self.bonds[0].atoms[elements.index("P")]
+            _LOGGER.warning("Correcting phosphate bond order.")
+            o_atoms = []
+            for bond in p_atom.bonds:
+                for atom in bond.atoms:
+                    if atom.type[0] == "O" and atom.bond_order == 1:
+                        o_atoms.append(atom.name)
+            if o_atoms.index(self.name) == 0:
+                formal_charge = -1
+            else:
+                formal_charge = 0
+        return formal_charge
 
 
 class Mol2Molecule:
@@ -307,7 +384,15 @@ class Mol2Molecule:
                 raise ValueError(err)
             atom = Mol2Atom()
             atom.name = words[1]
-            atom.atom_type = words[5]
+            atom_type = words[5]
+            type_parts = atom_type.split(".")
+            type_parts[0] = type_parts[0].capitalize()
+            if len(type_parts) == 2:
+                type_parts[1] = type_parts[1].lower()
+            elif len(type_parts) > 2:
+                err = "Invalid atom type: %s" % atom_type
+                raise ValueError(err)
+            atom.type = ".".join(type_parts)
             atom.chain_id = "L"
             try:
                 atom.serial = int(words[0])

@@ -20,7 +20,7 @@ from . import hydrogens
 from . import forcefield
 from . import protein as prot
 from . import input_output as io 
-from .ligand.parameterize import ParameterizedMolecule
+from .ligand.mol2 import Mol2Molecule
 from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
@@ -263,7 +263,7 @@ def setup_molecule(pdblist, definition, ligand_path):
         ligand:  ligand object (may be None)
     """
     if ligand_path is not None:
-        ligand = ParameterizedMolecule()
+        ligand = Mol2Molecule()
         with open(ligand_path, "rt", encoding="utf-8") as ligand_file:
             ligand.read(ligand_file)
         raise NotImplementedError("Where do initial ligand charges come from?")

@@ -5,15 +5,15 @@ from pathlib import Path
 import pytest
 import pandas as pd
 from numpy.testing import assert_almost_equal
-from pdb2pqr.ligand import parameterize
+from pdb2pqr.ligand.mol2 import Mol2Molecule
+from pdb2pqr.ligand import RADII
 import common
 from ligand_results import TORSION_RESULTS, RING_RESULTS
-from ligand_results import FORMAL_CHARGE_RESULTS, PARTIAL_CHARGE_RESULTS
+from ligand_results import FORMAL_CHARGE_RESULTS, PARAMETER_RESULTS
 
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.warning("Need functional and regression test coverage for --ligand")
-_LOGGER.error("Still haven't figured out radii")
 
 
 ALL_LIGANDS = set(TORSION_RESULTS) | set(RING_RESULTS)
@@ -24,46 +24,44 @@ ALL_LIGANDS = sorted(list(ALL_LIGANDS))
 
 
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
-def test_parameterization(input_mol2):
+def test_assign_parameters(input_mol2):
     """Testing basic aspects of code breaking."""
-    ligand = parameterize.ParameterizedMolecule()
+    ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
     old_total_charge = 0
     for atom in ligand.atoms.values():
-        atom.charge = atom.formal_charge
-        old_total_charge += atom.charge
-        atom.old_charge = atom.charge
-    ligand.update(ligand)
+        old_total_charge += atom.formal_charge
+    ligand.assign_parameters()
     new_total_charge = 0
     test_results = []
     for atom in ligand.atoms.values():
         test_row = {
-            "name": atom.name, "charge": atom.charge}
+            "name": atom.name, "type": atom.type, "charge": atom.charge,
+            "radius": atom.radius}
         test_results.append(test_row)
         new_total_charge += atom.charge
     _LOGGER.debug("Test results: %s", test_results)
     test_results = pd.DataFrame(test_results)
     test_results = test_results.set_index("name")
-    _LOGGER.debug("Test results:\n%s", test_results)
+    # _LOGGER.debug("Test results:\n%s", test_results.to_string())
     _LOGGER.info(
         "Total charge: %5.2f -> %5.2f", old_total_charge, new_total_charge)
-    expected_results = pd.DataFrame(PARTIAL_CHARGE_RESULTS[input_mol2])
+    expected_results = pd.DataFrame(PARAMETER_RESULTS[input_mol2])
     expected_results = expected_results.set_index("name")
-    diff_results = test_results - expected_results
-    _LOGGER.debug(
-        "Difference between test and expected results:\n%s",
-        diff_results.to_string())
     assert_almost_equal(
         test_results["charge"].to_numpy(),
         expected_results["charge"].to_numpy())
+    assert_almost_equal(
+        test_results["radius"].to_numpy(),
+        expected_results["radius"].to_numpy(), verbose=True)
 
 
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
 def test_formal_charge(input_mol2):
     """Testing formal charge calculation."""
-    ligand = parameterize.ParameterizedMolecule()
+    ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
@@ -91,7 +89,7 @@ def test_formal_charge(input_mol2):
 @pytest.mark.parametrize("input_mol2", TORSION_RESULTS)
 def test_torsions(input_mol2):
     """Test assignment of torsion angles."""
-    ligand = parameterize.ParameterizedMolecule()
+    ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
@@ -125,7 +123,7 @@ def test_torsions(input_mol2):
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
 def test_rings(input_mol2):
     """Test assignment of torsion angles."""
-    ligand = parameterize.ParameterizedMolecule()
+    ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)

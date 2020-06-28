@@ -10,19 +10,42 @@ assert sys.version_info >= (3, 5)
 
 
 # TODO - this belongs in a configuration file somewhere other than here.
-# PARSE radii data for C, N, O, S, H, Br, F, P are from Sitkoff et al's paper:
-# 
-#   Sitkoff D, Sharp KA, Honig B. Accurate Calculation of Hydration Free
-#   Energies Using Macroscopic Solvent Models. J Phys Chem 98 (7) 1978-88,
-#   1994. J. Phys. Chem. 1994, 98, 7, 1978–1988
 #
-# See also the AMBER mailing list: http://amber.ch.ic.ac.uk/archive/.
-# 
-# The van der Waals radius is used for chlorine.
-PARSE_RADII = {
-    "C": 1.70, "N": 1.50, "O": 1.40, "S": 1.85, "H": 1.00, "Br":2.50,
-    "F": 1.20, "P": 1.90, "Cl": 1.75}
-
+# When using these tables, the most specific Sybyl atom type should be used
+# first and then the generic element should be used
+RADII = {
+    # NOTE - these are not the original PARSE radii but they are the ones
+    # included in the previous version of PDB2PKA so I'm preserving them for 
+    # posterity. There's a claim they came from
+    # http://amber.ch.ic.ac.uk/archive/ but that link no longer works.
+    "not parse - do not use": {
+        "C": 1.70, "N": 1.50, "O": 1.40, "S": 1.85, "H": 1.00, "Br": 2.50,
+        "F": 1.20, "P": 1.90, "Cl": 1.75},
+    # These are the PARSE radii from Table 4 of
+    # http://doi.org/10.1021/j100058a043
+    "parse": {
+        "C.1": 2.00, "C.2": 2.00, "C.3": 2.00, "C": 1.70, "H": 1.00,
+        "O": 1.40, "N": 1.50, "S": 1.85},
+    # These are the ZAP radii from Table 2 of
+    # http://doi.org/10.1021/jm070549%2B. Bondi radii should be used for
+    # atoms not found in this table.
+    "zap9": {
+        "C": 1.87, "H": 1.10, "O.co2": 1.76, "N": 1.40, "S": 2.15, "F": 2.40,
+        "Cl": 1.82, "I": 2.65},
+    # These are the Bondi radii from Table 2 of
+    # http://doi.org/10.1021/jm070549%2B
+    "bondi-zap": {
+        "C": 1.7, "H": 1.20, "O.co2": 1.52, "N": 1.55, "S": 1.80, "F": 1.47,
+        "Cl": 1.75, "I": 1.98},
+    # These are the Bondi radii from Table I of
+    # http://doi.org/10.1021/j100785a001. NOTE - there are some variations to 
+    # the halogens in Table V that we might want to consider in the future.
+    "bondi": {
+        "H": 1.20, "He": 1.40, "C": 1.70, "N": 1.55, "O": 1.52, "F": 1.47, 
+        "Ne": 1.54, "Si": 2.10, "P": 1.80, "S": 1.80, "Cl": 1.75, "Ar": 1.88,
+        "As": 1.85, "Se": 1.90, "Br": 1.85, "Kr": 2.02, "Te": 2.06, "I": 1.98,
+        "Xe": 2.16}
+}
 
 # Numbers of valence electrons for the groups of the periodic table
 VALENCE_BY_GROUP = {1: 1, 2: 2, 13: 3, 14: 4, 15: 5, 16: 6, 17: 7, 18: 8}

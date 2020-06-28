@@ -8,7 +8,9 @@ from collections import OrderedDict
 from itertools import combinations
 from numpy import array
 from numpy.linalg import norm
+from . import peoe
 from . import VALENCE_BY_ELEMENT, NONBONDED_BY_TYPE
+from . import RADII
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -104,6 +106,35 @@ class Mol2Atom:
             "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
         )
         return pdb_fmt.format(a=self)
+
+    def assign_radius(self, primary_dict, secondary_dict):
+        """Assign radius to atom.
+
+        TODO - it seems inconsistent that this function pulls radii from a 
+        dictionary and the protein routines use force field files.
+
+        Args:
+            primary_dict:  primary dictionary of radii indexed by atom type or
+                           element
+            secondary_dict:  backup dictionary for radii not found in primary
+                             dictionary
+        """
+        radius = None
+        for rdict in [primary_dict, secondary_dict]:
+            if radius is not None:
+                break
+            for key in [self.type, self.element]:
+                if key in rdict:
+                    radius = rdict[key]
+                    break
+        if radius is not None:
+            self.radius = radius
+        else:
+            err = (
+                "Unable to find radius parameter for self of type {type} in "
+                "radius dictionary: {ff}").format(
+                    type=self.type, ff=primary_dict)
+            raise KeyError(err)
 
     @property
     def coords(self):
@@ -218,6 +249,38 @@ class Mol2Molecule:
         self.name = None
         self.res_name = None
         self.res_seq = None
+
+    def assign_parameters(
+        self, primary_dict=RADII["zap9"], secondary_dict=RADII["bondi"]):
+        """Assign charges and radii to atoms in molecule.
+
+        Args:
+            primary_dict:  primary dictionary of radii indexed by atom type or
+                           element
+            secondary_dict:  backup dictionary for radii not found in primary
+                             dictionary
+        """
+        self.assign_radii(primary_dict, secondary_dict)
+        self.assign_charges()
+
+    def assign_radii(
+        self, primary_dict, secondary_dict):
+        """Assign radii to atoms in molecule.
+
+        Args:
+            primary_dict:  primary dictionary of radii indexed by atom type or
+                           element
+            secondary_dict:  backup dictionary for radii not found in primary
+                             dictionary
+        """
+        for atom in self.atoms.values():
+            atom.assign_radius(primary_dict, secondary_dict)
+
+    def assign_charges(self):
+        """Assign charges to atoms in molecule."""
+        for atom in self.atoms.values():
+            atom.charge = atom.formal_charge
+        peoe.equilibrate(self.atoms.values())
 
     def find_atom_torsions(self, start_atom):
         """Set the torsion angles that start with this atom (name).

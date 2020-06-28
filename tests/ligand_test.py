@@ -43,7 +43,7 @@ def test_parameterization(input_mol2):
             "name": atom.name, "charge": atom.charge}
         test_results.append(test_row)
         new_total_charge += atom.charge
-    _LOGGER.info("Test results: %s", test_results)
+    _LOGGER.debug("Test results: %s", test_results)
     test_results = pd.DataFrame(test_results)
     test_results = test_results.set_index("name")
     _LOGGER.debug("Test results:\n%s", test_results)
@@ -88,19 +88,33 @@ def test_formal_charge(input_mol2):
         raise ValueError(err)
 
 
-@pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
+@pytest.mark.parametrize("input_mol2", TORSION_RESULTS)
 def test_torsions(input_mol2):
     """Test assignment of torsion angles."""
     ligand = parameterize.ParameterizedMolecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
+    test = set()
+    # Only test heavy-atom torsions
+    for torsion in ligand.torsions:
+        has_hydrogen = False
+        for atom in torsion:
+            if atom.startswith("H"):
+                has_hydrogen = True
+        if not has_hydrogen:
+            test.add(torsion)
     try:
-        benchmark = TORSION_RESULTS[input_mol2]
-        diff = ligand.torsions ^ benchmark
+        expected = TORSION_RESULTS[input_mol2]
+        diff = test ^ expected
         if len(diff) > 0:
-            err = "Torsion test failed for %s: %s" % (
-                input_mol2, sorted(list(diff)))
+            err = (
+                "Torsion test failed for {mol}:\n"
+                "Got: {test}\n"
+                "Expected: {expected}\n"
+                "Difference: {diff}").format(
+                    mol=input_mol2, test=sorted(list(test)),
+                    expected=sorted(list(expected)), diff=sorted(list(diff)))
             raise ValueError(err)
     except KeyError:
         err = "No results for %s: %s", input_mol2, sorted(

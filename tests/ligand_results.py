@@ -1,16 +1,26 @@
 """Expected results for ligand tests"""
 TORSION_RESULTS = {
-    "ethanol.mol2": {
-        ('CAA', 'CAB', 'OAC', 'HAF'), ('HAF', 'OAC', 'CAB', 'CAA')},
+    "acetylcholine.mol2": {
+        ('CAA', 'NAD', 'CAE', 'CAF'), ('CAC', 'NAD', 'CAE', 'CAF'),
+        ('CAE', 'CAF', 'OAG', 'CAH'), ('CAF', 'CAE', 'NAD', 'CAA'),
+        ('CAF', 'CAE', 'NAD', 'CAC'), ('CAF', 'CAE', 'NAD', 'CAJ'),
+        ('CAF', 'OAG', 'CAH', 'CAI'), ('CAF', 'OAG', 'CAH', 'OAB'),
+        ('CAH', 'OAG', 'CAF', 'CAE'), ('CAI', 'CAH', 'OAG', 'CAF'),
+        ('CAJ', 'NAD', 'CAE', 'CAF'), ('NAD', 'CAE', 'CAF', 'OAG'),
+        ('OAB', 'CAH', 'OAG', 'CAF'), ('OAG', 'CAF', 'CAE', 'NAD')},
+    "ethanol.mol2": set(),
+    "pyrrole.mol2": {
+        ('CAA', 'CAD', 'CAE', 'CAC'), ('CAA', 'NAB', 'CAC', 'CAE'),
+        ('CAC', 'CAE', 'CAD', 'CAA'), ('CAC', 'NAB', 'CAA', 'CAD'),
+        ('CAD', 'CAA', 'NAB', 'CAC'), ('CAD', 'CAE', 'CAC', 'NAB'),
+        ('CAE', 'CAC', 'NAB', 'CAA'), ('CAE', 'CAD', 'CAA', 'NAB'),
+        ('NAB', 'CAA', 'CAD', 'CAE'), ('NAB', 'CAC', 'CAE', 'CAD')},
+    "tetramethylammonium.mol2": set(),
     "glycerol.mol2": {
-        ('CAA', 'CAB', 'CAC', 'OAF'), ('CAA', 'CAB', 'OAE', 'HAG'),
-        ('CAB', 'CAA', 'OAD', 'HAF'), ('CAB', 'CAC', 'OAF', 'HAH'),
-        ('CAC', 'CAB', 'CAA', 'OAD'), ('CAC', 'CAB', 'OAE', 'HAG'),
-        ('HAF', 'OAD', 'CAA', 'CAB'), ('HAG', 'OAE', 'CAB', 'CAA'),
-        ('HAG', 'OAE', 'CAB', 'CAC'), ('HAH', 'OAF', 'CAC', 'CAB'),
-        ('OAD', 'CAA', 'CAB', 'CAC'), ('OAD', 'CAA', 'CAB', 'OAE'),
-        ('OAE', 'CAB', 'CAA', 'OAD'), ('OAE', 'CAB', 'CAC', 'OAF'),
-        ('OAF', 'CAC', 'CAB', 'CAA'), ('OAF', 'CAC', 'CAB', 'OAE')},
+        ('CAA', 'CAC', 'CAE', 'OAF'), ('CAE', 'CAC', 'CAA', 'OAB'),
+        ('OAB', 'CAA', 'CAC', 'CAE'), ('OAB', 'CAA', 'CAC', 'OAD'),
+        ('OAD', 'CAC', 'CAA', 'OAB'), ('OAD', 'CAC', 'CAE', 'OAF'),
+        ('OAF', 'CAE', 'CAC', 'CAA'), ('OAF', 'CAE', 'CAC', 'OAD')},
     "cyclohexane.mol2": {
         ('CAA', 'CAB', 'CAC', 'CAF'), ('CAA', 'CAD', 'CAE', 'CAF'),
         ('CAB', 'CAA', 'CAD', 'CAE'), ('CAB', 'CAC', 'CAF', 'CAE'),
@@ -24,6 +34,9 @@ TORSION_RESULTS = {
 RING_RESULTS = {
     "ethanol.mol2": set(),
     "glycerol.mol2": set(),
+    "pyrrole.mol2": set(),
+    "tetramethylammonium.mol2": set(),
+    "naphthalene.mol2": set(),
     "cyclohexane.mol2": {('CAA', 'CAD', 'CAE', 'CAF', 'CAC', 'CAB')},
     "naphthalene.mol2": {
         ('CAA', 'CAB', 'CAC', 'CAH', 'CAG', 'CAF'),

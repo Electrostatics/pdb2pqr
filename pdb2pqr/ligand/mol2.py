@@ -8,7 +8,7 @@ from collections import OrderedDict
 from itertools import combinations
 from numpy import array
 from numpy.linalg import norm
-from . import BOND_LENGTHS, VALENCE_BY_ELEMENT, NONBONDED_BY_TYPE
+from . import VALENCE_BY_ELEMENT, NONBONDED_BY_TYPE
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -52,29 +52,6 @@ class Mol2Bond:
     def __str__(self):
         fmt = "{b.atoms[0].name:s} {b.type:s}-bonded to {b.atoms[1].name:s}"
         return fmt.format(b=self)
-
-    @property
-    def guess_bond_order(self):
-        """Attempt to determine the order of this bond.
-
-        Return:
-            string with order of bond or None
-        """
-        _LOGGER.warning("Ignoring bond type: %s", self.type)
-        type1 = self.atoms[0].type.split(".")[0]
-        type2 = self.atoms[1].type.split(".")[0]
-        types = sorted(type1, type2)
-        bond_lengths = BOND_LENGTHS.loc[
-            (BOND_LENGTHS["atom1"] == types[0])
-            & (BOND_LENGTHS["atom2"] == types[1])]
-        best_type = None
-        best_fit = BOND_DIST
-        for _, row in bond_lengths.iterrows():
-            if abs(self.length - row["length"]) < best_fit:
-                best_fit = abs(self.length - row["length"])
-                best_type = row["type"]
-        return best_type
-
 
 class Mol2Atom:
     """MOL2 molecule atoms."""

@@ -7,7 +7,7 @@ import pandas as pd
 from numpy.testing import assert_almost_equal
 from pdb2pqr.ligand import parameterize
 import common
-from ligand_results import TORSION_RESULTS, RING_RESULTS, BOND_RESULTS
+from ligand_results import TORSION_RESULTS, RING_RESULTS
 from ligand_results import FORMAL_CHARGE_RESULTS, PARTIAL_CHARGE_RESULTS
 
 
@@ -16,7 +16,7 @@ _LOGGER.warning("Need functional and regression test coverage for --ligand")
 _LOGGER.error("Still haven't figured out radii")
 
 
-ALL_LIGANDS = set(TORSION_RESULTS) | set(BOND_RESULTS) | set(RING_RESULTS)
+ALL_LIGANDS = set(TORSION_RESULTS) | set(RING_RESULTS)
 ALL_LIGANDS |= {
     "1HPX-ligand.mol2", "1QBS-ligand.mol2", "1US0-ligand.mol2", "adp.mol2",
     "acetate.mol2"}
@@ -152,26 +152,6 @@ def test_rings(input_mol2):
         if atom.num_rings > 0:
             str_ = "%d rings: %s" % (atom.num_rings, atom)
             _LOGGER.debug(str_)
-
-
-@pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
-def test_bonds(input_mol2):
-    """Test detection of bond types."""
-    ligand = parameterize.ParameterizedMolecule()
-    mol2_path = Path("tests/data") / input_mol2
-    with open(mol2_path, "rt") as mol2_file:
-        ligand.read(mol2_file)
-    results = BOND_RESULTS[input_mol2]
-    for ibond, bond in enumerate(ligand.bonds):
-        try:
-            if bond.bond_order != results[ibond]:
-                err = "Incorrect order for %s. Got %s, expected %s" % (
-                    str(bond), bond.bond_order, results[ibond])
-                raise ValueError(err)
-        except IndexError:
-            err = "Add test for %s -- %s (%s)" % (
-                input_mol2, str(bond), bond.bond_order)
-            raise IndexError(err)
 
 
 @pytest.mark.parametrize("input_pdb", ["1HPX", "1QBS", "1US0"], ids=str)

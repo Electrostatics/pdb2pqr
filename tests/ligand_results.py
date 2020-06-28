@@ -69,27 +69,6 @@ RING_RESULTS = {
 }
 
 
-BOND_RESULTS = {
-    "cyclohexane.mol2": 6 * ["single"],
-    "ethanol.mol2": [
-        "single", "single", None, "single", "single"],
-    "glycerol.mol2": [
-        None, "single", "single", "single", "single", None, "single", None],
-    "acetylcholine.mol2": [
-        "single", "double", "single", "single", "single", "single", "single",
-        "single", "single"],
-    "acetonitrile.mol2": [
-        "triple", "single"],
-    "pyrrole.mol2": [
-        "aromatic", "aromatic", "aromatic", "aromatic", "aromatic", None],
-    "fatty-acid.mol2": [
-        "double", "double", "single", "single", "single", "single", "double",
-        "single", "single", "single", "single"],
-    "tetramethylammonium.mol2": ["single", None, "single", "single"],
-    "naphthalene.mol2": 11 * ["aromatic"]
-}
-
-
 FORMAL_CHARGE_RESULTS = {
     "1HPX-ligand.mol2": 87*[0],
     "1QBS-ligand.mol2": 80*[0],

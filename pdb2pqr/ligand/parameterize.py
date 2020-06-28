@@ -39,7 +39,7 @@ class ParameterizedMolecule(Mol2Molecule):
             atom.charge = atom.formal_charge
         equilibrate(ligand.atoms.values())
         for atom in ligand.atoms.values():
-            elem = atom.element
+            elem = atom.element.capitalize()
             charge = atom.charge
             try:
                 radius = PARSE_RADII[elem]

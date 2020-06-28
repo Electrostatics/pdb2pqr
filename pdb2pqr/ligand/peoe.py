@@ -105,7 +105,7 @@ def assign_terms(atoms, term_dict):
         modified list of atoms
     """
     for atom in atoms:
-        atom_type = atom.atom_type.upper()
+        atom_type = atom.type.upper()
         if atom_type == 'O.3':
             atom_type = 'O.OH'
         try:
@@ -135,37 +135,43 @@ def equilibrate(
     abs_qges = 0.0
     for atom in atoms:
         if isclose(atom.charge, 0.0):
-            atom.formal_charge = 0.0
+            atom.equil_formal_charge = 0.0
         else:
-            atom.formal_charge = atom.charge*(1.0/scale)
+            # PEOE multiples all atoms by a scaling factor at the end to account
+            # for increased polarizability.  The initial formal charge needs to
+            # be reduced to account for this scaling.
+            atom.equil_formal_charge = atom.charge*(1.0/scale)
             abs_qges += abs(atom.charge)
+        atom.charge = 0
 
+    # A finite number of cycles is used to prevent complete equilibration of the
+    # molecule.  I'm not sure why this is a good idea but people have been doing
+    # it since the original 1978 Tetrahedron paper with Gasteiger & Marsili
     for icycle in range(num_cycles):
         for atom1 in atoms:
-            atom1.chi = electronegativity(
-                atom1.charge, atom1.poly_terms, atom1.atom_type)
+            chi1 = electronegativity(
+                atom1.charge, atom1.poly_terms, atom1.type)
             atom1.delta_charge = 0.0
-            for bonded_atom in atom1.bonded_atoms:
-                for atom2 in atoms:
-                    if atom2.name == bonded_atom.name:
-                        chi2 = electronegativity(
-                            atom2.charge, atom2.poly_terms,
-                            atom2.atom_type)
-                        chi_diff = chi2 - atom1.chi
-                        if chi_diff > 0:
-                            chi_norm = electronegativity(
-                                +1, atom1.poly_terms, atom1.atom_type)
-                        else:
-                            chi_norm = electronegativity(
-                                +1, atom2.poly_terms, atom2.atom_type)
-                        atom1.delta_charge += (
-                            (chi_diff/chi_norm)*(damp**icycle))
-        for atom1 in atoms:
+            for atom2 in atom1.bonded_atoms:
+                chi2 = electronegativity(
+                    atom2.charge, atom2.poly_terms, atom2.type)
+                chi_diff = chi2 - chi1
+                if chi2 > chi1:
+                    chi_norm = electronegativity(
+                        +1, atom1.poly_terms, atom1.type)
+                else:
+                    chi_norm = electronegativity(
+                        +1, atom2.poly_terms, atom2.type)
+                # Damping is used in PEOE to accelerate convergence
+                atom1.delta_charge += (
+                    (chi_diff/chi_norm)*(damp**(icycle+1)))
+        for atom in atoms:
             if isclose(abs_qges, 0.0):
-                atom1.charge += atom1.delta_charge
+                atom.charge += atom.delta_charge
             else:
-                atom1.charge += (
-                    atom1.delta_charge + (1.0/6.0) * atom1.formal_charge)
-    for atom1 in atoms:
-        atom1.charge = scale * atom1.charge
+                atom.charge += (
+                    atom.delta_charge
+                    + (1.0/num_cycles) * atom.equil_formal_charge)
+    for atom in atoms:
+        atom.charge = scale * atom.charge
     return atoms

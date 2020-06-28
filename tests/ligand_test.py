@@ -3,10 +3,12 @@ import logging
 from math import isclose
 from pathlib import Path
 import pytest
+import pandas as pd
+from numpy.testing import assert_almost_equal
 from pdb2pqr.ligand import parameterize
 import common
 from ligand_results import TORSION_RESULTS, RING_RESULTS, BOND_RESULTS
-from ligand_results import FORMAL_CHARGE_RESULTS
+from ligand_results import FORMAL_CHARGE_RESULTS, PARTIAL_CHARGE_RESULTS
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,18 +26,38 @@ ALL_LIGANDS = sorted(list(ALL_LIGANDS))
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
 def test_parameterization(input_mol2):
     """Testing basic aspects of code breaking."""
-    _LOGGER.warning("Ideally, this would be a regression test.")
     ligand = parameterize.ParameterizedMolecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-        for atom in ligand.atoms.values():
-            atom.charge = atom.formal_charge
-            atom.old_charge = atom.charge
-        ligand.update(ligand)
-        for atom in ligand.atoms.values():
-            fmt = "{a!s} -- {a.old_charge:5.2f} -> {a.charge:5.2f}"
-            _LOGGER.info(fmt.format(a=atom))
+    old_total_charge = 0
+    for atom in ligand.atoms.values():
+        atom.charge = atom.formal_charge
+        old_total_charge += atom.charge
+        atom.old_charge = atom.charge
+    ligand.update(ligand)
+    new_total_charge = 0
+    test_results = []
+    for atom in ligand.atoms.values():
+        test_row = {
+            "name": atom.name, "charge": atom.charge}
+        test_results.append(test_row)
+        new_total_charge += atom.charge
+    _LOGGER.info("Test results: %s", test_results)
+    test_results = pd.DataFrame(test_results)
+    test_results = test_results.set_index("name")
+    _LOGGER.debug("Test results:\n%s", test_results)
+    _LOGGER.info(
+        "Total charge: %5.2f -> %5.2f", old_total_charge, new_total_charge)
+    expected_results = pd.DataFrame(PARTIAL_CHARGE_RESULTS[input_mol2])
+    expected_results = expected_results.set_index("name")
+    diff_results = test_results - expected_results
+    _LOGGER.debug(
+        "Difference between test and expected results:\n%s",
+        diff_results.to_string())
+    assert_almost_equal(
+        test_results["charge"].to_numpy(),
+        expected_results["charge"].to_numpy())
 
 
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)

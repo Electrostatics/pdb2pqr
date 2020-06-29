@@ -1915,16 +1915,16 @@ def read_pdb(file_):
             _LOGGER.error("<%s>", line.strip())
             _LOGGER.error("Truncating remaining errors for record type:%s", record)
         except IndexError as details:
-            if "ATOM" in record or "HETATM" in record:
+            if record == "ATOM" or record == "HETATM":
                 try:
                     obj = read_atom(line)
                     pdblist.append(obj)
                 except Exception as details:
                     _LOGGER.error("Error parsing line: %s,", details)
                     _LOGGER.error("<%s>", line.strip())
-            elif "SITE" in record or "TURN" in record:
+            elif record == "SITE" or record == "TURN":
                 pass
-            elif "SSBOND" in record or "LINK" in record:
+            elif record == "SSBOND" or record == "LINK":
                 _LOGGER.error("Warning -- ignoring record:")
                 _LOGGER.error("<%s>", line.strip())
             else:

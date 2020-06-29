@@ -6,7 +6,6 @@ import pytest
 import pandas as pd
 from numpy.testing import assert_almost_equal
 from pdb2pqr.ligand.mol2 import Mol2Molecule
-from pdb2pqr.ligand import RADII
 import common
 from ligand_results import TORSION_RESULTS, RING_RESULTS
 from ligand_results import FORMAL_CHARGE_RESULTS, PARAMETER_RESULTS

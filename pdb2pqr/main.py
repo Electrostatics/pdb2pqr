@@ -20,7 +20,7 @@ from . import debump
 from . import hydrogens
 from . import forcefield
 from . import protein as prot
-from . import input_output as io 
+from . import input_output as io
 from .ligand.mol2 import Mol2Molecule
 from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
@@ -377,7 +377,7 @@ def run_propka(args, protein):
     molecule.calculate_pka()
 
     pka_filename = Path(pdb_path).stem + ".pka"
-    molecule.write_pka(filename = pka_filename)
+    molecule.write_pka(filename=pka_filename)
 
     conformation = molecule.conformations["AVR"]
     rows = []

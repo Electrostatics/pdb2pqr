@@ -43,7 +43,7 @@ POLY_TERMS = {
     'S.O2': (10.13 + 0.5, 9.13, 1.38, 20.65),
     'P.3': (10.13 + 0.5, 9.13, 1.38, 20.65)
     }
-# Maximum (absolute) value of charge after which contribution to polynomial 
+# Maximum (absolute) value of charge after which contribution to polynomial
 # is capped
 MAX_CHARGE = 1.1
 DEFAULT_H_ELECTRONEG = 20.02
@@ -116,9 +116,8 @@ def assign_terms(atoms, term_dict):
     return atoms
 
 
-def equilibrate(
-        atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
-        num_cycles=NUM_CYCLES, term_dict=POLY_TERMS):
+def equilibrate(atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
+                num_cycles=NUM_CYCLES, term_dict=POLY_TERMS):
     """Equilibrate the atomic charges.
 
     Args:

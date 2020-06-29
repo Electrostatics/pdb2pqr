@@ -110,7 +110,7 @@ class Mol2Atom:
     def assign_radius(self, primary_dict, secondary_dict):
         """Assign radius to atom.
 
-        TODO - it seems inconsistent that this function pulls radii from a 
+        TODO - it seems inconsistent that this function pulls radii from a
         dictionary and the protein routines use force field files.
 
         Args:
@@ -250,8 +250,8 @@ class Mol2Molecule:
         self.res_name = None
         self.res_seq = None
 
-    def assign_parameters(
-        self, primary_dict=RADII["zap9"], secondary_dict=RADII["bondi"]):
+    def assign_parameters(self, primary_dict=RADII["zap9"],
+                          secondary_dict=RADII["bondi"]):
         """Assign charges and radii to atoms in molecule.
 
         Args:
@@ -263,8 +263,7 @@ class Mol2Molecule:
         self.assign_radii(primary_dict, secondary_dict)
         self.assign_charges()
 
-    def assign_radii(
-        self, primary_dict, secondary_dict):
+    def assign_radii(self, primary_dict, secondary_dict):
         """Assign radii to atoms in molecule.
 
         Args:

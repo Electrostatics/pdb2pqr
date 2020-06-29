@@ -92,6 +92,7 @@ def print_pqr_header(pdblist, atomlist, reslist, charge, force_field, ph_calc_me
     """Print the header for the PQR file
 
     Args:
+        pdblist:  list of lines from original PDB with header
         atomlist: A list of atoms that were unable to have charges assigned (list)
         reslist:  A list of residues with non-integral charges (list)
         charge:  The total charge on the protein (float)

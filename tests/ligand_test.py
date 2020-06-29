@@ -152,12 +152,15 @@ def test_rings(input_mol2):
             _LOGGER.debug(str_)
 
 
-@pytest.mark.parametrize("input_pdb", ["1HPX", "1QBS", "1US0"], ids=str)
+@pytest.mark.parametrize(
+    "input_pdb", ["1HPX"], ids=str)
 def test_ligand_protein(input_pdb, tmp_path):
     """PROPKA non-regression tests on proteins without ligands."""
-    ligand = Path("tests/data") / ("%s-ligand.mol2" % input_pdb)
+    input_pdb = Path(input_pdb)
+    ligand = Path("tests/data") / ("%s-ligand.mol2" % input_pdb.stem)
     args = "--log-level=INFO --ff=AMBER --drop-water --ligand=%s" % ligand
     output_pqr = Path(input_pdb).stem + ".pqr"
+    _LOGGER.debug("Running test in %s", tmp_path)
     common.run_pdb2pqr(
         args=args, input_pdb=input_pdb, output_pqr=output_pqr,
         tmp_path=tmp_path)

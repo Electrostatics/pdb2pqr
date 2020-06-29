@@ -9,6 +9,7 @@ import argparse
 from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 from pathlib import Path
+from math import isclose
 import pandas
 import propka.lib
 from propka.parameters import Parameters
@@ -28,6 +29,10 @@ from .config import REPAIR_LIMIT
 
 _LOGGER = logging.getLogger("PDB2PQR%s" % VERSION)
 _LOGGER.addFilter(io.DuplicateFilter())
+
+
+# Round-off error when determining if charge is integral
+CHARGE_ERROR = 1e-3
 
 
 def build_parser():
@@ -266,10 +271,9 @@ def setup_molecule(pdblist, definition, ligand_path):
         ligand = Mol2Molecule()
         with open(ligand_path, "rt", encoding="utf-8") as ligand_file:
             ligand.read(ligand_file)
-        raise NotImplementedError("Where do initial ligand charges come from?")
     else:
-        protein = prot.Protein(pdblist, definition)
         ligand = None
+    protein = prot.Protein(pdblist, definition)
     _LOGGER.info("Created protein object with %d residues and %d atoms.",
                  len(protein.residues), len(protein.atoms))
     for residue in protein.residues:
@@ -397,13 +401,14 @@ def run_propka(args, protein):
     return df, pka_filename
 
 
-def non_trivial(args, protein, definition, is_cif):
+def non_trivial(args, protein, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
     Args:
         args:  argparse namespace.
         protein:  Protein object.  This is not actually specific to proteins...
                   Nucleic acids are biomolecules, too!
+        ligand:  Mol2Molecule object or None
         definition:  Definition object for topology.
         is_cif:  Boolean indicating whether file is CIF format.
     Returns:
@@ -471,9 +476,38 @@ def non_trivial(args, protein, definition, is_cif):
 
     if args.ligand is not None:
         _LOGGER.info("Processing ligand.")
-        raise NotImplementedError(
-            "Got argument --ligand=%s but ligand support not implemented" %
-            args.ligand)
+        _LOGGER.warning("Using ZAP9 forcefield for ligand radii.")
+        ligand.assign_parameters()
+        missing_atoms = []
+        lig_atoms = []
+        for residue in protein.residues:
+            tot_charge = 0
+            for pdb_atom in residue.atoms:
+                # Only check residues with HETATM
+                if pdb_atom.type == "ATOM":
+                    break
+                try:
+                    mol2_atom = ligand.atoms[pdb_atom.name]
+                    pdb_atom.radius = mol2_atom.radius
+                    pdb_atom.ffcharge = mol2_atom.charge
+                    tot_charge += mol2_atom.charge
+                    lig_atoms.append(pdb_atom)
+                except KeyError:
+                    err = (
+                        "Can't find HETATM {r.name} {r.res_seq} {a.name} "
+                        "in MOL2 file").format(r=residue, a=pdb_atom)
+                    _LOGGER.warning(err)
+                    missing_atoms.append(pdb_atom)
+
+    matched_atoms = hitlist + lig_atoms
+
+    for residue in protein.residues:
+        if not isclose(
+                residue.charge, int(residue.charge), abs_tol=CHARGE_ERROR):
+            err = (
+                "Residue {r.name} {r.res_seq} charge is "
+                "non-integer: {r.charge}").format(r=residue)
+            raise ValueError(err)
 
     if args.ffout is not None:
         _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
@@ -486,18 +520,19 @@ def non_trivial(args, protein, definition, is_cif):
     _LOGGER.info("Regenerating headers.")
     reslist, charge = protein.charge
     if is_cif:
-        header = io.print_pqr_header_cif(misslist, reslist, charge, args.ff,
-                                         args.pka_method, args.ph, args.ffout,
-                                         include_old_header=args.include_header)
+        header = io.print_pqr_header_cif(
+            missing_atoms, reslist, charge, args.ff, args.pka_method, args.ph,
+            args.ffout, include_old_header=args.include_header)
     else:
-        header = io.print_pqr_header(protein.pdblist, misslist, reslist, charge,
-                                     args.ff, args.pka_method, args.ph, args.ffout,
-                                     include_old_header=args.include_header)
+        header = io.print_pqr_header(
+            protein.pdblist, missing_atoms, reslist, charge, args.ff,
+            args.pka_method, args.ph, args.ffout,
+            include_old_header=args.include_header)
 
     _LOGGER.info("Regenerating PDB lines.")
-    lines = io.print_protein_atoms(hitlist, args.keep_chain)
+    lines = io.print_protein_atoms(matched_atoms, args.keep_chain)
 
-    return {"lines": lines, "header": header, "missed_residues": misslist}
+    return {"lines": lines, "header": header, "missed_residues": missing_atoms}
 
 
 def main(args):
@@ -538,8 +573,9 @@ def main(args):
         results = {"header": "", "missed_residues": None, "protein": protein,
                    "lines": io.print_protein_atoms(protein.atoms, args.keep_chain)}
     else:
-        results = non_trivial(args=args, protein=protein, definition=definition,
-                              is_cif=is_cif)
+        results = non_trivial(
+            args=args, protein=protein, ligand=ligand, definition=definition,
+            is_cif=is_cif)
 
     print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
               missing_lines=results["missed_residues"], is_cif=is_cif)

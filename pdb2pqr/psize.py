@@ -20,7 +20,7 @@ REDFAC = 0.25
 _LOGGER = logging.getLogger(__name__)
 
 
-class Psize(object):
+class Psize:
     """Master class for parsing input files and suggesting settings"""
     def __init__(self, cfac=CFAC, fadd=FADD, space=SPACE, gmemfac=GMEMFAC,
                  gmemceil=GMEMCEIL, ofrac=OFRAC, redfac=REDFAC):

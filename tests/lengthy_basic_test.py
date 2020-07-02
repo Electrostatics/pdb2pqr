@@ -64,9 +64,9 @@ for pdb in GOOD_PDBS:
         marks = []
         if len(set(opt) & set(FAST_OPTIONS)) > 0:
             marks.append(pytest.mark.fast)
-        args = " ".join(opt)
-        id_ = "%s %s" % (pdb, args)
-        PARAM_LIST += [{"args": args, "pdb": common.DATA_DIR/pdb, "id": id_,
+        ARGS = " ".join(opt)
+        id_ = "%s %s" % (pdb, ARGS)
+        PARAM_LIST += [{"args": ARGS, "pdb": common.DATA_DIR/pdb, "id": id_,
                         "marks": marks}]
 _LOGGER.info("Generated %d total tests.", len(PARAM_LIST))
 

@@ -31,8 +31,8 @@ class PdbxWriterTests(unittest.TestCase):
     def setUp(self):
         self.lfh = sys.stderr
         self.verbose = False
-        self.pathPdbxDataFile = "../tests/1kip.cif"
-        self.pathOutputFile = "testOutputDataFile.cif"
+        self.path_pdbx_data_file = "../tests/1kip.cif"
+        self.path_output_file = "testOutputDataFile.cif"
 
     def tearDown(self):
         pass
@@ -44,25 +44,25 @@ class PdbxWriterTests(unittest.TestCase):
                                                sys._getframe().f_code.co_name))
         try:
             #
-            myDataList = []
+            my_data_list = []
             ofh = open("test-output.cif", "w")
-            curContainer = DataContainer("myblock")
-            aCat = DataCategory("pdbx_seqtool_mapping_ref")
-            aCat.appendAttribute("ordinal")
-            aCat.appendAttribute("entity_id")
-            aCat.appendAttribute("auth_mon_id")
-            aCat.appendAttribute("auth_mon_num")
-            aCat.appendAttribute("pdb_chain_id")
-            aCat.appendAttribute("ref_mon_id")
-            aCat.appendAttribute("ref_mon_num")
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            curContainer.append(aCat)
-            myDataList.append(curContainer)
-            pdbxW = PdbxWriter(ofh)
-            pdbxW.write(myDataList)
+            cur_container = DataContainer("myblock")
+            a_cat = DataCategory("pdbx_seqtool_mapping_ref")
+            a_cat.appendAttribute("ordinal")
+            a_cat.appendAttribute("entity_id")
+            a_cat.appendAttribute("auth_mon_id")
+            a_cat.appendAttribute("auth_mon_num")
+            a_cat.appendAttribute("pdb_chain_id")
+            a_cat.appendAttribute("ref_mon_id")
+            a_cat.appendAttribute("ref_mon_num")
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            cur_container.append(a_cat)
+            my_data_list.append(cur_container)
+            pdbx_w = PdbxWriter(ofh)
+            pdbx_w.write(my_data_list)
             ofh.close()
         except:
             traceback.print_exc(file=sys.stderr)
@@ -76,45 +76,45 @@ class PdbxWriterTests(unittest.TestCase):
         try:
             # Create a initial data file --
             #
-            myDataList = []
+            my_data_list = []
             ofh = open("test-output-1.cif", "w")
-            curContainer = DataContainer("myblock")
-            aCat = DataCategory("pdbx_seqtool_mapping_ref")
-            aCat.appendAttribute("ordinal")
-            aCat.appendAttribute("entity_id")
-            aCat.appendAttribute("auth_mon_id")
-            aCat.appendAttribute("auth_mon_num")
-            aCat.appendAttribute("pdb_chain_id")
-            aCat.appendAttribute("ref_mon_id")
-            aCat.appendAttribute("ref_mon_num")
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            aCat.append((1, 2, 3, 4, 5, 6, 7))
-            curContainer.append(aCat)
-            myDataList.append(curContainer)
-            pdbxW = PdbxWriter(ofh)
-            pdbxW.write(myDataList)
+            cur_container = DataContainer("myblock")
+            a_cat = DataCategory("pdbx_seqtool_mapping_ref")
+            a_cat.appendAttribute("ordinal")
+            a_cat.appendAttribute("entity_id")
+            a_cat.appendAttribute("auth_mon_id")
+            a_cat.appendAttribute("auth_mon_num")
+            a_cat.appendAttribute("pdb_chain_id")
+            a_cat.appendAttribute("ref_mon_id")
+            a_cat.appendAttribute("ref_mon_num")
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            a_cat.append((1, 2, 3, 4, 5, 6, 7))
+            cur_container.append(a_cat)
+            my_data_list.append(cur_container)
+            pdbx_w = PdbxWriter(ofh)
+            pdbx_w.write(my_data_list)
             ofh.close()
             #
             # Read and update the data -
             #
-            myDataList = []
+            my_data_list = []
             ifh = open("test-output-1.cif", "r")
-            pRd = PdbxReader(ifh)
-            pRd.read(myDataList)
+            prd = PdbxReader(ifh)
+            prd.read(my_data_list)
             ifh.close()
             #
-            myBlock = myDataList[0]
-            myBlock.printIt()
-            myCat = myBlock.getObj('pdbx_seqtool_mapping_ref')
-            myCat.printIt()
-            for iRow in range(0, myCat.getRowCount()):
-                myCat.setValue('some value', 'ref_mon_id', iRow)
-                myCat.setValue(100, 'ref_mon_num', iRow)
+            my_block = my_data_list[0]
+            my_block.printIt()
+            my_cat = my_block.getObj('pdbx_seqtool_mapping_ref')
+            my_cat.printIt()
+            for i_row in range(0, my_cat.getRowCount()):
+                my_cat.setValue('some value', 'ref_mon_id', i_row)
+                my_cat.setValue(100, 'ref_mon_num', i_row)
             ofh = open("test-output-2.cif", "w")
-            pdbxW = PdbxWriter(ofh)
-            pdbxW.write(myDataList)
+            pdbx_w = PdbxWriter(ofh)
+            pdbx_w.write(my_data_list)
             ofh.close()
 
         except:
@@ -128,10 +128,10 @@ class PdbxWriterTests(unittest.TestCase):
                                                sys._getframe().f_code.co_name))
         try:
             #
-            myDataList = []
-            ifh = open(self.pathPdbxDataFile, "r")
-            pRd = PdbxReader(ifh)
-            pRd.read(myDataList)
+            my_data_list = []
+            ifh = open(self.path_pdbx_data_file, "r")
+            prd = PdbxReader(ifh)
+            prd.read(my_data_list)
             ifh.close()
         except:
             traceback.print_exc(file=sys.stderr)
@@ -144,15 +144,15 @@ class PdbxWriterTests(unittest.TestCase):
                                                sys._getframe().f_code.co_name))
         try:
             #
-            myDataList = []
-            ifh = open(self.pathPdbxDataFile, "r")
-            pRd = PdbxReader(ifh)
-            pRd.read(myDataList)
+            my_data_list = []
+            ifh = open(self.path_pdbx_data_file, "r")
+            prd = PdbxReader(ifh)
+            prd.read(my_data_list)
             ifh.close()
 
-            ofh = open(self.pathOutputFile, "w")
-            pWr = PdbxWriter(ofh)
-            pWr.write(myDataList)
+            ofh = open(self.path_output_file, "w")
+            pwr = PdbxWriter(ofh)
+            pwr.write(my_data_list)
             ofh.close()
         except:
             traceback.print_exc(file=sys.stderr)

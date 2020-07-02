@@ -20,7 +20,6 @@ class DefinitionHandler(sax.ContentHandler):
         self.curobj = None
         self.map = {}
         self.patches = []
-        return
 
     def startElement(self, name, _):
         if name == "residue":
@@ -37,7 +36,6 @@ class DefinitionHandler(sax.ContentHandler):
             self.curobj = obj
         else:
             self.curelement = name
-        return
 
     def endElement(self, name):
         if name == "residue": # Complete Residue object
@@ -105,7 +103,7 @@ class DefinitionHandler(sax.ContentHandler):
         return
 
 
-class Definition(object):
+class Definition:
     """The Definition class contains the structured definitions found in the
     files and several mappings for easy access to the information.
     """
@@ -197,7 +195,7 @@ class Definition(object):
             self.patches[newname] = patch
 
 
-class Patch(object):
+class Patch:
     """Patch the definitionResidue class"""
     def __init__(self):
         self.name = ""

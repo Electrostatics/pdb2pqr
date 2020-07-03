@@ -30,7 +30,7 @@ with open("README.md", "r") as f:
 
 MAJOR = 3
 MINOR = 0
-MICRO = 0
+MICRO = 1
 VERSION = "%d.%d.%d" % (MAJOR, MINOR, MICRO)
 
 setuptools.setup(
@@ -44,21 +44,20 @@ setuptools.setup(
         "biomolecular structure modeling, analysis, and simulation."),
     long_description=long_description,
     install_requires=["propka >= 3.2", "pandas >= 1.0", "pytest>=5.4.1"],
-    url="https://github.com/Electrostatics/apbs-pdb2pqr/tree/master/pdb2pqr",
+    url="http://www.poissonboltzmann.org",
     packages=setuptools.find_packages(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
     license="BSD",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 2 - Pre-Alpha",
         "Environment :: Console",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
         "Operating System :: MacOS",
         "Operating System :: Microsoft :: Windows",
-        "Operating System :: Linux",
         "Operating System :: POSIX",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
@@ -66,8 +65,15 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
-        "Topic :: Scientific/Engineering :: Chemestry"
+        "Topic :: Scientific/Engineering :: Chemistry"
     ],
+    project_urls={
+        'Documentation': 'http://www.poissonboltzmann.org',
+        'Get help': 'https://github.com/Electrostatics/pdb2pqr/issues',
+        'Publications': 'https://pubmed.ncbi.nlm.nih.gov/?term=R01+GM069702',
+        'Funding': 'https://bit.ly/apbs-funding',
+        'Source': 'https://github.com/Electrostatics/pdb2pqr',
+    },
     keywords="science chemistry molecular biology",
     entry_points={"console_scripts": "pdb2pqr30=pdb2pqr.main:main"}
 )

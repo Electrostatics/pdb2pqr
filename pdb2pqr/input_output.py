@@ -325,7 +325,7 @@ def get_molecule(input_path):
     input_file = get_pdb_file(input_path)
     is_cif = False
 
-    if path.suffix.lower() == "cif":
+    if path.suffix.lower() == ".cif":
         pdblist, errlist = cif.read_cif(input_file)
         is_cif = True
     else:

@@ -543,7 +543,6 @@ def main(args):
     Args:
         args:  argument namespace object (e.g., as returned by argparse).
     """
-    logging.basicConfig(level=getattr(logging, args.log_level))
     _LOGGER.debug("Invoked with arguments: %s", args)
     print_splash_screen(args)
 

@@ -61,8 +61,8 @@ try:
             SPLIT_LINE = in_f.readline().split()
             grid_dims = [float(item) for item in SPLIT_LINE[-3:]]
 
-            dim_lin = PARAMETER_FMT.format(GRID_SIZES[x], *grid_dims)
-            out_f.write(dim_lin)
+            DIM_LIN = PARAMETER_FMT.format(GRID_SIZES[x], *grid_dims)
+            out_f.write(DIM_LIN)
 
         ATOMS_PARAMETER_FMT = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f} {:>11.6f}\n"
         A = True

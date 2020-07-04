@@ -214,7 +214,7 @@ def jacobi(amat, nrot):
         a:    Matrix to diagonalize (4x4 list)
         nrot: Maximum number of sweeps
     Returns
-        dvec:    Eigenvalues
+        dvec: Eigenvalues
         v:    Eigenvectors
     """
     vmat = []

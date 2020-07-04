@@ -112,39 +112,41 @@ def pqr_distance(df1, df2):
     Args:
         df1:  PQR dataframe
         df2:  PQR dataframe
-    
+
     Returns:
         Dataframe of distances
     """
     if "chain" in df1.columns:
-        df = df1.merge(df2, on=["atom_name", "res_name", "res_num", "chain"],
-                       how="inner", suffixes=("A", "B"))
+        d_frame = df1.merge(df2,
+                            on=["atom_name", "res_name", "res_num", "chain"],
+                            how="inner", suffixes=("A", "B"))
     else:
-        df = df1.merge(df2, on=["atom_name", "res_name", "res_num"], how="inner",
-                       suffixes=("A", "B"))
+        d_frame = df1.merge(df2,
+                            on=["atom_name", "res_name", "res_num"],
+                            how="inner", suffixes=("A", "B"))
 
     # Calculate differences and drop original columns
-    for c in ("x", "y", "z", "q", "r"):
-        d = "d%s" % c
-        d2 = "d%s2" % c
-        cA = "%sA" % c
-        cB = "%sB" % c
-        df[d] = df[cA] - df[cB]
-        df[d2] = df[d] * df[d]
-        df = df.drop([d, cA, cB], axis="columns")
+    for c_val in ("x", "y", "z", "q", "r"):
+        d_val = "d%s" % c_val
+        d2_val = "d%s2" % c_val
+        c_a = "%sA" % c_val
+        c_b = "%sB" % c_val
+        d_frame[d_val] = d_frame[c_a] - d_frame[c_b]
+        d_frame[d2_val] = d_frame[d_val] * d_frame[d_val]
+        d_frame = d_frame.drop([d_val, c_a, c_b], axis="columns")
 
     # Calculate position norm-squared and drop used columns
-    df["dp2"] = df["dx2"] + df["dy2"] + df["dz2"]
-    df = df.drop(["dx2", "dy2", "dz2"], axis="columns")
+    d_frame["dp2"] = d_frame["dx2"] + d_frame["dy2"] + d_frame["dz2"]
+    d_frame = d_frame.drop(["dx2", "dy2", "dz2"], axis="columns")
 
     # Calculate norms of all measures and drop used columns
-    for c in ("p", "q", "r"):
-        n = "d%s" % c
-        n2 = "d%s2" % c
-        df[n] = numpy.sqrt(df[n2])
-        df = df.drop(n2, axis="columns")
-    
-    return df
+    for c_val in ("p", "q", "r"):
+        n_val = "d%s" % c_val
+        n2_val = "d%s2" % c_val
+        d_frame[n_val] = numpy.sqrt(d_frame[n2_val])
+        d_frame = d_frame.drop(n2_val, axis="columns")
+
+    return d_frame
 
 
 def compare_pqr(pqr1_path, pqr2_path):
@@ -159,15 +161,15 @@ def compare_pqr(pqr1_path, pqr2_path):
     with open(pqr1_path, "rt", encoding="utf-8") as pqr1_file:
         df1 = pqr_to_dict(pqr1_file)
         _LOGGER.debug("PQR 1 has shape %s", df1.shape)
-    
+
     with open(pqr2_path, "rt", encoding="utf-8") as pqr2_file:
         df2 = pqr_to_dict(pqr2_file)
         _LOGGER.debug("PQR 2 has shape %s", df2.shape)
-    
-    df = pqr_distance(df1, df2)
-    _LOGGER.debug("Merged df has shape %s", df.shape)
 
-    grouped = df.groupby(["res_name", "res_name", "atom_name"])
+    d_frame = pqr_distance(df1, df2)
+    _LOGGER.debug("Merged d_frame has shape %s", d_frame.shape)
+
+    grouped = d_frame.groupby(["res_name", "res_name", "atom_name"])
     _LOGGER.debug("Have %d unique atoms", len(grouped))
     df_min = grouped.min()
 
@@ -181,7 +183,8 @@ def compare_pqr(pqr1_path, pqr2_path):
             if ndiff > 0:
                 _LOGGER.warning(result)
                 df_c = df_min[df_min[col] > cut_].sort_values(col, ascending=False)
-                summary = ["%s: %.3E" % (key, val) for (key, val) in df_c[col].describe().to_dict().items()]
+                summary = (["%s: %.3E" % (key, val)
+                            for (key, val) in df_c[col].describe().to_dict().items()])
                 _LOGGER.debug(summary)
                 if cut_ > 0:
                     raise ValueError(result)

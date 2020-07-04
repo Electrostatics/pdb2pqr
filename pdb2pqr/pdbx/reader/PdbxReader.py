@@ -35,16 +35,16 @@ class PdbxError(Exception):
 class SyntaxError(Exception):
     """ Class for catching syntax errors
     """
-    def __init__(self, lineNumber, text):
+    def __init__(self, line_number, text):
         Exception.__init__(self)
-        self.lineNumber = lineNumber
+        self.line_number = line_number
         self.text = text
 
     def __str__(self):
-        return "%%ERROR - [at line: %d] %s" % (self.lineNumber, self.text)
+        return "%%ERROR - [at line: %d] %s" % (self.line_number, self.text)
 
 
-class PdbxReader(object):
+class PdbxReader:
     """ PDBx reader for data files and dictionaries.
 
     """
@@ -52,9 +52,9 @@ class PdbxReader(object):
         """ ifh - input file handle returned by open()
         """
         #
-        self.__curLineNumber = 0
+        self.__cur_line_number = 0
         self.__ifh = ifh
-        self.__stateDict = {
+        self.__state_dict = {
             "data": "ST_DATA_CONTAINER",
             "loop": "ST_TABLE",
             "global": "ST_GLOBAL_CONTAINER",
@@ -62,28 +62,28 @@ class PdbxReader(object):
             "stop": "ST_STOP"
         }
 
-    def read(self, containerList):
+    def read(self, container_list):
         """
         Appends to the input list of definition and data containers.
 
         """
-        self.__curLineNumber = 0
+        self.__cur_line_number = 0
         try:
-            self.__parser(self.__tokenizer(self.__ifh), containerList)
+            self.__parser(self.__tokenizer(self.__ifh), container_list)
         except StopIteration:
             pass
         else:
             raise PdbxError()
 
-    def __syntaxError(self, errText):
-        raise SyntaxError(self.__curLineNumber, errText)
+    def __syntaxError(self, err_text):
+        raise SyntaxError(self.__cur_line_number, err_text)
 
-    def __getContainerName(self, inWord):
+    def __getContainerName(self, in_word):
         """ Returns the name of the data_ or save_ container
         """
-        return str(inWord[5:]).strip()
+        return str(in_word[5:]).strip()
 
-    def __getState(self, inWord):
+    def __getState(self, in_word):
         """Identifies reserved syntax elements and assigns an associated state.
 
            Returns: (reserved word, state)
@@ -92,17 +92,17 @@ class PdbxReader(object):
                                data_, loop_, global_, save_, stop_
               state - the parser state required to process this next section.
         """
-        i = inWord.find("_")
+        i = in_word.find("_")
         if i == -1:
             return None, "ST_UNKNOWN"
 
         try:
-            rWord = inWord[:i].lower()
-            return rWord, self.__stateDict[rWord]
+            r_word = in_word[:i].lower()
+            return r_word, self.__state_dict[r_word]
         except:
             return None, "ST_UNKNOWN"
 
-    def __parser(self, tokenizer, containerList):
+    def __parser(self, tokenizer, container_list):
         """ Parser for PDBx data files and dictionaries.
 
             Input - tokenizer() reentrant method recognizing
@@ -110,30 +110,30 @@ class PdbxReader(object):
                     quoted strings (single, double and multi-line semi-colon delimited),
                     and unquoted strings.
 
-                    containerList - list-type container for data and definition objects parsed
+                    container_list - list-type container for data and definition objects parsed
                                      from from the input file.
 
             Return:
-                    containerList - is appended with data and definition objects -
+                    container_list - is appended with data and definition objects -
         """
         # Working container - data or definition
-        curContainer = None
+        cur_container = None
         #
         # Working category container
-        categoryIndex = {}
-        curCategory = None
+        category_index = {}
+        cur_category = None
         #
-        curRow = None
+        cur_row = None
         state = None
 
         # Find the first reserved word and begin capturing data.
         #
         while True:
-            curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
-            if curWord is None:
+            cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
+            if cur_word is None:
                 continue
-            reservedWord, state = self.__getState(curWord)
-            if reservedWord is not None:
+            reserved_word, state = self.__getState(cur_word)
+            if reserved_word is not None:
                 break
 
         while True:
@@ -143,10 +143,10 @@ class PdbxReader(object):
             # At this point in the processing cycle we are expecting a token containing
             # either a '_category.attribute' or a reserved word.
             #
-            if curCatName is not None:
+            if cur_cat_name is not None:
                 state = "ST_KEY_VALUE_PAIR"
-            elif curWord is not None:
-                reservedWord, state = self.__getState(curWord)
+            elif cur_word is not None:
+                reserved_word, state = self.__getState(cur_word)
             else:
                 self.__syntaxError("Miscellaneous syntax error")
                 return
@@ -156,57 +156,58 @@ class PdbxReader(object):
             #
             if state == "ST_KEY_VALUE_PAIR":
                 try:
-                    curCategory = categoryIndex[curCatName]
+                    cur_category = category_index[cur_cat_name]
                 except KeyError:
                     # A new category is encountered - create a container and add a row
-                    curCategory = categoryIndex[curCatName] = DataCategory(curCatName)
+                    cur_category = category_index[cur_cat_name] = DataCategory(cur_cat_name)
 
                     try:
-                        curContainer.append(curCategory)
+                        cur_container.append(cur_category)
                     except AttributeError:
                         self.__syntaxError("Category cannot be added to data_ block")
                         return
 
-                    curRow = []
-                    curCategory.append(curRow)
+                    cur_row = []
+                    cur_category.append(cur_row)
                 else:
                     # Recover the existing row from the category
                     try:
-                        curRow = curCategory[0]
+                        cur_row = cur_category[0]
                     except IndexError:
                         self.__syntaxError("Internal index error accessing category data")
                         return
 
                 # Check for duplicate attributes and add attribute to table.
-                if curAttName in curCategory.getAttributeList():
+                if cur_att_name in cur_category.getAttributeList():
                     self.__syntaxError("Duplicate attribute encountered in category")
                     return
                 else:
-                    curCategory.appendAttribute(curAttName)
+                    cur_category.appendAttribute(cur_att_name)
 
                 # Get the data for this attribute from the next token
-                tCat, tAtt, curQuotedString, curWord = next(tokenizer)
+                t_cat, t_att, cur_quoted_string, cur_word = next(tokenizer)
 
-                if tCat is not None or (curQuotedString is None and curWord is None):
-                    self.__syntaxError("Missing data for item _%s.%s" % (curCatName, curAttName))
+                if t_cat is not None or (cur_quoted_string is None and cur_word is None):
+                    self.__syntaxError("Missing data for item _%s.%s" %
+                                       (cur_cat_name, cur_att_name))
 
-                if curWord is not None:
+                if cur_word is not None:
                     #
                     # Validation check token for misplaced reserved words -
                     #
-                    reservedWord, state = self.__getState(curWord)
-                    if reservedWord is not None:
-                        self.__syntaxError("Unexpected reserved word: %s" % (reservedWord))
+                    reserved_word, state = self.__getState(cur_word)
+                    if reserved_word is not None:
+                        self.__syntaxError("Unexpected reserved word: %s" % (reserved_word))
 
-                    curRow.append(curWord)
+                    cur_row.append(cur_word)
 
-                elif curQuotedString is not None:
-                    curRow.append(curQuotedString)
+                elif cur_quoted_string is not None:
+                    cur_row.append(cur_quoted_string)
 
                 else:
                     self.__syntaxError("Missing value in item-value pair")
 
-                curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
                 continue
 
             #
@@ -214,114 +215,114 @@ class PdbxReader(object):
             #
             elif state == "ST_TABLE":
 
-                # The category name in the next curCatName, curAttName pair
+                # The category name in the next cur_cat_name, cur_att_name pair
                 # defines the name of the category container.
-                curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
 
-                if curCatName is None or curAttName is None:
+                if cur_cat_name is None or cur_att_name is None:
                     self.__syntaxError("Unexpected token in loop_ declaration")
                     return
 
                 # Check for a previous category declaration.
-                if curCatName in categoryIndex:
+                if cur_cat_name in category_index:
                     self.__syntaxError("Duplicate category declaration in loop_")
                     return
 
-                curCategory = DataCategory(curCatName)
+                cur_category = DataCategory(cur_cat_name)
 
                 try:
-                    curContainer.append(curCategory)
+                    cur_container.append(cur_category)
                 except AttributeError:
                     self.__syntaxError("loop_ declaration outside of data_ block or save_ frame")
                     return
 
-                curCategory.appendAttribute(curAttName)
+                cur_category.appendAttribute(cur_att_name)
 
                 # Read the rest of the loop_ declaration
                 while True:
-                    curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                    cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
 
-                    if curCatName is None:
+                    if cur_cat_name is None:
                         break
 
-                    if curCatName != curCategory.getName():
+                    if cur_cat_name != cur_category.getName():
                         self.__syntaxError("Changed category name in loop_ declaration")
                         return
 
-                    curCategory.appendAttribute(curAttName)
+                    cur_category.appendAttribute(cur_att_name)
 
                 # If the next token is a 'word', check it for any reserved words -
-                if curWord is not None:
-                    reservedWord, state = self.__getState(curWord)
-                    if reservedWord is not None:
-                        if reservedWord == "stop":
+                if cur_word is not None:
+                    reserved_word, state = self.__getState(cur_word)
+                    if reserved_word is not None:
+                        if reserved_word == "stop":
                             return
                         else:
                             self.__syntaxError(
                                 "Unexpected reserved word after loop declaration: %s" %
-                                (reservedWord))
+                                (reserved_word))
 
                 # Read the table of data for this loop_ -
                 while True:
-                    curRow = []
-                    curCategory.append(curRow)
+                    cur_row = []
+                    cur_category.append(cur_row)
 
-                    for tAtt in curCategory.getAttributeList():
-                        if curWord is not None:
-                            curRow.append(curWord)
-                        elif curQuotedString is not None:
-                            curRow.append(curQuotedString)
+                    for t_att in cur_category.getAttributeList():
+                        if cur_word is not None:
+                            cur_row.append(cur_word)
+                        elif cur_quoted_string is not None:
+                            cur_row.append(cur_quoted_string)
 
-                        curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                        cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
 
                     # loop_ data processing ends if -
 
                     # A new _category.attribute is encountered
-                    if curCatName is not None:
+                    if cur_cat_name is not None:
                         break
 
                     # A reserved word is encountered
-                    if curWord is not None:
-                        reservedWord, state = self.__getState(curWord)
-                        if reservedWord is not None:
+                    if cur_word is not None:
+                        reserved_word, state = self.__getState(cur_word)
+                        if reserved_word is not None:
                             break
 
                 continue
 
             elif state == "ST_DEFINITION":
                 # Ignore trailing unnamed saveframe delimiters e.g. 'save_'
-                sName = self.__getContainerName(curWord)
-                if (len(sName) > 0):
-                    curContainer = DefinitionContainer(sName)
-                    containerList.append(curContainer)
-                    categoryIndex = {}
-                    curCategory = None
+                s_name = self.__getContainerName(cur_word)
+                if len(s_name) > 0:
+                    cur_container = DefinitionContainer(s_name)
+                    container_list.append(cur_container)
+                    category_index = {}
+                    cur_category = None
 
-                curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
 
             elif state == "ST_DATA_CONTAINER":
                 #
-                dName = self.__getContainerName(curWord)
-                if len(dName) == 0:
-                    dName = "unidentified"
-                curContainer = DataContainer(dName)
-                containerList.append(curContainer)
-                categoryIndex = {}
-                curCategory = None
-                curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                d_name = self.__getContainerName(cur_word)
+                if len(d_name) == 0:
+                    d_name = "unidentified"
+                cur_container = DataContainer(d_name)
+                container_list.append(cur_container)
+                category_index = {}
+                cur_category = None
+                cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
 
             elif state == "ST_STOP":
                 return
             elif state == "ST_GLOBAL":
-                curContainer = DataContainer("blank-global")
-                curContainer.setGlobal()
-                containerList.append(curContainer)
-                categoryIndex = {}
-                curCategory = None
-                curCatName, curAttName, curQuotedString, curWord = next(tokenizer)
+                cur_container = DataContainer("blank-global")
+                cur_container.setGlobal()
+                container_list.append(cur_container)
+                category_index = {}
+                cur_category = None
+                cur_cat_name, cur_att_name, cur_quoted_string, cur_word = next(tokenizer)
 
             elif state == "ST_UNKNOWN":
-                self.__syntaxError("Unrecogized syntax element: " + str(curWord))
+                self.__syntaxError("Unrecogized syntax element: " + str(cur_word))
                 return
 
     def __tokenizer(self, ifh):
@@ -338,27 +339,21 @@ class PdbxReader(object):
         #
         # Regex definition for mmCIF syntax - semi-colon delimited strings are handled
         # outside of this regex.
-        mmcifRe = re.compile(
+        mmcif_re = re.compile(
             r"(?:"
+            r"(?:_(.+?)[.](\S+))" "|"  # _category.attribute
+            r"(?:['](.*?)(?:[']\s|[']$))" "|"  # single quoted strings
+            r"(?:[\"](.*?)(?:[\"]\s|[\"]$))" "|"  # double quoted strings
+            r"(?:\s*#.*$)" "|"  # comments (dumped)
+            r"(\S+)"  # unquoted words
+            r")")
 
-            "(?:_(.+?)[.](\S+))" "|"  # _category.attribute
-
-            "(?:['](.*?)(?:[']\s|[']$))" "|"  # single quoted strings
-            "(?:[\"](.*?)(?:[\"]\s|[\"]$))" "|"  # double quoted strings
-
-            "(?:\s*#.*$)" "|"  # comments (dumped)
-
-            "(\S+)"  # unquoted words
-
-            ")"
-        )
-
-        fileIter = iter(ifh)
+        file_iter = iter(ifh)
 
         # Tokenizer loop begins here ---
         while True:
-            line = next(fileIter)
-            self.__curLineNumber += 1
+            line = next(file_iter)
+            self.__cur_line_number += 1
 
             # Dump comments
             if line.startswith("#"):
@@ -368,18 +363,18 @@ class PdbxReader(object):
             # and stuff this into the string slot in the return tuple
             #
             if line.startswith(";"):
-                mlString = [line[1:]]
+                ml_string = [line[1:]]
                 while True:
-                    line = next(fileIter)
-                    self.__curLineNumber += 1
+                    line = next(file_iter)
+                    self.__cur_line_number += 1
                     if line.startswith(";"):
                         break
-                    mlString.append(line)
+                    ml_string.append(line)
 
                 # remove trailing new-line that is part of the \n; delimiter
-                mlString[-1] = mlString[-1].rstrip()
+                ml_string[-1] = ml_string[-1].rstrip()
                 #
-                yield (None, None, "".join(mlString), None)
+                yield (None, None, "".join(ml_string), None)
                 #
                 # Need to process the remainder of the current line -
                 line = line[1:]
@@ -387,16 +382,16 @@ class PdbxReader(object):
 
             # Apply regex to the current line consolidate the single/double
             # quoted within the quoted string category
-            for it in mmcifRe.finditer(line):
-                tgroups = it.groups()
+            for itor in mmcif_re.finditer(line):
+                tgroups = itor.groups()
                 if tgroups != (None, None, None, None, None):
                     if tgroups[2] is not None:
-                        qs = tgroups[2]
+                        qstr = tgroups[2]
                     elif tgroups[3] is not None:
-                        qs = tgroups[3]
+                        qstr = tgroups[3]
                     else:
-                        qs = None
-                    groups = (tgroups[0], tgroups[1], qs, tgroups[4])
+                        qstr = None
+                    groups = (tgroups[0], tgroups[1], qstr, tgroups[4])
                     yield groups
 
     def __tokenizerOrg(self, ifh):
@@ -411,26 +406,20 @@ class PdbxReader(object):
         #
         # Regex definition for mmCIF syntax - semi-colon delimited strings are handled
         # outside of this regex.
-        mmcifRe = re.compile(
+        mmcif_re = re.compile(
             r"(?:"
+            r"(?:_(.+?)[.](\S+))" "|"  # _category.attribute
+            r"(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
+            r"(?:\s*#.*$)" "|"  # comments (dumped)
+            r"(\S+)"  # unquoted words
+            r")")
 
-            "(?:_(.+?)[.](\S+))" "|"  # _category.attribute
-
-            "(?:['\"](.*?)(?:['\"]\s|['\"]$))" "|"  # quoted strings
-
-            "(?:\s*#.*$)" "|"  # comments (dumped)
-
-            "(\S+)"  # unquoted words
-
-            ")"
-        )
-
-        fileIter = iter(ifh)
+        file_iter = iter(ifh)
 
         # Tokenizer loop begins here ---
         while True:
-            line = next(fileIter)
-            self.__curLineNumber += 1
+            line = next(file_iter)
+            self.__cur_line_number += 1
 
             # Dump comments
             if line.startswith("#"):
@@ -440,25 +429,25 @@ class PdbxReader(object):
             # and stuff this into the string slot in the return tuple
             #
             if line.startswith(";"):
-                mlString = [line[1:]]
+                ml_string = [line[1:]]
                 while True:
-                    line = next(fileIter)
-                    self.__curLineNumber += 1
+                    line = next(file_iter)
+                    self.__cur_line_number += 1
                     if line.startswith(";"):
                         break
-                    mlString.append(line)
+                    ml_string.append(line)
 
                 # remove trailing new-line that is part of the \n; delimiter
-                mlString[-1] = mlString[-1].rstrip()
+                ml_string[-1] = ml_string[-1].rstrip()
                 #
-                yield (None, None, "".join(mlString), None)
+                yield (None, None, "".join(ml_string), None)
                 #
                 # Need to process the remainder of the current line -
                 line = line[1:]
                 # continue
 
             # Apply regex to the current line
-            for it in mmcifRe.finditer(line):
-                groups = it.groups()
+            for itor in mmcif_re.finditer(line):
+                groups = itor.groups()
                 if groups != (None, None, None, None):
                     yield groups

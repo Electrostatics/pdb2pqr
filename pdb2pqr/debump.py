@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
-class Debump(object):
+class Debump:
     """Grab bag of random stuff that apparently didn't fit elsewhere.
 
     TODO - needs to be susbtantially refactored in to multiple classes with clear
@@ -405,12 +405,9 @@ class Debump(object):
         for iatom, atom_name in enumerate(moveablenames):
             atom = residue.get_atom(atom_name)
             self.cells.remove_cell(atom)
-            x = (newcoords[iatom][0] + coordlist[1][0])
-            y = (newcoords[iatom][1] + coordlist[1][1])
-            z = (newcoords[iatom][2] + coordlist[1][2])
-            atom.x = x
-            atom.y = y
-            atom.z = z
+            atom.x = (newcoords[iatom][0] + coordlist[1][0])
+            atom.y = (newcoords[iatom][1] + coordlist[1][1])
+            atom.z = (newcoords[iatom][2] + coordlist[1][2])
             self.cells.add_cell(atom)
 
         # Set the new angle

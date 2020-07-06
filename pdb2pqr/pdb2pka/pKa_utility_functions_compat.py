@@ -21,14 +21,14 @@ def getWI_resid(line):
     #
     split = line.split()
     residuename = split[2]
-    last = string.split(line, '(')[1]
-    number = string.split(last, ')')[0]
-    if len(string.strip(string.split(last, ')')[1])) > 0:
-        chain_id = string.split(string.split(last, ')')[1])[0]
+    last = line.split('(')[1]
+    number_ = last.split(')')[0]
+    if len(last.split(')')[1].strip()) > 0:
+        chain_id = last.split(')')[1][0]
     else:
         chain_id = ''
-    number = string.strip(number)
-    resid = '%s:%4s:%3s' %(chain_id, number.zfill(4), residuename)
+    number_ = number_.strip()
+    resid = '%s:%4s:%3s' %(chain_id, number_.zfill(4), residuename)
     return resid
 
 def getWI_resid2(line, format_=None):
@@ -41,23 +41,22 @@ def getWI_resid2(line, format_=None):
 
 
     If format is pdb2pka, then just return the line"""
-    import string
     if format_ == 'pdb2pka':
         return line.split(' ')[0].strip()
     #
     # WHAT IF format
     #
 
-    split = string.split(line)[:-1]
-    line = string.join(split)
+    fields = line.split()[:-1]
+    line = fields.join()
     #
     # Line reformatted
     #
-    residuename = split[1]
-    last = string.split(line, '(')[1]
-    number = string.split(last, ')')[0]
-    last_part = string.strip(string.split(last, ')')[1])
-    last_split = string.split(last_part)
+    residuename = fields[1]
+    last = line.split('(')[1]
+    number = last.split(')')[0]
+    last_part = last.split(')')[1].strip()
+    last_split = last_part.split()
     if len(last_split) == 1:
         chain_id = last_split[0]
     else:
@@ -93,18 +92,22 @@ def getWI_resid4(line):
     #
     # First trim the string
     #
-    line = string.join(string.split(line.strip())[:-1])
+    line = line.strip()[:-1].join()
     #
     # Now the line looks like: 1 THR ( 1 ) N
     #
     split = line.split()
     atomname = split[-1]
     residuename = split[1]
-    last = string.split(line, '(')[1]
-    number = string.strip(string.split(last, ')')[0])
+    last = line.split('(')[1]
+    number = last.split(')')[0].strip()
     # Chain ID
-    laststrip = last.strip()
-    lastsplit = string.split(last, ')')[1]
+    # TODO: 2020/07/06 intendo - I think line 109 should is supposed to be:
+    # last = last.strip()
+    #   or line 102 should be:
+    # last = line.strip().split('(')[1]
+    # UNUSED: laststrip = last.strip()
+    lastsplit = last.split(')')[1]
     split_lastsplit = lastsplit.split()
     if len(split_lastsplit) > 1:
         chain_id = split_lastsplit[0]
@@ -118,30 +121,31 @@ def getWI_resid4(line):
 #
 
 def get_resid(unique_id):
-    return string.join(string.split(unique_id, ':')[:2], ':')
+    return unique_id.split(':')[:2].join(':')
 
 def get_resnum(unique_id):
     # Given a unique_id this function returns the residue number
-    return string.split(unique_id, ':')[1]
+    return unique_id.split(':')[1]
 
 def get_resname(unique_id):
-    return string.split(unique_id, ':')[2]
+    return unique_id.split(':')[2]
 
-def get_chainid(self,unique_id):
-    return string.split(unique_id, ':')[0]
+# TODO: 2020/07/06 intendo - this does not seem to be used anywhere. Can it be removed?
+#def get_chainid(self, unique_id):
+#    return unique_id.split(':')[0]
 
 def is_terminal(unique_id):
     #
     # Is this residue a terminal titratable group?
     #
-    if string.split(unique_id,':')[-1] == 'TERM':
+    if unique_id.split(':')[-1] == 'TERM':
         return 1
     return None
 
-acidbase = {'ARG': 1, 'HIS': 1, 'LYS': 1, 'TYR': -1, 'ASP': -1, 'GLU': -1,
+ACIDBASE = {'ARG': 1, 'HIS': 1, 'LYS': 1, 'TYR': -1, 'ASP': -1, 'GLU': -1,
             'CYS': -1, 'CTERM': -1, 'NTERM': 1, 'SER': -1, 'THR': -1}
 
-charged = ['ARG', 'LYS', 'HIS', 'ASP', 'GLU']
+CHARGED = ['ARG', 'LYS', 'HIS', 'ASP', 'GLU']
 
 def is_normally_titratable(unique_id):
     """Does this group have a pKa value in the range 2-12"""
@@ -154,15 +158,15 @@ def is_titratable(unique_id):
     return istitratable(unique_id)
 
 def istitratable(unique_id):
-    type_ = string.split(unique_id, ':')[-1]
-    if acidbase.has_key(type_):
+    type_ = unique_id.split(':')[-1]
+    if type_ in ACIDBASE:
         return 1
     else:
         return None
 
 def is_charged(unique_id):
-    type_ = string.split(unique_id, ':')[-1]
-    if type_ in charged:
+    type_ = unique_id.split(':')[-1]
+    if type_ in CHARGED:
         return 1
     return None
 
@@ -170,8 +174,8 @@ def isacid(unique_id):
     #
     # Is the residue a base or an acid?
     #
-    type_ = string.split(unique_id, ':')[-1]
-    val = acidbase[type_]
+    type_ = unique_id.split(':')[-1]
+    val = ACIDBASE[type_]
     if val == -1:
         return 1
     return None
@@ -184,17 +188,17 @@ def acibas(unique_id):
         return -1
     return 1
 
-def reformat_name(oldname, Nterm=None, format_='WHAT IF'):
+def reformat_name(oldname, nterm=None, format_='WHAT IF'):
     #
-    # Reformat the residue names 
+    # Reformat the residue names
     #
     if format_ == 'WHAT IF':
         import copy
         residue = copy.copy(oldname)
         newname = ''
-        Tflag = None
+        tflag = None
         if residue[0] == 'T':
-            Tflag = 1
+            tflag = 1
             residue = residue[1:]
         number = residue[:4]
         name = residue[4:7]
@@ -202,11 +206,11 @@ def reformat_name(oldname, Nterm=None, format_='WHAT IF'):
         if len(residue) == 8:
             chain_id = residue[7]
         newname = '%s:%4s:%3s' % (chain_id, number, name)
-        if Tflag:
+        if tflag:
             #
             # Nterm is 1 for an Nterm and 0 for a Cterm
             #
-            if Nterm == 1:
+            if nterm == 1:
                 newname += ':NTERM'
             else:
                 newname += ':CTERM'

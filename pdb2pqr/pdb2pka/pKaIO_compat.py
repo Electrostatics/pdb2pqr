@@ -8,7 +8,6 @@
 # University College Dublin 2003 -
 # All rights reserved
 #
-from sys import version_info
 import os
 import logging
 import sys
@@ -123,14 +122,14 @@ class pKaIO:
         #
         # Define counter for keeping track of terminals
         #
-        Nterm = 0
+        nterm = 0
         while not done:
             residue = lines[linenumber].split()
             if format_ == 'WHAT IF':
                 nline = ''
                 if residue[0].lower() == 'TERMINAL'.lower():
-                    Nterm = abs(Nterm-1)
-                    nline = lines[linenumber+1].replace('(', '')
+                    nterm = abs(nterm - 1)
+                    nline = lines[linenumber + 1].replace('(', '')
                 else:
                     nline = lines[linenumber].replace('(', '')
                 nline = nline.replace(')', '')
@@ -141,7 +140,7 @@ class pKaIO:
                     resid = list_[2].zfill(4) + list_[1].upper()
                     chainid = None
                 if residue[0].lower() == 'TERMINAL'.lower():
-                    linenumber = linenumber+1
+                    linenumber += 1
                     residue = lines[linenumber].split()
                     if len(residue[5]) == 1 and residue[5].isalpha():
                         pka = residue[6].atof()
@@ -159,7 +158,7 @@ class pKaIO:
                             if len(residue[2]) > 1:
                                 index -= 1
                             modelpk = residue[index].atof()
-                            dpk = residue[index+1].atof()
+                            dpk = residue[index + 1].atof()
                             desolv = residue[index+2].atof()
                             backgr = residue[index+3].atof()
                             site = residue[index+4].atof()
@@ -190,7 +189,7 @@ class pKaIO:
                             if len(residue[2]) > 1:
                                 index -= 1
                             modelpk = residue[index].atof()
-                            dpk = residue[index+1].atof()
+                            dpk = residue[index + 1].atof()
                             desolv = residue[index+2].atof()
                             backgr = residue[index+3].atof()
                             site = residue[index+4].atof()
@@ -215,7 +214,7 @@ class pKaIO:
             # structure
             #
             if self.newname:
-                residue = reformat_name(residue, Nterm, format_)
+                residue = reformat_name(residue, nterm, format_)
             #
             # Make sure that non-determined pKa values are marked appropriately
             #
@@ -225,7 +224,7 @@ class pKaIO:
             # Construct dictionary
             #
             pKa[residue] = {'pKa':pka, 'modelpK':modelpk, 'desolv':desolv, 'backgr':backgr, 'delec':site}
-            linenumber = linenumber+1
+            linenumber += 1
             if lines[linenumber].lower().strip() == 'End of file'.lower():
                 done = 1
         self.pka = pKa
@@ -252,29 +251,20 @@ class pKaIO:
         groups = data.keys()
         # Sort accroding to the residue sequence number
         newgroup = {}
-        for g in groups:
-            newg = g.split('_')[2]
-            newgroup[int(newg), g] = g
-        newgroupkeys = newgroup.keys()
-        if version_info >= (3, 0):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        for gname in groups:
+            newg = gname.split('_')[2]
+            newgroup[int(newg), gname] = gname
+        newgroupkeys = sorted(newgroup.keys())
         groups = []
-        for k in newgroupkeys:
-            groups.append(k[1])
+        for idx in newgroupkeys:
+            groups.append(idx[1])
 
         written = {}
         #
         # ---------
         #
         for group in groups:
-            if version_info >= (3, 0):
-                hk = group in data
-            else:
-                hk = data.has_key(group)
-            #if data.has_key(group):
-            if hk:
+            if group in data:
                 this_data = data[group]
                 wfd.write('%15s      %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  \n' %(self.WI_res_text(group, format_),
                                                                                      this_data['pKa'],
@@ -330,24 +320,24 @@ class pKaIO:
         terms = [':NTERM', ':CTERM']
         term_count = -1
         while not done:
-            Term = None
+            term = None
             if lines[linenumber].strip() == 'TERMINAL GROUP:':
-                linenumber = linenumber+1
-                Term = 1
+                linenumber += 1
+                term = 1
             residue = getWI_resid2(lines[linenumber], format_)
-            if Term:
-                term_count = term_count+1
+            if term:
+                term_count += 1
                 residue = residue+terms[term_count]
                 if term_count == 1:
                     term_count = -1
             pKa = float(lines[linenumber].split()[-1])
-            linenumber = linenumber+1
+            linenumber += 1
             #
             # --------------
             #
             charge = {'pKa':pKa}
-            for pH in range(int(100*phstart), int(100*phend+100*phstep), int(100*phstep)):
-                rpH = float(pH)/100.0
+            for pH in range(int(100 * phstart), int(100 * phend + 100 * phstep), int(100 * phstep)):
+                rpH = float(pH) / 100.0
                 line = lines[linenumber].split()
                 # TODO: 2020/07/04 intendo - isn't this really bad to check a float to another value
                 if line[0].atof() == rpH:
@@ -373,44 +363,27 @@ class pKaIO:
         # Extract some data from the dictionary
         #
         residues = data.keys()
-        phvals = data[residues[0]].keys()
-        if version_info >= (3, 0):
-            phvals = sorted(phvals)
-        else:
-            phvals.sort()
+        phvals = sorted(data[residues[0]].keys())
         for residue in residues:
-            newpHvals = data[residue].keys()
-            if version_info >= (3, 0):
-                newpHvals = sorted(newpHvals)
-            else:
-                newpHvals.sort()
-            if newpHvals != phvals:
+            newp_hvals = sorted(data[residue].keys())
+            if newp_hvals != phvals:
                 _LOGGER.info(phvals)
-                _LOGGER.info(newpHvals)
+                _LOGGER.info(newp_hvals)
                 raise 'Dictionary does not contain identical pH values'
         #
         # Check that a pKa value is in the pH values
         #
         for residue in residues:
-            if version_info >= (3, 0):
-                hk = not 'pKa' in data[residue]
-            else:
-                hk = not data[residue].has_key('pKa')
-            #if not data[residue].has_key('pKa'):
-            if hk:
+            if 'pKa' not in data[residue]:
                 #print 'No pKa value found. Setting to zero!! - Jens change this!!'
                 data[residue]['pKa'] = 0.0
         #
         # Find the pH-start, stop and step
         #
-        phvals = data[residues[0]].keys()
-        if version_info >= (3, 0):
-            phvals = sorted(phvals)
-        else:
-            phvals.sort()
+        phvals = sorted(data[residues[0]].keys())
         phstart = phvals[0]
         phstop = phvals[-2]
-        phstep = phvals[1]-phstart
+        phstep = phvals[1] - phstart
 
         wfd = open(filename, 'w')
         #
@@ -428,11 +401,7 @@ class pKaIO:
         for r in residues:
             newr = r.split('_')[2]
             newresidue[int(newr), r] = r
-        newresiduekeys = newresidue.keys()
-        if version_info >= (3, 0):
-            newresiduekeys = sorted(newresiduekeys)
-        else:
-            newresiduekeys.sort()
+        newresiduekeys = sorted(newresidue.keys())
         residues = []
         for k in newresiduekeys:
             residues.append(k[1])
@@ -489,22 +458,22 @@ class pKaIO:
             raise 'Unknown format'
         if not lines[1].strip() == 'Format 1.0':
             raise 'Wrong format: %s' % lines[1]
-        x = 1
+        idx = 1
         done = None
         partners = None
-        Nterm = 0
+        nterm = 0
         while not done:
-            x = x+1
+            idx += 1
             #
             # Read first line for this partner residue
             #
             if format_ == 'WHAT IF':
                 term = None
-                if lines[x].strip() == 'TERMINAL GROUP:':
+                if lines[idx].strip() == 'TERMINAL GROUP:':
                     term = 1
-                    Nterm = abs(Nterm-1)
-                    x = x+1
-                nline = lines[x].replace('(', '')
+                    nterm = abs(nterm - 1)
+                    idx += 1
+                nline = lines[idx].replace('(', '')
                 nline = nline.replace(')', '')
                 list_ = nline.split()
                 if len(list_[3]) == 1:
@@ -518,7 +487,7 @@ class pKaIO:
                 # Should we use the new naming structure?
                 #
                 if self.newname:
-                    resid = reformat_name(resid, Nterm, format_)
+                    resid = reformat_name(resid, nterm, format_)
                 #
                 #
                 #
@@ -532,15 +501,15 @@ class pKaIO:
                 #
                 # Now read all the interactions with the partners
                 #
-                Nterm_partner = 0
+                nterm_partner = 0
                 for count in range(partners):
-                    x += 1
+                    idx += 1
                     term2 = None
-                    if lines[x].strip() == 'TERMINAL GROUP:':
-                        Nterm_partner = abs(Nterm_partner - 1)
+                    if lines[idx].strip() == 'TERMINAL GROUP:':
+                        nterm_partner = abs(nterm_partner - 1)
                         term2 = 1
-                        x += 1
-                    nline = lines[x].replace('(', '')
+                        idx += 1
+                    nline = lines[idx].replace('(', '')
                     nline = nline.replace(')', '')
                     list_ = nline.split()
                     if len(list_[3]) == 1:
@@ -553,22 +522,22 @@ class pKaIO:
                     # New name?
                     #
                     if self.newname:
-                        partid = reformat_name(partid, Nterm_partner, format_)
+                        partid = reformat_name(partid, nterm_partner, format_)
                     chacha = list_[-1].strip().atof()
-                    x = x+1
-                    i2 = lines[x].atof()
-                    x = x+1
-                    i3 = lines[x].atof()
-                    x = x+1
-                    i4 = lines[x].atof()
-                    energies = [chacha, i2, i3, i4]
+                    idx += 1
+                    interaction2 = lines[idx].atof()
+                    idx += 1
+                    interaction3 = lines[idx].atof()
+                    idx += 1
+                    interaction4 = lines[idx].atof()
+                    energies = [chacha, interaction2, interaction3, interaction4]
                     self.matrix[resid][partid] = energies
                     term2 = None
             elif format_ == 'pdb2pka':
                 #
                 # pseudo-pdb2pka format
                 #
-                list_ = lines[x].split()
+                list_ = lines[idx].split()
                 resid = list_[0].strip()
                 self.matrix[resid] = {}
                 partners = int(float(list_[-1]))
@@ -576,20 +545,20 @@ class pKaIO:
                 # Now read all the interactions with the partners
                 #
                 for count in range(partners):
-                    x = x+1
-                    list_ = lines[x].split()
+                    idx += 1
+                    list_ = lines[idx].split()
                     partid = list_[0]
                     chacha = list_[-1].strip().atof()
-                    x = x+1
-                    i2 = lines[x].atof()
-                    x = x+1
-                    i3 = lines[x].atof()
-                    x = x+1
-                    i4 = lines[x].atof()
-                    energies = [chacha, i2, i3, i4]
+                    idx += 1
+                    interaction2 = lines[idx].atof()
+                    idx += 1
+                    interaction3 = lines[idx].atof()
+                    idx += 1
+                    interaction4 = lines[idx].atof()
+                    energies = [chacha, interaction2, interaction3, interaction4]
                     self.matrix[resid][partid] = energies
-            x += 1
-            if lines[x+1].strip() == 'End of file':
+            idx += 1
+            if lines[idx + 1].strip() == 'End of file':
                 done = 1
         return self.matrix
 
@@ -604,14 +573,10 @@ class pKaIO:
         wfd = open(filename, 'w')
         wfd.write('%s Interaction Matrix File\n' % format_)
         wfd.write('Format 1.0\n')
-        groups = self.matrix.keys()
-        if version_info >= (3, 0):
-            groups = sorted(groups)
-        else:
-            groups.sort()
+        groups = sorted(self.matrix.keys())
 
         num_groups = len(groups)
-        count = 0
+        #count = 0
         written = {}
         newgroups = []
         for group in groups:
@@ -621,14 +586,10 @@ class pKaIO:
                 newgroups.append(group)
 
         newnewgroup = {}
-        for g in newgroups:
-            newg = g.split('_')[2]
-            newnewgroup[int(newg), g] = g
-        newnewgroupkeys = newnewgroup.keys()
-        if version_info >= (3, 0):
-            newnewgroupkeys = sorted(newnewgroupkeys)
-        else:
-            newnewgroupkeys.sort()
+        for gname in newgroups:
+            newg = gname.split('_')[2]
+            newnewgroup[int(newg), gname] = gname
+        newnewgroupkeys = sorted(newnewgroup.keys())
         newgroups = []
         for k in newnewgroupkeys:
             newgroups.append(k[1])
@@ -638,33 +599,28 @@ class pKaIO:
         # ---------
         #
         for group in newgroups:
-            if version_info >= (3, 0):
-                hk0 = group in self.matrix
-                hk1 = 'T'+group in self.matrix
-                hk2 = 'T'+group in self.matrix and not 'T'+group in written
-            else:
-                hk0 = self.matrix.has_key(group)
-                hk1 = self.matrix.has_key('T'+group)
-                hk2 = self.matrix.has_key('T'+group) and not written.has_key('T'+group)
-            #if self.matrix.has_key(group):
+            group_name = 'T' + group
+            hk0 = group in self.matrix
+            hk1 = group_name in self.matrix
+            hk2 = group_name in self.matrix and group_name not in written
             if hk0:
                 wfd.write('%s      %7.4f\n' %(self.WI_res_text(group, format_), float(num_groups)))
-                self.write_section(group, fd, format_)
+                self.write_section(group, wfd, format_)
                 written[group] = 1
                 #
                 # Is there a terminal group associated with this residue?
                 #
-                #if self.matrix.has_key('T'+group):
+                #if self.matrix.has_key(group_name):
                 if hk1:
-                    wfd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group), float(num_groups)))
-                    self.write_section('T'+group, fd, format_)
-                    written['T'+group] = 1
+                    wfd.write('%s      %7.4f\n' % self.WI_res_text(group_name, format_), float(num_groups))
+                    self.write_section(group_name, wfd, format_)
+                    written[group_name] = 1
             else:
-                #if self.matrix.has_key('T'+group) and not written.has_key('T'+group):
+                #if self.matrix.has_key(group_name) and not written.has_key(group_name):
                 if hk2:
-                    wfd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group, format_), float(num_groups)))
-                    self.write_section('T'+group, fd, format_)
-                    written['T'+group] = 1
+                    wfd.write('%s      %7.4f\n' %(self.WI_res_text(group_name, format_), float(num_groups)))
+                    self.write_section(group_name, wfd, format_)
+                    written[group_name] = 1
         wfd.write('End of file\n')
         wfd.close()
         return
@@ -674,8 +630,8 @@ class pKaIO:
     #
 
     def write_pdb2pka_matrix(self, filename, matrix):
-        """Write an interaction energy matrix in pdb2pka format"""
-        """At the moment, we just reformat and write a WHAT IF file"""
+        """Write an interaction energy matrix in pdb2pka format
+        At the moment, we just reformat and write a WHAT IF file"""
         self.matrix = {}
         for group1 in matrix.keys():
             self.matrix[group1.uniqueid] = {}
@@ -683,24 +639,17 @@ class pKaIO:
                 for state1 in matrix[group1][tit1].keys():
                     sub_m = matrix[group1][tit1][state1]
                     for group2 in sub_m.keys():
-                        if version_info >= (3, 0):
-                            if not group2.uniqueid in self.matrix[group1.uniqueid]:
-                                self.matrix[group1.uniqueid][group2.uniqueid] = []
-                            for tit2 in sub_m[group2].keys():
-                                for state2 in sub_m[group2][tit2].keys():
-                                    self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
-                        else:
-                            if not self.matrix[group1.uniqueid].has_key(group2.uniqueid):
-                                self.matrix[group1.uniqueid][group2.uniqueid] = []
-                            for tit2 in sub_m[group2].keys():
-                                for state2 in sub_m[group2][tit2].keys():
-                                    self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
-        for group1 in self.matrix.keys():
-            for group2 in self.matrix[group1].keys():
-                sum = 0.0
+                        if not group2.uniqueid in self.matrix[group1.uniqueid]:
+                            self.matrix[group1.uniqueid][group2.uniqueid] = []
+                        for tit2 in sub_m[group2].keys():
+                            for state2 in sub_m[group2][tit2].keys():
+                                self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
+        for group1 in self.matrix:
+            for group2 in self.matrix[group1]:
+                sum_ = 0.0
                 for val in self.matrix[group1][group2]:
-                    sum = sum+val
-                self.matrix[group1][group2] = [sum, 0.0, 0.0, 0.0]
+                    sum_ += val
+                self.matrix[group1][group2] = [sum_, 0.0, 0.0, 0.0]
         self.write_matrix(filename, format_='pdb2pka')
         return
 
@@ -719,29 +668,20 @@ class pKaIO:
 
         # Sort accroding to the residue sequence number
         newgroup = {}
-        for g in groups2:
-            newg = g.split('_')[2]
-            newgroup[int(newg), g] = g
-        newgroupkeys = newgroup.keys()
-        if version_info >= (3, 0):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        for gname in groups2:
+            newg = gname.split('_')[2]
+            newgroup[int(newg), gname] = gname
+        newgroupkeys = sorted(newgroup.keys())
         groups2 = []
         for k in newgroupkeys:
             groups2.append(k[1])
 
         written = {}
         for group2 in groups2:
-            if version_info >= (3, 0):
-                hk0 = group2 in self.matrix[group]
-                hk1 = 'T'+group2 in self.matrix[group]
-                hk2 = 'T'+group2 in self.matrix[group] and 'T'+group2 not in written
-            else:
-                hk0 = self.matrix[group].has_key(group2)
-                hk1 = self.matrix[group].has_key('T'+group2)
-                hk2 = self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2)
-            #if self.matrix[group].has_key(group2):
+            group2_name = 'T' + group2
+            hk0 = group2 in self.matrix[group]
+            hk1 = group2_name in self.matrix[group]
+            hk2 = group2_name in self.matrix[group] and group2_name not in written
             if hk0:
                 fd.write('%s      %7.4f\n' %(self.WI_res_text(group2, format_), self.matrix[group][group2][0]))
                 fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2][1], self.matrix[group][group2][2], self.matrix[group][group2][3]))
@@ -749,17 +689,17 @@ class pKaIO:
                 #
                 # Is there a terminal group associated with this residue?
                 #
-                #if self.matrix[group].has_key('T'+group2):
+                #if self.matrix[group].has_key(group2_name):
                 if hk1:
-                    fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group2, format_), self.matrix[group]['T'+group2][0]))
-                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group]['T'+group2][1], self.matrix[group]['T'+group2][2], self.matrix[group]['T'+group2][3]))
-                    written['T'+group2] = 1
+                    fd.write('%s      %7.4f\n' %(self.WI_res_text(group2_name, format_), self.matrix[group][group2_name][0]))
+                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2_name][1], self.matrix[group][group2_name][2], self.matrix[group][group2_name][3]))
+                    written[group2_name] = 1
             else:
-                #if self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2):
+                #if self.matrix[group].has_key(group2_name) and not written.has_key(group2_name):
                 if hk2:
-                    fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group2, format_), self.matrix[group]['T'+group2][0]))
-                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group]['T'+group2][1], self.matrix[group]['T'+group2][2], self.matrix[group]['T'+group2][3]))
-                    written['T'+group2] = 1
+                    fd.write('%s      %7.4f\n' %(self.WI_res_text(group2_name, format_), self.matrix[group][group2_name][0]))
+                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2_name][1], self.matrix[group][group2_name][2], self.matrix[group][group2_name][3]))
+                    written[group2_name] = 1
         fd.write('--------------------------------------------\n')
         return
 
@@ -832,7 +772,7 @@ class pKaIO:
         elif lines[0].strip() == 'pdb2pka Background Energy File':
             format_ = 'pdb2pka'
         else:
-            raise (Exception, 'Unknown format: ' + lines[0].strip())
+            raise Exception('Unknown format: %s' % lines[0].strip())
         #
         # Call the generic read routine
         #
@@ -844,24 +784,24 @@ class pKaIO:
     #
 
 
-    def read_WIfile(self, lines, dict, format_):
+    def read_WIfile(self, lines, dict_, format_):
         #
         # Read a DESOLV file or a BACKGR file
         #
-        x = 1
+        idx = 1
         done = None
-        Nterm = 0
+        nterm = 0
         while not done:
-            x = x+1
+            idx += 1
             #
             # Read first line for this residue
             #
             term = None
-            if lines[x].strip() == 'TERMINAL GROUP:':
-                Nterm = abs(Nterm-1)
+            if lines[idx].strip() == 'TERMINAL GROUP:':
+                nterm = abs(nterm - 1)
                 term = 1
-                x = x+1
-            nline = lines[x].replace('(', '')
+                idx += 1
+            nline = lines[idx].replace('(', '')
             nline = nline.replace(')', '')
             list_ = nline.strip()
             if len(list_[3]) == 1:
@@ -870,17 +810,17 @@ class pKaIO:
                 resid = list_[2].zfill(4) + list_[1].upper()
                 chainid = None
             if term:
-                resid = 'T'+resid
+                resid = 'T' + resid
             #
             # New name?
             #
             if self.newname:
-                resid = reformat_name(resid, Nterm)
+                resid = reformat_name(resid, nterm)
             #
-            dict[resid] = list_[-1].atof()
-            if lines[x+1].strip() == 'End of file':
+            dict_[resid] = list_[-1].atof()
+            if lines[idx + 1].strip() == 'End of file':
                 done = 1
-        return dict
+        return dict_
 
     #
     # ----------------------
@@ -899,11 +839,7 @@ class pKaIO:
         for g in groups:
             newg = g.split('_')[2]
             newgroup[int(newg), g] = g
-        newgroupkeys = newgroup.keys()
-        if version_info >= (3, 0):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        newgroupkeys = sorted(newgroup.keys())
         groups = []
         for k in newgroupkeys:
             groups.append(k[1])
@@ -912,12 +848,7 @@ class pKaIO:
         # ---------
         #
         for group in groups:
-            if version_info >= (3, 0):
-                hk = group in self.desolv
-            else:
-                hk = self.desolv.has_key(group)
-            #if self.desolv.has_key(group):
-            if hk:
+            if group in self.desolv:
                 wfd.write('%s      %7.4f\n' %(self.WI_res_text(group, format_), float(self.desolv[group])))
                 written[group] = 1
         wfd.write('End of file\n')
@@ -938,28 +869,19 @@ class pKaIO:
         groups = self.backgr.keys()
         # Sort accroding to the residue sequence number
         newgroup = {}
-        for g in groups:
-            newg = g.split('_')[2]
-            newgroup[int(newg), g] = g
-        newgroupkeys = newgroup.keys()
-        if version_info >= (3, 0):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        for gname in groups:
+            newg = gname.split('_')[2]
+            newgroup[int(newg), gname] = gname
+        newgroupkeys = sorted(newgroup.keys())
         groups = []
-        for k in newgroupkeys:
-            groups.append(k[1])
+        for idx in newgroupkeys:
+            groups.append(idx[1])
         written = {}
         #
         # ---------
         #
         for group in groups:
-            if version_info >= (3, 0):
-                hk = group in self.backgr
-            else:
-                hk = self.backgr.has_key(group)
-            #if self.backgr.has_key(group):
-            if hk:
+            if group in self.backgr:
                 wfd.write('%s      %7.4f\n' %(self.WI_res_text(group, format_), float(self.backgr[group])))
                 written[group] = 1
         wfd.write('End of file\n')
@@ -1035,4 +957,4 @@ class pKaIO:
                 line = 'TERMINAL GROUP:\n'+line
             return line
         else:
-            raise (Exception, 'Unknown format:' + format_)
+            raise Exception('Unknown format:' + format_)

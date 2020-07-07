@@ -1,10 +1,8 @@
-#
-# $Id$
-#
-# Helper classes for all the pKa stuff. I need to reorganise these into something
-# more logic at some point
-#
-#
+"""
+Helper classes for all the pKa stuff. I need to reorganise these into something
+more logic at some point
+"""
+
 class pKa:
     """
         The main pKa object
@@ -21,39 +19,38 @@ class pKa:
                          (HydrogenAmbiguity)
         """
         self.residue = residue
-        self.pKaGroup = group
+        self.pka_group = group
         self.amb = amb
         self.desolvation = {}
         self.background = {}
-        self.interactionEnergies = {}
-        self.intrinsic_pKa = {}
-        self.simulated_intrinsic_pKa = None
-        self.pKa = None
+        self.interaction_energies = {}
+        self.intrinsic_pka = {}
+        self.simulated_intrinsic_pka = None
+        self.pka = None
         #
         # Unique identifier
         #
-        self.uniqueid='%s_%s_%d_TITTYPE:%s' %(residue.name,residue.chain_id,residue.res_seq,group.name)
-        return
+        self.unique_id = '%s_%s_%d_TITTYPE:%s' % (residue.name,
+                                                  residue.chain_id,
+                                                  residue.res_seq,
+                                                  group.name)
 
     def __repr__(self):
-        return self.uniqueid
+        return self.unique_id
 
-#
-# -------------------------------------------
-#
 
 class pKaGroup:
-    #
-    # pKaGroup holds the defintion on a single titratable entity. In most cases we will
-    # only have a single titration taking place in one group, but in some cases
-    # we might have to have several transitions in one group (e.g. His - -> His 0 -> His +)
-    #
-    # The name, resname and type should probably be in pKaTitrations, but for now I'll leave
-    # them here to get something working before we do complicated things...
-    #
+    """
+    pKaGroup holds the defintion on a single titratable entity. In most cases we will
+    only have a single titration taking place in one group, but in some cases
+    we might have to have several transitions in one group (e.g. His - -> His 0 -> His +)
+
+    The name, resname and type should probably be in pKaTitrations, but for now I'll leave
+    them here to get something working before we do complicated things...
+    """
 
 
-    def __init__(self, name, resname, type, DefTitrations):
+    def __init__(self, name, resname, type_, def_titrations):
         #
         #    Initialize the pKaGroup object
         #
@@ -61,14 +58,13 @@ class pKaGroup:
         #        name:    The name of the group (string)
         #        resname: The residue name (string)
         #        type:    The type of group, acid or base (string)
-        #        DefTitrations: A list of DefTitration objects (list)
+        #        def_titrations: A list of DefTitration objects (list)
         #
         #
         self.name = name
         self.resname = resname
-        self.type = type
-        self.DefTitrations = DefTitrations
-        return
+        self.type_ = type_
+        self.def_titrations = def_titrations
 
     #
     # ------------------------
@@ -81,37 +77,33 @@ class pKaGroup:
             Returns
                 text:  The pKaGroup information (string)
         """
-        text  = "Group name:   %s\n" % self.name
+        text = "Group name:   %s\n" % self.name
         text += "Residue name: %s\n" % self.resname
-        text += "Group type:   %s\n" % self.type
+        text += "Group type:   %s\n" % self.type_
         text += "Transitions:\n"
-        for tran in self.DefTitrations:
+        for tran in self.def_titrations:
             text += str(tran)
         return text
 
 
-#
-# -----------------------------------------------
-#
-
 class DefTitration:
-    #
-    # pKa_Titration holds all the info on a specific titration
-    # We define a titration as a single group that has a number of
-    # startstates and a number of endstates which is modelled by a
-    # single model pKa value
-    # A single group can have several transitions depending on the
-    # number of startstates and endstates
-    #
+    """
+    pKa_Titration holds all the info on a specific titration
+    We define a titration as a single group that has a number of
+    startstates and a number of endstates which is modelled by a
+    single model pKa value
+    A single group can have several transitions depending on the
+    number of startstates and endstates
+    """
 
-    def __init__(self, startstates, endstates, modelpKa,name):
+    def __init__(self, startstates, endstates, modelpka, name):
         #
         #    Initialize the pKaTransition object
         #
         #    Parameters
         #        startstates: A list of state numbers (list)
         #        endstates:   A list of state numbers (list)
-        #        modelpKa:    The model pKa associated with this titration
+        #        modelpka:    The model pKa associated with this titration
         #                     (float)
         #        transitions: A dictionary of the possible transitions for this group
         #                     (dictionary)
@@ -122,26 +114,21 @@ class DefTitration:
         self.residue = None
         self.startstates = startstates
         self.endstates = endstates
-        self.allstates=startstates+endstates
-        self.modelpKa = modelpKa
+        self.allstates = startstates + endstates
+        self.modelpka = modelpka
         self.name = name
         #
         # Set transitions
         #
-        self.transitions={}
-        count=0
+        self.transitions = {}
+        count = 0
         for start_s in self.startstates:
             for end_s in self.endstates:
-                count=count+1
-                self.transitions[count]={'start':start_s,'end':end_s}
+                count += 1
+                self.transitions[count] = {'start':start_s, 'end':end_s}
         #
         # Interactions has to be set at a higher level
         #
-        return
-
-    #
-    # ---------------------
-    #
 
     def __str__(self):
         """
@@ -150,9 +137,8 @@ class DefTitration:
             Returns
                 text:  The pKaTransition information (string)
         """
-        text  = "\tStartstates: %s\n" % self.startstates
+        text = "\tStartstates: %s\n" % self.startstates
         text += "\tEndstates:   %s\n" % self.endstates
-        text += "\tmodelpKa:    %.1f\n" % self.modelpKa
+        text += "\tmodelpKa:    %.1f\n" % self.modelpka
         text += "\tName:        %s\n" % self.name
         return text
-

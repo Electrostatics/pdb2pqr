@@ -1,9 +1,8 @@
-from __future__ import print_function
+import logging
 from sys import float_info
 from itertools import product
 import random
 random.seed("Mmmmm, sandwiches...")
-import logging
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -80,7 +79,7 @@ def monte_carlo(pc, labeling, uncertain):
 
     for _ in range(iterations):
         test_states = (random.choice(state_pair) for state_pair in state_pairs)
-        test_labeling.update((x,y) for x,y in zip(uncertain, test_states))
+        test_labeling.update((x, y) for x, y in zip(uncertain, test_states))
         last_residue = None
         for _ in range(sub_iterations):
             random_residue = random.choice(uncertain)

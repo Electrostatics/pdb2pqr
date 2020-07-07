@@ -652,7 +652,7 @@ class Water(optimize.Optimize):
 
             # Build hydrogen away from closest atom
             closeatom = self.routines.get_closest_atom(atom)
-            if closeatom != None:
+            if closeatom is not None:
                 vec = util.subtract(atom.coords, closeatom.coords)
                 dist = util.distance(atom.coords, closeatom.coords)
 
@@ -712,7 +712,7 @@ class Water(optimize.Optimize):
 
             # Debump residue if necessary by trying the other location
             nearatom = self.routines.get_closest_atom(newatom)
-            if nearatom != None:
+            if nearatom is not None:
                 dist1 = util.distance(newatom.coords, nearatom.coords)
 
                 # Place at other location
@@ -723,7 +723,7 @@ class Water(optimize.Optimize):
                 self.routines.cells.add_cell(atom)
 
                 nearatom = self.routines.get_closest_atom(newatom)
-                if nearatom != None:
+                if nearatom is not None:
 
                     # If this is worse, switch back
                     if util.distance(newatom.coords, nearatom.coords) < dist1:
@@ -961,7 +961,7 @@ class Carboxylic(optimize.Optimize):
 
             # If only one H is left, we're done
             if len(self.hlist) == 1:
-                if donorhatom != None:
+                if donorhatom is not None:
                     self.rename(donorhatom)
                 residue.fixed = 1
             return 1
@@ -1039,7 +1039,7 @@ class Carboxylic(optimize.Optimize):
                 residue.remove_atom(hydatom.name)
 
         # Rename the atoms
-        if bestatom != None and len(bestatom.name) == 4:
+        if bestatom is not None and len(bestatom.name) == 4:
             self.rename(bestatom)
         else:
             pass
@@ -1123,7 +1123,7 @@ class Carboxylic(optimize.Optimize):
             self.finalize()
 
 
-class PotentialBond(object):
+class PotentialBond:
     """A small class containing the hbond structure"""
 
     def __init__(self, atom1, atom2, dist):
@@ -1146,7 +1146,7 @@ class PotentialBond(object):
         return txt
 
 
-class HydrogenDefinition(object):
+class HydrogenDefinition:
     """HydrogenDefinition class
 
     The HydrogenDefinition class provides information on possible
@@ -1191,7 +1191,7 @@ class HydrogenDefinition(object):
         self.conformations.append(conf)
 
 
-class HydrogenConformation(object):
+class HydrogenConformation:
     """HydrogenConformation class
 
     The HydrogenConformation class contains data about possible
@@ -1227,7 +1227,7 @@ class HydrogenConformation(object):
         self.atoms.append(atom)
 
 
-class HydrogenAmbiguity(object):
+class HydrogenAmbiguity:
     """
         A class containing information about the ambiguity
     """
@@ -1277,7 +1277,6 @@ class HydrogenHandler(sax.ContentHandler):
             self.curobj = obj
         else:
             self.curelement = name
-        return
 
     def endElement(self, name):
         """Complete whatever object is currently passed in by the name
@@ -1323,4 +1322,3 @@ class HydrogenHandler(sax.ContentHandler):
             value = str(text)
 
         setattr(self.curobj, self.curelement, value)
-

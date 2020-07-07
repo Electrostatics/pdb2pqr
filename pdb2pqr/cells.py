@@ -5,7 +5,7 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 
-class Cells(object):
+class Cells:
     """The cells object provides a better way to search for nearby atoms.
 
     A pure all versus all search is O(n^2) - for every atom, every other atom

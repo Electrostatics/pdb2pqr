@@ -1,5 +1,5 @@
-import networkx as nx
 from itertools import combinations
+import networkx as nx
 
 class ProteinGraph(object):
     def __init__(self, protein_complex):
@@ -39,21 +39,21 @@ class ProteinGraph(object):
                 self.DG.add_edge(deprot_node, "T", capacity=deprot_capacity)
 
         #Create all interaction energy edges.
-        for p, q in combinations(iter(self.pc.residue_variables.items()),2):
+        for p, q in combinations(iter(self.pc.residue_variables.items()), 2):
             p_key, p_residue = p
             q_key, q_residue = q
 
             p_prot_instance = p_residue.instances["PROTONATED"]
-            p_prot_node = p_key+("PROTONATED",)
+            p_prot_node = p_key + ("PROTONATED",)
 
             p_deprot_instance = p_residue.instances["DEPROTONATED"]
-            p_deprot_node = p_key+("DEPROTONATED",)
+            p_deprot_node = p_key + ("DEPROTONATED",)
 
             q_prot_instance = q_residue.instances["PROTONATED"]
-            q_prot_node = q_key+("PROTONATED",)
+            q_prot_node = q_key + ("PROTONATED",)
 
             q_deprot_instance = q_residue.instances["DEPROTONATED"]
-            q_deprot_node = q_key+("DEPROTONATED",)
+            q_deprot_node = q_key + ("DEPROTONATED",)
 
             capacity = self.pc.normalized_interaction_energies[p_deprot_instance, q_deprot_instance] / 2.0
 

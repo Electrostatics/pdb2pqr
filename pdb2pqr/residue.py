@@ -12,6 +12,7 @@ class Residue(object):
     """Residue class
 
     TODO - move this class to a separate file
+    BUG FIXME - Should this class have a member variable for dihedrals? Pylint complains!
 
     The residue class contains a list of Atom objects associated with that
     residue and other helper functions.
@@ -236,12 +237,9 @@ class Residue(object):
 
         newcoords = quat.qchichange(initcoords, movecoords, angle)
         for iatom, atom in enumerate(moveatoms):
-            x = newcoords[iatom][0] + atom1.x
-            y = newcoords[iatom][1] + atom1.y
-            z = newcoords[iatom][2] + atom1.z
-            atom.x = x
-            atom.y = y
-            atom.z = z
+            atom.x = newcoords[iatom][0] + atom1.x
+            atom.y = newcoords[iatom][1] + atom1.y
+            atom.z = newcoords[iatom][2] + atom1.z
 
     def pick_dihedral_angle(self, conflict_names, oldnum=None):
         """Choose an angle number to use in debumping

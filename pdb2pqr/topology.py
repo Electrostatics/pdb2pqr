@@ -39,33 +39,33 @@ class TopologyHandler(sax.ContentHandler):
             if tagName == "topology":
                 pass
             elif tagName == "residue":
-                if self.curr_residue != None:
+                if self.curr_residue is not None:
                     _LOGGER.info("** Overwriting current topology_residue object!")
                 self.curr_residue = TopologyResidue(self)
             elif tagName == "reference":
-                if self.curr_reference != None:
+                if self.curr_reference is not None:
                     _LOGGER.info("** Overwriting current TopologyReference object!")
                 self.curr_reference = TopologyReference(self.curr_residue)
             elif tagName == "titrationstate":
-                if self.curr_titration_state != None:
+                if self.curr_titration_state is not None:
                     _LOGGER.info("** Overwriting current topology_titration_state object!")
                 self.curr_titration_state = TopologyTitrationState(self.curr_residue)
             elif tagName == "tautomer":
-                if self.curr_tautomer != None:
+                if self.curr_tautomer is not None:
                     _LOGGER.info("** Overwriting current Tautomer object!")
                 self.curr_tautomer = TopologyTautomer(self.curr_titration_state)
             elif tagName == "conformer":
-                if self.curr_conformer != None:
+                if self.curr_conformer is not None:
                     _LOGGER.info("** Overwriting current Conformer object!")
                 self.curr_conformer = TopologyConformer(self.curr_tautomer)
             elif tagName == "name":
                 self.curr_element = tagName
             elif tagName == "atom":
-                if self.curr_conformer_add != None:
+                if self.curr_conformer_add is not None:
                     self.curr_atom = TopologyAtom(self.curr_conformer_add)
-                elif self.curr_conformer_remove != None:
+                elif self.curr_conformer_remove is not None:
                     self.curr_atom = TopologyAtom(self.curr_conformer_remove)
-                elif self.curr_reference != None:
+                elif self.curr_reference is not None:
                     self.curr_atom = TopologyAtom(self.curr_reference)
                 else:
                     _LOGGER.info("** Don't know what to do with this atom!")
@@ -81,11 +81,11 @@ class TopologyHandler(sax.ContentHandler):
                 self.curr_element = tagName
             elif tagName == "dihedral":
                 self.curr_element = tagName
-                if self.curr_conformer_add != None:
+                if self.curr_conformer_add is not None:
                     self.curr_dihedral = TopologyDihedral(self.curr_conformer_add)
-                elif self.curr_conformer_remove != None:
+                elif self.curr_conformer_remove is not None:
                     self.curr_dihedral = TopologyDihedral(self.curr_conformer_remove)
-                elif self.curr_reference != None:
+                elif self.curr_reference is not None:
                     self.curr_dihedral = TopologyDihedral(self.curr_reference)
                 else:
                     _LOGGER.info("** Don't know what to do with this dihedral!")
@@ -146,15 +146,15 @@ class TopologyHandler(sax.ContentHandler):
             return
         if not self.incomplete:
             if self.curr_element == "name":
-                if self.curr_atom != None:
+                if self.curr_atom is not None:
                     self.curr_atom.name = text
-                elif self.curr_conformer != None:
+                elif self.curr_conformer is not None:
                     self.curr_conformer.name = text
-                elif self.curr_tautomer != None:
+                elif self.curr_tautomer is not None:
                     self.curr_tautomer.name = text
-                elif self.curr_titration_state != None:
+                elif self.curr_titration_state is not None:
                     self.curr_titration_state.name = text
-                elif self.curr_residue != None:
+                elif self.curr_residue is not None:
                     self.curr_residue.name = text
                 else:
                     _LOGGER.info("    *** Don't know what to do with name %s!", text)
@@ -175,7 +175,7 @@ class TopologyHandler(sax.ContentHandler):
 
 
 # TODO - lots of repeated code that could be eliminated with better inheritance
-class TopologyResidue(object):
+class TopologyResidue:
     """ A class for residue topology information """
     def __init__(self, topology_):
         """ Initialize with a Topology object """
@@ -189,7 +189,7 @@ class TopologyResidue(object):
         return self.name
 
 
-class TopologyDihedral(object):
+class TopologyDihedral:
     """ A class for dihedral topology information.  """
     def __init__(self, parent):
         """ Needs a parent that has a dihedral list. """
@@ -201,7 +201,7 @@ class TopologyDihedral(object):
         return self.atom_list
 
 
-class TopologyAtom(object):
+class TopologyAtom:
     """ A class for atom topology information """
     def __init__(self, parent):
         """ Needs to be intialized with an upper-level class that contains an
@@ -219,7 +219,7 @@ class TopologyAtom(object):
         return self.name
 
 
-class TopologyTitrationState(object):
+class TopologyTitrationState:
     """ A class for the titration state of a residue """
     def __init__(self, topology_residue):
         """ Initialize with a topology_residue object """
@@ -232,7 +232,7 @@ class TopologyTitrationState(object):
         return self.name
 
 
-class TopologyTautomer(object):
+class TopologyTautomer:
     """ A class for topology tautomer information """
     def __init__(self, topology_titration_state):
         """ Initialize with a topology_titration_state object """
@@ -245,7 +245,7 @@ class TopologyTautomer(object):
         return self.name
 
 
-class TopologyConformer(object):
+class TopologyConformer:
     """ A class for topology conformer information """
     def __init__(self, topology_tautomer):
         """ Initialize with a TopologyTautomer object """
@@ -259,7 +259,7 @@ class TopologyConformer(object):
         return self.name
 
 
-class TopologyReference(object):
+class TopologyReference:
     """ A class for the reference structure of a residue """
     def __init__(self, topology_residue):
         """ Initialize with a topology_residue object """
@@ -269,7 +269,7 @@ class TopologyReference(object):
         self.dihedrals = []
 
 
-class TopologyConformerAdd(object):
+class TopologyConformerAdd:
     """ A class for adding atoms to a conformer """
     def __init__(self, topology_conformer):
         """ Initialize with a TopologyConformer object """
@@ -280,7 +280,7 @@ class TopologyConformerAdd(object):
         self.dihedrals = []
 
 
-class TopologyConformerRemove(object):
+class TopologyConformerRemove:
     """ A class for removing atoms to a conformer """
     def __init__(self, topology_conformer):
         """ Initialize with a TopologyConformer object """
@@ -290,7 +290,7 @@ class TopologyConformerRemove(object):
         self.name = None
 
 
-class Topology(object):
+class Topology:
     """ Contains the structured definitions of residue reference coordinates
     as well as alternate titration, conformer, and tautomer states.
     """

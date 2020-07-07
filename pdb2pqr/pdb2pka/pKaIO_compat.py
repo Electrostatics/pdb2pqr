@@ -8,40 +8,38 @@
 # University College Dublin 2003 -
 # All rights reserved
 #
-from sys import version_info
-#try:
 import os
 import logging
-# TODO - fix import *
-from .pKa_utility_functions_compat import *
-
+import sys
+from .pKa_utility_functions_compat import getWI_resid2, reformat_name
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class pKaIO:
 
-    def __init__(self,rootfilename=None):
-        self.newname=None
-        self.backgr={}
-        self.desolv={}
-        self.matrix={}
-        self.pka={}
-        self.backgr_file=None
-        self.desolv_file=None
-        self.matrix_file=None
-        self.pkafile=None
-        self.titcurvfile=None
+    def __init__(self, rootfilename=None):
+        self.newname = None
+        self.backgr = {}
+        self.desolv = {}
+        self.matrix = {}
+        self.pka = {}
+        self.backgr_file = None
+        self.desolv_file = None
+        self.matrix_file = None
+        self.pkafile = None
+        self.titcurvfile = None
         #
         # Do we know any of the names?
         #
         if rootfilename:
-            self.backgr_file=rootfilename+'.BACKGR.DAT'
-            self.desolv_file=rootfilename+'.DESOLV.DAT'
-            self.matrix_file=rootfilename+'.MATRIX.DAT'
-            self.pkafile=rootfilename+'.PKA.DAT'
-            self.titcurvfile=rootfilename+'.TITCURV.DAT'
-        self.allfiles=[self.backgr_file,self.desolv_file,self.matrix_file,self.pkafile,self.titcurvfile]
+            self.backgr_file = rootfilename+'.BACKGR.DAT'
+            self.desolv_file = rootfilename+'.DESOLV.DAT'
+            self.matrix_file = rootfilename+'.MATRIX.DAT'
+            self.pkafile = rootfilename+'.PKA.DAT'
+            self.titcurvfile = rootfilename+'.TITCURV.DAT'
+        self.allfiles = [self.backgr_file, self.desolv_file,
+                         self.matrix_file, self.pkafile, self.titcurvfile]
         #
         # Do we have the files
         #
@@ -49,15 +47,15 @@ class pKaIO:
         #
         # Define dictionaries that we will need all the time
         #
-        self.acidbase={'ARG':1,'HIS':1,'LYS':1,'TYR':-1,'ASP':-1,'GLU':-1,
-                       'CYS':-1,'CTERM':-1,'NTERM':1,'SER':-1,'THR':-1}
-        self.modelpKas={'NTERM':8.00,'LYS':10.40,'GLU':4.40,'HIS':6.30,
-                        'ASP':4.00,'TYR':9.6,'ARG':13.0,'CTERM':3.80,
-                        'CYS':8.7,'SER':15.0,'THR':15.0}
+        self.acidbase = {'ARG':1, 'HIS':1, 'LYS':1, 'TYR':-1, 'ASP':-1, 'GLU':-1,
+                         'CYS':-1, 'CTERM':-1, 'NTERM':1, 'SER':-1, 'THR':-1}
+        self.model_pkas = {'NTERM':8.00, 'LYS':10.40, 'GLU':4.40, 'HIS':6.30,
+                           'ASP':4.00, 'TYR':9.6, 'ARG':13.0, 'CTERM':3.80,
+                           'CYS':8.7, 'SER':15.0, 'THR':15.0}
         #
         # We always use the new names
         #
-        self.newname=1
+        self.newname = 1
         #
         # done
         #
@@ -71,386 +69,355 @@ class pKaIO:
         #
         # Do we have a completed pKa calculation for the PDB file?
         #
-        self.file_status={}
-        self.calculation_completed=1
+        self.file_status = {}
+        self.calculation_completed = 1
         for file in self.allfiles:
             if not file:
-                self.calculation_completed=None
-                self.file_status[file]=None
+                self.calculation_completed = None
+                self.file_status[file] = None
                 continue
             if os.path.isfile(file):
-                self.file_status[file]=1
+                self.file_status[file] = 1
             else:
-                self.calculation_completed=None
-                self.file_status[file]=None
+                self.calculation_completed = None
+                self.file_status[file] = None
         return self.calculation_completed
 
     #
     # -------------------------------
     #
 
-    def readpka(self,filename=None):
+    def readpka(self, filename=None):
         #
         # This function reads a WHAT IF pKa file and creates a dictionary with the
-        # following format: self.pka={<residue1>:{'pKa':<pKa>,'modelpK':<model pKa value>,
-        # 'desolv':<dpK due to desolvation>,'backgr':<dpK due to background int.>,
-        # 'delec':<dpK due to site-site interactions>},<residue2>:.....}
+        # following format: self.pka={<residue1>:{'pKa':<pKa>, 'modelpK':<model pKa value>,
+        # 'desolv':<dpK due to desolvation>, 'backgr':<dpK due to background int.>,
+        # 'delec':<dpK due to site-site interactions>}, <residue2>:.....}
         #
         if not filename:
-            filename=self.pkafile
-        import string
+            filename = self.pkafile
         if not filename:
-            _LOGGER.info(filename,'is not a filename')
-            os._exit(0)
+            _LOGGER.info(filename, 'is not a filename')
+            sys.exit(0)
         if not os.path.isfile(filename):
-            raise('File does not exist:',filename)
-        fd=open(filename)
-        lines=fd.readlines()
-        fd.close()
+            raise 'File does not exist: %s' % filename
+        rfd = open(filename)
+        lines = rfd.readlines()
+        rfd.close()
         #
         # Parse
         #
-        if string.lower(string.strip(lines[0]))==string.lower('WHAT IF pKa File'):
-            format='WHAT IF'
-        elif string.lower(string.strip(lines[0]))==string.lower('pdb2pka pKa File'):
-            format='WHAT IF'
+        if lines[0].strip().lower() == 'WHAT IF pKa File'.lower():
+            format_ = 'WHAT IF'
+        elif lines[0].strip().lower() == 'pdb2pka pKa File'.lower():
+            format_ = 'WHAT IF'
         else:
             raise ValueError('Unknown format')
-        if string.lower(string.strip(lines[1]))!=string.lower('Format 1.0'):
-            raise('unknown format: ',lines[1])
+        if lines[1].strip().lower() != 'Format 1.0'.lower():
+            raise 'unknown format: %s' % lines[1]
         # Next line is text
-        linenumber=3
-        pKa={}
-        done=None
+        linenumber = 3
+        pKa = {}
+        done = None
         #
         # Define counter for keeping track of terminals
         #
-        Nterm=0
+        nterm = 0
         while not done:
-            residue=string.split(lines[linenumber])
-            if format=='WHAT IF':
-                nline=''
-                if string.lower(residue[0])==string.lower('TERMINAL'):
-                    Nterm=abs(Nterm-1)
-                    nline=string.replace(lines[linenumber+1],'(','')
+            residue = lines[linenumber].split()
+            if format_ == 'WHAT IF':
+                nline = ''
+                if residue[0].lower() == 'TERMINAL'.lower():
+                    nterm = abs(nterm - 1)
+                    nline = lines[linenumber + 1].replace('(', '')
                 else:
-                    nline=string.replace(lines[linenumber],'(','')
-                nline=string.replace(nline,')','')
-                list=string.split(nline)
-                if len(list[3])==1:
-                    resid=string.zfill(list[2],4)+string.upper(list[1])+list[3]
+                    nline = lines[linenumber].replace('(', '')
+                nline = nline.replace(')', '')
+                list_ = nline.split()
+                if len(list_[3]) == 1:
+                    resid = list_[2].zfill(4) + list_[1].upper() + list_[3]
                 else:
-                    resid=string.zfill(list[2],4)+string.upper(list[1])
-                    chainid=None
-                if string.lower(residue[0])==string.lower('TERMINAL'):
-                    linenumber=linenumber+1
-                    residue=string.split(lines[linenumber])
-                    if len(residue[5])==1 and residue[5] in string.letters:
-                        pka=string.atof(residue[6])
+                    resid = list_[2].zfill(4) + list_[1].upper()
+                    chainid = None
+                if residue[0].lower() == 'TERMINAL'.lower():
+                    linenumber += 1
+                    residue = lines[linenumber].split()
+                    if len(residue[5]) == 1 and residue[5].isalpha():
+                        pka = residue[6].atof()
                     else:
-                        pka=string.atof(residue[5])
-                    if len(residue)>6:
-                        if len(residue[5])==1 and residue[5] in string.letters:
-                            modelpk=string.atof(residue[7])
-                            dpk=string.atof(residue[8])
-                            desolv=string.atof(residue[0])
-                            backgr=string.atof(residue[10])
-                            site=string.atof(residue[11])
+                        pka = residue[5].atof()
+                    if len(residue) > 6:
+                        if len(residue[5]) == 1 and residue[5].isalpha():
+                            modelpk = residue[7].atof()
+                            dpk = residue[8].atof()
+                            desolv = residue[0].atof()
+                            backgr = residue[10].atof()
+                            site = residue[11].atof()
                         else:
-                            index=6
-                            if len(residue[2])>1:
-                                index=index-1
-                            modelpk=string.atof(residue[index])
-                            dpk=string.atof(residue[index+1])
-                            desolv=string.atof(residue[index+2])
-                            backgr=string.atof(residue[index+3])
-                            site=string.atof(residue[index+4])
+                            index = 6
+                            if len(residue[2]) > 1:
+                                index -= 1
+                            modelpk = residue[index].atof()
+                            dpk = residue[index + 1].atof()
+                            desolv = residue[index+2].atof()
+                            backgr = residue[index+3].atof()
+                            site = residue[index+4].atof()
                     else:
-                        modelpk='Not in file'
-                        dpk='Not in file'
-                        desolv='Not in file'
-                        backgr='Not in file'
-                        site='Not in file'
+                        modelpk = 'Not in file'
+                        dpk = 'Not in file'
+                        desolv = 'Not in file'
+                        backgr = 'Not in file'
+                        site = 'Not in file'
 
-                    #residue='T'+string.zfill(residue[0],4)+residue[1]
-                    residue='T'+resid
+                    #residue = 'T'+residue[0].zfill(4)+residue[1]
+                    residue = 'T'+resid
                 else:
-                    if len(residue[5])==1 and residue[5] in string.letters:
-                        pka=string.atof(residue[6])
+                    if len(residue[5]) == 1 and residue[5].isalpha():
+                        pka = residue[6].atof()
                     else:
-                        pka=string.atof(residue[5])
-                    #pka=string.atof(residue[5])
-                    if len(residue)>6:
-                        if len(residue[5])==1 and residue[5] in string.letters:
-                            modelpk=string.atof(residue[7])
-                            dpk=string.atof(residue[8])
-                            desolv=string.atof(residue[9])
-                            backgr=string.atof(residue[10])
-                            site=string.atof(residue[11])
+                        pka = residue[5].atof()
+                    #pka = residue[5].atof()
+                    if len(residue) > 6:
+                        if len(residue[5]) == 1 and residue[5].isalpha():
+                            modelpk = residue[7].atof()
+                            dpk = residue[8].atof()
+                            desolv = residue[9].atof()
+                            backgr = residue[10].atof()
+                            site = residue[11].atof()
                         else:
-                            index=6
-                            if len(residue[2])>1:
-                                index=index-1
-                            modelpk=string.atof(residue[index])
-                            dpk=string.atof(residue[index+1])
-                            desolv=string.atof(residue[index+2])
-                            backgr=string.atof(residue[index+3])
-                            site=string.atof(residue[index+4])
+                            index = 6
+                            if len(residue[2]) > 1:
+                                index -= 1
+                            modelpk = residue[index].atof()
+                            dpk = residue[index + 1].atof()
+                            desolv = residue[index+2].atof()
+                            backgr = residue[index+3].atof()
+                            site = residue[index+4].atof()
                     else:
-                        modelpk='Not in file'
-                        dpk='Not in file'
-                        desolv='Not in file'
-                        backgr='Not in file'
-                        site='Not in file'
-                    #residue=string.zfill(residue[0],4)+residue[1]
-                    residue=resid
-            elif format=='pdb2pka':
-                pka=string.atof(residue[1])
-                modelpk=string.atof(residue[2])
-                dpk=string.atof(residue[3])
-                desolv=string.atof(residue[4])
-                backgr=string.atof(residue[5])
-                site=string.atof(residue[6])
-                residue=residue[0]
+                        modelpk = 'Not in file'
+                        dpk = 'Not in file'
+                        desolv = 'Not in file'
+                        backgr = 'Not in file'
+                        site = 'Not in file'
+                    #residue = residue[0].zfill(4)+residue[1]
+                    residue = resid
+            elif format_ == 'pdb2pka':
+                pka = residue[1].atof()
+                modelpk = residue[2].atof()
+                dpk = residue[3].atof()
+                desolv = residue[4].atof()
+                backgr = residue[5].atof()
+                site = residue[6].atof()
+                residue = residue[0]
             #
             # Reformat the residue names if we are asked for the new name
             # structure
             #
             if self.newname:
-                residue=reformat_name(residue,Nterm,format)
+                residue = reformat_name(residue, nterm, format_)
             #
             # Make sure that non-determined pKa values are marked appropriately
             #
-            if pka==0.0:
-                pka=None
+            if pka == 0.0:
+                pka = None
             #
             # Construct dictionary
             #
-            pKa[residue]={'pKa':pka,'modelpK':modelpk,'desolv':desolv,'backgr':backgr,'delec':site}
-            linenumber=linenumber+1
-            if string.strip(string.lower(lines[linenumber]))==string.lower('End of file'):
-                done=1
-        self.pka=pKa
+            pKa[residue] = {'pKa':pka, 'modelpK':modelpk, 'desolv':desolv, 'backgr':backgr, 'delec':site}
+            linenumber += 1
+            if lines[linenumber].lower().strip() == 'End of file'.lower():
+                done = 1
+        self.pka = pKa
         return self.pka
 
     #
     # -----
     #
 
-    def write_pka(self,filename,data=None,format='WHAT IF'):
+    def write_pka(self, filename, data=None, format_='WHAT IF'):
         """Write a PKA.DAT file containing all info on the calculations"""
         #
         # Get the data
         #
         if not data:
-            data=self.pka
+            data = self.pka
         #
         # Write the file
         #
-        fd=open(filename,'w')
-        fd.write('%s pKa File\n' %format)
-        fd.write('Format 1.0\n')
-        fd.write('      Group            pKa value  Model pK    dpK     dDesolv    dBack   dElec\n')
-        groups=data.keys()
+        wfd = open(filename, 'w')
+        wfd.write('%s pKa File\n' % format_)
+        wfd.write('Format 1.0\n')
+        wfd.write('      Group            pKa value  Model pK    dpK     dDesolv    dBack   dElec\n')
+        groups = data.keys()
         # Sort accroding to the residue sequence number
-        newgroup ={}
-        for g in groups:
-            newg = g.split('_')[2]
-            newgroup[int(newg),g]=g
-        newgroupkeys = newgroup.keys()
-        if(version_info >= (3,0)):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        newgroup = {}
+        for gname in groups:
+            newg = gname.split('_')[2]
+            newgroup[int(newg), gname] = gname
+        newgroupkeys = sorted(newgroup.keys())
         groups = []
-        for k in newgroupkeys:
-            groups.append(k[1])
+        for idx in newgroupkeys:
+            groups.append(idx[1])
 
-        written={}
+        written = {}
         #
         # ---------
         #
         for group in groups:
-            if(version_info >= (3,0)):
-                hk = group in data
-            else:
-                hk = data.has_key(group)
-            #if data.has_key(group):
-            if hk:
-                this_data=data[group]
-                fd.write('%15s      %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  \n' %(self.WI_res_text(group,format),
-                                                                                    this_data['pKa'],
-                                                                                    this_data['modelpK'],
-                                                                                    this_data['pKa']-this_data['modelpK'],
-                                                                                    this_data['desolv'],
-                                                                                    this_data['backgr'],
-                                                                                    this_data['delec']))
-                written[group]=1
-        fd.write('End of file\n')
-        fd.close()
+            if group in data:
+                this_data = data[group]
+                wfd.write('%15s      %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  %7.4f  \n' %(self.WI_res_text(group, format_),
+                                                                                     this_data['pKa'],
+                                                                                     this_data['modelpK'],
+                                                                                     this_data['pKa']-this_data['modelpK'],
+                                                                                     this_data['desolv'],
+                                                                                     this_data['backgr'],
+                                                                                     this_data['delec']))
+                written[group] = 1
+        wfd.write('End of file\n')
+        wfd.close()
         return
 
     #
     # -------------------------------
     #
 
-    def read_titration_curve(self,filename=None):
+    def read_titration_curve(self, filename=None):
         return self.readtitcurv(filename)
 
-    def readtitcurv(self,filename=None):
+    def readtitcurv(self, filename=None):
         #
-        # Syntax: readtitcurv(self,<titration curve filename>)
+        # Syntax: readtitcurv(self, <titration curve filename>)
         # This function reads a WHAT IF titration curve file and
         # creates self.titdata, which is a dictionary:
-        # self.titdata={<residue>:{'pKa':<pka>,<ph1>:<charge1>,<ph2>:<charge2>.....}}
+        # self.titdata = {<residue>:{'pKa':<pka>, <ph1>:<charge1>, <ph2>:<charge2>.....}}
         #
         if not filename:
-            filename=self.titcurvfile
-        import string
+            filename = self.titcurvfile
         if not os.path.isfile(filename):
-            raise('File does not exist:',filename)
-        fd=open(filename)
-        lines=fd.readlines()
-        fd.close()
+            raise 'File does not exist: %s' % filename
+        rfd = open(filename)
+        lines = rfd.readlines()
+        rfd.close()
         #
         # Parse
         #
-        if string.lower(string.strip(lines[0]))==string.lower('WHAT IF Titration Curve File'):
-            format='WHAT IF'
-        elif string.lower(string.strip(lines[0]))==string.lower('pdb2pka Titration Curve File'):
-            format='pdb2pka'
+        if lines[0].strip().lower() == 'WHAT IF Titration Curve File'.lower():
+            format_ = 'WHAT IF'
+        elif lines[0].strip().lower() == 'pdb2pka Titration Curve File'.lower():
+            format_ = 'pdb2pka'
         else:
-            raise('Unknown format')
-        if string.lower(string.strip(lines[1]))!=string.lower('Format 1.0'):
-            raise('unknown format: ',lines[1])
-        phvals=string.split(lines[2])
-        phstart=string.atof(phvals[0])
-        phend=string.atof(phvals[1])
-        phstep=string.atof(phvals[2])
-        titdata={}
-        linenumber=3
-        done=0
-        terms=[':NTERM',':CTERM']
-        term_count=-1
+            raise 'Unknown format'
+        if lines[1].strip().lower() != 'Format 1.0'.lower():
+            raise 'unknown format: %s' % lines[1]
+        phvals = lines[2].split()
+        phstart = phvals[0].atof()
+        phend = phvals[1].atof()
+        phstep = phvals[2].atof()
+        titdata = {}
+        linenumber = 3
+        done = 0
+        terms = [':NTERM', ':CTERM']
+        term_count = -1
         while not done:
-            Term=None
-            if string.strip(lines[linenumber])=='TERMINAL GROUP:':
-                linenumber=linenumber+1
-                Term=1
-            residue=getWI_resid2(lines[linenumber],format)
-            if Term:
-                term_count=term_count+1
-                residue=residue+terms[term_count]
-                if term_count==1:
-                    term_count=-1
-            pKa=float(string.split(lines[linenumber])[-1])
-            linenumber=linenumber+1
+            term = None
+            if lines[linenumber].strip() == 'TERMINAL GROUP:':
+                linenumber += 1
+                term = 1
+            residue = getWI_resid2(lines[linenumber], format_)
+            if term:
+                term_count += 1
+                residue = residue+terms[term_count]
+                if term_count == 1:
+                    term_count = -1
+            pKa = float(lines[linenumber].split()[-1])
+            linenumber += 1
             #
             # --------------
             #
-            charge={'pKa':pKa}
-            for pH in range(int(100*phstart),int(100*phend+100*phstep),int(100*phstep)):
-                rpH=float(pH)/100.0
-                line=string.split(lines[linenumber])
-                if string.atof(line[0])==rpH:
-                    charge[rpH]=string.atof(line[1])
-                    linenumber=linenumber+1
-            titdata[residue]=charge
-            linenumber=linenumber+1
-            if string.strip(string.lower(lines[linenumber]))==string.lower('End of file'):
-                done=1
-        self.titdata=titdata
+            charge = {'pKa':pKa}
+            for pH in range(int(100 * phstart), int(100 * phend + 100 * phstep), int(100 * phstep)):
+                rpH = float(pH) / 100.0
+                line = lines[linenumber].split()
+                # TODO: 2020/07/04 intendo - isn't this really bad to check a float to another value
+                if line[0].atof() == rpH:
+                    charge[rpH] = line[1].atof()
+                    linenumber += 1
+            titdata[residue] = charge
+            linenumber += 1
+            if lines[linenumber].lower().strip() == 'End of file'.lower():
+                done = 1
+        self.titdata = titdata
         return self.titdata
 
     #
     # ----------------------
     #
 
-    def write_titration_curve(self,filename,data,format='WHAT IF'):
+    def write_titration_curve(self, filename, data, format_='WHAT IF'):
         #
         # This function creates a WHAT IF titration curve file.
         # data is a dictionary:
-        # data={<residue>:{'pKa':<pka>,<ph1>:<charge1>,<ph2>:<charge2>.....}}
+        # data = {<residue>:{'pKa':<pka>, <ph1>:<charge1>, <ph2>:<charge2>.....}}
         #
         # Extract some data from the dictionary
         #
-        residues=data.keys()
-        phvals=data[residues[0]].keys()
-        if(version_info >= (3,0)):
-            phvals = sorted(phvals);
-        else:
-            phvals.sort()
+        residues = data.keys()
+        phvals = sorted(data[residues[0]].keys())
         for residue in residues:
-            newpHvals=data[residue].keys()
-            if(version_info >= (3,0)):
-                newpHvals = sorted(newpHvals)
-            else:
-                newpHvals.sort()
-            if newpHvals!=phvals:
+            newp_hvals = sorted(data[residue].keys())
+            if newp_hvals != phvals:
                 _LOGGER.info(phvals)
-                _LOGGER.info(newpHvals)
-                raise('Dictionary does not contain identical pH values')
+                _LOGGER.info(newp_hvals)
+                raise 'Dictionary does not contain identical pH values'
         #
         # Check that a pKa value is in the pH values
         #
         for residue in residues:
-            if(version_info >= (3,0)):
-                hk = not 'pKa' in data[residue]
-            else:
-                hk = not data[residue].has_key('pKa')
-            #if not data[residue].has_key('pKa'):
-            if hk:
+            if 'pKa' not in data[residue]:
                 #print 'No pKa value found. Setting to zero!! - Jens change this!!'
-                data[residue]['pKa']=0.0
+                data[residue]['pKa'] = 0.0
         #
         # Find the pH-start, stop and step
         #
-        phvals=data[residues[0]].keys()
-        if(version_info >= (3,0)):
-            phvals = sorted(phvals)
-        else:
-            phvals.sort()
-        phstart=phvals[0]
-        phstop=phvals[-2]
-        phstep=phvals[1]-phstart
+        phvals = sorted(data[residues[0]].keys())
+        phstart = phvals[0]
+        phstop = phvals[-2]
+        phstep = phvals[1] - phstart
 
-        fd=open(filename,'w')
+        wfd = open(filename, 'w')
         #
         # Write header
         #
-        fd.write('%s Titration Curve File\n' %format)
-        fd.write('Format 1.0\n')
+        wfd.write('%s Titration Curve File\n' % format_)
+        wfd.write('Format 1.0\n')
         #
         # Start pH, end pH, pH step
         #
-        fd.write('%6.3f %7.3f %6.3f\n' %(phstart,phstop,phstep))
-        residues=data.keys()
+        wfd.write('%6.3f %7.3f %6.3f\n' %(phstart, phstop, phstep))
+        residues = data.keys()
         # Sort accroding to the residue sequence number
-        newresidue ={}
+        newresidue = {}
         for r in residues:
             newr = r.split('_')[2]
-            newresidue[int(newr),r]=r
-        newresiduekeys = newresidue.keys()
-        if(version_info >= (3,0)):
-            newresiduekeys = sorted(newresiduekeys)
-        else:
-            newresiduekeys.sort()
+            newresidue[int(newr), r] = r
+        newresiduekeys = sorted(newresidue.keys())
         residues = []
         for k in newresiduekeys:
             residues.append(k[1])
 
         for residue in residues:
-            fd.write('%s      %7.4f\n' %(self.WI_res_text(residue,format),float(data[residue]['pKa'])))
+            wfd.write('%s      %7.4f\n' %(self.WI_res_text(residue, format_), float(data[residue]['pKa'])))
             for ph in phvals:
-                if ph=='pKa':
+                if ph == 'pKa':
                     continue
-                fd.write('%.2f  %.3f\n' %(float(ph),float(data[residue][ph])))
-            fd.write('------------------------------------------\n')
-        fd.write('End of file\n')
+                wfd.write('%.2f  %.3f\n' %(float(ph), float(data[residue][ph])))
+            wfd.write('------------------------------------------\n')
+        wfd.write('End of file\n')
         #
         # Close file
         #
-        fd.close()
+        wfd.close()
         #
         # This will never work without a template file.
         # It is not worth the trouble to reconstruct WHAT IFs residue identifier line
@@ -461,307 +428,278 @@ class pKaIO:
     # ----------------------------------
     #
 
-    def read_matrix(self,filename=None):
+    def read_matrix(self, filename=None):
         #
         # This subroutine read a MATRIX file
         #
         if not filename:
             if self.matrix_file:
-                filename=self.matrix_file
+                filename = self.matrix_file
             else:
-                raise('No matrix filename given')
+                raise 'No matrix filename given'
         #
-        import os, string
         if not os.path.isfile(filename):
-            raise("File not found",filename)
-        fd=open(filename)
-        lines=fd.readlines()
-        fd.close()
+            raise "File not found: %s" % filename
+        rfd = open(filename)
+        lines = rfd.readlines()
+        rfd.close()
         #
         # Initialise dictionary
         #
-        self.matrix={}
+        self.matrix = {}
         #
         # Read title lines
         #
-        if string.lower(string.strip(lines[0]))==string.lower('WHAT IF Interaction Matrix File'):
-            format='WHAT IF'
-        elif string.lower(string.strip(lines[0]))==string.lower('pdb2pka Interaction Matrix File'):
-            format='WHAT IF'
+        if lines[0].strip().lower() == 'WHAT IF Interaction Matrix File'.lower():
+            format_ = 'WHAT IF'
+        elif lines[0].strip().lower() == 'pdb2pka Interaction Matrix File.lower()'.lower():
+            format_ = 'WHAT IF'
         else:
-            raise('Unknown format')
-        if not string.strip(lines[1])=='Format 1.0':
-            raise('Wrong format',lines[1])
-        x=1
-        done=None
-        partners=None
-        Nterm=0
+            raise 'Unknown format'
+        if not lines[1].strip() == 'Format 1.0':
+            raise 'Wrong format: %s' % lines[1]
+        idx = 1
+        done = None
+        partners = None
+        nterm = 0
         while not done:
-            x=x+1
+            idx += 1
             #
             # Read first line for this partner residue
             #
-            if format=='WHAT IF':
-                term=None
-                if string.strip(lines[x])=='TERMINAL GROUP:':
-                    term=1
-                    Nterm=abs(Nterm-1)
-                    x=x+1
-                nline=string.replace(lines[x],'(','')
-                nline=string.replace(nline,')','')
-                list=string.split(nline)
-                if len(list[3])==1:
-                    resid=string.zfill(list[2],4)+string.upper(list[1])+list[3]
+            if format_ == 'WHAT IF':
+                term = None
+                if lines[idx].strip() == 'TERMINAL GROUP:':
+                    term = 1
+                    nterm = abs(nterm - 1)
+                    idx += 1
+                nline = lines[idx].replace('(', '')
+                nline = nline.replace(')', '')
+                list_ = nline.split()
+                if len(list_[3]) == 1:
+                    resid = list_[2].zfill(4) + list_[1].upper() + list_[3]
                 else:
-                    resid=string.zfill(list[2],4)+string.upper(list[1])
-                    chainid=None
+                    resid = list_[2].zfill(4) + list_[1].upper()
+                    chainid = None
                 if term:
-                    resid='T'+resid
+                    resid = 'T' + resid
                 #
                 # Should we use the new naming structure?
                 #
                 if self.newname:
-                    resid=reformat_name(resid,Nterm,format)
+                    resid = reformat_name(resid, nterm, format_)
                 #
                 #
                 #
-                np=int(string.atof(list[-1]))
+                np = int(list_[-1].atof())
                 if not partners:
-                    partners=np
+                    partners = np
                 else:
-                    if partners!=np:
-                        raise('Number of partners changes:',np)
-                self.matrix[resid]={}
+                    if partners != np:
+                        raise 'Number of partners changes: %s' % np
+                self.matrix[resid] = {}
                 #
                 # Now read all the interactions with the partners
                 #
-                Nterm_partner=0
+                nterm_partner = 0
                 for count in range(partners):
-                    x=x+1
-                    term2=None
-                    if string.strip(lines[x])=='TERMINAL GROUP:':
-                        Nterm_partner=abs(Nterm_partner-1)
-                        term2=1
-                        x=x+1
-                    nline=string.replace(lines[x],'(','')
-                    nline=string.replace(nline,')','')
-                    list=string.split(nline)
-                    if len(list[3])==1:
-                        partid=string.zfill(list[2],4)+string.upper(list[1])+list[3]
+                    idx += 1
+                    term2 = None
+                    if lines[idx].strip() == 'TERMINAL GROUP:':
+                        nterm_partner = abs(nterm_partner - 1)
+                        term2 = 1
+                        idx += 1
+                    nline = lines[idx].replace('(', '')
+                    nline = nline.replace(')', '')
+                    list_ = nline.split()
+                    if len(list_[3]) == 1:
+                        partid = list_[2].zfill(4) + list_[1].upper() + list_[3]
                     else:
-                        partid=string.zfill(list[2],4)+string.upper(list[1])
+                        partid = list_[2].zfill(4) + list_[1].upper()
                     if term2:
-                        partid='T'+partid
+                        partid = 'T' + partid
                     #
                     # New name?
                     #
                     if self.newname:
-                        partid=reformat_name(partid,Nterm_partner,format)
-                    chacha=string.atof(string.strip(list[-1]))
-                    x=x+1
-                    i2=string.atof(lines[x])
-                    x=x+1
-                    i3=string.atof(lines[x])
-                    x=x+1
-                    i4=string.atof(lines[x])
-                    energies=[chacha,i2,i3,i4]
-                    self.matrix[resid][partid]=energies
-                    term2=None
-            elif format=='pdb2pka':
+                        partid = reformat_name(partid, nterm_partner, format_)
+                    chacha = list_[-1].strip().atof()
+                    idx += 1
+                    interaction2 = lines[idx].atof()
+                    idx += 1
+                    interaction3 = lines[idx].atof()
+                    idx += 1
+                    interaction4 = lines[idx].atof()
+                    energies = [chacha, interaction2, interaction3, interaction4]
+                    self.matrix[resid][partid] = energies
+                    term2 = None
+            elif format_ == 'pdb2pka':
                 #
                 # pseudo-pdb2pka format
                 #
-                list=lines[x].split()
-                resid=string.strip(list[0])
-                self.matrix[resid]={}
-                partners=int(float(list[-1]))
+                list_ = lines[idx].split()
+                resid = list_[0].strip()
+                self.matrix[resid] = {}
+                partners = int(float(list_[-1]))
                 #
                 # Now read all the interactions with the partners
                 #
                 for count in range(partners):
-                    x=x+1
-                    list=lines[x].split()
-                    partid=list[0]
-                    chacha=string.atof(string.strip(list[-1]))
-                    x=x+1
-                    i2=string.atof(lines[x])
-                    x=x+1
-                    i3=string.atof(lines[x])
-                    x=x+1
-                    i4=string.atof(lines[x])
-                    energies=[chacha,i2,i3,i4]
-                    self.matrix[resid][partid]=energies
-            x=x+1
-            if string.strip(lines[x+1])=='End of file':
-                done=1
+                    idx += 1
+                    list_ = lines[idx].split()
+                    partid = list_[0]
+                    chacha = list_[-1].strip().atof()
+                    idx += 1
+                    interaction2 = lines[idx].atof()
+                    idx += 1
+                    interaction3 = lines[idx].atof()
+                    idx += 1
+                    interaction4 = lines[idx].atof()
+                    energies = [chacha, interaction2, interaction3, interaction4]
+                    self.matrix[resid][partid] = energies
+            idx += 1
+            if lines[idx + 1].strip() == 'End of file':
+                done = 1
         return self.matrix
 
     #
     # -------------------------
     #
 
-    def write_matrix(self,filename,format='WHAT IF'):
+    def write_matrix(self, filename, format_='WHAT IF'):
         #
         # Writes an interaction energy matrix
         #
-        fd=open(filename,'w')
-        fd.write('%s Interaction Matrix File\n' %format)
-        fd.write('Format 1.0\n')
-        groups=self.matrix.keys()
-        if(version_info >= (3,0)):
-            groups = sorted(groups)
-        else:
-            groups.sort()
+        wfd = open(filename, 'w')
+        wfd.write('%s Interaction Matrix File\n' % format_)
+        wfd.write('Format 1.0\n')
+        groups = sorted(self.matrix.keys())
 
-        num_groups=len(groups)
-        count=0
-        written={}
-        newgroups=[]
+        num_groups = len(groups)
+        #count = 0
+        written = {}
+        newgroups = []
         for group in groups:
-            if group[0]=='T':
+            if group[0] == 'T':
                 newgroups.append(group[1:])
             else:
                 newgroups.append(group)
 
-        newnewgroup ={}
-        for g in newgroups:
-            newg = g.split('_')[2]
-            newnewgroup[int(newg),g]=g
-        newnewgroupkeys = newnewgroup.keys()
-        if(version_info >= (3,0)):
-            newnewgroupkeys = sorted(newnewgroupkeys)
-        else:
-            newnewgroupkeys.sort()
+        newnewgroup = {}
+        for gname in newgroups:
+            newg = gname.split('_')[2]
+            newnewgroup[int(newg), gname] = gname
+        newnewgroupkeys = sorted(newnewgroup.keys())
         newgroups = []
         for k in newnewgroupkeys:
             newgroups.append(k[1])
 
-        self.newgroups=newgroups[:]
+        self.newgroups = newgroups[:]
         #
         # ---------
         #
         for group in newgroups:
-            if(version_info >= (3,0)):
-                hk0 = group in self.matrix
-                hk1 = 'T'+group in self.matrix
-                hk2 = 'T'+group in self.matrix and not 'T'+group in written
-            else:
-                hk0 = self.matrix.has_key(group)
-                hk1 = self.matrix.has_key('T'+group)
-                hk2 = self.matrix.has_key('T'+group) and not written.has_key('T'+group)
-            #if self.matrix.has_key(group):
+            group_name = 'T' + group
+            hk0 = group in self.matrix
+            hk1 = group_name in self.matrix
+            hk2 = group_name in self.matrix and group_name not in written
             if hk0:
-                fd.write('%s      %7.4f\n' %(self.WI_res_text(group,format),float(num_groups)))
-                self.write_section(group,fd,format)
-                written[group]=1
+                wfd.write('%s      %7.4f\n' %(self.WI_res_text(group, format_), float(num_groups)))
+                self.write_section(group, wfd, format_)
+                written[group] = 1
                 #
                 # Is there a terminal group associated with this residue?
                 #
-                #if self.matrix.has_key('T'+group):
+                #if self.matrix.has_key(group_name):
                 if hk1:
-                    fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group),float(num_groups)))
-                    self.write_section('T'+group,fd,format)
-                    written['T'+group]=1
+                    wfd.write('%s      %7.4f\n' % self.WI_res_text(group_name, format_), float(num_groups))
+                    self.write_section(group_name, wfd, format_)
+                    written[group_name] = 1
             else:
-                #if self.matrix.has_key('T'+group) and not written.has_key('T'+group):
+                #if self.matrix.has_key(group_name) and not written.has_key(group_name):
                 if hk2:
-                    fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group,format),float(num_groups)))
-                    self.write_section('T'+group,fd,format)
-                    written['T'+group]=1
-        fd.write('End of file\n')
+                    wfd.write('%s      %7.4f\n' %(self.WI_res_text(group_name, format_), float(num_groups)))
+                    self.write_section(group_name, wfd, format_)
+                    written[group_name] = 1
+        wfd.write('End of file\n')
+        wfd.close()
         return
 
     #
     # -----
     #
 
-    def write_pdb2pka_matrix(self,filename,matrix):
-        """Write an interaction energy matrix in pdb2pka format"""
-        """At the moment, we just reformat and write a WHAT IF file"""
-        self.matrix={}
+    def write_pdb2pka_matrix(self, filename, matrix):
+        """Write an interaction energy matrix in pdb2pka format
+        At the moment, we just reformat and write a WHAT IF file"""
+        self.matrix = {}
         for group1 in matrix.keys():
-            self.matrix[group1.uniqueid]={}
+            self.matrix[group1.uniqueid] = {}
             for tit1 in matrix[group1].keys():
                 for state1 in matrix[group1][tit1].keys():
-                    sub_m=matrix[group1][tit1][state1]
+                    sub_m = matrix[group1][tit1][state1]
                     for group2 in sub_m.keys():
-                        if(version_info >= (3,0)):
-                            if not group2.uniqueid in self.matrix[group1.uniqueid]:
-                                self.matrix[group1.uniqueid][group2.uniqueid]=[]
-                            for tit2 in sub_m[group2].keys():
-                                for state2 in sub_m[group2][tit2].keys():
-                                    self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
-                        else:
-                            if not self.matrix[group1.uniqueid].has_key(group2.uniqueid):
-                                self.matrix[group1.uniqueid][group2.uniqueid]=[]
-                            for tit2 in sub_m[group2].keys():
-                                for state2 in sub_m[group2][tit2].keys():
-                                    self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
-        for group1 in self.matrix.keys():
-            for group2 in self.matrix[group1].keys():
-                sum=0.0
+                        if not group2.uniqueid in self.matrix[group1.uniqueid]:
+                            self.matrix[group1.uniqueid][group2.uniqueid] = []
+                        for tit2 in sub_m[group2].keys():
+                            for state2 in sub_m[group2][tit2].keys():
+                                self.matrix[group1.uniqueid][group2.uniqueid].append(sub_m[group2][tit2][state2])
+        for group1 in self.matrix:
+            for group2 in self.matrix[group1]:
+                sum_ = 0.0
                 for val in self.matrix[group1][group2]:
-                    sum=sum+val
-                self.matrix[group1][group2]=[sum,0.0,0.0,0.0]
-        self.write_matrix(filename,format='pdb2pka')
+                    sum_ += val
+                self.matrix[group1][group2] = [sum_, 0.0, 0.0, 0.0]
+        self.write_matrix(filename, format_='pdb2pka')
         return
 
     #
     # ------------------------
     #
 
-    def write_section(self,group,fd,format):
-        groups_tmp=self.matrix[group].keys()
-        groups2=[]
+    def write_section(self, group, fd, format_):
+        groups_tmp = self.matrix[group].keys()
+        groups2 = []
         for group_x in groups_tmp:
-            if group_x[0]=='T':
+            if group_x[0] == 'T':
                 groups2.append(group_x[1:])
             else:
                 groups2.append(group_x)
 
         # Sort accroding to the residue sequence number
-        newgroup ={}
-        for g in groups2:
-            newg = g.split('_')[2]
-            newgroup[int(newg),g]=g
-        newgroupkeys = newgroup.keys()
-        if(version_info >= (3,0)):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        newgroup = {}
+        for gname in groups2:
+            newg = gname.split('_')[2]
+            newgroup[int(newg), gname] = gname
+        newgroupkeys = sorted(newgroup.keys())
         groups2 = []
         for k in newgroupkeys:
             groups2.append(k[1])
 
-        written={}
+        written = {}
         for group2 in groups2:
-            if(version_info >= (3,0)):
-                hk0 = group2 in self.matrix[group]
-                hk1 = 'T'+group2 in self.matrix[group]
-                hk2 = 'T'+group2 in self.matrix[group] and 'T'+group2 not in written
-            else:
-                hk0 = self.matrix[group].has_key(group2)
-                hk1 = self.matrix[group].has_key('T'+group2)
-                hk2 = self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2)
-            #if self.matrix[group].has_key(group2):
+            group2_name = 'T' + group2
+            hk0 = group2 in self.matrix[group]
+            hk1 = group2_name in self.matrix[group]
+            hk2 = group2_name in self.matrix[group] and group2_name not in written
             if hk0:
-                fd.write('%s      %7.4f\n' %(self.WI_res_text(group2,format),self.matrix[group][group2][0]))
-                fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2][1],self.matrix[group][group2][2],self.matrix[group][group2][3]))
-                written[group2]=1
+                fd.write('%s      %7.4f\n' %(self.WI_res_text(group2, format_), self.matrix[group][group2][0]))
+                fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2][1], self.matrix[group][group2][2], self.matrix[group][group2][3]))
+                written[group2] = 1
                 #
                 # Is there a terminal group associated with this residue?
                 #
-                #if self.matrix[group].has_key('T'+group2):
+                #if self.matrix[group].has_key(group2_name):
                 if hk1:
-                    fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group2,format),self.matrix[group]['T'+group2][0]))
-                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group]['T'+group2][1],self.matrix[group]['T'+group2][2],self.matrix[group]['T'+group2][3]))
-                    written['T'+group2]=1
+                    fd.write('%s      %7.4f\n' %(self.WI_res_text(group2_name, format_), self.matrix[group][group2_name][0]))
+                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2_name][1], self.matrix[group][group2_name][2], self.matrix[group][group2_name][3]))
+                    written[group2_name] = 1
             else:
-                #if self.matrix[group].has_key('T'+group2) and not written.has_key('T'+group2):
+                #if self.matrix[group].has_key(group2_name) and not written.has_key(group2_name):
                 if hk2:
-                    fd.write('%s      %7.4f\n' %(self.WI_res_text('T'+group2,format),self.matrix[group]['T'+group2][0]))
-                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group]['T'+group2][1],self.matrix[group]['T'+group2][2],self.matrix[group]['T'+group2][3]))
-                    written['T'+group2]=1
+                    fd.write('%s      %7.4f\n' %(self.WI_res_text(group2_name, format_), self.matrix[group][group2_name][0]))
+                    fd.write('%7.4f\n%7.4f\n%7.4f\n'%(self.matrix[group][group2_name][1], self.matrix[group][group2_name][2], self.matrix[group][group2_name][3]))
+                    written[group2_name] = 1
         fd.write('--------------------------------------------\n')
         return
 
@@ -769,78 +707,76 @@ class pKaIO:
     # ------------------------------
     #
 
-    def read_desolv(self,filename=None):
+    def read_desolv(self, filename=None):
         if not filename:
             if self.desolv_file:
-                filename=self.desolv_file
+                filename = self.desolv_file
             else:
-                raise('No desolv filename given')
+                raise 'No desolv filename given'
         #
         #
         # This subroutine reads a DESOLV file
         #
-        import os, string
         if not os.path.isfile(filename):
-            raise("File not found",filename)
-        fd=open(filename)
-        lines=fd.readlines()
-        fd.close()
+            raise "File not found: %s" % filename
+        rfd = open(filename)
+        lines = rfd.readlines()
+        rfd.close()
         #
         # Initialise dictionary
         #
-        self.desolv={}
+        self.desolv = {}
         #
         # Read title lines
         #
-        if string.strip(lines[0])=='WHAT IF Desolvation Energy File' and string.strip(lines[1])=='Format 1.0':
-            format='WHAT IF'
-        elif string.strip(lines[0])=='pdb2pka Desolvation Energy File':
-            format='pdb2pka'
+        if lines[0].strip() == 'WHAT IF Desolvation Energy File' and lines[1].strip() == 'Format 1.0':
+            format_ = 'WHAT IF'
+        elif lines[0].strip() == 'pdb2pka Desolvation Energy File':
+            format_ = 'pdb2pka'
         else:
-            raise(Exception,'Unknown format:'+string.strip(lines[0]))
+            raise Exception("Unknown format: %s" % lines[0].strip())
         #
         # Call the generic read routine
         #
-        self.read_WIfile(lines,self.desolv,format)
+        self.read_WIfile(lines, self.desolv, format_)
         return self.desolv
 
     #
     # -----------------------------
     #
 
-    def read_backgr(self,filename=None):
+    def read_backgr(self, filename=None):
         #
         # This subroutine reads a BACKGR file
         #
         if not filename:
             if self.backgr_file:
-                filename=self.backgr_file
+                filename = self.backgr_file
             else:
-                raise('No matrix filename given')
+                raise 'No matrix filename given'
         #
-        import os, string
         if not os.path.isfile(filename):
-            raise("File not found",filename)
-        fd=open(filename)
-        lines=fd.readlines()
-        fd.close()
+            raise "File not found: %s" % filename
+        rfd = open(filename)
+        lines = rfd.readlines()
+        rfd.close()
         #
         # Initialise dictionary
         #
-        self.backgr={}
+        self.backgr = {}
         #
         # Read title lines
         #
-        if string.strip(lines[0])=='WHAT IF Background Energy File':
-            format='WHAT IF'
-        elif string.strip(lines[0])=='pdb2pka Background Energy File':
-            format='pdb2pka'
+        if lines[0].strip() == 'WHAT IF Background Energy File':
+            format_ = 'WHAT IF'
+        elif lines[0].strip() == 'pdb2pka Background Energy File':
+            format_ = 'pdb2pka'
         else:
-            raise (Exception,'Unknown format:'+string.strip(lines[0]))
+            raise Exception('Unknown format: %s' % lines[0].strip())
         #
         # Call the generic read routine
         #
-        self.read_WIfile(lines,self.backgr,format)
+        self.read_WIfile(lines, self.backgr, format_)
         return self.backgr
 
     #
@@ -848,195 +784,177 @@ class pKaIO:
     #
 
 
-    def read_WIfile(self,lines,dict,format):
+    def read_WIfile(self, lines, dict_, format_):
         #
         # Read a DESOLV file or a BACKGR file
         #
-        import string
-        x=1
-        done=None
-        Nterm=0
+        idx = 1
+        done = None
+        nterm = 0
         while not done:
-            x=x+1
+            idx += 1
             #
             # Read first line for this residue
             #
-            term=None
-            if string.strip(lines[x])=='TERMINAL GROUP:':
-                Nterm=abs(Nterm-1)
-                term=1
-                x=x+1
-            nline=string.replace(lines[x],'(','')
-            nline=string.replace(nline,')','')
-            list=string.split(nline)
-            if len(list[3])==1:
-                resid=string.zfill(list[2],4)+string.upper(list[1])+list[3]
+            term = None
+            if lines[idx].strip() == 'TERMINAL GROUP:':
+                nterm = abs(nterm - 1)
+                term = 1
+                idx += 1
+            nline = lines[idx].replace('(', '')
+            nline = nline.replace(')', '')
+            list_ = nline.strip()
+            if len(list_[3]) == 1:
+                resid = list_[2].zfill(4) + list_[1].upper() + list_[3]
             else:
-                resid=string.zfill(list[2],4)+string.upper(list[1])
-                chainid=None
+                resid = list_[2].zfill(4) + list_[1].upper()
+                chainid = None
             if term:
-                resid='T'+resid
+                resid = 'T' + resid
             #
             # New name?
             #
             if self.newname:
-                resid=reformat_name(resid,Nterm)
+                resid = reformat_name(resid, nterm)
             #
-            dict[resid]=string.atof(list[-1])
-            if string.strip(lines[x+1])=='End of file':
-                done=1
-        return dict
+            dict_[resid] = list_[-1].atof()
+            if lines[idx + 1].strip() == 'End of file':
+                done = 1
+        return dict_
 
     #
     # ----------------------
     #
 
-    def write_desolv(self,filename,format='WHAT IF'):
+    def write_desolv(self, filename, format_='WHAT IF'):
         #
         # Writes the desolvation file
         #
-        fd=open(filename,'w')
-        fd.write('%s Desolvation Energy File\n' %format)
-        fd.write('Format 1.0\n')
-        groups=self.desolv.keys()
+        wfd = open(filename, 'w')
+        wfd.write('%s Desolvation Energy File\n' % format_)
+        wfd.write('Format 1.0\n')
+        groups = self.desolv.keys()
         # Sort accroding to the residue sequence number
-        newgroup ={}
+        newgroup = {}
         for g in groups:
             newg = g.split('_')[2]
-            newgroup[int(newg),g]=g
-        newgroupkeys = newgroup.keys()
-        if(version_info >= (3,0)):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+            newgroup[int(newg), g] = g
+        newgroupkeys = sorted(newgroup.keys())
         groups = []
         for k in newgroupkeys:
             groups.append(k[1])
-        written={}
+        written = {}
         #
         # ---------
         #
         for group in groups:
-            if(version_info >= (3,0)):
-                hk = group in self.desolv
-            else:
-                hk = self.desolv.has_key(group)
-            #if self.desolv.has_key(group):
-            if hk:
-                fd.write('%s      %7.4f\n' %(self.WI_res_text(group,format),float(self.desolv[group])))
-                written[group]=1
-        fd.write('End of file\n')
+            if group in self.desolv:
+                wfd.write('%s      %7.4f\n' %(self.WI_res_text(group, format_), float(self.desolv[group])))
+                written[group] = 1
+        wfd.write('End of file\n')
+        wfd.close()
         return
 
     #
     # ----------------------
     #
 
-    def write_backgr(self,filename,format='WHAT IF'):
+    def write_backgr(self, filename, format_='WHAT IF'):
         #
         # Writes the background interaction energy file
         #
-        fd=open(filename,'w')
-        fd.write('%s Background Energy File\n' %format)
-        fd.write('Format 1.0\n')
-        groups=self.backgr.keys()
+        wfd = open(filename, 'w')
+        wfd.write('%s Background Energy File\n' % format_)
+        wfd.write('Format 1.0\n')
+        groups = self.backgr.keys()
         # Sort accroding to the residue sequence number
-        newgroup ={}
-        for g in groups:
-            newg = g.split('_')[2]
-            newgroup[int(newg),g]=g
-        newgroupkeys = newgroup.keys()
-        if(version_info >= (3,0)):
-            newgroupkeys = sorted(newgroupkeys)
-        else:
-            newgroupkeys.sort()
+        newgroup = {}
+        for gname in groups:
+            newg = gname.split('_')[2]
+            newgroup[int(newg), gname] = gname
+        newgroupkeys = sorted(newgroup.keys())
         groups = []
-        for k in newgroupkeys:
-            groups.append(k[1])
-        written={}
+        for idx in newgroupkeys:
+            groups.append(idx[1])
+        written = {}
         #
         # ---------
         #
         for group in groups:
-            if(version_info >= (3,0)):
-                hk = group in self.backgr
-            else:
-                hk = self.backgr.has_key(group)
-            #if self.backgr.has_key(group):
-            if hk:
-                fd.write('%s      %7.4f\n' %(self.WI_res_text(group,format),float(self.backgr[group])))
-                written[group]=1
-        fd.write('End of file\n')
+            if group in self.backgr:
+                wfd.write('%s      %7.4f\n' %(self.WI_res_text(group, format_), float(self.backgr[group])))
+                written[group] = 1
+        wfd.write('End of file\n')
+        wfd.close()
         return
 
     #
     # ----------------------
     #
 
-    def WI_res_text(self,residue,format):
+    def WI_res_text(self, residue, format_):
         """Constructs the WHAT IF residue ID line
         f.ex. 1 LYS  (   1  ) from 0001LYS.
         Function works with new names."""
-        if format=='WHAT IF':
+        if format_ == 'WHAT IF':
             if not self.newname:
                 # Old names
-                import string
-                terminal=None
-                if residue[0]=="T":
-                    terminal=1
-                    residue=residue[1:]
-                number=string.atoi(residue[:4])
-                residue=residue[4:]
-                if len(residue)>3:
-                    chainid=residue[-1]
-                    residue=residue[:-1]
+                terminal = None
+                if residue[0] == "T":
+                    terminal = 1
+                    residue = residue[1:]
+                number = residue[:4].atoi()
+                residue = residue[4:]
+                if len(residue) > 3:
+                    chainid = residue[-1]
+                    residue = residue[:-1]
                 else:
-                    chainid=' '
-                line='%4d %3s  (%4d  ) %1s' %(number,residue,number,chainid)
+                    chainid = ' '
+                line = '%4d %3s  (%4d  ) %1s' %(number, residue, number, chainid)
                 if terminal:
-                    line='TERMINAL GROUP:\n'+line
+                    line = 'TERMINAL GROUP:\n'+line
                 return line
             else:
                 #
                 # New names
                 #
-                #print 'In WI_res_text',residue,format
-                terminal=None
-                split=residue.split(':')
-                if split[-1]=="CTERM" or split[-1]=='NTERM':
-                    terminal=1
+                #print 'In WI_res_text', residue, format
+                terminal = None
+                split = residue.split(':')
+                if split[-1] == "CTERM" or split[-1] == 'NTERM':
+                    terminal = 1
                 try:
-                    number=int(split[1])
-                    residue=split[2]
-                    chainid=split[0]
-                    line='%4d %3s  (%4d  ) %1s' %(number,residue,number,chainid)
+                    number = int(split[1])
+                    residue = split[2]
+                    chainid = split[0]
+                    line = '%4d %3s  (%4d  ) %1s' %(number, residue, number, chainid)
                     if terminal:
-                        line='TERMINAL GROUP:\n'+line
+                        line = 'TERMINAL GROUP:\n'+line
                     return line
                 except:
                     return residue
-        elif format=='pdb2pka':
+        elif format_ == 'pdb2pka':
             #
             # PDB2PKA format
             #
-            terminal=None
-            split=residue.split(':')
-            if split[1]=='NTR' or split[1]=='CTR':
-                terminal=1
+            terminal = None
+            split = residue.split(':')
+            if split[1] == 'NTR' or split[1] == 'CTR':
+                terminal = 1
             #
-            res=split[0]
-            res=res.split('_')
-            residue=res[0]
-            chainid=res[1]
+            res = split[0]
+            res = res.split('_')
+            residue = res[0]
+            chainid = res[1]
             #
             # For Design_pKa
             #
-            #chainid=''
+            #chainid = ''
             #
-            number=int(res[2])
-            line='%4d %3s  (%4d  ) %1s' %(number,residue,number,chainid)
+            number = int(res[2])
+            line = '%4d %3s  (%4d  ) %1s' %(number, residue, number, chainid)
             if terminal:
-                line='TERMINAL GROUP:\n'+line
+                line = 'TERMINAL GROUP:\n'+line
             return line
         else:
-            raise (Exception,'Unknown format:'+format)
+            raise Exception('Unknown format:' + format_)

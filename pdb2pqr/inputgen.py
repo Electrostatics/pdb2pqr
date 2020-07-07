@@ -12,7 +12,7 @@ from . import psize
 _LOGGER = logging.getLogger(__name__)
 
 
-class Elec(object):
+class Elec:
     """An object for the ELEC section of an APBS input file"""
 
     def __init__(self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
@@ -113,7 +113,7 @@ class Elec(object):
         text += "end\n"
         return text
 
-class Input(object):
+class Input:
     """The input class.  Each input object is one APBS input file."""
 
     def __init__(self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
@@ -170,7 +170,7 @@ class Input(object):
 
     def print_input_files(self, output_path):
         """Generate the input file(s) associated with this object.
-        
+
         Args:
             output_path:  location for generated files.
         """

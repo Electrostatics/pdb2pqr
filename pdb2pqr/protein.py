@@ -637,7 +637,7 @@ class Protein(object):
         for residue in self.residues:
             if isinstance(residue, aa.CYS):
                 atom = residue.get_atom("SG")
-                if atom != None:
+                if atom is not None:
                     sg_partners[atom] = []
 
         for atom in sg_partners:
@@ -723,13 +723,13 @@ class Protein(object):
 
             for atom in residue.atoms:
                 rname, aname = forcefield_.get_names(resname, atom.name)
-                if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and rname != None:
+                if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and rname is not None:
                     try:
                         if (residue.is_n_term or residue.is_c_term) and rname != residue.name:
                             rname = residue.name
                     except AttributeError:
                         pass
-                if aname != None and rname != None:
+                if aname is not None and rname is not None:
                     atom.res_name = rname
                     atom.name = aname
 

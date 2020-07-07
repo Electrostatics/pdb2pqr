@@ -149,7 +149,7 @@ class ForcefieldHandler(sax.ContentHandler):
             self.oldresname = text
 
 
-class Forcefield(object):
+class Forcefield:
     """Forcefield class
 
     The forcefield class contains definitions for a given forcefield. Each
@@ -859,7 +859,7 @@ class Forcefield(object):
         return resname, atomname
 
 
-class ForcefieldResidue(object):
+class ForcefieldResidue:
     """ForcefieldResidue class
 
     The ForceFieldResidue class contains a mapping of all atoms within the
@@ -909,7 +909,7 @@ class ForcefieldResidue(object):
         return None
 
 
-class ForcefieldAtom(object):
+class ForcefieldAtom:
     """ForcefieldAtom class
 
     The ForcefieldAtom object contains fields that are related to the

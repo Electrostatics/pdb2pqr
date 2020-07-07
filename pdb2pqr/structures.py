@@ -9,7 +9,7 @@ from . import pdb
 from .config import BACKBONE
 
 
-class Chain(object):
+class Chain:
     """Chain class
 
     The chain class contains information about each chain within a given

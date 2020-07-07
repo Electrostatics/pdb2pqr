@@ -1,7 +1,6 @@
-from pdb2pka.graph_cut.protein_complex import ProteinComplex
-from pdb2pka.graph_cut.titration_curve import get_titration_curves
-from sys import version_info
 import logging
+from .. graph_cut.protein_complex import ProteinComplex
+from .. graph_cut.titration_curve import get_titration_curves
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -57,19 +56,16 @@ def process_desolv_and_background(protein_complex, pKa):
     chain = pKa.residue.chain_id
     location = str(pKa.residue.res_seq)
 
-    if(version_info >= (3,0)):
-        for state, energy in pKa.desolvation.items():
-            _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
+    for state, energy in pKa.desolvation.items():
+        _process_desolv_or_background_line(protein_complex,
+                                           res_type, chain,
+                                           location, state, energy)
 
-        for state, energy in pKa.background.items():
-            _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
+    for state, energy in pKa.background.items():
+        _process_desolv_or_background_line(protein_complex,
+                                           res_type, chain,
+                                           location, state, energy)
 
-    else:
-        for state, energy in pKa.desolvation.iteritems():
-            _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
-
-        for state, energy in pKa.background.iteritems():
-            _process_desolv_or_background_line(protein_complex, res_type, chain, location, state, energy)
 
 def _process_desolv_or_background_line(protein_complex, res_type, chain, location, state_name, energy):
     instance = protein_complex.get_instance(res_type, chain, location, state_name)

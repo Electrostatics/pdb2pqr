@@ -9,7 +9,7 @@ from ..config import ANGLE_CUTOFF, DIST_CUTOFF
 _LOGGER = logging.getLogger(__name__)
 
 
-class Optimize(object):
+class Optimize:
     """The holder class for the hydrogen optimization routines.
 
     Individual optimization types inherit off of this class.  Any functions
@@ -520,7 +520,7 @@ class Optimize(object):
         return 1
 
 
-class OptimizationHolder(object):
+class OptimizationHolder:
     """A holder class for the XML parser."""
 
     def __init__(self):

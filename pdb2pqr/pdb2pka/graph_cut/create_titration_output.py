@@ -1,3 +1,4 @@
+# TODO: Use pathlib Path instead of os.path
 import os.path
 
 def create_output(path, curves):
@@ -6,6 +7,6 @@ def create_output(path, curves):
         file_name = file_name_template.format(*key)
         file_path = os.path.join(path, file_name)
 
-        with open(file_path, "w") as f:
-            for pH, value in curve:
-                f.write(str(pH)+', '+str(value)+'\n')
+        with open(file_path, "w") as file:
+            for ph_val, value in curve:
+                file.write(str(ph_val) + ', ' + str(value) + '\n')

@@ -79,6 +79,7 @@ class Atom(pdb.ATOM):
             type:  Either ATOM or HETATM (string)
             residue:  A pointer back to the parent residue object (Residue)
         """
+        # BUG? 2020/07/06 intendo - should this call super().__init__ ?
         if type_ == "ATOM" or type_ == "HETATM":
             self.type = type_
         else:
@@ -185,12 +186,12 @@ class Atom(pdb.ATOM):
             str: String with ATOM/HETATM field set appropriately
         """
         outstr = self.get_common_string_rep(chainflag=chainflag)
-        if self.ffcharge != None:
+        if self.ffcharge is not None:
             ffcharge = "%.4f" % self.ffcharge
         else:
             ffcharge = "0.0000"
         outstr += str.rjust(ffcharge, 8)[:8]
-        if self.radius != None:
+        if self.radius is not None:
             ffradius = "%.4f" % self.radius
         else:
             ffradius = "0.0000"

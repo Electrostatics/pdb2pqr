@@ -9,7 +9,7 @@
 #
 # Get paths
 #
-debug=False
+DEBUG=False
 import optparse
 import os
 

@@ -19,10 +19,4 @@ logging.captureWarnings(True)
 if __name__ == "__main__":
     PARSER = build_parser()
     ARGS = PARSER.parse_args()
-    LOG_CACHE = Path(Path(ARGS.output_pqr).parent, Path(ARGS.output_pqr).stem + '.log')
-    logging.basicConfig(
-        filename=LOG_CACHE,
-        level=logging.DEBUG
-    )
-    logging.captureWarnings(True)
     main(ARGS)

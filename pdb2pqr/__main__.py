@@ -16,8 +16,6 @@ logging.captureWarnings(True)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    logging.captureWarnings(True)
     PARSER = build_parser()
     ARGS = PARSER.parse_args()
     main(ARGS)

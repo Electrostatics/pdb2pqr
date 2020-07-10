@@ -371,3 +371,15 @@ def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
                 definitions = defns.Definition(aa_file=aa_file, na_file=na_file,
                                                patch_file=patch_file)
     return definitions
+
+def setup_logger(output_pqr, level='DEBUG'):
+    """ Setup the logger to output the log file to the same dir as pqr output"""
+    # Get the output logging location
+    output_pth = Path(output_pqr)
+    log_file = Path(output_pth.parent, output_pth.stem + '.log')
+    _LOGGER.info("Logs stored: %s" % log_file)
+
+    logging.basicConfig(
+        filename=log_file,
+        level=getattr(logging, level)
+        )

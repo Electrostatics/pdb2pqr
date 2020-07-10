@@ -474,12 +474,12 @@ def non_trivial(args, protein, ligand, definition, is_cif):
     protein.set_states()
     hitlist, misslist = protein.apply_force_field(forcefield_)
 
+    missing_atoms = []
+    lig_atoms = []
     if args.ligand is not None:
         _LOGGER.info("Processing ligand.")
         _LOGGER.warning("Using ZAP9 forcefield for ligand radii.")
         ligand.assign_parameters()
-        missing_atoms = []
-        lig_atoms = []
         for residue in protein.residues:
             tot_charge = 0
             for pdb_atom in residue.atoms:
@@ -543,6 +543,7 @@ def main(args):
     Args:
         args:  argument namespace object (e.g., as returned by argparse).
     """
+    io.setup_logger(args.output_pqr, args.log_level)
     _LOGGER.debug("Invoked with arguments: %s", args)
     print_splash_screen(args)
 

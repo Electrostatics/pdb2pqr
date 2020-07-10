@@ -6,6 +6,8 @@
 # All rights reserved
 #
 
+# TODO: 2020/07/06 intendo - Do we need this file?
+
 #
 # Get paths
 #
@@ -16,7 +18,6 @@ import os
 from pKa_base import *
 
 print(__file__)
-import os
 try:
     file_name=__file__
     if file_name[:2]=='./':
@@ -494,8 +495,8 @@ def pre_init(pdbfilename=None,
 
     if verbose:
         print("Created protein object (after processing debumper) -")
-        print("\tNumber of residues in protein: %s" % len(my_protein.residues)
-        print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms)
+        print("\tNumber of residues in protein: %s" % len(my_protein.residues))
+        print("\tNumber of atoms in protein   : %s" % len(my_protein.atoms))
     #
     # Create the APBS input file
     #

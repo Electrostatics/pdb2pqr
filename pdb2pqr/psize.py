@@ -20,7 +20,7 @@ REDFAC = 0.25
 _LOGGER = logging.getLogger(__name__)
 
 
-class Psize(object):
+class Psize:
     """Master class for parsing input files and suggesting settings"""
     def __init__(self, cfac=CFAC, fadd=FADD, space=SPACE, gmemfac=GMEMFAC,
                  gmemceil=GMEMCEIL, ofrac=OFRAC, redfac=REDFAC):
@@ -63,8 +63,7 @@ class Psize(object):
 
     def parse_string(self, structure):
         """ Parse the input structure as a string in PDB or PQR format """
-        # TODO - modernize str functions in this module
-        lines = str.split(structure, "\n")
+        lines = structure.split("\n")
         self.parse_lines(lines)
 
     def parse_input(self, filename):
@@ -77,9 +76,9 @@ class Psize(object):
         for line in lines:
             # TODO -- This is messed up.
             # Why are we parsing the PQR manually here when we have routines to do that?
-            if str.find(line, "ATOM") == 0:
-                subline = str.replace(line[30:], "-", " -")
-                words = str.split(subline)
+            if line.find("ATOM") == 0:
+                subline = line[30:].replace("-", " -")
+                words = subline.split()
                 if len(words) < 5:
                     continue
                 self.gotatom += 1
@@ -93,12 +92,12 @@ class Psize(object):
                         self.minlen[i] = center[i]-rad
                     if self.maxlen[i] is None or center[i]+rad > self.maxlen[i]:
                         self.maxlen[i] = center[i]+rad
-            elif str.find(line, "HETATM") == 0:
+            elif line.find("HETATM") == 0:
                 self.gothet = self.gothet + 1
                 # Special handling for no ATOM entries in the pqr file, only HETATM entries
                 if self.gotatom == 0:
-                    subline = str.replace(line[30:], "-", " -")
-                    words = str.split(subline)
+                    subline = line[30:].replace("-", " -")
+                    words = subline.split()
                     if len(words) < 5:
                         continue
                     self.charge = self.charge + float(words[3])

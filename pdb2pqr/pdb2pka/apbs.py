@@ -17,13 +17,15 @@ try:
     # TODO - emliminate import *
     from .apbslib import *
 except:
-    errstr = "Missing Python libraries for APBS interface.  This often means you need to build APBS with Python support using the Cmake argument -DENABLE_PYTHON=ON"
-    _LOGGER.error(errstr)
-    raise RuntimeError(errstr)
+    ERRSTR = "Missing Python libraries for APBS interface. "
+    ERRSTR += "This often means you need to build APBS with Python support "
+    ERRSTR += "using the Cmake argument -DENABLE_PYTHON=ON"
+    _LOGGER.error(ERRSTR)
+    raise RuntimeError(ERRSTR)
 
 
-Python_kb = 1.3806581e-23
-Python_Na = 6.0221367e+23
+PYTHON_KB = 1.3806581e-23
+PYTHON_NA = 6.0221367e+23
 NOSH_MAXMOL = 20
 NOSH_MAXCALC = 20
 ACD_ERROR = 2    # < Error setting up calculation>
@@ -50,7 +52,7 @@ class APBSError(Exception):
             Return the error message
         """
         #return `self.value`
-        return repr(self.value);
+        return repr(self.value)
 
 class runAPBS:
 
@@ -66,10 +68,10 @@ class runAPBS:
                 factor: The conversion factor (float)
         """
         temp = 298.15
-        factor = Python_kb/1000.0 * temp * Python_Na
+        factor = PYTHON_KB / 1000.0 * temp * PYTHON_NA
         return factor
 
-    def runAPBS(self,protein, inputpath, routines, CM=None):
+    def runAPBS(self, protein, inputpath, routines, cm_val=None):
         """
             Run APBS, using the protein instead of a pqr file
 
@@ -102,8 +104,8 @@ class runAPBS:
             self.pbe = new_pbelist(NOSH_MAXMOL)
             self.pmg = new_pmglist(NOSH_MAXMOL)
             self.pmgp = new_pmgplist(NOSH_MAXMOL)
-            self.realCenter = double_array(3)
-            self.totEnergy = []
+            self.real_center = double_array(3)
+            self.tot_energy = []
             self.x = []
             self.y = []
             self.z = []
@@ -123,10 +125,10 @@ class runAPBS:
             self.nosh = NOsh_ctor(self.rank, self.size)
             #nosh = NOsh()
             #NOsh_ctor2(nosh, rank, size)
-            _LOGGER.info("Parsing input file %s...\n" % inputpath)
+            _LOGGER.info("Parsing input file %s...\n", inputpath)
             if NOsh_parseInputFile(self.nosh, inputpath) != 1:
                 _LOGGER.error("main:  Error while parsing input file.\n")
-                raise APBSError( "Error while parsing input file!" )
+                raise APBSError("Error while parsing input file!")
 
             # Load the molecules using Valist_load routine
 
@@ -138,22 +140,22 @@ class runAPBS:
 
             if NOsh_setupElecCalc(self.nosh, self.alist) != 1:
                 _LOGGER.error("Error setting up ELEC calculations\n")
-                raise APBSError( "Error while setting up calculations!")
+                raise APBSError("Error while setting up calculations!")
 
             if NOsh_setupApolCalc(self.nosh, self.alist) == ACD_ERROR:
                 _LOGGER.error("Error setting up APOL calculations\n")
-                raise APBSError( "Error while setting up calculations!")
+                raise APBSError("Error while setting up calculations!")
 
             #
             # DEBUGGING
             #
-            self.cm_list=[]
+            self.cm_list = []
 
             #print 'These are the charges in the PQR file'
             #print 'atom name\tresnum\tresname\tcharge\tradius'
-            #res_charge=0.0
-            #old_res=-1
-            #old_res_name=''
+            #res_charge = 0.0
+            #old_res = -1
+            #old_res_name = ''
             for i in range(len(self.atoms)):
                 atom = self.atoms[i]
                 self.x.append(atom.get("x"))
@@ -161,63 +163,51 @@ class runAPBS:
                 self.z.append(atom.get("z"))
                 self.chg.append(atom.get("ffcharge"))
                 self.rad.append(atom.get("radius"))
-                self.cm_list.append([atom.res_seq,atom.name,atom.get("ffcharge")])
-                #if atom.res_seq!=old_res:
-                    #if old_res!=-1:
-                    #    print '%4i %4s %6.4f' %(old_res,old_res_name,res_charge)
-                #    res_charge=atom.get('ffcharge')
-                #    old_res=atom.res_seq
-                #    old_res_name=atom.res_name
-                #else:
-                #    res_charge=res_charge+atom.get('ffcharge')
-
-                #print '%5s\t%4i\t%5s\t%6.4f\t%6.4f' %(atom.name,atom.res_seq,atom.res_name,atom.get("ffcharge"),atom.get('radius'))
-            #print '%4i %4s %6.4f' %(old_res,old_res_name,res_charge)
+                self.cm_list.append([atom.res_seq, atom.name, atom.get("ffcharge")])
             #
             # DEBUG
             #
-            if CM:
-                CM.display_charges(self.cm_list)
-            #
+            if cm_val:
+                cm_val.display_charges(self.cm_list)
 
-            self.myAlist = make_Valist(self.alist,0)
-            Valist_load(self.myAlist, self.protsize, self.x,self.y,self.z,self.chg,self.rad)
+            self.my_alist = make_Valist(self.alist, 0)
+            Valist_load(self.my_alist, self.protsize, self.x, self.y, self.z, self.chg, self.rad)
 
             # Initialize the energy holders
-            self.totEnergy = [ 0.0 ] * int( self.nosh.ncalc )
+            self.tot_energy = [0.0] * int(self.nosh.ncalc)
 
-            potList = []
+            pot_list = []
 
             # Initialize the force holders
-            forceList = []
+            force_list = []
 
             # Load the dieletric maps
 
-            self.dielXMap = new_gridlist(NOSH_MAXMOL)
-            self.dielYMap = new_gridlist(NOSH_MAXMOL)
-            self.dielZMap = new_gridlist(NOSH_MAXMOL)
+            self.diel_xmap = new_gridlist(NOSH_MAXMOL)
+            self.diel_ymap = new_gridlist(NOSH_MAXMOL)
+            self.diel_zmap = new_gridlist(NOSH_MAXMOL)
 
-            if loadDielMaps(self.nosh, self.dielXMap, self.dielYMap, self.dielZMap) != 1:
+            if loadDielMaps(self.nosh, self.diel_xmap, self.diel_ymap, self.diel_zmap) != 1:
                 _LOGGER.error("Error reading dielectric maps!\n")
-                raise APBSError( "Error reading dielectric maps!")
+                raise APBSError("Error reading dielectric maps!")
 
             # Load the kappa maps
-            self.kappaMap = new_gridlist(NOSH_MAXMOL)
-            if loadKappaMaps(self.nosh, self.kappaMap) != 1:
+            self.kappa_map = new_gridlist(NOSH_MAXMOL)
+            if loadKappaMaps(self.nosh, self.kappa_map) != 1:
                 _LOGGER.error("Error reading kappa maps!\n")
-                raise APBSError( "Error reading kappa maps!")
+                raise APBSError("Error reading kappa maps!")
 
             # Load the potential maps
-            self.potMap = new_gridlist(NOSH_MAXMOL)
-            if loadPotMaps(self.nosh, self.potMap) != 1:
+            self.pot_map = new_gridlist(NOSH_MAXMOL)
+            if loadPotMaps(self.nosh, self.pot_map) != 1:
                 _LOGGER.error("Error reading potential maps!\n")
-                raise APBSError( "Error reading potential maps!")
+                raise APBSError("Error reading potential maps!")
 
             # Load the charge maps
-            self.chargeMap = new_gridlist(NOSH_MAXMOL)
-            if loadChargeMaps(self.nosh, self.chargeMap) != 1:
+            self.charge_map = new_gridlist(NOSH_MAXMOL)
+            if loadChargeMaps(self.nosh, self.charge_map) != 1:
                 _LOGGER.error("Error reading charge maps!\n")
-                raise APBSError( "Error reading charge maps!")
+                raise APBSError("Error reading charge maps!")
 
             # Do the calculations
 
@@ -230,34 +220,35 @@ class runAPBS:
                 self.pbeparm = self.calc.pbeparm
                 if self.calc.calctype != 0:
                     _LOGGER.error("main:  Only multigrid calculations supported!\n")
-                    raise APBSError( "Only multigrid calculations supported!")
+                    raise APBSError("Only multigrid calculations supported!")
 
                 for k in range(0, self.nosh.nelec):
-                    if NOsh_elec2calc(self.nosh,k) >= icalc:
+                    if NOsh_elec2calc(self.nosh, k) >= icalc:
                         break
 
-                name = NOsh_elecname(self.nosh, k+1)
+                name = NOsh_elecname(self.nosh, k + 1)
 
                 # Routine initMG
 
-                if initMG(icalc, self.nosh, self.mgparm, self.pbeparm, self.realCenter, self.pbe,
-                      self.alist, self.dielXMap, self.dielYMap, self.dielZMap, self.kappaMap, self.chargeMap,
-                      self.pmgp, self.pmg, self.potMap) != 1:
+                if initMG(icalc, self.nosh, self.mgparm, self.pbeparm,
+                          self.real_center, self.pbe, self.alist, self.diel_xmap,
+                          self.diel_ymap, self.diel_zmap, self.kappa_map,
+                          self.charge_map, self.pmgp, self.pmg, self.pot_map) != 1:
                     _LOGGER.error("Error setting up MG calculation!\n")
-                    raise APBSError( "Error setting up MG calculation!")
+                    raise APBSError("Error setting up MG calculation!")
 
                 # Print problem parameters
 
-                #printMGPARM(self.mgparm, self.realCenter)
+                #printMGPARM(self.mgparm, self.real_center)
                 #printPBEPARM(self.pbeparm)
 
                 # Solve the problem : Routine solveMG
 
-                self.thispmg = get_Vpmg(self.pmg,icalc)
+                self.thispmg = get_Vpmg(self.pmg, icalc)
 
                 if solveMG(self.nosh, self.thispmg, self.mgparm.type) != 1:
                     _LOGGER.error("Error solving PDE! \n")
-                    raise APBSError( "Error Solving PDE!")
+                    raise APBSError("Error Solving PDE!")
 
                 # Set partition information : Routine setPartMG
 
@@ -265,8 +256,8 @@ class runAPBS:
                     _LOGGER.error("Error setting partition info!\n")
                     raise APBSError("Error setting partition info!")
 
-                ret, self.totEnergy[icalc] = energyMG(self.nosh, icalc, self.thispmg, 0,
-                                                      self.totEnergy[icalc], 0.0, 0.0, 0.0)
+                ret, self.tot_energy[icalc] = energyMG(self.nosh, icalc, self.thispmg, 0,
+                                                       self.tot_energy[icalc], 0.0, 0.0, 0.0)
 
                 # Set partition information
 
@@ -281,21 +272,21 @@ class runAPBS:
                 writematMG(self.rank, self.nosh, self.pbeparm, self.thispmg)
 
                 # GET THE POTENTIALS
-                potentials = getPotentials(self.nosh, self.pbeparm, self.thispmg, self.myAlist)
-                potList.append(potentials)
+                potentials = getPotentials(self.nosh, self.pbeparm, self.thispmg, self.my_alist)
+                pot_list.append(potentials)
         finally:
             os.chdir(old_cwd)
 
         #
         # Cleanup
         #
-        return potList
+        return pot_list
 
     #
     # ------
     #
 
-    def get_potentials(self,protein):
+    def get_potentials(self, protein):
 
         #import copy
 
@@ -318,28 +309,28 @@ class runAPBS:
         #
         # DEBUG
         #
-        #if CM:
-        #    CM.display_charges(self.cm_list)
+        #if cm_val:
+        #    cm_val.display_charges(self.cm_list)
         #
-        self.myAlist = make_Valist(self.alist,0)
+        self.my_alist = make_Valist(self.alist, 0)
 
-        xlist = self.x[-1*(self.protsize):]
-        ylist = self.y[-1*(self.protsize):]
-        zlist = self.z[-1*(self.protsize):]
-        chglist = self.chg[-1*(self.protsize):]
-        radlist = self.rad[-1*(self.protsize):]
+        xlist = self.x[-1 * (self.protsize):]
+        ylist = self.y[-1 * (self.protsize):]
+        zlist = self.z[-1 * (self.protsize):]
+        chglist = self.chg[-1 * (self.protsize):]
+        radlist = self.rad[-1 * (self.protsize):]
 
         try:
-            Valist_load(self.myAlist, self.protsize, xlist, ylist, zlist, chglist, radlist)
+            Valist_load(self.my_alist, self.protsize, xlist, ylist, zlist, chglist, radlist)
         except:
             frameinfo = getframeinfo(currentframe())
             _LOGGER.warning("%s[%d]: Valist_load Warning." % (frameinfo.filename, frameinfo.lineno))
-        potentials = getPotentials(self.nosh,self.pbeparm,self.thispmg,self.myAlist)
+        potentials = getPotentials(self.nosh, self.pbeparm, self.thispmg, self.my_alist)
 
         protein = copy.copy(proteincopy)
 
-        # Free up the memory allocated for self.myAlist
-        remove_Valist(self.myAlist)
+        # Free up the memory allocated for self.my_alist
+        remove_Valist(self.my_alist)
 
         return potentials
 
@@ -357,14 +348,14 @@ class runAPBS:
         #killForce(mem, nosh, nforce, atomforce)
         killEnergy()
         killMG(self.nosh, self.pbe, self.pmgp, self.pmg)
-        killChargeMaps(self.nosh, self.chargeMap)
-        killKappaMaps(self.nosh, self.kappaMap)
-        killPotMaps(self.nosh, self.potMap)
-        killDielMaps(self.nosh, self.dielXMap, self.dielYMap, self.dielZMap)
+        killChargeMaps(self.nosh, self.charge_map)
+        killKappaMaps(self.nosh, self.kappa_map)
+        killPotMaps(self.nosh, self.pot_map)
+        killDielMaps(self.nosh, self.diel_xmap, self.diel_ymap, self.diel_zmap)
 
-        if self.myAlist.number == 0:
-            self.myAlist = make_Valist(self.alist,0)
-            Valist_load(self.myAlist, self.protsize, self.x,self.y,self.z,self.chg,self.rad)
+        if self.my_alist.number == 0:
+            self.my_alist = make_Valist(self.alist, 0)
+            Valist_load(self.my_alist, self.protsize, self.x, self.y, self.z, self.chg, self.rad)
         killMolecules(self.nosh, self.alist)
 
 
@@ -373,16 +364,16 @@ class runAPBS:
         # Clean up Python structures
 
         #ptrfree(nfor)
-        delete_double_array(self.realCenter)
+        delete_double_array(self.real_center)
         #delete_int_array(nforce)
         #delete_atomforcelist(atomforce)
         delete_valist(self.alist)
-        delete_gridlist(self.dielXMap)
-        delete_gridlist(self.dielYMap)
-        delete_gridlist(self.dielZMap)
-        delete_gridlist(self.kappaMap)
-        delete_gridlist(self.potMap)
-        delete_gridlist(self.chargeMap)
+        delete_gridlist(self.diel_xmap)
+        delete_gridlist(self.diel_ymap)
+        delete_gridlist(self.diel_zmap)
+        delete_gridlist(self.kappa_map)
+        delete_gridlist(self.pot_map)
+        delete_gridlist(self.charge_map)
         delete_pmglist(self.pmg)
         delete_pmgplist(self.pmgp)
         delete_pbelist(self.pbe)

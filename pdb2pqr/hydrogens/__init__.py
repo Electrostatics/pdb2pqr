@@ -17,7 +17,7 @@ from .. import definitions as defns
 from .. import utilities as util
 from .. import quatfit as quat
 from ..config import HYD_DEF_PATH
-from . import structures
+from . structures import HydrogenConformation, HydrogenDefinition, HydrogenHandler, PotentialBond
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def create_handler(hyd_path=HYD_DEF_PATH):
     Returns:
         HydrogenHandler object.
     """
-    handler = structures.HydrogenHandler()
+    handler = HydrogenHandler()
     hyd_path = io.test_dat_file(hyd_path)
     with open(hyd_path, "rt") as hyd_file:
         sax.make_parser()
@@ -49,7 +49,7 @@ def create_handler(hyd_path=HYD_DEF_PATH):
     return handler
 
 
-class HydrogenRoutines(object):
+class HydrogenRoutines:
     """The main routines for hydrogen optimization.
 
     TODO - this class really needs to be refactored.
@@ -92,7 +92,7 @@ class HydrogenRoutines(object):
         for conf in hdef.conformations:
             hname = conf.hname
             boundname = conf.boundatom
-            if residue.get_atom(hname) != None:
+            if residue.get_atom(hname) is not None:
                 _LOGGER.debug('Removing %s %s %s', residue.name, residue.res_seq, hname)
                 residue.remove_atom(hname)
             residue.get_atom(boundname).hacceptor = 1
@@ -119,7 +119,7 @@ class HydrogenRoutines(object):
                 resatom = residue.get_atom(atomname)
                 if atomname == hname:
                     defatomcoords = atom.coords
-                elif resatom != None:
+                elif resatom is not None:
                     refcoords.append(resatom.coords)
                     defcoords.append(atom.coords)
                 else:
@@ -161,7 +161,7 @@ class HydrogenRoutines(object):
         for conf in hdef.conformations:
             hname = conf.hname
             boundname = conf.boundatom
-            if residue.get_atom(hname) != None:
+            if residue.get_atom(hname) is not None:
                 residue.remove_atom(hname)
             residue.get_atom(boundname).hacceptor = 1
             residue.get_atom(boundname).hdonor = 0
@@ -191,7 +191,7 @@ class HydrogenRoutines(object):
                     resatom = residue.get_atom(atomname)
                     if atomname == hname:
                         defatomcoords = atom.coords
-                    elif resatom != None:
+                    elif resatom is not None:
                         refcoords.append(resatom.coords)
                         defcoords.append(atom.coords)
                     else:
@@ -266,7 +266,7 @@ class HydrogenRoutines(object):
                     break
 
         # If alcoholic, make sure the hydrogen is present
-        if optinstance != None:
+        if optinstance is not None:
             if optinstance.opttype == "Alcoholic":
                 atomname = list(optinstance.map.keys())[0]
                 if not residue.reference.has_atom(atomname):
@@ -399,7 +399,7 @@ class HydrogenRoutines(object):
                     dist = util.distance(atom.coords, closeatom.coords)
                     if dist < 4.3:
                         residue = atom.residue
-                        hbond = structures.PotentialBond(atom, closeatom, dist)
+                        hbond = PotentialBond(atom, closeatom, dist)
 
                         # Store the potential bond
                         obj.hbonds.append(hbond)
@@ -562,7 +562,7 @@ class HydrogenRoutines(object):
         optangle = self.map[res].optangle
         map_ = self.map[res].map
 
-        mydef = structures.HydrogenDefinition(name, opttype, optangle, map_)
+        mydef = HydrogenDefinition(name, opttype, optangle, map_)
         patch_map = []
         refmap = {}
         titrationstatemap = {}
@@ -787,11 +787,14 @@ class HydrogenRoutines(object):
                 atom = defns.DefinitionAtom(hname, x, y, z)
                 myconf.add_atom(atom)
 
-                if refatoms != None:
+                if refatoms is not None:
                     if name == 'HIS' and atom.name == 'HE2':
                         refatoms = ['NE2', 'CE1', 'CD2']
                     if name == 'ARG' and atom.name == 'HE':
                         refatoms = ['NE', 'CZ', 'NH1']
+                    # FIXME: 2020/07/06 intendo -  the "atom" is reused in
+                    #                              the outer for loop and
+                    #                              ambiguous
                     for atom in refatoms:
                         atomname = atom
                         x = atommap[name, atomname].x

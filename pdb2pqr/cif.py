@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from numpy import minimum, ceil
 from . import pdb
-from .pdbx.reader.PdbxReader import PdbxReader
+from pdbx.reader import PdbxReader
 
 
 _LOGGER = logging.getLogger(__name__)

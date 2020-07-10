@@ -17,16 +17,12 @@ logging.captureWarnings(True)
 
 
 if __name__ == "__main__":
-    parser = build_parser()
-    args = parser.parse_args()
-
-    # Get the output logging location
-    output_path = Path(args.output_pqr)
-    log_file = Path(output_path.parent, output_path.stem + '.log')
+    PARSER = build_parser()
+    ARGS = PARSER.parse_args()
+    LOG_CACHE = Path(Path(ARGS.output_pqr).parent, Path(ARGS.output_pqr).stem + '.log')
     logging.basicConfig(
-        filename=log_file,
-        level=logging.DEBUG)
+        filename=LOG_CACHE,
+        level=logging.DEBUG
+    )
     logging.captureWarnings(True)
-    _LOGGER.info(args)
-
-    main(args)
+    main(ARGS)

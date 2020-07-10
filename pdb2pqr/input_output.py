@@ -377,7 +377,7 @@ def setup_logger(output_pqr, level='DEBUG'):
     # Get the output logging location
     output_pth = Path(output_pqr)
     log_file = Path(output_pth.parent, output_pth.stem + '.log')
-    _LOGGER.info("Logs stored: %s" % log_file)
+    _LOGGER.info('Logs stored: %s', log_file)
 
     logging.basicConfig(
         filename=log_file,

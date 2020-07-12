@@ -8,8 +8,8 @@ Author:  Juan Brandi
 import logging
 from datetime import datetime
 from numpy import minimum, ceil
+import pdbx
 from . import pdb
-from .pdbx.reader.PdbxReader import PdbxReader
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -917,10 +917,7 @@ def read_cif(cif_file):
     if cif_file is None:
         return pdblist, errlist
 
-    pdbdata = []
-
-    reader = PdbxReader(cif_file)
-    reader.read(pdbdata)
+    pdbdata = pdbx.load(cif_file)
 
     # TODO - manage several blocks of data.
     if len(pdbdata) > 0:

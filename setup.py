@@ -49,7 +49,9 @@ setuptools.setup(
         "continuum solvation calculations as well as many other types of "
         "biomolecular structure modeling, analysis, and simulation."),
     long_description=LONG_DESCRIPTION,
-    install_requires=["propka >= 3.2", "pandas >= 1.0", "pytest>=5.4.1"],
+    install_requires=[
+        "propka >= 3.2", "pandas >= 1.0", "pytest>=5.4.1",
+        "mmcif_pdbx>=1.1.0"],
     url="http://www.poissonboltzmann.org",
     packages=setuptools.find_packages(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]),

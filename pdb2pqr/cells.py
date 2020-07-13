@@ -9,11 +9,11 @@ class Cells:
     """The cells object provides a better way to search for nearby atoms.
 
     A pure all versus all search is O(n^2) - for every atom, every other atom
-    must be searched.  This is rather inefficient, especially for large proteins
-    where cells may be tens of angstroms apart.  The cell class breaks down the
-    xyz protein space into several 3-D cells of desired size - then by simply
-    examining atoms that fall into the adjacent cells one can quickly find nearby
-    cells.
+    must be searched.  This is rather inefficient, especially for large
+    proteins where cells may be tens of angstroms apart.  The cell class breaks
+    down the xyz protein space into several 3-D cells of desired size - then by
+    simply examining atoms that fall into the adjacent cells one can quickly
+    find nearby cells.
     """
 
     def __init__(self, cellsize):

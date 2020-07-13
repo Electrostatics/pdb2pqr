@@ -7,7 +7,7 @@ import pandas as pd
 from numpy.testing import assert_almost_equal
 from pdb2pqr.ligand.mol2 import Mol2Molecule
 import common
-from ligand_results import TORSION_RESULTS, RING_RESULTS
+from ligand_results import TORSION_RESULTS, RING_RESULTS, CHARGES_1HPX
 from ligand_results import FORMAL_CHARGE_RESULTS, PARAMETER_RESULTS
 
 
@@ -22,9 +22,29 @@ ALL_LIGANDS |= {
 ALL_LIGANDS = sorted(list(ALL_LIGANDS))
 
 
+def test_peoe_charges():
+    """Specifically test PEOE charges."""
+    ligand = Mol2Molecule()
+    mol2_path = Path("tests/data/1HPX-ligand.mol2")
+    with open(mol2_path, "rt") as mol2_file:
+        ligand.read(mol2_file)
+    old_total_charge = 0
+    for atom in ligand.atoms.values():
+        old_total_charge += atom.formal_charge
+    ligand.assign_parameters()
+    new_total_charge = 0
+    test_charges = []
+    for atom in ligand.atoms.values():
+        new_total_charge += atom.charge
+        test_charges.append(atom.charge)
+    assert_almost_equal(
+        test_charges, CHARGES_1HPX, verbose=True
+    )
+
+
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
 def test_assign_parameters(input_mol2):
-    """Testing basic aspects of code breaking."""
+    """Tests to break basic ligand functionality."""
     ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:

@@ -222,7 +222,7 @@ class TER(BaseRecord):
         27       string ins_code   Insertion code.
         """
         super(TER, self).__init__(line)
-        try: # Not really needed
+        try:  # Not really needed
             self.serial = int(str.strip(line[6:11]))
             self.res_name = str.strip(line[17:20])
             self.chain_id = str.strip(line[21])
@@ -1537,7 +1537,7 @@ class JRNL(BaseRecord):
         13-70    string text   See Details on web.
         """
         super(JRNL, self).__init__(line)
-        #TODO: What is this mess?
+        # TODO: What is this mess?
         self.text = str.strip(line[12:70])
 
 
@@ -1892,7 +1892,7 @@ def read_pdb(file_):
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of records we can't parse
 
-    #We can come up with nothing if can't get our file off the web.
+    # We can come up with nothing if can't get our file off the web.
     if file_ is None:
         return pdblist, errlist
 

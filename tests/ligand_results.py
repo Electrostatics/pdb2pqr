@@ -139,7 +139,7 @@ PARAMETER_RESULTS = {
         {'name': 'HN3', 'type': 'H', 'charge': 0.46813799183459115, 'radius': 1.1},
         {'name': 'HN5', 'type': 'H', 'charge': 0.4699450251195792, 'radius': 1.1},
         {'name': 'HO2', 'type': 'H', 'charge': 0.4135083335659837, 'radius': 1.1},
-        {'name':'H1', 'type': 'H', 'charge': 0.1930651515377243, 'radius': 1.1},
+        {'name': 'H1', 'type': 'H', 'charge': 0.1930651515377243, 'radius': 1.1},
         {'name': 'H2', 'type': 'H', 'charge': 0.14930498376978826, 'radius': 1.1},
         {'name': 'H5', 'type': 'H', 'charge': 0.2004887586723136, 'radius': 1.1},
         {'name': 'H7', 'type': 'H', 'charge': 0.1568207646303434, 'radius': 1.1},

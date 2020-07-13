@@ -110,7 +110,7 @@ def print_pqr_header(pdblist, atomlist, reslist, charge, force_field, ph_calc_me
                       "REMARK   1 %s" % TITLE_FORMAT_STRING.format(version=VERSION),
                       "REMARK   1",
                       "REMARK   1 Forcefield Used: %s" % force_field, ""])
-    if not ffout is None:
+    if ffout is not None:
         head += "REMARK   1 Naming Scheme Used: %s\n" % ffout
     head += head + "REMARK   1\n"
 
@@ -271,6 +271,7 @@ def test_dat_file(name):
         filename or empty string
     """
     return test_for_file(name, "DAT")
+
 
 def test_xml_file(name):
     """Test for the existence of the forcefield file with a few name permutations.

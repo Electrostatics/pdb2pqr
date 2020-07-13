@@ -38,7 +38,7 @@ class DefinitionHandler(sax.ContentHandler):
             self.curelement = name
 
     def endElement(self, name):
-        if name == "residue": # Complete Residue object
+        if name == "residue":  # Complete Residue object
             residue_ = self.curholder
             if not isinstance(residue_, DefinitionResidue):
                 raise RuntimeError("Internal error parsing XML!")
@@ -50,7 +50,7 @@ class DefinitionHandler(sax.ContentHandler):
                 self.curholder = None
                 self.curobj = None
 
-        elif name == "patch": # Complete patch object
+        elif name == "patch":  # Complete patch object
             patch = self.curholder
             if not isinstance(patch, Patch):
                 raise RuntimeError("Internal error parsing XML!")
@@ -62,7 +62,7 @@ class DefinitionHandler(sax.ContentHandler):
                 self.curholder = None
                 self.curobj = None
 
-        elif name == "atom": # Complete atom object
+        elif name == "atom":  # Complete atom object
             atom = self.curatom
             if not isinstance(atom, DefinitionAtom):
                 raise RuntimeError("Internal error parsing XML!")
@@ -74,7 +74,7 @@ class DefinitionHandler(sax.ContentHandler):
                 self.curatom = None
                 self.curobj = self.curholder
 
-        else: # Just free the current element namespace
+        else:  # Just free the current element namespace
             self.curelement = ""
 
         return self.map
@@ -155,7 +155,7 @@ class Definition:
             newname:  The name of the new (patched) object (string)
         """
         try:
-            aadef = self.map[refname] # The reference
+            aadef = self.map[refname]  # The reference
             patch_residue = copy.deepcopy(aadef)
 
             # Add atoms from patch
@@ -191,7 +191,7 @@ class Definition:
             # Store the patch
             self.patches[newname] = patch
 
-        except KeyError: # Just store the patch
+        except KeyError:  # Just store the patch
             self.patches[newname] = patch
 
 

@@ -22,7 +22,6 @@ from . import forcefield
 from . import protein as prot
 from . import input_output as io
 from .ligand.mol2 import Mol2Molecule
-from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
@@ -321,8 +320,8 @@ def is_repairable(protein, has_ligand):
     miss_frac = float(num_missing) / float(num_heavy)
     if miss_frac > REPAIR_LIMIT:
         error = "This PDB file is missing too many (%i out of " % num_missing
-        error += "%i, %g) heavy atoms to accurately repair the file.  " % \
-                    (num_heavy, miss_frac)
+        error += "%i, %g) " % (num_heavy, miss_frac)
+        error += "heavy atoms to accurately repair the file."
         error += "The current repair limit is set at %g. " % REPAIR_LIMIT
         error += "You may also see this message if PDB2PQR does not have "
         error += "parameters for enough residues in your protein."

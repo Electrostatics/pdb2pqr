@@ -20,7 +20,7 @@ class Elec:
         # the per-grid dime rather than the global dime.
         self.dime = size.ngrid
         gmem = 200.0 * self.dime[0] * self.dime[1] * self.dime[2] / 1024.0 / 1024.0
-        if method == "": # method not named - use ceiling
+        if method == "":  # method not named - use ceiling
             if gmem > size.gmemceil:
                 method = "mg-para"
             else:
@@ -49,7 +49,7 @@ class Elec:
         self.npbe = 0
         self.bcfl = "sdh"
         # TODO - where did these very arbitrary numbers come from?
-        self.ion = [[-1, 1.815], [1, 1.875]] # Multiple ions possible
+        self.ion = [[-1, 1.815], [1, 1.875]]  # Multiple ions possible
         self.pdie = 2.0
         self.sdie = 78.54
         self.srfm = "smol"
@@ -64,7 +64,7 @@ class Elec:
         if potdx:
             self.write = [["pot", "dx", pqrpath]]
         else:
-            self.write = [["pot", "dx", "pot"]] # Multiple write statements possible
+            self.write = [["pot", "dx", "pot"]]  # Multiple write statements possible
 
     def __str__(self):
         text = "elec %s\n" % self.label
@@ -112,6 +112,7 @@ class Elec:
             text += "    write %s %s %s\n" % (write[0], write[1], write[2])
         text += "end\n"
         return text
+
 
 class Input:
     """The input class.  Each input object is one APBS input file."""
@@ -224,7 +225,7 @@ def split_input(filename):
                 break
             text += line
             line = line.strip()
-            if line.startswith("pdime"): # Get # Procs
+            if line.startswith("pdime"):  # Get # Procs
                 words = line.split()
                 nproc = int(words[1]) * int(words[2]) * int(words[3])
 

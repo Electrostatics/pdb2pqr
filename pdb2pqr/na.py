@@ -34,7 +34,7 @@ class Nucleic(residue.Residue):
 
         # Create each atom
         for atom in atoms:
-            if atom.name in ref.altnames: # Rename atoms
+            if atom.name in ref.altnames:  # Rename atoms
                 atom.name = ref.altnames[atom.name]
 
             if atom.name not in self.map:

@@ -55,6 +55,7 @@ class Mol2Bond:
         fmt = "{b.atoms[0].name:s} {b.type:s}-bonded to {b.atoms[1].name:s}"
         return fmt.format(b=self)
 
+
 class Mol2Atom:
     """MOL2 molecule atoms."""
     def __init__(self):

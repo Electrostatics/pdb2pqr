@@ -98,12 +98,16 @@ class Debump:
 
             # Also ignore if this is a donor/acceptor pair
             pair_ignored = False
-            if atom.is_hydrogen and len(atom.bonds) != 0 and atom.bonds[0].hdonor \
-               and closeatom.hacceptor:
+            if (atom.is_hydrogen and
+                    len(atom.bonds) != 0 and
+                    atom.bonds[0].hdonor and
+                    closeatom.hacceptor):
                 continue
 
-            if closeatom.is_hydrogen and len(closeatom.bonds) != 0 and closeatom.bonds[0].hdonor \
-                   and atom.hacceptor:
+            if (closeatom.is_hydrogen and
+                    len(closeatom.bonds) != 0 and
+                    closeatom.bonds[0].hdonor and
+                    atom.hacceptor):
                 continue
 
             dist = util.distance(atom.coords, closeatom.coords)
@@ -238,7 +242,7 @@ class Debump:
                 # Set the best angle
                 elif score < bestscore:
                     diff = abs(bestscore - score)
-                    #Don't update if it's effectively a tie
+                    # Don't update if it's effectively a tie
                     if diff > SMALL_NUMBER:
                         bestscore = score
                         bestangle = newangle
@@ -349,12 +353,16 @@ class Debump:
                 continue
 
             # Also ignore if this is a donor/acceptor pair
-            if (atom.is_hydrogen and len(atom.bonds) != 0 and \
-                atom.bonds[0].hdonor and closeatom.hacceptor):
+            if (atom.is_hydrogen and
+                    len(atom.bonds) != 0 and
+                    atom.bonds[0].hdonor and
+                    closeatom.hacceptor):
                 continue
 
-            if (closeatom.is_hydrogen and len(closeatom.bonds) != 0 and \
-                closeatom.bonds[0].hdonor and atom.hacceptor):
+            if (closeatom.is_hydrogen and
+                    len(closeatom.bonds) != 0 and
+                    closeatom.bonds[0].hdonor and
+                    atom.hacceptor):
                 continue
 
             dist = util.distance(atom.coords, closeatom.coords)

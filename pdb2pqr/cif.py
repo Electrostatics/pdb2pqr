@@ -962,8 +962,8 @@ def read_cif(cif_file):
             errlist:    a list of record names that couldn't be parsed.
     """
 
-    pdblist = [] # Array of parsed lines (as objects)
-    errlist = [] # List of record names that couldn't be parsed.
+    pdblist = []  # Array of parsed lines (as objects)
+    errlist = []  # List of record names that couldn't be parsed.
 
     if cif_file is None:
         return pdblist, errlist
@@ -989,10 +989,12 @@ def read_cif(cif_file):
             ato_pdb, ato_err = atom_site(block)
             con_pdb, con_err = conect(block)
 
-            pdblist = head_pdb + title_pdb + cmpnd_pdb + src_pdb + key_pdb + ex_pdb + aut_pdb + \
-                    ssb_pdb + cis_pdb + cry_pdb + or_pdb + sc_pdb + ato_pdb + con_pdb
-            errlist = head_err + title_err + cmpnd_err + src_err + key_err + ex_err + aut_err + \
-                    ssb_err + cis_err + cry_err + or_err + sc_err + ato_err + con_err
+            pdblist = (head_pdb + title_pdb + cmpnd_pdb + src_pdb +
+                       key_pdb + ex_pdb + aut_pdb + ssb_pdb + cis_pdb +
+                       cry_pdb + or_pdb + sc_pdb + ato_pdb + con_pdb)
+            errlist = (head_err + title_err + cmpnd_err + src_err +
+                       key_err + ex_err + aut_err + ssb_err + cis_err +
+                       cry_err + or_err + sc_err + ato_err + con_err)
 
         return pdblist, errlist
     # TODO - does this "else" do anything given the "return" above?

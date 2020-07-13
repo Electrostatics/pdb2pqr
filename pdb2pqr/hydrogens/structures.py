@@ -198,14 +198,15 @@ class Flip(optimize.Optimize):
         # Delete the appropriate atoms
         for atom in atomlist:
             atomname = atom.name
-            if atomname.endswith("FLIP") and flag: # Delete the other list
+            if atomname.endswith("FLIP") and flag:  # Delete the other list
                 if residue.has_atom(atomname[:-4]):
                     self.routines.cells.remove_cell(residue.get_atom(atomname[:-4]))
                     residue.remove_atom(atomname[:-4])
             elif atomname.endswith("FLIP"):  # Delete the flip
                 self.routines.cells.remove_cell(atom)
                 residue.remove_atom(atomname)
-            else: continue
+            else:
+                continue
 
         residue.fixed = 1
 
@@ -331,7 +332,7 @@ class Alcoholic(optimize.Optimize):
                       donor.residue, donor.name, acc.residue, acc.name)
 
         # Act depending on the number of bonds
-        if len(donor.bonds) == 1: # No H or LP attached
+        if len(donor.bonds) == 1:  # No H or LP attached
             self.make_atom_with_one_bond_h(donor, newname)
             newatom = donor.residue.get_atom(newname)
             return self.try_single_alcoholic_h(donor, acc, newatom)
@@ -357,13 +358,14 @@ class Alcoholic(optimize.Optimize):
             return 0
         elif residue.has_atom("LP1"):
             newname = "LP2"
-        else: newname = "LP1"
+        else:
+            newname = "LP1"
 
         _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)",
                       acc.residue, acc.name, donor.residue, donor.name)
 
         # Act depending on the number of bonds
-        if len(acc.bonds) == 1: # No H or LP attached
+        if len(acc.bonds) == 1:  # No H or LP attached
             self.make_atom_with_one_bond_lp(acc, newname)
             newatom = acc.residue.get_atom(newname)
             return self.try_single_alcoholic_lp(acc, donor, newatom)
@@ -394,10 +396,9 @@ class Alcoholic(optimize.Optimize):
             return
 
         if len(atom.bonds) == 1:
-
             # Initialize variables
             pivot = atom.bonds[0]
-            #bestdist = 0.0
+            # bestdist = 0.0
             bestcoords = []
             bestenergy = 999.99
 
@@ -568,7 +569,7 @@ class Water(optimize.Optimize):
                 return 1
             return 0
 
-        elif len(acc.bonds) == 1: # No H or LP attached
+        elif len(acc.bonds) == 1:  # No H or LP attached
             _LOGGER.debug("Trying to add %s to %s with one bond", newname, acc.residue)
             self.make_water_with_one_bond(acc, newname)
             newatom = acc.residue.get_atom(newname)
@@ -1070,7 +1071,7 @@ class Carboxylic(optimize.Optimize):
         # PATCHES.xml expects *2 - if it's *1 that left, flip names
         if len(self.atomlist) == 2:
             if hydatom.name.endswith("1"):
-                residue.rename_atom(hydatom.name, "%s2" %  hydatom.name[:-1])
+                residue.rename_atom(hydatom.name, "%s2" % hydatom.name[:-1])
                 bondname0 = self.atomlist[0].name
                 bondname1 = self.atomlist[1].name
                 tempname = "FLIP"
@@ -1247,7 +1248,7 @@ class HydrogenAmbiguity:
         self.routines = routines
 
     def __str__(self):
-        text = "%s %i %s (%s)" % (self.residue.name, self.residue.res_seq, \
+        text = "%s %i %s (%s)" % (self.residue.name, self.residue.res_seq,
                                   self.residue.chain_id, self.hdef.opttype)
         return text
 
@@ -1282,7 +1283,7 @@ class HydrogenHandler(sax.ContentHandler):
         """Complete whatever object is currently passed in by the name
         parameter
         """
-        if name == "class": # Complete Residue object
+        if name == "class":  # Complete Residue object
             obj = self.curholder
             if not isinstance(obj, optimize.OptimizationHolder):
                 raise ValueError("Internal error parsing XML!")
@@ -1291,7 +1292,7 @@ class HydrogenHandler(sax.ContentHandler):
             self.curholder = None
             self.curobj = None
 
-        elif name == "atom": # Complete atom object
+        elif name == "atom":  # Complete atom object
             atom = self.curatom
             if not isinstance(atom, defns.DefinitionAtom):
                 raise ValueError("Internal error parsing XML!")
@@ -1304,7 +1305,7 @@ class HydrogenHandler(sax.ContentHandler):
                 self.curatom = None
                 self.curobj = self.curholder
 
-        else: # Just free the current element namespace
+        else:  # Just free the current element namespace
             self.curelement = ""
 
         return self.map

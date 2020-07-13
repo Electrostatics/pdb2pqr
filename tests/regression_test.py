@@ -146,6 +146,7 @@ def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     common.run_pdb2pqr(args=args, input_pdb=input_pdb, output_pqr=output_pqr,
                        expected_pqr=expected_pqr, tmp_path=tmp_path)
 
+
 # @pytest.mark.parametrize(
 #     "args, input_pdb, output_pqr, expected_pqr",
 

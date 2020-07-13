@@ -42,9 +42,9 @@ class Optimize:
         norm1 = util.normalize(coords1)
         norm2 = util.normalize(coords2)
         dotted = util.dot(norm1, norm2)
-        if dotted > 1.0: # If normalized, this is due to rounding error
+        if dotted > 1.0:  # If normalized, this is due to rounding error
             dotted = 1.0
-        elif dotted < -1.0: # If normalized, this is due to rounding error
+        elif dotted < -1.0:  # If normalized, this is due to rounding error
             dotted = -1.0
         rad = abs(math.acos(dotted))
         angle = rad*180.0/math.pi
@@ -197,7 +197,7 @@ class Optimize:
         residue = atom.residue
         nextatom = atom.bonds[0]
         coords = [atom.coords, nextatom.coords]
-        refcoords = [residue.reference.map[atom.name].coords, \
+        refcoords = [residue.reference.map[atom.name].coords,
                      residue.reference.map["H1"].coords]
         refatomcoords = residue.reference.map["H2"].coords
 
@@ -219,7 +219,7 @@ class Optimize:
         residue = atom.residue
         nextatom = atom.bonds[0]
         coords = [atom.coords, nextatom.coords]
-        refcoords = [residue.reference.map[atom.name].coords, \
+        refcoords = [residue.reference.map[atom.name].coords,
                      residue.reference.map[nextatom.name].coords]
         refatomcoords = residue.reference.map[addname].coords
 

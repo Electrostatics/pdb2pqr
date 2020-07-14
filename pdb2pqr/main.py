@@ -472,7 +472,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
 
     _LOGGER.info("Applying force field to biomolecule states.")
     protein.set_states()
-    hitlist, misslist = protein.apply_force_field(forcefield_)
+    matched_atoms, missing_atoms = protein.apply_force_field(forcefield_)
 
     missing_atoms = []
     lig_atoms = []
@@ -480,6 +480,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
         _LOGGER.info("Processing ligand.")
         _LOGGER.warning("Using ZAP9 forcefield for ligand radii.")
         ligand.assign_parameters()
+        lig_atoms = []
         for residue in protein.residues:
             tot_charge = 0
             for pdb_atom in residue.atoms:
@@ -498,8 +499,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
                         "in MOL2 file").format(r=residue, a=pdb_atom)
                     _LOGGER.warning(err)
                     missing_atoms.append(pdb_atom)
-
-    matched_atoms = hitlist + lig_atoms
+        matched_atoms += lig_atoms
 
     for residue in protein.residues:
         if not isclose(

@@ -22,7 +22,8 @@ def test_log_output_in_pqr_location(capture, input_file, output_file, tmp_path):
         tmp_path=tmp_path
     )
 
-    # This match tests that the log file is output to the same location as the output pqr
+    # This match tests that the log file is output to the same location
+    # as the output pqr
     capture.check_present(
         ('pdb2pqr.input_output', 'INFO', f'Logs stored: {tmp_path}/{output_file.split(".")[0]}.log')
     )

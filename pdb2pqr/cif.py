@@ -17,6 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 # TODO - This module should be nuked from orbit and refactored... it's the
 # only way to be sure
+# TODO - Why do we have this module when we have pdbx?
 
 
 def atom_site(block):
@@ -892,49 +893,56 @@ def ssbond(block):
         return ssb_arr, ssb_err
     for i in range(ssb_obj.getRowCount()):
         line = "SSBOND "
-        line += " "*(3 - len(str(ssb_obj.getValue("id", i)[-1]))) + \
-            str(ssb_obj.getValue("id", i)[-1])
+        line += (
+            " " * (3 - len(str(ssb_obj.getValue("id", i)[-1])))
+            + str(ssb_obj.getValue("id", i)[-1]))
         line += " "
-        line += " "*(3 - len(ssb_obj.getValue("ptnr1_auth_comp_id", i))) + \
-            ssb_obj.getValue("ptnr1_auth_comp_id", i)
+        line += (
+            " " * (3 - len(ssb_obj.getValue("ptnr1_auth_comp_id", i)))
+            + ssb_obj.getValue("ptnr1_auth_comp_id", i))
         line += " "
         line += ssb_obj.getValue("ptnr1_auth_asym_id", i)
         line += " "
-        line += " "*(4 - len(str(ssb_obj.getValue("ptnr1_auth_seq_id", i)))) + \
-            str(ssb_obj.getValue("ptnr1_auth_seq_id", i))
+        line += (
+            " " * (4 - len(str(ssb_obj.getValue("ptnr1_auth_seq_id", i))))
+            + str(ssb_obj.getValue("ptnr1_auth_seq_id", i)))
         if ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i) != '?':
             line += ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i)
         else:
             line += " "
-        line += " "*3
-        line += " "*(3 - len(ssb_obj.getValue("ptnr2_auth_comp_id", i))) + \
-            ssb_obj.getValue("ptnr2_auth_comp_id", i)
+        line += " " * 3
+        line += (
+            " " * (3 - len(ssb_obj.getValue("ptnr2_auth_comp_id", i)))
+            + ssb_obj.getValue("ptnr2_auth_comp_id", i))
         line += " "
         line += ssb_obj.getValue("ptnr2_auth_asym_id", i)
         line += " "
-        line += " "*(4 - len(str(ssb_obj.getValue("ptnr2_auth_seq_id", i)))) + \
-            str(ssb_obj.getValue("ptnr2_auth_seq_id", i))
+        line += (
+            " " * (4 - len(str(ssb_obj.getValue("ptnr2_auth_seq_id", i))))
+            + str(ssb_obj.getValue("ptnr2_auth_seq_id", i)))
         if ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i) != '?':
             line += ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i)
         else:
             line += " "
-        line += " "*23
-        line += " "*(6 - len(ssb_obj.getValue("ptnr1_symmetry", i).replace("_", ""))) + \
-            ssb_obj.getValue("ptnr1_symmetry", i).replace("_", "")
+        line += " " * 23
+        line += (
+            " " * (6 - len(ssb_obj.getValue("ptnr1_symmetry", i).replace(
+                "_", "")))
+            + ssb_obj.getValue("ptnr1_symmetry", i).replace("_", ""))
         line += " "
-        line += " "*(6 - len(ssb_obj.getValue("ptnr2_symmetry", i).replace("_", ""))) + \
-            ssb_obj.getValue("ptnr2_symmetry", i).replace("_", "")
+        line += (
+            " " * (6 - len(ssb_obj.getValue("ptnr2_symmetry", i).replace(
+                "_", "")))
+            + ssb_obj.getValue("ptnr2_symmetry", i).replace("_", ""))
         line += " "
-        line += " "*(5 - len(str(ssb_obj.getValue("pdbx_dist_value", i)))) + \
-            str(ssb_obj.getValue("pdbx_dist_value", i))
-
+        line += (
+            " " * (5 - len(str(ssb_obj.getValue("pdbx_dist_value", i))))
+            + str(ssb_obj.getValue("pdbx_dist_value", i)))
         try:
             ssb_arr.append(pdb.SSBOND(line))
-        # TODO - what are we catching here?
-        except:
+        except KeyError:
             _LOGGER.error("cif.ssbond:    Error parsing line:\n%s", line)
             ssb_err.append("ssbond")
-
     return ssb_arr, ssb_err
 
 

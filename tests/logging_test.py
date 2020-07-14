@@ -1,6 +1,7 @@
+""" Test log caching file in the same directory as the pqr output location """
 import pytest
-import common
 from testfixtures import log_capture
+import common
 
 
 @log_capture()

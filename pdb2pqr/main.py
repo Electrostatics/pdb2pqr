@@ -474,8 +474,6 @@ def non_trivial(args, protein, ligand, definition, is_cif):
     protein.set_states()
     matched_atoms, missing_atoms = protein.apply_force_field(forcefield_)
 
-    missing_atoms = []
-    lig_atoms = []
     if args.ligand is not None:
         _LOGGER.info("Processing ligand.")
         _LOGGER.warning("Using ZAP9 forcefield for ligand radii.")

@@ -4,23 +4,29 @@
 VERSION = "3.0"
 
 # How to format PDB2PQR title in output
-TITLE_FORMAT_STRING = "PDB2PQR v{version} - biomolecular structure conversion software"
+TITLE_FORMAT_STRING = (
+    "PDB2PQR v{version} - biomolecular structure conversion software")
 
 # Citation strings for PDB2PQR
-CITATIONS = [("Please cite:  Jurrus E, et al.  Improvements to the APBS biomolecular "
-              "solvation software suite.  Protein Sci 27 112-128 (2018)."),
-             ("Please cite:  Dolinsky TJ, et al.  PDB2PQR: expanding and upgrading "
-              "automated preparation of biomolecular structures for molecular simulations. "
-              "Nucleic Acids Res 35 W522-W525 (2007).")]
+CITATIONS = [
+    (
+        "Please cite:  Jurrus E, et al.  Improvements to the APBS "
+        "biomolecular solvation software suite.  Protein Sci 27 112-128 "
+        "(2018)."),
+    (
+        "Please cite:  Dolinsky TJ, et al.  PDB2PQR: expanding and upgrading "
+        "automated preparation of biomolecular structures for molecular "
+        "simulations. Nucleic Acids Res 35 W522-W525 (2007).")]
 
 # Standard force field names
 FORCE_FIELDS = ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]
 
 # Standard amino acid names
-AA_NAMES = ["ALA", "ARG", "ASH", "ASN", "ASP", "CYS", "CYM", "GLN", "GLU", "GLH",
-            "GLY", "HIS", "HID", "HIE", "HIP", "HSD", "HSE", "HSP", "ILE", "LEU",
-            "LYS", "LYN", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "TYM",
-            "VAL"]
+AA_NAMES = [
+    "ALA", "ARG", "ASH", "ASN", "ASP", "CYS", "CYM", "GLN", "GLU", "GLH",
+    "GLY", "HIS", "HID", "HIE", "HIP", "HSD", "HSE", "HSP", "ILE", "LEU",
+    "LYS", "LYN", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "TYM",
+    "VAL"]
 
 # Standard nucleic acid names
 NA_NAMES = ["A", "A5", "A3", "C", "C5", "C3", "G", "G5", "G3", "T", "T5", "T3",

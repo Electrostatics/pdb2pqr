@@ -16,13 +16,13 @@ modeling, analysis, and simulation. These tasks include:
 * Estimating titration states and protonating biomolecules in a manner
   consistent with favorable hydrogen bonding.
 * Assigning charge and radius parameters from a variety of force fields.
-* Generating "PQR" output compatible with several popular computational modeling
-  and analysis packages.
+* Generating "PQR" output compatible with several popular computational
+  modeling and analysis packages.
 
-This service is intended to facilitate the setup and execution of electrostatics
-calculations for both experts and non-experts and thereby broaden the
-accessibility of biomolecular solvation and electrostatics analyses to the
-biomedical community.
+This service is intended to facilitate the setup and execution of
+electrostatics calculations for both experts and non-experts and thereby
+broaden the accessibility of biomolecular solvation and electrostatics analyses
+to the biomedical community.
 """
 
 import sys

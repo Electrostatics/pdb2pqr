@@ -22,7 +22,6 @@ from . import forcefield
 from . import protein as prot
 from . import input_output as io
 from .ligand.mol2 import Mol2Molecule
-from . import input_output as io
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
@@ -43,89 +42,120 @@ def build_parser():
     """
 
     desc = TITLE_FORMAT_STRING.format(version=VERSION)
-    pars = argparse.ArgumentParser(description=desc,
-                                   formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    pars.add_argument("input_path",
-                      help="Input PDB path or ID (to be retrieved from RCSB database")
+    pars = argparse.ArgumentParser(
+        description=desc,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    pars.add_argument(
+        "input_path",
+        help="Input PDB path or ID (to be retrieved from RCSB database")
     pars.add_argument("output_pqr", help="Output PQR path")
-    pars.add_argument("--log-level", help="Logging level", default="INFO",
-                      choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
-    grp1 = pars.add_argument_group(title="Mandatory options",
-                                   description="One of the following options must be used")
-    grp1.add_argument("--ff", choices=[ff.upper() for ff in FORCE_FIELDS],
-                      default="PARSE",
-                      help="The forcefield to use.")
-    grp1.add_argument("--userff",
-                      help=("The user-created forcefield file to use. Requires "
-                            "--usernames and overrides --ff"))
-    grp1.add_argument("--clean", action='store_true', default=False,
-                      help=("Do no optimization, atom addition, or parameter "
-                            "assignment, just return the original PDB file in "
-                            "aligned format. Overrides --ff and --userff"))
+    pars.add_argument(
+        "--log-level", help="Logging level", default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+    grp1 = pars.add_argument_group(
+        title="Mandatory options",
+        description="One of the following options must be used")
+    grp1.add_argument(
+        "--ff", choices=[ff.upper() for ff in FORCE_FIELDS],
+        default="PARSE", help="The forcefield to use.")
+    grp1.add_argument(
+        "--userff",
+        help=(
+            "The user-created forcefield file to use. Requires "
+            "--usernames and overrides --ff"))
+    grp1.add_argument(
+        "--clean", action='store_true', default=False,
+        help=(
+            "Do no optimization, atom addition, or parameter assignment, "
+            "just return the original PDB file in aligned format. Overrides "
+            "--ff and --userff"))
     grp2 = pars.add_argument_group(title="General options")
-    grp2.add_argument('--nodebump', dest='debump', action='store_false',
-                      default=True, help='Do not perform the debumping operation')
-    grp2.add_argument('--noopt', dest='opt', action='store_false', default=True,
-                      help='Do not perform hydrogen optimization')
-    grp2.add_argument('--keep-chain', action='store_true', default=False,
-                      help='Keep the chain ID in the output PQR file')
-    grp2.add_argument('--assign-only', action='store_true', default=False,
-                      help=("Only assign charges and radii - do not add atoms, "
-                            "debump, or optimize."))
-    grp2.add_argument('--ffout', choices=[ff.upper() for ff in FORCE_FIELDS],
-                      help=('Instead of using the standard canonical naming '
-                            'scheme for residue and atom names, use the names '
-                            'from the given forcefield'))
-    grp2.add_argument('--usernames',
-                      help=('The user-created names file to use. Required if '
-                            'using --userff'))
-    grp2.add_argument('--apbs-input',
-                      help=('Create a template APBS input file based on the '
-                            'generated PQR file at the specified location.'))
-    grp2.add_argument('--ligand',
-                      help=('Calculate the parameters for the specified '
-                            'MOL2-format ligand at the path specified by this '
-                            'option.  PDB2PKA must be compiled.'))
-    grp2.add_argument('--whitespace', action='store_true', default=False,
-                      help=('Insert whitespaces between atom name and residue '
-                            'name, between x and y, and between y and z.'))
-    grp2.add_argument('--neutraln', action='store_true', default=False,
-                      help=('Make the N-terminus of this protein neutral '
-                            '(default is charged). Requires PARSE force field.'))
-    grp2.add_argument('--neutralc', action='store_true', default=False,
-                      help=('Make the C-terminus of this protein neutral '
-                            '(default is charged). Requires PARSE force field.'))
-    grp2.add_argument('--drop-water', action='store_true', default=False,
-                      help='Drop waters before processing protein.')
-    grp2.add_argument('--include-header', action='store_true', default=False,
-                      help=('Include pdb header in pqr file. WARNING: The '
-                            'resulting PQR file will not work with APBS versions '
-                            'prior to 1.5'))
-    grp3 = pars.add_argument_group(title="pKa options",
-                                   description="Options for titration calculations")
-    grp3.add_argument('--titration-state-method', dest="pka_method",
-                      choices=('propka', 'pdb2pka'),
-                      help=('Method used to calculate titration states. If a '
-                            'titration state method is selected, titratable '
-                            'residue charge states will be set by the pH value '
-                            'supplied by --with_ph'))
-    grp3.add_argument('--with-ph', dest='ph', type=float, action='store',
-                      default=7.0,
-                      help=('pH values to use when applying the results of the '
-                            'selected pH calculation method.'))
+    grp2.add_argument(
+        '--nodebump', dest='debump', action='store_false',
+        default=True, help='Do not perform the debumping operation')
+    grp2.add_argument(
+        '--noopt', dest='opt', action='store_false', default=True,
+        help='Do not perform hydrogen optimization')
+    grp2.add_argument(
+        '--keep-chain', action='store_true', default=False,
+        help='Keep the chain ID in the output PQR file')
+    grp2.add_argument(
+        '--assign-only', action='store_true', default=False,
+        help=(
+            "Only assign charges and radii - do not add atoms, "
+            "debump, or optimize."))
+    grp2.add_argument(
+        '--ffout', choices=[ff.upper() for ff in FORCE_FIELDS],
+        help=(
+            'Instead of using the standard canonical naming scheme for '
+            'residue and atom names, use the names from the given forcefield'))
+    grp2.add_argument(
+        '--usernames',
+        help=(
+            'The user-created names file to use. Required if using --userff'))
+    grp2.add_argument(
+        '--apbs-input',
+        help=(
+            'Create a template APBS input file based on the generated PQR '
+            'file at the specified location.'))
+    grp2.add_argument(
+        '--ligand',
+        help=(
+            'Calculate the parameters for the specified MOL2-format ligand at '
+            'the path specified by this option.  PDB2PKA must be compiled.'))
+    grp2.add_argument(
+        '--whitespace', action='store_true', default=False,
+        help=(
+            'Insert whitespaces between atom name and residue name, between x '
+            'and y, and between y and z.'))
+    grp2.add_argument(
+        '--neutraln', action='store_true', default=False,
+        help=(
+            'Make the N-terminus of this protein neutral (default is '
+            'charged). Requires PARSE force field.'))
+    grp2.add_argument(
+        '--neutralc', action='store_true', default=False,
+        help=(
+            'Make the C-terminus of this protein neutral (default is '
+            'charged). Requires PARSE force field.'))
+    grp2.add_argument(
+        '--drop-water', action='store_true', default=False,
+        help='Drop waters before processing protein.')
+    grp2.add_argument(
+        '--include-header', action='store_true', default=False,
+        help=(
+            'Include pdb header in pqr file. WARNING: The resulting PQR file '
+            'will not work with APBS versions prior to 1.5'))
+    grp3 = pars.add_argument_group(
+        title="pKa options", description="Options for titration calculations")
+    grp3.add_argument(
+        '--titration-state-method', dest="pka_method",
+        choices=('propka', 'pdb2pka'),
+        help=(
+            'Method used to calculate titration states. If a titration state '
+            'method is selected, titratable residue charge states will be set '
+            'by the pH value supplied by --with_ph'))
+    grp3.add_argument(
+        '--with-ph', dest='ph', type=float, action='store', default=7.0,
+        help=(
+            'pH values to use when applying the results of the selected pH '
+            'calculation method.'))
     # TODO - need separate argparse groups for PDB2PKA and PROPKA
     # These exist but need real options
     grp4 = pars.add_argument_group(title="PDB2PKA method options")
-    grp4.add_argument('--pdb2pka-out', default='pdb2pka_output',
-                      help='Output directory for PDB2PKA results.')
-    grp4.add_argument('--pdb2pka-resume', action="store_true", default=False,
-                      help='Resume run from state saved in output directory.')
-    grp4.add_argument('--pdie', default=8.0,
-                      help='Protein dielectric constant.')
-    grp4.add_argument('--sdie', default=80.0,
-                      help='Solvent dielectric constant.')
-    grp4.add_argument('--pairene', default=1.0,
-                      help='Cutoff energy in kT for pairwise pKa interaction energies.')
+    grp4.add_argument(
+        '--pdb2pka-out', default='pdb2pka_output',
+        help='Output directory for PDB2PKA results.')
+    grp4.add_argument(
+        '--pdb2pka-resume', action="store_true", default=False,
+        help='Resume run from state saved in output directory.')
+    grp4.add_argument(
+        '--pdie', default=8.0, help='Protein dielectric constant.')
+    grp4.add_argument(
+        '--sdie', default=80.0, help='Solvent dielectric constant.')
+    grp4.add_argument(
+        '--pairene', default=1.0,
+        help='Cutoff energy in kT for pairwise pKa interaction energies.')
     pars = propka.lib.build_parser(pars)
     return pars
 
@@ -163,11 +193,12 @@ def check_files(args):
             error = "User-provided forcefield file does not exist: %s" % userff
             raise FileNotFoundError(error)
         if args.usernames is None:
-            raise RuntimeError('--usernames must be specified if using --userff')
+            err = '--usernames must be specified if using --userff'
+            raise RuntimeError(err)
     elif args.ff is not None:
         if io.test_dat_file(args.ff) == "":
-            raise RuntimeError("Unable to load parameter file for forcefield %s" % args.ff)
-
+            err = "Unable to load parameter file for forcefield %s" % args.ff
+            raise RuntimeError(err)
     if args.ligand is not None:
         ligand = Path(args.ligand)
         if not ligand.is_file():
@@ -184,14 +215,16 @@ def check_options(args):
         RuntimeError:  silly option combinations were encountered.
     """
     if (args.ph < 0) or (args.ph > 14):
-        raise RuntimeError(("Specified pH (%s) is outside the range [1, 14] "
-                            "of this program") % args.ph)
-
+        err = (
+            "Specified pH (%s) is outside the range [1, 14] of this program"
+            % args.ph)
+        raise RuntimeError(err)
     if args.neutraln and (args.ff is None or args.ff.lower() != 'parse'):
-        raise RuntimeError('--neutraln option only works with PARSE forcefield!')
-
+        err = '--neutraln option only works with PARSE forcefield!'
+        raise RuntimeError(err)
     if args.neutralc and (args.ff is None or args.ff.lower() != 'parse'):
-        raise RuntimeError('--neutralc option only works with PARSE forcefield!')
+        err = '--neutralc option only works with PARSE forcefield!'
+        raise RuntimeError(err)
 
 
 def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
@@ -209,18 +242,22 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
     with open(args.output_pqr, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
-            _LOGGER.warning("Ignoring %d header lines in output.", len(header_lines))
+            _LOGGER.warning(
+                "Ignoring %d header lines in output.", len(header_lines))
         if missing_lines:
-            _LOGGER.warning("Ignoring %d missing lines in output.", len(missing_lines))
+            _LOGGER.warning(
+                "Ignoring %d missing lines in output.", len(missing_lines))
         for line in pqr_lines:
             if args.whitespace:
                 if line[0:4] == 'ATOM':
-                    newline = line[0:6] + ' ' + line[6:16] + ' ' + \
-                        line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                    newline = (
+                        line[0:6] + ' ' + line[6:16] + ' ' + line[16:38]
+                        + ' ' + line[38:46] + ' ' + line[46:])
                     outfile.write(newline)
                 elif line[0:6] == 'HETATM':
-                    newline = line[0:6] + ' ' + line[6:16] + ' ' + \
-                        line[16:38] + ' ' + line[38:46] + ' ' + line[46:]
+                    newline = (
+                        line[0:6] + ' ' + line[6:16] + ' ' + line[16:38]
+                        + ' ' + line[38:46] + ' ' + line[46:])
                     outfile.write(newline)
                 elif line[0:3] == "TER" and is_cif:
                     pass
@@ -281,11 +318,14 @@ def setup_molecule(pdblist, definition, ligand_path):
         for atom in residue.atoms:
             if atom.alt_loc != "":
                 multoccupancy = True
-                txt = "Multiple occupancies found: %s in %s." % (atom.name, residue)
+                txt = "Multiple occupancies found: %s in %s." % (
+                    atom.name, residue)
                 _LOGGER.warning(txt)
         if multoccupancy:
-            _LOGGER.warning(("Multiple occupancies found in %s. At least "
-                             "one of the instances is being ignored."), residue)
+            err = (
+                "Multiple occupancies found in %s. At least one of the "
+                "instances is being ignored." % residue)
+            _LOGGER.warning(err)
     return protein, definition, ligand
 
 
@@ -298,31 +338,33 @@ def is_repairable(protein, has_ligand):
     Returns:
         Boolean
     Raises:
-        ValueError if there are insufficient heavy atoms or a significant part of
-        the protein is missing
+        ValueError if there are insufficient heavy atoms or a significant part
+        of the protein is missing
     """
     num_heavy = protein.num_heavy
     num_missing = protein.num_missing_heavy
     if num_heavy == 0:
         if not has_ligand:
-            raise ValueError(("No biomolecule heavy atoms found and no ligand "
-                              "present.  Unable to proceed.  You may also see "
-                              "this message if PDB2PQR does not have parameters "
-                              "for any residue in your protein."))
+            err = (
+                "No biomolecule heavy atoms found and no ligand present. "
+                "Unable to proceed.  You may also see this message if "
+                "PDB2PQR does not have parameters for any residue in your "
+                "protein.")
+            raise ValueError(err)
         else:
-            _LOGGER.warning(("No heavy atoms found but a ligand is present. "
-                             "Proceeding with caution."))
+            err = (
+                "No heavy atoms found but a ligand is present. Proceeding "
+                "with caution.")
+            _LOGGER.warning(err)
             return False
-
     if num_missing == 0:
         _LOGGER.info("This biomolecule is clean.  No repair needed.")
         return False
-
     miss_frac = float(num_missing) / float(num_heavy)
     if miss_frac > REPAIR_LIMIT:
         error = "This PDB file is missing too many (%i out of " % num_missing
-        error += "%i, %g) heavy atoms to accurately repair the file.  " % \
-                    (num_heavy, miss_frac)
+        error += "%i, %g) " % (num_heavy, miss_frac)
+        error += "heavy atoms to accurately repair the file."
         error += "The current repair limit is set at %g. " % REPAIR_LIMIT
         error += "You may also see this message if PDB2PQR does not have "
         error += "parameters for enough residues in your protein."
@@ -397,7 +439,6 @@ def run_propka(args, protein):
             row_dict["coupled_group"] = None
         rows.append(row_dict)
     df = pandas.DataFrame(rows)
-
     return df, pka_filename
 
 
@@ -421,45 +462,39 @@ def non_trivial(args, protein, ligand, definition, is_cif):
     _LOGGER.info("Loading hydrogen topology definitions.")
     hydrogen_handler = hydrogens.create_handler()
     debumper = debump.Debump(protein)
-
     if args.assign_only:
-        # TODO - I don't understand why HIS needs to be set to HIP for assign-only
+        # TODO - I don't understand why HIS needs to be set to HIP for
+        # assign-only
         protein.set_hip()
     else:
         if is_repairable(protein, args.ligand is not None):
-            _LOGGER.info("Attempting to repair %d missing atoms in biomolecule.",
-                         protein.num_missing_heavy)
+            _LOGGER.info(
+                "Attempting to repair %d missing atoms in biomolecule.",
+                protein.num_missing_heavy)
             protein.repair_heavy()
-
         _LOGGER.info("Updating disulfide bridges.")
         protein.update_ss_bridges()
-
         if args.debump:
             _LOGGER.info("Debumping biomolecule.")
             debumper.debump_protein()
-
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
             protein.remove_hydrogens()
-            pka_df, pka_filename = run_propka(args, protein)
-
+            pka_df, _ = run_propka(args, protein)
             protein.apply_pka_values(
                 forcefield_.name, args.ph,
                 dict(zip(pka_df.group_label, pka_df.pKa)))
-
         elif args.pka_method == "pdb2pka":
             _LOGGER.info("Assigning titration states with PDB2PKA.")
             raise NotImplementedError("PDB2PKA not implemented.")
-
         _LOGGER.info("Adding hydrogens to biomolecule.")
         protein.add_hydrogens()
-
         if args.debump:
             _LOGGER.info("Debumping biomolecule (again).")
             debumper.debump_protein()
-
         _LOGGER.info("Optimizing hydrogen bonds")
-        hydrogen_routines = hydrogens.HydrogenRoutines(debumper, hydrogen_handler)
+        hydrogen_routines = hydrogens.HydrogenRoutines(
+            debumper, hydrogen_handler)
         if args.opt:
             hydrogen_routines.set_optimizeable_hydrogens()
             protein.hold_residues(None)
@@ -469,11 +504,9 @@ def non_trivial(args, protein, ligand, definition, is_cif):
             hydrogen_routines.initialize_wat_optimization()
             hydrogen_routines.optimize_hydrogens()
         hydrogen_routines.cleanup()
-
     _LOGGER.info("Applying force field to biomolecule states.")
     protein.set_states()
     matched_atoms, missing_atoms = protein.apply_force_field(forcefield_)
-
     if args.ligand is not None:
         _LOGGER.info("Processing ligand.")
         _LOGGER.warning("Using ZAP9 forcefield for ligand radii.")
@@ -498,7 +531,6 @@ def non_trivial(args, protein, ligand, definition, is_cif):
                     _LOGGER.warning(err)
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
-
     for residue in protein.residues:
         if not isclose(
                 residue.charge, int(residue.charge), abs_tol=CHARGE_ERROR):
@@ -506,7 +538,6 @@ def non_trivial(args, protein, ligand, definition, is_cif):
                 "Residue {r.name} {r.res_seq} charge is "
                 "non-integer: {r.charge}").format(r=residue)
             raise ValueError(err)
-
     if args.ffout is not None:
         _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
         if args.ffout != args.ff:
@@ -514,7 +545,6 @@ def non_trivial(args, protein, ligand, definition, is_cif):
         else:
             name_scheme = forcefield_
         protein.apply_name_scheme(name_scheme)
-
     _LOGGER.info("Regenerating headers.")
     reslist, charge = protein.charge
     if is_cif:
@@ -526,10 +556,8 @@ def non_trivial(args, protein, ligand, definition, is_cif):
             protein.pdblist, missing_atoms, reslist, charge, args.ff,
             args.pka_method, args.ph, args.ffout,
             include_old_header=args.include_header)
-
     _LOGGER.info("Regenerating PDB lines.")
     lines = io.print_protein_atoms(matched_atoms, args.keep_chain)
-
     return {"lines": lines, "header": header, "missed_residues": missing_atoms}
 
 
@@ -544,40 +572,36 @@ def main(args):
     io.setup_logger(args.output_pqr, args.log_level)
     _LOGGER.debug("Invoked with arguments: %s", args)
     print_splash_screen(args)
-
     _LOGGER.info("Checking and transforming input arguments.")
     args = transform_arguments(args)
     check_files(args)
     check_options(args)
-
     _LOGGER.info("Loading topology files.")
     definition = io.get_definitions()
-
     _LOGGER.info("Loading molecule: %s", args.input_path)
     pdblist, is_cif = io.get_molecule(args.input_path)
-
     if args.drop_water:
         _LOGGER.info("Dropping water from structure.")
         pdblist = drop_water(pdblist)
     _LOGGER.info("Setting up molecule.")
-    protein, definition, ligand = setup_molecule(pdblist, definition, args.ligand)
-
+    protein, definition, ligand = setup_molecule(
+        pdblist, definition, args.ligand)
     _LOGGER.info("Setting termini states for protein chains.")
     protein.set_termini(args.neutraln, args.neutralc)
     protein.update_bonds()
-
     if args.clean:
-        _LOGGER.info("Arguments specified cleaning only; skipping remaining steps.")
-        results = {"header": "", "missed_residues": None, "protein": protein,
-                   "lines": io.print_protein_atoms(protein.atoms, args.keep_chain)}
+        _LOGGER.info(
+            "Arguments specified cleaning only; skipping remaining steps.")
+        results = {
+            "header": "", "missed_residues": None, "protein": protein,
+            "lines": io.print_protein_atoms(protein.atoms, args.keep_chain)}
     else:
         results = non_trivial(
             args=args, protein=protein, ligand=ligand, definition=definition,
             is_cif=is_cif)
-
-    print_pqr(args=args, pqr_lines=results["lines"], header_lines=results["header"],
-              missing_lines=results["missed_residues"], is_cif=is_cif)
-
+    print_pqr(
+        args=args, pqr_lines=results["lines"], header_lines=results["header"],
+        missing_lines=results["missed_residues"], is_cif=is_cif)
     if args.apbs_input:
         raise NotImplementedError("Missing argument for APBS input file.")
         io.dump_apbs(args.output_pqr)

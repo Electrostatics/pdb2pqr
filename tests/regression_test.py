@@ -132,8 +132,8 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
         ),
         pytest.param(
             "--userff={ff} --usernames={names} --whitespace".format(
-                ff=common.DATA_DIR / "CUSTOM-FF.DAT",
-                names=common.DATA_DIR / "CUSTOM.names"),
+                ff=common.DATA_DIR / "custom-ff.dat",
+                names=common.DATA_DIR / "custom.names"),
             common.DATA_DIR / "1AFS.pdb",
             "output.pqr",
             common.DATA_DIR / '1AFS_userff_usernames_whitespace.pqr',
@@ -145,6 +145,7 @@ def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace."""
     common.run_pdb2pqr(args=args, input_pdb=input_pdb, output_pqr=output_pqr,
                        expected_pqr=expected_pqr, tmp_path=tmp_path)
+
 
 # @pytest.mark.parametrize(
 #     "args, input_pdb, output_pqr, expected_pqr",

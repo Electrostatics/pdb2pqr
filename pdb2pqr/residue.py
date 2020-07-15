@@ -46,7 +46,7 @@ class Residue(object):
             atomname = atom.name
             if atomname not in self.map:
                 self.add_atom(atom)
-            else: # Don't add duplicate atom
+            else:  # Don't add duplicate atom
                 oldatom = self.get_atom(atomname)
                 oldatom.alt_loc = ""
 
@@ -314,8 +314,9 @@ class Residue(object):
                 if not bonded and self.reference.name == "HIS":
                     atom.hacceptor = True
 
-            elif atomname.startswith("O") or \
-                 (atomname.startswith("S") and self.reference.name == "CYS"):
+            elif (atomname.startswith("O") or
+                  (atomname.startswith("S") and
+                   self.reference.name == "CYS")):
                 atom.hacceptor = True
                 for bondedatom in atom.bonds:
                     if bondedatom.is_hydrogen:

@@ -53,7 +53,7 @@ class Amino(residue.Residue):
 
         # Create each atom
         for atom_ in atoms:
-            if atom_.name in ref.altnames: # Rename atoms
+            if atom_.name in ref.altnames:  # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
             if atom_.name not in self.map:
                 atom = struct.Atom(atom_, "ATOM", self)
@@ -120,10 +120,10 @@ class Amino(residue.Residue):
     def rebuild_tetrahedral(self, atomname):
         """Rebuild a tetrahedral hydrogen group.
 
-        This is necessary due to the shortcomings of the quatfit routine - given
-        a tetrahedral geometry and two existing hydrogens, the quatfit routines
-        have two potential solutions.  This function uses basic tetrahedral
-        geometry to fix this issue.
+        This is necessary due to the shortcomings of the quatfit routine -
+        given a tetrahedral geometry and two existing hydrogens, the quatfit
+        routines have two potential solutions.  This function uses basic
+        tetrahedral geometry to fix this issue.
 
         Parameters
             atomname: The atomname to add (string)
@@ -163,10 +163,12 @@ class Amino(residue.Residue):
 
             # Place according to two atoms
             coords = [bondatom.coords, nextatom.coords]
-            refcoords = [self.reference.map[bondname].coords, \
-                         self.reference.map[nextatomname].coords]
+            refcoords = [
+                self.reference.map[bondname].coords,
+                self.reference.map[nextatomname].coords]
             refatomcoords = atomref.coords
-            newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
+            newcoords = quat.find_coordinates(
+                2, coords, refcoords, refatomcoords)
             self.create_atom(atomname, newcoords)
 
             # For LEU and ILE residues only: make sure the Hydrogens are in
@@ -303,7 +305,9 @@ class ASP(Amino):
         return 'D'
 
     def set_state(self):
-        """Set the name to use for the forcefield based on the current state."""
+        """Set the name to use for the forcefield.
+
+        Name set based on the current state."""
         if "ASH" in self.patches or self.name == "ASH":
             self.ffname = "ASH"
         Amino.set_state(self)
@@ -359,7 +363,9 @@ class GLU(Amino):
         return 'E'
 
     def set_state(self):
-        """Set the name to use for the forcefield based on the current state."""
+        """Set the name to use for the forcefield.
+
+        Set based on the current state."""
         if "GLH" in self.patches or self.name == "GLH":
             self.ffname = "GLH"
         Amino.set_state(self)
@@ -393,16 +399,22 @@ class HIS(Amino):
         hacceptor or hdonor flags.  Otherwise HID is used as the default.
         """
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
-            if self.get_atom("ND1").hdonor and not self.get_atom("ND1").hacceptor:
+            if (
+                    self.get_atom("ND1").hdonor
+                    and not self.get_atom("ND1").hacceptor):
                 if self.has_atom("HE2"):
                     self.remove_atom("HE2")
-            elif self.get_atom("NE2").hdonor and not self.get_atom("NE2").hacceptor:
+            elif (
+                    self.get_atom("NE2").hdonor
+                    and not self.get_atom("NE2").hacceptor):
                 if self.has_atom("HD1"):
                     self.remove_atom("HD1")
-            elif self.get_atom("ND1").hacceptor and not self.get_atom("ND1").hdonor:
+            elif (
+                    self.get_atom("ND1").hacceptor
+                    and not self.get_atom("ND1").hdonor):
                 if self.has_atom("HD1"):
                     self.remove_atom("HD1")
-            else: # Default to HID
+            else:  # Default to HID
                 if self.has_atom("HE2"):
                     self.remove_atom("HE2")
 
@@ -413,10 +425,11 @@ class HIS(Amino):
         elif self.has_atom("HE2"):
             self.ffname = "HIE"
         else:
-            errstr = ("Invalid type for %s! Missing both HD1 and HE2 atoms. If "
-                      "you receive this error while using the --assign-only "
-                      "option you can only resolve it by adding HD1, HE2 or "
-                      "both to this residue.") % str(self)
+            errstr = (
+                "Invalid type for %s! Missing both HD1 and HE2 atoms. If "
+                "you receive this error while using the --assign-only "
+                "option you can only resolve it by adding HD1, HE2 or "
+                "both to this residue.") % str(self)
             raise TypeError(errstr)
         Amino.set_state(self)
 
@@ -586,14 +599,14 @@ class WAT(residue.Residue):
 
         # Create each atom
         for atom_ in atoms:
-            if atom_.name in ref.altnames: # Rename atoms
+            if atom_.name in ref.altnames:  # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
 
             atom = struct.Atom(atom_, "HETATM", self)
             atomname = atom.name
             if atomname not in self.map:
                 self.add_atom(atom)
-            else: # Don't add duplicate atom with alt_loc field
+            else:  # Don't add duplicate atom with alt_loc field
                 oldatom = self.get_atom(atomname)
                 oldatom.alt_loc = ""
 
@@ -655,14 +668,14 @@ class LIG(residue.Residue):
 
         # Create each atom
         for atom_ in atoms:
-            if atom_.name in ref.altnames: # Rename atoms
+            if atom_.name in ref.altnames:  # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
 
             atom = struct.Atom(atom_, "HETATM", self)
             atomname = atom.name
             if atomname not in self.map:
                 self.add_atom(atom)
-            else: # Don't add duplicate atom with alt_loc field
+            else:  # Don't add duplicate atom with alt_loc field
                 oldatom = self.get_atom(atomname)
                 oldatom.alt_loc = ""
 

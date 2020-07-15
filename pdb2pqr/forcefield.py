@@ -81,8 +81,9 @@ class ForcefieldHandler(sax.ContentHandler):
             name:  The name of the element (string)
         """
         if name == "residue":
-            if self.oldresname != None:  # Make a new residue hook
-                newreslist = self.find_matching_names(self.newresname, self.reference)
+            if self.oldresname is not None:  # Make a new residue hook
+                newreslist = self.find_matching_names(
+                    self.newresname, self.reference)
 
                 # Multiple new residues
                 if self.oldresname.find("$group") >= 0:
@@ -93,7 +94,7 @@ class ForcefieldHandler(sax.ContentHandler):
                         if fromname in self.map:
                             self.update_map(resname, fromname, self.map)
 
-                else: # Work with a single new residue name
+                else:  # Work with a single new residue name
                     _ = self.find_matching_names(self.oldresname, self.map)
                     for resitem in newreslist:
                         resname = resitem.string
@@ -125,7 +126,7 @@ class ForcefieldHandler(sax.ContentHandler):
             self.oldatomname = None
             self.newatomname = None
 
-        else: # Just free the current element namespace
+        else:  # Just free the current element namespace
             self.curelement = ""
 
         return self.map
@@ -179,7 +180,8 @@ class Forcefield:
             defpath = io.test_dat_file(ff_name)
             if defpath == "":
                 _LOGGER.error("%s", locals())
-                raise FileNotFoundError("Unable to find forcefield parameter file %s!" % ff_name)
+                err = "Unable to find forcefield parameter file %s!" % ff_name
+                raise FileNotFoundError(err)
         else:
             defpath = userff
 
@@ -196,7 +198,8 @@ class Forcefield:
                         charge = float(fields[2])
                         radius = float(fields[3])
                     except ValueError:
-                        txt = "Unable to recognize user-defined forcefield file"
+                        txt = (
+                            "Unable to recognize user-defined forcefield file")
                         if defpath != "":
                             txt += " %s!" % defpath
                         else:
@@ -206,9 +209,11 @@ class Forcefield:
 
                     try:
                         group = fields[4]
-                        atom = ForcefieldAtom(atomname, charge, radius, resname, group)
+                        atom = ForcefieldAtom(
+                            atomname, charge, radius, resname, group)
                     except IndexError:
-                        atom = ForcefieldAtom(atomname, charge, radius, resname)
+                        atom = ForcefieldAtom(
+                            atomname, charge, radius, resname)
 
                     my_residue = self.get_residue(resname)
                     if my_residue is None:
@@ -314,7 +319,7 @@ class Forcefield:
         charge = None
         radius = None
 
-        #print self.map.keys()
+        # print self.map.keys()
         if resname in self.map:
             resid = self.map[resname]
             if resid.has_atom(atomname):
@@ -359,7 +364,7 @@ class Forcefield:
             return charge, radius
 
         atom = defresidue.get_atom(atomname)
-        if atom != None:
+        if atom is not None:
             charge = atom.charge
             radius = atom.radius
 
@@ -395,7 +400,7 @@ class Forcefield:
             elif "HE2" in residue.map:
                 resname = "HIE"
             else:
-                resname = "HID" # Default for no hydrogens
+                resname = "HID"  # Default for no hydrogens
         elif residue.name == "HSP":
             resname = "HIP"
         elif residue.name == "HSE":
@@ -469,7 +474,6 @@ class Forcefield:
         # TODO - this is a crazy list of conditionals!
         atomname = name
         resname = residue.name
-
         # Terminal/Water Substitutions
         nterm = residue.is_n_term
         cterm = residue.is_c_term
@@ -484,7 +488,7 @@ class Forcefield:
                 resname = "PRN"
                 if atomname == "H2" or atomname == "H3":
                     atomname = "HN"
-            elif nterm == 2: # Neutral
+            elif nterm == 2:  # Neutral
                 # TODO - there are a lot of hard-coded repeated lists like this
                 # They should be replaced with module-level variables.
                 if atomname in ["N", "H", "H2", "H3", "CA", "HA", "C", "O"]:
@@ -493,7 +497,7 @@ class Forcefield:
                     atomname = "H1"
                 if atomname == 'H3':
                     atomname = 'H2'
-            elif nterm == 3: # Positive
+            elif nterm == 3:  # Positive
                 if atomname in ["N", "H", "H2", "H3", "CA", "HA", "C", "O"]:
                     resname = "BK+"
                 if atomname == "H":
@@ -503,13 +507,15 @@ class Forcefield:
                 atomname = "O1"
             elif atomname == "OXT":
                 atomname = "O2"
-            if cterm == 1 and atomname in ["N", "H", "HA", "CA", "C", "O1", "O2"]:
+            if cterm == 1 and atomname in [
+                    "N", "H", "HA", "CA", "C", "O1", "O2"]:
                 resname = "BK-"
-            elif cterm == 2 and atomname in ["N", "H", "HA", "CA", "C", "O1", "O2", "HO"]:
+            elif cterm == 2 and atomname in [
+                    "N", "H", "HA", "CA", "C", "O1", "O2", "HO"]:
                 if atomname == "HO":
                     atomname = "H2"
                 resname = "BKC"
-            #print 'Cterm resname is',resname
+            # print 'Cterm resname is',resname
         elif residue.type == 3:
             resname = "H2O"
             if atomname == "O":
@@ -518,7 +524,6 @@ class Forcefield:
                 atomname = "HH1"
             elif atomname == "H2":
                 atomname = "HH2"
-
         # Residue Substitutions
         if resname == "HSD":
             resname = "HID"
@@ -535,7 +540,6 @@ class Forcefield:
                 atomname = "CD1"
         elif resname == "CYS" and "HG" not in residue.map:
             resname = "CSS"
-
         # Histidine
         elif resname == "HIS":
             if "HD1" in residue.map and "HE2" in residue.map:
@@ -544,7 +548,7 @@ class Forcefield:
                 resname = "HID"
             elif "HE2" in residue.map:
                 resname = "HIS"
-        elif resname == "GLU" or resname == "GLH":
+        elif resname in ["GLU", "GLH"]:
             if "HE1" in residue.map:
                 resname = "GL0"
                 if atomname == "HE1":
@@ -555,7 +559,7 @@ class Forcefield:
                     atomname = "OE1"
             elif "HE2" in residue.map:
                 resname = "GL0"
-        elif resname == "ASP" or resname == "ASH":
+        elif resname in ["ASP", "ASH"]:
             if "HD1" in residue.map:
                 resname = "AS0"
                 if atomname == "HD1":
@@ -576,7 +580,7 @@ class Forcefield:
             elif atomname == "CH3":
                 atomname = "CA"
         elif resname == "TYR":
-            if not "HH" in residue.map:
+            if "HH" not in residue.map:
                 resname = "TYM"
         elif resname == "TYM":
             resname = "TY-"
@@ -584,13 +588,13 @@ class Forcefield:
             resname = "CY-"
         elif resname == "LYN":
             resname = "LY0"
-
-        # Neutral LYS and neutral ARG detection based on hydrogens - added by Jens
+        # Neutral LYS and neutral ARG detection based on hydrogens - added by
+        # Jens
         elif resname == "LYS":
-            if not "HZ3" in residue.map:
+            if "HZ3" not in residue.map:
                 resname = "LY0"
         elif resname == "ARG":
-            if not "HE" in residue.map:
+            if "HE" not in residue.map:
                 resname = "AR0"
         elif resname == "NME":
             resname = "N-M"
@@ -600,7 +604,6 @@ class Forcefield:
                 atomname = "H1"
             elif atomname.startswith("HH"):
                 atomname = "HA" + atomname[-1]
-
         # Hydrogen Substitutions
         if atomname == "H":
             atomname = "HN"
@@ -612,11 +615,13 @@ class Forcefield:
             atomname = "HB1"
         elif atomname == "HB3" and resname not in ["ALA"]:
             atomname = "HB2"
-        elif atomname == "HD2" and resname not in ["HIS", "HI+", "HID", "AS0"]:
+        elif atomname == "HD2" and resname not in [
+                "HIS", "HI+", "HID", "AS0"]:
             atomname = "HD1"
         elif atomname == "HD3" and resname not in ["HIS", "HI+", "HID"]:
             atomname = "HD2"
-        elif atomname == "HE2" and resname not in ["TRP", "HIS", "HI+", "HID", "GL0"]:
+        elif atomname == "HE2" and resname not in [
+                "TRP", "HIS", "HI+", "HID", "GL0"]:
             atomname = "HE1"
         elif atomname == "HE3" and resname not in ["TRP", "HIS", "HI+", "HID"]:
             atomname = "HE2"
@@ -628,7 +633,6 @@ class Forcefield:
             atomname = "HZ1"
         elif atomname == "HZ3" and resname == "LY0":
             atomname = "HZ2"
-
         return resname, atomname
 
     @classmethod
@@ -666,7 +670,6 @@ class Forcefield:
                     atomname = "H53"
             elif resname == "U":
                 resname = "URA"
-
             if atomname == "H5'1":
                 atomname = "H5'"
             elif atomname == "H5'2":
@@ -675,21 +678,19 @@ class Forcefield:
                 atomname = "H2'"
             elif atomname in ["H2'2", "HO'2"]:
                 atomname = "H2''"
-
             if residue.get_atom("O2'") is None:
                 if atomname in ["C2'", "H2'", "H2''"]:
                     resname = "DEO1"
-
             if residue.get_atom("H5T") is not None:
                 if atomname in ["H5T", "O5'", "C5'"]:
                     resname = "5TER"
             if residue.get_atom("H3T") is not None:
                 if atomname in ["H3T", "O3'", "C3'"]:
                     resname = "3TER"
-
         # Terminal/Water Substitutions
         if residue.is_n_term:
-            if resname == "GLY" and atomname in ["N", "H", "H2", "H3", "CA", "HA2", "HA3"]:
+            if resname == "GLY" and atomname in [
+                    "N", "H", "H2", "H3", "CA", "HA2", "HA3"]:
                 resname = "GLYP"
                 if atomname == "H":
                     atomname = "HT1"
@@ -697,8 +698,9 @@ class Forcefield:
                     atomname = "HT2"
                 elif atomname == "H3":
                     atomname = "HT3"
-            elif resname == "PRO" and atomname in ["N", "HN1", "HN2", "CD", "CA",
-                                                   "HD1", "HD2", "HA", "H2", "H3"]:
+            elif resname == "PRO" and atomname in [
+                    "N", "HN1", "HN2", "CD", "CA", "HD1", "HD2", "HA", "H2",
+                    "H3"]:
                 resname = "PROP"
                 if atomname == "H2":
                     atomname = "HN1"
@@ -737,7 +739,6 @@ class Forcefield:
             resname = "TP3M"
             if atomname == "O":
                 atomname = "OH2"
-
         # Residue substitutions
         if resname == "ILE":
             if atomname == "CD1":
@@ -775,14 +776,17 @@ class Forcefield:
                     atomname = "OE2"
                 elif atomname == "OE2":
                     atomname = "OE1"
-                if atomname in ["CG", "HG3", "HG1", "HG2", "CD", "OE1", "OE2", "HE2"]:
+                if atomname in [
+                        "CG", "HG3", "HG1", "HG2", "CD", "OE1", "OE2", "HE2"]:
                     resname = "GLUP"
                 else:
                     resname = "GLU"
             elif "HE2" in residue.map:
-                if atomname in ["CG", "HG3", "HG1", "HG2", "CD", "OE1", "OE2", "HE2"]:
+                if atomname in [
+                        "CG", "HG3", "HG1", "HG2", "CD", "OE1", "OE2", "HE2"]:
                     resname = "GLUP"
-                else: resname = "GLU"
+                else:
+                    resname = "GLU"
         elif resname == "ASP" or resname == "ASH":
             if "HD1" in residue.map:
                 if atomname == "HD1":
@@ -791,14 +795,17 @@ class Forcefield:
                     atomname = "OD2"
                 elif atomname == "OD2":
                     atomname = "OD1"
-                if atomname in ["CB", "HB3", "HB1", "HB2", "CG", "OD1", "OD2", "HD2"]:
+                if atomname in [
+                        "CB", "HB3", "HB1", "HB2", "CG", "OD1", "OD2", "HD2"]:
                     resname = "ASPP"
-                else: resname = "ASP"
+                else:
+                    resname = "ASP"
             elif "HD2" in residue.map:
-                if atomname in ["CB", "HB3", "HB1", "HB2", "CG", "OD1", "OD2", "HD2"]:
+                if atomname in [
+                        "CB", "HB3", "HB1", "HB2", "CG", "OD1", "OD2", "HD2"]:
                     resname = "ASPP"
-                else: resname = "ASP"
-
+                else:
+                    resname = "ASP"
         # HETATM Substitutions
         if resname == "ACE":
             if atomname == "CH3":
@@ -829,7 +836,6 @@ class Forcefield:
                 atomname = "NT"
             elif atomname == "H":
                 atomname = "HNT"
-
         # Hydrogen Substitutions
         if atomname == "H":
             atomname = "HN"
@@ -841,11 +847,13 @@ class Forcefield:
             atomname = "HB1"
         elif atomname == "HB3" and resname not in ["ALA"]:
             atomname = "HB2"
-        elif atomname == "HD2" and resname not in ["HSP", "HSE", "HSD", "ASPP"]:
+        elif atomname == "HD2" and resname not in [
+                "HSP", "HSE", "HSD", "ASPP"]:
             atomname = "HD1"
         elif atomname == "HD3" and resname not in ["HIS", "HSE", "HSD"]:
             atomname = "HD2"
-        elif atomname == "HE2" and resname not in ["TRP", "HSP", "HSE", "HSD", "GLUP"]:
+        elif atomname == "HE2" and resname not in [
+                "TRP", "HSP", "HSE", "HSD", "GLUP"]:
             atomname = "HE1"
         elif atomname == "HE3" and resname not in ["TRP", "HSP", "HSE", "HSD"]:
             atomname = "HE2"
@@ -855,7 +863,6 @@ class Forcefield:
             atomname = "HG2"
         elif atomname == "HG" and resname in ["SER", "CYS"]:
             atomname = "HG1"
-
         return resname, atomname
 
 
@@ -949,14 +956,16 @@ class ForcefieldAtom:
             item = getattr(self, name)
             return item
         except AttributeError:
-            message = "Unable to access object \"%s\" in class ForcefieldAtom" % name
+            message = (
+                "Unable to access object \"%s\" in class ForcefieldAtom"
+                % name)
             raise KeyError(message)
 
     def __str__(self):
         """
             String representation of the forcefield atom.
         """
-        txt = "%s:\n"% self.name
+        txt = "%s:\n" % self.name
         txt += "  Charge: %.4f\n" % self.charge
         txt += "  Radius: %.4f" % self.radius
         return txt

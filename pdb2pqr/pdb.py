@@ -28,7 +28,7 @@ class BaseRecord(object):
     Verifies the received record type
     """
     def __init__(self, line):
-        record = str.strip(line[0:6])
+        record = line[0:6].strip()
         if record != self.__class__.__name__:
             raise ValueError(record)
 
@@ -50,8 +50,8 @@ class END(BaseRecord):
     found in a coordinate entry.
     """
     def __init__(self, line):
-        # TODO - not sure what is going on here...
-        super(END, self).__init__(line)
+        """Initialize with line."""
+        super().__init__(line)
 
 
 @register_line_parser
@@ -65,33 +65,46 @@ class MASTER(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD     DEFINITION
-        -------------------------------------------------
-        11-15    int    num_remark Number of REMARK records
-        21-25    int    num_het    Number of HET records
-        26-30    int    numHelix  Number of HELIX records
-        31-35    int    numSheet  Number of SHEET records
-        36-40    int    numTurn   Number of TURN records
-        41-45    int    numSite   Number of SITE records
-        46-50    int    numXform  Number of coordinate transformation records (ORIGX+SCALE+MTRIX)
-        51-55    int    numCoord  Number of atomic coordinate records (ATOM+HETATM)
-        56-60    int    numTer    Number of TER records
-        61-65    int    numConect Number of CONECT records
-        66-70    int    numSeq    Number of SEQRES records
+        +---------+------+------------+-------------------------------------+
+        | COLUMNS | TYPE | FIELD      | DEFINITION                          |
+        +=========+======+============+=====================================+
+        | 11-15   | int  | num_remark | Number of REMARK records            |
+        +---------+------+------------+-------------------------------------+
+        | 21-25   | int  | num_het    | Number of HET records               |
+        +---------+------+------------+-------------------------------------+
+        | 26-30   | int  | numHelix   | Number of HELIX records             |
+        +---------+------+------------+-------------------------------------+
+        | 31-35   | int  | numSheet   | Number of SHEET records             |
+        +---------+------+------------+-------------------------------------+
+        | 36-40   | int  | numTurn    | Number of TURN records              |
+        +---------+------+------------+-------------------------------------+
+        | 41-45   | int  | numSite    | Number of SITE records              |
+        +---------+------+------------+-------------------------------------+
+        | 46-50   | int  | numXform   | Number of coordinate transformation |
+        |         |      |            | records (ORIGX+SCALE+MTRIX)         |
+        +---------+------+------------+-------------------------------------+
+        | 51-55   | int  | numCoord   | Number of atomic coordinate records |
+        |         |      |            | (ATOM+HETATM)                       |
+        +---------+------+------------+-------------------------------------+
+        | 56-60   | int  | numTer     | Number of TER records               |
+        +---------+------+------------+-------------------------------------+
+        | 61-65   | int  | numConect  | Number of CONECT records            |
+        +---------+------+------------+-------------------------------------+
+        | 66-70   | int  | numSeq     | Number of SEQRES records            |
+        +---------+------+------------+-------------------------------------+
         """
-        super(MASTER, self).__init__(line)
-        # TODO - this is a strange use of the str.strip function
-        self.num_remark = int(str.strip(line[10:15]))
-        self.num_het = int(str.strip(line[20:25]))
-        self.num_helix = int(str.strip(line[25:30]))
-        self.num_sheet = int(str.strip(line[30:35]))
-        self.num_turn = int(str.strip(line[35:40]))
-        self.num_site = int(str.strip(line[40:45]))
-        self.num_xform = int(str.strip(line[45:50]))
-        self.num_coord = int(str.strip(line[50:55]))
-        self.num_ter = int(str.strip(line[55:60]))
-        self.num_conect = int(str.strip(line[60:65]))
-        self.num_seq = int(str.strip(line[65:70]))
+        super().__init__(line)
+        self.num_remark = int(line[10:15].strip())
+        self.num_het = int(line[20:25].strip())
+        self.num_helix = int(line[25:30].strip())
+        self.num_sheet = int(line[30:35].strip())
+        self.num_turn = int(line[35:40].strip())
+        self.num_site = int(line[40:45].strip())
+        self.num_xform = int(line[45:50].strip())
+        self.num_coord = int(line[50:55].strip())
+        self.num_ter = int(line[55:60].strip())
+        self.num_conect = int(line[60:65].strip())
+        self.num_seq = int(line[65:70].strip())
 
 
 @register_line_parser
@@ -110,60 +123,72 @@ class CONECT(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        --------------------------------------------
-        7-11     int    serial   Atom serial number
-        12-16    int    serial1  Serial number of bonded atom
-        17-21    int    serial2  Serial number of bonded atom
-        22-26    int    serial3  Serial number of bonded atom
-        27-31    int    serial4  Serial number of bonded atom
-        32-36    int    serial5  Serial number of hydrogen bonded atom
-        37-41    int    serial6  Serial number of hydrogen bonded atom
-        42-46    int    serial7  Serial number of salt bridged atom
-        47-51    int    serial8  Serial number of hydrogen bonded atom
-        52-56    int    serial9  Serial number of hydrogen bonded atom
-        57-61    int    serial10 Serial number of salt bridged atom
+        +---------+------+----------+---------------------------------------+
+        | COLUMNS | TYPE | FIELD    | DEFINITION                            |
+        +=========+======+==========+=======================================+
+        | 7-11    | int  | serial   | Atom serial number                    |
+        +---------+------+----------+---------------------------------------+
+        | 12-16   | int  | serial1  | Serial number of bonded atom          |
+        +---------+------+----------+---------------------------------------+
+        | 17-21   | int  | serial2  | Serial number of bonded atom          |
+        +---------+------+----------+---------------------------------------+
+        | 22-26   | int  | serial3  | Serial number of bonded atom          |
+        +---------+------+----------+---------------------------------------+
+        | 27-31   | int  | serial4  | Serial number of bonded atom          |
+        +---------+------+----------+---------------------------------------+
+        | 32-36   | int  | serial5  | Serial number of hydrogen bonded atom |
+        +---------+------+----------+---------------------------------------+
+        | 37-41   | int  | serial6  | Serial number of hydrogen bonded atom |
+        +---------+------+----------+---------------------------------------+
+        | 42-46   | int  | serial7  | Serial number of salt bridged atom    |
+        +---------+------+----------+---------------------------------------+
+        | 47-51   | int  | serial8  | Serial number of hydrogen bonded atom |
+        +---------+------+----------+---------------------------------------+
+        | 52-56   | int  | serial9  | Serial number of hydrogen bonded atom |
+        +---------+------+----------+---------------------------------------+
+        | 57-61   | int  | serial10 | Serial number of salt bridged atom    |
+        +---------+------+----------+---------------------------------------+
         """
-        super(CONECT, self).__init__(line)
-        self.serial = int(str.strip(line[6:11]))
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
         try:
-            self.serial1 = int(str.strip(line[11:16]))
+            self.serial1 = int(line[11:16].strip())
         except ValueError:
             self.serial1 = None
         try:
-            self.serial2 = int(str.strip(line[16:21]))
+            self.serial2 = int(line[16:21].strip())
         except ValueError:
             self.serial2 = None
         try:
-            self.serial3 = int(str.strip(line[21:26]))
+            self.serial3 = int(line[21:26].strip())
         except ValueError:
             self.serial3 = None
         try:
-            self.serial4 = int(str.strip(line[26:31]))
+            self.serial4 = int(line[26:31].strip())
         except ValueError:
             self.serial4 = None
         try:
-            self.serial5 = int(str.strip(line[31:36]))
+            self.serial5 = int(line[31:36].strip())
         except ValueError:
             self.serial5 = None
         try:
-            self.serial6 = int(str.strip(line[36:41]))
+            self.serial6 = int(line[36:41].strip())
         except ValueError:
             self.serial6 = None
         try:
-            self.serial7 = int(str.strip(line[41:46]))
+            self.serial7 = int(line[41:46].strip())
         except ValueError:
             self.serial7 = None
         try:
-            self.serial8 = int(str.strip(line[46:51]))
+            self.serial8 = int(line[46:51].strip())
         except ValueError:
             self.serial8 = None
         try:
-            self.serial9 = int(str.strip(line[51:56]))
+            self.serial9 = int(line[51:56].strip())
         except ValueError:
             self.serial9 = None
         try:
-            self.serial10 = int(str.strip(line[56:61]))
+            self.serial10 = int(line[56:61].strip())
         except ValueError:
             self.serial10 = None
 
@@ -178,13 +203,15 @@ class NUMMDL(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE      FIELD         DEFINITION
-        -----------------------------------------------------------
-        11-14    int       modelNumber   Number of models.
+        +---------+------+-------------+-------------------+
+        | COLUMNS | TYPE | FIELD       | DEFINITION        |
+        +=========+======+=============+===================+
+        | 11-14   | int  | modelNumber | Number of models. |
+        +---------+------+-------------+-------------------+
         """
-        super(NUMMDL, self).__init__(line)
+        super().__init__(line)
         try:
-            self.model_number = int(str.strip(line[10:14]))
+            self.model_number = int(line[10:14].strip())
         except ValueError:
             self.model_number = None
 
@@ -198,8 +225,7 @@ class ENDMDL(BaseRecord):
     """
 
     def __init__(self, line):
-        # TODO - not sure what is going on here.
-        super(ENDMDL, self).__init__(line)
+        super().__init__(line)
 
 
 @register_line_parser
@@ -213,21 +239,27 @@ class TER(BaseRecord):
     def __init__(self, line):
         """ Initialize by parsing line:
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        -------------------------------------------
-        7-11     int    serial  Serial number.
-        18-20    string res_name Residue name.
-        22       string chain_id Chain identifier.
-        23-26    int    res_seq  Residue sequence number.
-        27       string ins_code   Insertion code.
+        +---------+--------+----------+--------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION               |
+        +=========+========+==========+==========================+
+        | 7-11    | int    | serial   | Serial number.           |
+        +---------+--------+----------+--------------------------+
+        | 18-20   | string | res_name | Residue name.            |
+        +---------+--------+----------+--------------------------+
+        | 22      | string | chain_id | Chain identifier.        |
+        +---------+--------+----------+--------------------------+
+        | 23-26   | int    | res_seq  | Residue sequence number. |
+        +---------+--------+----------+--------------------------+
+        | 27      | string | ins_code | Insertion code.          |
+        +---------+--------+----------+--------------------------+
         """
-        super(TER, self).__init__(line)
-        try: # Not really needed
-            self.serial = int(str.strip(line[6:11]))
-            self.res_name = str.strip(line[17:20])
-            self.chain_id = str.strip(line[21])
-            self.res_seq = int(str.strip(line[22:26]))
-            self.ins_code = str.strip(line[26])
+        super().__init__(line)
+        try:  # Not really needed
+            self.serial = int(line[6:11].strip())
+            self.res_name = line[17:20].strip()
+            self.chain_id = line[21].strip()
+            self.res_seq = int(line[22:26].strip())
+            self.ins_code = line[26].strip()
         except (IndexError, ValueError):
             self.serial = None
             self.res_name = None
@@ -246,43 +278,59 @@ class SIGUIJ(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line:
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        ------------------------------------------------------
-        7-11     int    serial  Atom serial number.
-        13-16    string name    Atom name.
-        17       string alt_loc  Alternate location indicator.
-        18-20    string res_name Residue name.
-        22       string chain_id Chain identifier.
-        23-26    int    res_seq  Residue sequence number.
-        27       string ins_code   Insertion code.
-        29-35    int    sig11   Sigma U(1,1)
-        36-42    int    sig22   Sigma U(2,2)
-        43-49    int    sig33   Sigma U(3,3)
-        50-56    int    sig12   Sigma U(1,2)
-        57-63    int    sig13   Sigma U(1,3)
-        64-70    int    sig23   Sigma U(2,3)
-        73-76    string seg_id   Segment identifier, left-justified.
-        77-78    string element Element symbol, right-justified.
-        79-80    string charge  Charge on the atom.
+        +---------+--------+----------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                          |
+        +=========+========+==========+=====================================+
+        | 7-11    | int    | serial   | Atom serial number.                 |
+        +---------+--------+----------+-------------------------------------+
+        | 13-16   | string | name     | Atom name.                          |
+        +---------+--------+----------+-------------------------------------+
+        | 17      | string | alt_loc  | Alternate location indicator.       |
+        +---------+--------+----------+-------------------------------------+
+        | 18-20   | string | res_name | Residue name.                       |
+        +---------+--------+----------+-------------------------------------+
+        | 22      | string | chain_id | Chain identifier.                   |
+        +---------+--------+----------+-------------------------------------+
+        | 23-26   | int    | res_seq  | Residue sequence number.            |
+        +---------+--------+----------+-------------------------------------+
+        | 27      | string | ins_code | Insertion code.                     |
+        +---------+--------+----------+-------------------------------------+
+        | 29-35   | int    | sig11    | Sigma U(1,1)                        |
+        +---------+--------+----------+-------------------------------------+
+        | 36-42   | int    | sig22    | Sigma U(2,2)                        |
+        +---------+--------+----------+-------------------------------------+
+        | 43-49   | int    | sig33    | Sigma U(3,3)                        |
+        +---------+--------+----------+-------------------------------------+
+        | 50-56   | int    | sig12    | Sigma U(1,2)                        |
+        +---------+--------+----------+-------------------------------------+
+        | 57-63   | int    | sig13    | Sigma U(1,3)                        |
+        +---------+--------+----------+-------------------------------------+
+        | 64-70   | int    | sig23    | Sigma U(2,3)                        |
+        +---------+--------+----------+-------------------------------------+
+        | 73-76   | string | seg_id   | Segment identifier, left-justified. |
+        +---------+--------+----------+-------------------------------------+
+        | 77-78   | string | element  | Element symbol, right-justified.    |
+        +---------+--------+----------+-------------------------------------+
+        | 79-80   | string | charge   | Charge on the atom.                 |
+        +---------+--------+----------+-------------------------------------+
         """
-        super(SIGUIJ, self).__init__(line)
-
-        self.serial = int(str.strip(line[6:11]))
-        self.name = str.strip(line[12:16])
-        self.alt_loc = str.strip(line[16])
-        self.res_name = str.strip(line[17:20])
-        self.chain_id = str.strip(line[21])
-        self.res_seq = int(str.strip(line[22:26]))
-        self.ins_code = str.strip(line[26])
-        self.sig11 = int(str.strip(line[28:35]))
-        self.sig22 = int(str.strip(line[35:42]))
-        self.sig33 = int(str.strip(line[42:49]))
-        self.sig12 = int(str.strip(line[49:56]))
-        self.sig13 = int(str.strip(line[56:63]))
-        self.sig23 = int(str.strip(line[63:70]))
-        self.seg_id = str.strip(line[72:76])
-        self.element = str.strip(line[76:78])
-        self.charge = str.strip(line[78:80])
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
+        self.name = line[12:16].strip()
+        self.alt_loc = line[16].strip()
+        self.res_name = line[17:20].strip()
+        self.chain_id = line[21].strip()
+        self.res_seq = int(line[22:26].strip())
+        self.ins_code = line[26].strip()
+        self.sig11 = int(line[28:35].strip())
+        self.sig22 = int(line[35:42].strip())
+        self.sig33 = int(line[42:49].strip())
+        self.sig12 = int(line[49:56].strip())
+        self.sig13 = int(line[56:63].strip())
+        self.sig23 = int(line[63:70].strip())
+        self.seg_id = line[72:76].strip()
+        self.element = line[76:78].strip()
+        self.charge = line[78:80].strip()
 
 
 @register_line_parser
@@ -295,42 +343,59 @@ class ANISOU(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line:
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        ------------------------------------------------------
-        7-11     int    serial  Atom serial number.
-        13-16    string name    Atom name.
-        17       string alt_loc  Alternate location indicator.
-        18-20    string res_name Residue name.
-        22       string chain_id Chain identifier.
-        23-26    int    res_seq  Residue sequence number.
-        27       string ins_code   Insertion code.
-        29-35    int    u00     U(1,1)
-        36-42    int    u11     U(2,2)
-        43-49    int    u22     U(3,3)
-        50-56    int    u01     U(1,2)
-        57-63    int    u02     U(1,3)
-        64-70    int    u12     U(2,3)
-        73-76    string seg_id   Segment identifier, left-justified.
-        77-78    string element Element symbol, right-justified.
-        79-80    string charge  Charge on the atom.
+        +---------+--------+----------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                          |
+        +=========+========+==========+=====================================|
+        | 7-11    | int    | serial   | Atom serial number.                 |
+        +---------+--------+----------+-------------------------------------+
+        | 13-16   | string | name     | Atom name.                          |
+        +---------+--------+----------+-------------------------------------+
+        | 17      | string | alt_loc  | Alternate location indicator.       |
+        +---------+--------+----------+-------------------------------------+
+        | 18-20   | string | res_name | Residue name.                       |
+        +---------+--------+----------+-------------------------------------+
+        | 22      | string | chain_id | Chain identifier.                   |
+        +---------+--------+----------+-------------------------------------+
+        | 23-26   | int    | res_seq  | Residue sequence number.            |
+        +---------+--------+----------+-------------------------------------+
+        | 27      | string | ins_code | Insertion code.                     |
+        +---------+--------+----------+-------------------------------------+
+        | 29-35   | int    | u00      | U(1,1)                              |
+        +---------+--------+----------+-------------------------------------+
+        | 36-42   | int    | u11      | U(2,2)                              |
+        +---------+--------+----------+-------------------------------------+
+        | 43-49   | int    | u22      | U(3,3)                              |
+        +---------+--------+----------+-------------------------------------+
+        | 50-56   | int    | u01      | U(1,2)                              |
+        +---------+--------+----------+-------------------------------------+
+        | 57-63   | int    | u02      | U(1,3)                              |
+        +---------+--------+----------+-------------------------------------+
+        | 64-70   | int    | u12      | U(2,3)                              |
+        +---------+--------+----------+-------------------------------------+
+        | 73-76   | string | seg_id   | Segment identifier, left-justified. |
+        +---------+--------+----------+-------------------------------------+
+        | 77-78   | string | element  | Element symbol, right-justified.    |
+        +---------+--------+----------+-------------------------------------+
+        | 79-80   | string | charge   | Charge on the atom.                 |
+        +---------+--------+----------+-------------------------------------+
         """
-        super(ANISOU, self).__init__(line)
-        self.serial = int(str.strip(line[6:11]))
-        self.name = str.strip(line[12:16])
-        self.alt_loc = str.strip(line[16])
-        self.res_name = str.strip(line[17:20])
-        self.chain_id = str.strip(line[21])
-        self.res_seq = int(str.strip(line[22:26]))
-        self.ins_code = str.strip(line[26])
-        self.u00 = int(str.strip(line[28:35]))
-        self.u11 = int(str.strip(line[35:42]))
-        self.u22 = int(str.strip(line[42:49]))
-        self.u01 = int(str.strip(line[49:56]))
-        self.u02 = int(str.strip(line[56:63]))
-        self.u12 = int(str.strip(line[63:70]))
-        self.seg_id = str.strip(line[72:76])
-        self.element = str.strip(line[76:78])
-        self.charge = str.strip(line[78:80])
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
+        self.name = line[12:16].strip()
+        self.alt_loc = line[16].strip()
+        self.res_name = line[17:20].strip()
+        self.chain_id = line[21].strip()
+        self.res_seq = int(line[22:26].strip())
+        self.ins_code = line[26].strip()
+        self.u00 = int(line[28:35].strip())
+        self.u11 = int(line[35:42].strip())
+        self.u22 = int(line[42:49].strip())
+        self.u01 = int(line[49:56].strip())
+        self.u02 = int(line[56:63].strip())
+        self.u12 = int(line[63:70].strip())
+        self.seg_id = line[72:76].strip()
+        self.element = line[76:78].strip()
+        self.charge = line[78:80].strip()
 
 
 @register_line_parser
@@ -344,40 +409,60 @@ class SIGATM(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        ---------------------------------------------
-        7-11      int   serial   Atom serial number.
-        13-16     string name    Atom name.
-        17        string alt_loc  Alternate location indicator.
-        18-20     string res_name Residue name.
-        22        string chain_id Chain identifier.
-        23-26     int    res_seq  Residue sequence number.
-        27        string ins_code   Code for insertion of residues.
-        31-38     float  sig_x    Standard devition of orthogonal coordinates for X in Angstroms.
-        39-46     float  sig_y    Standard devition of orthogonal coordinates for Y in Angstroms.
-        47-54     float  sig_z    Standard devition of orthogonal coordinates for Z in Angstroms.
-        55-60     float  sig_occ  Standard devition of occupancy.
-        61-66     float  sig_temp Standard devition of temperature factor.
-        73-76     string seg_id   Segment identifier, left-justified.
-        77-78     string element Element symbol, right-justified.
-        79-80     string charge  Charge on the atom.
+        +---------+--------+----------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                          |
+        +=========+========+==========+=====================================+
+        | 7-11    | int    | serial   | Atom serial number.                 |
+        +---------+--------+----------+-------------------------------------+
+        | 13-16   | string | name     | Atom name.                          |
+        +---------+--------+----------+-------------------------------------+
+        | 17      | string | alt_loc  | Alternate location indicator.       |
+        +---------+--------+----------+-------------------------------------+
+        | 18-20   | string | res_name | Residue name.                       |
+        +---------+--------+----------+-------------------------------------+
+        | 22      | string | chain_id | Chain identifier.                   |
+        +---------+--------+----------+-------------------------------------+
+        | 23-26   | int    | res_seq  | Residue sequence number.            |
+        +---------+--------+----------+-------------------------------------+
+        | 27      | string | ins_code | Code for insertion of residues.     |
+        +---------+--------+----------+-------------------------------------+
+        | 31-38   | float  | sig_x    | Standard deviation of orthogonal    |
+        |         |        |          | coordinates for X in Angstroms.     |
+        +---------+--------+----------+-------------------------------------+
+        | 39-46   | float  | sig_y    | Standard deviation of orthogonal    |
+        |         |        |          | coordinates for Y in Angstroms.     |
+        +---------+--------+----------+-------------------------------------+
+        | 47-54   | float  | sig_z    | Standard deviation of orthogonal    |
+        |         |        |          | coordinates for Z in Angstroms.     |
+        +---------+--------+----------+-------------------------------------+
+        | 55-60   | float  | sig_occ  | Standard deviation of occupancy.    |
+        +---------+--------+----------+-------------------------------------+
+        | 61-66   | float  | sig_temp | Standard deviation of temperature   |
+        |         |        |          | factor.                             |
+        +---------+--------+----------+-------------------------------------+
+        | 73-76   | string | seg_id   | Segment identifier, left-justified. |
+        +---------+--------+----------+-------------------------------------+
+        | 77-78   | string | element  | Element symbol, right-justified.    |
+        +---------+--------+----------+-------------------------------------+
+        | 79-80   | string | charge   | Charge on the atom.                 |
+        +---------+--------+----------+-------------------------------------+
         """
-        super(SIGATM, self).__init__(line)
-        self.serial = int(str.strip(line[6:11]))
-        self.name = str.strip(line[12:16])
-        self.alt_loc = str.strip(line[16])
-        self.res_name = str.strip(line[17:20])
-        self.chain_id = str.strip(line[21])
-        self.res_seq = int(str.strip(line[22:26]))
-        self.ins_code = str.strip(line[26])
-        self.sig_x = float(str.strip(line[30:38]))
-        self.sig_y = float(str.strip(line[38:46]))
-        self.sig_z = float(str.strip(line[46:54]))
-        self.sig_occ = float(str.strip(line[54:60]))
-        self.sig_temp = float(str.strip(line[60:66]))
-        self.seg_id = str.strip(line[72:76])
-        self.element = str.strip(line[76:78])
-        self.charge = str.strip(line[78:80])
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
+        self.name = line[12:16].strip()
+        self.alt_loc = line[16].strip()
+        self.res_name = line[17:20].strip()
+        self.chain_id = line[21].strip()
+        self.res_seq = int(line[22:26].strip())
+        self.ins_code = line[26].strip()
+        self.sig_x = float(line[30:38].strip())
+        self.sig_y = float(line[38:46].strip())
+        self.sig_z = float(line[46:54].strip())
+        self.sig_occ = float(line[54:60].strip())
+        self.sig_temp = float(line[60:66].strip())
+        self.seg_id = line[72:76].strip()
+        self.element = line[76:78].strip()
+        self.charge = line[78:80].strip()
 
 
 @register_line_parser
@@ -392,38 +477,57 @@ class HETATM(BaseRecord):
     def __init__(self, line, sybyl_type="A.aaa", l_bonds=[], l_bonded_atoms=[]):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ---------------------------------------------
-        7-11      int   serial         Atom serial number.
-        13-16     string name          Atom name.
-        17        string alt_loc        Alternate location indicator.
-        18-20     string res_name       Residue name.
-        22        string chain_id       Chain identifier.
-        23-26     int    res_seq        Residue sequence number.
-        27        string ins_code         Code for insertion of residues.
-        31-38     float  x             Orthogonal coordinates for X in Angstroms.
-        39-46     float  y             Orthogonal coordinates for Y in Angstroms.
-        47-54     float  z             Orthogonal coordinates for Z in Angstroms.
-        55-60     float  occupancy     Occupancy.
-        61-66     float  temp_factor    Temperature factor.
-        73-76     string seg_id         Segment identifier, left-justified.
-        77-78     string element       Element symbol, right-justified.
-        79-80     string charge        Charge on the atom.
+        +---------+--------+-------------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD       | DEFINITION                          |
+        +=========+========+=============+=====================================+
+        | 7-11    | int    | serial      | Atom serial number.                 |
+        +---------+--------+-------------+-------------------------------------+
+        | 13-16   | string | name        | Atom name.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 17      | string | alt_loc     | Alternate location indicator.       |
+        +---------+--------+-------------+-------------------------------------+
+        | 18-20   | string | res_name    | Residue name.                       |
+        +---------+--------+-------------+-------------------------------------+
+        | 22      | string | chain_id    | Chain identifier.                   |
+        +---------+--------+-------------+-------------------------------------+
+        | 23-26   | int    | res_seq     | Residue sequence number.            |
+        +---------+--------+-------------+-------------------------------------+
+        | 27      | string | ins_code    | Code for insertion of residues.     |
+        +---------+--------+-------------+-------------------------------------+
+        | 31-38   | float  | x           | Orthogonal coordinates for X in     |
+        |         |        |             | Angstroms.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 39-46   | float  | y           | Orthogonal coordinates for Y in     |
+        |         |        |             | Angstroms.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 47-54   | float  | z           | Orthogonal coordinates for Z in     |
+        |         |        |             | Angstroms.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 55-60   | float  | occupancy   | Occupancy.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 61-66   | float  | temp_factor | Temperature factor.                 |
+        +---------+--------+-------------+-------------------------------------+
+        | 73-76   | string | seg_id      | Segment identifier, left-justified. |
+        +---------+--------+-------------+-------------------------------------+
+        | 77-78   | string | element     | Element symbol, right-justified.    |
+        +---------+--------+-------------+-------------------------------------+
+        | 79-80   | string | charge      | Charge on the atom.                 |
+        +---------+--------+-------------+-------------------------------------+
         """
-        super(HETATM, self).__init__(line)
-        self.serial = int(str.strip(line[6:11]))
-        self.name = str.strip(line[12:16])
-        self.alt_loc = str.strip(line[16])
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
+        self.name = line[12:16].strip()
+        self.alt_loc = line[16].strip()
         try:
-            self.res_name = str.strip(line[17:20])
-            self.chain_id = str.strip(line[21])
-            self.res_seq = int(str.strip(line[22:26]))
-            self.ins_code = str.strip(line[26])
+            self.res_name = line[17:20].strip()
+            self.chain_id = line[21].strip()
+            self.res_seq = int(line[22:26].strip())
+            self.ins_code = line[26].strip()
         except IndexError:
             raise ValueError('Residue name must be less than 4 characters!')
-        self.x = float(str.strip(line[30:38]))
-        self.y = float(str.strip(line[38:46]))
-        self.z = float(str.strip(line[46:54]))
+        self.x = float(line[30:38].strip())
+        self.y = float(line[38:46].strip())
+        self.z = float(line[46:54].strip())
 
         self.sybyl_type = sybyl_type
         self.l_bonded_atoms = l_bonded_atoms
@@ -434,11 +538,11 @@ class HETATM(BaseRecord):
         self.mol2charge = None
 
         try:
-            self.occupancy = float(str.strip(line[54:60]))
-            self.temp_factor = float(str.strip(line[60:66]))
-            self.seg_id = str.strip(line[72:76])
-            self.element = str.strip(line[76:78])
-            self.charge = str.strip(line[78:80])
+            self.occupancy = float(line[54:60].strip())
+            self.temp_factor = float(line[60:66].strip())
+            self.seg_id = line[72:76].strip()
+            self.element = line[76:78].strip()
+            self.charge = line[78:80].strip()
         except (ValueError, IndexError):
             self.occupancy = 0.00
             self.temp_factor = 0.00
@@ -461,41 +565,60 @@ class ATOM(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD          DEFINITION
-        ---------------------------------------------
-        7-11      int   serial         Atom serial number.
-        13-16     string name          Atom name.
-        17        string alt_loc        Alternate location indicator.
-        18-20     string res_name       Residue name.
-        22        string chain_id       Chain identifier.
-        23-26     int    res_seq        Residue sequence number.
-        27        string ins_code         Code for insertion of residues.
-        31-38     float  x             Orthogonal coordinates for X in Angstroms.
-        39-46     float  y             Orthogonal coordinates for Y in Angstroms.
-        47-54     float  z             Orthogonal coordinates for Z in Angstroms.
-        55-60     float  occupancy     Occupancy.
-        61-66     float  temp_factor    Temperature factor.
-        73-76     string seg_id         Segment identifier, left-justified.
-        77-78     string element       Element symbol, right-justified.
-        79-80     string charge        Charge on the atom.
+        +---------+--------+-------------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD       | DEFINITION                          |
+        +=========+========+=============+=====================================+
+        | 7-11    | int    | serial      | Atom serial number.                 |
+        +---------+--------+-------------+-------------------------------------+
+        | 13-16   | string | name        | Atom name.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 17      | string | alt_loc     | Alternate location indicator.       |
+        +---------+--------+-------------+-------------------------------------+
+        | 18-20   | string | res_name    | Residue name.                       |
+        +---------+--------+-------------+-------------------------------------+
+        | 22      | string | chain_id    | Chain identifier.                   |
+        +---------+--------+-------------+-------------------------------------+
+        | 23-26   | int    | res_seq     | Residue sequence number.            |
+        +---------+--------+-------------+-------------------------------------+
+        | 27      | string | ins_code    | Code for insertion of residues.     |
+        +---------+--------+-------------+-------------------------------------+
+        | 31-38   | float  | x           | Orthogonal coordinates for X in     |
+        |         |        |             | Angstroms.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 39-46   | float  | y           | Orthogonal coordinates for Y in     |
+        |         |        |             | Angstroms.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 47-54   | float  | z           | Orthogonal coordinates for Z in     |
+        |         |        |             | Angstroms.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 55-60   | float  | occupancy   | Occupancy.                          |
+        +---------+--------+-------------+-------------------------------------+
+        | 61-66   | float  | temp_factor | Temperature factor.                 |
+        +---------+--------+-------------+-------------------------------------+
+        | 73-76   | string | seg_id      | Segment identifier, left-justified. |
+        +---------+--------+-------------+-------------------------------------+
+        | 77-78   | string | element     | Element symbol, right-justified.    |
+        +---------+--------+-------------+-------------------------------------+
+        | 79-80   | string | charge      | Charge on the atom.                 |
+        +---------+--------+-------------+-------------------------------------+
         """
-        super(ATOM, self).__init__(line)
-        self.serial = int(str.strip(line[6:11]))
-        self.name = str.strip(line[12:16])
-        self.alt_loc = str.strip(line[16])
-        self.res_name = str.strip(line[17:20])
-        self.chain_id = str.strip(line[21])
-        self.res_seq = int(str.strip(line[22:26]))
-        self.ins_code = str.strip(line[26])
-        self.x = float(str.strip(line[30:38]))
-        self.y = float(str.strip(line[38:46]))
-        self.z = float(str.strip(line[46:54]))
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
+        self.name = line[12:16].strip()
+        self.alt_loc = line[16].strip()
+        self.res_name = line[17:20].strip()
+        self.chain_id = line[21].strip()
+        self.res_seq = int(line[22:26].strip())
+        self.ins_code = line[26].strip()
+        self.x = float(line[30:38].strip())
+        self.y = float(line[38:46].strip())
+        self.z = float(line[46:54].strip())
         try:
-            self.occupancy = float(str.strip(line[54:60]))
-            self.temp_factor = float(str.strip(line[60:66]))
-            self.seg_id = str.strip(line[72:76])
-            self.element = str.strip(line[76:78])
-            self.charge = str.strip(line[78:80])
+            self.occupancy = float(line[54:60].strip())
+            self.temp_factor = float(line[60:66].strip())
+            self.seg_id = line[72:76].strip()
+            self.element = line[76:78].strip()
+            self.charge = line[78:80].strip()
         except (ValueError, IndexError):
             self.occupancy = 0.00
             self.temp_factor = 0.00
@@ -521,7 +644,7 @@ class MODEL(BaseRecord):
         11-14    int    serial Model serial number.
         """
         super(MODEL, self).__init__(line)
-        self.serial = int(str.strip(line[10:14]))
+        self.serial = int(line[10:14].strip())
 
 
 @register_line_parser
@@ -537,18 +660,18 @@ class TVECT(BaseRecord):
 
         COLUMNS  TYPE   FIELD  DEFINITION
         ---------------------------------
-            8-10    int    serial Serial number
+        8-10     int    serial Serial number
         11-20    float  t1     Components of translation vector
         21-30    float  t2     Components of translation vector
         31-40    float  t2     Components of translation vector
         41-70    string text   Comments
         """
         super(TVECT, self).__init__(line)
-        self.serial = int(str.strip(line[7:10]))
-        self.trans1 = float(str.strip(line[10:20]))
-        self.trans2 = float(str.strip(line[20:30]))
-        self.trans3 = float(str.strip(line[30:40]))
-        self.text = str.strip(line[40:70])
+        self.serial = int(line[7:10].strip())
+        self.trans1 = float(line[10:20].strip())
+        self.trans2 = float(line[20:30].strip())
+        self.trans3 = float(line[30:40].strip())
+        self.text = line[40:70].strip()
 
 
 class MTRIXn(BaseRecord):
@@ -561,25 +684,26 @@ class MTRIXn(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
+        COLUMNS  TYPE   FIELD   DEFINITION
         ---------------------------------
-        8-10     int    serial Serial number
-        11-20    float  mn1    M31
-        21-30    float  mn2    M32
-        31-40    float  mn3    M33
-        46-55    float  vn     V3
+        8-10     int    serial  Serial number
+        11-20    float  mn1     M31
+        21-30    float  mn2     M32
+        31-40    float  mn3     M33
+        46-55    float  vn      V3
         60       int    i_given 1 if coordinates for the representations which
-                        are approximately related by the transformations of the
-                        molecule are contained in the entry.  Otherwise, blank.
+                                are approximately related by the transformations
+                                of the molecule are contained in the entry.
+                                Otherwise, blank.
         """
         super(MTRIXn, self).__init__(line)
-        self.serial = int(str.strip(line[7:10]))
-        self.mn1 = float(str.strip(line[10:20]))
-        self.mn2 = float(str.strip(line[20:30]))
-        self.mn3 = float(str.strip(line[30:40]))
-        self.vecn = float(str.strip(line[45:55]))
+        self.serial = int(line[7:10].strip())
+        self.mn1 = float(line[10:20].strip())
+        self.mn2 = float(line[20:30].strip())
+        self.mn3 = float(line[30:40].strip())
+        self.vecn = float(line[45:55].strip())
         try:
-            self.i_given = int(str.strip(line[59]))
+            self.i_given = int(line[59].strip())
         except (ValueError, IndexError):
             self.i_given = None
 
@@ -622,10 +746,10 @@ class SCALEn(BaseRecord):
         46-55    float  un     U3
         """
         super(SCALEn, self).__init__(line)
-        self.sn1 = float(str.strip(line[10:20]))
-        self.sn2 = float(str.strip(line[20:30]))
-        self.sn3 = float(str.strip(line[30:40]))
-        self.unif = float(str.strip(line[45:55]))
+        self.sn1 = float(line[10:20].strip())
+        self.sn2 = float(line[20:30].strip())
+        self.sn3 = float(line[30:40].strip())
+        self.unif = float(line[45:55].strip())
 
 
 @register_line_parser
@@ -665,10 +789,10 @@ class ORIGXn(BaseRecord):
         46-55    float  tn     T2
         """
         super(ORIGXn, self).__init__(line)
-        self.on1 = float(str.strip(line[10:20]))
-        self.on2 = float(str.strip(line[20:30]))
-        self.on3 = float(str.strip(line[30:40]))
-        self.tn = float(str.strip(line[45:55]))
+        self.on1 = float(line[10:20].strip())
+        self.on2 = float(line[20:30].strip())
+        self.on3 = float(line[30:40].strip())
+        self.tn = float(line[45:55].strip())
 
 
 @register_line_parser
@@ -713,14 +837,14 @@ class CRYST1(BaseRecord):
         67-70    int    z      Z value.
         """
         super(CRYST1, self).__init__(line)
-        self.a = float(str.strip(line[6:15]))
-        self.b = float(str.strip(line[15:24]))
-        self.c = float(str.strip(line[24:33]))
-        self.alpha = float(str.strip(line[33:40]))
-        self.beta = float(str.strip(line[40:47]))
-        self.gamma = float(str.strip(line[47:54]))
-        self.space_group = str.strip(line[55:65])
-        self.z = int(str.strip(line[66:70]))
+        self.a = float(line[6:15].strip())
+        self.b = float(line[15:24].strip())
+        self.c = float(line[24:33].strip())
+        self.alpha = float(line[33:40].strip())
+        self.beta = float(line[40:47].strip())
+        self.gamma = float(line[47:54].strip())
+        self.space_group = line[55:65].strip()
+        self.z = int(line[66:70].strip())
 
 
 @register_line_parser
@@ -757,26 +881,26 @@ class SITE(BaseRecord):
         61       string ins_code4   Insertion code for fourth residue comprising site.
         """
         super(SITE, self).__init__(line)
-        self.seq_num = int(str.strip(line[7:10]))
-        self.site_id = str.strip(line[11:14])
-        self.num_res = int(str.strip(line[15:17]))
-        self.res_name1 = str.strip(line[18:21])
-        self.chain_id1 = str.strip(line[22])
-        self.seq1 = int(str.strip(line[23:27]))
-        self.ins_code1 = str.strip(line[27])
-        self.res_name2 = str.strip(line[29:32])
-        self.chain_id2 = str.strip(line[33])
-        self.seq2 = int(str.strip(line[34:38]))
-        self.ins_code2 = str.strip(line[38])
-        self.res_name3 = str.strip(line[40:43])
-        self.chain_id3 = str.strip(line[44])
-        self.seq3 = int(str.strip(line[45:49]))
-        self.ins_code3 = str.strip(line[49])
-        self.res_name4 = str.strip(line[51:54])
-        self.chain_id4 = str.strip(line[55])
-        self.seq4 = int(str.strip(line[56:60]))
+        self.seq_num = int(line[7:10].strip())
+        self.site_id = line[11:14].strip()
+        self.num_res = int(line[15:17].strip())
+        self.res_name1 = line[18:21].strip()
+        self.chain_id1 = line[22].strip()
+        self.seq1 = int(line[23:27].strip())
+        self.ins_code1 = line[27].strip()
+        self.res_name2 = line[29:32].strip()
+        self.chain_id2 = line[33].strip()
+        self.seq2 = int(line[34:38].strip())
+        self.ins_code2 = line[38].strip()
+        self.res_name3 = line[40:43].strip()
+        self.chain_id3 = line[44].strip()
+        self.seq3 = int(line[45:49].strip())
+        self.ins_code3 = line[49].strip()
+        self.res_name4 = line[51:54].strip()
+        self.chain_id4 = line[55].strip()
+        self.seq4 = int(line[56:60].strip())
         try:
-            self.ins_code4 = str.strip(line[60])
+            self.ins_code4 = line[60].strip()
         except IndexError:
             self.ins_code4 = None
 
@@ -808,17 +932,17 @@ class CISPEP(BaseRecord):
         54-59    float  measure  Measure of the angle in degrees.
         """
         super(CISPEP, self).__init__(line)
-        self.ser_num = int(str.strip(line[7:10]))
-        self.pep1 = str.strip(line[11:14])
-        self.chain_id1 = str.strip(line[15])
-        self.seq_num1 = int(str.strip(line[17:21]))
-        self.icode1 = str.strip(line[21])
-        self.pep2 = str.strip(line[25:28])
-        self.chain_id2 = str.strip(line[29])
-        self.seq_num2 = int(str.strip(line[31:35]))
-        self.icode2 = str.strip(line[35])
-        self.mod_num = int(str.strip(line[43:46]))
-        self.measure = float(str.strip(line[53:59]))
+        self.ser_num = int(line[7:10].strip())
+        self.pep1 = line[11:14].strip()
+        self.chain_id1 = line[15].strip()
+        self.seq_num1 = int(line[17:21].strip())
+        self.icode1 = line[21].strip()
+        self.pep2 = line[25:28].strip()
+        self.chain_id2 = line[29].strip()
+        self.seq_num2 = int(line[31:35].strip())
+        self.icode2 = line[35].strip()
+        self.mod_num = int(line[43:46].strip())
+        self.measure = float(line[53:59].strip())
 
 
 @register_line_parser
@@ -850,20 +974,20 @@ class SLTBRG(BaseRecord):
         67-72    string sym2      Symmetry operator for 2nd atom.
         """
         super(SLTBRG, self).__init__(line)
-        self.name1 = str.strip(line[12:16])
-        self.alt_loc1 = str.strip(line[16])
-        self.res_name1 = str.strip(line[17:20])
-        self.chain_id1 = str.strip(line[21])
-        self.res_seq1 = int(str.strip(line[22:26]))
-        self.ins_code1 = str.strip(line[26])
-        self.name2 = str.strip(line[42:46])
-        self.alt_loc2 = str.strip(line[46])
-        self.res_name2 = str.strip(line[47:50])
-        self.chain_id2 = str.strip(line[51])
-        self.res_seq2 = int(str.strip(line[52:56]))
-        self.ins_code2 = str.strip(line[56])
-        self.sym1 = str.strip(line[59:65])
-        self.sym2 = str.strip(line[66:72])
+        self.name1 = line[12:16].strip()
+        self.alt_loc1 = line[16].strip()
+        self.res_name1 = line[17:20].strip()
+        self.chain_id1 = line[21].strip()
+        self.res_seq1 = int(line[22:26].strip())
+        self.ins_code1 = line[26].strip()
+        self.name2 = line[42:46].strip()
+        self.alt_loc2 = line[46].strip()
+        self.res_name2 = line[47:50].strip()
+        self.chain_id2 = line[51].strip()
+        self.res_seq2 = int(line[52:56].strip())
+        self.ins_code2 = line[56].strip()
+        self.sym1 = line[59:65].strip()
+        self.sym2 = line[66:72].strip()
 
 
 @register_line_parser
@@ -899,25 +1023,25 @@ class HYDBND(BaseRecord):
         67-72    string sym2      Symmetry operator for 2nd non-hydrogen atom.
         """
         super(HYDBND, self).__init__(line)
-        self.name1 = str.strip(line[12:16])
-        self.alt_loc1 = str.strip(line[16])
-        self.res_name1 = str.strip(line[17:20])
-        self.chain1 = str.strip(line[21])
-        self.res_seq1 = str.strip(line[22:27])
-        self.i_code1 = str.strip(line[27])
-        self.name_h = str.strip(line[29:33])
-        self.alt_loc_h = str.strip(line[33])
-        self.chain_h = str.strip(line[35])
-        self.res_seq_h = str.strip(line[36:41])
-        self.i_code_h = str.strip(line[41])
-        self.name2 = str.strip(line[43:47])
-        self.alt_loc2 = str.strip(line[47])
-        self.res_name2 = str.strip(line[48:51])
-        self.chain2 = str.strip(line[52])
-        self.res_seq2 = str.strip(line[53:58])
-        self.i_code2 = str.strip(line[58])
-        self.sym1 = str.strip(line[59:65])
-        self.sym2 = str.strip(line[66:72])
+        self.name1 = line[12:16].strip()
+        self.alt_loc1 = line[16].strip()
+        self.res_name1 = line[17:20].strip()
+        self.chain1 = line[21].strip()
+        self.res_seq1 = line[22:27].strip()
+        self.i_code1 = line[27].strip()
+        self.name_h = line[29:33].strip()
+        self.alt_loc_h = line[33].strip()
+        self.chain_h = line[35].strip()
+        self.res_seq_h = line[36:41].strip()
+        self.i_code_h = line[41].strip()
+        self.name2 = line[43:47].strip()
+        self.alt_loc2 = line[47].strip()
+        self.res_name2 = line[48:51].strip()
+        self.chain2 = line[52].strip()
+        self.res_seq2 = line[53:58].strip()
+        self.i_code2 = line[58].strip()
+        self.sym1 = line[59:65].strip()
+        self.sym2 = line[66:72].strip()
 
 
 @register_line_parser
@@ -951,20 +1075,20 @@ class LINK(BaseRecord):
         67-72    string sym2      Symmetry operator for 2nd atom.
         """
         super(LINK, self).__init__(line)
-        self.name1 = str.strip(line[12:16])
-        self.alt_loc1 = str.strip(line[16])
-        self.res_name1 = str.strip(line[17:20])
-        self.chain_id1 = str.strip(line[21])
-        self.res_seq1 = int(str.strip(line[22:26]))
-        self.ins_code1 = str.strip(line[26])
-        self.name2 = str.strip(line[42:46])
-        self.alt_loc2 = str.strip(line[46])
-        self.res_name2 = str.strip(line[47:50])
-        self.chain_id2 = str.strip(line[51])
-        self.res_seq2 = int(str.strip(line[52:56]))
-        self.ins_code2 = str.strip(line[56])
-        self.sym1 = str.strip(line[59:65])
-        self.sym2 = str.strip(line[66:72])
+        self.name1 = line[12:16].strip()
+        self.alt_loc1 = line[16].strip()
+        self.res_name1 = line[17:20].strip()
+        self.chain_id1 = line[21].strip()
+        self.res_seq1 = int(line[22:26].strip())
+        self.ins_code1 = line[26].strip()
+        self.name2 = line[42:46].strip()
+        self.alt_loc2 = line[46].strip()
+        self.res_name2 = line[47:50].strip()
+        self.chain_id2 = line[51].strip()
+        self.res_seq2 = int(line[52:56].strip())
+        self.ins_code2 = line[56].strip()
+        self.sym1 = line[59:65].strip()
+        self.sym2 = line[66:72].strip()
 
 
 @register_line_parser
@@ -992,15 +1116,15 @@ class SSBOND(BaseRecord):
         67 - 72  string sym2           Symmetry operator for 2nd residue.
         """
         super(SSBOND, self).__init__(line)
-        self.ser_num = int(str.strip(line[7:10]))
-        self.chain_id1 = str.strip(line[15])
-        self.seq_num1 = int(str.strip(line[17:21]))
-        self.icode1 = str.strip(line[21])
-        self.chain_id2 = str.strip(line[29])
-        self.seq_num2 = int(str.strip(line[31:35]))
-        self.icode2 = str.strip(line[35])
-        self.sym1 = str.strip(line[59:65])
-        self.sym2 = str.strip(line[66:72])
+        self.ser_num = int(line[7:10].strip())
+        self.chain_id1 = line[15].strip()
+        self.seq_num1 = int(line[17:21].strip())
+        self.icode1 = line[21].strip()
+        self.chain_id2 = line[29].strip()
+        self.seq_num2 = int(line[31:35].strip())
+        self.icode2 = line[35].strip()
+        self.sym1 = line[59:65].strip()
+        self.sym2 = line[66:72].strip()
 
 
 @register_line_parser
@@ -1029,17 +1153,17 @@ class TURN(BaseRecord):
         41-70    string comment     Associated comment.
         """
         super(TURN, self).__init__(line)
-        self.seq = int(str.strip(line[7:10]))
-        self.turn_id = str.strip(line[11:14])
-        self.init_res_name = str.strip(line[15:18])
-        self.init_chain_id = str.strip(line[19])
-        self.init_seq_num = int(str.strip(line[20:24]))
-        self.init_i_code = str.strip(line[24])
-        self.end_res_name = str.strip(line[26:29])
-        self.end_chain_id = str.strip(line[30])
-        self.end_seq_num = int(str.strip(line[31:35]))
-        self.end_i_code = str.strip(line[35])
-        self.comment = str.strip(line[40:70])
+        self.seq = int(line[7:10].strip())
+        self.turn_id = line[11:14].strip()
+        self.init_res_name = line[15:18].strip()
+        self.init_chain_id = line[19].strip()
+        self.init_seq_num = int(line[20:24].strip())
+        self.init_i_code = line[24].strip()
+        self.end_res_name = line[26:29].strip()
+        self.end_chain_id = line[30].strip()
+        self.end_seq_num = int(line[31:35].strip())
+        self.end_i_code = line[35].strip()
+        self.comment = line[40:70].strip()
 
 
 @register_line_parser
@@ -1083,35 +1207,35 @@ class SHEET(BaseRecord):
         70       string prev_ins_code   Registration. Insertion code in previous strand.
         """
         super(SHEET, self).__init__(line)
-        self.strand = int(str.strip(line[7:10]))
-        self.sheet_id = str.strip(line[11:14])
-        self.num_strands = int(str.strip(line[14:16]))
-        self.init_res_name = str.strip(line[17:20])
-        self.init_chain_id = str.strip(line[21])
-        self.init_seq_num = int(str.strip(line[22:26]))
-        self.init_i_code = str.strip(line[26])
-        self.end_res_name = str.strip(line[28:31])
-        self.end_chain_id = str.strip(line[32])
-        self.end_seq_num = int(str.strip(line[33:37]))
-        self.end_i_code = str.strip(line[37])
-        self.sense = int(str.strip(line[38:40]))
+        self.strand = int(line[7:10].strip())
+        self.sheet_id = line[11:14].strip()
+        self.num_strands = int(line[14:16].strip())
+        self.init_res_name = line[17:20].strip()
+        self.init_chain_id = line[21].strip()
+        self.init_seq_num = int(line[22:26].strip())
+        self.init_i_code = line[26].strip()
+        self.end_res_name = line[28:31].strip()
+        self.end_chain_id = line[32].strip()
+        self.end_seq_num = int(line[33:37].strip())
+        self.end_i_code = line[37].strip()
+        self.sense = int(line[38:40].strip())
         try:
-            self.cur_atom = str.strip(line[41:45])
-            self.curr_res_name = str.strip(line[45:48])
-            self.curr_chain_id = str.strip(line[49])
+            self.cur_atom = line[41:45].strip()
+            self.curr_res_name = line[45:48].strip()
+            self.curr_chain_id = line[49].strip()
             try:
-                self.curr_res_seq = int(str.strip(line[50:54]))
+                self.curr_res_seq = int(line[50:54].strip())
             except ValueError:
                 self.curr_res_seq = None
-            self.curr_ins_code = str.strip(line[54])
-            self.prev_atom = str.strip(line[56:60])
-            self.prev_res_name = str.strip(line[60:63])
-            self.prev_chain_id = str.strip(line[64])
+            self.curr_ins_code = line[54].strip()
+            self.prev_atom = line[56:60].strip()
+            self.prev_res_name = line[60:63].strip()
+            self.prev_chain_id = line[64].strip()
             try:
-                self.prev_res_seq = int(str.strip(line[65:69]))
+                self.prev_res_seq = int(line[65:69].strip())
             except ValueError:
                 self.prev_res_seq = None
-            self.prev_ins_code = str.strip(line[69])
+            self.prev_ins_code = line[69].strip()
         except IndexError:
             self.cur_atom = None
             self.curr_res_name = None
@@ -1157,23 +1281,23 @@ class HELIX(BaseRecord):
         72-76    int    length      Length of this helix.
         """
         super(HELIX, self).__init__(line)
-        self.ser_num = int(str.strip(line[7:10]))
-        self.helix_id = str.strip(line[11:14])
-        self.init_res_name = str.strip(line[15:18])
-        self.init_chain_id = str.strip(line[19])
-        self.init_seq_num = int(str.strip(line[21:25]))
-        self.init_i_code = str.strip(line[25])
-        self.end_res_name = str.strip(line[27:30])
-        self.end_chain_id = str.strip(line[31])
-        self.end_seq_num = int(str.strip(line[33:37]))
-        self.end_i_code = str.strip(line[37])
+        self.ser_num = int(line[7:10].strip())
+        self.helix_id = line[11:14].strip()
+        self.init_res_name = line[15:18].strip()
+        self.init_chain_id = line[19].strip()
+        self.init_seq_num = int(line[21:25].strip())
+        self.init_i_code = line[25].strip()
+        self.end_res_name = line[27:30].strip()
+        self.end_chain_id = line[31].strip()
+        self.end_seq_num = int(line[33:37].strip())
+        self.end_i_code = line[37].strip()
         try:
-            self.helix_class = int(str.strip(line[38:40]))
+            self.helix_class = int(line[38:40].strip())
         except ValueError:
             self.helix_class = None
-        self.comment = str.strip(line[40:70])
+        self.comment = line[40:70].strip()
         try:
-            self.length = int(str.strip(line[71:76]))
+            self.length = int(line[71:76].strip())
         except ValueError:
             self.length = None
 
@@ -1196,10 +1320,10 @@ class FORMUL(BaseRecord):
         20-70    string text     Chemical formula
         """
         super(FORMUL, self).__init__(line)
-        self.comp_num = int(str.strip(line[8:10]))
-        self.hetatm_id = str.strip(line[12:15])
-        self.asterisk = str.strip(line[19])
-        self.text = str.strip(line[19:70])
+        self.comp_num = int(line[8:10].strip())
+        self.hetatm_id = line[12:15].strip()
+        self.asterisk = line[19].strip()
+        self.text = line[19:70].strip()
 
 
 @register_line_parser
@@ -1220,8 +1344,8 @@ class HETSYN(BaseRecord):
         16-70    string hetatm_synonyms   List of synonyms
         """
         super(HETSYN, self).__init__(line)
-        self.hetatm_id = str.strip(line[11:14])
-        self.hetatm_synonyms = str.strip(line[15:70])
+        self.hetatm_id = line[11:14].strip()
+        self.hetatm_synonyms = line[15:70].strip()
 
 
 @register_line_parser
@@ -1239,8 +1363,8 @@ class HETNAM(BaseRecord):
         16-70    string text   Chemical name.
         """
         super(HETNAM, self).__init__(line)
-        self.hetatm_id = str.strip(line[11:14])
-        self.text = str.strip(line[15:70])
+        self.hetatm_id = line[11:14].strip()
+        self.text = line[15:70].strip()
 
 
 @register_line_parser
@@ -1273,15 +1397,15 @@ class HET(BaseRecord):
         31-70    string text        Text describing Het group.
         """
         super(HET, self).__init__(line)
-        self.hetatm_id = str.strip(line[7:10])
-        self.chain_id = str.strip(line[12])
+        self.hetatm_id = line[7:10].strip()
+        self.chain_id = line[12].strip()
         try:
-            self.seq_num = int(str.strip(line[13]))
+            self.seq_num = int(line[13].strip())
         except ValueError:
             self.seq_num = None
-        self.ins_code = str.strip(line[17])
-        self.num_het_atoms = int(str.strip(line[20:25]))
-        self.text = str.strip(line[30:70])
+        self.ins_code = line[17].strip()
+        self.num_het_atoms = int(line[20:25].strip())
+        self.text = line[30:70].strip()
 
 
 @register_line_parser
@@ -1308,13 +1432,13 @@ class MODRES(BaseRecord):
         30-70    string comment Description of the residue modification.
         """
         super(MODRES, self).__init__(line)
-        self.id_code = str.strip(line[7:11])
-        self.res_name = str.strip(line[12:15])
-        self.chain_id = str.strip(line[16])
-        self.seq_num = int(str.strip(line[18:22]))
-        self.ins_code = str.strip(line[22])
-        self.stdRes = str.strip(line[24:27])
-        self.comment = str.strip(line[29:70])
+        self.id_code = line[7:11].strip()
+        self.res_name = line[12:15].strip()
+        self.chain_id = line[16].strip()
+        self.seq_num = int(line[18:22].strip())
+        self.ins_code = line[22].strip()
+        self.stdRes = line[24:27].strip()
+        self.comment = line[29:70].strip()
 
 
 @register_line_parser
@@ -1353,23 +1477,23 @@ class SEQRES(BaseRecord):
         68-70    string res_name Residue name.
         """
         super(SEQRES, self).__init__(line)
-        self.ser_num = int(str.strip(line[8:10]))
-        self.chain_id = str.strip(line[11])
-        self.num_res = int(str.strip(line[13:17]))
+        self.ser_num = int(line[8:10].strip())
+        self.chain_id = line[11].strip()
+        self.num_res = int(line[13:17].strip())
         self.res_name = []
-        self.res_name.append(str.strip(line[19:22]))
-        self.res_name.append(str.strip(line[23:26]))
-        self.res_name.append(str.strip(line[27:30]))
-        self.res_name.append(str.strip(line[31:34]))
-        self.res_name.append(str.strip(line[35:38]))
-        self.res_name.append(str.strip(line[39:42]))
-        self.res_name.append(str.strip(line[43:46]))
-        self.res_name.append(str.strip(line[47:50]))
-        self.res_name.append(str.strip(line[51:54]))
-        self.res_name.append(str.strip(line[55:58]))
-        self.res_name.append(str.strip(line[59:62]))
-        self.res_name.append(str.strip(line[63:66]))
-        self.res_name.append(str.strip(line[67:70]))
+        self.res_name.append(line[19:22].strip())
+        self.res_name.append(line[23:26].strip())
+        self.res_name.append(line[27:30].strip())
+        self.res_name.append(line[31:34].strip())
+        self.res_name.append(line[35:38].strip())
+        self.res_name.append(line[39:42].strip())
+        self.res_name.append(line[43:46].strip())
+        self.res_name.append(line[47:50].strip())
+        self.res_name.append(line[51:54].strip())
+        self.res_name.append(line[55:58].strip())
+        self.res_name.append(line[59:62].strip())
+        self.res_name.append(line[63:66].strip())
+        self.res_name.append(line[67:70].strip())
 
 
 @register_line_parser
@@ -1402,22 +1526,22 @@ class SEQADV(BaseRecord):
         50-70    string conflict Conflict comment.
         """
         super(SEQADV, self).__init__(line)
-        self.id_code = str.strip(line[7:11])
-        self.res_name = str.strip(line[12:15])
-        self.chain_id = str.strip(line[16])
+        self.id_code = line[7:11].strip()
+        self.res_name = line[12:15].strip()
+        self.chain_id = line[16].strip()
         try:
-            self.seq_num = int(str.strip(line[19:22]))
+            self.seq_num = int(line[19:22].strip())
         except ValueError:
             self.seq_num = None
-        self.ins_code = str.strip(line[22])
-        self.database = str.strip(line[24:28])
-        self.db_id_code = str.strip(line[29:38])
-        self.db_res = str.strip(line[39:42])
+        self.ins_code = line[22].strip()
+        self.database = line[24:28].strip()
+        self.db_id_code = line[29:38].strip()
+        self.db_res = line[39:42].strip()
         try:
-            self.db_seq = int(str.strip(line[43:48]))
+            self.db_seq = int(line[43:48].strip())
         except ValueError:
             self.db_seq = None
-        self.conflict = str.strip(line[49:70])
+        self.conflict = line[49:70].strip()
 
 
 @register_line_parser
@@ -1457,20 +1581,20 @@ class DBREF(BaseRecord):
                                     segment, if PDB is the reference.
         """
         super(DBREF, self).__init__(line)
-        self.id_code = str.strip(line[7:11])
-        self.chain_id = str.strip(line[12])
-        self.seq_begin = int(str.strip(line[14:18]))
-        self.insert_begin = str.strip(line[18])
-        self.seq_end = int(str.strip(line[20:24]))
-        self.insert_end = str.strip(line[24])
-        self.database = str.strip(line[26:32])
-        self.db_accession = str.strip(line[33:41])
-        self.db_id_code = str.strip(line[42:54])
-        self.db_seq_begin = int(str.strip(line[55:60]))
-        self.db_ins_begin = str.strip(line[60])
-        self.dbseq_end = int(str.strip(line[62:67]))
+        self.id_code = line[7:11].strip()
+        self.chain_id = line[12].strip()
+        self.seq_begin = int(line[14:18].strip())
+        self.insert_begin = line[18].strip()
+        self.seq_end = int(line[20:24].strip())
+        self.insert_end = line[24].strip()
+        self.database = line[26:32].strip()
+        self.db_accession = line[33:41].strip()
+        self.db_id_code = line[42:54].strip()
+        self.db_seq_begin = int(line[55:60].strip())
+        self.db_ins_begin = line[60].strip()
+        self.dbseq_end = int(line[62:67].strip())
         try:
-            self.db_ins_end = str.strip(line[67])
+            self.db_ins_end = line[67].strip()
         except IndexError:
             self.db_ins_end = None
 
@@ -1490,33 +1614,33 @@ class REMARK(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line"""
         super(REMARK, self).__init__(line)
-        self.remark_num = int(str.strip(line[7:10]))
+        self.remark_num = int(line[7:10].strip())
         self.remark_dict = {}
 
         if self.remark_num == 1:
-            subfield = str.strip(line[11:20])
+            subfield = line[11:20].strip()
             if subfield == "REFERENCE":
-                self.remark_dict["refNum"] = int(str.strip(line[21:70]))
+                self.remark_dict["refNum"] = int(line[21:70].strip())
             elif subfield == "AUTH":
-                self.remark_dict["author_list"] = str.strip(line[19:70])
+                self.remark_dict["author_list"] = line[19:70].strip()
             elif subfield == "TITL":
-                self.remark_dict["title"] = str.strip(line[19:70])
+                self.remark_dict["title"] = line[19:70].strip()
             elif subfield == "EDIT":
-                self.remark_dict["editorList"] = str.strip(line[19:70])
+                self.remark_dict["editorList"] = line[19:70].strip()
             elif subfield == "REF":
-                self.remark_dict["ref"] = str.strip(line[19:66])
+                self.remark_dict["ref"] = line[19:66].strip()
             elif subfield == "PUBL":
-                self.remark_dict["pub"] = str.strip(line[19:70])
+                self.remark_dict["pub"] = line[19:70].strip()
             elif subfield == "REFN":
-                self.remark_dict["refn"] = str.strip(line[19:70])
+                self.remark_dict["refn"] = line[19:70].strip()
         elif self.remark_num == 2:
-            restr = str.strip(line[22:27])
+            restr = line[22:27].strip()
             try:
                 self.remark_dict["resolution"] = float(restr)
             except ValueError:
-                self.remark_dict["comment"] = str.strip(line[11:70])
+                self.remark_dict["comment"] = line[11:70].strip()
         else:
-            self.remark_dict["text"] = str.strip(line[11:70])
+            self.remark_dict["text"] = line[11:70].strip()
 
 
 @register_line_parser
@@ -1537,8 +1661,8 @@ class JRNL(BaseRecord):
         13-70    string text   See Details on web.
         """
         super(JRNL, self).__init__(line)
-        #TODO: What is this mess?
-        self.text = str.strip(line[12:70])
+        # TODO: What is this mess?
+        self.text = line[12:70].strip()
 
 
 @register_line_parser
@@ -1568,17 +1692,17 @@ class SPRSDE(BaseRecord):
         67-70    string sid_code    ID code of a superseded entry.
         """
         super(SPRSDE, self).__init__(line)
-        self.super_date = str.strip(line[11:20])
-        self.id_code = str.strip(line[21:25])
+        self.super_date = line[11:20].strip()
+        self.id_code = line[21:25].strip()
         self.super_id_codes = []
-        self.super_id_codes.append(str.strip(line[31:35]))
-        self.super_id_codes.append(str.strip(line[36:40]))
-        self.super_id_codes.append(str.strip(line[41:45]))
-        self.super_id_codes.append(str.strip(line[46:50]))
-        self.super_id_codes.append(str.strip(line[51:55]))
-        self.super_id_codes.append(str.strip(line[56:60]))
-        self.super_id_codes.append(str.strip(line[61:65]))
-        self.super_id_codes.append(str.strip(line[66:70]))
+        self.super_id_codes.append(line[31:35].strip())
+        self.super_id_codes.append(line[36:40].strip())
+        self.super_id_codes.append(line[41:45].strip())
+        self.super_id_codes.append(line[46:50].strip())
+        self.super_id_codes.append(line[51:55].strip())
+        self.super_id_codes.append(line[56:60].strip())
+        self.super_id_codes.append(line[61:65].strip())
+        self.super_id_codes.append(line[66:70].strip())
 
 
 @register_line_parser
@@ -1606,15 +1730,15 @@ class REVDAT(BaseRecord):
         61-66    string record  Name of the modified record.
         """
         super(REVDAT, self).__init__(line)
-        self.mod_num = int(str.strip(line[7:10]))
-        self.mod_date = str.strip(line[13:22])
-        self.mod_id = str.strip(line[23:28])
-        self.mod_type = int(str.strip(line[31]))
+        self.mod_num = int(line[7:10].strip())
+        self.mod_date = line[13:22].strip()
+        self.mod_id = line[23:28].strip()
+        self.mod_type = int(line[31].strip())
         self.records = []
-        self.records.append(str.strip(line[39:45]))
-        self.records.append(str.strip(line[46:52]))
-        self.records.append(str.strip(line[53:59]))
-        self.records.append(str.strip(line[60:66]))
+        self.records.append(line[39:45].strip())
+        self.records.append(line[46:52].strip())
+        self.records.append(line[53:59].strip())
+        self.records.append(line[60:66].strip())
 
 
 @register_line_parser
@@ -1632,7 +1756,7 @@ class AUTHOR(BaseRecord):
         11-70    string author_list List of the author names, separated by commas
         """
         super(AUTHOR, self).__init__(line)
-        self.author_list = str.strip(line[10:70])
+        self.author_list = line[10:70].strip()
 
 
 @register_line_parser
@@ -1661,7 +1785,7 @@ class EXPDTA(BaseRecord):
                                     comment describing the sample or experiment
         """
         super(EXPDTA, self).__init__(line)
-        self.technique = str.strip(line[10:70])
+        self.technique = line[10:70].strip()
 
 
 @register_line_parser
@@ -1684,7 +1808,7 @@ class KEYWDS(BaseRecord):
         11-70    string keywds  Comma-separated list of keywords relevant to the entry
         """
         super(KEYWDS, self).__init__(line)
-        self.keywds = str.strip(line[10:70])
+        self.keywds = line[10:70].strip()
 
 
 @register_line_parser
@@ -1707,7 +1831,7 @@ class SOURCE(BaseRecord):
                                 token: value format
         """
         super(SOURCE, self).__init__(line)
-        self.source = str.strip(line[10:70])
+        self.source = line[10:70].strip()
 
 
 @register_line_parser
@@ -1734,7 +1858,7 @@ class COMPND(BaseRecord):
         11-70    string compound Description of the molecular list components.
         """
         super(COMPND, self).__init__(line)
-        self.compound = str.strip(line[10:70])
+        self.compound = line[10:70].strip()
 
 
 @register_line_parser
@@ -1754,8 +1878,8 @@ class CAVEAT(BaseRecord):
         20-70    string comment Free text giving the reason for the CAVEAT.
         """
         super(CAVEAT, self).__init__(line)
-        self.id_code = str.strip(line[11:15])
-        self.comment = str.strip(line[19:70])
+        self.id_code = line[11:15].strip()
+        self.comment = line[19:70].strip()
 
 
 @register_line_parser
@@ -1775,7 +1899,7 @@ class TITLE(BaseRecord):
         11-70    string title  Title of the experiment
         """
         super(TITLE, self).__init__(line)
-        self.title = str.strip(line[10:70])
+        self.title = line[10:70].strip()
 
 
 @register_line_parser
@@ -1805,17 +1929,17 @@ class OBSLTE(BaseRecord):
         67-70    string rid_code  ID code of entry that replaced this one.
         """
         super(OBSLTE, self).__init__(line)
-        self.replace_date = str.strip(line[11:20])
-        self.id_code = str.strip(line[21:25])
+        self.replace_date = line[11:20].strip()
+        self.id_code = line[21:25].strip()
         self.replace_id_codes = []
-        self.replace_id_codes.append(str.strip(line[31:35]))
-        self.replace_id_codes.append(str.strip(line[36:40]))
-        self.replace_id_codes.append(str.strip(line[41:45]))
-        self.replace_id_codes.append(str.strip(line[46:50]))
-        self.replace_id_codes.append(str.strip(line[51:55]))
-        self.replace_id_codes.append(str.strip(line[56:60]))
-        self.replace_id_codes.append(str.strip(line[61:65]))
-        self.replace_id_codes.append(str.strip(line[67:70]))
+        self.replace_id_codes.append(line[31:35].strip())
+        self.replace_id_codes.append(line[36:40].strip())
+        self.replace_id_codes.append(line[41:45].strip())
+        self.replace_id_codes.append(line[46:50].strip())
+        self.replace_id_codes.append(line[51:55].strip())
+        self.replace_id_codes.append(line[56:60].strip())
+        self.replace_id_codes.append(line[61:65].strip())
+        self.replace_id_codes.append(line[67:70].strip())
 
 
 @register_line_parser
@@ -1838,9 +1962,9 @@ class HEADER(BaseRecord):
         63-66    string id_code         This identifier is unique within PDB
         """
         super(HEADER, self).__init__(line)
-        self.classification = str.strip(line[10:50])
-        self.dep_date = str.strip(line[50:59])
-        self.id_code = str.strip(line[62:66])
+        self.classification = line[10:50].strip()
+        self.dep_date = line[50:59].strip()
+        self.id_code = line[62:66].strip()
 
 
 def read_atom(line):
@@ -1866,7 +1990,7 @@ def read_atom(line):
         except ValueError:
             consec = 0
 
-    record = str.strip(line[0:6])
+    record = line[0:6].strip()
     newline = line[0:22]
     newline = newline + str.rjust(words[size-iword-1], 4)
     newline = newline + str.rjust("", 3)
@@ -1892,7 +2016,7 @@ def read_pdb(file_):
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of records we can't parse
 
-    #We can come up with nothing if can't get our file off the web.
+    # We can come up with nothing if can't get our file off the web.
     if file_ is None:
         return pdblist, errlist
 

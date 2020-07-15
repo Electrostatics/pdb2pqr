@@ -7,17 +7,17 @@ TODO - This module is insane... so many lines!
 Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 """
 import logging
-import math
 from xml import sax
 from .. import input_output as io
 from .. import aa
 from .. import cells
-from .. import topology
 from .. import definitions as defns
 from .. import utilities as util
 from .. import quatfit as quat
 from ..config import HYD_DEF_PATH
-from . structures import HydrogenConformation, HydrogenDefinition, HydrogenHandler, PotentialBond
+from . import structures
+from .structures import HydrogenConformation, HydrogenDefinition
+from .structures import HydrogenHandler, PotentialBond
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -111,10 +111,10 @@ class HydrogenRoutines:
             defcoords = []
             defatomcoords = []
             if conf == ():
-                continue # Nothing to add
+                continue  # Nothing to add
             hname = conf.hname
             for atom in conf.atoms:
-                #print confatoms
+                # print confatoms
                 atomname = atom.name
                 resatom = residue.get_atom(atomname)
                 if atomname == hname:
@@ -450,7 +450,7 @@ class HydrogenRoutines:
                 txt += "%s, " % obj
             _LOGGER.debug("Starting network %s", txt[:-2])
 
-            ###  FIRST:  Only optimizeable to backbone atoms
+            #  FIRST:  Only optimizeable to backbone atoms
             _LOGGER.debug("* Optimizeable to backbone *")
             hbondmap = {}
             for obj in network:
@@ -472,7 +472,7 @@ class HydrogenRoutines:
                 if atom.hacceptor:
                     obj.try_acceptor(atom, atom2)
 
-            ### SECOND:  Non-dual water Optimizeable to Optimizeable
+            # SECOND:  Non-dual water Optimizeable to Optimizeable
             _LOGGER.debug("* Optimizeable to optimizeable *")
             hbondmap = {}
             seenlist = []
@@ -508,7 +508,7 @@ class HydrogenRoutines:
                 if atom.hacceptor and atom2.hdonor and res == 0:
                     obj2.try_both(atom2, atom, obj1)
 
-            ### THIRD:  All water-water residues
+            # THIRD:  All water-water residues
             _LOGGER.debug("* Water to Water *")
             hbondmap = {}
             seenlist = []
@@ -537,7 +537,7 @@ class HydrogenRoutines:
                 if atom.hacceptor and atom2.hdonor and res == 0:
                     obj2.try_both(atom2, atom, obj1)
 
-            ### FOURTH: Complete all residues
+            # FOURTH: Complete all residues
             for obj in network:
                 obj.complete()
 
@@ -622,8 +622,8 @@ class HydrogenRoutines:
             refatoms = ['CA', 'H', 'N']
 
         elif name == 'CTR':
-            hmap = {} # map for h atoms
-            nonhmap = {} # map for refatoms
+            hmap = {}  # map for h atoms
+            nonhmap = {}  # map for refatoms
             conformernames = []
             for tautomer in titrationstatemap["CTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
@@ -674,8 +674,8 @@ class HydrogenRoutines:
             refatoms = ['OD1', 'CG', 'OD2']
 
         elif name == 'GLH':
-            hmap = {} # map for h atoms
-            nonhmap = {} # map for refatoms
+            hmap = {}  # map for h atoms
+            nonhmap = {}  # map for refatoms
             conformernames = []
             _ = refmap['GLU']
             for tautomer in titrationstatemap["GLH"].tautomers:
@@ -715,9 +715,9 @@ class HydrogenRoutines:
                     elif atom_ == 'H':
                         caatom = defns.DefinitionAtom(atom_, 1.201, 1.847, 0.000)
                         myconf.add_atom(caatom)
-                    else: pass
+                    else:
+                        pass
                 mydef.add_conf(myconf)
-
         elif name in ['CTR']:
             for conformer in conformernames:
                 for atom in atoms:

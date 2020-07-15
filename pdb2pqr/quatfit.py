@@ -199,7 +199,7 @@ def qtrfit(numpoints, defcoords, refcoords, nrot):
     cmat[2][3] = xyyz + xzyy
     cmat[3][3] = xzyz - xxyx - xyyy
 
-    _, vmat = jacobi(cmat, nrot) # diagonalize c
+    _, vmat = jacobi(cmat, nrot)  # diagonalize c
 
     for i in range(4):
         quat.append(vmat[i][3])
@@ -274,7 +274,7 @@ def jacobi(amat, nrot):
                     dtemp = cscl * cscl * dvec[i] + sscl * sscl * dvec[j] \
                         - 2.0 * cscl * sscl * bscl
                     dvec[j] = sscl * sscl * dvec[i] + cscl * cscl * dvec[j] \
-                        +  2.0 * cscl * sscl * bscl
+                        + 2.0 * cscl * sscl * bscl
                     dvec[i] = dtemp
 
     nrot = the_lrot
@@ -317,7 +317,7 @@ def q2mat(quat):
     urot[1][1] = quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2] - quat[3] * quat[3]
     urot[1][2] = 2.0 * (quat[2] * quat[3] - quat[0] * quat[1])
 
-    urot[2][0] = 2.0 *(quat[3] * quat[1] - quat[0] * quat[2])
+    urot[2][0] = 2.0 * (quat[3] * quat[1] - quat[0] * quat[2])
     urot[2][1] = 2.0 * (quat[3] * quat[2] + quat[0] * quat[1])
     urot[2][2] = quat[0] * quat[0] - quat[1] * quat[1] - quat[2] * quat[2] + quat[3] * quat[3]
 

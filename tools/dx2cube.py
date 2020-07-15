@@ -12,7 +12,7 @@ PARSER.add_argument('output',
 
 ARGS = PARSER.parse_args()
 
-#DX STUFF
+# DX STUFF
 if ARGS.dx_input.endswith('.dx'):
     print("Success")
 else:
@@ -55,7 +55,6 @@ try:
 
         ORIGIN_LINE = PARAMETER_FMT.format(ATOM_NUM, *ORIGIN)
         out_f.write(ORIGIN_LINE)
-
 
         for x in range(3):
             SPLIT_LINE = in_f.readline().split()
@@ -109,7 +108,7 @@ try:
         in_f.readline()
         in_f.readline()
 
-        ## TODO_OLD: put atoms here - This NOTE is over 5 years old
+        # TODO_OLD: put atoms here - This NOTE is over 5 years old
 
         VALUE_FORMAT = ["{:< 13.5E}"]
         VALUE_FORMAT = ' '.join(VALUE_FORMAT * 6) + '\n'
@@ -129,8 +128,6 @@ try:
         if GROUP:
             GROUP_STRS = ["{:< 13.5E}".format(ITEM) for ITEM in GROUP]
             out_f.write(' '.join(GROUP_STRS))
-
-
 
 except IOError:
     print("file doesn't exist")

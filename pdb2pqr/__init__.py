@@ -7,6 +7,7 @@ For more information, see http://www.poissonboltzmann.org/
 """
 import logging
 from sys import version_info
+from pathlib import Path
 from .main import main, build_parser
 assert version_info >= (3, 5)
 
@@ -16,8 +17,6 @@ logging.captureWarnings(True)
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
-    logging.captureWarnings(True)
     PARSER = build_parser()
     ARGS = PARSER.parse_args()
     main(ARGS)

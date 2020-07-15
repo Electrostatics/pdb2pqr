@@ -569,7 +569,7 @@ def main(args):
     Args:
         args:  argument namespace object (e.g., as returned by argparse).
     """
-    logging.basicConfig(level=getattr(logging, args.log_level))
+    io.setup_logger(args.output_pqr, args.log_level)
     _LOGGER.debug("Invoked with arguments: %s", args)
     print_splash_screen(args)
     _LOGGER.info("Checking and transforming input arguments.")

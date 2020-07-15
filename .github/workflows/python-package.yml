@@ -37,3 +37,17 @@ jobs:
     - name: Test with pytest and coverage
       run: |
         coverage run --source=pdb2pqr -m pytest
+        coverage report -m | tee coverage.txt
+        coverage html
+    - name: Upload coverage results
+      run: bash <(curl -s https://codecov.io/bash)
+    - name: Store coverage text results
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-text
+        path: coverage.txt
+    - name: Store coverage HTML results
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-html
+        path: htmlcov/*

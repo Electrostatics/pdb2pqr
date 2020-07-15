@@ -46,8 +46,8 @@ class BaseRecord(object):
 class END(BaseRecord):
     """ END class
 
-    The END records are paired with MODEL records to group individual structures
-    found in a coordinate entry.
+    The END records are paired with MODEL records to group individual
+    structures found in a coordinate entry.
     """
     def __init__(self, line):
         """Initialize with line."""
@@ -474,45 +474,47 @@ class HETATM(BaseRecord):
     molecules and atoms presented in HET groups.
     """
 
-    def __init__(self, line, sybyl_type="A.aaa", l_bonds=[], l_bonded_atoms=[]):
+    def __init__(
+            self, line, sybyl_type="A.aaa", l_bonds=[], l_bonded_atoms=[]):
         """Initialize by parsing line
 
-        +---------+--------+-------------+-------------------------------------+
-        | COLUMNS | TYPE   | FIELD       | DEFINITION                          |
-        +=========+========+=============+=====================================+
-        | 7-11    | int    | serial      | Atom serial number.                 |
-        +---------+--------+-------------+-------------------------------------+
-        | 13-16   | string | name        | Atom name.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 17      | string | alt_loc     | Alternate location indicator.       |
-        +---------+--------+-------------+-------------------------------------+
-        | 18-20   | string | res_name    | Residue name.                       |
-        +---------+--------+-------------+-------------------------------------+
-        | 22      | string | chain_id    | Chain identifier.                   |
-        +---------+--------+-------------+-------------------------------------+
-        | 23-26   | int    | res_seq     | Residue sequence number.            |
-        +---------+--------+-------------+-------------------------------------+
-        | 27      | string | ins_code    | Code for insertion of residues.     |
-        +---------+--------+-------------+-------------------------------------+
-        | 31-38   | float  | x           | Orthogonal coordinates for X in     |
-        |         |        |             | Angstroms.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 39-46   | float  | y           | Orthogonal coordinates for Y in     |
-        |         |        |             | Angstroms.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 47-54   | float  | z           | Orthogonal coordinates for Z in     |
-        |         |        |             | Angstroms.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 55-60   | float  | occupancy   | Occupancy.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 61-66   | float  | temp_factor | Temperature factor.                 |
-        +---------+--------+-------------+-------------------------------------+
-        | 73-76   | string | seg_id      | Segment identifier, left-justified. |
-        +---------+--------+-------------+-------------------------------------+
-        | 77-78   | string | element     | Element symbol, right-justified.    |
-        +---------+--------+-------------+-------------------------------------+
-        | 79-80   | string | charge      | Charge on the atom.                 |
-        +---------+--------+-------------+-------------------------------------+
+        +---------+--------+-------------+------------------------------------+
+        | COLUMNS | TYPE   | FIELD       | DEFINITION                         |
+        +=========+========+=============+====================================+
+        | 7-11    | int    | serial      | Atom serial number.                |
+        +---------+--------+-------------+------------------------------------+
+        | 13-16   | string | name        | Atom name.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 17      | string | alt_loc     | Alternate location indicator.      |
+        +---------+--------+-------------+------------------------------------+
+        | 18-20   | string | res_name    | Residue name.                      |
+        +---------+--------+-------------+------------------------------------+
+        | 22      | string | chain_id    | Chain identifier.                  |
+        +---------+--------+-------------+------------------------------------+
+        | 23-26   | int    | res_seq     | Residue sequence number.           |
+        +---------+--------+-------------+------------------------------------+
+        | 27      | string | ins_code    | Code for insertion of residues.    |
+        +---------+--------+-------------+------------------------------------+
+        | 31-38   | float  | x           | Orthogonal coordinates for X in    |
+        |         |        |             | Angstroms.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 39-46   | float  | y           | Orthogonal coordinates for Y in    |
+        |         |        |             | Angstroms.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 47-54   | float  | z           | Orthogonal coordinates for Z in    |
+        |         |        |             | Angstroms.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 55-60   | float  | occupancy   | Occupancy.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 61-66   | float  | temp_factor | Temperature factor.                |
+        +---------+--------+-------------+------------------------------------+
+        | 73-76   | string | seg_id      | Segment identifier, left-          |
+        |         |        |             | justified.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 77-78   | string | element     | Element symbol, right-justified.   |
+        +---------+--------+-------------+------------------------------------+
+        | 79-80   | string | charge      | Charge on the atom.                |
+        +---------+--------+-------------+------------------------------------+
         """
         super().__init__(line)
         self.serial = int(line[6:11].strip())
@@ -565,42 +567,43 @@ class ATOM(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        +---------+--------+-------------+-------------------------------------+
-        | COLUMNS | TYPE   | FIELD       | DEFINITION                          |
-        +=========+========+=============+=====================================+
-        | 7-11    | int    | serial      | Atom serial number.                 |
-        +---------+--------+-------------+-------------------------------------+
-        | 13-16   | string | name        | Atom name.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 17      | string | alt_loc     | Alternate location indicator.       |
-        +---------+--------+-------------+-------------------------------------+
-        | 18-20   | string | res_name    | Residue name.                       |
-        +---------+--------+-------------+-------------------------------------+
-        | 22      | string | chain_id    | Chain identifier.                   |
-        +---------+--------+-------------+-------------------------------------+
-        | 23-26   | int    | res_seq     | Residue sequence number.            |
-        +---------+--------+-------------+-------------------------------------+
-        | 27      | string | ins_code    | Code for insertion of residues.     |
-        +---------+--------+-------------+-------------------------------------+
-        | 31-38   | float  | x           | Orthogonal coordinates for X in     |
-        |         |        |             | Angstroms.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 39-46   | float  | y           | Orthogonal coordinates for Y in     |
-        |         |        |             | Angstroms.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 47-54   | float  | z           | Orthogonal coordinates for Z in     |
-        |         |        |             | Angstroms.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 55-60   | float  | occupancy   | Occupancy.                          |
-        +---------+--------+-------------+-------------------------------------+
-        | 61-66   | float  | temp_factor | Temperature factor.                 |
-        +---------+--------+-------------+-------------------------------------+
-        | 73-76   | string | seg_id      | Segment identifier, left-justified. |
-        +---------+--------+-------------+-------------------------------------+
-        | 77-78   | string | element     | Element symbol, right-justified.    |
-        +---------+--------+-------------+-------------------------------------+
-        | 79-80   | string | charge      | Charge on the atom.                 |
-        +---------+--------+-------------+-------------------------------------+
+        +---------+--------+-------------+------------------------------------+
+        | COLUMNS | TYPE   | FIELD       | DEFINITION                         |
+        +=========+========+=============+====================================+
+        | 7-11    | int    | serial      | Atom serial number.                |
+        +---------+--------+-------------+------------------------------------+
+        | 13-16   | string | name        | Atom name.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 17      | string | alt_loc     | Alternate location indicator.      |
+        +---------+--------+-------------+------------------------------------+
+        | 18-20   | string | res_name    | Residue name.                      |
+        +---------+--------+-------------+------------------------------------+
+        | 22      | string | chain_id    | Chain identifier.                  |
+        +---------+--------+-------------+------------------------------------+
+        | 23-26   | int    | res_seq     | Residue sequence number.           |
+        +---------+--------+-------------+------------------------------------+
+        | 27      | string | ins_code    | Code for insertion of residues.    |
+        +---------+--------+-------------+------------------------------------+
+        | 31-38   | float  | x           | Orthogonal coordinates for X in    |
+        |         |        |             | Angstroms.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 39-46   | float  | y           | Orthogonal coordinates for Y in    |
+        |         |        |             | Angstroms.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 47-54   | float  | z           | Orthogonal coordinates for Z in    |
+        |         |        |             | Angstroms.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 55-60   | float  | occupancy   | Occupancy.                         |
+        +---------+--------+-------------+------------------------------------+
+        | 61-66   | float  | temp_factor | Temperature factor.                |
+        +---------+--------+-------------+------------------------------------+
+        | 73-76   | string | seg_id      | Segment identifier,                |
+        |         |        |             | left-justified.                    |
+        +---------+--------+-------------+------------------------------------+
+        | 77-78   | string | element     | Element symbol, right-justified.   |
+        +---------+--------+-------------+------------------------------------+
+        | 79-80   | string | charge      | Charge on the atom.                |
+        +---------+--------+-------------+------------------------------------+
         """
         super().__init__(line)
         self.serial = int(line[6:11].strip())
@@ -639,11 +642,13 @@ class MODEL(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        -----------------------------------------------------
-        11-14    int    serial Model serial number.
+        +---------+------+--------+----------------------+
+        | COLUMNS | TYPE | FIELD  | DEFINITION           |
+        +=========+======+========+======================+
+        | 11-14   | int  | serial | Model serial number. |
+        +---------+------+--------+----------------------+
         """
-        super(MODEL, self).__init__(line)
+        super().__init__(line)
         self.serial = int(line[10:14].strip())
 
 
@@ -658,15 +663,21 @@ class TVECT(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ---------------------------------
-        8-10     int    serial Serial number
-        11-20    float  t1     Components of translation vector
-        21-30    float  t2     Components of translation vector
-        31-40    float  t2     Components of translation vector
-        41-70    string text   Comments
+        +---------+--------+--------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD  | DEFINITION                       |
+        +=========+========+========+==================================+
+        | 8-10    | int    | serial | Serial number                    |
+        +---------+--------+--------+----------------------------------+
+        | 11-20   | float  | t1     | Components of translation vector |
+        +---------+--------+--------+----------------------------------+
+        | 21-30   | float  | t2     | Components of translation vector |
+        +---------+--------+--------+----------------------------------+
+        | 31-40   | float  | t2     | Components of translation vector |
+        +---------+--------+--------+----------------------------------+
+        | 41-70   | string | text   | Comments                         |
+        +---------+--------+--------+----------------------------------+
         """
-        super(TVECT, self).__init__(line)
+        super().__init__(line)
         self.serial = int(line[7:10].strip())
         self.trans1 = float(line[10:20].strip())
         self.trans2 = float(line[20:30].strip())
@@ -684,19 +695,27 @@ class MTRIXn(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        ---------------------------------
-        8-10     int    serial  Serial number
-        11-20    float  mn1     M31
-        21-30    float  mn2     M32
-        31-40    float  mn3     M33
-        46-55    float  vn      V3
-        60       int    i_given 1 if coordinates for the representations which
-                                are approximately related by the transformations
-                                of the molecule are contained in the entry.
-                                Otherwise, blank.
+        +---------+-------+---------+-----------------------------------------+
+        | COLUMNS | TYPE  | FIELD   | DEFINITION                              |
+        +=========+=======+=========+=========================================+
+        | 8-10    | int   | serial  | Serial number                           |
+        +---------+-------+---------+-----------------------------------------+
+        | 11-20   | float | mn1     | M31                                     |
+        +---------+-------+---------+-----------------------------------------+
+        | 21-30   | float | mn2     | M32                                     |
+        +---------+-------+---------+-----------------------------------------+
+        | 31-40   | float | mn3     | M33                                     |
+        +---------+-------+---------+-----------------------------------------+
+        | 46-55   | float | vn      | V3                                      |
+        +---------+-------+---------+-----------------------------------------+
+        | 60      | int   | i_given | 1 if coordinates for the                |
+        |         |       |         | representations which are approximately |
+        |         |       |         | related by the transformations of the   |
+        |         |       |         | molecule are contained in the entry.    |
+        |         |       |         | Otherwise, blank.                       |
+        +---------+-------+---------+-----------------------------------------+
         """
-        super(MTRIXn, self).__init__(line)
+        super().__init__(line)
         self.serial = int(line[7:10].strip())
         self.mn1 = float(line[10:20].strip())
         self.mn2 = float(line[20:30].strip())
@@ -711,19 +730,16 @@ class MTRIXn(BaseRecord):
 @register_line_parser
 class MTRIX3(MTRIXn):
     """MATRIX3 PDB entry"""
-    pass
 
 
 @register_line_parser
 class MTRIX2(MTRIXn):
     """MATRIX2 PDB entry"""
-    pass
 
 
 @register_line_parser
 class MTRIX1(MTRIXn):
     """MATRIX1 PDB entry"""
-    pass
 
 
 class SCALEn(BaseRecord):
@@ -738,14 +754,19 @@ class SCALEn(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ---------------------------------
-        11-20    float  sn1    S31
-        21-30    float  sn2    S32
-        31-40    float  sn3    S33
-        46-55    float  un     U3
+        +---------+-------+-------+------------+
+        | COLUMNS | TYPE  | FIELD | DEFINITION |
+        +=========+=======+=======+============+
+        | 11-20   | float | sn1   | S31        |
+        +---------+-------+-------+------------+
+        | 21-30   | float | sn2   | S32        |
+        +---------+-------+-------+------------+
+        | 31-40   | float | sn3   | S33        |
+        +---------+-------+-------+------------+
+        | 46-55   | float | un    | U3         |
+        +---------+-------+-------+------------+
         """
-        super(SCALEn, self).__init__(line)
+        super().__init__(line)
         self.sn1 = float(line[10:20].strip())
         self.sn2 = float(line[20:30].strip())
         self.sn3 = float(line[30:40].strip())
@@ -755,19 +776,16 @@ class SCALEn(BaseRecord):
 @register_line_parser
 class SCALE3(SCALEn):
     """SCALE3 PDB entry"""
-    pass
 
 
 @register_line_parser
 class SCALE2(SCALEn):
     """SCALE2 PDB entry"""
-    pass
 
 
 @register_line_parser
 class SCALE1(SCALEn):
     """SCALE2 PDB entry"""
-    pass
 
 
 class ORIGXn(BaseRecord):
@@ -781,14 +799,19 @@ class ORIGXn(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ---------------------------------
-        11-20    float  on1    O21
-        21-30    float  on2    O22
-        31-40    float  on3    O23
-        46-55    float  tn     T2
+        +---------+-------+-------+------------+
+        | COLUMNS | TYPE  | FIELD | DEFINITION |
+        +=========+=======+=======+============+
+        | 11-20   | float | on1   | O21        |
+        +---------+-------+-------+------------+
+        | 21-30   | float | on2   | O22        |
+        +---------+-------+-------+------------+
+        | 31-40   | float | on3   | O23        |
+        +---------+-------+-------+------------+
+        | 46-55   | float | tn    | T2         |
+        +---------+-------+-------+------------+
         """
-        super(ORIGXn, self).__init__(line)
+        super().__init__(line)
         self.on1 = float(line[10:20].strip())
         self.on2 = float(line[20:30].strip())
         self.on3 = float(line[30:40].strip())
@@ -798,19 +821,16 @@ class ORIGXn(BaseRecord):
 @register_line_parser
 class ORIGX2(ORIGXn):
     """ORIGX2 PDB entry"""
-    pass
 
 
 @register_line_parser
 class ORIGX3(ORIGXn):
     """ORIGX3 PDB entry"""
-    pass
 
 
 @register_line_parser
 class ORIGX1(ORIGXn):
     """ORIGX3 PDB entry"""
-    pass
 
 
 @register_line_parser
@@ -825,18 +845,27 @@ class CRYST1(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ---------------------------------------
-        7-15    float  a      a (Angstroms).
-        16-24    float  b      b (Angstroms).
-        25-33    float  c      c (Angstroms).
-        34-40    float  alpha  alpha (degrees).
-        41-47    float  beta   beta (degrees).
-        48-54    float  gamma  gamma (degrees).
-        56-66    string space_group Space group.
-        67-70    int    z      Z value.
+        +---------+--------+-------------+------------------+
+        | COLUMNS | TYPE   | FIELD       | DEFINITION       |
+        +=========+========+=============+==================+
+        | 7-15    | float  | a           | a (Angstroms).   |
+        +---------+--------+-------------+------------------+
+        | 16-24   | float  | b           | b (Angstroms).   |
+        +---------+--------+-------------+------------------+
+        | 25-33   | float  | c           | c (Angstroms).   |
+        +---------+--------+-------------+------------------+
+        | 34-40   | float  | alpha       | alpha (degrees). |
+        +---------+--------+-------------+------------------+
+        | 41-47   | float  | beta        | beta (degrees).  |
+        +---------+--------+-------------+------------------+
+        | 48-54   | float  | gamma       | gamma (degrees). |
+        +---------+--------+-------------+------------------+
+        | 56-66   | string | space_group | Space group.     |
+        +---------+--------+-------------+------------------+
+        | 67-70   | int    | z           | Z value.         |
+        +---------+--------+-------------+------------------+
         """
-        super(CRYST1, self).__init__(line)
+        super().__init__(line)
         self.a = float(line[6:15].strip())
         self.b = float(line[15:24].strip())
         self.c = float(line[24:33].strip())
@@ -858,29 +887,64 @@ class SITE(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing the line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        --------------------------------------------------------------
-        8-10     int    seq_num   Sequence number.
-        12-14    string site_id   Site name.
-        16-17    int    num_res   Number of residues comprising site.
-        19-21    string res_name1 Residue name for first residue comprising site.
-        23       string chain_id1 Chain identifier for first residue comprising site.
-        24-27    int    seq1     Residue sequence number for first residue comprising site.
-        28       string ins_code1   Insertion code for first residue comprising site.
-        30-32    string res_name2 Residue name for second residue comprising site.
-        34       string chain_id2 Chain identifier for second residue comprising site.
-        35-38    int    seq2     Residue sequence number for second residue comprising site.
-        39       string ins_code2   Insertion code for second residue comprising site.
-        41-43    string res_name3 Residue name for third residue comprising site.
-        45       string chain_id3 Chain identifier for third residue comprising site.
-        46-49    int    seq3     Residue sequence number for third residue comprising site.
-        50       string ins_code3   Insertion code for third residue comprising site.
-        52-54    string res_name4 Residue name for fourth residue comprising site.
-        56       string chain_id4 Chain identifier for fourth residue comprising site.
-        57-60    int    seq4     Residue sequence number for fourth residue comprising site.
-        61       string ins_code4   Insertion code for fourth residue comprising site.
+        +---------+--------+-----------+--------------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                           |
+        | 8-10    | int    | seq_num   | Sequence number.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 12-14   | string | site_id   | Site name.                           |
+        +---------+--------+-----------+--------------------------------------+
+        | 16-17   | int    | num_res   | Number of residues comprising site.  |
+        +---------+--------+-----------+--------------------------------------+
+        | 19-21   | string | res_name1 | Residue name for first residue       |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 23      | string | chain_id1 | Chain identifier for first residue   |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 24-27   | int    | seq1      | Residue sequence number for first    |
+        |         |        |           | residue comprising site.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 28      | string | ins_code1 | Insertion code for first residue     |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 30-32   | string | res_name2 | Residue name for second residue      |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 34      | string | chain_id2 | Chain identifier for second residue  |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 35-38   | int    | seq2      | Residue sequence number for second   |
+        |         |        |           | residue comprising site.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 39      | string | ins_code2 | Insertion code for second residue    |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 41-43   | string | res_name3 | Residue name for third residue       |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 45      | string | chain_id3 | Chain identifier for third residue   |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 46-49   | int    | seq3      | Residue sequence number for third    |
+        |         |        |           | residue comprising site.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 50      | string | ins_code3 | Insertion code for third residue     |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 52-54   | string | res_name4 | Residue name for fourth residue      |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 56      | string | chain_id4 | Chain identifier for fourth residue  |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
+        | 57-60   | int    | seq4      | Residue sequence number for fourth   |
+        |         |        |           | residue comprising site.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 61      | string | ins_code4 | Insertion code for fourth residue    |
+        |         |        |           | comprising site.                     |
+        +---------+--------+-----------+--------------------------------------+
         """
-        super(SITE, self).__init__(line)
+        super().__init__(line)
         self.seq_num = int(line[7:10].strip())
         self.site_id = line[11:14].strip()
         self.num_res = int(line[15:17].strip())
@@ -917,21 +981,33 @@ class CISPEP(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        -----------------------------------------------------------
-        8-10     int    ser_num   Record serial number.
-        12-14    string pep1     Residue name.
-        16       string chain_id1 Chain identifier.
-        18-21    int    seq_num1  Residue sequence number.
-        22       string icode1   Insertion code.
-        26-28    string pep2     Residue name.
-        30       string chain_id2 Chain identifier.
-        32-35    int    seq_num2  Residue sequence number.
-        36       string icode2   Insertion code.
-        44-46    int    mod_num   Identifies the specific model.
-        54-59    float  measure  Measure of the angle in degrees.
+        +---------+--------+-----------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                       |
+        +=========+========+===========+==================================+
+        | 8-10    | int    | ser_num   | Record serial number.            |
+        +---------+--------+-----------+----------------------------------+
+        | 12-14   | string | pep1      | Residue name.                    |
+        +---------+--------+-----------+----------------------------------+
+        | 16      | string | chain_id1 | Chain identifier.                |
+        +---------+--------+-----------+----------------------------------+
+        | 18-21   | int    | seq_num1  | Residue sequence number.         |
+        +---------+--------+-----------+----------------------------------+
+        | 22      | string | icode1    | Insertion code.                  |
+        +---------+--------+-----------+----------------------------------+
+        | 26-28   | string | pep2      | Residue name.                    |
+        +---------+--------+-----------+----------------------------------+
+        | 30      | string | chain_id2 | Chain identifier.                |
+        +---------+--------+-----------+----------------------------------+
+        | 32-35   | int    | seq_num2  | Residue sequence number.         |
+        +---------+--------+-----------+----------------------------------+
+        | 36      | string | icode2    | Insertion code.                  |
+        +---------+--------+-----------+----------------------------------+
+        | 44-46   | int    | mod_num   | Identifies the specific model.   |
+        +---------+--------+-----------+----------------------------------+
+        | 54-59   | float  | measure   | Measure of the angle in degrees. |
+        +---------+--------+-----------+----------------------------------+
         """
-        super(CISPEP, self).__init__(line)
+        super().__init__(line)
         self.ser_num = int(line[7:10].strip())
         self.pep1 = line[11:14].strip()
         self.chain_id1 = line[15].strip()
@@ -956,24 +1032,39 @@ class SLTBRG(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD     DEFINITION
-        -----------------------------------------------------
-        13-16    string name1     Atom name.
-        17       string alt_loc1   Alternate location indicator.
-        18-20    string res_name1  Residue name.
-        22       string chain_id1  Chain identifier.
-        23-26    int    res_seq1   Residue sequence number.
-        27       string ins_code1    Insertion code.
-        43-46    string name2     Atom name.
-        47       string alt_loc2   Alternate location indicator.
-        48-50    string res_name2  Residue name.
-        52       string chain_id2  Chain identifier.
-        53-56    int    res_seq2   Residue sequence number.
-        57       string ins_code2    Insertion code.
-        60-65    string sym1      Symmetry operator for 1st atom.
-        67-72    string sym2      Symmetry operator for 2nd atom.
+        +---------+--------+-----------+---------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                      |
+        +=========+========+===========+=================================+
+        | 13-16   | string | name1     | Atom name.                      |
+        +---------+--------+-----------+---------------------------------+
+        | 17      | string | alt_loc1  | Alternate location indicator.   |
+        +---------+--------+-----------+---------------------------------+
+        | 18-20   | string | res_name1 | Residue name.                   |
+        +---------+--------+-----------+---------------------------------+
+        | 22      | string | chain_id1 | Chain identifier.               |
+        +---------+--------+-----------+---------------------------------+
+        | 23-26   | int    | res_seq1  | Residue sequence number.        |
+        +---------+--------+-----------+---------------------------------+
+        | 27      | string | ins_code1 | Insertion code.                 |
+        +---------+--------+-----------+---------------------------------+
+        | 43-46   | string | name2     | Atom name.                      |
+        +---------+--------+-----------+---------------------------------+
+        | 47      | string | alt_loc2  | Alternate location indicator.   |
+        +---------+--------+-----------+---------------------------------+
+        | 48-50   | string | res_name2 | Residue name.                   |
+        +---------+--------+-----------+---------------------------------+
+        | 52      | string | chain_id2 | Chain identifier.               |
+        +---------+--------+-----------+---------------------------------+
+        | 53-56   | int    | res_seq2  | Residue sequence number.        |
+        +---------+--------+-----------+---------------------------------+
+        | 57      | string | ins_code2 | Insertion code.                 |
+        +---------+--------+-----------+---------------------------------+
+        | 60-65   | string | sym1      | Symmetry operator for 1st atom. |
+        +---------+--------+-----------+---------------------------------+
+        | 67-72   | string | sym2      | Symmetry operator for 2nd atom. |
+        +---------+--------+-----------+---------------------------------+
         """
-        super(SLTBRG, self).__init__(line)
+        super().__init__(line)
         self.name1 = line[12:16].strip()
         self.alt_loc1 = line[16].strip()
         self.res_name1 = line[17:20].strip()
@@ -1000,29 +1091,51 @@ class HYDBND(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD     DEFINITION
-        -----------------------------------------------------------
-        13-16    string name1     Atom name.
-        17       string alt_loc1   Alternate location indicator.
-        18-20    string res_name1  Residue name.
-        22       string chain1    Chain identifier.
-        23-27    int    res_seq1   Residue sequence number.
-        28       string i_code1    Insertion code.
-        30-33    string name_h     Hydrogen atom name.
-        34       string alt_loc_h   Alternate location indicator.
-        36       string chain_h    Chain identifier.
-        37-41    int    res_seq_h   Residue sequence number.
-        42       string ins_codeH    Insertion code.
-        44-47    string name2     Atom name.
-        48       string alt_loc2   Alternate location indicator.
-        49-51    string res_name2  Residue name.
-        53       string chain_id2  Chain identifier.
-        54-58    int    res_seq2   Residue sequence number.
-        59       string ins_code2    Insertion code.
-        60-65    string sym1      Symmetry operator for 1st non-hydrogen atom.
-        67-72    string sym2      Symmetry operator for 2nd non-hydrogen atom.
+        +---------+--------+-----------+--------------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                           |
+        +=========+========+===========+======================================+
+        | 13-16   | string | name1     | Atom name.                           |
+        +---------+--------+-----------+--------------------------------------+
+        | 17      | string | alt_loc1  | Alternate location indicator.        |
+        +---------+--------+-----------+--------------------------------------+
+        | 18-20   | string | res_name1 | Residue name.                        |
+        +---------+--------+-----------+--------------------------------------+
+        | 22      | string | chain1    | Chain identifier.                    |
+        +---------+--------+-----------+--------------------------------------+
+        | 23-27   | int    | res_seq1  | Residue sequence number.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 28      | string | i_code1   | Insertion code.                      |
+        +---------+--------+-----------+--------------------------------------+
+        | 30-33   | string | name_h    | Hydrogen atom name.                  |
+        +---------+--------+-----------+--------------------------------------+
+        | 34      | string | alt_loc_h | Alternate location indicator.        |
+        +---------+--------+-----------+--------------------------------------+
+        | 36      | string | chain_h   | Chain identifier.                    |
+        +---------+--------+-----------+--------------------------------------+
+        | 37-41   | int    | res_seq_h | Residue sequence number.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 42      | string | ins_codeH | Insertion code.                      |
+        +---------+--------+-----------+--------------------------------------+
+        | 44-47   | string | name2     | Atom name.                           |
+        +---------+--------+-----------+--------------------------------------+
+        | 48      | string | alt_loc2  | Alternate location indicator.        |
+        +---------+--------+-----------+--------------------------------------+
+        | 49-51   | string | res_name2 | Residue name.                        |
+        +---------+--------+-----------+--------------------------------------+
+        | 53      | string | chain_id2 | Chain identifier.                    |
+        +---------+--------+-----------+--------------------------------------+
+        | 54-58   | int    | res_seq2  | Residue sequence number.             |
+        +---------+--------+-----------+--------------------------------------+
+        | 59      | string | ins_code2 | Insertion code.                      |
+        +---------+--------+-----------+--------------------------------------+
+        | 60-65   | string | sym1      | Symmetry operator for 1st            |
+        |         |        |           | non-hydrogen atom.                   |
+        +---------+--------+-----------+--------------------------------------+
+        | 67-72   | string | sym2      | Symmetry operator for 2nd            |
+        |         |        |           | non-hydrogen atom.                   |
+        +---------+--------+-----------+--------------------------------------+
         """
-        super(HYDBND, self).__init__(line)
+        super().__init__(line)
         self.name1 = line[12:16].strip()
         self.alt_loc1 = line[16].strip()
         self.res_name1 = line[17:20].strip()
@@ -1057,24 +1170,39 @@ class LINK(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD     DEFINITION
-        -----------------------------------------------------
-        13-16    string name1     Atom name.
-        17       string alt_loc1   Alternate location indicator.
-        18-20    string res_name1  Residue name.
-        22       string chain_id1  Chain identifier.
-        23-26    int    res_seq1   Residue sequence number.
-        27       string ins_code1    Insertion code.
-        43-46    string name2     Atom name.
-        47       string alt_loc2   Alternate location indicator.
-        48-50    string res_name2  Residue name.
-        52       string chain_id2  Chain identifier.
-        53-56    int    res_seq2   Residue sequence number.
-        57       string ins_code2    Insertion code.
-        60-65    string sym1      Symmetry operator for 1st atom.
-        67-72    string sym2      Symmetry operator for 2nd atom.
+        +---------+--------+-----------+---------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                      |
+        +=========+========+===========+=================================+
+        | 13-16   | string | name1     | Atom name.                      |
+        +---------+--------+-----------+---------------------------------+
+        | 17      | string | alt_loc1  | Alternate location indicator.   |
+        +---------+--------+-----------+---------------------------------+
+        | 18-20   | string | res_name1 | Residue name.                   |
+        +---------+--------+-----------+---------------------------------+
+        | 22      | string | chain_id1 | Chain identifier.               |
+        +---------+--------+-----------+---------------------------------+
+        | 23-26   | int    | res_seq1  | Residue sequence number.        |
+        +---------+--------+-----------+---------------------------------+
+        | 27      | string | ins_code1 | Insertion code.                 |
+        +---------+--------+-----------+---------------------------------+
+        | 43-46   | string | name2     | Atom name.                      |
+        +---------+--------+-----------+---------------------------------+
+        | 47      | string | alt_loc2  | Alternate location indicator.   |
+        +---------+--------+-----------+---------------------------------+
+        | 48-50   | string | res_name2 | Residue name.                   |
+        +---------+--------+-----------+---------------------------------+
+        | 52      | string | chain_id2 | Chain identifier.               |
+        +---------+--------+-----------+---------------------------------+
+        | 53-56   | int    | res_seq2  | Residue sequence number.        |
+        +---------+--------+-----------+---------------------------------+
+        | 57      | string | ins_code2 | Insertion code.                 |
+        +---------+--------+-----------+---------------------------------+
+        | 60-65   | string | sym1      | Symmetry operator for 1st atom. |
+        +---------+--------+-----------+---------------------------------+
+        | 67-72   | string | sym2      | Symmetry operator for 2nd atom. |
+        +---------+--------+-----------+---------------------------------+
         """
-        super(LINK, self).__init__(line)
+        super().__init__(line)
         self.name1 = line[12:16].strip()
         self.alt_loc1 = line[16].strip()
         self.res_name1 = line[17:20].strip()
@@ -1103,19 +1231,29 @@ class SSBOND(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD          DEFINITION
-        -----------------------------------------------------
-        8 - 10   int    ser_num         Serial number.
-        16       string chain_id1       Chain identifier.
-        18 - 21  int    seq_num1        Residue sequence number.
-        22       string icode1         Insertion code.
-        30       string chain_id2       Chain identifier.
-        32 - 35  int    seq_num2        Residue sequence number.
-        36       string icode2         Insertion code.
-        60 - 65  string sym1           Symmetry operator for 1st residue.
-        67 - 72  string sym2           Symmetry operator for 2nd residue.
+        +---------+--------+-----------+------------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                         |
+        +=========+========+===========+====================================+
+        | 8-10    | int    | ser_num   | Serial number.                     |
+        +---------+--------+-----------+------------------------------------+
+        | 16      | string | chain_id1 | Chain identifier.                  |
+        +---------+--------+-----------+------------------------------------+
+        | 18-21   | int    | seq_num1  | Residue sequence number.           |
+        +---------+--------+-----------+------------------------------------+
+        | 22      | string | icode1    | Insertion code.                    |
+        +---------+--------+-----------+------------------------------------+
+        | 30      | string | chain_id2 | Chain identifier.                  |
+        +---------+--------+-----------+------------------------------------+
+        | 32-35   | int    | seq_num2  | Residue sequence number.           |
+        +---------+--------+-----------+------------------------------------+
+        | 36      | string | icode2    | Insertion code.                    |
+        +---------+--------+-----------+------------------------------------+
+        | 60-65   | string | sym1      | Symmetry operator for 1st residue. |
+        +---------+--------+-----------+------------------------------------+
+        | 67-72   | string | sym2      | Symmetry operator for 2nd residue. |
+        +---------+--------+-----------+------------------------------------+
         """
-        super(SSBOND, self).__init__(line)
+        super().__init__(line)
         self.ser_num = int(line[7:10].strip())
         self.chain_id1 = line[15].strip()
         self.seq_num1 = int(line[17:21].strip())
@@ -1138,21 +1276,42 @@ class TURN(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD       DEFINITION
-        ---------------------------------------------------------
-        8-10     int    seq         Turn number; starts with 1 and increments by one.
-        12-14    string turn_id      Turn identifier
-        16-18    string init_res_name Residue name of initial residue in turn.
-        20       string init_chain_id Chain identifier for the chain containing this turn.
-        21-24    int    init_seq_num  Sequence number of initial residue in turn.
-        25       string init_i_code   Insertion code of initial residue in turn.
-        27-29    string end_res_name  Residue name of terminal residue of turn.
-        31       string end_chain_id  Chain identifier for the chain containing this turn.
-        32-35    int    end_seq_num   Sequence number of terminal residue of turn.
-        36       string end_i_code    Insertion code of terminal residue of turn.
-        41-70    string comment     Associated comment.
+        +---------+--------+---------------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD         | DEFINITION                       |
+        +=========+========+===============+==================================+
+        | 8-10    | int    | seq           | Turn number; starts with 1 and   |
+        |         |        |               | increments by one.               |
+        +---------+--------+---------------+----------------------------------+
+        | 12-14   | string | turn_id       | Turn identifier.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 16-18   | string | init_res_name | Residue name of initial residue  |
+        |         |        |               | in turn.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 20      | string | init_chain_id | Chain identifier for the chain   |
+        |         |        |               | containing this turn.            |
+        +---------+--------+---------------+----------------------------------+
+        | 21-24   | int    | init_seq_num  | Sequence number of initial       |
+        |         |        |               | residue in turn.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 25      | string | init_i_code   | Insertion code of initial        |
+        |         |        |               | residue in turn.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 27-29   | string | end_res_name  | Residue name of terminal residue |
+        |         |        |               | of turn.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 31      | string | end_chain_id  | Chain identifier for the chain   |
+        |         |        |               | containing this turn.            |
+        +---------+--------+---------------+----------------------------------+
+        | 32-35   | int    | end_seq_num   | Sequence number of terminal      |
+        |         |        |               | residue of turn.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 36      | string | end_i_code    | Insertion code of terminal       |
+        |         |        |               | residue of turn.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 41-70   | string | comment       | Associated comment.              |
+        +---------+--------+---------------+----------------------------------+
         """
-        super(TURN, self).__init__(line)
+        super().__init__(line)
         self.seq = int(line[7:10].strip())
         self.turn_id = line[11:14].strip()
         self.init_res_name = line[15:18].strip()
@@ -1178,35 +1337,77 @@ class SHEET(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD       DEFINITION
-        -------------------------------------------------
-        8 - 10  int     strand      Strand number which starts at 1 for each
-                                    strand within a sheet and increases by one.
-        12 - 14  string sheet_id     Sheet identifier.
-        15 - 16  int    num_strands  Number of strands in sheet.
-        18 - 20  string init_res_name Residue name of initial residue.
-        22       string init_chain_id Chain identifier of initial residue in strand.
-        23 - 26  int    init_seq_num  Sequence number of initial residue in strand.
-        27       string init_i_code   Insertion code of initial residue in strand.
-        29 - 31  string end_res_name  Residue name of terminal residue.
-        33       string end_chain_id  Chain identifier of terminal residue.
-        34 - 37  int    end_seq_num   Sequence number of terminal residue.
-        38       string end_i_code    Insertion code of terminal residue.
-        39 - 40  int    sense       Sense of strand with respect to previous strand
-                                    in the sheet. 0 if first strand, 1 if parallel,
-                                    -1 if anti-parallel.
-        42 - 45  string cur_atom     Registration. Atom name in current strand.
-        46 - 48  string curr_res_name  Registration. Residue name in current strand.
-        50       string curChainId  Registration. Chain identifier in current strand.
-        51 - 54  int    curr_res_seq   Registration. Residue sequence number in current strand.
-        55       string curr_ins_code    Registration. Insertion code in current strand.
-        57 - 60  string prev_atom    Registration. Atom name in previous strand.
-        61 - 63  string prev_res_name Registration. Residue name in previous strand.
-        65       string prevChainId Registration. Chain identifier in previous strand.
-        66 - 69  int    prev_res_seq  Registration. Residue sequence number in previous strand.
-        70       string prev_ins_code   Registration. Insertion code in previous strand.
+        +---------+--------+---------------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD         | DEFINITION                       |
+        +=========+========+===============+==================================+
+        | 8-10    | int    | strand        | Strand number which starts at 1  |
+        |         |        |               | for each strand within a sheet   |
+        |         |        |               | and increases by one.            |
+        +---------+--------+---------------+----------------------------------+
+        | 12-14   | string | sheet_id      | Sheet identifier.                |
+        +---------+--------+---------------+----------------------------------+
+        | 15-16   | int    | num_strands   | Number of strands in sheet.      |
+        +---------+--------+---------------+----------------------------------+
+        | 18-20   | string | init_res_name | Residue name of initial residue. |
+        +---------+--------+---------------+----------------------------------+
+        | 22      | string | init_chain_id | Chain identifier of initial      |
+        |         |        |               | residue in strand.               |
+        +---------+--------+---------------+----------------------------------+
+        | 23-26   | int    | init_seq_num  | Sequence number of initial       |
+        |         |        |               | residue in strand.               |
+        +---------+--------+---------------+----------------------------------+
+        | 27      | string | init_i_code   | Insertion code of initial        |
+        |         |        |               | residue in strand.               |
+        +---------+--------+---------------+----------------------------------+
+        | 29-31   | string | end_res_name  | Residue name of terminal         |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 33      | string | end_chain_id  | Chain identifier of terminal     |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 34-37   | int    | end_seq_num   | Sequence number of terminal      |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 38      | string | end_i_code    | Insertion code of terminal       |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 39-40   | int    | sense         | Sense of strand with respect to  |
+        |         |        |               | previous strand in the sheet. 0  |
+        |         |        |               | if first strand, 1 if parallel,  |
+        |         |        |               | -1 if anti-parallel.             |
+        +---------+--------+---------------+----------------------------------+
+        | 42-45   | string | cur_atom      | Registration. Atom name in       |
+        |         |        |               | current strand.                  |
+        +---------+--------+---------------+----------------------------------+
+        | 46-48   | string | curr_res_name | Registration. Residue name in    |
+        |         |        |               | current strand.                  |
+        +---------+--------+---------------+----------------------------------+
+        | 50      | string | curChainId    | Registration. Chain identifier   |
+        |         |        |               | in current strand.               |
+        +---------+--------+---------------+----------------------------------+
+        | 51-54   | int    | curr_res_seq  | Registration. Residue sequence   |
+        |         |        |               | number in current strand.        |
+        +---------+--------+---------------+----------------------------------+
+        | 55      | string | curr_ins_code | Registration. Insertion code in  |
+        |         |        |               | current strand.                  |
+        +---------+--------+---------------+----------------------------------+
+        | 57-60   | string | prev_atom     | Registration. Atom name in       |
+        |         |        |               | previous strand.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 61-63   | string | prev_res_name | Registration. Residue name in    |
+        |         |        |               | previous strand.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 65      | string | prevChainId   | Registration. Chain identifier   |
+        |         |        |               | in previous strand.              |
+        +---------+--------+---------------+----------------------------------+
+        | 66-69   | int    | prev_res_seq  | Registration. Residue sequence   |
+        |         |        |               | number in previous strand.       |
+        +---------+--------+---------------+----------------------------------+
+        | 70      | string | prev_ins_code | Registration. Insertion code in  |
+        |         |        |               | previous strand.                 |
+        +---------+--------+---------------+----------------------------------+
         """
-        super(SHEET, self).__init__(line)
+        super().__init__(line)
         self.strand = int(line[7:10].strip())
         self.sheet_id = line[11:14].strip()
         self.num_strands = int(line[14:16].strip())
@@ -1261,26 +1462,49 @@ class HELIX(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ------------------------------------------------------
-        8-10     int    ser_num      Serial number of the helix.  This starts at
-                                    1 and increases incrementally.
-        12-14    string helix_id     Helix identifier.  In addition to a serial
-                                    number, each helix is given an alphanumeric
-                                    character helix identifier.
-        16-18    string init_res_name Name of the initial residue.
-        20       string init_chain_id Chain identifier for the chain containing this helix.
-        22-25    int    init_seq_num  Sequence number of the initial residue.
-        26       string init_i_code   Insertion code of the initial residue.
-        28-30    string end_res_name  Name of the terminal residue of the helix.
-        32       string end_chain_id  Chain identifier for the chain containing this helix.
-        34-37    int    end_seq_num   Sequence number of the terminal residue.
-        38       string end_i_code    Insertion code of the terminal residue.
-        39-40    int    helix_class  Helix class (see below).
-        41-70    string comment     Comment about this helix.
-        72-76    int    length      Length of this helix.
+        +---------+--------+---------------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD         | DEFINITION                       |
+        +=========+========+===============+==================================+
+        | 8-10    | int    | ser_num       | Serial number of the helix. This |
+        |         |        |               | starts at 1 and increases        |
+        |         |        |               | incrementally.                   |
+        +---------+--------+---------------+----------------------------------+
+        | 12-14   | string | helix_id      | Helix identifier.  In addition   |
+        |         |        |               | to a serial number, each helix   |
+        |         |        |               | is given an alphanumeric         |
+        |         |        |               | character helix identifier.      |
+        +---------+--------+---------------+----------------------------------+
+        | 16-18   | string | init_res_name | Name of the initial residue.     |
+        +---------+--------+---------------+----------------------------------+
+        | 20      | string | init_chain_id | Chain identifier for the chain   |
+        |         |        |               | containing this helix.           |
+        +---------+--------+---------------+----------------------------------+
+        | 22-25   | int    | init_seq_num  | Sequence number of the initial   |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 26      | string | init_i_code   | Insertion code of the initial    |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 28-30   | string | end_res_name  | Name of the terminal residue of  |
+        |         |        |               | the helix.                       |
+        +---------+--------+---------------+----------------------------------+
+        | 32      | string | end_chain_id  | Chain identifier for the chain   |
+        |         |        |               | containing this helix.           |
+        +---------+--------+---------------+----------------------------------+
+        | 34-37   | int    | end_seq_num   | Sequence number of the terminal  |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 38      | string | end_i_code    | Insertion code of the terminal   |
+        |         |        |               | residue.                         |
+        +---------+--------+---------------+----------------------------------+
+        | 39-40   | int    | helix_class   | Helix class (see below).         |
+        +---------+--------+---------------+----------------------------------+
+        | 41-70   | string | comment       | Comment about this helix.        |
+        +---------+--------+---------------+----------------------------------+
+        | 72-76   | int    | length        | Length of this helix.            |
+        +---------+--------+---------------+----------------------------------+
         """
-        super(HELIX, self).__init__(line)
+        super().__init__(line)
         self.ser_num = int(line[7:10].strip())
         self.helix_id = line[11:14].strip()
         self.init_res_name = line[15:18].strip()
@@ -1306,20 +1530,26 @@ class HELIX(BaseRecord):
 class FORMUL(BaseRecord):
     """FORMUL field
 
-    The FORMUL record presents the chemical formula and charge of a non-standard group.
+    The FORMUL record presents the chemical formula and charge of a
+    non-standard group.
     """
 
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        -----------------------------------------------------
-        9-10     int    comp_num  Component number
-        13-15    string hetatm_id    Het identifier
-        19       string asterisk * for water
-        20-70    string text     Chemical formula
+        +---------+--------+------------+------------------+
+        | COLUMNS | TYPE   | FIELD      | DEFINITION       |
+        +=========+========+============+==================+
+        | 9-10    | int    | comp_num   | Component number |
+        +---------+--------+------------+------------------+
+        | 13-15   | string | hetatm_id  | Het identifier   |
+        +---------+--------+------------+------------------+
+        | 19      | string | asterisk * | for water        |
+        +---------+--------+------------+------------------+
+        | 20-70   | string | text       | Chemical formula |
+        +---------+--------+------------+------------------+
         """
-        super(FORMUL, self).__init__(line)
+        super().__init__(line)
         self.comp_num = int(line[8:10].strip())
         self.hetatm_id = line[12:15].strip()
         self.asterisk = line[19].strip()
@@ -1338,12 +1568,16 @@ class HETSYN(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD         DEFINITION
-        -----------------------------------------------------
-        12-14    string hetatm_id         Het identifier, right-justified.
-        16-70    string hetatm_synonyms   List of synonyms
+        +---------+--------+-----------------+-------------------+
+        | COLUMNS | TYPE   | FIELD           | DEFINITION        |
+        +=========+========+=================+===================+
+        | 12-14   | string | hetatm_id       | Het identifier,   |
+        |         |        |                 | right-justified.  |
+        +---------+--------+-----------------+-------------------+
+        | 16-70   | string | hetatm_synonyms | List of synonyms  |
+        +---------+--------+-----------------+-------------------+
         """
-        super(HETSYN, self).__init__(line)
+        super().__init__(line)
         self.hetatm_id = line[11:14].strip()
         self.hetatm_synonyms = line[15:70].strip()
 
@@ -1352,17 +1586,21 @@ class HETSYN(BaseRecord):
 class HETNAM(BaseRecord):
     """HETNAM field
 
-    This record gives the chemical name of the compound with the given hetatm_id. """
+    This record gives the chemical name of the compound with the
+    given hetatm_id. """
 
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        -----------------------------------------------------
-        12-14    string hetatm_id  Het identifier, right-justified.
-        16-70    string text   Chemical name.
+        +---------+--------+-----------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                       |
+        +=========+========+===========+==================================+
+        | 12-14   | string | hetatm_id | Het identifier, right-justified. |
+        +---------+--------+-----------+----------------------------------+
+        | 16-70   | string | text      | Chemical name.                   |
+        +---------+--------+-----------+----------------------------------+
         """
-        super(HETNAM, self).__init__(line)
+        super().__init__(line)
         self.hetatm_id = line[11:14].strip()
         self.text = line[15:70].strip()
 
@@ -1374,12 +1612,14 @@ class HET(BaseRecord):
     HET records are used to describe non-standard residues, such as
     prosthetic groups, inhibitors, solvent molecules, and ions for which
     coordinates are supplied. Groups are considered HET if they are:
-        - not one of the standard amino acids, and
-        - not one of the nucleic acids (C, G, A, T, U, and I), and
-        - not one of the modified versions of nucleic acids (+C, +G, +A, +T,
-        +U, and +I), and
-        - not an unknown amino acid or nucleic acid where UNK is used to
-        indicate the unknown residue name.
+
+    * not one of the standard amino acids, and
+    * not one of the nucleic acids (C, G, A, T, U, and I), and
+    * not one of the modified versions of nucleic acids (+C, +G, +A, +T, +U,
+      and +I), and
+    * not an unknown amino acid or nucleic acid where UNK is used to indicate
+      the unknown residue name.
+
     Het records also describe heterogens for which the chemical identity is
     unknown, in which case the group is assigned the hetatm_id UNK.
     """
@@ -1387,16 +1627,23 @@ class HET(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD       DEFINITION
-        --------------------------------------------------------
-        8-10     string hetatm_id       Het identifier, right-justified.
-        13       string ChainID     Chain identifier.
-        14-17    int    seq_num      Sequence number.
-        18       string ins_code       Insertion code.
-        21-25    int    num_het_atoms Number of HETATM records for the
-        31-70    string text        Text describing Het group.
+        +---------+--------+---------------+----------------------------------+
+        | COLUMNS | TYPE   | FIELD         | DEFINITION                       |
+        +=========+========+===============+==================================+
+        | 8-10    | string | hetatm_id     | Het identifier, right-justified. |
+        +---------+--------+---------------+----------------------------------+
+        | 13      | string | ChainID       | Chain identifier.                |
+        +---------+--------+---------------+----------------------------------+
+        | 14-17   | int    | seq_num       | Sequence number.                 |
+        +---------+--------+---------------+----------------------------------+
+        | 18      | string | ins_code      | Insertion code.                  |
+        +---------+--------+---------------+----------------------------------+
+        | 21-25   | int    | num_het_atoms | Number of HETATM records.        |
+        +---------+--------+---------------+----------------------------------+
+        | 31-70   | string | text          | Text describing Het group.       |
+        +---------+--------+---------------+----------------------------------+
         """
-        super(HET, self).__init__(line)
+        super().__init__(line)
         self.hetatm_id = line[7:10].strip()
         self.chain_id = line[12].strip()
         try:
@@ -1421,17 +1668,26 @@ class MODRES(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        ---------------------------------------
-        8-11     string id_code  ID code of this entry.
-        13-15    string res_name Residue name used in this entry.
-        17       string chain_id Chain identifier.
-        19-22    int    seq_num  Sequence number.
-        23       string ins_code   Insertion code.
-        25-27    string stdRes  Standard residue name.
-        30-70    string comment Description of the residue modification.
+        +---------+--------+----------+---------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                            |
+        +=========+========+==========+=======================================+
+        | 8-11    | string | id_code  | ID code of this entry.                |
+        +---------+--------+----------+---------------------------------------+
+        | 13-15   | string | res_name | Residue name used in this entry.      |
+        +---------+--------+----------+---------------------------------------+
+        | 17      | string | chain_id | Chain identifier.                     |
+        +---------+--------+----------+---------------------------------------+
+        | 19-22   | int    | seq_num  | Sequence number.                      |
+        +---------+--------+----------+---------------------------------------+
+        | 23      | string | ins_code | Insertion code.                       |
+        +---------+--------+----------+---------------------------------------+
+        | 25-27   | string | stdRes   | Standard residue name.                |
+        +---------+--------+----------+---------------------------------------+
+        | 30-70   | string | comment  | Description of the residue            |
+        |         |        |          | modification.                         |
+        +---------+--------+----------+---------------------------------------+
         """
-        super(MODRES, self).__init__(line)
+        super().__init__(line)
         self.id_code = line[7:11].strip()
         self.res_name = line[12:15].strip()
         self.chain_id = line[16].strip()
@@ -1452,31 +1708,50 @@ class SEQRES(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        -----------------------------------------------------
-        9-10     int    ser_num  Serial number of the SEQRES record for the current
-                                chain.  Starts at 1 and increments by one each line.
-                                Reset to 1 for each chain.
-        12       string chain_id Chain identifier.  This may be any single legal
-                                character, including a blank which is used if
-                                there is only one chain.
-        14-17    int    num_res  Number of residues in the chain. This value is
-                                repeated on every record.
-        20-22    string res_name Residue name.
-        24-26    string res_name Residue name.
-        28-30    string res_name Residue name.
-        32-34    string res_name Residue name.
-        36-38    string res_name Residue name.
-        40-42    string res_name Residue name.
-        44-46    string res_name Residue name.
-        48-50    string res_name Residue name.
-        52-54    string res_name Residue name.
-        56-58    string res_name Residue name.
-        60-62    string res_name Residue name.
-        64-66    string res_name Residue name.
-        68-70    string res_name Residue name.
+        +---------+--------+----------+---------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                            |
+        +=========+========+==========+=======================================+
+        | 9-10    | int    | ser_num  | Serial number of the SEQRES record    |
+        |         |        |          | for the current chain.  Starts at 1   |
+        |         |        |          | and increments by one each line.      |
+        |         |        |          | Reset to 1 for each chain.            |
+        +---------+--------+----------+---------------------------------------+
+        | 12      | string | chain_id | Chain identifier.  This may be any    |
+        |         |        |          | single legal character, including a   |
+        |         |        |          | blank which is used if there is only  |
+        |         |        |          | one chain.                            |
+        +---------+--------+----------+---------------------------------------+
+        | 14-17   | int    | num_res  | Number of residues in the chain. This |
+        |         |        |          | value is repeated on every record.    |
+        +---------+--------+----------+---------------------------------------+
+        | 20-22   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 24-26   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 28-30   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 32-34   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 36-38   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 40-42   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 44-46   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 48-50   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 52-54   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 56-58   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 60-62   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 64-66   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
+        | 68-70   | string | res_name | Residue name.                         |
+        +---------+--------+----------+---------------------------------------+
         """
-        super(SEQRES, self).__init__(line)
+        super().__init__(line)
         self.ser_num = int(line[8:10].strip())
         self.chain_id = line[11].strip()
         self.num_res = int(line[13:17].strip())
@@ -1512,20 +1787,32 @@ class SEQADV(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        -----------------------------------------------------
-        8-11     string id_code   ID code of this entry.
-        13-15    string res_name  Name of the PDB residue in conflict.
-        17       string chain_id  PDB chain identifier.
-        19-22    int    seq_num   PDB sequence number.
-        23       string ins_code    PDB insertion code.
-        25-28    string database Sequence database name.
-        30-38    string db_id_code Sequence database accession number.
-        40-42    string db_res    Sequence database residue name.
-        44-48    int    db_seq    Sequence database sequence number.
-        50-70    string conflict Conflict comment.
+        +---------+--------+------------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD      | DEFINITION                          |
+        +=========+========+============+=====================================+
+        | 8-11    | string | id_code    | ID code of this entry.              |
+        +---------+--------+------------+-------------------------------------+
+        | 13-15   | string | res_name   | Name of the PDB residue in          |
+        |         |        |            | conflict.                           |
+        +---------+--------+------------+-------------------------------------+
+        | 17      | string | chain_id   | PDB chain identifier.               |
+        +---------+--------+------------+-------------------------------------+
+        | 19-22   | int    | seq_num    | PDB sequence number.                |
+        +---------+--------+------------+-------------------------------------+
+        | 23      | string | ins_code   | PDB insertion code.                 |
+        +---------+--------+------------+-------------------------------------+
+        | 25-28   | string | database   | Sequence database name.             |
+        +---------+--------+------------+-------------------------------------+
+        | 30-38   | string | db_id_code | Sequence database accession number. |
+        +---------+--------+------------+-------------------------------------+
+        | 40-42   | string | db_res     | Sequence database residue name.     |
+        +---------+--------+------------+-------------------------------------+
+        | 44-48   | int    | db_seq     | Sequence database sequence number.  |
+        +---------+--------+------------+-------------------------------------+
+        | 50-70   | string | conflict   | Conflict comment.                   |
+        +---------+--------+------------+-------------------------------------+
         """
-        super(SEQADV, self).__init__(line)
+        super().__init__(line)
         self.id_code = line[7:11].strip()
         self.res_name = line[12:15].strip()
         self.chain_id = line[16].strip()
@@ -1559,28 +1846,54 @@ class DBREF(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line.
 
-        COLUMNS  TYPE   FIELD       DEFINITION
-        ------------------------------------------------------
-        8-11     string id_code      ID code of this entry.
-        13       string chain_id     Chain identifier.
-        15-18    int    seq_begin    Initial sequence number of the PDB sequence segment.
-        19       string insert_begin Initial insertion code of the PDB sequence segment.
-        21-24    int    seq_end      Ending sequence number of the PDB sequence segment.
-        25       string insert_end   Ending insertion code of the PDB sequence segment.
-        27-32    string database    Sequence database name.  "PDB" when a corresponding
-                                    sequence database entry has not been identified.
-        34-41    string db_accession Sequence database accession code. For GenBank
-                                    entries, this is the NCBI gi number.
-        43-54    string db_id_code    Sequence database identification code.
-                                    For GenBank entries, this is the accession code.
-        56-60    int    db_seq_begin  Initial sequence number of the database seqment.
-        61       string db_ins_begin    Insertion code of initial residue of the segment,
-                                    if PDB is the reference.
-        63-67    int    dbseq_end    Ending sequence number of the database segment.
-        68       string db_ins_end    Insertion code of the ending residue of the
-                                    segment, if PDB is the reference.
+        +---------+--------+--------------+-----------------------------------+
+        | COLUMNS | TYPE   | FIELD        | DEFINITION                        |
+        +=========+========+==============+===================================+
+        | 8-11    | string | id_code      | ID code of this entry.            |
+        +---------+--------+--------------+-----------------------------------+
+        | 13      | string | chain_id     | Chain identifier.                 |
+        +---------+--------+--------------+-----------------------------------+
+        | 15-18   | int    | seq_begin    | Initial sequence number of the    |
+        |         |        |              | PDB sequence segment.             |
+        +---------+--------+--------------+-----------------------------------+
+        | 19      | string | insert_begin | Initial insertion code of the     |
+        |         |        |              | PDB sequence segment.             |
+        +---------+--------+--------------+-----------------------------------+
+        | 21-24   | int    | seq_end      | Ending sequence number of the     |
+        |         |        |              | PDB sequence segment.             |
+        +---------+--------+--------------+-----------------------------------+
+        | 25      | string | insert_end   | Ending insertion code of the      |
+        |         |        |              | PDB sequence segment.             |
+        +---------+--------+--------------+-----------------------------------+
+        | 27-32   | string | database     | Sequence database name.  "PDB"    |
+        |         |        |              | when a corresponding sequence     |
+        |         |        |              | database entry has not been       |
+        |         |        |              | identified.                       |
+        +---------+--------+--------------+-----------------------------------+
+        | 34-41   | string | db_accession | Sequence database accession code. |
+        |         |        |              | For GenBank entries, this is the  |
+        |         |        |              | NCBI gi number.                   |
+        +---------+--------+--------------+-----------------------------------+
+        | 43-54   | string | db_id_code   | Sequence database identification  |
+        |         |        |              | code. For GenBank entries, this   |
+        |         |        |              | is the accession code.            |
+        +---------+--------+--------------+-----------------------------------+
+        | 56-60   | int    | db_seq_begin | Initial sequence number of the    |
+        |         |        |              | database seqment.                 |
+        +---------+--------+--------------+-----------------------------------+
+        | 61      | string | db_ins_begin | Insertion code of initial residue |
+        |         |        |              | of the segment, if PDB is the     |
+        |         |        |              | reference.                        |
+        +---------+--------+--------------+-----------------------------------+
+        | 63-67   | int    | dbseq_end    | Ending sequence number of the     |
+        |         |        |              | database segment.                 |
+        +---------+--------+--------------+-----------------------------------+
+        | 68      | string | db_ins_end   | Insertion code of the ending      |
+        |         |        |              | residue of the                    |
+        |         |        |              | segment, if PDB is the reference. |
+        +---------+--------+--------------+-----------------------------------+
         """
-        super(DBREF, self).__init__(line)
+        super().__init__(line)
         self.id_code = line[7:11].strip()
         self.chain_id = line[12].strip()
         self.seq_begin = int(line[14:18].strip())
@@ -1613,7 +1926,7 @@ class REMARK(BaseRecord):
 
     def __init__(self, line):
         """Initialize by parsing line"""
-        super(REMARK, self).__init__(line)
+        super().__init__(line)
         self.remark_num = int(line[7:10].strip())
         self.remark_dict = {}
 
@@ -1656,12 +1969,13 @@ class JRNL(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        -----------------------------------------------
-        13-70    string text   See Details on web.
+        +---------+--------+-------+---------------------+
+        | COLUMNS | TYPE   | FIELD | DEFINITION          |
+        +=========+========+=======+=====================+
+        | 13-70   | string | text  | See details on web. |
+        +---------+--------+-------+---------------------+
         """
-        super(JRNL, self).__init__(line)
-        # TODO: What is this mess?
+        super().__init__(line)
         self.text = line[12:70].strip()
 
 
@@ -1678,20 +1992,32 @@ class SPRSDE(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line
 
-        COLUMNS  TYPE   FIELD      DEFINITION
-        -----------------------------------------------
-        12-20    string super_date Date this entry superseded the listed entries.
-        22-25    string id_code     ID code of this entry.
-        32-35    string sid_code    ID code of a superseded entry.
-        37-40    string sid_code    ID code of a superseded entry.
-        42-45    string sid_code    ID code of a superseded entry.
-        47-50    string sid_code    ID code of a superseded entry.
-        52-55    string sid_code    ID code of a superseded entry.
-        57-60    string sid_code    ID code of a superseded entry.
-        62-65    string sid_code    ID code of a superseded entry.
-        67-70    string sid_code    ID code of a superseded entry.
+        +---------+--------+------------+-------------------------------------+
+        | COLUMNS | TYPE   | FIELD      | DEFINITION                          |
+        +=========+========+============+=====================================+
+        | 12-20   | string | super_date | Date this entry superseded the      |
+        |         |        |            | listed entries.                     |
+        +---------+--------+------------+-------------------------------------+
+        | 22-25   | string | id_code    | ID code of this entry.              |
+        +---------+--------+------------+-------------------------------------+
+        | 32-35   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 37-40   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 42-45   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 47-50   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 52-55   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 57-60   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 62-65   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
+        | 67-70   | string | sid_code   | ID code of a superseded entry.      |
+        +---------+--------+------------+-------------------------------------+
         """
-        super(SPRSDE, self).__init__(line)
+        super().__init__(line)
         self.super_date = line[11:20].strip()
         self.id_code = line[21:25].strip()
         self.super_id_codes = []
@@ -1709,27 +2035,41 @@ class SPRSDE(BaseRecord):
 class REVDAT(BaseRecord):
     """REVDAT field
 
-    REVDAT records contain a history of the modifications made to an entry since its release.
+    REVDAT records contain a history of the modifications made to an entry
+    since its release.
     """
 
     def __init__(self, line):
         """Initialize by parsing a line.
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        -------------------------------------------------------
-        8-10     int    mod_num  Modification number.
-        14-22    string mod_date Date of modification (or release for new entries).
-        24-28    string mod_id   Identifies this particular modification. It links
-                                to the archive used internally by PDB.
-        32       int    mod_type An integer identifying the type of modification.
-                                In case of revisions with more than one possible
-                                mod_type, the highest value applicable will be assigned.
-        40-45    string record  Name of the modified record.
-        47-52    string record  Name of the modified record.
-        54-59    string record  Name of the modified record.
-        61-66    string record  Name of the modified record.
+        +---------+--------+----------+---------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                            |
+        +=========+========+==========+=======================================+
+        | 8-10    | int    | mod_num  | Modification number.                  |
+        +---------+--------+----------+---------------------------------------+
+        | 14-22   | string | mod_date | Date of modification (or release for  |
+        |         |        |          | new entries).                         |
+        +---------+--------+----------+---------------------------------------+
+        | 24-28   | string | mod_id   | Identifies this particular            |
+        |         |        |          | modification. It links to the archive |
+        |         |        |          | used internally by PDB.               |
+        +---------+--------+----------+---------------------------------------+
+        | 32      | int    | mod_type | An integer identifying the type of    |
+        |         |        |          | modification. In case of revisions    |
+        |         |        |          | with more than one possible mod_type, |
+        |         |        |          | the highest value applicable will be  |
+        |         |        |          | assigned.                             |
+        +---------+--------+----------+---------------------------------------+
+        | 40-45   | string | record   | Name of the modified record.          |
+        +---------+--------+----------+---------------------------------------+
+        | 47-52   | string | record   | Name of the modified record.          |
+        +---------+--------+----------+---------------------------------------+
+        | 54-59   | string | record   | Name of the modified record.          |
+        +---------+--------+----------+---------------------------------------+
+        | 61-66   | string | record   | Name of the modified record.          |
+        +---------+--------+----------+---------------------------------------+
         """
-        super(REVDAT, self).__init__(line)
+        super().__init__(line)
         self.mod_num = int(line[7:10].strip())
         self.mod_date = line[13:22].strip()
         self.mod_id = line[23:28].strip()
@@ -1745,17 +2085,21 @@ class REVDAT(BaseRecord):
 class AUTHOR(BaseRecord):
     """AUTHOR field
 
-    The AUTHOR record contains the names of the people responsible for the contents of the entry.
+    The AUTHOR record contains the names of the people responsible for the
+    contents of the entry.
     """
 
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD      DEFINITION
-        --------------------------------------------------
-        11-70    string author_list List of the author names, separated by commas
+        +---------+--------+-------------+------------------------------------+
+        | COLUMNS | TYPE   | FIELD       | DEFINITION                         |
+        +=========+========+=============+====================================+
+        | 11-70   | string | author_list | List of the author names,          |
+        |         |        |             | separated by commas                |
+        +---------+--------+-------------+------------------------------------+
         """
-        super(AUTHOR, self).__init__(line)
+        super().__init__(line)
         self.author_list = line[10:70].strip()
 
 
@@ -1767,24 +2111,27 @@ class EXPDTA(BaseRecord):
     refer to the type of radiation and sample, or include the spectroscopic
     or modeling technique. Permitted values include:
 
-    ELECTRON DIFFRACTION
-    FIBER DIFFRACTION
-    FLUORESCENCE TRANSFER
-    NEUTRON DIFFRACTION
-    NMR
-    THEORETICAL MODEL
-    X-RAY DIFFRACTION
+    * ELECTRON DIFFRACTION
+    * FIBER DIFFRACTION
+    * FLUORESCENCE TRANSFER
+    * NEUTRON DIFFRACTION
+    * NMR
+    * THEORETICAL MODEL
+    * X-RAY DIFFRACTION
     """
 
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD       DEFINITION
-        --------------------------------------------------
-        11-70    string technique   The experimental technique(s) with optional
-                                    comment describing the sample or experiment
+        +---------+--------+-----------+--------------------------------------+
+        | COLUMNS | TYPE   | FIELD     | DEFINITION                           |
+        +=========+========+===========+======================================+
+        | 11-70   | string | technique | The experimental technique(s) with   |
+        |         |        |           | optional comment describing the      |
+        |         |        |           | sample or experiment                 |
+        +---------+--------+-----------+--------------------------------------+
         """
-        super(EXPDTA, self).__init__(line)
+        super().__init__(line)
         self.technique = line[10:70].strip()
 
 
@@ -1803,11 +2150,14 @@ class KEYWDS(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        --------------------------------------------------
-        11-70    string keywds  Comma-separated list of keywords relevant to the entry
+        +---------+--------+--------+-----------------------------------------+
+        | COLUMNS | TYPE   | FIELD  | DEFINITION                              |
+        +=========+========+========+=========================================+
+        | 11-70   | string | keywds | Comma-separated list of keywords        |
+        |         |        |        | relevant to the entry                   |
+        +---------+--------+--------+-----------------------------------------+
         """
-        super(KEYWDS, self).__init__(line)
+        super().__init__(line)
         self.keywds = line[10:70].strip()
 
 
@@ -1825,12 +2175,14 @@ class SOURCE(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        --------------------------------------------------
-        11-70    string source  Identifies the source of the macromolecule in a
-                                token: value format
+        +---------+--------+--------+-----------------------------------------+
+        | COLUMNS | TYPE   | FIELD  | DEFINITION                              |
+        +=========+========+========+=========================================+
+        | 11-70   | string | source | Identifies the source of the            |
+        |         |        |        | macromolecule in a token: value format  |
+        +---------+--------+--------+-----------------------------------------+
         """
-        super(SOURCE, self).__init__(line)
+        super().__init__(line)
         self.source = line[10:70].strip()
 
 
@@ -1853,11 +2205,14 @@ class COMPND(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        --------------------------------------------------
-        11-70    string compound Description of the molecular list components.
+        +---------+--------+----------+---------------------------------------+
+        | COLUMNS | TYPE   | FIELD    | DEFINITION                            |
+        +=========+========+==========+=======================================+
+        | 11-70   | string | compound | Description of the molecular list     |
+        |         |        |          | components.                           |
+        +---------+--------+----------+---------------------------------------+
         """
-        super(COMPND, self).__init__(line)
+        super().__init__(line)
         self.compound = line[10:70].strip()
 
 
@@ -1872,12 +2227,16 @@ class CAVEAT(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing line.
 
-        COLUMNS  TYPE   FIELD   DEFINITION
-        ----------------------------------------------------
-        12-15    string id_code  PDB ID code of this entry.
-        20-70    string comment Free text giving the reason for the CAVEAT.
+        +---------+--------+---------+----------------------------------------+
+        | COLUMNS | TYPE   | FIELD   | DEFINITION                             |
+        +=========+========+=========+========================================+
+        | 12-15   | string | id_code | PDB ID code of this entry.             |
+        +---------+--------+---------+----------------------------------------+
+        | 20-70   | string | comment | Free text giving the reason for the    |
+        |         |        |         | CAVEAT.                                |
+        +---------+--------+---------+----------------------------------------+
         """
-        super(CAVEAT, self).__init__(line)
+        super().__init__(line)
         self.id_code = line[11:15].strip()
         self.comment = line[19:70].strip()
 
@@ -1894,11 +2253,13 @@ class TITLE(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line.
 
-        COLUMNS  TYPE   FIELD  DEFINITION
-        ---------------------------------------------
-        11-70    string title  Title of the experiment
+        +---------+--------+-------+--------------------------+
+        | COLUMNS | TYPE   | FIELD | DEFINITION               |
+        +=========+========+=======+==========================+
+        | 11-70   | string | title | Title of the experiment  |
+        +---------+--------+-------+--------------------------+
         """
-        super(TITLE, self).__init__(line)
+        super().__init__(line)
         self.title = line[10:70].strip()
 
 
@@ -1906,29 +2267,51 @@ class TITLE(BaseRecord):
 class OBSLTE(BaseRecord):
     """OBSLTE field
 
-    This record acts as a flag in an entry which has been withdrawn from the PDB's
-    full release. It indicates which, if any, new entries have replaced the withdrawn entry.
+    This record acts as a flag in an entry which has been withdrawn from the
+    PDB's full release. It indicates which, if any, new entries have replaced
+    the withdrawn entry.
 
-    The format allows for the case of multiple new entries replacing one existing entry.
+    The format allows for the case of multiple new entries replacing one
+    existing entry.
     """
 
     def __init__(self, line):
         """Initialize by parsing a line.
 
-        COLUMNS  TYPE   FIELD    DEFINITION
-        -----------------------------------------------
-        12-20    string replace_date  Date that this entry was replaced.
-        22-25    string id_code   ID code of this entry.
-        32-35    string rid_code  ID code of entry that replaced this one.
-        37-40    string rid_code  ID code of entry that replaced this one.
-        42-45    string rid_code  ID code of entry that replaced this one.
-        47-50    string rid_code  ID code of entry that replaced this one.
-        52-55    string rid_code  ID code of entry that replaced this one.
-        57-60    string rid_code  ID code of entry that replaced this one.
-        62-65    string rid_code  ID code of entry that replaced this one.
-        67-70    string rid_code  ID code of entry that replaced this one.
+        +---------+--------+--------------+-----------------------------------+
+        | COLUMNS | TYPE   | FIELD        | DEFINITION                        |
+        +=========+========+==============+===================================+
+        | 12-20   | string | replace_date | Date that this entry was          |
+        |         |        |              | replaced.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 22-25   | string | id_code      | ID code of this entry.            |
+        +---------+--------+--------------+-----------------------------------+
+        | 32-35   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 37-40   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 42-45   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 47-50   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 52-55   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 57-60   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 62-65   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
+        | 67-70   | string | rid_code     | ID code of entry that replaced    |
+        |         |        |              | this one.                         |
+        +---------+--------+--------------+-----------------------------------+
         """
-        super(OBSLTE, self).__init__(line)
+        super().__init__(line)
         self.replace_date = line[11:20].strip()
         self.id_code = line[21:25].strip()
         self.replace_id_codes = []
@@ -1946,22 +2329,28 @@ class OBSLTE(BaseRecord):
 class HEADER(BaseRecord):
     """ HEADER field
 
-    The HEADER record uniquely identifies a PDB entry through the id_code field.
-    This record also provides a classification for the entry. Finally, it
-    contains the date the coordinates were deposited at the PDB.
+    The HEADER record uniquely identifies a PDB entry through the id_code
+    field. This record also provides a classification for the entry. Finally,
+    it contains the date the coordinates were deposited at the PDB.
     """
 
     def __init__(self, line):
         """Initialize by parsing a line.
 
-        COLUMNS  TYPE   FIELD          DEFINITION
-        ---------------------------------------------------------
-        11-50    string classification  Classifies the molecule(s)
-        51-59    string dep_date        Deposition date.  This is the date the
-                                        coordinates were received by the PDB
-        63-66    string id_code         This identifier is unique within PDB
+        +---------+--------+----------------+---------------------------------+
+        | COLUMNS | TYPE   | FIELD          | DEFINITION                      |
+        +=========+========+================+=================================+
+        | 11-50   | string | classification | Classifies the molecule(s)      |
+        +---------+--------+----------------+---------------------------------+
+        | 51-59   | string | dep_date       | Deposition date.  This is the   |
+        |         |        |                | date the coordinates were       |
+        |         |        |                | received by the PDB             |
+        +---------+--------+----------------+---------------------------------+
+        | 63-66   | string | id_code        | This identifier is unique wihin |
+        |         |        |                | within PDB                      |
+        +---------+--------+----------------+---------------------------------+
         """
-        super(HEADER, self).__init__(line)
+        super().__init__(line)
         self.classification = line[10:50].strip()
         self.dep_date = line[50:59].strip()
         self.id_code = line[62:66].strip()
@@ -2037,13 +2426,14 @@ def read_pdb(file_):
             errlist.append(record)
             _LOGGER.error("Error parsing line: %s", details)
             _LOGGER.error("<%s>", line.strip())
-            _LOGGER.error("Truncating remaining errors for record type:%s", record)
+            _LOGGER.error(
+                "Truncating remaining errors for record type:%s", record)
         except IndexError as details:
             if record == "ATOM" or record == "HETATM":
                 try:
                     obj = read_atom(line)
                     pdblist.append(obj)
-                except Exception as details:
+                except IndexError as details:
                     _LOGGER.error("Error parsing line: %s,", details)
                     _LOGGER.error("<%s>", line.strip())
             elif record == "SITE" or record == "TURN":

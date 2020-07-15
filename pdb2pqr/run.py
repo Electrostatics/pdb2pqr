@@ -54,6 +54,7 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
     # protein.apply_pka_values(ff, ph, residue_ph)
     # _LOGGER.debug('Finished running PDB2PKA.')
 
+
 def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
     """Run the PDB2PQR Suite"""
     raise DeprecationWarning("TODO - This function is deprecated")

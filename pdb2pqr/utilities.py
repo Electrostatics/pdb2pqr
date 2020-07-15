@@ -7,7 +7,6 @@ Authors:  Todd Dolinsky, Yong Huang
 import math
 import logging
 import numpy as np
-import requests
 from .config import SMALL_NUMBER, DIHEDRAL_WTF
 
 
@@ -99,10 +98,10 @@ def angle(coords1, coords2, coords3):
     norm1 = normalize(diff32)
     norm2 = normalize(diff12)
     dotted = np.inner(norm1, norm2)
-    if dotted > 1.0: # If normalized, this is due to rounding error
+    if dotted > 1.0:  # If normalized, this is due to rounding error
         dotted = 1.0
     rad = np.absolute(np.arccos(dotted))
-    value = rad*180.0/np.pi
+    value = rad * 180.0 / np.pi
     if value > 180.0:
         value = 360.0 - value
     return value

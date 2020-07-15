@@ -214,7 +214,7 @@ class Atom(pdb.ATOM):
         outstr += str.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.temp_factor
         outstr += str.rjust(tstr, 6)[:6]
-        #padding between temp factor and seg_id
+        # padding between temp factor and seg_id
         outstr += ' ' * 7
         tstr = self.seg_id
         outstr += str.ljust(tstr, 4)[:4]

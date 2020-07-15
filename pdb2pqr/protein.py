@@ -53,7 +53,7 @@ class Protein(object):
         num_chains = 1
         count = 0
 
-        for record in pdblist: # Find number of chains
+        for record in pdblist:  # Find number of chains
             if isinstance(record, pdb.TER):
                 num_chains += 1
 
@@ -75,9 +75,9 @@ class Protein(object):
                     my_chain = struct.Chain(chain_id)
                     chain_dict[chain_id] = my_chain
 
-                if res_seq != previous_atom.res_seq or \
-                      ins_code != previous_atom.ins_code or \
-                      chain_id != previous_atom.chain_id:
+                if (res_seq != previous_atom.res_seq or
+                        ins_code != previous_atom.ins_code or
+                        chain_id != previous_atom.chain_id):
                     my_residue = self.create_residue(residue, previous_atom.res_name)
                     chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     residue = []
@@ -233,8 +233,8 @@ class Protein(object):
                         fixflag = 1
 
                 elif isinstance(residue, na.Nucleic):
-                    if ((residue.has_atom("H3T") or residue.name.endswith("3"))\
-                      and not residue.is3term):
+                    if ((residue.has_atom("H3T") or residue.name.endswith("3"))
+                            and not residue.is3term):
                         fixflag = 1
 
                 if fixflag:
@@ -678,7 +678,7 @@ class Protein(object):
                     residue.type = 3
                 elif name in NA_NAMES:
                     residue.type = 4
-                else: # Residue is a ligand or unknown
+                else:  # Residue is a ligand or unknown
                     residue.type = 2
 
     def apply_force_field(self, forcefield_):
@@ -900,8 +900,9 @@ class Protein(object):
             atomlist = list(residue.atoms)
             for atom in atomlist:
                 atomname = atom.name
-                if atomname in ["OP1", "OP2"] and residue.reference.has_atom("O1P") \
-                    and residue.reference.has_atom("O2P"):
+                if (atomname in ["OP1", "OP2"] and
+                        residue.reference.has_atom("O1P") and
+                        residue.reference.has_atom("O2P")):
                     continue
                 if not residue.reference.has_atom(atomname):
                     _LOGGER.warning("Extra atom %s in %s! - ", atomname, residue)
@@ -955,7 +956,7 @@ class Protein(object):
                         text += ' '.join(missing)
                         raise ValueError(text)
 
-                else: # Rebuild the atom
+                else:  # Rebuild the atom
                     newcoords = quat.find_coordinates(3, coords, refcoords, refatomcoords)
                     residue.create_atom(atomname, newcoords)
                     _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)

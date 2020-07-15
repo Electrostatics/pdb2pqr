@@ -15,7 +15,9 @@ from .. import definitions as defns
 from .. import utilities as util
 from .. import quatfit as quat
 from ..config import HYD_DEF_PATH
-from . structures import HydrogenConformation, HydrogenDefinition, HydrogenHandler, PotentialBond
+from . import structures
+from .structures import HydrogenConformation, HydrogenDefinition
+from .structures import HydrogenHandler, PotentialBond
 
 
 _LOGGER = logging.getLogger(__name__)

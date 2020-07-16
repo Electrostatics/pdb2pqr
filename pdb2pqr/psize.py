@@ -27,18 +27,18 @@ class Psize:
         """Initialize Psize.
 
         Args:
-            cfac:  Factor by which to expand molecular dimensions to get coarse
-                    grid dimensions
+            cfac:  Factor by which to expand molecular dimensions to get
+                   coarse grid dimensions
             fadd:  Amount to add to mol dims to get fine grid dims
             space:  Desired fine mesh resolution
-            gmemfac:  Number of bytes per grid point required for sequential MG
-                        calculation
+            gmemfac:  Number of bytes per grid point required for sequential
+                      MG calculation
             gmemceil: Max MB allowed for sequential MG calculation. Adjust this
-                        to force the script to perform faster calculations (which
-                        require more parallelism).
+                        to force the script to perform faster calculations
+                        (which require more parallelism).
             ofrac:  Overlap factor between mesh partitions
-            redfac:  The maximum factor by which a domain dimension can be reduced
-                     during focusing
+            redfac:  The maximum factor by which a domain dimension can be
+                     reduced during focusing
         """
         self.minlen = [None, None, None]
         self.maxlen = [None, None, None]
@@ -75,7 +75,8 @@ class Psize:
         """ Parse the lines """
         for line in lines:
             # TODO -- This is messed up.
-            # Why are we parsing the PQR manually here when we have routines to do that?
+            # Why are we parsing the PQR manually here when we have routines
+            # to do that?
             if line.find("ATOM") == 0:
                 subline = line[30:].replace("-", " -")
                 words = subline.split()
@@ -88,13 +89,18 @@ class Psize:
                 for word in words[0:3]:
                     center.append(float(word))
                 for i in range(3):
-                    if self.minlen[i] is None or center[i]-rad < self.minlen[i]:
+                    if (
+                            self.minlen[i] is None
+                            or center[i]-rad < self.minlen[i]):
                         self.minlen[i] = center[i]-rad
-                    if self.maxlen[i] is None or center[i]+rad > self.maxlen[i]:
+                    if (
+                            self.maxlen[i] is None
+                            or center[i]+rad > self.maxlen[i]):
                         self.maxlen[i] = center[i]+rad
             elif line.find("HETATM") == 0:
                 self.gothet = self.gothet + 1
-                # Special handling for no ATOM entries in the pqr file, only HETATM entries
+                # Special handling for no ATOM entries in the pqr file, only
+                # HETATM entries
                 if self.gotatom == 0:
                     subline = line[30:].replace("-", " -")
                     words = subline.split()
@@ -106,9 +112,13 @@ class Psize:
                     for word in words[0:3]:
                         center.append(float(word))
                     for i in range(3):
-                        if self.minlen[i] is None or center[i]-rad < self.minlen[i]:
+                        if (
+                                self.minlen[i] is None
+                                or center[i]-rad < self.minlen[i]):
                             self.minlen[i] = center[i]-rad
-                        if self.maxlen[i] is None or center[i]+rad > self.maxlen[i]:
+                        if (
+                                self.maxlen[i] is None
+                                or center[i]+rad > self.maxlen[i]):
                             self.maxlen[i] = center[i]+rad
 
     def set_length(self, maxlen, minlen):
@@ -165,7 +175,8 @@ class Psize:
                 i = nsmall.index(max(nsmall))
                 nsmall[i] = 32 * ((nsmall[i] - 1)/32 - 1) + 1
                 if nsmall[i] <= 0:
-                    _LOGGER.error("You picked a memory ceiling that is too small")
+                    _LOGGER.error(
+                        "You picked a memory ceiling that is too small")
                     raise ValueError(nsmall[i])
         self.nsmall = nsmall
         return nsmall
@@ -185,7 +196,9 @@ class Psize:
         processor subdomain """
         nfoc = [0, 0, 0]
         for i in range(3):
-            nfoc[i] = int(log((fine_length[i]/nproc[i])/coarse_length[i])/log(self.redfac) + 1.0)
+            nfoc[i] = int(
+                log((fine_length[i]/nproc[i])/coarse_length[i])/log(
+                    self.redfac) + 1.0)
         nfocus = nfoc[0]
         if nfoc[1] > nfocus:
             nfocus = nfoc[1]
@@ -248,40 +261,38 @@ class Psize:
             gmem = 200.0 * ngrid[0] * ngrid[1] * ngrid[2] / 1024 / 1024
 
             # Print the calculated entries
-            str_ = str_ + "################# MOLECULE INFO ####################\n"
+            str_ = str_ + "############### MOLECULE INFO ##################\n"
             str_ = str_ + "Number of ATOM entries = %i\n" % self.gotatom
-            str_ = str_ + "Number of HETATM entries (ignored) = %i\n" % self.gothet
+            str_ = str_ + "Number of HETATM entries (ignored) = %i\n" % (
+                self.gothet)
             str_ = str_ + "Total charge = %.3f e\n" % charge
-            str_ = str_ + "Dimensions = %.3f x %.3f x %.3f A\n" % (mol_length[0],
-                                                                   mol_length[1],
-                                                                   mol_length[2])
-            str_ = str_ + "Center = %.3f x %.3f x %.3f A\n" % (center[0], center[1], center[2])
-            str_ = str_ + "Lower corner = %.3f x %.3f x %.3f A\n" % (minlen[0],
-                                                                     minlen[1],
-                                                                     minlen[2])
-            str_ = str_ + "Upper corner = %.3f x %.3f x %.3f A\n" % (maxlen[0],
-                                                                     maxlen[1],
-                                                                     maxlen[2])
-
+            str_ = str_ + "Dimensions = %.3f x %.3f x %.3f A\n" % (
+                mol_length[0], mol_length[1], mol_length[2])
+            str_ = str_ + "Center = %.3f x %.3f x %.3f A\n" % (
+                center[0], center[1], center[2])
+            str_ = str_ + "Lower corner = %.3f x %.3f x %.3f A\n" % (
+                minlen[0], minlen[1], minlen[2])
+            str_ = str_ + "Upper corner = %.3f x %.3f x %.3f A\n" % (
+                maxlen[0], maxlen[1], maxlen[2])
             str_ = str_ + "\n"
-            str_ = str_ + "############## GENERAL CALCULATION INFO #############\n"
-            str_ = str_ + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (coarse_length[0],
-                                                                         coarse_length[1],
-                                                                         coarse_length[2])
-            str_ = str_ + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (fine_length[0],
-                                                                       fine_length[1],
-                                                                       fine_length[2])
-            str_ = str_ + "Num. fine grid pts. = %i x %i x %i\n" % (ngrid[0],
-                                                                    ngrid[1],
-                                                                    ngrid[2])
+            str_ = str_ + "############ GENERAL CALCULATION INFO ###########\n"
+            str_ = str_ + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (
+                coarse_length[0], coarse_length[1], coarse_length[2])
+            str_ = str_ + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (
+                fine_length[0], fine_length[1], fine_length[2])
+            str_ = str_ + "Num. fine grid pts. = %i x %i x %i\n" % (
+                ngrid[0], ngrid[1], ngrid[2])
 
             if gmem > self.gmemceil:
                 str_ = str_ + ("Parallel solve required "
                                "(%.3f MB > %.3f MB)\n") % (gmem, self.gmemceil)
-                str_ = str_ + "Total processors required = %i\n" % (nproc[0]*nproc[1]*nproc[2])
-                str_ = str_ + "Proc. grid = %i x %i x %i\n" % (nproc[0], nproc[1], nproc[2])
-                str_ = str_ + ("Grid pts. on each proc. = "
-                               "%i x %i x %i\n") % (nsmall[0], nsmall[1], nsmall[2])
+                str_ = str_ + "Total processors required = %i\n" % (
+                    nproc[0]*nproc[1]*nproc[2])
+                str_ = str_ + "Proc. grid = %i x %i x %i\n" % (
+                    nproc[0], nproc[1], nproc[2])
+                str_ = str_ + (
+                    "Grid pts. on each proc. = " "%i x %i x %i\n") % (
+                        nsmall[0], nsmall[1], nsmall[2])
                 xglob = nproc[0]*round(nsmall[0]/(1 + 2*self.ofrac - 0.001))
                 yglob = nproc[1]*round(nsmall[1]/(1 + 2*self.ofrac - 0.001))
                 zglob = nproc[2]*round(nsmall[2]/(1 + 2*self.ofrac - 0.001))
@@ -291,25 +302,31 @@ class Psize:
                     yglob = nsmall[1]
                 if nproc[2] == 1:
                     zglob = nsmall[2]
-                str_ = str_ + "Fine mesh spacing = %g x %g x %g A\n" % (fine_length[0]/(xglob-1),
-                                                                        fine_length[1]/(yglob-1),
-                                                                        fine_length[2]/(zglob-1))
-                str_ = str_ + "Estimated mem. required for parallel solve = %.3f MB/proc.\n" % nsmem
+                str_ = str_ + "Fine mesh spacing = %g x %g x %g A\n" % (
+                    fine_length[0]/(xglob-1), fine_length[1]/(yglob-1),
+                    fine_length[2]/(zglob-1))
+                str_ = str_ + (
+                    "Estimated mem. required for parallel solve = %.3f "
+                    "MB/proc.\n") % nsmem
                 ntot = nsmall[0]*nsmall[1]*nsmall[2]
 
             else:
-                str_ = str_ + "Fine mesh spacing = %g x %g x %g A\n" % (fine_length[0]/(ngrid[0]-1),
-                                                                        fine_length[1]/(ngrid[1]-1),
-                                                                        fine_length[2]/(ngrid[2]-1))
-                str_ = str_ + "Estimated mem. required for sequential solve = %.3f MB\n" % gmem
+                str_ = str_ + "Fine mesh spacing = %g x %g x %g A\n" % (
+                    fine_length[0]/(ngrid[0]-1), fine_length[1]/(ngrid[1]-1),
+                    fine_length[2]/(ngrid[2]-1))
+                str_ = str_ + (
+                    "Estimated mem. required for sequential solve = %.3f "
+                    "MB\n") % gmem
                 ntot = ngrid[0]*ngrid[1]*ngrid[2]
 
             str_ = str_ + "Number of focusing operations = %i\n" % nfocus
             str_ = str_ + "\n"
-            str_ = str_ + "################# ESTIMATED REQUIREMENTS ####################\n"
-            str_ = str_ + "Memory per processor = %.3f MB\n" % (200.0*ntot/1024/1024)
-            str_ = str_ + ("Grid storage requirements (ASCII) "
-                           "= %.3f MB\n") % (8.0*12*nproc[0]*nproc[1]*nproc[2]*ntot/1024/1024)
+            str_ = str_ + "############ ESTIMATED REQUIREMENTS ############\n"
+            str_ = str_ + "Memory per processor = %.3f MB\n" % (
+                200.0*ntot/1024/1024)
+            str_ = str_ + (
+                "Grid storage requirements (ASCII) = %.3f MB\n") % (
+                    8.0*12*nproc[0]*nproc[1]*nproc[2]*ntot/1024/1024)
             str_ = str_ + "\n"
         else:
             str_ = str_ + "No ATOM entries in file!\n\n"
@@ -322,27 +339,38 @@ def build_parser():
     Returns:
         ArgumentParser
     """
-    parser = argparse.ArgumentParser(description="Set size parameters for APBS",
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--cfac", default=CFAC, type=float,
-                        help=("Factor by which to expand molecular dimensions to "
-                              "get coarse grid dimensions"))
-    parser.add_argument("--fadd", default=FADD, type=float,
-                        help="Amount to add to mol dims to get fine grid dims")
-    parser.add_argument("--space", default=SPACE, type=float,
-                        help="Desired fine mesh resolution")
-    parser.add_argument("--gmemfac", default=GMEMFAC, type=int,
-                        help=("Number of bytes per grid point required for "
-                              "sequential MG calculation"))
-    parser.add_argument("--gmemceil", default=GMEMCEIL, type=int,
-                        help=("Max MB allowed for sequential MG calculation. "
-                              "Adjust this to force the script to perform faster "
-                              "calculations (which require more parallelism)."))
-    parser.add_argument("--ofrac", default=OFRAC, type=float,
-                        help="Overlap factor between mesh partitions")
-    parser.add_argument("--redfac", default=REDFAC, type=float,
-                        help=("The maximum factor by which a domain dimension "
-                              "can be reduced during focusing"))
+    parser = argparse.ArgumentParser(
+        description="Set size parameters for APBS",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        "--cfac", default=CFAC, type=float,
+        help=(
+            "Factor by which to expand molecular dimensions to "
+            "get coarse grid dimensions"))
+    parser.add_argument(
+        "--fadd", default=FADD, type=float,
+        help="Amount to add to mol dims to get fine grid dims")
+    parser.add_argument(
+        "--space", default=SPACE, type=float,
+        help="Desired fine mesh resolution")
+    parser.add_argument(
+        "--gmemfac", default=GMEMFAC, type=int,
+        help=(
+            "Number of bytes per grid point required for "
+            "sequential MG calculation"))
+    parser.add_argument(
+        "--gmemceil", default=GMEMCEIL, type=int, help=(
+            "Max MB allowed for sequential MG calculation. "
+            "Adjust this to force the script to perform faster "
+            "calculations (which require more parallelism)."))
+    parser.add_argument(
+        "--ofrac", default=OFRAC, type=float,
+        help="Overlap factor between mesh partitions")
+    parser.add_argument(
+        "--redfac", default=REDFAC, type=float,
+        help=(
+            "The maximum factor by which a domain dimension "
+            "can be reduced during focusing"))
     parser.add_argument("mol_path", help="Path to PQR file.")
     return parser
 

@@ -341,7 +341,7 @@ class Protein(object):
                 if residue.has_atom(atomname):
                     continue
                 if isinstance(residue, aa.CYS) and (
-                    residue.ss_bonded and atomname == "HG"):
+                        residue.ss_bonded and atomname == "HG"):
                     continue
 
                 # If this hydrogen is part of a tetrahedral group,
@@ -741,7 +741,8 @@ class Protein(object):
 
             for atom in residue.atoms:
                 rname, aname = forcefield_.get_names(resname, atom.name)
-                if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and rname is not None:
+                if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and (
+                        rname is not None):
                     try:
                         if (residue.is_n_term or residue.is_c_term) and (
                                 rname != residue.name):
@@ -982,21 +983,26 @@ class Protein(object):
 
                     missing.append(atomname)
                     if seenmap[atomname] > nummissing:
-                        text = "Too few atoms present to reconstruct or cap "
-                        text += "residue %s in structure! " % (residue)
-                        text += "This error is generally caused by missing backbone "
-                        text += "atoms in this protein; "
-                        text += "you must use an external program to complete gaps "
-                        text += "in the protein backbone. "
-                        text += "Heavy atoms missing from %s: " % (residue)
-                        text += ' '.join(missing)
-                        raise ValueError(text)
+                        text = (
+                            "Too few atoms present to reconstruct or cap "
+                            "residue {residue} in structure! This error is "
+                            "generally caused by missing backbone atoms in "
+                            "this protein; you must use an external program "
+                            "to complete gaps in the protein backbone. Heavy "
+                            "atoms missing from {residue}:  {missing}")
+                        missing_str = ' '.join(missing)
+                        err = text.format(residue=residue, missing=missing_str)
+                        raise ValueError(err)
 
                 else:  # Rebuild the atom
-                    newcoords = quat.find_coordinates(3, coords, refcoords, refatomcoords)
+                    newcoords = quat.find_coordinates(
+                        3, coords, refcoords, refatomcoords)
                     residue.create_atom(atomname, newcoords)
-                    _LOGGER.debug("Added %s to %s at coordinates", atomname, residue)
-                    _LOGGER.debug(" %.3f %.3f %.3f", newcoords[0], newcoords[1], newcoords[2])
+                    _LOGGER.debug(
+                        "Added %s to %s at coordinates", atomname, residue)
+                    _LOGGER.debug(
+                        " %.3f %.3f %.3f", newcoords[0], newcoords[1],
+                        newcoords[2])
 
     def create_html_typemap(self, definition, outfilename):
         """Create an HTML typemap file at the desired location.
@@ -1015,20 +1021,20 @@ class Protein(object):
 
         amberff = forcefield.Forcefield("amber", definition, None)
         charmmff = forcefield.Forcefield("charmm", definition, None)
-
         with open(outfilename, "w") as file_:
             file_.write("<HTML>\n")
             file_.write("<HEAD>\n")
             file_.write("<TITLE>PQR Typemap (beta)</TITLE>\n")
             file_.write("</HEAD>\n")
             file_.write("<BODY>\n")
-            file_.write(("<H3>This is a developmental page including the atom "
-                         "type for the atoms in the PQR file.</H3><P>\n"))
+            file_.write(
+                "<H3>This is a developmental page including the atom "
+                "type for the atoms in the PQR file.</H3><P>\n")
             file_.write("<TABLE CELLSPACING=2 CELLPADDING=2 BORDER=1>\n")
-            file_.write(("<tr><th>Atom Number</th><th>Atom Name</th><th>Residue "
-                         "Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>"
-                         "CHARMM Atom Type</th></tr>\n"))
-
+            file_.write(
+                "<tr><th>Atom Number</th><th>Atom Name</th><th>Residue "
+                "Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>"
+                "CHARMM Atom Type</th></tr>\n")
             for atom in self.atoms:
                 if isinstance(atom.residue, (aa.Amino, aa.WAT, na.Nucleic)):
                     resname = atom.residue.ffname
@@ -1036,11 +1042,11 @@ class Protein(object):
                     resname = atom.residue.name
                 ambergroup = amberff.get_group(resname, atom.name)
                 charmmgroup = charmmff.get_group(resname, atom.name)
-                file_.write(("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
-                             "<td>%s</td><td>%s</td></tr>\n") % (atom.serial, atom.name,
-                                                                 resname, atom.chain_id,
-                                                                 ambergroup, charmmgroup))
-
+                file_.write(
+                    "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
+                    "<td>%s</td><td>%s</td></tr>\n" % (
+                        atom.serial, atom.name, resname, atom.chain_id,
+                        ambergroup, charmmgroup))
             file_.write("</table>\n")
             file_.write("</BODY></HTML>\n")
 

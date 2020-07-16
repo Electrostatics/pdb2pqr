@@ -1,11 +1,10 @@
 PDB2PQR
 ============
 
-This package contains the PDB2PQR software (http://www.poissonboltzmann.org/docs/structures-ready/).
+This package contains the PDB2PQR software (https://apbs-pdb2pqr.readthedocs.io/en/latest/getting-started.html).
 
 For more information about PDB2PQR, please see
 
-* Home page:  http://www.poissonboltmzann.org/
-* User guide:  http://www.poissonboltzmann.org/docs/pdb2pqr-algorithm-description/
-* Programmer guide:  http://www.poissonboltzmann.org/docs/pdb2pqr-programmers/
-
+* Home page:  http://www.poissonboltzmann.org/
+* User guide:  https://apbs-pdb2pqr.readthedocs.io/en/latest/
+* Programmer guide:  https://apbs-pdb2pqr.readthedocs.io/en/latest/pdb2pqr/extending.html

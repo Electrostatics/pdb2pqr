@@ -1,14 +1,5 @@
 """Routines for running the code with a given set of options and PDB files."""
 import logging
-import time
-import tempfile
-from pathlib import Path
-from . import debump
-from . import hydrogens
-from . import forcefield
-from . import aa
-from . import na
-from . import input_output as io
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,21 +16,20 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
     # init_params = pdb2pka_params.copy()
     # init_params.pop('pairene')
     # init_params.pop('clean_output')
-    # results = pka.pre_init(original_pdb_list=pdb_list, ff=force_field, ligand=ligand,
-    #                        **init_params)
+    # results = pka.pre_init(
+    #     original_pdb_list=pdb_list, ff=force_field, ligand=ligand,
+    #     **init_params)
     # TODO - this is a messed-up variable unpacking:
     # output_dir, protein, routines, forcefield, apbs_setup, \
     #     ligand_titratable_groups, maps, sd = results
-    # mypkaRoutines = pka_routines.pKaRoutines(protein, routines, forcefield,
-    #                                          apbs_setup, output_dir, maps, sd,
-    #                                          restart=pdb2pka_params.get('clean_output'),
-    #                                          pairene=pdb2pka_params.get('pairene'))
-
+    # mypkaRoutines = pka_routines.pKaRoutines(
+    #     protein, routines, forcefield, apbs_setup, output_dir, maps, sd,
+    #     restart=pdb2pka_params.get('clean_output'),
+    #     pairene=pdb2pka_params.get('pairene'))
     # _LOGGER.info('Doing full pKa calculation')
     # mypkaRoutines.runpKa()
     # pdb2pka_warnings = mypkaRoutines.warnings[:]
     # _LOGGER.warning(pdb2pka_warnings)
-
     # residue_ph = {}
     # for pka_residue_tuple, calc_ph in mypkaRoutines.ph_at_0_5.items():
     #     tit_type, chain_id, number_str = pka_residue_tuple
@@ -47,7 +37,6 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
     #         tit_type = 'N+'
     #     elif tit_type == 'CTR':
     #         tit_type = 'C-'
-
     #     key = ' '.join([tit_type, number_str, chain_id])
     #     residue_ph[key] = calc_ph
     # pformat(residue_ph)
@@ -60,8 +49,8 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
     raise DeprecationWarning("TODO - This function is deprecated")
 #     """Run the PDB2PQR Suite
 #     Args:
-#         pdblist: The list of objects that was read from the PDB file given as
-#                  input (list)
+#         pdblist: The list of objects that was read from the PDB file given
+#                  as input (list)
 #         my_protein: Protein object
 #         options: The name of the forcefield (string)
 #         is_cif:  Boolean indicating whether input is CIF
@@ -70,8 +59,8 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #         A dictionary with the following elements:
 #         * header:  The PQR file header (string)
 #         * lines:  The PQR file atoms (list)
-#         * missed_ligands:  A list of ligand residue names whose charges could
-#                            not be assigned (ligand)
+#         * missed_ligands:  A list of ligand residue names whose charges
+#                            could not be assigned (ligand)
 #         * protein:  The protein object
 #     """
 #     pkaname = ""
@@ -105,9 +94,10 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #                 charge = residue.charge
 #                 if abs(charge - int(charge)) > 0.001:
 #                     # Ligand parameterization failed
-#                     _LOGGER.warning(("WARNING: PDB2PQR could not successfully "
-#                                      "parameterize the desired ligand; it has "
-#                                      "been left out of the PQR file."))
+#                     _LOGGER.warning(
+#                         "WARNING: PDB2PQR could not successfully "
+#                         "parameterize the desired ligand; it has "
+#                         "been left out of the PQR file.")
 
 #                     # remove the ligand
 #                     my_protein.residues.remove(residue)
@@ -119,7 +109,8 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #                     # Mark these atoms as hits
 #                     hitlist = hitlist + templist
 
-#     # Temporary fix; if ligand was successful, pull all ligands from misslist
+#     # Temporary fix; if ligand was successful, pull all ligands from
+#     # misslist
 #     if ligsuccess:
 #         templist = misslist[:]
 #         for atom in templist:

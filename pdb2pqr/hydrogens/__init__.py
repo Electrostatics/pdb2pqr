@@ -28,9 +28,9 @@ TITRATION_DICT = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4',
                   'ASP': '0', 'GLH1c': '1', 'GLH1t': '2', 'GLH2c': '3',
                   'GLH2t': '4', 'GLU': '0', 'ARG0': '1+2+3+4',
                   'ARG': '1+2+3+4+5', 'LYS': '1', 'LYS0': '0', 'TYR': '1',
-                  'TYR-': '0', 'HSD': '1', 'HSE': '2', 'HSP': '1+2', 'H3': '1',
-                  'H2': '2', 'H3+H2': '1+2', 'CTR01c': '1', 'CTR01t': '2',
-                  'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
+                  'TYR-': '0', 'HSD': '1', 'HSE': '2', 'HSP': '1+2',
+                  'H3': '1', 'H2': '2', 'H3+H2': '1+2', 'CTR01c': '1',
+                  'CTR01t': '2', 'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
 
 
 def create_handler(hyd_path=HYD_DEF_PATH):
@@ -93,7 +93,8 @@ class HydrogenRoutines:
             hname = conf.hname
             boundname = conf.boundatom
             if residue.get_atom(hname) is not None:
-                _LOGGER.debug('Removing %s %s %s', residue.name, residue.res_seq, hname)
+                _LOGGER.debug(
+                    'Removing %s %s %s', residue.name, residue.res_seq, hname)
                 residue.remove_atom(hname)
             residue.get_atom(boundname).hacceptor = 1
             residue.get_atom(boundname).hdonor = 0
@@ -125,7 +126,8 @@ class HydrogenRoutines:
                 else:
                     raise KeyError("Could not find necessary atom!")
 
-            newcoords = quat.find_coordinates(3, refcoords, defcoords, defatomcoords)
+            newcoords = quat.find_coordinates(
+                3, refcoords, defcoords, defatomcoords)
             boundname = conf.boundatom
             residue.create_atom(hname, newcoords, "ATOM")
             residue.addDebumpAtom(residue.get_atom(hname))
@@ -197,7 +199,8 @@ class HydrogenRoutines:
                     else:
                         raise KeyError("Could not find necessary atom!")
 
-                newcoords = quat.find_coordinates(3, refcoords, defcoords, defatomcoords)
+                newcoords = quat.find_coordinates(
+                    3, refcoords, defcoords, defatomcoords)
                 residue.create_atom(hname, newcoords)
 
             boundname = conf.boundatom
@@ -420,7 +423,8 @@ class HydrogenRoutines:
             if len(obj.hbonds) == 0:
                 if obj.residue.fixed:
                     continue
-                _LOGGER.debug("%s has no nearby partners - fixing.", obj.residue)
+                _LOGGER.debug(
+                    "%s has no nearby partners - fixing.", obj.residue)
                 obj.finalize()
 
         # Determine the distinct networks
@@ -484,7 +488,8 @@ class HydrogenRoutines:
                                 # Only get one hbond pair
                                 if (hbond.atom2, hbond.atom1) not in seenlist:
                                     hbondmap[hbond] = hbond.dist
-                                    seenlist.append((hbond.atom1, hbond.atom2))
+                                    seenlist.append(
+                                        (hbond.atom1, hbond.atom2))
 
             hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
@@ -555,7 +560,8 @@ class HydrogenRoutines:
         Returns:
             mydef:  The hydrogen definition object (HydrogenDefinition)
 
-        This is the current definition:  Name Ttyp  A R # Stdconf   HT Chi OPTm
+        This is the current definition:
+            Name Ttyp  A R # Stdconf HT Chi OPTm
         """
         name = self.map[res].name
         opttype = self.map[res].opttype
@@ -615,7 +621,8 @@ class HydrogenRoutines:
             ntrmap = {}    # map for N-TERM
             for tautomer in titrationstatemap["NTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformer_adds:
+                    for conformeradds in conformermap[
+                            conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             ntrmap[atom.name] = atom
             atoms = ['H3', 'H2']
@@ -627,13 +634,15 @@ class HydrogenRoutines:
             conformernames = []
             for tautomer in titrationstatemap["CTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformer_adds:
+                    for conformeradds in conformermap[
+                            conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             nonhmap[atom.name] = atom
             for tautomer in titrationstatemap["CTER0"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     conformernames.append(conformer.name)
-                    for conformeradds in conformermap[conformer.name].conformer_adds:
+                    for conformeradds in conformermap[
+                            conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
 
@@ -666,7 +675,8 @@ class HydrogenRoutines:
             _ = refmap['ASP']
             for tautomer in titrationstatemap["ASH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformer_adds:
+                    for conformeradds in conformermap[
+                            conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
                             conformernames.append(conformer.name)
@@ -680,7 +690,8 @@ class HydrogenRoutines:
             _ = refmap['GLU']
             for tautomer in titrationstatemap["GLH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[conformer.name].conformer_adds:
+                    for conformeradds in conformermap[
+                            conformer.name].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
                             conformernames.append(conformer.name)
@@ -713,7 +724,8 @@ class HydrogenRoutines:
                         caatom = defns.DefinitionAtom(atom_, 0.0, 0.0, 0.0)
                         myconf.add_atom(caatom)
                     elif atom_ == 'H':
-                        caatom = defns.DefinitionAtom(atom_, 1.201, 1.847, 0.000)
+                        caatom = defns.DefinitionAtom(
+                            atom_, 1.201, 1.847, 0.000)
                         myconf.add_atom(caatom)
                     else:
                         pass
@@ -734,7 +746,8 @@ class HydrogenRoutines:
                     # TODO - the following code is almost nonsensical
                     for atom_ in refatoms:
                         if atom_ == 'C':
-                            catom = defns.DefinitionAtom(atom_, -1.250, 0.881, 0.000)
+                            catom = defns.DefinitionAtom(
+                                atom_, -1.250, 0.881, 0.000)
                             myconf.add_atom(catom)
                         else:
                             atomname = atom_
@@ -749,13 +762,15 @@ class HydrogenRoutines:
             for conformer in conformernames:
                 for atom in atoms:
                     hname = atom
-                    if ('1' in conformer and '1' in atom) or ('2' in conformer and '2' in atom):
+                    if ('1' in conformer and '1' in atom) or (
+                            '2' in conformer and '2' in atom):
                         x = hmap[conformer, hname].x
                         y = hmap[conformer, hname].y
                         z = hmap[conformer, hname].z
                         bondatom = hmap[conformer, hname].bonds[0]
                         bondlength = 1.0
-                        myconf = HydrogenConformation(hname, bondatom, bondlength)
+                        myconf = HydrogenConformation(
+                            hname, bondatom, bondlength)
                         atom = defns.DefinitionAtom(hname, x, y, z)
                         myconf.add_atom(atom)
 

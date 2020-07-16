@@ -112,7 +112,8 @@ def assign_terms(atoms, term_dict):
             atom.poly_terms = term_dict[atom_type]
         except KeyError:
             raise KeyError(
-                "Unable to find polynomial terms for atom type %s" % atom_type)
+                "Unable to find polynomial terms for atom type %s"
+                % atom_type)
     return atoms
 
 
@@ -136,16 +137,17 @@ def equilibrate(atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
         if isclose(atom.charge, 0.0):
             atom.equil_formal_charge = 0.0
         else:
-            # PEOE multiples all atoms by a scaling factor at the end to account
-            # for increased polarizability.  The initial formal charge needs to
-            # be reduced to account for this scaling.
+            # PEOE multiples all atoms by a scaling factor at the end to
+            # account for increased polarizability.  The initial formal
+            # charge needs to be reduced to account for this scaling.
             atom.equil_formal_charge = atom.charge*(1.0/scale)
             abs_qges += abs(atom.charge)
         atom.charge = 0
 
-    # A finite number of cycles is used to prevent complete equilibration of the
-    # molecule.  I'm not sure why this is a good idea but people have been doing
-    # it since the original 1978 Tetrahedron paper with Gasteiger & Marsili
+    # A finite number of cycles is used to prevent complete equilibration of
+    # the molecule.  I'm not sure why this is a good idea but people have
+    # been doing it since the original 1978 Tetrahedron paper with Gasteiger
+    # & Marsili
     for icycle in range(num_cycles):
         for atom1 in atoms:
             chi1 = electronegativity(

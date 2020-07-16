@@ -11,13 +11,15 @@ TOPOLOGYPATH = "TOPOLOGY.xml"
 
 
 class TopologyHandler(sax.ContentHandler):
-    """ Handler for XML-based topology files.  Assumes the following hierarchy of tags:
-    topology
-    -->residue
-       |-->reference
-       |-->titrationstate
-           |-->tautomer
-               |-->conformer
+    """ Handler for XML-based topology files.  Assumes the following hierarchy
+    of tags:
+
+    * topology
+      * residue
+        * reference
+        * titrationstate
+          * tautomer
+            * conformer
     """
     def __init__(self):
         self.curr_element = None
@@ -40,20 +42,26 @@ class TopologyHandler(sax.ContentHandler):
                 pass
             elif tagName == "residue":
                 if self.curr_residue is not None:
-                    _LOGGER.info("** Overwriting current topology_residue object!")
+                    _LOGGER.info(
+                        "** Overwriting current topology_residue object!")
                 self.curr_residue = TopologyResidue(self)
             elif tagName == "reference":
                 if self.curr_reference is not None:
-                    _LOGGER.info("** Overwriting current TopologyReference object!")
+                    _LOGGER.info(
+                        "** Overwriting current TopologyReference object!")
                 self.curr_reference = TopologyReference(self.curr_residue)
             elif tagName == "titrationstate":
                 if self.curr_titration_state is not None:
-                    _LOGGER.info("** Overwriting current topology_titration_state object!")
-                self.curr_titration_state = TopologyTitrationState(self.curr_residue)
+                    _LOGGER.info(
+                        "** Overwriting current topology_titration_state "
+                        "object!")
+                self.curr_titration_state = TopologyTitrationState(
+                    self.curr_residue)
             elif tagName == "tautomer":
                 if self.curr_tautomer is not None:
                     _LOGGER.info("** Overwriting current Tautomer object!")
-                self.curr_tautomer = TopologyTautomer(self.curr_titration_state)
+                self.curr_tautomer = TopologyTautomer(
+                    self.curr_titration_state)
             elif tagName == "conformer":
                 if self.curr_conformer is not None:
                     _LOGGER.info("** Overwriting current Conformer object!")
@@ -82,17 +90,23 @@ class TopologyHandler(sax.ContentHandler):
             elif tagName == "dihedral":
                 self.curr_element = tagName
                 if self.curr_conformer_add is not None:
-                    self.curr_dihedral = TopologyDihedral(self.curr_conformer_add)
+                    self.curr_dihedral = TopologyDihedral(
+                        self.curr_conformer_add)
                 elif self.curr_conformer_remove is not None:
-                    self.curr_dihedral = TopologyDihedral(self.curr_conformer_remove)
+                    self.curr_dihedral = TopologyDihedral(
+                        self.curr_conformer_remove)
                 elif self.curr_reference is not None:
-                    self.curr_dihedral = TopologyDihedral(self.curr_reference)
+                    self.curr_dihedral = TopologyDihedral(
+                        self.curr_reference)
                 else:
-                    _LOGGER.info("** Don't know what to do with this dihedral!")
+                    _LOGGER.info(
+                        "** Don't know what to do with this dihedral!")
             elif tagName == "add":
-                self.curr_conformer_add = TopologyConformerAdd(self.curr_conformer)
+                self.curr_conformer_add = TopologyConformerAdd(
+                    self.curr_conformer)
             elif tagName == "remove":
-                self.curr_conformer_remove = TopologyConformerRemove(self.curr_conformer)
+                self.curr_conformer_remove = TopologyConformerRemove(
+                    self.curr_conformer)
             elif tagName == "incomplete":
                 self.incomplete = 1
             else:
@@ -157,7 +171,8 @@ class TopologyHandler(sax.ContentHandler):
                 elif self.curr_residue is not None:
                     self.curr_residue.name = text
                 else:
-                    _LOGGER.info("    *** Don't know what to do with name %s!", text)
+                    _LOGGER.info(
+                        "    *** Don't know what to do with name %s!", text)
             elif self.curr_element == "x":
                 self.curr_atom.x = float(text)
             elif self.curr_element == "y":
@@ -174,7 +189,8 @@ class TopologyHandler(sax.ContentHandler):
                 _LOGGER.info("** NOT handling character text:  %s", text)
 
 
-# TODO - lots of repeated code that could be eliminated with better inheritance
+# TODO - lots of repeated code that could be eliminated with better
+# inheritance
 class TopologyResidue:
     """ A class for residue topology information """
     def __init__(self, topology_):

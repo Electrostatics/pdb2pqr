@@ -183,36 +183,3 @@ def test_ligand_protein(input_pdb, tmp_path):
     common.run_pdb2pqr(
         args=args, input_pdb=input_pdb, output_pqr=output_pqr,
         tmp_path=tmp_path)
-
-
-# @pytest.mark.parametrize(
-#     "args, input_pdb, input_mol2, output_pqr",
-#     [
-#         pytest.param(
-#             "--log-level=INFO --ff=AMBER",
-#             "1HPX",
-#             common.DATA_DIR / "1HPX-ligand.mol2",
-#             "output.pqr",
-#             id="1HPX-ligand AMBER"
-#         ),
-#         pytest.param(
-#             "--log-level=INFO --ff=AMBER",
-#             common.DATA_DIR / "1QBS.pdb",
-#             common.DATA_DIR / "1QBS-ligand.mol2",
-#             "output.pqr",
-#             id="1QBS-ligand AMBER"
-#         ),
-#         pytest.param(
-#             "--log-level=INFO --ff=AMBER",
-#             common.DATA_DIR / "1US0.pdb",
-#             common.DATA_DIR / "1US0-ligand.mol2",
-#             "output.pqr",
-#             id="1US0-ligand AMBER"
-#         ),
-#     ]
-# )
-# def test_ligand(args, input_pdb, input_mol2, output_pqr, tmp_path):
-#     """Test ligand handling."""
-#     args_ = "{args} --ligand={ligand}".format(args=args, ligand=input_mol2)
-#     run_pdb2pqr(args_, input_pdb, output_pqr, tmp_path)
-#     _LOGGER.warning("This test needs better checking to avoid silent failure.")

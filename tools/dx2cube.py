@@ -1,22 +1,22 @@
-"""Utility to translate a DX file to CUBE format"""
+"""Utility to translate a DX file to CUBE format
 
+TODO - this file is a mess.
+"""
 import argparse
 
-PARSER = argparse.ArgumentParser(description='Translate a dx file to cube format')
-PARSER.add_argument('dx_input',
-                    help='Name of the dx_input file (required arguement)')
-PARSER.add_argument('pqr_input',
-                    help='Name of the pqr_input file (required arguement)')
-PARSER.add_argument('output',
-                    help='Name of the output file (required arguement)')
+
+PARSER = argparse.ArgumentParser(
+    description='Translate a dx file to cube format')
+PARSER.add_argument(
+    'dx_input', help='Name of the dx_input file (required arguement)')
+PARSER.add_argument(
+    'pqr_input', help='Name of the pqr_input file (required arguement)')
+PARSER.add_argument(
+    'output', help='Name of the output file (required arguement)')
+
 
 ARGS = PARSER.parse_args()
 
-# DX STUFF
-if ARGS.dx_input.endswith('.dx'):
-    print("Success")
-else:
-    print("Error converting file")
 
 try:
     with open(ARGS.dx_input, 'r') as in_f,\
@@ -63,7 +63,8 @@ try:
             DIM_LIN = PARAMETER_FMT.format(GRID_SIZES[x], *grid_dims)
             out_f.write(DIM_LIN)
 
-        ATOMS_PARAMETER_FMT = "{:>4} {:>11.6f} {:>11.6f} {:>11.6f} {:>11.6f}\n"
+        ATOMS_PARAMETER_FMT = (
+            "{:>4} {:>11.6f} {:>11.6f} {:>11.6f} {:>11.6f}\n")
         A = True
         XREAL_CENTER = []
         YREAL_CENTER = []

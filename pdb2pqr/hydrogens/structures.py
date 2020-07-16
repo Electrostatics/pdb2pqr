@@ -23,8 +23,8 @@ class Flip(optimize.Optimize):
 
         Args:
             residue:      The residue to flip (residue)
-            optinstance:  The optimization instance containing information about
-                what to optimize
+            optinstance:  The optimization instance containing information
+                about what to optimize
         """
         # Initialize some variables
         self.optinstance = optinstance
@@ -177,7 +177,8 @@ class Flip(optimize.Optimize):
 
     def fix_flip(self, bondatom):
         """Called if a hydrogen bond has been found using the bondatom.
-        If bondatom is *FLIP, remove all * atoms, otherwise remove all *FLIP atoms.
+        If bondatom is *FLIP, remove all * atoms, otherwise remove all *FLIP
+        atoms.
         """
 
         # Initialize some variables
@@ -200,7 +201,8 @@ class Flip(optimize.Optimize):
             atomname = atom.name
             if atomname.endswith("FLIP") and flag:  # Delete the other list
                 if residue.has_atom(atomname[:-4]):
-                    self.routines.cells.remove_cell(residue.get_atom(atomname[:-4]))
+                    self.routines.cells.remove_cell(
+                        residue.get_atom(atomname[:-4]))
                     residue.remove_atom(atomname[:-4])
             elif atomname.endswith("FLIP"):  # Delete the flip
                 self.routines.cells.remove_cell(atom)
@@ -212,7 +214,8 @@ class Flip(optimize.Optimize):
 
     def finalize(self):
         """Finalizes a flippable back to its original state - since the original
-        atoms are now *FLIP, it deletes the * atoms and renames the *FLIP atoms back to *.
+        atoms are now *FLIP, it deletes the * atoms and renames the *FLIP
+        atoms back to *.
         """
         residue = self.residue
         if residue.fixed:
@@ -230,8 +233,8 @@ class Flip(optimize.Optimize):
     def complete(self):
         """Complete the flippable residue optimization.
 
-        Call the finalize function, and then rename all FLIP atoms back to their
-        standard names.
+        Call the finalize function, and then rename all FLIP atoms back to
+        their standard names.
         """
         residue = self.residue
         self.finalize()
@@ -266,8 +269,8 @@ class Alcoholic(optimize.Optimize):
     """The class for alcoholic residues"""
 
     def __init__(self, residue, optinstance, routines):
-        """Initialize the alcoholic class by removing the alcoholic hydrogen if
-        it exists."""
+        """Initialize the alcoholic class by removing the alcoholic hydrogen
+        if it exists."""
 
         # Initialize some variables
         self.optinstance = optinstance
@@ -316,7 +319,8 @@ class Alcoholic(optimize.Optimize):
         return 0
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable residue."""
+        """The main driver for adding a hydrogen to an optimizeable
+        residue."""
         residue = self.residue
 
         # Do some error checking
@@ -338,7 +342,8 @@ class Alcoholic(optimize.Optimize):
             return self.try_single_alcoholic_h(donor, acc, newatom)
         elif len(donor.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(donor)
-            return self.try_positions_with_two_bonds_h(donor, acc, newname, loc1, loc2)
+            return self.try_positions_with_two_bonds_h(
+                donor, acc, newname, loc1, loc2)
         elif len(donor.bonds) == 3:
             loc = self.get_position_with_three_bonds(donor)
             return self.try_positions_three_bonds_h(donor, acc, newname, loc)
@@ -371,7 +376,8 @@ class Alcoholic(optimize.Optimize):
             return self.try_single_alcoholic_lp(acc, donor, newatom)
         elif len(acc.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(acc)
-            return self.try_positions_with_two_bonds_lp(acc, donor, newname, loc1, loc2)
+            return self.try_positions_with_two_bonds_lp(
+                acc, donor, newname, loc1, loc2)
         elif len(acc.bonds) == 3:
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
@@ -413,7 +419,9 @@ class Alcoholic(optimize.Optimize):
                 closeatoms = self.routines.cells.get_near_cells(atom)
                 energy = 0.0
                 for catom in closeatoms:
-                    energy += self.get_pair_energy(atom, catom) + self.get_pair_energy(catom, atom)
+                    energy += (
+                        self.get_pair_energy(atom, catom)
+                        + self.get_pair_energy(catom, atom))
                 if energy < bestenergy:
                     bestenergy = energy
                     bestcoords = newatom.coords
@@ -433,7 +441,9 @@ class Alcoholic(optimize.Optimize):
             closeatoms = self.routines.cells.get_near_cells(atom)
             energy1 = 0.0
             for catom in closeatoms:
-                energy1 += self.get_pair_energy(atom, catom) + self.get_pair_energy(catom, atom)
+                energy1 += (
+                    self.get_pair_energy(atom, catom)
+                    + self.get_pair_energy(catom, atom))
 
             # Place at other location
             self.routines.cells.remove_cell(newatom)
@@ -444,7 +454,9 @@ class Alcoholic(optimize.Optimize):
 
             energy2 = 0.0
             for catom in closeatoms:
-                energy2 += self.get_pair_energy(atom, catom) + self.get_pair_energy(catom, atom)
+                energy2 += (
+                    self.get_pair_energy(atom, catom)
+                    + self.get_pair_energy(catom, atom))
 
             # If this is worse, switch back
             if energy2 > energy1:
@@ -498,7 +510,7 @@ class Water(optimize.Optimize):
     def try_both(self, donor, acc, accobj):
         """Called when both the donor and acceptor are optimizeable.
         If one is fixed, we only need to try one side.  Otherwise
-        first try to satisfy the donor - if that's succesful,
+        first try to satisfy the donor - if that's successful,
         try to satisfy the acceptor.  An undo may be necessary
         if the donor is satisfied and the acceptor isn't.
         """
@@ -561,8 +573,8 @@ class Water(optimize.Optimize):
                 # Point the LP to the best H
                 # TODO - this looks like a bug...
                 # donorh ends up being the last item in donor.bonds
-                # This may be fixed by setting a best_donorh to go with bestdist
-                # and using best_donorh in the function below
+                # This may be fixed by setting a best_donorh to go with
+                # bestdist and using best_donorh in the function below
                 self.make_atom_with_no_bonds(acc, donorh, newname)
                 _LOGGER.warning("The best donorH was not picked (BUG?).")
                 _LOGGER.debug("Added %s to %s", newname, acc.residue)
@@ -570,22 +582,28 @@ class Water(optimize.Optimize):
             return 0
 
         elif len(acc.bonds) == 1:  # No H or LP attached
-            _LOGGER.debug("Trying to add %s to %s with one bond", newname, acc.residue)
+            _LOGGER.debug(
+                "Trying to add %s to %s with one bond", newname, acc.residue)
             self.make_water_with_one_bond(acc, newname)
             newatom = acc.residue.get_atom(newname)
             return self.try_single_alcoholic_lp(acc, donor, newatom)
         elif len(acc.bonds) == 2:
-            _LOGGER.debug("Trying to add %s to %s with two bonds", newname, acc.residue)
+            _LOGGER.debug(
+                "Trying to add %s to %s with two bonds", newname, acc.residue)
             loc1, loc2 = self.get_positions_with_two_bonds(acc)
-            return self.try_positions_with_two_bonds_lp(acc, donor, newname, loc1, loc2)
+            return self.try_positions_with_two_bonds_lp(
+                acc, donor, newname, loc1, loc2)
         elif len(acc.bonds) == 3:
-            _LOGGER.debug("Trying to add %s to %s with three bonds", newname, acc.residue)
+            _LOGGER.debug(
+                "Trying to add %s to %s with three bonds", newname,
+                acc.residue)
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
         return 0
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable residue."""
+        """The main driver for adding a hydrogen to an optimizeable
+        residue."""
         residue = self.residue
 
         # Do some error checking
@@ -617,7 +635,8 @@ class Water(optimize.Optimize):
             return self.try_single_alcoholic_h(donor, acc, newatom)
         elif len(donor.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(donor)
-            return self.try_positions_with_two_bonds_h(donor, acc, newname, loc1, loc2)
+            return self.try_positions_with_two_bonds_h(
+                donor, acc, newname, loc1, loc2)
         elif len(donor.bonds) == 3:
             loc = self.get_position_with_three_bonds(donor)
             return self.try_positions_three_bonds_h(donor, acc, newname, loc)
@@ -643,89 +662,65 @@ class Water(optimize.Optimize):
             addname = "H1"
         else:
             addname = "H2"
-
         _LOGGER.debug("Finalizing %s by adding %s (%i current O bonds)",
                       residue, addname, len(atom.bonds))
-
         if len(atom.bonds) == 0:
-
             newcoords = []
-
             # Build hydrogen away from closest atom
             closeatom = self.routines.get_closest_atom(atom)
             if closeatom is not None:
                 vec = util.subtract(atom.coords, closeatom.coords)
                 dist = util.distance(atom.coords, closeatom.coords)
-
                 for i in range(3):
                     newcoords.append(vec[i]/dist + atom.coords[i])
-
             else:
                 newcoords = util.add(atom.coords, [1.0, 0.0, 0.0])
-
             residue.create_atom(addname, newcoords)
             self.routines.cells.add_cell(residue.get_atom(addname))
-
             self.finalize()
-
         elif len(atom.bonds) == 1:
-
             # Initialize variables
             pivot = atom.bonds[0]
             bestdist = 0.0
             bestcoords = []
-
             # Add atom and debump
             self.make_water_with_one_bond(atom, addname)
             newatom = residue.get_atom(addname)
             self.routines.cells.add_cell(newatom)
-
             for i in range(18):
                 residue.rotate_tetrahedral(pivot, atom, 20.0)
                 nearatom = self.routines.get_closest_atom(newatom)
-
                 # If there is no closest conflict, continue
                 if nearatom is None:
                     continue
-
                 dist = util.distance(nearatom.coords, newatom.coords)
-
                 if dist > bestdist:
                     bestdist = dist
                     bestcoords = newatom.coords
-
             if bestcoords != []:
                 newatom.x = bestcoords[0]
                 newatom.y = bestcoords[1]
                 newatom.z = bestcoords[2]
-
             if addname == "H1":
                 self.finalize()
-
             residue.fixed = 1
-
         elif len(atom.bonds) == 2:
-
             loc1, loc2 = self.get_positions_with_two_bonds(atom)
             residue.create_atom(addname, loc1)
             newatom = residue.get_atom(addname)
             self.routines.cells.add_cell(newatom)
-
             # Debump residue if necessary by trying the other location
             nearatom = self.routines.get_closest_atom(newatom)
             if nearatom is not None:
                 dist1 = util.distance(newatom.coords, nearatom.coords)
-
                 # Place at other location
                 self.routines.cells.remove_cell(atom)
                 newatom.x = loc2[0]
                 newatom.y = loc2[1]
                 newatom.z = loc2[2]
                 self.routines.cells.add_cell(atom)
-
                 nearatom = self.routines.get_closest_atom(newatom)
                 if nearatom is not None:
-
                     # If this is worse, switch back
                     if util.distance(newatom.coords, nearatom.coords) < dist1:
                         self.routines.cells.remove_cell(atom)
@@ -733,12 +728,9 @@ class Water(optimize.Optimize):
                         newatom.y = loc1[1]
                         newatom.z = loc1[2]
                         self.routines.cells.add_cell(atom)
-
             if addname == "H1":
                 self.finalize()
-
         elif len(atom.bonds) == 3:
-
             loc = self.get_position_with_three_bonds(atom)
             residue.create_atom(addname, loc)
             self.routines.cells.add_cell(residue.get_atom(addname))
@@ -957,7 +949,8 @@ class Carboxylic(optimize.Optimize):
                 residue.remove_atom(hyds[1].name)
                 if residue.has_atom(hyds[0].name):
                     donorhatom = residue.get_atom(hyds[0].name)
-                elif len(self.hlist) != 0 and residue.has_atom(self.hlist[0].name):
+                elif len(self.hlist) != 0 and residue.has_atom(
+                        self.hlist[0].name):
                     donorhatom = residue.get_atom(self.hlist[0].name)
 
             # If only one H is left, we're done
@@ -971,7 +964,8 @@ class Carboxylic(optimize.Optimize):
             return 0
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable residue."""
+        """The main driver for adding a hydrogen to an optimizeable
+        residue."""
         # Do some error checking
         if not acc.hacceptor:
             return 0
@@ -983,13 +977,15 @@ class Carboxylic(optimize.Optimize):
 
     def fix(self, donor, acc):
         """Fix the carboxylic residue."""
-        _LOGGER.debug("Fixing residue %s due to %s", donor.residue, donor.name)
+        _LOGGER.debug(
+            "Fixing residue %s due to %s", donor.residue, donor.name)
         residue = donor.residue
 
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) <= ANGLE_CUTOFF:
+                if self.get_hbond_angle(
+                        acc, donor, donorhatom) <= ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
 
@@ -1025,8 +1021,9 @@ class Carboxylic(optimize.Optimize):
             bondedatom = hydatom.bonds[0]
             closeatoms = self.routines.cells.get_near_cells(bondedatom)
             for catom in closeatoms:
-                energy += self.get_pair_energy(bondedatom, catom) + \
-                    self.get_pair_energy(catom, bondedatom)
+                energy += (
+                    self.get_pair_energy(bondedatom, catom)
+                    + self.get_pair_energy(catom, bondedatom))
             if energy < bestenergy:
                 bestenergy = energy
                 bestatom = hydatom

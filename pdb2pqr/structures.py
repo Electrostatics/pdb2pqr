@@ -20,7 +20,8 @@ class Chain:
         """Initialize the class
 
         Args:
-            chain_id: The chain_id for this chain as denoted in the PDB file (string)
+            chain_id: The chain_id for this chain as denoted in the PDB
+            file (string)
         """
         self.chain_id = chain_id
         self.residues = []
@@ -35,7 +36,8 @@ class Chain:
         self.residues.append(residue)
 
     def renumber_residues(self):
-        """Renumber Atoms based on actual Residue number and not PDB res_seq"""
+        """Renumber Atoms based on actual Residue number and not PDB
+        res_seq"""
         count = 1
         for residue in self.residues:
             residue.set_res_seq(count)
@@ -83,7 +85,9 @@ class Atom(pdb.ATOM):
         if type_ == "ATOM" or type_ == "HETATM":
             self.type = type_
         else:
-            raise ValueError("Invalid atom type %s (Atom Class IN structures.py)!" % type_)
+            err = (
+                "Invalid atom type %s (Atom Class IN structures.py)!" % type_)
+            raise ValueError(err)
         self.serial = atom.serial
         self.name = atom.name
         self.alt_loc = atom.alt_loc
@@ -119,8 +123,9 @@ class Atom(pdb.ATOM):
     def get_common_string_rep(self, chainflag=False):
         """Returns a string of the common column of the new atom type.
 
-        Uses the ATOM string output but changes the first field to either by ATOM
-        or HETATM as necessary. This is used to create the output for pqr and pdb files.
+        Uses the ATOM string output but changes the first field to either by
+        ATOM or HETATM as necessary. This is used to create the output for pqr
+        and pdb files.
 
         Returns
             outstr: String with ATOM/HETATM field set appropriately

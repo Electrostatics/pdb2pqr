@@ -7,7 +7,6 @@ For more information, see http://www.poissonboltzmann.org/
 """
 import logging
 from sys import version_info
-from pathlib import Path
 from .main import main, build_parser
 assert version_info >= (3, 5)
 

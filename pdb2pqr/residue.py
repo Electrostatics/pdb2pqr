@@ -12,7 +12,8 @@ class Residue(object):
     """Residue class
 
     TODO - move this class to a separate file
-    BUG FIXME - Should this class have a member variable for dihedrals? Pylint complains!
+    TODO BUG FIXME - Should this class have a member variable for dihedrals?
+    Pylint complains!
 
     The residue class contains a list of Atom objects associated with that
     residue and other helper functions.
@@ -56,7 +57,8 @@ class Residue(object):
                 atom.res_name = "WAT"
 
     def __str__(self):
-        text = "%s %s %i%s" % (self.name, self.chain_id, self.res_seq, self.ins_code)
+        text = "%s %s %i%s" % (
+            self.name, self.chain_id, self.res_seq, self.ins_code)
         return text
 
     def get_moveable_names(self, pivot):
@@ -216,8 +218,8 @@ class Residue(object):
 
     @classmethod
     def rotate_tetrahedral(cls, atom1, atom2, angle):
-        """Rotate about the atom1-atom2 bond by a given angle All atoms connected
-        to atom2 will rotate.
+        """Rotate about the atom1-atom2 bond by a given angle
+        All atoms connected to atom2 will rotate.
 
         Args:
             atom1:  The first atom of the bond to rotate about (atom)
@@ -255,7 +257,8 @@ class Residue(object):
 
         Parameters
             residue:  The residue that is being debumped (Residue)
-            conflict_names: A list of atom names that are currently conflicts (list)
+            conflict_names: A list of atom names that are currently
+                            conflicts (list)
             oldnum:  The old dihedral angle number (int)
         Returns
             bestnum:  The new dihedral angle number (int)

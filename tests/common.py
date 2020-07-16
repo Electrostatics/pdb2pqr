@@ -71,7 +71,8 @@ def pqr_to_dict(pqr_file):
         words = line.strip().split()
         label = words.pop(0)
         if label in ["REMARK", "TER", "END", "HEADER", "TITLE", "COMPND",
-                     "SOURCE", "KEYWDS", "EXPDTA", "AUTHOR", "REVDAT", "JRNL"]:
+                     "SOURCE", "KEYWDS", "EXPDTA", "AUTHOR", "REVDAT",
+                     "JRNL"]:
             pass
         elif label in ["ATOM", "HETATM"]:
             row_dict["atom_num"] = int(words.pop(0))
@@ -177,14 +178,18 @@ def compare_pqr(pqr1_path, pqr2_path):
                            ("dq", "charge", Q_CUT),
                            ("dr", "radius", R_CUT)]:
         for cut_ in [0.0, cut]:
-            df_c = df_min[df_min[col] > cut_].sort_values(col, ascending=False)
+            df_c = df_min[df_min[col] > cut_].sort_values(
+                col, ascending=False)
             ndiff = df_c.shape[0]
             result = "%d atoms have %s differences > %g" % (ndiff, what, cut_)
             if ndiff > 0:
                 _LOGGER.warning(result)
-                df_c = df_min[df_min[col] > cut_].sort_values(col, ascending=False)
-                summary = (["%s: %.3E" % (key, val)
-                            for (key, val) in df_c[col].describe().to_dict().items()])
+                df_c = df_min[df_min[col] > cut_].sort_values(
+                    col, ascending=False)
+                summary = (
+                    [
+                        "%s: %.3E" % (key, val) for (key, val) in
+                        df_c[col].describe().to_dict().items()])
                 _LOGGER.debug(summary)
                 if cut_ > 0:
                     raise ValueError(result)

@@ -138,11 +138,13 @@ class Optimize:
                 # Assign energies based on angles
                 angle1 = Optimize.get_hbond_angle(acceptor, donor, donorhatom)
                 if angle1 <= adh_angle_cutoff:
-                    angle2 = Optimize.get_hbond_angle(donorhatom, acceptorhatom, acceptor)
+                    angle2 = Optimize.get_hbond_angle(
+                        donorhatom, acceptorhatom, acceptor)
                     if angle2 < dhaha_angle_cutoff:
                         angle2 = 1.0
                     else:
-                        angle2 = (dhaha_angle_cutoff - angle2)/dhaha_angle_cutoff
+                        angle2 = (
+                            dhaha_angle_cutoff - angle2)/dhaha_angle_cutoff
 
                     angleterm = (adh_angle_cutoff - angle1)/adh_angle_cutoff
                     energy += max_hbond_energy/pow(dist, 3)*angleterm*angle2
@@ -202,7 +204,8 @@ class Optimize:
         refatomcoords = residue.reference.map["H2"].coords
 
         # Make the atom
-        newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
+        newcoords = quat.find_coordinates(
+            2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
         # Set the bonds (since not in reference structure)
@@ -258,8 +261,8 @@ class Optimize:
     def try_single_alcoholic_h(self, donor, acc, newatom):
         """After a new bond has been added using makeAtomWithOneBond*, try to
         find the best orientation by rotating to form a hydrogen bond.  If a
-        bond cannot be formed, remove the newatom (thereby returning to a single
-        bond). """
+        bond cannot be formed, remove the newatom (thereby returning to a
+        single bond). """
 
         # Initialize some variables
         besten = 999.99
@@ -287,9 +290,9 @@ class Optimize:
 
     def try_single_alcoholic_lp(self, acc, donor, newatom):
         """After a new bond has been added using makeAtomWithOneBond*, ensure
-        that a hydrogen bond has been made.  If so, try to minimze the H(D)-A-LP
-        angle.  If that cannot be minimized, ignore the bond and remove the
-        atom.
+        that a hydrogen bond has been made.  If so, try to minimze the
+        H(D)-A-LP angle.  If that cannot be minimized, ignore the bond and
+        remove the atom.
         """
 
         # Initialize some variables
@@ -307,7 +310,8 @@ class Optimize:
 
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
+                if self.get_hbond_angle(
+                        acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
 
@@ -321,7 +325,9 @@ class Optimize:
 
         # Remove if geometry does not work
         if bestangle > (ANGLE_CUTOFF * 2.0):
-            _LOGGER.debug("Removing due to geometry %.2f > %.2f", bestangle, ANGLE_CUTOFF*2.0)
+            _LOGGER.debug(
+                "Removing due to geometry %.2f > %.2f", bestangle,
+                ANGLE_CUTOFF*2.0)
             residue.remove_atom(newatom.name)
             return 0
 
@@ -335,8 +341,8 @@ class Optimize:
 
     @classmethod
     def get_positions_with_two_bonds(cls, atom):
-        """Given a tetrahedral geometry with two existing bonds, return the two
-        potential sets of coordinates that are possible for a new bond."""
+        """Given a tetrahedral geometry with two existing bonds, return the
+        two potential sets of coordinates that are possible for a new bond."""
 
         # Initialize some variables
         residue = atom.residue
@@ -355,8 +361,8 @@ class Optimize:
         return loc1, loc2
 
     def try_positions_with_two_bonds_h(self, donor, acc, newname, loc1, loc2):
-        """Try adding a new hydrogen two the two potential locations.
-        If both form hydrogen bonds, place at whatever returns the best bond as
+        """Try adding a new hydrogen two the two potential locations. If both
+        form hydrogen bonds, place at whatever returns the best bond as
         determined by get_pair_energy.
         """
 
@@ -391,10 +397,11 @@ class Optimize:
         residue.remove_atom(newname)
         return 0
 
-    def try_positions_with_two_bonds_lp(self, acc, donor, newname, loc1, loc2):
-        """Try placing an LP on a tetrahedral geometry with two existing bonds.
-        If this isn't a hydrogen bond it can return - otherwise ensure that the
-        H(D)-A-LP angle is minimized.
+    def try_positions_with_two_bonds_lp(
+            self, acc, donor, newname, loc1, loc2):
+        """Try placing an LP on a tetrahedral geometry with two existing
+        bonds. If this isn't a hydrogen bond it can return - otherwise ensure
+        that the H(D)-A-LP angle is minimized.
         """
 
         # Initialize some variables
@@ -409,7 +416,8 @@ class Optimize:
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
+                if self.get_hbond_angle(
+                        acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
 
@@ -494,7 +502,8 @@ class Optimize:
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
+                if self.get_hbond_angle(
+                        acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
 

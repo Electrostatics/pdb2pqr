@@ -29,8 +29,9 @@ def sort_dict_by_value(inputdict):
 
 
 def shortest_path(graph, start, end, path=[]):
-    """Uses recursion to find the shortest path from one node to another in an
-    unweighted graph.  Adapted from http://www.python.org/doc/essays/graphs.html
+    """Uses recursion to find the shortest path from one node to another in
+    an unweighted graph.  Adapted from
+    http://www.python.org/doc/essays/graphs.html
 
     Args:
         graph: A mapping of the graph to analyze, of the form

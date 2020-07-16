@@ -19,16 +19,20 @@ from .utilities import normalize
 def find_coordinates(numpoints, refcoords, defcoords, defatomcoords):
     """Driver for the quaternion file.
 
-    Provide the coordinates as inputs and obtain the coordinates for the new atom as output.
+    Provide the coordinates as inputs and obtain the coordinates for the new
+    atom as output.
 
     Parameters
-        numpoints:     The number of points in each list (int)
-        refcoords:     The reference coordinates, a list of lists of form [x,y,z] (list)
-        defcoords:     The definition coordinates, a list of lists of form [x,y,z] (list)
-        defatomcoords:  The definition coordinates for the atom to be placed in the
-                        reference frame (list)
+        numpoints:  The number of points in each list (int)
+        refcoords:  The reference coordinates, a list of lists of form [x,y,z]
+                    (list)
+        defcoords:  The definition coordinates, a list of lists of form
+                    [x,y,z] (list)
+        defatomcoords:  The definition coordinates for the atom to be placed
+                        in the reference frame (list)
     Returns
-        newcoords:  The coordinates of the new atom in the reference frame (list)
+        newcoords:  The coordinates of the new atom in the reference frame
+                    (list)
     """
     refcenter, fitcenter, rotation = qfit(numpoints, refcoords, defcoords)
     newcoords = qtransform(1, defatomcoords, refcenter, fitcenter, rotation)
@@ -38,8 +42,8 @@ def find_coordinates(numpoints, refcoords, defcoords, defatomcoords):
 
 
 def qtransform(numpoints, defcoords, refcenter, fitcenter, rotation):
-    """Transform the set of defcoords using the reference center, the fit center,
-    and a rotation matrix.
+    """Transform the set of defcoords using the reference center, the fit
+    center, and a rotation matrix.
 
     Parameters
         numpoints: The number of points in each list (int)
@@ -61,13 +65,15 @@ def qtransform(numpoints, defcoords, refcenter, fitcenter, rotation):
 
 
 def qfit(numpoints, refcoords, defcoords):
-    """Method for getting new atom coordinates from sets of reference and definition
-    coordinates.
+    """Method for getting new atom coordinates from sets of reference and
+    definition coordinates.
 
     Parameters
-        numpoints: The number of points in each list (int)
-        refcoords: List of reference coordinates, with each set a list of form [x,y,z] (list)
-        defcoords: List of definition coordinates, with each set a list of form [x,y,z] (list)
+        numpoints:  The number of points in each list (int)
+        refcoords:  List of reference coordinates, with each set a list of
+                    form [x,y,z] (list)
+        defcoords:  List of definition coordinates, with each set a list of
+                    form [x,y,z] (list)
     """
     nrot = 30
     refcenter, refcoords = center(numpoints, refcoords)
@@ -81,14 +87,16 @@ def qfit(numpoints, refcoords, defcoords):
 
 
 def qchichange(initcoords, refcoords, angle):
-    """Change the chiangle of the reference coordinate using the initcoords and the given angle
+    """Change the chiangle of the reference coordinate using the initcoords
+    and the given angle
 
     Parameters
-        initcoords: Coordinates based on the point and basis atoms (one dimensional list)
-        difchi    : The angle to use (float)
-        refcoords : The atoms to analyze (list of many coordinates)
+        initcoords:  Coordinates based on the point and basis atoms (one
+                     dimensional list)
+        difchi:  The angle to use (float)
+        refcoords:  The atoms to analyze (list of many coordinates)
     Returns
-        newcoords : The new coordinates of the atoms (list of many coords)
+        newcoords:  The new coordinates of the atoms (list of many coords)
     """
     # Initialize
     left = []
@@ -105,15 +113,30 @@ def qchichange(initcoords, refcoords, angle):
     left[2] = normalized[2]
 
     # Construct the rotation matrix
-    right[0][0] = math.cos(radangle) + left[0]*left[0] * (1.0 - math.cos(radangle))
-    right[1][1] = math.cos(radangle) + left[1]*left[1] * (1.0 - math.cos(radangle))
-    right[2][2] = math.cos(radangle) + left[2]*left[2] * (1.0 - math.cos(radangle))
-    right[1][0] = left[0]*left[1]*(1.0 - math.cos(radangle)) - left[2] * math.sin(radangle)
-    right[2][0] = left[0]*left[2]*(1.0 - math.cos(radangle)) + left[1] * math.sin(radangle)
-    right[0][1] = left[1]*left[0]*(1.0 - math.cos(radangle)) + left[2] * math.sin(radangle)
-    right[2][1] = left[1]*left[2]*(1.0 - math.cos(radangle)) - left[0] * math.sin(radangle)
-    right[0][2] = left[2]*left[0]*(1.0 - math.cos(radangle)) - left[1] * math.sin(radangle)
-    right[1][2] = left[2]*left[1]*(1.0 - math.cos(radangle)) + left[0] * math.sin(radangle)
+    right[0][0] = (
+        math.cos(radangle) + left[0]*left[0] * (1.0 - math.cos(radangle)))
+    right[1][1] = (
+        math.cos(radangle) + left[1]*left[1] * (1.0 - math.cos(radangle)))
+    right[2][2] = (
+        math.cos(radangle) + left[2]*left[2] * (1.0 - math.cos(radangle)))
+    right[1][0] = (
+        left[0]*left[1]*(1.0 - math.cos(radangle))
+        - left[2] * math.sin(radangle))
+    right[2][0] = (
+        left[0]*left[2]*(1.0 - math.cos(radangle))
+        + left[1] * math.sin(radangle))
+    right[0][1] = (
+        left[1]*left[0]*(1.0 - math.cos(radangle))
+        + left[2] * math.sin(radangle))
+    right[2][1] = (
+        left[1]*left[2]*(1.0 - math.cos(radangle))
+        - left[0] * math.sin(radangle))
+    right[0][2] = (
+        left[2]*left[0]*(1.0 - math.cos(radangle))
+        - left[1] * math.sin(radangle))
+    right[1][2] = (
+        left[2]*left[1]*(1.0 - math.cos(radangle))
+        + left[0] * math.sin(radangle))
 
     numpoints = len(refcoords)
     newcoords = rotmol(numpoints, refcoords, right)
@@ -134,10 +157,15 @@ def rotmol(numpoints, coor, lrot):
     out = []
     for i in range(numpoints):
         out.append([])
-        out[i].append(lrot[0][0] * coor[i][0] + lrot[1][0] * coor[i][1] + lrot[2][0] * coor[i][2])
-        out[i].append(lrot[0][1] * coor[i][0] + lrot[1][1] * coor[i][1] + lrot[2][1] * coor[i][2])
-        out[i].append(lrot[0][2] * coor[i][0] + lrot[1][2] * coor[i][1] + lrot[2][2] * coor[i][2])
-
+        out[i].append(
+            lrot[0][0] * coor[i][0] + lrot[1][0] * coor[i][1]
+            + lrot[2][0] * coor[i][2])
+        out[i].append(
+            lrot[0][1] * coor[i][0] + lrot[1][1] * coor[i][1]
+            + lrot[2][1] * coor[i][2])
+        out[i].append(
+            lrot[0][2] * coor[i][0] + lrot[1][2] * coor[i][1]
+            + lrot[2][2] * coor[i][2])
     return out
 
 
@@ -150,8 +178,10 @@ def qtrfit(numpoints, defcoords, refcoords, nrot):
 
     Parameters
         numpoints:  The number of points in each list (int)
-        defcoords:  List of definition coordinates, with each set a list of form [x,y,z] (list)
-        refcoords:  List of fitted coordinates, with each set a list of form [x,y,z] (list)
+        defcoords:  List of definition coordinates, with each set a list of
+                    form [x,y,z] (list)
+        refcoords:  List of fitted coordinates, with each set a list of form
+                    [x,y,z] (list)
         nrot:  The maximum number of jacobi sweeps
     Returns
         quat:  The best-fit quaternion
@@ -271,10 +301,12 @@ def jacobi(amat, nrot):
                         vtemp = cscl * vmat[k][i] - sscl * vmat[k][j]
                         vmat[k][j] = sscl * vmat[k][i] + cscl * vmat[k][j]
                         vmat[k][i] = vtemp
-                    dtemp = cscl * cscl * dvec[i] + sscl * sscl * dvec[j] \
-                        - 2.0 * cscl * sscl * bscl
-                    dvec[j] = sscl * sscl * dvec[i] + cscl * cscl * dvec[j] \
-                        + 2.0 * cscl * sscl * bscl
+                    dtemp = (
+                        cscl * cscl * dvec[i] + sscl * sscl * dvec[j]
+                        - 2.0 * cscl * sscl * bscl)
+                    dvec[j] = (
+                        sscl * sscl * dvec[i] + cscl * cscl * dvec[j]
+                        + 2.0 * cscl * sscl * bscl)
                     dvec[i] = dtemp
 
     nrot = the_lrot
@@ -309,17 +341,23 @@ def q2mat(quat):
         for _ in range(3):
             urot[i].append(0.0)
 
-    urot[0][0] = quat[0] * quat[0] + quat[1] * quat[1] - quat[2] * quat[2] - quat[3] * quat[3]
+    urot[0][0] = (
+        quat[0] * quat[0] + quat[1] * quat[1] - quat[2] * quat[2]
+        - quat[3] * quat[3])
     urot[0][1] = 2.0 * (quat[1] * quat[2] - quat[0] * quat[3])
     urot[0][2] = 2.0 * (quat[1] * quat[3] + quat[0] * quat[2])
 
     urot[1][0] = 2.0 * (quat[2] * quat[1] + quat[0] * quat[3])
-    urot[1][1] = quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2] - quat[3] * quat[3]
+    urot[1][1] = (
+        quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2]
+        - quat[3] * quat[3])
     urot[1][2] = 2.0 * (quat[2] * quat[3] - quat[0] * quat[1])
 
     urot[2][0] = 2.0 * (quat[3] * quat[1] - quat[0] * quat[2])
     urot[2][1] = 2.0 * (quat[3] * quat[2] + quat[0] * quat[1])
-    urot[2][2] = quat[0] * quat[0] - quat[1] * quat[1] - quat[2] * quat[2] + quat[3] * quat[3]
+    urot[2][2] = (
+        quat[0] * quat[0] - quat[1] * quat[1] - quat[2] * quat[2]
+        + quat[3] * quat[3])
 
     return urot
 
@@ -363,7 +401,8 @@ def translate(numpoints, refcoords, center_, mode):
 
     Parameters
         numpoints:  Number of points
-        refcoords:  List of reference coordinates, with each set a list of form [x,y,z] (list)
+        refcoords:  List of reference coordinates, with each set a list of
+                    form [x,y,z] (list)
         center:  Center of the system(list)
         mode:  If 1, center will be subtracted from refcoords.
                If 2, center will be added to refcoords

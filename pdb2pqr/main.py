@@ -561,7 +561,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
     return {"lines": lines, "header": header, "missed_residues": missing_atoms}
 
 
-def main(args):
+def main_driver(args):
     """Main driver for running program from the command line.
 
     Validate inputs, launch PDB2PQR, handle output.
@@ -605,3 +605,10 @@ def main(args):
     if args.apbs_input:
         raise NotImplementedError("Missing argument for APBS input file.")
         io.dump_apbs(args.output_pqr)
+
+
+def main():
+    """Hook for command-line usage."""
+    parser = build_parser()
+    args = parser.parse_args()
+    main_driver(args)

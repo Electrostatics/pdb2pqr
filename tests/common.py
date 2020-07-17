@@ -5,7 +5,7 @@ import hashlib
 from pathlib import Path
 import numpy
 import pandas
-from pdb2pqr.main import build_parser, main
+from pdb2pqr.main import build_parser, main_driver
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -208,6 +208,6 @@ def run_pdb2pqr(args, input_pdb, tmp_path, output_pqr=None, expected_pqr=None):
     _LOGGER.debug("Writing output to %s", output_pqr)
     arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
     args = PARSER.parse_args(arg_str.split())
-    main(args)
+    main_driver(args)
     if expected_pqr is not None:
         compare_pqr(output_pqr, expected_pqr)

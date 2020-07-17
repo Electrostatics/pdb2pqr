@@ -28,5 +28,5 @@ def test_log_output_in_pqr_location(
     # as the output pqr
     capture.check_present(
         (
-            'pdb2pqr.input_output', 'INFO',
+            'pdb2pqr.io', 'INFO',
             f'Logs stored: {tmp_path / output_file.split(".")[0]}.log'))

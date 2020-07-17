@@ -20,7 +20,7 @@ from . import debump
 from . import hydrogens
 from . import forcefield
 from . import protein as prot
-from . import input_output as io
+from . import io
 from .ligand.mol2 import Mol2Molecule
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT

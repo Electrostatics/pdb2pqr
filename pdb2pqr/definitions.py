@@ -1,5 +1,4 @@
-"""This file contains classes associated with Amino Acid and Rotamer
-definitions as used by PDB2PQR.
+"""XML handling for biomolecular residues.
 
 Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 """

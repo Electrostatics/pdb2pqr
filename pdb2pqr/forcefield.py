@@ -8,7 +8,7 @@ Authors:  Todd Dolinsky, Yong Huang
 import re
 import logging
 from xml import sax
-from . import input_output as io
+from . import io
 
 
 _LOGGER = logging.getLogger(__name__)

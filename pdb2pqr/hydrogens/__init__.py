@@ -8,7 +8,7 @@ Authors:  Todd Dolinsky, Jens Erik Nielsen, Yong Huang
 """
 import logging
 from xml import sax
-from .. import input_output as io
+from .. import io
 from .. import aa
 from .. import cells
 from .. import definitions as defns

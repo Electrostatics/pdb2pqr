@@ -7,7 +7,7 @@ Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
 import logging
 from . import aa
 from . import utilities as util
-from . import input_output as io
+from . import io
 from . import quatfit as quat
 from . import cells
 from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS

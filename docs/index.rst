@@ -33,7 +33,9 @@ Contents
 
    getting
    using
+   supporting
    extending
+   releases
    api
 
 ------------------

@@ -36,7 +36,12 @@ Molecular structures
 
    aa
    hydrogens
+   hydrogens.optimize
+   hydrogens.structures
    ligand
+   ligand.mol2
+   ligand.peoe
+   ligand.topology
    na
    protein
    residue

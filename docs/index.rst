@@ -32,9 +32,12 @@ Contents
    :maxdepth: 2
 
    getting
-   using
+   using/index
+   supporting
    extending
+   formats/index
    api
+   releases
 
 ------------------
 Indices and tables

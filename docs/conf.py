@@ -66,4 +66,6 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # Enable intersphinx mapping
-intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+}

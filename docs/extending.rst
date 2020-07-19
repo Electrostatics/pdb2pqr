@@ -17,6 +17,7 @@ Adding an entirely new forcefield
 The following steps outline how to add a new force field to PDB2PQR.
 
 You will need to generate a forcefield data file (e.g., :file:`myff.DAT`) and, if your atom naming scheme of the forcefield is different from the PDB2PQR canonical naming scheme, you will also need to provide a names files (:file:`myFF.names`).
+The format of the names file is described in :doc:`/formats/xml-names`.
 It is recommended to build your own forcefield data and names files based on existing PDB2PQR :file:`.DAT` and :file:`.names` examples provided with PDB2PQR in the :file:`dat` directory.
 After finishing your forcefield data file and names file, these can be used with either the command line or the web server versions of PDB2PQR.
 

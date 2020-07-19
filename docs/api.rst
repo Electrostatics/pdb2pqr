@@ -37,7 +37,7 @@ Molecular structures
    aa
    hydrogens
    hydrogens.optimize
-   hydrogens.structure
+   hydrogens.structures
    ligand
    ligand.mol2
    ligand.peoe

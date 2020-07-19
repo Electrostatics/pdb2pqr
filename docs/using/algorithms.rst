@@ -1,44 +1,3 @@
-=============
-Using PDB2PQR
-=============
-
-.. note::
-
-   *Before you begin!* PDB2PQR funding is dependent on your help for continued development and support. Please `register <http://eepurl.com/by4eQr>`_ before using the software so we can accurately report the number of users to our funding agencies.
-
---------------
-Web server use
---------------
-
-Most users will use PDB2PQR through `the web server <http://apbs.poissonboltzmann.org/>`_ (after `registering <http://eepurl.com/by4eQr>`_, of course).
-However, it is also possible to install local versions of PDB2PQR and run these through the command line.
-
-----------------
-Command line use
-----------------
-
-.. code-block:: bash
-
-   pdb2pqr30 [options] --ff={forcefield} {path} {output-path}
-
-This module takes a PDB file as input and performs optimizations before yielding a new PQR-style file in ``{output-path}``.
-If ``{path}`` is a `PDB ID <http://www.rcsb.org/pdb/staticHelp.do?p=help/advancedsearch/pdbIDs.html>`_ it will automatically be retrieved from the online PDB archive.
-
-In addition to the required ``{path}`` and ``{output-path}`` arguments, :program:`pdb2pqr30` requires one of the following options:
-
-* ``--ff=FIELD_NAME`` specifying the forcefield to use.  Run ``pdb2pqr30 --help`` to see specific options.
-
-* ``--userff=USER_FIELD_FILE`` specifying a user-created forcefield file. Requires ``--usernames`` and overrides ``--ff``.
-
-* ``--clean`` specifying no optimization, atom addition, or parameter assignment, just return the original PDB file in aligned format.
-  Overrides ``--ff`` and ``--userff`` options.
-
-Information about additional options can be obtained by running:
-
-.. code-block:: bash
-
-   pdb2pqr30 --help
-
 --------------------------
 Algorithms used by PDB2PQR
 --------------------------
@@ -77,7 +36,6 @@ Currently this entails manipulating the following residues:
 * Rotating the sidechain hydrogen on SER, THR, TYR, and CYS (if available);
 * Determining the best placement for the sidechain hydrogen on neutral HIS, protonated GLU, and protonated ASP;
 * Optimizing all water hydrogens.
-
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Titration state assignment

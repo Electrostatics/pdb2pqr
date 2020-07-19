@@ -68,6 +68,4 @@ html_static_path = ['_static']
 # Enable intersphinx mapping
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'propka': ('https://propka.readthedocs.io/', None),
-    'mmcif_pdbx': ('https://mmcif-pdbx.readthedocs.io/', None)
 }

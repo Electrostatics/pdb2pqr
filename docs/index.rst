@@ -33,6 +33,7 @@ Contents
 
    getting
    using/index
+   help
    supporting
    extending
    formats/index

@@ -1,4 +1,4 @@
-"""Hydrogen optimization for PDB2PQR
+"""Hydrogen optimization module for PDB2PQR.
 
 This is an module for hydrogen optimization routines.
 
@@ -65,7 +65,7 @@ class HydrogenRoutines:
         """Initialize object.
 
         :param debumper:  Debump object
-        :type debumper:  debump.Debump 
+        :type debumper:  debump.Debump
         :param handler:  HydrogenHandler object
         :type handler:  HydrogenHandler
         """
@@ -233,7 +233,7 @@ class HydrogenRoutines:
     def cleanup(self):
         """Delete extra carboxylic atoms.
 
-        If there are any extra carboxlyic *1 atoms, delete them.
+        If there are any extra carboxlyic ``*1`` atoms, delete them.
         This may occur when no optimization is chosen.
         """
         for residue in self.debumper.protein.residues:
@@ -250,9 +250,9 @@ class HydrogenRoutines:
         """Check to see if the given residue is optimizeable.
         There are three ways to identify a residue:
 
-        1.  By name (i.e. HIS)
-        2.  By reference name - a PDB file HSP has a HIS reference name
-        3.  By patch - applied by PropKa, terminal selection
+        1. By name (i.e., HIS)
+        2. By reference name - a PDB file HSP has a HIS reference name
+        3. By patch - applied by :program:`propka`, terminal selection
 
         :param residue:  the residue in question
         :type residue:  Residue
@@ -374,7 +374,8 @@ class HydrogenRoutines:
            Should be called only after the optlist has been initialized.
 
         .. todo::
-           Remove hard-coded :makevar:`progress` threshold and increment values.
+           Remove hard-coded :makevar:`progress` threshold and increment
+           values.
 
         .. todo::
            This function needs to be simplified.
@@ -549,7 +550,7 @@ class HydrogenRoutines:
         :param res:  the lines to parse (list)
         :type res:  unknown
         :param topo:  Topology object
-        :type topo:  Topology
+        :type topo:  pdb2pqr.topology.Topology
         :return:  the hydrogen definition object
         :rtype: HydrogenDefinition
 

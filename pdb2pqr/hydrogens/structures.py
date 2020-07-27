@@ -18,13 +18,16 @@ class Flip(optimize.Optimize):
         """Initialize a potential flip.
 
         Rather than flipping the given residue back and forth, take each atom
-        that would be flipped and pre-flip it, making a new *FLIP atom in its
-        place.
+        that would be flipped and pre-flip it, making a new ``*FLIP`` atom in
+        its place.
 
-        Args:
-            residue:      The residue to flip (residue)
-            optinstance:  The optimization instance containing information
-                about what to optimize
+        :param residue:  the residue to flip
+        :type residue:  Residue
+        :param optinstance:  the optimization instance containing information
+            about what to optimize
+        :type optinstance:  OptimizationHandler
+        :param routines:  debumping routines object
+        :type routines:  Debump
         """
         # Initialize some variables
         self.optinstance = optinstance
@@ -33,7 +36,6 @@ class Flip(optimize.Optimize):
         self.atomlist = []
         self.hbonds = []
         map_ = {}
-
         # Get all moveable names for this angle/residue pair
         dihedral = optinstance.optangle
         pivot = dihedral.split()[2]
@@ -47,26 +49,22 @@ class Flip(optimize.Optimize):
                 else:
                     newmoveablenames.append(name)
             moveablenames = newmoveablenames
-
         # Cache current coordinates
         for name in moveablenames:
             atom = residue.get_atom(name)
             map_[name] = atom.coords
-
         # Flip the residue about the angle
         anglenum = residue.reference.dihedrals.index(dihedral)
         if anglenum == -1:
             raise ValueError("Unable to find Flip dihedral angle!")
         newangle = 180.0 + residue.dihedrals[anglenum]
         self.routines.set_dihedral_angle(residue, anglenum, newangle)
-
         # Create new atoms at cached positions
         for name in map_:
             newname = "%sFLIP" % name
             residue.create_atom(newname, map_[name])
             newatom = residue.get_atom(newname)
             self.routines.cells.add_cell(newatom)
-
             # Set the bonds
             newatom.reference = residue.reference.map[name]
             for bond in newatom.reference.bonds:
@@ -77,7 +75,6 @@ class Flip(optimize.Optimize):
                         newatom.bonds.append(bondatom)
                     if newatom not in bondatom.bonds:
                         bondatom.bonds.append(newatom)
-
                 # And connect back to the existing structure
                 newbond = bond
                 if residue.has_atom(newbond):
@@ -86,24 +83,19 @@ class Flip(optimize.Optimize):
                         newatom.bonds.append(bondatom)
                     if newatom not in bondatom.bonds:
                         bondatom.bonds.append(newatom)
-
         residue.set_donors_acceptors()
-
         # Add to the optimization list
         for name in moveablenames:
-
             # Get the atom
             atom = residue.get_atom(name)
             if not atom.is_hydrogen:
                 if atom.hdonor or atom.hacceptor:
                     self.atomlist.append(atom)
-
             # And the FLIP
             atom = residue.get_atom("%sFLIP" % name)
             if not atom.is_hydrogen:
                 if atom.hdonor or atom.hacceptor:
                     self.atomlist.append(atom)
-
         # Special case: Neutral unassigned HIS can be acceptors
         if isinstance(residue, aa.HIS):
             if residue.name == "HIS" and len(residue.patches) == 1:
@@ -112,90 +104,114 @@ class Flip(optimize.Optimize):
                         atom.hacceptor = 1
 
     def try_both(self, donor, acc, accobj):
-        """Called when both the donor and acceptor are optimizeable.
+        """Try to optimize both donor and acceptor bonds.
 
-        If one is fixed, we only need to try one side.  Otherwise first try to
-        satisfy the donor - if that's succesful, try to satisfy the acceptor.
+        Called when both the donor and acceptor are optimizeable.
+        If one is fixed, we only need to try one side.
+        Otherwise first try to satisfy the donor - if that's succesful, try to
+        satisfy the acceptor.
         An undo may be necessary if the donor is satisfied and the acceptor
         isn't.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :param accobj:  a Flip-like hydrogen bond structure object
+        :type accobj:  Flip
+        :return:  indication of whether hydrogen was added
+        :rtype:  bool
         """
         # If one residue if fixed, use other functions
         if donor.residue.fixed:
             if accobj.try_acceptor(acc, donor):
-                return 1
-            return 0
+                return True
+            return False
         if acc.residue.fixed:
             if self.try_donor(donor, acc):
-                return 1
-            return 0
-
-        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)",
-                      donor.residue, donor.name, acc.residue, acc.name)
+                return True
+            return False
+        _LOGGER.debug(
+            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
+            donor.name, acc.residue, acc.name)
         if self.is_hbond(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 self.fix_flip(donor)
                 donor.hacceptor = 0
                 _LOGGER.debug("NET BOND SUCCESSFUL!")
-                return 1
-            return 0
-        return 0
+                return True
+            return False
+        return False
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable residue."""
-        residue = self.residue
+        """Add hydrogen to an optimizable residue.
 
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool
+        """
+        residue = self.residue
         # Do some error checking
         if not acc.hacceptor:
-            return 0
-
-        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)",
-                      donor.residue, donor.name, acc.residue, acc.name)
-
+            return False
+        _LOGGER.debug(
+            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
+            donor.name, acc.residue, acc.name)
         if self.is_hbond(donor, acc):
             residue.fixed = donor.name
             self.fix_flip(donor)
             donor.hacceptor = 0
-            return 1
-        return 0
+            return True
+        return False
 
     def try_acceptor(self, acc, donor):
-        """The main driver for adding an LP to an optimizeable residue. """
-        residue = acc.residue
+        """Aa lone pair to an optimizable residue.
 
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool
+        """
+        residue = acc.residue
         # Do some error checking
         if not donor.hdonor:
-            return 0
-
-        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)",
-                      acc.residue, acc.name, donor.residue, donor.name)
+            return False
+        _LOGGER.debug(
+            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
+            acc.name, donor.residue, donor.name)
         if self.is_hbond(donor, acc):
             residue.fixed = acc.name
             self.fix_flip(acc)
             acc.hdonor = 0
-            return 1
-        return 0
+            return True
+        return False
 
     def fix_flip(self, bondatom):
-        """Called if a hydrogen bond has been found using the bondatom.
-        If bondatom is *FLIP, remove all * atoms, otherwise remove all *FLIP
-        atoms.
-        """
+        """Remove atoms if hydrogen bond has been found for specified atom.
 
+        If bondatom is of type ``*FLIP``, remove all ``*`` atoms, otherwise
+        remove all ``*FLIP`` atoms.
+
+        :param bondatom:  atom to flip
+        :type bondatom:  Atom
+        """
         # Initialize some variables
         atomlist = []
         residue = bondatom.residue
         for atom in residue.atoms:
             atomlist.append(atom)
-
         # Set a flag to see whether to delete the FLIPs or not
         flag = 0
         if bondatom.name.endswith("FLIP"):
             flag = 1
-
         dstr = "fix_flip called for residue {:s}, bondatom {:s} and flag {:d}"
         _LOGGER.debug(dstr.format(str(residue), str(bondatom), flag))
         residue.wasFlipped = (flag == 0)
-
         # Delete the appropriate atoms
         for atom in atomlist:
             atomname = atom.name
@@ -209,13 +225,13 @@ class Flip(optimize.Optimize):
                 residue.remove_atom(atomname)
             else:
                 continue
-
         residue.fixed = 1
 
     def finalize(self):
-        """Finalizes a flippable back to its original state - since the original
-        atoms are now *FLIP, it deletes the * atoms and renames the *FLIP
-        atoms back to *.
+        """Finalize a flippable group back to its original state.
+
+        Since the original atoms are now ``*FLIP``, it deletes the ``*`` atoms
+        and renames the ``*FLIP`` atoms back to ``*``.
         """
         residue = self.residue
         if residue.fixed:
@@ -233,8 +249,8 @@ class Flip(optimize.Optimize):
     def complete(self):
         """Complete the flippable residue optimization.
 
-        Call the finalize function, and then rename all FLIP atoms back to
-        their standard names.
+        Call the :func:`finalize` function, and then rename all ``FLIP`` atoms
+        back to their standard names.
         """
         residue = self.residue
         self.finalize()
@@ -249,6 +265,16 @@ class Generic(optimize.Optimize):
     """Generic optimization class"""
 
     def __init__(self, residue, optinstance, routines):
+        """Initialize a potential optimization.
+
+        :param residue:  the residue to optimize
+        :type residue:  Residue
+        :param optinstance:  the optimization instance containing information
+            about what to optimize
+        :type optinstance:  OptimizationHandler
+        :param routines:  debumping routines object
+        :type routines:  Debump
+        """
         self.optinstance = optinstance
         self.residue = residue
         self.routines = routines
@@ -256,32 +282,38 @@ class Generic(optimize.Optimize):
         self.atomlist = []
 
     def finalize(self):
-        """Initialize some variable and pass?"""
+        """Initialize some variable and pass."""
         pass
 
     def complete(self):
-        """If not already fixed, finalize"""
+        """If not already fixed, finalize."""
         if not self.residue.fixed:
             self.finalize()
 
 
 class Alcoholic(optimize.Optimize):
-    """The class for alcoholic residues"""
+    """The class for alcoholic residue."""
 
     def __init__(self, residue, optinstance, routines):
         """Initialize the alcoholic class by removing the alcoholic hydrogen
-        if it exists."""
+        if it exists.
 
+        :param residue:  the residue to optimize
+        :type residue:  Residue
+        :param optinstance:  the optimization instance containing information
+            about what to optimize
+        :type optinstance:  OptimizationHandler
+        :param routines:  debumping routines object
+        :type routines:  Debump
+        """
         # Initialize some variables
         self.optinstance = optinstance
         self.residue = residue
         self.routines = routines
         self.atomlist = []
         self.hbonds = []
-
         name = list(optinstance.map.keys())[0]
         self.hname = name
-
         bondname = residue.reference.get_atom(name).bonds[0]
         self.atomlist.append(residue.get_atom(bondname))
         if residue.has_atom(name):
@@ -290,51 +322,62 @@ class Alcoholic(optimize.Optimize):
             residue.remove_atom(name)
 
     def try_both(self, donor, acc, accobj):
-        """Called when both the donor and acceptor are optimizeable.
+        """Attempt to optimize both the donor and acceptor.
 
-           If one is fixed, we only need to try one side.  Otherwise
-           first try to satisfy the donor - if that's succesful,
-           try to satisfy the acceptor.  An undo may be necessary
-           if the donor is satisfied and the acceptor isn't.
+        If one is fixed, we only need to try one side.
+        Otherwise first try to satisfy the donor - if that's succesful, try
+        to satisfy the acceptor.  An undo may be necessary if the donor is
+        satisfied and the acceptor isn't.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :param accobj:  a Flip-like hydrogen bond structure object
+        :type accobj:  Flip
+        :return:  indication of whether hydrogen was added
+        :rtype:  bool
         """
         # If one residue if fixed, use other functions
-
         residue = donor.residue
         if donor.residue.fixed:
             if accobj.try_acceptor(acc, donor):
-                return 1
-            return 0
+                return True
+            return False
         if acc.residue.fixed:
             if self.try_donor(donor, acc):
-                return 1
-            return 0
-
+                return True
+            return False
         if self.try_donor(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 _LOGGER.debug("NET BOND SUCCESSFUL!")
-                return 1
+                return True
             residue.remove_atom(self.hname)
             _LOGGER.debug("REMOVED NET HBOND")
-            return 0
-        return 0
+            return False
+        return False
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable
-        residue."""
-        residue = self.residue
+        """Add hydrogen to an optimizable residue.
 
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool
+        """
+        residue = self.residue
         # Do some error checking
         if not acc.hacceptor:
-            return 0
-
+            return False
         # Get the name of the atom to add
         newname = self.hname
         if residue.has_atom(newname):
-            return 0
-
-        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)",
-                      donor.residue, donor.name, acc.residue, acc.name)
-
+            return False
+        _LOGGER.debug(
+            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
+            donor.name, acc.residue, acc.name)
         # Act depending on the number of bonds
         if len(donor.bonds) == 1:  # No H or LP attached
             self.make_atom_with_one_bond_h(donor, newname)
@@ -347,8 +390,7 @@ class Alcoholic(optimize.Optimize):
         elif len(donor.bonds) == 3:
             loc = self.get_position_with_three_bonds(donor)
             return self.try_positions_three_bonds_h(donor, acc, newname, loc)
-
-        return 0
+        return False
 
     def try_acceptor(self, acc, donor):
         """The main driver for adding an LP to an optimizeable residue."""
@@ -493,7 +535,16 @@ class Water(optimize.Optimize):
     """The class for water residues"""
 
     def __init__(self, residue, optinstance, routines):
-        """Initialize the water optimization class"""
+        """Initialize the water optimization class.
+
+        :param residue:  the residue to flip
+        :type residue:  Residue
+        :param optinstance:  the optimization instance containing information
+            about what to optimize
+        :type optinstance:  OptimizationHandler
+        :param routines:  debumping routines object
+        :type routines:  Debump
+        """
         self.optinstance = optinstance
         self.residue = residue
         self.routines = routines
@@ -508,36 +559,44 @@ class Water(optimize.Optimize):
         self.atomlist = [oxatom]
 
     def try_both(self, donor, acc, accobj):
-        """Called when both the donor and acceptor are optimizeable.
-        If one is fixed, we only need to try one side.  Otherwise
-        first try to satisfy the donor - if that's successful,
-        try to satisfy the acceptor.  An undo may be necessary
-        if the donor is satisfied and the acceptor isn't.
+        """Attempt to optimize both the donor and the acceptor.
+
+        If one is fixed, we only need to try one side.  Otherwise first try to
+        satisfy the donor - if that's successful, try to satisfy the acceptor.
+        An undo may be necessary if the donor is satisfied and the acceptor
+        isn't.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :param accobj:  a Flip-like hydrogen bond structure object
+        :type accobj:  Flip
+        :return:  indication of whether hydrogen was added
+        :rtype:  bool
         """
         # If one residue if fixed, use other functions
         residue = donor.residue
-
         if donor.residue.fixed:
             if accobj.try_acceptor(acc, donor):
-                return 1
-            return 0
+                return True
+            return False
         if acc.residue.fixed:
             if self.try_donor(donor, acc):
-                return 1
-            return 0
-
+                return True
+            return False
         if self.try_donor(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 _LOGGER.debug("NET BOND SUCCESSFUL!")
-                return 1
+                return True
             # We need to undo what we did to the donor
             _LOGGER.debug("REMOVED NET HBOND")
             if residue.has_atom("H2"):
                 residue.remove_atom("H2")
             elif residue.has_atom("H1"):
                 residue.remove_atom("H1")
-            return 0
-        return 0
+            return False
+        return False
 
     def try_acceptor(self, acc, donor):
         """The main driver for adding an LP to an optimizeable residue."""
@@ -602,33 +661,36 @@ class Water(optimize.Optimize):
         return 0
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable
-        residue."""
-        residue = self.residue
+        """Add hydrogen to an optimizable residue.
 
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool"""
+        residue = self.residue
         # Do some error checking
         if not acc.hacceptor:
-            return 0
-
+            return False
         # Get the name of the atom to add
         if residue.has_atom("H2"):
-            return 0
+            return False
         elif residue.has_atom("H1"):
             newname = "H2"
         else:
             newname = "H1"
-
-        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)",
-                      donor.residue, donor.name, acc.residue, acc.name)
-
+        _LOGGER.debug(
+            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
+            donor.name, acc.residue, acc.name)
         # Act depending on the number of bonds
         if len(donor.bonds) == 0:
             self.make_atom_with_no_bonds(donor, acc, newname)
             if self.is_hbond(donor, acc):
-                return 1
+                return True
             self.routines.cells.remove_cell(residue.get_atom(newname))
             residue.remove_atom(newname)
-            return 0
+            return False
         if len(donor.bonds) == 1:
             self.make_water_with_one_bond(donor, newname)
             newatom = donor.residue.get_atom(newname)
@@ -640,7 +702,7 @@ class Water(optimize.Optimize):
         elif len(donor.bonds) == 3:
             loc = self.get_position_with_three_bonds(donor)
             return self.try_positions_three_bonds_h(donor, acc, newname, loc)
-        return 0
+        return False
 
     def finalize(self):
         """Finalize a water residue.
@@ -752,24 +814,24 @@ class Carboxylic(optimize.Optimize):
     """The class for carboxylic residues"""
 
     def __init__(self, residue, optinstance, routines):
-        """Initialize a case where the lone hydrogen atom can have four
-        different orientations.  Works similar to initializeFlip by preadding
-        the necessary atoms.
+        """Initialize carboxylic optimization class.
 
-        This also takes into account that the carboxyl group
-        has different bond lengths for the two C-O bonds -
-        this is probably due to one bond being assigned
-        as a C=O.  As a result hydrogens are only added to
-        the C-O (longer) bond.
+        Initialize a case where the lone hydrogen atom can have four different
+        orientations. Works similar to :func:`initializeFlip` by pre-adding the
+        necessary atoms.
 
-        Args:
-            residue:  The residue to flip (residue)
-            dihedral: The angle to flip about
-            hname:    The name of one of the hydrogens to add
+        This also takes into account that the carboxyl group has different bond
+        lengths for the two C-O bonds - this is probably due to one bond being
+        assigned as a C=O.  As a result hydrogens are only added to the C-O
+        (longer) bond.
 
-        Returns:
-            optlist:  A list of optimizeable donors and
-                        acceptors in the residue (list)
+        :param residue:  the residue to flip
+        :type residue:  Residue
+        :param optinstance:  the optimization instance containing information
+            about what to optimize
+        :type optinstance:  OptimizationHandler
+        :param routines:  debumping routines object
+        :type routines:  Debump
         """
         # Initialize some variables
         self.optinstance = optinstance
@@ -778,7 +840,6 @@ class Carboxylic(optimize.Optimize):
         self.atomlist = []
         self.hbonds = []
         self.hlist = []
-
         hname2 = ""
         hname1 = ""
         for name in optinstance.map.keys():
@@ -786,58 +847,44 @@ class Carboxylic(optimize.Optimize):
                 hname2 = name
             else:
                 hname1 = name
-
         bondatom1 = residue.get_atom(optinstance.map[hname1].bond)
         bondatom2 = residue.get_atom(optinstance.map[hname2].bond)
         longflag = 0
-
         # If one bond in the group is significantly (0.05 A)
         # longer than the other, use that group only
         for pivotatom in bondatom1.bonds:
             if not pivotatom.is_hydrogen:
                 the_pivatom = pivotatom
                 break
-
         dist1 = util.distance(the_pivatom.coords, bondatom1.coords)
         dist2 = util.distance(the_pivatom.coords, bondatom2.coords)
-
         order = [hname1, hname2]
-
         if dist2 > dist1 and abs(dist1 - dist2) > 0.05:
             longflag = 1
             order = [hname2, hname1]
-
         elif dist1 > dist2 and abs(dist1 - dist2) > 0.05:
             longflag = 1
             order = [hname1, hname2]
-
         for hname in order:
             bondatom = residue.get_atom(optinstance.map[hname].bond)
-
             # First mirror the hydrogen about the same donor
             for dihedral in residue.reference.dihedrals:
                 if dihedral.endswith(hname):
                     the_dihedral = dihedral
                     break
-
             anglenum = residue.reference.dihedrals.index(the_dihedral)
             if anglenum == -1:
                 raise IndexError("Unable to find Carboxylic dihedral angle!")
-
             if residue.dihedrals[anglenum] is None:
                 self.atomlist.append(bondatom)
                 continue
-
             newangle = 180.0 + residue.dihedrals[anglenum]
             self.routines.set_dihedral_angle(residue, anglenum, newangle)
-
             hatom = residue.get_atom(hname)
             newcoords = hatom.coords
-
             # Flip back to return original atom
             newangle = 180.0 + residue.dihedrals[anglenum]
             self.routines.set_dihedral_angle(residue, anglenum, newangle)
-
             # Rename the original atom and rebuild the new atom
             residue.rename_atom(hname, "%s1" % hname)
             newname = "%s2" % hname
@@ -845,50 +892,57 @@ class Carboxylic(optimize.Optimize):
             newatom = residue.get_atom(newname)
             self.routines.cells.add_cell(newatom)
             newatom.refdistance = hatom.refdistance
-
             # Set the bonds for the new atom
             if bondatom not in newatom.bonds:
                 newatom.bonds.append(bondatom)
             if newatom not in bondatom.bonds:
                 bondatom.bonds.append(newatom)
-
             # Break if this is the only atom to add
             self.atomlist.append(bondatom)
             self.hlist.append(residue.get_atom("%s1" % hname))
             self.hlist.append(residue.get_atom("%s2" % hname))
-
             if longflag:
                 break
-
         residue.set_donors_acceptors()
 
     def try_both(self, donor, acc, accobj):
-        """Called when both the donor and acceptor are optimizeable.
-           If one is fixed, we only need to try one side.  Otherwise
-           first try to satisfy the donor - if that's succesful,
-           try to satisfy the acceptor.  An undo may be necessary
-           if the donor is satisfied and the acceptor isn't.
+        """Attempt to optimize donor and acceptor.
+
+        Called when both the donor and acceptor are optimizeable.
+        If one is fixed, we only need to try one side.
+        Otherwise first try to satisfy the donor - if that's succesful, try to
+        satisfy the acceptor.
+        An undo may be necessary if the donor is satisfied and the acceptor
+        isn't.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :param accobj:  a Flip-like hydrogen bond structure object
+        :type accobj:  Flip
+        :return:  indication of whether hydrogen was added
+        :rtype:  bool
         """
         # If one residue if fixed, use other functions
         if donor.residue.fixed:
             if accobj.try_acceptor(acc, donor):
-                return 1
-            return 0
+                return True
+            return False
         if acc.residue.fixed:
             if self.try_donor(donor, acc):
-                return 1
-            return 0
-
-        _LOGGER.debug("Working on %s %s (donor) to %s %s (acceptor)",
-                      donor.residue, donor.name, acc.residue, acc.name)
-
+                return True
+            return False
+        _LOGGER.debug(
+            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
+            donor.name, acc.residue, acc.name)
         if self.is_hbond(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 self.fix(donor, acc)
                 _LOGGER.debug("NET BOND SUCCESSFUL!")
-                return 1
-            return 0
-        return 0
+                return True
+            return False
+        return False
 
     def is_carboxylic_hbond(self, donor, acc):
         """Determine whether this donor acceptor pair is a hydrogen bond"""
@@ -911,7 +965,14 @@ class Carboxylic(optimize.Optimize):
         return 0
 
     def try_acceptor(self, acc, donor):
-        """The main driver for adding an LP to an optimizeable residue."""
+        """Add lone pair to an optimizable residue.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool"""
         residue = acc.residue
 
         # Do some error checking
@@ -964,16 +1025,22 @@ class Carboxylic(optimize.Optimize):
             return 0
 
     def try_donor(self, donor, acc):
-        """The main driver for adding a hydrogen to an optimizeable
-        residue."""
+        """Add hydrogen to an optimizable residue.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool
+        """
         # Do some error checking
         if not acc.hacceptor:
-            return 0
-
+            return False
         if self.is_hbond(donor, acc):
             self.fix(donor, acc)
-            return 1
-        return 0
+            return True
+        return False
 
     def fix(self, donor, acc):
         """Fix the carboxylic residue."""

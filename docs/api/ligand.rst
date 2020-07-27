@@ -1,5 +1,5 @@
 =====================================
-:mod:`ligand` and submodules contents
+:mod:`ligand` and submodule contents
 =====================================
 
 -------------

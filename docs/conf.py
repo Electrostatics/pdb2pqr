@@ -35,12 +35,17 @@ release = '3.0.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary', 'sphinx.ext.napoleon', 'sphinx_rtd_theme'
+    'sphinx.ext.autosummary', 'sphinx.ext.napoleon', 'sphinx_rtd_theme',
+    'sphinx.ext.todo'
 ]
 
 autosummary_generate = True
 autosummary_imported_members = True
 autosummary_generate_overwrite = True
+autodoc_default_options = {'special-members': '__init__'}
+todo_include_todos = True
+todo_emit_warnings = True
+show_authors = True
 
 # Add any paths that contain templates here, relative to this directory.
 # templates_path = ['_templates']

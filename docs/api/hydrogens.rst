@@ -1,5 +1,5 @@
 ========================================
-:mod:`hydrogens` and submodules contents
+:mod:`hydrogens` and submodule contents
 ========================================
 
 ----------------

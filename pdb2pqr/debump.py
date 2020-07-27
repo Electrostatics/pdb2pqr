@@ -22,16 +22,17 @@ _LOGGER.addFilter(io.DuplicateFilter())
 class Debump:
     """Grab bag of random stuff that apparently didn't fit elsewhere.
 
-    TODO - needs to be susbtantially refactored in to multiple classes with
-    clear responsibilities.
+    .. todo::
+       This class eeds to be susbtantially refactored in to multiple classes
+       with clear responsibilities.
     """
     def __init__(self, protein, definition=None):
         """Initialize the Debump class.
 
         The class contains most of the main routines that run PDB2PQR
 
-        Parameters
-            protein:  The protein to run PDB2PQR on (Protein)
+        :param protein:  the protein to debump
+        :param definition:  topology definition file
         """
         self.protein = protein
         self.definition = definition
@@ -42,7 +43,12 @@ class Debump:
             self.nadef = definition.getNA()
 
     def get_bump_score(self, residue):
-        """Get an bump score for the current structure"""
+        """Get a bump score for a residue.
+
+        :param residue:  residue with bumping to evaluate
+        :return:  bump score
+        :rtype:  float
+        """
 
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
@@ -73,10 +79,9 @@ class Debump:
         donor/acceptor pairs, atoms in the same residue, and bonded CYS
         bridges.
 
-        Parameters
-            atom:  Find nearby atoms to this atom (Atom)
-        Returns
-            bumpscore: a bump score sum((dist-cutoff)**20 for all near atoms
+        :param atom:  find nearby atoms to this atom (Atom)
+        :return:  a bump score sum((dist-cutoff)**20 for all nearby atoms
+        :rtype:  float
         """
         # Initialize some variables
         residue = atom.residue
@@ -126,8 +131,10 @@ class Debump:
         return bumpscore
 
     def debump_protein(self):
-        """Make sure that none of the added atoms were rebuilt on top of
-        existing atoms. See each called function for more information.
+        """Minimize bump score for molecule.
+
+        Make sure that none of the added atoms were rebuilt on top of existing
+        atoms. See each called function for more information.
         """
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
@@ -165,7 +172,14 @@ class Debump:
         _LOGGER.debug("Done checking if we must debump any residues.")
 
     def find_residue_conflicts(self, residue, write_conflict_info=False):
-        """Find conflicts between residues."""
+        """Find conflicts between residues.
+
+        :param residue:  residue to check
+        :param write_conflict_info:  write verbose output about conflict
+        :type write_conflict_info:  bool
+        :return: list of conflicts
+        :rtype: list
+        """
         conflict_names = []
         for atom in residue.atoms:
             atomname = atom.name
@@ -207,12 +221,11 @@ class Debump:
         conflict. If called, try to rotate about dihedral angles to resolve the
         conflict.
 
-        Parameters
-            residue:  The residue in question
-            conflict_names:  A list of atomnames that were rebuilt too close to
-                             other atoms
-        Returns
-            True if successful, False otherwise
+        :param residue:  the residue in question
+        :param conflict_names:  a list of atomnames that were rebuilt too close
+            to other atoms
+        :return: True if successful, False otherwise
+        :rtype: bool
         """
         # Initialize some variables
         anglenum = -1

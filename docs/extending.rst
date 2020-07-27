@@ -22,9 +22,22 @@ It is recommended to build your own forcefield data and names files based on exi
 After finishing your forcefield data file and names file, these can be used with either the command line or the web server versions of PDB2PQR.
 
 ------------------------
-Adding new functionality
+Helping with development
 ------------------------
+
+^^^^^^^^^^^^^^^^^^^^^^^^
+Adding new functionality
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 PDB2PQR welcomes new contributions; the software API is documented in :ref:`api-label`.
 To contribute code, submit a *pull request* against the master branch in the `PDB2PQR repository <https://github.com/Electrostatics/pdb2pqr>`_.
 Please be sure to run PDB2PQR tests, as described in :ref:`testing-label`, before submitting new code.
+
+^^^^^^^^^^^^^^^^^^^^^^^^
+Helping with to-do items
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+A list of "to-do" items for the code is available in `GitHub Issues <https://github.com/Electrostatics/pdb2pqr/issues>`_. 
+A loosely maintained list auto-generated from the documentation is also presented below.
+
+.. todolist::

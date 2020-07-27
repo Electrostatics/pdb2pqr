@@ -19,13 +19,13 @@ class Amino(residue.Residue):
 
     This class provides standard features of the amino acids
     """
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms: list, ref: residue.Residue):
         """Constructor
 
-        Args:
-            atoms:  A list of Atom objects to be stored in this class (list)
-            ref:  The reference object for the amino acid.  Used to convert
-            from the alternate naming scheme to the main naming scheme.
+        :param atoms:  A list of Atom objects to be stored in this class (list)
+        :param ref:  The reference object for the amino acid.
+                     Used to convert from the alternate naming scheme to the
+                     main naming scheme.
         """
         # TODO - why isn't super().__init__() called?
         sample_atom = atoms[-1]

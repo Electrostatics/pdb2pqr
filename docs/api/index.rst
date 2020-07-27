@@ -4,6 +4,10 @@
 API Reference
 =============
 
+.. currentmodule:: pdb2pqr
+.. module:: pdb2pqr
+
+
 The :program:`pdb2pqr30` command provides a command-line interface to PDB2PQR's functionality.
 It is built on classes and functions in the :mod:`pdb2pqr` module.
 The API of :mod:`pdb2pqr` is documented here for developers who might want to directly use the PDB2PQR code.
@@ -13,35 +17,26 @@ The API of :mod:`pdb2pqr` is documented here for developers who might want to di
    The API is still changing and there is currently no guarantee that
    it will remain stable between minor releases.
 
-.. currentmodule:: pdb2pqr
+--------------------------
+Forcefield support modules
+--------------------------
 
-.. module:: pdb2pqr
-
-------------------
-Forcefield support
-------------------
-
-.. autosummary::
-   :toctree: api
+.. toctree::
+   :maxdepth: 2
 
    definitions
    forcefield
 
---------------------
-Molecular structures
---------------------
+---------------------------
+Molecular structure modules
+---------------------------
 
-.. autosummary::
-   :toctree: api
+.. toctree::
+   :maxdepth: 2
 
    aa
    hydrogens
-   hydrogens.optimize
-   hydrogens.structures
    ligand
-   ligand.mol2
-   ligand.peoe
-   ligand.topology
    na
    protein
    residue
@@ -49,23 +44,23 @@ Molecular structures
    topology
 
 -----------
-I/O support
+I/O modules
 -----------
 
-.. autosummary::
-   :toctree: api
+.. toctree::
+   :maxdepth: 2
 
    cif
    io
    inputgen
    pdb
 
-----------------------------------------------
-Other modules that need to be better organized
-----------------------------------------------
+-------------
+Other modules
+-------------
 
-.. autosummary::
-   :toctree: api
+.. toctree::
+   :maxdepth: 2
 
    cells
    debump

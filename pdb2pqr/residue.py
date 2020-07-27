@@ -246,20 +246,24 @@ class Residue(object):
     def pick_dihedral_angle(self, conflict_names, oldnum=None):
         """Choose an angle number to use in debumping
 
+        ==========
         Algorithm
-            Instead of simply picking a random chiangle, this function
-            uses a more intelligent method to improve efficiency.
-            The algorithm uses the names of the conflicting atoms
-            within the residue to determine which angle number
-            has the best chance of fixing the problem(s). The method
-            also insures that the same chiangle will not be run twice
-            in a row.
+        ==========
+
+        Instead of simply picking a random chiangle, this function
+        uses a more intelligent method to improve efficiency.
+        The algorithm uses the names of the conflicting atoms
+        within the residue to determine which angle number
+        has the best chance of fixing the problem(s). The method
+        also insures that the same chiangle will not be run twice
+        in a row.
 
         Parameters
             residue:  The residue that is being debumped (Residue)
             conflict_names: A list of atom names that are currently
                             conflicts (list)
             oldnum:  The old dihedral angle number (int)
+        
         Returns
             bestnum:  The new dihedral angle number (int)
         """

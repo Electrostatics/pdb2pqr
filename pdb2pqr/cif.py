@@ -1,9 +1,10 @@
-""" CIF parsing methods
+"""CIF parsing methods.
 
 This methods use the pdbx/cif parser provided by WWPDB
 (http://mmcif.wwpdb.org/docs/sw-examples/python/html/index.html)
 
-Author:  Juan Brandi
+.. todo:  Why do we have this module when we have pdbx?
+.. codeauthor::  Juan Brandi
 """
 import logging
 from datetime import datetime
@@ -15,32 +16,24 @@ from . import pdb
 _LOGGER = logging.getLogger(__name__)
 
 
-# TODO - This module should be nuked from orbit and refactored... it's the
-# only way to be sure
-# TODO - Why do we have this module when we have pdbx?
-
-
 def atom_site(block):
     """Handle ATOM_SITE block.
 
     Data items in the ATOM_SITE category record details about the atom sites
     in a macromolecular crystal structure, such as the positional coordinates,
-    atomic displacement parameters, magnetic moments and directions. (source:
-    https://j.mp/2Zprx41)
+    atomic displacement parameters, magnetic moments and directions.
+    (Source: https://j.mp/2Zprx41)
 
-    Args:
-        block: Pdbx data block
-    Returs:
-        pdblist: array of pdb.ATOM objects
-        errlist: array of things that weren't handled by parser
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.ATOM objects, array of things that weren't handled
+        by parser)
+    :rtype:  ([Atom], [str])
     """
     pdb_arr = []
     err_arr = []
-
     atoms = block.getObj("atom_site")
-
     num_model_arr = count_models(block)
-
     if len(num_model_arr) == 1:
         # TODO - this part of the conditional should be a separate function
         for i in range(atoms.getRowCount()):
@@ -391,27 +384,24 @@ def conect(block):
     """Handle CONECT block.
 
     Data items in the STRUCT_CONN category record details about the connections
-    between portions of the structure. These can be hydrogen bonds, salt
-    bridges, disulfide bridges and so on.
+    between portions of the structure.
+    These can be hydrogen bonds, salt bridges, disulfide bridges and so on.
 
-    The STRUCT_CONN_TYPE records define the criteria used to identify these
-    connections. (source: https://j.mp/3gPkJT5)
+    The ``STRUCT_CONN_TYPE`` records define the criteria used to identify these
+    connections.
+    (Source: https://j.mp/3gPkJT5)
 
-    Args:
-        block: Pdbx data block
-    Returs:
-        pdblist: array of pdb.conect objects
-        errlist: array of thigs that
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
     """
     pdb_arr = []
     err_arr = []
-
     struct_conn = block.getObj("struct_conn")
     atoms = block.getObj("atom_site")
-
     if(struct_conn is None or atoms is None):
         return pdb_arr, err_arr
-
     for index in range(struct_conn.getRowCount()):
         atom_pair = []
         for partner in ["ptnr1_", "ptnr2_"]:
@@ -446,7 +436,13 @@ def conect(block):
 
 
 def header(block):
-    """Handle HEADER block"""
+    """Handle HEADER block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     header_arr = []
     header_err = []
 
@@ -474,7 +470,13 @@ def header(block):
 
 
 def title(block):
-    """Handle TITLE block"""
+    """Handle TITLE block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     title_arr = []
     title_err = []
     struct_obj = block.getObj("struct")
@@ -496,7 +498,13 @@ def title(block):
 
 
 def compnd(block):
-    """Handle COMPND block"""
+    """Handle COMPND block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     compnd_arr = []
     compnd_err = []
     entity_obj = block.getObj("entity")
@@ -530,7 +538,13 @@ def compnd(block):
 
 
 def source(block):
-    """Handle SOURCE block."""
+    """Handle SOURCE block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     src_arr = []
     src_err = []
     src_obj = block.getObj("entity_src_gen")
@@ -600,7 +614,13 @@ def source(block):
 
 
 def keywds(block):
-    """Handle KEYWDS block"""
+    """Handle KEYWDS block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     key_arr = []
     key_err = []
     key_obj = block.getObj("struct_keywords")
@@ -622,7 +642,13 @@ def keywds(block):
 
 
 def expdata(block):
-    """Handle EXPDTA block"""
+    """Handle EXPDTA block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     ex_arr = []
     ex_err = []
     ex_obj = block.getObj("exptl")
@@ -638,7 +664,13 @@ def expdata(block):
 
 
 def author(block):
-    """Handle AUTHOR block."""
+    """Handle AUTHOR block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     aut_arr = []
     aut_err = []
     aut_obj = block.getObj("audit_author")
@@ -657,7 +689,13 @@ def author(block):
 
 
 def cryst1(block):
-    """Handle CRYST1 block"""
+    """Handle CRYST1 block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     cry_arr = []
     cry_err = []
     cry_obj = block.getObj("cell")
@@ -696,7 +734,13 @@ def cryst1(block):
 
 
 def scalen(block):
-    """Handle SCALEn block"""
+    """Handle SCALEn block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     sc_arr = []
     sc_err = []
     sc_obj = block.getObj("atom_sites")
@@ -764,7 +808,13 @@ def scalen(block):
 
 
 def origxn(block):
-    """Handle ORIGXn block"""
+    """Handle ORIGXn block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     or_arr = []
     or_err = []
     or_obj = block.getObj("database_PDB_matrix")
@@ -829,7 +879,13 @@ def origxn(block):
 
 
 def cispep(block):
-    """Handle CISPEP block"""
+    """Handle CISPEP block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     cis_arr = []
     cis_err = []
     cis_obj = block.getObj("struct_mon_prot_cis")
@@ -885,7 +941,13 @@ def cispep(block):
 
 
 def ssbond(block):
-    """Handle SSBOND block"""
+    """Handle SSBOND block.
+
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  (array of pdb.conect objects, array of things that did not parse)
+    :rtype:  ([pdb.CONECT], [str])
+    """
     ssb_arr = []
     ssb_err = []
     ssb_obj = block.getObj("struct_conn")
@@ -947,9 +1009,14 @@ def ssbond(block):
 
 
 def count_models(block):
-    """Count models in structure file block"""
-    atom_obj = block.getObj("atom_site")
+    """Count models in structure file block.
 
+    :param block:  PDBx data block
+    :type block:  [str]
+    :return:  number of models in block
+    :rtype:  int
+    """
+    atom_obj = block.getObj("atom_site")
     model_num = []
     for i in range(atom_obj.getRowCount()):
         tmp = atom_obj.getValue("pdbx_PDB_model_num", i)
@@ -957,30 +1024,26 @@ def count_models(block):
             model_num.append(tmp)
         else:
             pass
-
     return model_num
 
 
 def read_cif(cif_file):
-    """ Parse CIF-format data into array of Atom objects.
-        Parameters:
-            file: open file object
-        Returns (dict, errlist):
-            dict:       a dictionary indexed by PDBx/CIF record names.
-            errlist:    a list of record names that couldn't be parsed.
-    """
+    """Parse CIF-format data into array of Atom objects.
 
+    .. todo::  Manage several blocks of data.
+
+    :param file:  open file-like object
+    :type file:  file
+    :return:  (a dictionary indexed by PDBx/CIF record names, a list of record
+        names that couldn't be parsed)
+    :rtype:  (dict, [str])
+    """
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of record names that couldn't be parsed.
-
     if cif_file is None:
         return pdblist, errlist
-
     pdbdata = pdbx.load(cif_file)
-
-    # TODO - manage several blocks of data.
     if len(pdbdata) > 0:
-
         for block in pdbdata:
             head_pdb, head_err = header(block)
             title_pdb, title_err = title(block)
@@ -996,16 +1059,15 @@ def read_cif(cif_file):
             sc_pdb, sc_err = scalen(block)
             ato_pdb, ato_err = atom_site(block)
             con_pdb, con_err = conect(block)
-
-            pdblist = (head_pdb + title_pdb + cmpnd_pdb + src_pdb +
-                       key_pdb + ex_pdb + aut_pdb + ssb_pdb + cis_pdb +
-                       cry_pdb + or_pdb + sc_pdb + ato_pdb + con_pdb)
-            errlist = (head_err + title_err + cmpnd_err + src_err +
-                       key_err + ex_err + aut_err + ssb_err + cis_err +
-                       cry_err + or_err + sc_err + ato_err + con_err)
-
+            pdblist = (
+                head_pdb + title_pdb + cmpnd_pdb + src_pdb + key_pdb + ex_pdb
+                + aut_pdb + ssb_pdb + cis_pdb + cry_pdb + or_pdb + sc_pdb
+                + ato_pdb + con_pdb)
+            errlist = (
+                head_err + title_err + cmpnd_err + src_err + key_err + ex_err
+                + aut_err + ssb_err + cis_err + cry_err + or_err + sc_err
+                + ato_err + con_err)
         return pdblist, errlist
-    # TODO - does this "else" do anything given the "return" above?
     else:
         _LOGGER.error("Unknown error while reading CIF file.")
         return pdblist, errlist

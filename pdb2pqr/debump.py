@@ -1,8 +1,9 @@
-"""Routines for PDB2PQR
+"""Routines for biomolecule optimization.
 
-This module contains debumping routines to optimize the biomolecule.
-
-Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
+.. codeauthor::  Jens Erik Nielsen
+.. codeauthor::  Todd Dolinsky
+.. codeauthor::  Yong Huang
+.. codeauthor::  Nathan Baker
 """
 import logging
 from . import aa
@@ -23,16 +24,17 @@ class Debump:
     """Grab bag of random stuff that apparently didn't fit elsewhere.
 
     .. todo::
-       This class eeds to be susbtantially refactored in to multiple classes
-       with clear responsibilities.
+        This class needs to be susbtantially refactored in to multiple classes
+        with clear responsibilities.
     """
-    def __init__(self, protein, definition=None):
-        """Initialize the Debump class.
 
-        The class contains most of the main routines that run PDB2PQR
+    def __init__(self, protein, definition=None):
+        """Initialize the Debump object.
 
         :param protein:  the protein to debump
+        :type protein:  Protein
         :param definition:  topology definition file
+        :type definition:  Definition
         """
         self.protein = protein
         self.definition = definition
@@ -46,14 +48,13 @@ class Debump:
         """Get a bump score for a residue.
 
         :param residue:  residue with bumping to evaluate
+        :type residue:  Residue
         :return:  bump score
         :rtype:  float
         """
-
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
         self.cells.assign_cells(self.protein)
-
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
@@ -61,7 +62,6 @@ class Debump:
         bumpscore = 0.0
         if not isinstance(residue, aa.Amino):
             return 0.0
-
         # Initialize variables
         for atom in residue.atoms:
             atomname = atom.name
@@ -79,17 +79,16 @@ class Debump:
         donor/acceptor pairs, atoms in the same residue, and bonded CYS
         bridges.
 
-        :param atom:  find nearby atoms to this atom (Atom)
+        :param atom:  find nearby atoms to this atom
+        :type atom:  Atom
         :return:  a bump score sum((dist-cutoff)**20 for all nearby atoms
         :rtype:  float
         """
         # Initialize some variables
         residue = atom.residue
         atom_size = BUMP_HYDROGEN_SIZE if atom.is_hydrogen else BUMP_HEAVY_SIZE
-
         # Get atoms from nearby cells
         closeatoms = self.cells.get_near_cells(atom)
-
         # Loop through and see if any are within the cutoff
         bumpscore = 0.0
         for closeatom in closeatoms:
@@ -97,13 +96,11 @@ class Debump:
             if closeresidue == residue and (
                     closeatom in atom.bonds or atom in closeatom.bonds):
                 continue
-
             if not isinstance(closeresidue, aa.Amino):
                 continue
             if isinstance(residue, aa.CYS):
                 if residue.ss_bonded_partner == closeatom:
                     continue
-
             # Also ignore if this is a donor/acceptor pair
             pair_ignored = False
             if (atom.is_hydrogen and
@@ -111,13 +108,11 @@ class Debump:
                     atom.bonds[0].hdonor and
                     closeatom.hacceptor):
                 continue
-
             if (closeatom.is_hydrogen and
                     len(closeatom.bonds) != 0 and
                     closeatom.bonds[0].hdonor and
                     atom.hacceptor):
                 continue
-
             dist = util.distance(atom.coords, closeatom.coords)
             other_size = (
                 BUMP_HYDROGEN_SIZE
@@ -139,23 +134,18 @@ class Debump:
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
         self.cells.assign_cells(self.protein)
-
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
         self.protein.set_reference_distance()
-
         # Determine which residues to debump
         for residue in self.protein.residues:
             if not isinstance(residue, aa.Amino):
                 continue
-
             # Initialize variables
             conflict_names = self.find_residue_conflicts(residue, True)
-
             if not conflict_names:
                 continue
-
             # Otherwise debump the residue
             _LOGGER.debug("Starting to debump %s...", residue)
             _LOGGER.debug(
@@ -168,17 +158,17 @@ class Debump:
             else:
                 text = "WARNING: Unable to debump %s", residue
                 _LOGGER.warning(text)
-
         _LOGGER.debug("Done checking if we must debump any residues.")
 
     def find_residue_conflicts(self, residue, write_conflict_info=False):
         """Find conflicts between residues.
 
         :param residue:  residue to check
+        :type residue:  Residue
         :param write_conflict_info:  write verbose output about conflict
         :type write_conflict_info:  bool
         :return: list of conflicts
-        :rtype: list
+        :rtype: [str]
         """
         conflict_names = []
         for atom in residue.atoms:
@@ -189,9 +179,7 @@ class Debump:
                 continue
             if atom.optimizeable:
                 continue
-
             nearatoms = self.find_nearby_atoms(atom)
-
             # If something is too close, we must debump the residue
             if nearatoms != {}:
                 conflict_names.append(atomname)
@@ -203,7 +191,15 @@ class Debump:
         return conflict_names
 
     def score_dihedral_angle(self, residue, anglenum):
-        """Assign score to dihedral angle"""
+        """Assign score to dihedral angle.
+
+        :param residue:  residue with dihedral angles to score
+        :type residue:  Residue
+        :param anglenum:  specific dihedral angle index
+        :type anglenum:  int
+        :return:  score for dihedral angle
+        :rtype:  float
+        """
         score = 0
         atomnames = residue.reference.dihedrals[anglenum].split()
         pivot = atomnames[2]
@@ -218,12 +214,14 @@ class Debump:
         """Debump a specific residue.
 
         Only should be called if the residue has been detected to have a
-        conflict. If called, try to rotate about dihedral angles to resolve the
         conflict.
+        If called, try to rotate about dihedral angles to resolve the conflict.
 
         :param residue:  the residue in question
+        :type residue:  Residue
         :param conflict_names:  a list of atomnames that were rebuilt too close
             to other atoms
+        :type conflict_names:  [str]
         :return: True if successful, False otherwise
         :rtype: bool
         """
@@ -281,13 +279,14 @@ class Debump:
         """Get the closest atom that does not form a donor/acceptor pair.
 
         Used to detect potential conflicts.
-        NOTE:  Cells must be set before using this function.
 
-        Parameters
-            atom:  The atom in question (Atom)
-        Returns
-            bestatom:  The closest atom to the input atom that does not satisfy
-                       a donor/acceptor pair.
+        .. note::  Cells must be set before using this function.
+
+        :param atom:  the atom to test
+        :type atom:  Atom
+        :return:  the closest atom to the input atom that does not satisfy a
+            donor/acceptor pair.
+        :rtype:  Atom
         """
         # Initialize some variables
         bestdist = 999.99
@@ -337,16 +336,16 @@ class Debump:
         """Find nearby atoms for conflict-checking.
 
         Uses neighboring cells to compare atoms rather than an all versus all
-        O(n^2) algorithm, which saves a great deal of time.  There are several
-        instances where we ignore potential conflicts; these include
-        donor/acceptor pairs, atoms in the same residue, and bonded CYS
+        O(n^2) algorithm, which saves a great deal of time.
+        There are several instances where we ignore potential conflicts; these
+        include donor/acceptor pairs, atoms in the same residue, and bonded CYS
         bridges.
 
-        Parameters
-            atom:  Find nearby atoms to this atom (Atom)
-        Returns
-            nearatoms:  A dictionary of <Atom too close> to <amount of overlap
-                        for that atom>.
+        :param atom:  find nearby atoms to this atom
+        :type atom:  Atom
+        :return:  a dictionary of ``Atom too close`` to ``amount of overlap
+            for that atom``
+        :rtype:  dict
         """
         # Initialize some variables
         nearatoms = {}
@@ -387,13 +386,13 @@ class Debump:
     def set_dihedral_angle(self, residue, anglenum, angle):
         """Rotate a residue about a given angle.
 
-        Uses the quatfit methods to perform the matrix mathematics.
+        Uses :mod:`quatfit` methods to perform the matrix mathematics.
 
-        Parameters
-            residue:   The residue to rotate
-            anglenum:  The number of the angle to rotate as listed in
-                       residue.dihedrals
-            angle:     The desired angle.
+        :param residue:  residue to rotate
+        :type residue:  Residue
+        :param anglenum:  specific dihedral angle index
+        :param angle:  the angle to set the dihedral to
+        :type angle:  float
         """
         coordlist = []
         initcoords = []

@@ -11,8 +11,8 @@ class Topology:
     def __init__(self, molecule):
         """Initialize with molecule.
 
-        Args:
-            molecule:  Mol2Molecule object
+        :param molecule:  Mol2Molecule object
+        :type molecule:  Mol2Molecule
         """
         self.atom_dict = {}
         for atom in molecule.atoms:

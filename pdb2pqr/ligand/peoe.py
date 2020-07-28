@@ -1,9 +1,9 @@
-"""Implements the PEOE method described in:
+"""Implements the PEOE method.
 
-Paul Czodrowski  Ingo Dramburg  Christoph A. Sotriffer  Gerhard Klebe.
-Development, validation, and application of adapted PEOE charges to estimate
-pKa values of functional groups in protein–ligand complexes.
-Proteins, 65, 424-437, 2006.
+The PEOE method is described in:  Paul Czodrowski, Ingo Dramburg,
+Christoph A. Sotriffer  Gerhard Klebe. Development, validation, and
+application of adapted PEOE charges to estimate pKa values of functional
+groups in protein–ligand complexes. Proteins, 65, 424-437, 2006.
 https://doi.org/10.1002/prot.21110
 """
 import logging
@@ -61,14 +61,14 @@ def electronegativity(charge, poly_terms, atom_type):
     Calculation is based on a third-order polynomial in the atomic charge as
     described in Equation 2 of https://doi.org/10.1002/prot.21110.
 
-    Args:
-        charge:  charge of atom
-        poly_terms:  polynomial terms ordered from 0th- to 3rd-order
-        atom_type:  string with atom type
-    Returns:
-        electronegativity value
-    Raises:
-        IndexError if incorrect number of poly_terms given
+    :param charge:  charge of atom
+    :type charge:  float
+    :param poly_terms:  polynomial terms ordered from 0th- to 3rd-order
+    :param atom_type:  string with atom type
+    :type atom_type:  str
+    :return: electronegativity value
+    :rtype:  float
+    :raises IndexError:  if incorrect number of poly_terms given
     """
     chi = None
     if abs(charge) > MAX_CHARGE:
@@ -98,11 +98,12 @@ def electronegativity(charge, poly_terms, atom_type):
 def assign_terms(atoms, term_dict):
     """Assign polynomial terms to each atom.
 
-    Args:
-        atoms:  list of Mol2Atom atoms
-        term_dict:  dictionary of polynomial terms
-    Returns:
-        modified list of atoms
+    :param atoms:  list of Mol2Atom atoms
+    :type atoms:  list
+    :param term_dict:  dictionary of polynomial terms
+    :type term_dict:  dict
+    :return:  modified list of atoms
+    :rtype:  list
     """
     for atom in atoms:
         atom_type = atom.type.upper()
@@ -117,18 +118,23 @@ def assign_terms(atoms, term_dict):
     return atoms
 
 
-def equilibrate(atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
-                num_cycles=NUM_CYCLES, term_dict=POLY_TERMS):
+def equilibrate(
+        atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
+        num_cycles=NUM_CYCLES, term_dict=POLY_TERMS):
     """Equilibrate the atomic charges.
 
-    Args:
-        atoms:  list of Mol2Atom atoms to equilibrate
-        damp:  damping factor for equilibration process
-        scale:  scaling factor for equilibration process
-        num_cycles:  number of PEOE cycles
-        term_dict:  dictionary of polynomial terms
-    Returns:
-        revised list of atoms
+    :param atoms:  list of Mol2Atom atoms to equilibrate
+    :type atoms:  list
+    :param damp:  damping factor for equilibration process
+    :type damp:  float
+    :param scale:  scaling factor for equilibration process
+    :type scale:  float
+    :param num_cycles:  number of PEOE cycles
+    :type num_cycles:  int
+    :param term_dict:  dictionary of polynomial terms
+    :type term_dict:  dict
+    :return: revised list of atoms
+    :rtype:  list
     """
     atoms = assign_terms(atoms, term_dict)
     # Reset or accumulate charges
@@ -143,7 +149,6 @@ def equilibrate(atoms, damp=DAMPING_FACTOR, scale=SCALING_FACTOR,
             atom.equil_formal_charge = atom.charge*(1.0/scale)
             abs_qges += abs(atom.charge)
         atom.charge = 0
-
     # A finite number of cycles is used to prevent complete equilibration of
     # the molecule.  I'm not sure why this is a good idea but people have
     # been doing it since the original 1978 Tetrahedron paper with Gasteiger

@@ -1,7 +1,7 @@
 """Support molecules in Tripos MOL2 format.
 
-    For further information look at (web page exists: 25 August 2005):
-    http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
+For further information look at (web page exists: 25 August 2005):
+http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
 """
 import logging
 from collections import OrderedDict
@@ -24,14 +24,19 @@ BOND_DIST = 2.0
 
 class Mol2Bond:
     """MOL2 molecule bonds."""
+
     def __init__(self, atom1, atom2, bond_type, bond_id=0):
         """Initialize bond.
 
-        Args:
-            atom1:  name of first atom in bond
-            atom2:  name of second atom in bond
-            bond_type:  type of bond:  1 (single), 2 (double), or ar (aromatic)
-            bond_id:  integer ID of bond
+        :param atom1:  name of first atom in bond
+        :type atom1:  str
+        :param atom2:  name of second atom in bond
+        :type atom2:  str
+        :param bond_type:  type of bond:  1 (single), 2 (double), or ar
+            (aromatic)
+        :type bond_type:  int
+        :param bond_id:  integer ID of bond
+        :type bond_id:  int
         """
         self.atoms = (atom1, atom2)
         self.bond_id = int(bond_id)
@@ -43,12 +48,20 @@ class Mol2Bond:
 
     @property
     def atom_names(self):
-        """Return tuple with names of atoms in bond."""
+        """Get atom names in bond.
+
+        :return:  tuple with names of atoms in bond.
+        :rtype:  (str, str)
+        """
         return (self.atoms[0].name, self.atoms[1].name)
 
     @property
     def length(self):
-        """Return bond length."""
+        """Get bond length.
+
+        :return:  bond length
+        :rtype:  float
+        """
         return self.atoms[0].distance(self.atoms[1])
 
     def __str__(self):
@@ -93,10 +106,10 @@ class Mol2Atom:
     def distance(self, other):
         """Get distance between two atoms.
 
-        Args:
-            other:  other atom object
-        Returns:
-            float with distance
+        :param other:  other atom for distance measurement
+        :type other:  Mol2Atom
+        :return:  distance
+        :rtype:  float
         """
         return norm(other.coords - self.coords)
 
@@ -104,21 +117,22 @@ class Mol2Atom:
         """Generate PDB line from MOL2."""
         pdb_fmt = (
             "HETATM{a.serial:5d}{a.name:>5s}{a.res_name:>4s} L"
-            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
-        )
+            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}")
         return pdb_fmt.format(a=self)
 
     def assign_radius(self, primary_dict, secondary_dict):
         """Assign radius to atom.
 
-        TODO - it seems inconsistent that this function pulls radii from a
-        dictionary and the protein routines use force field files.
+        .. todo::
+           It seems inconsistent that this function pulls radii from a
+           dictionary and the protein routines use force field files.
 
-        Args:
-            primary_dict:  primary dictionary of radii indexed by atom type or
-                           element
-            secondary_dict:  backup dictionary for radii not found in primary
-                             dictionary
+        :param primary_dict:  primary dictionary of radii indexed by atom
+            type or element
+        :type primary_dict:  dict
+        :param secondary_dict:  backup dictionary for radii not found in
+            primary dictionary
+        :type secondary_dict:  dict
         """
         radius = None
         for rdict in [primary_dict, secondary_dict]:
@@ -139,32 +153,56 @@ class Mol2Atom:
 
     @property
     def coords(self):
-        """Return coordinates as numpy vector."""
+        """Coordinates.
+
+        :return:  coordinates
+        :rtype:  numpy.ndarray
+        """
         return array([self.x, self.y, self.z])
 
     @property
     def bonded_atom_names(self):
-        """Return a list of bonded atom names."""
+        """Bonded atom names.
+
+        :return:  bonded atom names
+        :rtype:  list
+        """
         return [a.name for a in self.bonded_atoms]
 
     @property
     def num_bonded_heavy(self):
-        """Return the number of heavy atoms bonded to this atom."""
+        """Number of heavy atoms bonded to this atom.
+
+        :return:  number of heavy atoms
+        :rtype: int
+        """
         return len([a for a in self.bonded_atoms if a.type != "H"])
 
     @property
     def num_bonded_hydrogen(self):
-        """Return the number of hydrogen atoms bonded to this atom."""
+        """Number of hydrogen atoms bonded to this atom.
+
+        :return:  number of hydrogen atoms
+        :rtype:  int
+        """
         return len([a for a in self.bonded_atoms if a.type == "H"])
 
     @property
     def element(self):
-        """Return a string with the element for this atom (uppercase)."""
+        """Element for this atom (uppercase).
+
+        :return:  element for this atom
+        :rtype:  str
+        """
         return self.type.split(".")[0].upper()
 
     @property
     def bond_order(self):
-        """Return the total number of electrons in bonds with other atoms."""
+        """Total number of electrons in bonds with other atoms.
+
+        :return:  total number of electrons in bonds with other atoms
+        :rtype:  int
+        """
         order = 0
         num_aromatic = 0
         for bond in self.bonds:
@@ -185,7 +223,11 @@ class Mol2Atom:
 
     @property
     def formal_charge(self):
-        """Return an integer with the formal charge for this atom."""
+        """Formal charge for this atom
+
+        :return:  formal charge for this atom
+        :rtype:  int
+        """
         element = self.type.split(".")[0]
         valence = VALENCE_BY_ELEMENT[element]
         nonbonded = NONBONDED_BY_TYPE[self.type]
@@ -240,7 +282,7 @@ class Mol2Atom:
 
 
 class Mol2Molecule:
-    """Tripos MOL2 molecule"""
+    """Tripos MOL2 molecule."""
     def __init__(self):
         self.atoms = OrderedDict()
         self.bonds = []
@@ -251,8 +293,8 @@ class Mol2Molecule:
         self.res_name = None
         self.res_seq = None
 
-    def assign_parameters(self, primary_dict=RADII["zap9"],
-                          secondary_dict=RADII["bondi"]):
+    def assign_parameters(
+            self, primary_dict=RADII["zap9"], secondary_dict=RADII["bondi"]):
         """Assign charges and radii to atoms in molecule.
 
         Args:
@@ -267,11 +309,12 @@ class Mol2Molecule:
     def assign_radii(self, primary_dict, secondary_dict):
         """Assign radii to atoms in molecule.
 
-        Args:
-            primary_dict:  primary dictionary of radii indexed by atom type or
-                           element
-            secondary_dict:  backup dictionary for radii not found in primary
-                             dictionary
+        :param primary_dict:  primary dictionary of radii indexed by atom
+            type or element
+        :type primary_dict:  dict
+        :param secondary_dict:  backup dictionary for radii not found in
+            primary dictionary
+        :type secondary_dict:  dict
         """
         for atom in self.atoms.values():
             atom.assign_radius(primary_dict, secondary_dict)
@@ -285,10 +328,9 @@ class Mol2Molecule:
     def find_atom_torsions(self, start_atom):
         """Set the torsion angles that start with this atom (name).
 
-        Args:
-            start_atom:  starting atom name
-        Returns:
-            list of 4-tuples containing atom names comprising torsions
+        :param start_atom:  starting atom name
+        :type start_atom:  str
+        :return: list of 4-tuples containing atom names comprising torsions
         """
         torsions = []
         for bonded1 in self.atoms[start_atom].bonded_atom_names:
@@ -314,10 +356,10 @@ class Mol2Molecule:
 
         This was borrowed from StackOverflow: https://j.mp/2AHaukj
 
-        Args:
-            path:  list of atom names
-        Returns:
-            rotated path (list)
+        :param path:  list of atom names
+        :type path:  list of str
+        :return:  rotated path
+        :rtype:  list of str
         """
         n = path.index(min(path))
         return path[n:]+path[:n]
@@ -327,12 +369,14 @@ class Mol2Molecule:
 
         This was borrowed from StackOverflow: https://j.mp/2AHaukj
 
-        Args:
-            path:  list of atom names
-            rings:  current list of rings
-            level:  recursion level
-        Returns:
-            new list of rings
+        :param path:  list of atom names
+        :type path:  list of str
+        :param rings:  current list of rings
+        :type rings:  list of str
+        :param level:  recursion level
+        :type level:  int
+        :return:  new list of rings
+        :rtype:  int
         """
         start_node = path[0]
         next_node = None
@@ -389,8 +433,7 @@ class Mol2Molecule:
     def read(self, mol2_file):
         """Routines for reading MOL2 file.
 
-        Args:
-            mol2_file:  file-like object with MOL2 data.
+        :param mol2_file:  file-like object with MOL2 data
         """
         mol2_file = self.parse_atoms(mol2_file)
         mol2_file = self.parse_bonds(mol2_file)
@@ -398,13 +441,10 @@ class Mol2Molecule:
     def parse_atoms(self, mol2_file):
         """Parse @<TRIPOS>ATOM section of file.
 
-        Args:
-            mol2_file:  file-like object with MOL2 data.
-        Returns:
-            file object advanced to bonds section
-        Raises:
-            ValueError for bad MOL2 ATOM lines
-            TypeError for bad charge entries
+        :param mol2_file:  file-like object with MOL2 data
+        :return:  file-like object advanced to bonds section
+        :raises ValueError:  for bad MOL2 ATOM lines
+        :raises TypeError:  for bad charge entries
         """
         # Skip material before atoms section
         for line in mol2_file:
@@ -466,10 +506,8 @@ class Mol2Molecule:
         Atoms must already have been parsed.
         Also sets up torsions and rings.
 
-        Args:
-            mol2_file:  file-like object with MOL2 data.
-        Returns:
-            file object advanced to SUBSTRUCTURE section
+        :param mol2_file:  file-like object with MOL2 data
+        :return:  file-like object advanced to SUBSTRUCTURE section
         """
         atom_names = list(self.atoms.keys())
         for line in mol2_file:

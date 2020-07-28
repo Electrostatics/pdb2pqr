@@ -393,24 +393,29 @@ class Alcoholic(optimize.Optimize):
         return False
 
     def try_acceptor(self, acc, donor):
-        """The main driver for adding an LP to an optimizeable residue."""
-        residue = acc.residue
+        """Add a lone pair to an optimizeable residue.
 
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool
+        """
+        residue = acc.residue
         # Do some error checking
         if not donor.hdonor:
-            return 0
-
+            return False
         # Get the name of the LP to add
         if residue.has_atom("LP2"):
-            return 0
+            return False
         elif residue.has_atom("LP1"):
             newname = "LP2"
         else:
             newname = "LP1"
-
-        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)",
-                      acc.residue, acc.name, donor.residue, donor.name)
-
+        _LOGGER.debug(
+            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
+            acc.name, donor.residue, donor.name)
         # Act depending on the number of bonds
         if len(acc.bonds) == 1:  # No H or LP attached
             self.make_atom_with_one_bond_lp(acc, newname)
@@ -423,41 +428,38 @@ class Alcoholic(optimize.Optimize):
         elif len(acc.bonds) == 3:
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
-
-        return 0
+        return False
 
     def finalize(self):
         """Finalize an alcoholic residue.
+
+        .. todo::
+           Replace hard-coded values in the function.
+
         Try to minimize conflict with nearby atoms by building away from them.
         Called when LPs are still present so as to account for their bonds.
         """
-
         # Initialize some variables
         residue = self.residue
         atom = self.atomlist[0]
-
         # Conditions for return
         addname = self.hname
         if residue.fixed:
             return
         if residue.has_atom(addname):
             return
-
         if len(atom.bonds) == 1:
             # Initialize variables
             pivot = atom.bonds[0]
             # bestdist = 0.0
             bestcoords = []
             bestenergy = 999.99
-
             # Add atom and debump
             self.make_atom_with_one_bond_h(atom, addname)
             newatom = residue.get_atom(addname)
             self.routines.cells.add_cell(newatom)
-
             for _ in range(18):
                 residue.rotate_tetrahedral(pivot, atom, 20.0)
-
                 closeatoms = self.routines.cells.get_near_cells(atom)
                 energy = 0.0
                 for catom in closeatoms:
@@ -467,18 +469,15 @@ class Alcoholic(optimize.Optimize):
                 if energy < bestenergy:
                     bestenergy = energy
                     bestcoords = newatom.coords
-
             if bestcoords != []:
                 newatom.x = bestcoords[0]
                 newatom.y = bestcoords[1]
                 newatom.z = bestcoords[2]
-
         elif len(atom.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(atom)
             residue.create_atom(addname, loc1)
             newatom = residue.get_atom(addname)
             self.routines.cells.add_cell(newatom)
-
             # Debump residue if necessary by trying the other location
             closeatoms = self.routines.cells.get_near_cells(atom)
             energy1 = 0.0
@@ -486,20 +485,17 @@ class Alcoholic(optimize.Optimize):
                 energy1 += (
                     self.get_pair_energy(atom, catom)
                     + self.get_pair_energy(catom, atom))
-
             # Place at other location
             self.routines.cells.remove_cell(newatom)
             newatom.x = loc2[0]
             newatom.y = loc2[1]
             newatom.z = loc2[2]
             self.routines.cells.add_cell(newatom)
-
             energy2 = 0.0
             for catom in closeatoms:
                 energy2 += (
                     self.get_pair_energy(atom, catom)
                     + self.get_pair_energy(catom, atom))
-
             # If this is worse, switch back
             if energy2 > energy1:
                 self.routines.cells.remove_cell(newatom)
@@ -507,7 +503,6 @@ class Alcoholic(optimize.Optimize):
                 newatom.y = loc1[1]
                 newatom.z = loc1[2]
                 self.routines.cells.add_cell(newatom)
-
         elif len(atom.bonds) == 3:
             loc = self.get_position_with_three_bonds(atom)
             residue.create_atom(addname, loc)
@@ -515,13 +510,13 @@ class Alcoholic(optimize.Optimize):
 
     def complete(self):
         """Complete an alcoholic optimization.
-        Call finalize(), and then remove all extra LP atoms.
+
+        Call :func:`finalize` and then remove all extra LP atoms.
         """
         # Initialize some variables
         residue = self.residue
         self.finalize()
         residue.fixed = 1
-
         # Remove all LP atoms
         atomlist = []
         for atom in residue.atoms:
@@ -532,7 +527,7 @@ class Alcoholic(optimize.Optimize):
 
 
 class Water(optimize.Optimize):
-    """The class for water residues"""
+    """The class for water residues."""
 
     def __init__(self, residue, optinstance, routines):
         """Initialize the water optimization class.
@@ -549,11 +544,9 @@ class Water(optimize.Optimize):
         self.residue = residue
         self.routines = routines
         self.hbonds = []
-
         oxatom = residue.get_atom("O")
         if oxatom is None:
             raise KeyError("Unable to find oxygen atom in %s!" % residue)
-
         oxatom.hdonor = 1
         oxatom.hacceptor = 1
         self.atomlist = [oxatom]
@@ -599,47 +592,50 @@ class Water(optimize.Optimize):
         return False
 
     def try_acceptor(self, acc, donor):
-        """The main driver for adding an LP to an optimizeable residue."""
-        residue = acc.residue
+        """The main driver for adding an LP to an optimizeable residue.
 
+        .. todo::
+           This looks like a bug: donorh ends up being the last item in
+           donor.bonds.
+           This may be fixed by setting a best_donorh to go with bestdist and
+           using best_donorh in the function below
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :return:  indication of whether addition was successful
+        :rtype:  bool
+        """
+        residue = acc.residue
         # Do some error checking
         if not donor.hdonor:
-            return 0
-
+            return False
         # Get the name of the LP to add
         if residue.has_atom("LP2"):
-            return 0
+            return False
         elif residue.has_atom("LP1"):
             newname = "LP2"
         else:
             newname = "LP1"
-
-        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)",
-                      acc.residue, acc.name, donor.residue, donor.name)
-
+        _LOGGER.debug(
+            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
+            acc.name, donor.residue, donor.name)
         # Act depending on the number of bonds
         if len(acc.bonds) == 0:
-
             if self.is_hbond(donor, acc):
-
                 # Find the best donor hydrogen and use that
                 bestdist = util.distance(acc.coords, donor.coords)
                 for donorh in donor.bonds:
                     dist = util.distance(acc.coords, donorh.coords)
                     if dist < bestdist:
                         bestdist = dist
-
                 # Point the LP to the best H
-                # TODO - this looks like a bug...
-                # donorh ends up being the last item in donor.bonds
-                # This may be fixed by setting a best_donorh to go with
-                # bestdist and using best_donorh in the function below
                 self.make_atom_with_no_bonds(acc, donorh, newname)
                 _LOGGER.warning("The best donorH was not picked (BUG?).")
                 _LOGGER.debug("Added %s to %s", newname, acc.residue)
-                return 1
-            return 0
-
+                return True
+            return False
         elif len(acc.bonds) == 1:  # No H or LP attached
             _LOGGER.debug(
                 "Trying to add %s to %s with one bond", newname, acc.residue)
@@ -658,7 +654,7 @@ class Water(optimize.Optimize):
                 acc.residue)
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
-        return 0
+        return False
 
     def try_donor(self, donor, acc):
         """Add hydrogen to an optimizable residue.
@@ -706,11 +702,11 @@ class Water(optimize.Optimize):
 
     def finalize(self):
         """Finalize a water residue.
+
         Try to minimize conflict with nearby atoms by building away from them.
-        Called when LPs are still present so as to account for their bonds."""
-
+        Called when LPs are still present so as to account for their bonds.
+        """
         residue = self.residue
-
         # Conditions for return
         if residue.fixed:
             _LOGGER.debug("Residue %s already fixed", residue)
@@ -718,14 +714,14 @@ class Water(optimize.Optimize):
         if residue.has_atom("H2"):
             _LOGGER.debug("Residue %s already has H2", residue)
             return
-
         atom = residue.get_atom("O")
         if not residue.has_atom("H1"):
             addname = "H1"
         else:
             addname = "H2"
-        _LOGGER.debug("Finalizing %s by adding %s (%i current O bonds)",
-                      residue, addname, len(atom.bonds))
+        _LOGGER.debug(
+            "Finalizing %s by adding %s (%i current O bonds)", residue,
+            addname, len(atom.bonds))
         if len(atom.bonds) == 0:
             newcoords = []
             # Build hydrogen away from closest atom
@@ -798,7 +794,7 @@ class Water(optimize.Optimize):
             self.routines.cells.add_cell(residue.get_atom(addname))
 
     def complete(self):
-        """Complete the water optimization class"""
+        """Complete the water optimization process."""
         self.finalize()
         residue = self.residue
 
@@ -817,13 +813,13 @@ class Carboxylic(optimize.Optimize):
         """Initialize carboxylic optimization class.
 
         Initialize a case where the lone hydrogen atom can have four different
-        orientations. Works similar to :func:`initializeFlip` by pre-adding the
-        necessary atoms.
+        orientations. Works similar to :func:`initializeFlip` by pre-adding
+        the necessary atoms.
 
-        This also takes into account that the carboxyl group has different bond
-        lengths for the two C-O bonds - this is probably due to one bond being
-        assigned as a C=O.  As a result hydrogens are only added to the C-O
-        (longer) bond.
+        This also takes into account that the carboxyl group has different
+        bond lengths for the two C-O bonds - this is probably due to one bond
+        being assigned as a C=O.  As a result hydrogens are only added to the
+        C-O (longer) bond.
 
         :param residue:  the residue to flip
         :type residue:  Residue
@@ -945,24 +941,31 @@ class Carboxylic(optimize.Optimize):
         return False
 
     def is_carboxylic_hbond(self, donor, acc):
-        """Determine whether this donor acceptor pair is a hydrogen bond"""
+        """Determine whether this donor acceptor pair is a hydrogen bond.
+
+        :param donor:  hydrogen bond donor
+        :type donor:  Atom
+        :param acc:  hydrogen bond acceptor
+        :type acc:  Atom
+        :param accobj:  a Flip-like hydrogen bond structure object
+        :type accobj:  Flip
+        :return:  indication of whether hydrogen was added
+        :rtype:  bool
+        """
         for donorhatom in donor.bonds:
             if not donorhatom.is_hydrogen:
                 continue
-
             # Check the H(D)-A distance
             dist = util.distance(donorhatom.coords, acc.coords)
             if dist > DIST_CUTOFF:
                 continue
-
             # Check the A-D-H(D) angle
             angle = self.get_hbond_angle(acc, donor, donorhatom)
             if angle <= ANGLE_CUTOFF:
                 _LOGGER.debug("Found HBOND! %.4f %.4f", dist, angle)
-                return 1
-
+                return True
         # If we get here, no bond is formed
-        return 0
+        return False
 
     def try_acceptor(self, acc, donor):
         """Add lone pair to an optimizable residue.
@@ -974,17 +977,14 @@ class Carboxylic(optimize.Optimize):
         :return:  indication of whether addition was successful
         :rtype:  bool"""
         residue = acc.residue
-
         # Do some error checking
         if not donor.hdonor:
-            return 0
-
-        _LOGGER.debug("Working on %s %s (acceptor) to %s %s (donor)",
-                      acc.residue, acc.name, donor.residue, donor.name)
-
+            return False
+        _LOGGER.debug(
+            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
+            acc.name, donor.residue, donor.name)
         # We want to ignore the Hs on the acceptor
         if self.is_carboxylic_hbond(donor, acc):
-
             # Eliminate the closer hydrogen
             hyds = []
             dist = None
@@ -992,10 +992,8 @@ class Carboxylic(optimize.Optimize):
             for hatom in self.hlist:
                 if hatom.is_hydrogen:
                     hyds.append(hatom)
-
             if len(hyds) < 2:
-                return 1
-
+                return True
             dist = util.distance(hyds[0].coords, donor.coords)
             dist2 = util.distance(hyds[1].coords, donor.coords)
             # Eliminate hyds[0]
@@ -1013,16 +1011,14 @@ class Carboxylic(optimize.Optimize):
                 elif len(self.hlist) != 0 and residue.has_atom(
                         self.hlist[0].name):
                     donorhatom = residue.get_atom(self.hlist[0].name)
-
             # If only one H is left, we're done
             if len(self.hlist) == 1:
                 if donorhatom is not None:
                     self.rename(donorhatom)
                 residue.fixed = 1
-            return 1
-
+            return True
         else:
-            return 0
+            return False
 
     def try_donor(self, donor, acc):
         """Add hydrogen to an optimizable residue.
@@ -1047,7 +1043,6 @@ class Carboxylic(optimize.Optimize):
         _LOGGER.debug(
             "Fixing residue %s due to %s", donor.residue, donor.name)
         residue = donor.residue
-
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
@@ -1055,7 +1050,6 @@ class Carboxylic(optimize.Optimize):
                         acc, donor, donorhatom) <= ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
-
         # Remove all the other available bonded hydrogens
         hydrogens = self.hlist[:]
         for atom in hydrogens:
@@ -1063,24 +1057,21 @@ class Carboxylic(optimize.Optimize):
                 self.routines.cells.remove_cell(atom)
                 self.hlist.remove(atom)
                 residue.remove_atom(atom.name)
-
         # Rename the atoms
         self.rename(the_donorhatom)
         residue.fixed = 1
 
     def finalize(self):
-        """Finalize a protontated residue.  Try to minimize conflict with
-        nearby atoms.
-        """
+        """Finalize a protontated residue.
 
+        Try to minimize conflict with nearby atoms.
+        """
         # Initialize some variables
         hydrogens = []
         bestatom = None
         residue = self.residue
-
         if residue.fixed:
             return
-
         # For each atom, get the closest atom
         bestenergy = 999.99
         for hydatom in self.hlist:
@@ -1094,7 +1085,6 @@ class Carboxylic(optimize.Optimize):
             if energy < bestenergy:
                 bestenergy = energy
                 bestatom = hydatom
-
         # Keep the bestatom
         for hydatom in self.hlist:
             hydrogens.append(hydatom)
@@ -1102,7 +1092,6 @@ class Carboxylic(optimize.Optimize):
             if bestatom != hydatom:
                 self.hlist.remove(hydatom)
                 residue.remove_atom(hydatom.name)
-
         # Rename the atoms
         if bestatom is not None and len(bestatom.name) == 4:
             self.rename(bestatom)
@@ -1117,21 +1106,18 @@ class Carboxylic(optimize.Optimize):
         is linked to a specific oxygen, and this atom may have different
         parameter values.
 
-        Args:
-            hydatom:  The hydrogen atom that was added. (atom)
+        :param hydatom:  the hydrogen atom that was added
+        :type hydatom:  Atom
         """
         residue = self.residue
         optinstance = self.optinstance
-
         # No need to rename if hydatom is not in residue.map
         if hydatom.name not in residue.map.keys():
             return
-
         # Take off the extension
         if len(hydatom.name) == 4:
             hname = hydatom.name[:-1]
             residue.rename_atom(hydatom.name, hname)
-
         # PATCHES.xml expects *2 - if it's *1 that left, flip names
         if len(self.atomlist) == 2:
             if hydatom.name.endswith("1"):
@@ -1150,7 +1136,6 @@ class Carboxylic(optimize.Optimize):
                 residue.rename_atom(self.atomlist[0].name, tempname)
                 residue.rename_atom(self.atomlist[1].name, bondname0)
                 residue.rename_atom(tempname, bondname1)
-
         elif len(self.atomlist) == 1:
             # Appending the other bondatom to self.atomlist
             hnames = [hname[:-1] + "1", hname[:-1] + "2"]
@@ -1160,7 +1145,6 @@ class Carboxylic(optimize.Optimize):
                     self.atomlist.append(bondatom)
                 else:
                     pass
-
             if hydatom.name.endswith("1"):
                 if hydatom.name[:-1] + "2" in residue.map.keys():
                     residue.remove_atom("%s2" % hydatom.name[:-1])
@@ -1181,7 +1165,7 @@ class Carboxylic(optimize.Optimize):
                 residue.rename_atom(tempname, bondname1)
 
     def complete(self):
-        """If not already fixed, finalize"""
+        """If not already fixed, finalize the optimization."""
         if (len(self.hlist) == 2) and (self.residue.fixed == 1):
             self.residue.fixed = 0
         if not self.residue.fixed:
@@ -1189,15 +1173,17 @@ class Carboxylic(optimize.Optimize):
 
 
 class PotentialBond:
-    """A small class containing the hbond structure"""
+    """A class containing the hydrogen bond structure."""
 
     def __init__(self, atom1, atom2, dist):
-        """Initialize the class
+        """Initialize the class.
 
-        Args:
-            atom1:  The first atom in the potential bond (Atom)
-            atom2:  The second atom in the potential bond (Atom)
-            dist:  The distance between the two atoms (float)
+        :param atom1:  the first atom in the potential bond
+        :type atom1:  Atom
+        :param atom2:  the second atom in the potential bond
+        :type atom2:  Atom
+        :param dist:  the distance between the two atoms
+        :type dist:  float
         """
         self.atom1 = atom1
         self.atom2 = atom2
@@ -1212,23 +1198,23 @@ class PotentialBond:
 
 
 class HydrogenDefinition:
-    """HydrogenDefinition class
+    """Class for potential ambiguities in amino acid hydrogens.
 
-    The HydrogenDefinition class provides information on possible
-    ambiguities in amino acid hydrogens.  It is essentially the hydrogen
-    definition file in object form.
+    It is essentially the hydrogen definition file in object form.
     """
 
     def __init__(self, name, opttype, optangle, map_):
-        """Initialize the object with information from the definition file
+        """Initialize the object with information from the definition file.
 
-        Args:
-            name:          The name of the grouping (string)
-            opttype:       The optimization type of the grouping (string)
-            optangle:      The optimization angle of the grouping (string)
-            map:           The map of Hydrogens.
+        See :file:`HYDROGENS.XML` for more information.
 
-            See HYDROGENS.XML for more information
+        :param name:  the name of the grouping
+        :type name:  str
+        :param opttype:  the optimization type of the grouping
+        :type opttype:  str
+        :param optangle:  the optimization angle of the grouping
+        :type optangle:  str
+        :param map:  the map of hydrogens
         """
         self.name = name
         self.opttype = opttype
@@ -1248,18 +1234,18 @@ class HydrogenDefinition:
         return output
 
     def add_conf(self, conf):
-        """Add a HydrogenConformation to the list of conformations
+        """Add a hydrogen conformation to the list.
 
-        Args:
-            conf:  The conformation to be added (HydrogenConformation)
+        :param conf:  the conformation to be added
+        :type conf:  HydrogenConformation
         """
         self.conformations.append(conf)
 
 
 class HydrogenConformation:
-    """HydrogenConformation class
+    """Class for possible hydrogen conformations.
 
-    The HydrogenConformation class contains data about possible
+    The :class:`HydrogenConformation` class contains data about possible
     hydrogen conformations as specified in the hydrogen data file.
     """
 
@@ -1284,46 +1270,44 @@ class HydrogenConformation:
         return output
 
     def add_atom(self, atom):
-        """Add an atom to the list of atoms
+        """Add an atom to the list of atoms.
 
-        Args:
-            atom: The atom to be added (DefinitionAtom)
+        :param atom:  the atom to be added
+        :type atom:  DefinitionAtom
         """
         self.atoms.append(atom)
 
 
 class HydrogenAmbiguity:
-    """
-        A class containing information about the ambiguity
-    """
+    """Contains information about ambiguities in hydrogen conformations."""
+
     def __init__(self, residue, hdef, routines):
         """If the residue has a rotateable hydrogen, remove it.
 
         If it can be flipped, pre-flip the residue by creating all additional
         atoms.
 
-        Args:
-            residue:  The residue in question (residue)
-            hdef:     The hydrogen definition matching the residue
-            routines: Pointer to the general routines object
+        :param residue:  the residue in question
+        :type residue:  Residue
+        :param hdef:  the hydrogen definition matching the residue
+        :param routines:  the debumping routines object
+        :type routines:  Debump
         """
         self.residue = residue
         self.hdef = hdef
         self.routines = routines
 
     def __str__(self):
-        text = "%s %i %s (%s)" % (self.residue.name, self.residue.res_seq,
-                                  self.residue.chain_id, self.hdef.opttype)
+        text = "%s %i %s (%s)" % (
+            self.residue.name, self.residue.res_seq, self.residue.chain_id,
+            self.hdef.opttype)
         return text
 
 
 class HydrogenHandler(sax.ContentHandler):
-    """Extends the SAX XML Parser to parse the Hydrogens.xml class"""
-    def __init__(self):
-        """
-            Initalize the class.
-        """
+    """Extends the SAX XML Parser to parse the Hydrogens.xml class."""
 
+    def __init__(self):
         self.curelement = ""
         self.curatom = None
         self.curobj = None
@@ -1331,7 +1315,14 @@ class HydrogenHandler(sax.ContentHandler):
         self.map = {}
 
     def startElement(self, name, _):
-        """Create optimization holder objects or atoms"""
+        """Create optimization holder objects or atoms.
+
+        .. todo::
+           Rename this and related methods to conform with PEP8
+
+        :param name:  name for element
+        :type name:  str
+        """
         if name == "class":
             obj = optimize.OptimizationHolder()
             self.curholder = obj
@@ -1344,23 +1335,25 @@ class HydrogenHandler(sax.ContentHandler):
             self.curelement = name
 
     def endElement(self, name):
-        """Complete whatever object is currently passed in by the name
-        parameter
+        """Complete object is passed in by name parameter.
+
+        .. todo::
+           Rename this and related methods to conform with PEP8
+
+        :param name:  name for element
+        :type name:  str
         """
         if name == "class":  # Complete Residue object
             obj = self.curholder
             if not isinstance(obj, optimize.OptimizationHolder):
                 raise ValueError("Internal error parsing XML!")
-
             self.map[obj.name] = obj
             self.curholder = None
             self.curobj = None
-
         elif name == "atom":  # Complete atom object
             atom = self.curatom
             if not isinstance(atom, defns.DefinitionAtom):
                 raise ValueError("Internal error parsing XML!")
-
             atomname = atom.name
             if atomname == "":
                 raise ValueError("Atom name not set in XML!")
@@ -1368,22 +1361,21 @@ class HydrogenHandler(sax.ContentHandler):
                 self.curholder.map[atomname] = atom
                 self.curatom = None
                 self.curobj = self.curholder
-
         else:  # Just free the current element namespace
             self.curelement = ""
-
         return self.map
 
     def characters(self, text):
-        """Set a given attribute of the object to the text"""
+        """Set a given attribute of the object to the text.
 
+        :param text:  value of the attribute
+        :type text:  str
+        """
         if text.isspace():
             return
-
         # If this is a float, make it so
         try:
             value = float(str(text))
         except ValueError:
             value = str(text)
-
         setattr(self.curobj, self.curelement, value)

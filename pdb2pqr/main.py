@@ -1,8 +1,8 @@
 """Perform functions related to _main_ execution of PDB2PQR.
 
 This module is intended for functions that directly touch arguments provided at
-the invocation of PDB2PQR.  It was created to avoid cluttering the __init__.py
-file.
+the invocation of PDB2PQR.
+It was created to avoid cluttering the __init__.py file.
 """
 import logging
 import argparse
@@ -37,10 +37,13 @@ CHARGE_ERROR = 1e-3
 def build_parser():
     """Build an argument parser.
 
-    Return:
-        ArgumentParser() object
-    """
+    .. todo::
+        Need separate argparse groups for PDB2PKA and PROPKA.
+        These exist but need real options.
 
+    :returns:  argument parser
+    :rtype:  argparse.ArgumentParser
+    """
     desc = TITLE_FORMAT_STRING.format(version=VERSION)
     pars = argparse.ArgumentParser(
         description=desc,
@@ -140,8 +143,6 @@ def build_parser():
         help=(
             'pH values to use when applying the results of the selected pH '
             'calculation method.'))
-    # TODO - need separate argparse groups for PDB2PKA and PROPKA
-    # These exist but need real options
     grp4 = pars.add_argument_group(title="PDB2PKA method options")
     grp4.add_argument(
         '--pdb2pka-out', default='pdb2pka_output',
@@ -163,8 +164,8 @@ def build_parser():
 def print_splash_screen(args):
     """Print argument overview and citation information.
 
-    Args:
-        args:  argparse namespace
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
     """
     _LOGGER.debug("Args:  %s", args)
     _LOGGER.info("%s", TITLE_FORMAT_STRING.format(version=VERSION))
@@ -175,18 +176,16 @@ def print_splash_screen(args):
 def check_files(args):
     """Check for other necessary files.
 
-    Args:
-        args:  argparse namespace
-    Raises:
-        FileNotFoundError:  necessary files not found
-        RuntimeError:  input argument or file parsing problems
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :raises FileNotFoundError:  necessary files not found
+    :raises RuntimeError:  input argument or file parsing problems
     """
     if args.usernames is not None:
         usernames = Path(args.usernames)
         if not usernames.is_file():
             error = "User-provided names file does not exist: %s" % usernames
             raise FileNotFoundError(error)
-
     if args.userff is not None:
         userff = Path(args.userff)
         if not userff.is_file():
@@ -207,10 +206,9 @@ def check_files(args):
 def check_options(args):
     """Sanity check options.
 
-    Args:
-        args:  argparse namespace
-    Raises:
-        RuntimeError:  silly option combinations were encountered.
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :raises RuntimeError:  silly option combinations were encountered.
     """
     if (args.ph < 0) or (args.ph > 14):
         err = (
@@ -228,14 +226,18 @@ def check_options(args):
 def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
     """Print output to specified file
 
-    TODO - move this to another module (utilities)
+    .. todo::  Move this to another module (utilities)
 
-    Args:
-        args:  argparse namespace
-        pqr_lines:  output lines (records)
-        header_lines:  header lines
-        missing_lines:  lines describing missing atoms (should go in header)
-        is_cif:  flag indicating CIF-format
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :param pqr_lines:  output lines (records)
+    :type pqr_lines:  list
+    :param header_lines:  header lines
+    :type header_lines:  [str]
+    :param missing_lines:  lines describing missing atoms (should go in header)
+    :type missing_lines:  [str]
+    :param is_cif:  flag indicating CIF format
+    :type is_cif:  bool
     """
     with open(args.output_pqr, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
@@ -271,12 +273,12 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
 def transform_arguments(args):
     """Transform arguments with logic not provided by argparse.
 
-    TODO - I wish this could be done with argparse.
+    .. todo::  I wish this could be done with argparse.
 
-    Args:
-        args:  argparse namespace
-    Returns:
-        argparse namespace
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :return:  modified arguments
+    :rtype:  argparse.Namespace
     """
     if args.assign_only or args.clean:
         args.debump = False
@@ -293,10 +295,12 @@ def transform_arguments(args):
 def setup_molecule(pdblist, definition, ligand_path):
     """Set up the molecular system.
 
-    Args:
-        pdblist:  list of PDB records
-        definition:  topology definition
-        ligand_path:  path to ligand (may be None)
+    :param pdblist:  list of PDB records
+    :type pdblist:  list
+    :param definition:  topology definition
+    :type definition:  Definition
+    :param ligand_path:  path to ligand (may be None)
+    :type ligand_path:  str
     Returns:
         protein:  protein object
         definition:  definition object (revised if ligand was parsed)
@@ -395,8 +399,8 @@ def drop_water(pdblist):
 def run_propka(args, protein):
     """Run a PROPKA calculation.
 
-    Args:
-        args:  argparse namespace
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
         protein:  protein object
     Returns:
         1. DataFrame of assigned pKa values
@@ -443,8 +447,8 @@ def run_propka(args, protein):
 def non_trivial(args, protein, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
-    Args:
-        args:  argparse namespace.
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
         protein:  Protein object.  This is not actually specific to proteins...
                   Nucleic acids are biomolecules, too!
         ligand:  Mol2Molecule object or None
@@ -564,8 +568,8 @@ def main_driver(args):
 
     Validate inputs, launch PDB2PQR, handle output.
 
-    Args:
-        args:  argument namespace object (e.g., as returned by argparse).
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
     """
     io.setup_logger(args.output_pqr, args.log_level)
     _LOGGER.debug("Invoked with arguments: %s", args)

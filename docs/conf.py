@@ -44,7 +44,7 @@ autosummary_imported_members = True
 autosummary_generate_overwrite = True
 autodoc_default_options = {'special-members': '__init__'}
 todo_include_todos = True
-todo_emit_warnings = True
+todo_emit_warnings = False
 show_authors = True
 
 # Add any paths that contain templates here, relative to this directory.

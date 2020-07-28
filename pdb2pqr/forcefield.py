@@ -194,10 +194,6 @@ class Forcefield:
         defpath = ""
         if userff is None:
             defpath = io.test_dat_file(ff_name)
-            if defpath == "":
-                _LOGGER.error("%s", locals())
-                err = "Unable to find forcefield parameter file %s!" % ff_name
-                raise FileNotFoundError(err)
         else:
             defpath = userff
         with open(defpath, 'rt', encoding="utf-8") as ff_file:
@@ -236,7 +232,10 @@ class Forcefield:
                     my_residue.add_atom(atom)
         # Now parse the XML file, associating with FF objects -
         # This is not necessary (if canonical names match ff names)
-        defpath = io.test_names_file(ff_name)
+        try:
+            defpath = io.test_names_file(ff_name)
+        except FileNotFoundError:
+            defpath = None
         if usernames:
             names_path = usernames
         elif defpath:

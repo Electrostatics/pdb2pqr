@@ -196,9 +196,7 @@ def check_files(args):
             err = '--usernames must be specified if using --userff'
             raise RuntimeError(err)
     elif args.ff is not None:
-        if io.test_dat_file(args.ff) == "":
-            err = "Unable to load parameter file for forcefield %s" % args.ff
-            raise RuntimeError(err)
+        io.test_dat_file(args.ff)
     if args.ligand is not None:
         ligand = Path(args.ligand)
         if not ligand.is_file():

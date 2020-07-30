@@ -3,6 +3,8 @@
 This module is intended for functions that directly touch arguments provided at
 the invocation of PDB2PQR.
 It was created to avoid cluttering the __init__.py file.
+
+.. codeauthor:: Nathan Baker (et al.)
 """
 import logging
 import argparse
@@ -301,10 +303,9 @@ def setup_molecule(pdblist, definition, ligand_path):
     :type definition:  Definition
     :param ligand_path:  path to ligand (may be None)
     :type ligand_path:  str
-    Returns:
-        protein:  protein object
-        definition:  definition object (revised if ligand was parsed)
-        ligand:  ligand object (may be None)
+    :return: (protein object, definition object--revised if ligand was
+        parsed, ligand object--may be None)
+    :rtype: (Protein, Definition, Ligand)
     """
     if ligand_path is not None:
         ligand = Mol2Molecule()
@@ -334,14 +335,14 @@ def setup_molecule(pdblist, definition, ligand_path):
 def is_repairable(protein, has_ligand):
     """Determine if the protein can be (or needs to be) repaired.
 
-    Args:
-        protein:  protein object
-        has_ligand:  does the system contain a ligand? (bool)
-    Returns:
-        Boolean
-    Raises:
-        ValueError if there are insufficient heavy atoms or a significant part
-        of the protein is missing
+    :param protein:  protein object
+    :type protein:  Protein
+    :param has_ligand:  does the system contain a ligand?
+    :type has_ligand:  bool
+    :return:  indication of whether protein can be repaired
+    :rtype:  bool
+    :raises ValueError: if there are insufficient heavy atoms or a significant
+        part of the protein is missing
     """
     num_heavy = protein.num_heavy
     num_missing = protein.num_missing_heavy
@@ -378,13 +379,13 @@ def is_repairable(protein, has_ligand):
 def drop_water(pdblist):
     """Drop waters from a list of PDB records.
 
-    TODO - this module is already too long but this function fits better here.
-    Other possible place would be utilities.
+    .. todo:: this module is already too long but this function fits better
+        here. Other possible place would be utilities.
 
-    Args:
-        pdb_list:  list of PDB records as returned by io.get_molecule
-    Returns:
-        new list of PDB records with waters removed.
+    :param pdb_list:  list of PDB records as returned by io.get_molecule
+    :type pdb_list:  [str]
+    :return:  new list of PDB records with waters removed.
+    :rtype:  [str]
     """
     pdblist_new = []
     for record in pdblist:
@@ -401,10 +402,11 @@ def run_propka(args, protein):
 
     :param args:  command-line arguments
     :type args:  argparse.Namespace
-        protein:  protein object
-    Returns:
-        1. DataFrame of assigned pKa values
-        2. string with filename of PROPKA-created pKa file
+    :param protein:  protein object
+    :type protein:  Protein
+    :return:  (DataFrame of assigned pKa values, string with filename of
+        PROPKA-created pKa file)
+    :rtype:  (pandas.DataFrame, str)
     """
     # TODO - eliminate need to write temporary file
     lines = io.print_protein_atoms(
@@ -447,16 +449,22 @@ def run_propka(args, protein):
 def non_trivial(args, protein, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
+    .. todo::
+       These routines should be generalized to biomolecules; none of them are
+       specific to proteins.
+
     :param args:  command-line arguments
     :type args:  argparse.Namespace
-        protein:  Protein object.  This is not actually specific to proteins...
-                  Nucleic acids are biomolecules, too!
-        ligand:  Mol2Molecule object or None
-        definition:  Definition object for topology.
-        is_cif:  Boolean indicating whether file is CIF format.
-    Returns:
-        Dictionary with results.
-        TODO - replace this with a more robust return option
+    :param protein:  biomolecule
+    :type protein:  Protein
+    :param ligand:  ligand object or None
+    :type ligand:  Mol2Molecule
+    :param definition:  topology definition
+    :type definition:  Definition
+    :param is_cif:  indicates whether file is CIF format
+    :type is_cif:  bool
+    :return:  dictionary with results
+    :rtype:  dict
     """
     _LOGGER.info("Loading forcefield.")
     forcefield_ = forcefield.Forcefield(args.ff, definition, args.userff,

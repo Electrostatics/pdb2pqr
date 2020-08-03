@@ -2,7 +2,7 @@
 
 This module contains the protein object used in PDB2PQR and associated methods
 
-TODO - this module should be broken into separate files.
+.. todo:: This module should be broken into separate files.
 
 Authors:  Todd Dolinsky, Yong Huang
 """
@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Protein(object):
-    """Protein class
+    """Protein class.
 
     The protein class represents the parsed PDB, and provides a hierarchy of
     information - each Protein contains a list of Chain objects as provided in
@@ -37,26 +37,25 @@ class Protein(object):
     def __init__(self, pdblist, definition):
         """Initialize using parsed PDB file
 
-        Args:
-            pdblist: List of Classes of PDB lines as created
+        :param pdblist:  list of objects from :mod:`pdb` from lines of PDB file
+        :type pdblist:  list
+        :param definition:  topology definition object
+        :type definition:  Definition
         """
         self.chainmap = {}
         self.chains = []
         self.residues = []
         self.definition = definition
         self.pdblist = pdblist
-
         chain_dict = {}
         previous_atom = None
         residue = []
         num_models = 0
         num_chains = 1
         count = 0
-
         for record in pdblist:  # Find number of chains
             if isinstance(record, pdb.TER):
                 num_chains += 1
-
         for record in pdblist:
             if isinstance(record, (pdb.ATOM, pdb.HETATM)):
                 if record.chain_id == "":
@@ -64,18 +63,14 @@ class Protein(object):
                             "WAT", "HOH"]:
                         # Assign a chain ID
                         record.chain_id = string.ascii_uppercase[count]
-
                 chain_id = record.chain_id
                 res_seq = record.res_seq
                 ins_code = record.ins_code
-
                 if previous_atom is None:
                     previous_atom = record
-
                 if chain_id not in chain_dict:
                     my_chain = struct.Chain(chain_id)
                     chain_dict[chain_id] = my_chain
-
                 if (res_seq != previous_atom.res_seq or
                         ins_code != previous_atom.ins_code or
                         chain_id != previous_atom.chain_id):
@@ -83,54 +78,48 @@ class Protein(object):
                         residue, previous_atom.res_name)
                     chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     residue = []
-
                 residue.append(record)
                 previous_atom = record
-
             elif isinstance(record, pdb.END):
                 my_residue = self.create_residue(
                     residue, previous_atom.res_name)
                 chain_dict[previous_atom.chain_id].add_residue(my_residue)
                 residue = []
-
             elif isinstance(record, pdb.MODEL):
                 num_models += 1
                 if residue == []:
                     continue
                 if num_models > 1:
-                    my_residue = self.create_residue(residue,
-                                                     previous_atom.res_name)
+                    my_residue = self.create_residue(
+                        residue, previous_atom.res_name)
                     chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     break
-
             elif isinstance(record, pdb.TER):
                 count += 1
-
         if residue != [] and num_models <= 1:
             my_residue = self.create_residue(residue, previous_atom.res_name)
             chain_dict[previous_atom.chain_id].add_residue(my_residue)
-
         # Keep a map for accessing chains via chain_id
         self.chainmap = chain_dict.copy()
-
         # Make a list for sequential ordering of chains
         if "" in chain_dict:
             chain_dict["ZZ"] = chain_dict[""]
             del chain_dict[""]
-
         keys = list(chain_dict.keys())
         keys.sort()
-
         for key in keys:
             self.chains.append(chain_dict[key])
-
         for chain in self.chains:
             for residue in chain.residues:
                 self.residues.append(residue)
 
     @property
     def num_missing_heavy(self):
-        """Return number of missing biomolecular heavy atoms in structure."""
+        """Return number of missing biomolecular heavy atoms in structure.
+
+        :return:  number of missing heavy atoms in structure
+        :rtype:  int
+        """
         natom = 0
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
@@ -154,8 +143,14 @@ class Protein(object):
     def num_heavy(self):
         """Return number of biomolecular heavy atoms in structure.
 
-        TODO - figure out if this is redundant with self.num_bio_atoms
-        num_bio_atoms include hydrogens but those are stripped off eventually
+        .. todo::
+           Figure out if this is redundant with :func:`Protein.num_bio_atoms`
+
+        .. note::
+           Includes hydrogens (but those are stripped off eventually)
+
+        :return:  number of heavy atoms
+        :rtype:  int
         """
         natom = 0
         for residue in self.residues:
@@ -174,17 +169,30 @@ class Protein(object):
 
     @property
     def reference_map(self):
-        """Return definition reference map."""
+        """Return definition reference map.
+
+        :return:  definition reference map
+        :rtype:  dict
+        """
+        _LOGGER.error(type(self.definition.map))
         return self.definition.map
 
     @property
     def patch_map(self):
-        """Return definition patch map."""
+        """Return definition patch maps.
+
+        :return:  definition patch maps
+        :rtype:  list
+        """
         return self.definition.patches
 
     @property
     def num_bio_atoms(self):
-        """Return the number of ATOM (not HETATM) records protein."""
+        """Return the number of ATOM (not HETATM) records in the protein.
+
+        :return:  number of ATOM records
+        :rtype:  int
+        """
         natom = 0
         for atom in self.atoms:
             if atom.type == "ATOM":
@@ -203,43 +211,37 @@ class Protein(object):
         First set all known termini by looking at the ends of the chain. Then
         examine each residue, looking for internal chain breaks.
 
-        TODO:  this function needs to be cleaned and simplified
+        .. todo::  This function needs to be cleaned and simplified
 
-        Args:
-            neutraln:  whether N-terminus is neutral
-            neutralc:  whether C-terminus is neutral
+        :param neutraln:  indicate whether N-terminus is neutral
+        :type neutraln:  bool
+        :param neutralc:  indicate whether C-terminus is neutral
+        :type neutralc:  bool
         """
         # First assign the known termini
         for chain in self.chains:
             self.assign_termini(chain, neutraln, neutralc)
-
         # Now determine if there are any hidden chains
         letters = string.ascii_uppercase + string.ascii_lowercase
         ch_num = 0
-
         while ch_num < len(self.chains):
             chain = self.chains[ch_num]
             reslist = []
             origlist = []
-
             # origlist holds the original residue list for the chain
             for residue in chain.residues:
                 origlist.append(residue)
-
             for residue in origlist:
                 reslist.append(residue)
-
                 # Look for ending termini
                 fixflag = 0
                 if isinstance(residue, aa.Amino):
                     if (residue.has_atom("OXT") and not residue.is_c_term):
                         fixflag = 1
-
                 elif isinstance(residue, na.Nucleic):
                     if ((residue.has_atom("H3T") or residue.name.endswith("3"))
                             and not residue.is3term):
                         fixflag = 1
-
                 if fixflag:
                     # Get an available chain ID
                     chainid = letters[0]
@@ -251,30 +253,23 @@ class Protein(object):
                             id_length += 1
                             id_ = 0
                         chainid = letters[id_] * id_length
-
                     if id_length > 1:
                         message = (
                             'Warning: Reusing chain id: ' + chainid[0] + '')
                         _LOGGER.warning(message)
-
                     # Make a new chain with these residues
                     newchain = struct.Chain(chainid[0])
-
                     self.chainmap[chainid] = newchain
                     self.chains.insert(ch_num, newchain)
-
                     for res in reslist:
                         newchain.add_residue(res)
                         chain.residues.remove(res)
                         res.set_chain_id(chainid[0])
-
                     self.assign_termini(chain, neutraln, neutralc)
                     self.assign_termini(newchain, neutraln, neutralc)
-
                     reslist = []
                     ch_num += 1
             ch_num += 1
-
         # Update the final chain's chain_id if it is "" unless it's all water
         if "" in self.chainmap:
             notwat = 0
@@ -282,11 +277,9 @@ class Protein(object):
                 if not isinstance(res, aa.WAT):
                     notwat = 1
                     break
-
             if notwat == 0:
                 _LOGGER.debug("Done setting termini.")
                 return
-
             chain = self.chainmap[""]
             chainid = letters[0]
             id_ = 0
@@ -297,11 +290,9 @@ class Protein(object):
                     id_length += 1
                     id_ = 0
                 chainid = letters[id_] * id_length
-
             if id_length > 1:
                 message = 'Warning: Reusing chain id: ' + chainid[0]
                 _LOGGER.warning(message)
-
             # Use the new chain_id
             self.chainmap[chainid] = chain
             del self.chainmap[""]
@@ -316,7 +307,7 @@ class Protein(object):
         This is the last step before assigning the forcefield, but is necessary
         so as to distinguish between various protonation states.
 
-        See aa.py for residue-specific functions.
+        See :mod:`aa` for residue-specific functions.
         """
         for residue in self.residues:
             if isinstance(residue, (aa.Amino, na.Nucleic)):
@@ -343,20 +334,16 @@ class Protein(object):
                 if isinstance(residue, aa.CYS) and (
                         residue.ss_bonded and atomname == "HG"):
                     continue
-
                 # If this hydrogen is part of a tetrahedral group,
                 # follow a different codepath
                 if residue.rebuild_tetrahedral(atomname):
                     count += 1
                     continue
-
                 # Otherwise use the standard quatfit methods
                 coords = []
                 refcoords = []
-
                 refatomcoords = residue.reference.map[atomname].coords
                 bondlist = residue.reference.get_nearest_bonds(atomname)
-
                 for bond in bondlist:
                     if bond == "N+1":
                         atom = residue.peptide_n
@@ -364,18 +351,14 @@ class Protein(object):
                         atom = residue.peptide_c
                     else:
                         atom = residue.get_atom(bond)
-
                     if atom is None:
                         continue
-
                     # Get coordinates, reference coordinates
                     coords.append(atom.coords)
                     refcoords.append(residue.reference.map[bond].coords)
-
                     # Exit if we have enough atoms
                     if len(coords) == 3:
                         break
-
                 if len(coords) == 3:
                     newcoords = quat.find_coordinates(
                         3, coords, refcoords, refatomcoords)
@@ -387,17 +370,16 @@ class Protein(object):
         _LOGGER.debug(" Added %i hydrogen atoms.", count)
 
     def set_donors_acceptors(self):
-        """Set the donors and acceptors within the protein"""
+        """Set the donors and acceptors within the protein."""
         for residue in self.residues:
             residue.set_donors_acceptors()
 
     def calculate_dihedral_angles(self):
-        """Calculate the dihedral angle for every residue within the protein"""
+        """Calculate the dihedral angle for every residue in the protein."""
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
                 continue
             residue.dihedrals = []
-
             refangles = residue.reference.dihedrals
             for dihed in refangles:
                 coords = []
@@ -406,38 +388,32 @@ class Protein(object):
                     atomname = atoms[i]
                     if residue.has_atom(atomname):
                         coords.append(residue.get_atom(atomname).coords)
-
                 if len(coords) == 4:
                     angle = util.dihedral(
                         coords[0], coords[1], coords[2], coords[3])
                 else:
                     angle = None
-
                 residue.add_dihedral_angle(angle)
 
     def set_reference_distance(self):
         """Set the distance to the CA atom in the residue.
 
         This is necessary for determining which atoms are allowed to move
-        during rotations.  Uses the shortest_path algorithm found in
-        utilities.py.
+        during rotations.  Uses the :func:`shortest_path` algorithm found in
+        :mod:`utilities`.
         """
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
                 continue
-
             # Initialize some variables
             map_ = {}
             caatom = residue.get_atom("CA")
-
             if caatom is None:
                 text = "Cannot set references to %s without CA atom!"
                 raise ValueError(text)
-
             # Set up the linked map
             for atom in residue.atoms:
                 map_[atom] = atom.bonds
-
             # Run the algorithm
             for atom in residue.atoms:
                 if atom.is_backbone:
@@ -461,19 +437,20 @@ class Protein(object):
                     residue.remove_atom(atom.name)
 
     def assign_termini(self, chain, neutraln=False, neutralc=False):
-        """Assign the termini for the given chain by looking at the start and
-        end residues.
+        """Assign the termini for the given chain.
 
-        Args:
-            chain:  chain of protein
-            neutraln:  whether to neutralize N-terminus
-            neutralc:  whether to neutralize C-terminus
+        Assignment made by looking at the start and end residues.
+
+        :param chain:  chain of protein
+        :type chain:  Chain
+        :param neutraln:  indicate whether to neutralize N-terminus
+        :type neutraln:  bool
+        :param neutralc:  indicate whether to neutralize C-terminus
+        :type neutralc:  bool
         """
-
         if len(chain.residues) == 0:
             text = "Error: chain \"%s\" has 0 residues!" % chain.chain_id
             raise IndexError(text)
-
         # Set the N-Terminus/ 5' Terminus
         res0 = chain.residues[0]
         if isinstance(res0, aa.Amino):
@@ -487,7 +464,6 @@ class Protein(object):
         elif isinstance(res0, na.Nucleic):
             res0.is5term = True
             self.apply_patch("5TERM", res0)
-
         # Set the C-Terminus/ 3' Terminus
         reslast = chain.residues[-1]
         if isinstance(reslast, aa.Amino):
@@ -517,8 +493,10 @@ class Protein(object):
                     break
 
     def update_internal_bonds(self):
-        """Update the internal bonding network using the reference objects in
-        each atom."""
+        """Update the internal bonding network.
+
+        Update using the reference objects in each atom.
+        """
         for residue in self.residues:
             if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 for atom in residue.atoms:
@@ -535,10 +513,11 @@ class Protein(object):
         """Update the bonding network of the protein.
 
         This happens in 3 steps:
-            1.  Applying the PEPTIDE patch to all Amino residues so as to add
-                reference for the N(i+1) and C(i-1) atoms
-            2.  UpdateInternal_bonds for inter-residue linking
-            3.  Set the links to the N(i+1) and C(i-1) atoms
+
+        1. Apply the PEPTIDE patch to all Amino residues to add
+           reference for the N(i+1) and C(i-1) atoms
+        2. UpdateInternal_bonds for inter-residue linking
+        3. Set the links to the N(i+1) and C(i-1) atoms
         """
         # Apply the peptide patch
         for residue in self.residues:
@@ -547,10 +526,8 @@ class Protein(object):
                     continue
                 else:
                     self.apply_patch("PEPTIDE", residue)
-
         # Update all internal bonds
         self.update_internal_bonds()
-
         # Set the peptide bond pointers
         for chain in self.chains:
             for i in range(len(chain.residues) - 1):
@@ -561,14 +538,12 @@ class Protein(object):
                     continue
                 atom1 = res1.get_atom("C")
                 atom2 = res2.get_atom("N")
-
                 if atom1 is not None:
                     res2.peptide_c = atom1
                 if atom2 is not None:
                     res1.peptide_n = atom2
                 if atom1 is None or atom2 is None:
                     continue
-
                 if util.distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
                     text = "Gap in backbone detected between %s and %s!" % (
                         res1, res2)
@@ -580,32 +555,29 @@ class Protein(object):
         """Apply a patch to the given residue.
 
         This is one of the key functions in PDB2PQR.  A similar function
-        appears in definitions.py - that version is needed for residue level
-        subtitutions so certain protonation states (i.e. CYM, HSE) are
+        appears in :mod:`definitions` - that version is needed for residue
+        level subtitutions so certain protonation states (i.e. CYM, HSE) are
         detectatble on input.
 
-        This version looks up the particular patch name in the patch_map stored
-        in the protein, and then applies the various commands to the reference
-        and actual residue structures.
+        This version looks up the particular patch name in the patch_map
+        stored in the protein, and then applies the various commands to the
+        reference and actual residue structures.
 
         See the inline comments for a more detailed explanation.
 
-        Parameters
-            patchname:  The name of the patch (string)
-            residue:    The residue to apply the patch to (residue)
+        :param patchname:  the name of the patch
+        :type patchname:  str
+        :param residue:  the residue to apply the patch to
+        :type residue:  Residue
         """
         if patchname not in self.patch_map:
             raise KeyError("Unable to find patch %s!" % patchname)
-
         _LOGGER.debug('PATCH INFO: %s patched with %s', residue, patchname)
-
         if patchname == "PEPTIDE":
             newreference = residue.reference
         else:
             newreference = copy.deepcopy(residue.reference)
-
         patch = self.patch_map[patchname]
-
         # Add atoms from patch
         for atomname in patch.map:
             newreference.map[atomname] = patch.map[atomname]
@@ -614,7 +586,6 @@ class Protein(object):
                     continue
                 if atomname not in newreference.map[bond].bonds:
                     newreference.map[bond].bonds.append(atomname)
-
         # Remove atoms as directed by patch
         for remove in patch.remove:
             if remove in residue.map:
@@ -626,20 +597,16 @@ class Protein(object):
             for bond in removebonds:
                 index = newreference.map[bond].bonds.index(remove)
                 del newreference.map[bond].bonds[index]
-
         # Add the new dihedrals
         for dihedral_ in patch.dihedrals:
             newreference.dihedrals.append(dihedral_)
-
         # Point at the new reference
         residue.reference = newreference
         residue.patches.append(patchname)
-
         # Rename atoms as directed by patch
         for atom in residue.atoms:
             if atom.name in patch.altnames:
                 residue.rename_atom(atom.name, patch.altnames[atom.name])
-
         # Replace each atom's reference with the new one
         for atomname in residue.map:
             if newreference.has_atom(atomname):
@@ -647,15 +614,13 @@ class Protein(object):
                 atom.reference = newreference.map[atomname]
 
     def update_ss_bridges(self):
-        """Check for SS-bridge partners, and if present, set appropriate
-        partners."""
+        """Check and set SS-bridge partners."""
         sg_partners = {}
         for residue in self.residues:
             if isinstance(residue, aa.CYS):
                 atom = residue.get_atom("SG")
                 if atom is not None:
                     sg_partners[atom] = []
-
         for atom in sg_partners:
             for partner in sg_partners:
                 if atom == partner or sg_partners[atom] != []:
@@ -664,7 +629,6 @@ class Protein(object):
                 if dist < BONDED_SS_LIMIT:
                     sg_partners[atom].append(partner)
                     sg_partners[partner].append(atom)
-
         for atom in sg_partners:
             res1 = atom.residue
             numpartners = len(sg_partners[atom])
@@ -683,10 +647,13 @@ class Protein(object):
                 _LOGGER.debug("%s is a free cysteine", res1)
 
     def update_residue_types(self):
-        """Find the type of residue as notated in the Amino Acid definition"""
+        """Find the type of residue as notated in the Amino Acid definition.
+
+        .. todo::
+           Why are we setting residue types to numeric values (see code)?
+        """
         for chain in self.chains:
             for residue in chain.residues:
-                # TODO - why are we setting residue types to numeric values?
                 name = residue.name
                 if name in AA_NAMES:
                     residue.type = 1
@@ -698,14 +665,13 @@ class Protein(object):
                     residue.type = 2
 
     def apply_force_field(self, forcefield_):
-        """Apply the forcefield to the atoms within the protein
+        """Apply the forcefield to the atoms within the protein.
 
-        Parameters
-            forcefield: forcefield object (forcefield)
-        Returns
-            hitlist:  list of atoms that were found in the forcefield (list)
-            misslist:  list of atoms that were not found in the forcefield
-                       (list)
+        :param forcefield_:  forcefield object
+        :type forcefield_:  Forcefield
+        :return:  (list of atoms that were found in the forcefield,
+            list of atoms that were not found in the forcefield)
+        :rtype:  (list, list)
         """
         misslist = []
         hitlist = []
@@ -714,7 +680,6 @@ class Protein(object):
                 resname = residue.ffname
             else:
                 resname = residue.name
-
             for atom in residue.atoms:
                 atomname = atom.name
                 charge, radius = forcefield_.get_params(resname, atomname)
@@ -727,18 +692,16 @@ class Protein(object):
         return hitlist, misslist
 
     def apply_name_scheme(self, forcefield_):
-        """Apply the naming scheme of the given forcefield to the atoms within
-        the protein
+        """Apply the naming scheme of the given forcefield.
 
-        Args:
-            forcefield: forcefield object (forcefield)
+        :param forcefield_:  forcefield object
+        :type forcefield_:  Forcefield
         """
         for residue in self.residues:
             if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 resname = residue.ffname
             else:
                 resname = residue.name
-
             for atom in residue.atoms:
                 rname, aname = forcefield_.get_names(resname, atom.name)
                 if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and (
@@ -754,18 +717,24 @@ class Protein(object):
                     atom.name = aname
 
     def apply_pka_values(self, force_field, ph, pkadic):
-        """Apply calculated pKa values to assign titration states."""
+        """Apply calculated pKa values to assign titration states.
+
+        :param force_field:  force field name (determines naming of residues)
+        :type force_field:  str
+        :param ph:  pH value
+        :type ph:  float
+        :param pkadic:  dictionary of pKa values for residues
+        :type pkadic:  dict
+        """
         _LOGGER.info('Applying pKa values at a pH of %.2f:', ph)
         formatted_pkadict = pprint.pformat(pkadic)
         _LOGGER.debug("%s", formatted_pkadict)
-
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
                 continue
             resname = residue.name
             resnum = residue.res_seq
             chain_id = residue.chain_id
-
             if residue.is_n_term:
                 key = "N+ %i %s" % (resnum, chain_id)
                 key = key.strip()
@@ -780,7 +749,6 @@ class Protein(object):
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-NTERM", residue)
-
             if residue.is_c_term:
                 key = "C- %i %s" % (resnum, chain_id)
                 key = key.strip()
@@ -795,7 +763,6 @@ class Protein(object):
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-CTERM", residue)
-
             key = "%s %i %s" % (resname, resnum, chain_id)
             key = key.strip()
             if key in pkadic:
@@ -861,7 +828,6 @@ class Protein(object):
                         _LOGGER.warning(warn)
                     else:
                         self.apply_patch("TYM", residue)
-
         if len(pkadic) > 0:
             warn = (
                 "PDB2PQR could not identify the following residues and residue"
@@ -872,7 +838,12 @@ class Protein(object):
                 _LOGGER.warning(text)
 
     def hold_residues(self, hlist):
-        """Set the stateboolean dictionary to residues in hlist."""
+        """Set fixed state of specified residues.
+
+        :param hlist:  list of (res_seq, chainid, ins_code) specifying the 
+            residues for altering fixed state status.
+        :type hlist:  [(str, str, str)]
+        """
         if not hlist:
             return
         for residue in self.residues:
@@ -881,8 +852,8 @@ class Protein(object):
                 hlist.remove(reskey)
                 if isinstance(residue, aa.Amino):
                     residue.stateboolean = {'FIXEDSTATE': False}
-                    _LOGGER.debug("Setting residue {:s} as fixed.".format(
-                        str(residue)))
+                    _LOGGER.debug(
+                        "Setting residue {:s} as fixed.".format(str(residue)))
                 else:
                     err = "Matched residue {:s} but not subclass of Amino."
                     _LOGGER.warning(err.format(str(residue)))
@@ -898,11 +869,12 @@ class Protein(object):
         If the resname is a known residue type, try to make that specific
         object, otherwise just make a standard residue object.
 
-        Args:
-            residue:  A list of atoms (list)
-            resname:  The name of the residue (string)
-        Returns:
-            residue:  The residue object (Residue)
+        :param residue:  a list of atoms
+        :type residue:  list
+        :param resname:  the name of the residue
+        :type resname:  str
+        :return:  the residue object
+        :rtype:  Residue
         """
         try:
             refobj = self.definition.map[resname]
@@ -925,6 +897,8 @@ class Protein(object):
         rebuild it - it might depend on other atoms to be rebuild first (think
         side chains).  As such a 'seenmap' is used to keep track of what we've
         already seen and subsequent attempts to rebuild the atom.
+
+        :raise ValueError:  missing atoms prevent reconstruction
         """
         total_missing = self.num_missing_heavy
         if total_missing == 0:
@@ -945,7 +919,6 @@ class Protein(object):
                         "Extra atom %s in %s! - ", atomname, residue)
                     residue.remove_atom(atomname)
                     _LOGGER.warning("Deleted this atom.")
-
             missing = residue.missing
             if missing == []:
                 continue
@@ -957,7 +930,6 @@ class Protein(object):
                 atomname = missing.pop(0)
                 refatomcoords = residue.reference.map[atomname].coords
                 bondlist = residue.reference.get_nearest_bonds(atomname)
-
                 for bond in bondlist:
                     if bond == "N+1":
                         atom = residue.peptide_n
@@ -973,14 +945,12 @@ class Protein(object):
                     # Exit if we have enough atoms
                     if len(coords) == 3:
                         break
-
                 # We might need other atoms to be rebuilt first
                 if len(coords) < 3:
                     try:
                         seenmap[atomname] += 1
                     except KeyError:
                         seenmap[atomname] = 1
-
                     missing.append(atomname)
                     if seenmap[atomname] > nummissing:
                         text = (
@@ -993,7 +963,6 @@ class Protein(object):
                         missing_str = ' '.join(missing)
                         err = text.format(residue=residue, missing=missing_str)
                         raise ValueError(err)
-
                 else:  # Rebuild the atom
                     newcoords = quat.find_coordinates(
                         3, coords, refcoords, refatomcoords)
@@ -1009,16 +978,16 @@ class Protein(object):
 
         If a type cannot be found for an atom a blank is listed.
 
-        Args:
-            definition: The definition objects.
-            outfilename:  The name of the file to write (string)
+        :param definition:  the definition objects.
+        :type definition:  Definition
+        :param outfilename:  the name of the file to write
+        :type outfilename:  str
         """
         # Cache the initial atom numbers
         numcache = {}
         for atom in self.atoms:
             numcache[atom] = atom.serial
         self.reserialize()
-
         amberff = forcefield.Forcefield("amber", definition, None)
         charmmff = forcefield.Forcefield("charmm", definition, None)
         with open(outfilename, "w") as file_:
@@ -1049,13 +1018,12 @@ class Protein(object):
                         ambergroup, charmmgroup))
             file_.write("</table>\n")
             file_.write("</BODY></HTML>\n")
-
         # Return the original numbers back
         for atom in self.atoms:
             atom.serial = numcache[atom]
 
     def reserialize(self):
-        """Generate new serial numbers for atoms in the protein"""
+        """Generate new serial numbers for atoms in the protein."""
         count = 1
         for atom in self.atoms:
             atom.serial = count
@@ -1063,10 +1031,10 @@ class Protein(object):
 
     @property
     def atoms(self):
-        """Return all Atom objects in list format
+        """Return all Atom objects in list format.
 
-        Returns:
-            atomlist:  List of Atom objects in the protein (list)
+        :return:  all atom objects
+        :rtype:  [Atom]
         """
         atomlist = []
         for chain in self.chains:
@@ -1078,14 +1046,15 @@ class Protein(object):
     def charge(self):
         """Get the total charge on the protein
 
-        NOTE:  Since the misslist is used to identify incorrect charge
-        assignments, this routine does not list the 3 and 5 termini of nucleic
-        acid chains as having non-integer charge even though they are
-        (correctly) non-integer.
+        .. todo::
+           Since the misslist is used to identify incorrect charge
+           assignments, this routine does not list the 3 and 5 termini of
+           nucleic acid chains as having non-integer charge even though they
+           are (correctly) non-integer.
 
-        Returns:
-            misslist:  List of residues with non-integer charges (list)
-            charge:  The total charge on the protein (float)
+        :return:  (list of residues with non-integer charges,
+            the total charge on the protein)
+        :rtype:  (list, float)
         """
         charge = 0.0
         misslist = []

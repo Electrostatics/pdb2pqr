@@ -1,9 +1,10 @@
 #!/usr/bin/python
-"""psize
+"""Get dimensions and other information from a PQR file.
 
-Get dimensions and other information from a PQR file.
-
-Authors:  Dave Sept, Nathan Baker, Todd Dolinksy, Yong Huang
+.. codeauthor:: Dave Sept
+.. codeauthor:: Nathan Baker
+.. codeauthor:: Todd Dolinksy
+.. codeauthor:: Yong Huang
 """
 from math import log
 import logging
@@ -21,24 +22,34 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Psize:
-    """Master class for parsing input files and suggesting settings"""
-    def __init__(self, cfac=CFAC, fadd=FADD, space=SPACE, gmemfac=GMEMFAC,
-                 gmemceil=GMEMCEIL, ofrac=OFRAC, redfac=REDFAC):
-        """Initialize Psize.
+    """Class for parsing input files and suggesting settings."""
 
-        Args:
-            cfac:  Factor by which to expand molecular dimensions to get
-                   coarse grid dimensions
-            fadd:  Amount to add to mol dims to get fine grid dims
-            space:  Desired fine mesh resolution
-            gmemfac:  Number of bytes per grid point required for sequential
-                      MG calculation
-            gmemceil: Max MB allowed for sequential MG calculation. Adjust this
-                        to force the script to perform faster calculations
-                        (which require more parallelism).
-            ofrac:  Overlap factor between mesh partitions
-            redfac:  The maximum factor by which a domain dimension can be
-                     reduced during focusing
+    def __init__(
+            self, cfac=CFAC, fadd=FADD, space=SPACE, gmemfac=GMEMFAC,
+            gmemceil=GMEMCEIL, ofrac=OFRAC, redfac=REDFAC):
+        """Initialize.
+
+        :param cfac:  factor by which to expand molecular dimensions to get
+            coarse grid dimensions
+        :type cfac:  float
+        :param fadd:  amount (in Angstroms) to add to molecular dimensions to
+            get the fine grid dimensions
+        :type fadd:  float
+        :param space:  desired fine mesh resolution (in Angstroms)
+        :type space:  float
+        :param gmemfac:  number of bytes per grid point required for
+            a sequential multigrid calculation
+        :type gmemfac:  float
+        :param gmemceil:  maximum memory (in MB) allowed for sequential
+            multigrid calculation. Adjust this value to force the script to
+            perform faster calculations (which require more parallelism).
+        :type gmemceil:  float
+        :param ofrac:  overlap factor between mesh partitions in parallel
+            focusing calculation
+        :type ofrac:  float
+        :param redfac:  the maximum factor by which a domain dimension can be
+            reduced during focusing
+        :type redfac:  float
         """
         self.minlen = [None, None, None]
         self.maxlen = [None, None, None]
@@ -62,21 +73,35 @@ class Psize:
         self.nfocus = 0
 
     def parse_string(self, structure):
-        """ Parse the input structure as a string in PDB or PQR format """
+        """Parse the input structure as a string in PDB or PQR format.
+
+        :param structure:  input structure as string in PDB or PQR format.
+        :type structure:  str
+        """
         lines = structure.split("\n")
         self.parse_lines(lines)
 
     def parse_input(self, filename):
-        """ Parse input structure file in PDB or PQR format """
+        """Parse input structure file in PDB or PQR format.
+
+        :param filename:  string with path to PDB- or PQR-format file.
+        :type filename:  str
+        """
         with open(filename, 'rt', encoding="utf-8") as file_:
             self.parse_lines(file_.readlines())
 
     def parse_lines(self, lines):
-        """ Parse the lines """
+        """Parse the PQR/PDB lines.
+
+        .. todo::
+           This is messed up. Why are we parsing the PQR manually here when
+           we already have other routines to do that?  This function should
+           be replaced by a call to existing routines.
+
+        :param lines:  PDB/PQR lines to parse
+        :type lines:  [str]
+        """
         for line in lines:
-            # TODO -- This is messed up.
-            # Why are we parsing the PQR manually here when we have routines
-            # to do that?
             if line.find("ATOM") == 0:
                 subline = line[30:].replace("-", " -")
                 words = subline.split()
@@ -122,7 +147,17 @@ class Psize:
                             self.maxlen[i] = center[i]+rad
 
     def set_length(self, maxlen, minlen):
-        """ Compute molecule dimensions """
+        """Compute molecular dimensions, adjusting for zero-length values.
+
+        .. todo:: Replace hard-coded values in this function.
+
+        :param maxlen:  maximum dimensions from molecule
+        :type maxlen:  [float, float, float]
+        :param minlen:  minimum dimensions from molecule
+        :type minlen:  [float, float, float]
+        :return:  molecular dimensions
+        :rtype:  [float, float, float]
+        """
         for i in range(3):
             self.mol_length[i] = maxlen[i] - minlen[i]
             if self.mol_length[i] < 0.1:
@@ -130,13 +165,27 @@ class Psize:
         return self.mol_length
 
     def set_coarse_grid_dims(self, mol_length):
-        """ Compute coarse mesh dimensions """
+        """Compute coarse mesh lengths.
+
+        :param mol_length:  input molecule lengths
+        :type mol_length:  [float, float, float]
+        :return:  coarse grid dimensions
+        :rtype:  [float, float, float]
+        """
         for i in range(3):
             self.coarse_length[i] = self.cfac * mol_length[i]
         return self.coarse_length
 
     def set_fine_grid_dims(self, mol_length, coarse_length):
-        """ Compute fine mesh dimensions """
+        """Compute fine mesh lengths.
+
+        :param mol_length:  input molecule lengths
+        :type mol_length:  [float, float, float]
+        :param coarse_length:  coarse grid lengths
+        :type coarse_length:  [float, float, float]
+        :return:  fine grid lengths
+        :rtype:  [float, float, float]
+        """
         for i in range(3):
             self.fine_length[i] = mol_length[i] + self.fadd
             if self.fine_length[i] > coarse_length[i]:
@@ -144,13 +193,29 @@ class Psize:
         return self.fine_length
 
     def set_center(self, maxlen, minlen):
-        """ Compute molecule center """
+        """Compute molecular center.
+
+        :param maxlen:  maximum molecule lengths
+        :type maxlen:  [float, float, float]
+        :param minlen:  minimum molecule lengths
+        :type minlen:  [float, float, float]
+        :return:  center of molecule
+        :rtype:  [float, float, float]
+        """
         for i in range(3):
             self.center[i] = (maxlen[i] + minlen[i]) / 2
         return self.center
 
     def set_fine_grid_points(self, fine_length):
-        """ Compute mesh grid points, assuming 4 levels in MG hierarchy """
+        """Compute mesh grid points, assuming 4 levels in multigrid hierarchy.
+
+        .. todo:: remove hard-coded values from this function.
+
+        :param fine_length:  lengths of the fine grid
+        :type fine_length:  [float, float, float]
+        :return:  number of grid points in each direction
+        :rtype:  [int, int, int]
+        """
         temp_num = [0, 0, 0]
         for i in range(3):
             temp_num[i] = int(fine_length[i]/self.space + 0.5)
@@ -160,10 +225,22 @@ class Psize:
         return self.ngrid
 
     def set_smallest(self, ngrid):
-        """ Compute parallel division in case memory requirement above ceiling
-        Find the smallest dimension and see if the number of grid points in
-        that dimension will fit below the memory ceiling
-        Reduce nsmall until an nsmall^3 domain will fit into memory """
+        """Set smallest dimensions.
+
+        Compute parallel division of domain in case the memory requirements
+        for the calculation are above the memory ceiling. Find the smallest
+        dimension and see if the number of grid points in that dimension will
+        fit below the memory ceiling Reduce nsmall until an nsmall^3 domain
+        will fit into memory.
+
+        .. todo:: Remove hard-coded values from this function.
+
+        :param ngrid:  number of grid points
+        :type ngrid:  [int, int, int]
+        :return:  smallest number of grid points in each direction to fit in
+            memory
+        :rtype:  [int, int, int]
+        """
         nsmall = []
         for i in range(3):
             nsmall.append(ngrid[i])
@@ -182,8 +259,17 @@ class Psize:
         return nsmall
 
     def set_proc_grid(self, ngrid, nsmall):
-        """ Calculate the number of processors required to span each
-        dimension """
+        """Calculate the number of processors required in a parallel focusing
+        calculation to span each dimension of the grid given the grid size
+        suitable for memory constraints.
+
+        :param ngrid:  number of needed grid points
+        :type ngrid:  [int, int, int]
+        :param nsmall:  number of grid points that will fit in memory
+        :type nsmall:  [int, int, int]
+        :return:  number of processors needed in each direction
+        :rtype:  [int, int, int]
+        """
         zofac = 1 + 2 * self.ofrac
         for i in range(3):
             self.proc_grid[i] = ngrid[i]/float(nsmall[i])
@@ -192,8 +278,16 @@ class Psize:
         return self.proc_grid
 
     def set_focus(self, fine_length, nproc, coarse_length):
-        """ Calculate the number of levels of focusing required for each
-        processor subdomain """
+        """Calculate the number of levels of focusing required for each
+        processor subdomain.
+
+        :param fine_length:  fine grid length
+        :type fine_length:  [float, float, float]
+        :param nproc:  number of processors in each dimension
+        :type nproc:  [int, int, int]
+        :param coarse_length:  coarse grid length
+        :type coarse_length:  [float, float, float]
+        """
         nfoc = [0, 0, 0]
         for i in range(3):
             nfoc[i] = int(
@@ -209,38 +303,39 @@ class Psize:
         self.nfocus = nfocus
 
     def set_all(self):
-        """ Set up all of the things calculated individually above """
+        """Set up all of the things calculated individually above."""
         maxlen = self.maxlen
         minlen = self.minlen
         self.set_length(maxlen, minlen)
         mol_length = self.mol_length
-
         self.set_coarse_grid_dims(mol_length)
         coarse_length = self.coarse_length
-
         self.set_fine_grid_dims(mol_length, coarse_length)
         fine_length = self.fine_length
-
         self.set_center(maxlen, minlen)
-
         self.set_fine_grid_points(fine_length)
         ngrid = self.ngrid
-
         self.set_smallest(ngrid)
         nsmall = self.nsmall
-
         self.set_proc_grid(ngrid, nsmall)
         nproc = self.proc_grid
-
         self.set_focus(fine_length, nproc, coarse_length)
 
     def run_psize(self, filename):
-        """ Parse input PQR file and set parameters """
+        """Parse input PQR file and set parameters.
+
+        :param filename:  path of PQR file
+        :type filename:  str
+        """
         self.parse_input(filename)
         self.set_all()
 
     def __str__(self):
-        """ Return a string with the formatted results """
+        """Return a string with the formatted results.
+
+        :return:  string with formatted results
+        :rtype:  str
+        """
         str_ = "\n"
         if self.gotatom > 0:
             maxlen = self.maxlen
@@ -254,12 +349,9 @@ class Psize:
             nsmall = self.nsmall
             nproc = self.proc_grid
             nfocus = self.nfocus
-
             # Compute memory requirements
-
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             gmem = 200.0 * ngrid[0] * ngrid[1] * ngrid[2] / 1024 / 1024
-
             # Print the calculated entries
             str_ = str_ + "############### MOLECULE INFO ##################\n"
             str_ = str_ + "Number of ATOM entries = %i\n" % self.gotatom
@@ -280,19 +372,21 @@ class Psize:
                 coarse_length[0], coarse_length[1], coarse_length[2])
             str_ = str_ + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (
                 fine_length[0], fine_length[1], fine_length[2])
-            str_ = str_ + "Num. fine grid pts. = %i x %i x %i\n" % (
+            str_ = str_ + "Num. fine grid pts. = %d x %d x %d\n" % (
                 ngrid[0], ngrid[1], ngrid[2])
-
             if gmem > self.gmemceil:
-                str_ = str_ + ("Parallel solve required "
-                               "(%.3f MB > %.3f MB)\n") % (gmem, self.gmemceil)
-                str_ = str_ + "Total processors required = %i\n" % (
-                    nproc[0]*nproc[1]*nproc[2])
-                str_ = str_ + "Proc. grid = %i x %i x %i\n" % (
-                    nproc[0], nproc[1], nproc[2])
                 str_ = str_ + (
-                    "Grid pts. on each proc. = " "%i x %i x %i\n") % (
-                        nsmall[0], nsmall[1], nsmall[2])
+                    "Parallel solve required (%.3f MB > %.3f MB)\n" %
+                    (gmem, self.gmemceil))
+                str_ = str_ + (
+                    "Total processors required = %i\n" %
+                    (nproc[0]*nproc[1]*nproc[2]))
+                str_ = str_ + (
+                    "Proc. grid = %d x %d x %d\n" %
+                    (nproc[0], nproc[1], nproc[2]))
+                str_ = str_ + (
+                    "Grid pts. on each proc. = " "%d x %d x %d\n" %
+                    (nsmall[0], nsmall[1], nsmall[2]))
                 xglob = nproc[0]*round(nsmall[0]/(1 + 2*self.ofrac - 0.001))
                 yglob = nproc[1]*round(nsmall[1]/(1 + 2*self.ofrac - 0.001))
                 zglob = nproc[2]*round(nsmall[2]/(1 + 2*self.ofrac - 0.001))
@@ -309,16 +403,16 @@ class Psize:
                     "Estimated mem. required for parallel solve = %.3f "
                     "MB/proc.\n") % nsmem
                 ntot = nsmall[0]*nsmall[1]*nsmall[2]
-
             else:
-                str_ = str_ + "Fine mesh spacing = %g x %g x %g A\n" % (
-                    fine_length[0]/(ngrid[0]-1), fine_length[1]/(ngrid[1]-1),
-                    fine_length[2]/(ngrid[2]-1))
                 str_ = str_ + (
-                    "Estimated mem. required for sequential solve = %.3f "
-                    "MB\n") % gmem
+                    "Fine mesh spacing = %g x %g x %g A\n" % (
+                        fine_length[0]/(ngrid[0]-1),
+                        fine_length[1]/(ngrid[1]-1),
+                        fine_length[2]/(ngrid[2]-1)))
+                str_ = str_ + (
+                    "Estimated mem. required for sequential solve = %.3f MB\n"
+                    % gmem)
                 ntot = ngrid[0]*ngrid[1]*ngrid[2]
-
             str_ = str_ + "Number of focusing operations = %i\n" % nfocus
             str_ = str_ + "\n"
             str_ = str_ + "############ ESTIMATED REQUIREMENTS ############\n"
@@ -336,8 +430,8 @@ class Psize:
 def build_parser():
     """Build argument parser.
 
-    Returns:
-        ArgumentParser
+    :return:  argument parser
+    :rtype:  argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser(
         description="Set size parameters for APBS",

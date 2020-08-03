@@ -334,7 +334,7 @@ class SIGUIJ(BaseRecord):
         +---------+--------+----------+-------------------------------------+
         | 73-76   | string | seg_id   | Segment identifier, left-justified. |
         +---------+--------+----------+-------------------------------------+
-        | 77-78   | string | element  | Element symbol, right-justified.    |
+        | 77-78   | string | el.ment  | Element symbol, right-justified.    |
         +---------+--------+----------+-------------------------------------+
         | 79-80   | string | charge   | Charge on the atom.                 |
         +---------+--------+----------+-------------------------------------+
@@ -363,7 +363,7 @@ class SIGUIJ(BaseRecord):
 
 @register_line_parser
 class ANISOU(BaseRecord):
-    """ ANISOU class
+    """ANISOU class
 
     The ANISOU records present the anisotropic temperature factors.
     """
@@ -373,7 +373,7 @@ class ANISOU(BaseRecord):
 
         +---------+--------+----------+-------------------------------------+
         | COLUMNS | TYPE   | FIELD    | DEFINITION                          |
-        +=========+========+==========+=====================================|
+        +=========+========+==========+=====================================+
         | 7-11    | int    | serial   | Atom serial number.                 |
         +---------+--------+----------+-------------------------------------+
         | 13-16   | string | name     | Atom name.                          |

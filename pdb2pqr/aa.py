@@ -2,7 +2,8 @@
 
 This module contains the base amino acid structures for pdb2pqr.
 
-Author:  Todd Dolinsky
+.. codeauthor:: Todd Dolinsky
+.. codeauthor:: Nathan Baker
 """
 import logging
 from . import residue
@@ -15,27 +16,31 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Amino(residue.Residue):
-    """Amino class
+    """Amino acid class
 
-    This class provides standard features of the amino acids
+    This class provides standard features of the amino acids.
     """
+
     def __init__(self, atoms, ref):
-        """Constructor
+        """Initialize object.
 
-        Args:
-            atoms:  A list of Atom objects to be stored in this class (list)
-            ref:  The reference object for the amino acid.  Used to convert
-            from the alternate naming scheme to the main naming scheme.
+        .. todo:: need to see whether :func:`super().__init__()` should be
+            called
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
         """
-        # TODO - why isn't super().__init__() called?
         sample_atom = atoms[-1]
-
         self.atoms = []
         self.name = sample_atom.res_name
         self.chain_id = sample_atom.chain_id
         self.res_seq = sample_atom.res_seq
         self.ins_code = sample_atom.ins_code
-
         self.ffname = self.name
         self.map = {}
         self.dihedrals = []
@@ -50,7 +55,6 @@ class Amino(residue.Residue):
         self.reference = ref
         self.fixed = 0
         self.stateboolean = {}
-
         # Create each atom
         for atom_ in atoms:
             if atom_.name in ref.altnames:  # Rename atoms
@@ -62,10 +66,17 @@ class Amino(residue.Residue):
                 _LOGGER.debug("Ignoring atom %s", atom_.name)
 
     def create_atom(self, atomname, newcoords):
-        """Create an atom.  Override the generic residue's version of
-        create_atom().
+        """Create an atom.
+
+        .. todo:: Determine why this is different than superclass method.
+
+        Override the generic residue's version of create_atom().
+
+        :param atomname:  name of atom
+        :type atomname:  str
+        :param newcoords:  new coordinates for atom
+        :type newcoords:  [float, float, float]
         """
-        # TODO - OK to add a default type=ATOM argument like superclass?
         oldatom = self.atoms[0]
         newatom = struct.Atom(oldatom, "ATOM", self)
         newatom.x = newcoords[0]
@@ -78,8 +89,13 @@ class Amino(residue.Residue):
         self.add_atom(newatom)
 
     def add_atom(self, atom):
-        """Override the existing add_atom - include the link to the reference
-        object
+        """Add atom to residue.
+
+        Override the existing add_atom; include the link to the reference
+        object.
+
+        :param atom:  atom to add
+        :type atom:  Atom
         """
         self.atoms.append(atom)
         atomname = atom.name
@@ -98,12 +114,17 @@ class Amino(residue.Residue):
             atom.reference = None
 
     def add_dihedral_angle(self, value):
-        """Add the value to the list of chiangles"""
+        """Add a dihedral angle to the residue list.
+
+        :param value:  dihedral angle (in degrees) to add
+        :type value:  float
+        """
         self.dihedrals.append(value)
 
     def set_state(self):
         """Set the name to use for the forcefield based on the current state.
-        Uses N* and C* for termini.
+
+        Uses ``N*`` and ``C*`` for termini.
         """
         if self.is_n_term:
             if "NEUTRAL-NTERM" in self.patches:
@@ -122,26 +143,23 @@ class Amino(residue.Residue):
 
         This is necessary due to the shortcomings of the quatfit routine -
         given a tetrahedral geometry and two existing hydrogens, the quatfit
-        routines have two potential solutions.  This function uses basic
-        tetrahedral geometry to fix this issue.
+        routines have two potential solutions.
+        This function uses basic tetrahedral geometry to fix this issue.
 
-        Parameters
-            atomname: The atomname to add (string)
-        Returns
-            True if successful, False otherwise
+        :param atomname:  the atom name to add
+        :type atomname:  str
+        :return:  indication of whether this was successful
+        :rtype:  bool
         """
         hcount = 0
         nextatomname = None
-
         atomref = self.reference.map.get(atomname)
         if atomref is None:
             return False
         bondname = atomref.bonds[0]
-
         # Return if the bonded atom does not exist
         if not self.has_atom(bondname):
             return False
-
         # This group is tetrahedral if bondatom has 4 bonds,
         #  3 of which are hydrogens
         for bond in self.reference.map[bondname].bonds:
@@ -149,18 +167,14 @@ class Amino(residue.Residue):
                 hcount += 1
             elif bond != 'C-1' and bond != 'N+1':
                 nextatomname = bond
-
         # Check if this is a tetrahedral group
         if hcount != 3 or nextatomname is None:
             return False
-
         # Now rebuild according to the tetrahedral geometry
         bondatom = self.get_atom(bondname)
         nextatom = self.get_atom(nextatomname)
         numbonds = len(bondatom.bonds)
-
         if numbonds == 1:
-
             # Place according to two atoms
             coords = [bondatom.coords, nextatom.coords]
             refcoords = [
@@ -170,7 +184,6 @@ class Amino(residue.Residue):
             newcoords = quat.find_coordinates(
                 2, coords, refcoords, refatomcoords)
             self.create_atom(atomname, newcoords)
-
             # For LEU and ILE residues only: make sure the Hydrogens are in
             # staggered conformation instead of eclipsed.
             if isinstance(self, LEU):
@@ -180,7 +193,6 @@ class Amino(residue.Residue):
                                     bondatom.coords, hcoords)
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)
-
             elif isinstance(self, ILE):
                 hcoords = newcoords
                 cg1atom = self.get_atom('CG1')
@@ -194,139 +206,192 @@ class Amino(residue.Residue):
                 else:
                     ang = util.dihedral(cbatom.coords, nextatom.coords,
                                         bondatom.coords, hcoords)
-
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)
             return True
-
         elif numbonds == 2:
-
             # Get the single hydrogen coordinates
             hatom = None
             for bond in bondatom.reference.bonds:
                 if self.has_atom(bond) and bond.startswith("H"):
                     hatom = self.get_atom(bond)
                     break
-
             # Use the existing hydrogen and rotate about the bond
             self.rotate_tetrahedral(nextatom, bondatom, 120)
             newcoords = hatom.coords
             self.rotate_tetrahedral(nextatom, bondatom, -120)
             self.create_atom(atomname, newcoords)
-
             return True
-
         elif numbonds == 3:
-
             # Find the one spot the atom can be
             hatoms = []
             for bond in bondatom.reference.bonds:
                 if self.has_atom(bond) and bond.startswith("H"):
                     hatoms.append(self.get_atom(bond))
-
             # If this is more than two something is wrong
             if len(hatoms) != 2:
                 return False
-
             # Use the existing hydrogen and rotate about the bond
             self.rotate_tetrahedral(nextatom, bondatom, 120)
             newcoords1 = hatoms[0].coords
             self.rotate_tetrahedral(nextatom, bondatom, 120)
             newcoords2 = hatoms[0].coords
             self.rotate_tetrahedral(nextatom, bondatom, 120)
-
             # Determine which one hatoms[1] is not in
             if util.distance(hatoms[1].coords, newcoords1) > 0.1:
                 self.create_atom(atomname, newcoords1)
             else:
                 self.create_atom(atomname, newcoords2)
-
             return True
         return False
 
 
 class ALA(Amino):
-    """Alanine class"""
+    """Alanine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'A'
 
 
 class ARG(Amino):
-    """Arginine class"""
+    """Arginine class."""
 
     def __init__(self, atoms, ref):
-        """
-            Initialize the class
+        """Initialize object.
 
-            Parameters
-                atoms:      A list of Atom objects to be stored in this class
-                            (list)
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'R'
 
     def set_state(self):
-        """
-           Set the name to use for the forcefield based on the current
-           state.
-        """
+        """Set forcefield name based on current titration state."""
         if "AR0" in self.patches or self.name == "AR0":
             self.ffname = "AR0"
         Amino.set_state(self)
 
 
 class ASN(Amino):
-    """Asparagine class"""
+    """Asparagine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'N'
 
 
 class ASP(Amino):
-    """Aspartic Acid class"""
+    """Aspartic acid class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'D'
 
     def set_state(self):
-        """Set the name to use for the forcefield.
-
-        Name set based on the current state."""
+        """Set forcefield name based on current titration state."""
         if "ASH" in self.patches or self.name == "ASH":
             self.ffname = "ASH"
         Amino.set_state(self)
 
 
 class CYS(Amino):
-    """Cysteine class"""
+    """Cysteine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
         self.ss_bonded = 0
         self.ss_bonded_partner = None
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'C'
 
     def set_state(self):
-        """Set the state of the CYS object.
+        """Set forcefield name based on current state.
+
         If SS-bonded, use CYX.  If negatively charged, use CYM.  If HG is not
         present, use CYX.
         """
@@ -342,61 +407,123 @@ class CYS(Amino):
 
 
 class GLN(Amino):
-    """Glutamine class"""
+    """Glutamine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'Q'
 
 
 class GLU(Amino):
-    """Glutamic Acid class"""
+    """Glutamic acid class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'E'
 
     def set_state(self):
-        """Set the name to use for the forcefield.
-
-        Set based on the current state."""
+        """Set forcefield name based on current titration state."""
         if "GLH" in self.patches or self.name == "GLH":
             self.ffname = "GLH"
         Amino.set_state(self)
 
 
 class GLY(Amino):
-    """Glycine class"""
+    """Glycine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'G'
 
 
 class HIS(Amino):
-    """Histidine class"""
+    """Histidine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'H'
 
     def set_state(self):
-        """Histidines are a special case due to the presence of several
-        different forms.  This function sets all non- positive incarnations
-        of HIS to neutral HIS by checking to see if optimization removed
-        hacceptor or hdonor flags.  Otherwise HID is used as the default.
+        """Set forcefield name based on current titration state.
+
+        Histidines are a special case due to the presence of several different
+        forms.
+        This function sets all neutral forms of HIS to neutral HIS by checking
+        to see if optimization removed :makevar:`hacceptor` or
+        :makevar:`hdonor` flags.
+        Otherwise HID is used as the default.
         """
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
             if (
@@ -417,7 +544,6 @@ class HIS(Amino):
             else:  # Default to HID
                 if self.has_atom("HE2"):
                     self.remove_atom("HE2")
-
         if self.has_atom("HD1") and self.has_atom("HE2"):
             self.ffname = "HIP"
         elif self.has_atom("HD1"):
@@ -435,79 +561,170 @@ class HIS(Amino):
 
 
 class ILE(Amino):
-    """Isoleucine class"""
+    """Isoleucine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'I'
 
 
 class LEU(Amino):
-    """Leucine class"""
+    """Leucine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'L'
 
 
 class LYS(Amino):
-    """Lysine class"""
+    """Lysine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'K'
 
     def set_state(self):
-        """Determine if this is LYN or not"""
+        """Set forcefield name based on current titration state."""
         if "LYN" in self.patches or self.name == "LYN":
             self.ffname = "LYN"
         Amino.set_state(self)
 
 
 class MET(Amino):
-    """Methionine class"""
+    """Methionine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'M'
 
 
 class PHE(Amino):
-    """Phenylalanine class"""
+    """Phenylalanine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'F'
 
 
 class PRO(Amino):
-    """Proline class"""
+    """Proline class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'P'
 
     def set_state(self):
-        """Set the name to use for the forcefield based on the current state.
-        Uses N* and C* for termini.
+        """Set forcefield name based on the current state.
+
+        Uses ``N*`` and ``C*`` for termini.
         """
         if self.is_n_term:
             self.ffname = "N%s" % self.ffname
@@ -519,89 +736,174 @@ class PRO(Amino):
 
 
 class SER(Amino):
-    """Serine class"""
+    """Serine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'S'
 
 
 class THR(Amino):
-    """Threonine class"""
+    """Threonine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'T'
 
 
 class TRP(Amino):
-    """Tryptophan class """
+    """Tryptophan class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'W'
 
 
 class TYR(Amino):
-    """Tyrosine class"""
+    """Tyrosine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'Y'
 
     def set_state(self):
-        """See if the TYR is negative or not"""
+        """Set forcefield name based on current titration state."""
         if "TYM" in self.patches or self.name == "TYM":
             self.ffname = "TYM"
         Amino.set_state(self)
 
 
 class VAL(Amino):
-    """Valine class"""
+    """Valine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize object.
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the amino acid.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for amino acid.
+
+        :return:  amino acid 1-letter code
+        :rtype:  str
+        """
         return 'V'
 
 
 class WAT(residue.Residue):
-    """Water class"""
+    """Water class.
+
+    .. todo:: Why is water in the amino acid module?
+
+    """
     water_residue_names = ['HOH', 'WAT']
 
     def __init__(self, atoms, ref):
-        sample_atom = atoms[-1]
+        """Initialize object.
 
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the residue.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
+        sample_atom = atoms[-1]
         self.atoms = []
         self.name = sample_atom.res_name
         self.chain_id = sample_atom.chain_id
         self.res_seq = sample_atom.res_seq
         self.ins_code = sample_atom.ins_code
-
         self.fixed = 0
         self.ffname = "WAT"
         self.map = {}
         self.reference = ref
-
         # Create each atom
         for atom_ in atoms:
             if atom_.name in ref.altnames:  # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
-
             atom = struct.Atom(atom_, "HETATM", self)
             atomname = atom.name
             if atomname not in self.map:
@@ -611,8 +913,17 @@ class WAT(residue.Residue):
                 oldatom.alt_loc = ""
 
     def create_atom(self, atomname, newcoords):
-        """Create a water atom.  Note the HETATM field."""
-        # TODO - there is a huge amount of duplicated code in this module.
+        """Create a water atom.
+
+        Note the HETATM field.
+
+        .. todo::  There is a huge amount of duplicated code in this module.
+
+        :param atomname:  name of atom to be added
+        :type atomname:  str
+        :param newcoords:  coordinates for new atom
+        :type newcoords:  [float, float, float]
+        """
         oldatom = self.atoms[0]
         newatom = struct.Atom(oldatom, "HETATM", self)
         newatom.x = newcoords[0]
@@ -625,8 +936,13 @@ class WAT(residue.Residue):
         self.add_atom(newatom)
 
     def add_atom(self, atom):
-        """Override the existing add_atom - include the link to the reference
+        """Add an atom to the residue.
+
+        Override the existing add_atom - include the link to the reference
         object.
+
+        :param atom:  add atom to residue
+        :type atom:  Atom
         """
         self.atoms.append(atom)
         atomname = atom.name
@@ -646,31 +962,37 @@ class WAT(residue.Residue):
 
 
 class LIG(residue.Residue):
-    """Generic ligand class"""
+    """Generic ligand class."""
 
     def __init__(self, atoms, ref):
-        sample_atom = atoms[-1]
+        """Initialize this object.
 
+        .. todo:: why is the force field name "WAT" for this?
+
+        :param atoms:  A list of :class:`Atom` objects to be stored in this
+            object
+        :type atoms:  [Atom]
+        :param ref:  The reference object for the residue.
+            Used to convert from the alternate naming scheme to the main naming
+            scheme.
+        :type ref:  Residue
+        """
+        sample_atom = atoms[-1]
         self.atoms = []
         self.name = sample_atom.res_name
         self.chain_id = sample_atom.chain_id
         self.res_seq = sample_atom.res_seq
         self.ins_code = sample_atom.ins_code
-
         self.fixed = 0
-        # TODO - why is the ffname "WAT"?
         self.ffname = "WAT"
         self.map = {}
         self.reference = ref
-
         self.is_n_term = 0
         self.is_c_term = 0
-
         # Create each atom
         for atom_ in atoms:
             if atom_.name in ref.altnames:  # Rename atoms
                 atom_.name = ref.altnames[atom_.name]
-
             atom = struct.Atom(atom_, "HETATM", self)
             atomname = atom.name
             if atomname not in self.map:
@@ -680,6 +1002,13 @@ class LIG(residue.Residue):
                 oldatom.alt_loc = ""
 
     def create_atom(self, atomname, newcoords):
+        """Create a ligand atom.
+
+        :param atomname:  name of atom to be added
+        :type atomname:  str
+        :param newcoords:  coordinates for new atom
+        :type newcoords:  [float, float, float]
+        """
         oldatom = self.atoms[0]
         newatom = struct.Atom(oldatom, "HETATM", self)
         newatom.x = newcoords[0]
@@ -692,6 +1021,14 @@ class LIG(residue.Residue):
         self.add_atom(newatom)
 
     def add_atom(self, atom):
+        """Add an atom to the residue.
+
+        Override the existing add_atom - include the link to the reference
+        object.
+
+        :param atom:  add atom to residue
+        :type atom:  Atom
+        """
         self.atoms.append(atom)
         atomname = atom.name
         self.map[atomname] = atom

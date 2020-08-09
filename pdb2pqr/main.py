@@ -1,8 +1,10 @@
 """Perform functions related to _main_ execution of PDB2PQR.
 
 This module is intended for functions that directly touch arguments provided at
-the invocation of PDB2PQR.  It was created to avoid cluttering the __init__.py
-file.
+the invocation of PDB2PQR.
+It was created to avoid cluttering the __init__.py file.
+
+.. codeauthor:: Nathan Baker (et al.)
 """
 import logging
 import argparse
@@ -37,10 +39,13 @@ CHARGE_ERROR = 1e-3
 def build_parser():
     """Build an argument parser.
 
-    Return:
-        ArgumentParser() object
-    """
+    .. todo::
+        Need separate argparse groups for PDB2PKA and PROPKA.
+        These exist but need real options.
 
+    :returns:  argument parser
+    :rtype:  argparse.ArgumentParser
+    """
     desc = TITLE_FORMAT_STRING.format(version=VERSION)
     pars = argparse.ArgumentParser(
         description=desc,
@@ -140,8 +145,6 @@ def build_parser():
         help=(
             'pH values to use when applying the results of the selected pH '
             'calculation method.'))
-    # TODO - need separate argparse groups for PDB2PKA and PROPKA
-    # These exist but need real options
     grp4 = pars.add_argument_group(title="PDB2PKA method options")
     grp4.add_argument(
         '--pdb2pka-out', default='pdb2pka_output',
@@ -163,8 +166,8 @@ def build_parser():
 def print_splash_screen(args):
     """Print argument overview and citation information.
 
-    Args:
-        args:  argparse namespace
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
     """
     _LOGGER.debug("Args:  %s", args)
     _LOGGER.info("%s", TITLE_FORMAT_STRING.format(version=VERSION))
@@ -175,18 +178,16 @@ def print_splash_screen(args):
 def check_files(args):
     """Check for other necessary files.
 
-    Args:
-        args:  argparse namespace
-    Raises:
-        FileNotFoundError:  necessary files not found
-        RuntimeError:  input argument or file parsing problems
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :raises FileNotFoundError:  necessary files not found
+    :raises RuntimeError:  input argument or file parsing problems
     """
     if args.usernames is not None:
         usernames = Path(args.usernames)
         if not usernames.is_file():
             error = "User-provided names file does not exist: %s" % usernames
             raise FileNotFoundError(error)
-
     if args.userff is not None:
         userff = Path(args.userff)
         if not userff.is_file():
@@ -196,9 +197,7 @@ def check_files(args):
             err = '--usernames must be specified if using --userff'
             raise RuntimeError(err)
     elif args.ff is not None:
-        if io.test_dat_file(args.ff) == "":
-            err = "Unable to load parameter file for forcefield %s" % args.ff
-            raise RuntimeError(err)
+        io.test_dat_file(args.ff)
     if args.ligand is not None:
         ligand = Path(args.ligand)
         if not ligand.is_file():
@@ -209,10 +208,9 @@ def check_files(args):
 def check_options(args):
     """Sanity check options.
 
-    Args:
-        args:  argparse namespace
-    Raises:
-        RuntimeError:  silly option combinations were encountered.
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :raises RuntimeError:  silly option combinations were encountered.
     """
     if (args.ph < 0) or (args.ph > 14):
         err = (
@@ -230,14 +228,18 @@ def check_options(args):
 def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
     """Print output to specified file
 
-    TODO - move this to another module (utilities)
+    .. todo::  Move this to another module (utilities)
 
-    Args:
-        args:  argparse namespace
-        pqr_lines:  output lines (records)
-        header_lines:  header lines
-        missing_lines:  lines describing missing atoms (should go in header)
-        is_cif:  flag indicating CIF-format
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :param pqr_lines:  output lines (records)
+    :type pqr_lines:  list
+    :param header_lines:  header lines
+    :type header_lines:  [str]
+    :param missing_lines:  lines describing missing atoms (should go in header)
+    :type missing_lines:  [str]
+    :param is_cif:  flag indicating CIF format
+    :type is_cif:  bool
     """
     with open(args.output_pqr, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
@@ -273,12 +275,12 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
 def transform_arguments(args):
     """Transform arguments with logic not provided by argparse.
 
-    TODO - I wish this could be done with argparse.
+    .. todo::  I wish this could be done with argparse.
 
-    Args:
-        args:  argparse namespace
-    Returns:
-        argparse namespace
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :return:  modified arguments
+    :rtype:  argparse.Namespace
     """
     if args.assign_only or args.clean:
         args.debump = False
@@ -295,14 +297,15 @@ def transform_arguments(args):
 def setup_molecule(pdblist, definition, ligand_path):
     """Set up the molecular system.
 
-    Args:
-        pdblist:  list of PDB records
-        definition:  topology definition
-        ligand_path:  path to ligand (may be None)
-    Returns:
-        protein:  protein object
-        definition:  definition object (revised if ligand was parsed)
-        ligand:  ligand object (may be None)
+    :param pdblist:  list of PDB records
+    :type pdblist:  list
+    :param definition:  topology definition
+    :type definition:  Definition
+    :param ligand_path:  path to ligand (may be None)
+    :type ligand_path:  str
+    :return: (protein object, definition object--revised if ligand was
+        parsed, ligand object--may be None)
+    :rtype: (Protein, Definition, Ligand)
     """
     if ligand_path is not None:
         ligand = Mol2Molecule()
@@ -332,14 +335,14 @@ def setup_molecule(pdblist, definition, ligand_path):
 def is_repairable(protein, has_ligand):
     """Determine if the protein can be (or needs to be) repaired.
 
-    Args:
-        protein:  protein object
-        has_ligand:  does the system contain a ligand? (bool)
-    Returns:
-        Boolean
-    Raises:
-        ValueError if there are insufficient heavy atoms or a significant part
-        of the protein is missing
+    :param protein:  protein object
+    :type protein:  Protein
+    :param has_ligand:  does the system contain a ligand?
+    :type has_ligand:  bool
+    :return:  indication of whether protein can be repaired
+    :rtype:  bool
+    :raises ValueError: if there are insufficient heavy atoms or a significant
+        part of the protein is missing
     """
     num_heavy = protein.num_heavy
     num_missing = protein.num_missing_heavy
@@ -376,13 +379,13 @@ def is_repairable(protein, has_ligand):
 def drop_water(pdblist):
     """Drop waters from a list of PDB records.
 
-    TODO - this module is already too long but this function fits better here.
-    Other possible place would be utilities.
+    .. todo:: this module is already too long but this function fits better
+        here. Other possible place would be utilities.
 
-    Args:
-        pdb_list:  list of PDB records as returned by io.get_molecule
-    Returns:
-        new list of PDB records with waters removed.
+    :param pdb_list:  list of PDB records as returned by io.get_molecule
+    :type pdb_list:  [str]
+    :return:  new list of PDB records with waters removed.
+    :rtype:  [str]
     """
     pdblist_new = []
     for record in pdblist:
@@ -397,12 +400,13 @@ def drop_water(pdblist):
 def run_propka(args, protein):
     """Run a PROPKA calculation.
 
-    Args:
-        args:  argparse namespace
-        protein:  protein object
-    Returns:
-        1. DataFrame of assigned pKa values
-        2. string with filename of PROPKA-created pKa file
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :param protein:  protein object
+    :type protein:  Protein
+    :return:  (DataFrame of assigned pKa values, string with filename of
+        PROPKA-created pKa file)
+    :rtype:  (pandas.DataFrame, str)
     """
     # TODO - eliminate need to write temporary file
     lines = io.print_protein_atoms(
@@ -445,16 +449,22 @@ def run_propka(args, protein):
 def non_trivial(args, protein, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
-    Args:
-        args:  argparse namespace.
-        protein:  Protein object.  This is not actually specific to proteins...
-                  Nucleic acids are biomolecules, too!
-        ligand:  Mol2Molecule object or None
-        definition:  Definition object for topology.
-        is_cif:  Boolean indicating whether file is CIF format.
-    Returns:
-        Dictionary with results.
-        TODO - replace this with a more robust return option
+    .. todo::
+       These routines should be generalized to biomolecules; none of them are
+       specific to proteins.
+
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :param protein:  biomolecule
+    :type protein:  Protein
+    :param ligand:  ligand object or None
+    :type ligand:  Mol2Molecule
+    :param definition:  topology definition
+    :type definition:  Definition
+    :param is_cif:  indicates whether file is CIF format
+    :type is_cif:  bool
+    :return:  dictionary with results
+    :rtype:  dict
     """
     _LOGGER.info("Loading forcefield.")
     forcefield_ = forcefield.Forcefield(args.ff, definition, args.userff,
@@ -566,8 +576,8 @@ def main_driver(args):
 
     Validate inputs, launch PDB2PQR, handle output.
 
-    Args:
-        args:  argument namespace object (e.g., as returned by argparse).
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
     """
     io.setup_logger(args.output_pqr, args.log_level)
     _LOGGER.debug("Invoked with arguments: %s", args)

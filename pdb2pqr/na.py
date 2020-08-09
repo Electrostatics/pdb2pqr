@@ -2,7 +2,8 @@
 
 This module contains the base nucleic acid structures for pdb2pqr.
 
-Author:  Todd Dolinsky
+.. codeauthor::  Todd Dolinsky
+.. codeauthor::  Nathan Baker
 """
 from . import residue
 from . import structures as struct
@@ -41,13 +42,17 @@ class Nucleic(residue.Residue):
                 atom_ = struct.Atom(atom, "ATOM", self)
                 self.add_atom(atom_)
 
-    # TODO - here's some more code that's duplicated all over the place.
     def create_atom(self, atomname, newcoords):
-        """Create an atom.  Overrides the generic residue's create_atom().
+        """Create an atom.
 
-        Args:
-            atomname:  The name of the atom to add (string)
-            newcoords: The coordinates of the atom (list)
+        Overrides the generic residue's create_atom().
+
+        .. todo:: This code is duplicated in several places.
+
+        :param atomname:  the name of the atom to add
+        :type atomname:  str
+        :param newcoords:  the coordinates of the atom
+        :type newcoords:  [(float, float, float)]
         """
         oldatom = self.atoms[0]
         newatom = struct.Atom(oldatom, "ATOM", self)
@@ -61,8 +66,13 @@ class Nucleic(residue.Residue):
         self.add_atom(newatom)
 
     def add_atom(self, atom):
-        """Override the existing add_atom - include the link to the reference
+        """Add existing atom to system.
+
+        Override the existing add_atom - include the link to the reference
         object.
+
+        :param atom:  atom to add to system.
+        :type atom:  Atom
         """
         self.atoms.append(atom)
         atomname = atom.name
@@ -80,7 +90,11 @@ class Nucleic(residue.Residue):
             atom.reference = None
 
     def add_dihedral_angle(self, value):
-        """Add the value to the list of chiangles."""
+        """Add the value to the list of chi angles.
+
+        :param value:  dihedral angle to add to list (in degrees)
+        :type value:  float
+        """
         self.dihedrals.append(value)
 
     def set_state(self):
@@ -92,16 +106,27 @@ class Nucleic(residue.Residue):
 
 
 class ADE(Nucleic):
-    """Adenosine class"""
+    """Adenosine class."""
 
     def __init__(self, atoms, ref):
+        """Initialize residue.
+
+        :param atoms:  add atoms to residue
+        :type atoms:  [Atom]
+        """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for nucleic acid.
+
+        :return:  letter code for nucleic acid
+        :rtype:  str
+        """
         return 'A'
 
     def set_state(self):
+        """Set ribo- vs. deoxyribo- state of this residue."""
         if self.has_atom("O2'"):
             self.ffname = "RA"
         else:
@@ -113,13 +138,24 @@ class CYT(Nucleic):
     """Cytidine class"""
 
     def __init__(self, atoms, ref):
+        """Initialize residue.
+
+        :param atoms:  add atoms to residue
+        :type atoms:  [Atom]
+        """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for nucleic acid.
+
+        :return:  letter code for nucleic acid
+        :rtype:  str
+        """
         return 'C'
 
     def set_state(self):
+        """Set ribo- vs. deoxyribo- state of this residue."""
         if self.has_atom("O2'"):
             self.ffname = "RC"
         else:
@@ -131,13 +167,24 @@ class GUA(Nucleic):
     """Guanosine class"""
 
     def __init__(self, atoms, ref):
+        """Initialize residue.
+
+        :param atoms:  add atoms to residue
+        :type atoms:  [Atom]
+        """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for nucleic acid.
+
+        :return:  letter code for nucleic acid
+        :rtype:  str
+        """
         return 'G'
 
     def set_state(self):
+        """Set ribo- vs. deoxyribo- state of this residue."""
         if self.has_atom("O2'"):
             self.ffname = "RG"
         else:
@@ -149,13 +196,24 @@ class THY(Nucleic):
     """Thymine class"""
 
     def __init__(self, atoms, ref):
+        """Initialize residue.
+
+        :param atoms:  add atoms to residue
+        :type atoms:  [Atom]
+        """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for nucleic acid.
+
+        :return:  letter code for nucleic acid
+        :rtype:  str
+        """
         return 'T'
 
     def set_state(self):
+        """Set ribo- vs. deoxyribo- state of this residue."""
         self.ffname = "DT"
         Nucleic.set_state(self)
 
@@ -164,13 +222,24 @@ class URA(Nucleic):
     """Uridine class"""
 
     def __init__(self, atoms, ref):
+        """Initialize residue.
+
+        :param atoms:  add atoms to residue
+        :type atoms:  [Atom]
+        """
         Nucleic.__init__(self, atoms, ref)
         self.reference = ref
 
     def letter_code(self):
+        """Return letter code for nucleic acid.
+
+        :return:  letter code for nucleic acid
+        :rtype:  str
+        """
         return 'U'
 
     def set_state(self):
+        """Set ribo- vs. deoxyribo- state of this residue."""
         self.ffname = "RU"
         Nucleic.set_state(self)
 

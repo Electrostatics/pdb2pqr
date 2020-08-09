@@ -42,13 +42,14 @@ class DuplicateFilter(logging.Filter):
 
 
 def print_protein_atoms(atomlist, chainflag=False, pdbfile=False):
-    """Get text lines for specified atoms
+    """Get PDB-format text lines for specified atoms.
 
-    Args:
-        atomlist:  The list of atoms to include (list)
-        chainflag:  Flag whether to print chainid or not
-    Returns:
-        text:  list of (stringed) atoms (list)
+    :param atomlist:  the list of atoms to include
+    :type atomlist:  [Atom]
+    :param chainflag:  flag whether to print chainid or not
+    :type chainflag:  bool
+    :return:  list of strings, each representing an atom PDB line
+    :type:  [str]
     """
     text = []
     currentchain_id = None
@@ -69,12 +70,12 @@ def print_protein_atoms(atomlist, chainflag=False, pdbfile=False):
 
 
 def get_old_header(pdblist):
-    """Get old header from list of PDBs.
+    """Get old header from list of :mod:`pdb` objects.
 
-    Args:
-        pdblist:  list of PDBs
-    Returns:
-        Old header as string.
+    :param pdblist:  list of :mod:`pdb` block objects
+    :type pdblist:  []
+    :return:  old header as string
+    :rtype:  str
     """
     old_header = io.StringIO()
     header_types = (
@@ -91,19 +92,26 @@ def get_old_header(pdblist):
 def print_pqr_header(
         pdblist, atomlist, reslist, charge, force_field, ph_calc_method, ph,
         ffout, include_old_header=False):
-    """Print the header for the PQR file
+    """Print the header for the PQR file.
 
-    Args:
-        pdblist:  list of lines from original PDB with header
-        atomlist: A list of atoms that were unable to have charges assigned
-                  (list)
-        reslist:  A list of residues with non-integral charges (list)
-        charge:  The total charge on the protein (float)
-        ff:  The forcefield name (string)
-        ph:  pH value, if any. (float)
-        ffout:  ff used for naming scheme (string)
-    Returns
-        header:  The header for the PQR file (string)
+    :param pdblist:  list of lines from original PDB with header
+    :type pdblist:  [str]
+    :param atomlist:  a list of atoms that were unable to have charges assigned
+    :type atomlist:  [Atom]
+    :param reslist:  a list of residues with non-integral charges
+    :type reslist:  [Residue]
+    :param charge:  the total charge on the protein
+    :type charge:  float
+    :param force_field:  the forcefield name
+    :type force_field:  str
+    :param ph_calc_method:  pKa calculation method
+    :type ph_calc_method:  str
+    :param ph:  pH value, if any
+    :type ph:  float
+    :param ffout:  forcefield used for naming scheme
+    :type ffout:  str
+    :return:  the header for the PQR file
+    :rtype:  str
     """
     if force_field is None:
         force_field = 'User force field'
@@ -163,20 +171,27 @@ def print_pqr_header(
     return head
 
 
-def print_pqr_header_cif(atomlist, reslist, charge, force_field,
-                         ph_calc_method, ph, ffout, include_old_header=False):
-    """Print the header for the PQR file in cif format.
+def print_pqr_header_cif(
+        atomlist, reslist, charge, force_field, ph_calc_method, ph, ffout,
+        include_old_header=False):
+    """Print the header for the PQR file in CIF format.
 
-    Args:
-        atomlist: A list of atoms that were unable to have charges assigned
-                  (list)
-        reslist:  A list of residues with non-integral charges (list)
-        charge:  The total charge on the protein (float)
-        force_field:  The forcefield name (string)
-        ph:  pH value, if any. (float)
-        ffout:  ff used for naming scheme (string)
-    Returns
-        header:  The header for the PQR file (string)
+    :param atomlist:  a list of atoms that were unable to have charges assigned
+    :type atomlist:  [Atom]
+    :param reslist:  a list of residues with non-integral charges
+    :type reslist:  [Residue]
+    :param charge:  the total charge on the protein
+    :type charge:  float
+    :param force_field:  the forcefield name
+    :type force_field:  str
+    :param ph_calc_method:  pKa calculation method
+    :type ph_calc_method:  str
+    :param ph:  pH value, if any
+    :type ph:  float
+    :param ffout:  forcefield used for naming scheme
+    :type ffout:  str
+    :return:  the header for the PQR file
+    :rtype:  str
     """
     if force_field is None:
         force_field = "User force field"
@@ -233,9 +248,10 @@ def print_pqr_header_cif(atomlist, reslist, charge, force_field,
 def dump_apbs(output_pqr, output_path):
     """Generate and dump APBS input files related to output_pqr.
 
-    Args:
-        output_pqr:  path to PQR file used to generate APBS input file
-        output_path:  path for APBS input file output
+    :param output_pqr:  path to PQR file used to generate APBS input file
+    :type output_pqr:  str
+    :param output_path:  path for APBS input file output
+    :type output_path:  str
     """
     method = "mg-auto"
     size = psize.Psize()
@@ -248,11 +264,13 @@ def dump_apbs(output_pqr, output_path):
 def test_for_file(name, type_):
     """Test for the existence of a file with a few name permutations.
 
-    Args:
-        name:  name of file
-        type_:  type of file
-    Returns:
-        path to file or None
+    :param name:  name of file
+    :type name:  str
+    :param type_:  type of file
+    :type type_:  str
+    :return:  path to file
+    :raises FileNotFoundError:  if file not found
+    :rtype:  Path
     """
     if name is None:
         return ''
@@ -270,41 +288,42 @@ def test_for_file(name, type_):
                 if test_path.is_file():
                     _LOGGER.debug("Found %s file %s", type_, test_path)
                     return test_path
-    _LOGGER.warning("Unable to find %s file for %s", type_, name)
-    return ""
+    err = "Unable to find %s file for %s" % (type_, name)
+    raise FileNotFoundError(err)
 
 
 def test_names_file(name):
-    """Test for the *.names file that contains the XML mapping.
+    """Test for the .names file that contains the XML mapping.
 
-    Args:
-        name:  The name of the forcefield (string)
-    Returns
-        path:  The path to the file (string)
+    :param name:  the name of the forcefield
+    :type name:  str
+    :returns:  the path to the file
+    :rtype:  Path
+    :raises FileNotFoundError:  file not found
     """
     return test_for_file(name, "NAMES")
 
 
 def test_dat_file(name):
-    """Test for the existence of the forcefield file with a few name
-    permutations.
+    """Test for the forcefield file with a few name permutations.
 
-    Args:
-        name of forcefield
-    Returns:
-        filename or empty string
+    :param name:  the name of the dat file
+    :type name:  str
+    :returns:  the path to the file
+    :rtype:  Path
+    :raises FileNotFoundError:  file not found
     """
     return test_for_file(name, "DAT")
 
 
 def test_xml_file(name):
-    """Test for the existence of the forcefield file with a few name
-    permutations.
+    """Test for the XML file with a few name permutations.
 
-    Args:
-        name of the xml file
-    Returns:
-        filename or empty string
+    :param name:  the name of the dat file
+    :type name:  str
+    :returns:  the path to the file
+    :rtype:  Path
+    :raises FileNotFoundError:  file not found
     """
     return test_for_file(name, "xml")
 
@@ -316,13 +335,13 @@ def get_pdb_file(name):
     available, obtain the file from the PDB webserver at
     http://www.rcsb.org/pdb/
 
-    TODO - this should be a context manager (to close the open file)
+    .. todo::  This should be a context manager (to close the open file).
+    .. todo::  Remove hard-coded parameters.
 
-    Args:
-        name:  Name of PDB file to obtain (string)
-
-    Returns
-        file:  File object containing PDB file (file object)
+    :param name:  name of PDB file (path) or PDB ID
+    :type name:  str
+    :return:  file-like object containing PDB file
+    :rtype:  file
     """
     path = Path(name)
     if path.is_file():
@@ -339,60 +358,51 @@ def get_pdb_file(name):
 
 
 def get_molecule(input_path):
-    """Get molecular structure information.
+    """Get molecular structure information as a series of parsed lines.
 
-    Args:
-        input_path:  structure file PDB ID or path
-    Returns:
-        list of molecule records (lines)
-        Boolean indicating whether entry is CIF
-    Raises:
-        RuntimeError:  problems with structure file
+    :param input_path:  structure file PDB ID or path
+    :type intput_path:  str
+    :return: (list of molecule records, Boolean indicating whether entry is
+        CIF)
+    :rtype:  ([str], bool)
+    :raises RuntimeError:  problems with structure file
     """
     path = Path(input_path)
     input_file = get_pdb_file(input_path)
     is_cif = False
-
     if path.suffix.lower() == ".cif":
         pdblist, errlist = cif.read_cif(input_file)
         is_cif = True
     else:
         pdblist, errlist = pdb.read_pdb(input_file)
-
     if len(pdblist) == 0 and len(errlist) == 0:
         raise RuntimeError("Unable to find file %s!" % path)
-
     if len(errlist) != 0:
         if is_cif:
             _LOGGER.warning("Warning: %s is a non-standard CIF file.\n", path)
         else:
             _LOGGER.warning("Warning: %s is a non-standard PDB file.\n", path)
         _LOGGER.error(errlist)
-
     return pdblist, is_cif
 
 
-def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
-                    patch_path=PATCH_DEF_PATH):
-    """Get topology definition files.
+def get_definitions(
+        aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
+        patch_path=PATCH_DEF_PATH):
+    """Load topology definition files.
 
-    Args:
-        aa_path:  likely location of amino acid topology definitions
-        na_path:  likely location of nucleic acid topology definitions
-        patch_path:  likely location of patch topology definitions
-
-    Returns:
-        Definitions object.
+    :param aa_path:  likely location of amino acid topology definitions
+    :type aa_path:  str
+    :param na_path:  likely location of nucleic acid topology definitions
+    :type na_path:  str
+    :param patch_path:  likely location of patch topology definitions
+    :type patch_path:  str
+    :return:  topology Definitions object.
+    :rtype:  Definition
     """
     aa_path_ = test_xml_file(aa_path)
-    if not aa_path_:
-        raise FileNotFoundError("Unable to locate %s" % aa_path)
     na_path_ = test_xml_file(na_path)
-    if not na_path_:
-        raise FileNotFoundError("Unable to locate %s" % na_path)
     patch_path_ = test_xml_file(patch_path)
-    if not patch_path_:
-        raise FileNotFoundError("Unable to locate %s" % patch_path)
     with open(aa_path_, "rt") as aa_file:
         with open(na_path_, "rt") as na_file:
             with open(patch_path_, "rt") as patch_file:
@@ -402,8 +412,16 @@ def get_definitions(aa_path=AA_DEF_PATH, na_path=NA_DEF_PATH,
 
 
 def setup_logger(output_pqr, level='DEBUG'):
-    """ Setup the logger to output the log file to the same directory as PQR
-    output."""
+    """Setup the logger.
+
+    Setup logger to output the log file to the same directory as PQR
+    output.
+
+    :param output_pqr:  path to PQR file
+    :type output_pqr:  str
+    :param level:  logging level
+    :type level:  str
+    """
     # Get the output logging location
     output_pth = Path(output_pqr)
     log_file = Path(output_pth.parent, output_pth.stem + '.log')

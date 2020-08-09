@@ -1,19 +1,24 @@
 """Biomolecular residue class.
 
-Author:  Todd Dolinsky
+.. codeauthor:: Todd Dolinsky
+.. codeauthor:: Nathan Baker
 """
+import logging
 from . import pdb
 from . import structures
 from . import utilities as util
 from . import quatfit as quat
 
 
+_LOGGER = logging.getLogger(__name__)
+
+
 class Residue(object):
     """Residue class
 
-    TODO - move this class to a separate file
-    TODO BUG FIXME - Should this class have a member variable for dihedrals?
-    Pylint complains!
+    .. todo::
+       Should this class have a member variable for dihedrals? Pylint
+       complains!
 
     The residue class contains a list of Atom objects associated with that
     residue and other helper functions.
@@ -22,8 +27,9 @@ class Residue(object):
     def __init__(self, atoms):
         """Initialize the class
 
-        Args:
-            atoms:  list of Atom objects to be stored in this class (list)
+        :param atoms:  list of atom-like (:class:`HETATM` or :class:`ATOM`)
+            objects to be stored
+        :type atoms:  list
         """
         sample_atom = atoms[-1]
         self.atoms = []
@@ -36,7 +42,7 @@ class Residue(object):
         self.reference = None
         self.is_n_term = None
         self.is_c_term = None
-
+        self.dihedrals = []
         atomclass = ""
         for atom in atoms:
             if isinstance(atom, pdb.ATOM):
@@ -50,7 +56,6 @@ class Residue(object):
             else:  # Don't add duplicate atom
                 oldatom = self.get_atom(atomname)
                 oldatom.alt_loc = ""
-
         if self.name == "HOH":
             self.name = "WAT"
             for atom in self.atoms:
@@ -62,11 +67,14 @@ class Residue(object):
         return text
 
     def get_moveable_names(self, pivot):
-        """Return all atomnames that are further away than the pivot atom.
+        """Return all atom names that are further away than the pivot atom.
 
-        Parameters
-            residue:  The residue to use
-            pivot:    The pivot atomname
+        :param residue:  the residue to use
+        :type residue:  Residue
+        :param pivot:  the pivot atomname
+        :type pivot:  str
+        :return:  names of atoms further away than pivot atom
+        :rtype:  [str]
         """
         movenames = []
         refdist = self.get_atom(pivot).refdistance
@@ -76,7 +84,7 @@ class Residue(object):
         return movenames
 
     def update_terminus_status(self):
-        """Update the is_n_terms and is_c_term flags"""
+        """Update the :makevar:`is_n_terms` and :makevar:`is_c_term` flags."""
         # If Nterm then update counter of hydrogens
         if self.is_n_term:
             count = 0
@@ -87,7 +95,6 @@ class Residue(object):
                     if atom == atomname:
                         count = count+1
             self.is_n_term = count
-
         # If Cterm then update counter
         if self.is_c_term:
             self.is_c_term = None
@@ -100,11 +107,14 @@ class Residue(object):
                 self.is_c_term = 1
 
     def set_res_seq(self, value):
-        """Set the atom field res_seq to a certain value and change the
-        residue's information.  The icode field is no longer useful.
+        """Change the residue sequence number.
 
-        Args:
-            value:  The new value of res_seq (int)
+        Set the atom field :makevar:`res_seq` and change the residue's
+        information.
+        The :makevar:`icode` field is no longer useful.
+
+        :param value:  the new value of :makevar:`res_seq`
+        :type value:  int
         """
         self.ins_code = ""
         self.res_seq = value
@@ -112,7 +122,11 @@ class Residue(object):
             atom.res_seq = value
 
     def set_chain_id(self, value):
-        """Set the chain_id field to a certain value"""
+        """Set the chain ID.
+
+        :param value:  new :makevar:`chain_id` value
+        :type value:  str
+        """
         self.chain_id = value
         for atom in self.atoms:
             atom.chain_id = value
@@ -120,8 +134,7 @@ class Residue(object):
     def add_atom(self, atom):
         """Add the atom object to the residue.
 
-        Args:
-            atom: The object to be added (ATOM)
+        :param atom: atom-like object, e.g., :class:`HETATM` or :class:`ATOM`
         """
         self.atoms.append(atom)
         self.map[atom.name] = atom
@@ -129,17 +142,15 @@ class Residue(object):
     def remove_atom(self, atomname):
         """Remove an atom from the residue object.
 
-        Args:
-            atomname: The name of the atom to be removed (string)
+        :param atomname:  the name of the atom to be removed
+        :type atomname:  str
         """
         # Delete the atom from the map
         atom = self.map[atomname]
         bonds = atom.bonds
         del self.map[atomname]
-
         # Delete the atom from the list
         self.atoms.remove(atom)
-
         # Delete all instances of the atom as a bond
         for bondatom in bonds:
             if atom in bondatom.bonds:
@@ -147,11 +158,12 @@ class Residue(object):
         del atom
 
     def rename_atom(self, oldname, newname):
-        """Rename an atom to a new name
+        """Rename an atom to a new name.
 
-        Args:
-            oldname: The old atom name (string)
-            newname: The new atom name (string)
+        :param oldname:  old atom name
+        :type oldname:  str
+        :param newname:  new atom name
+        :type newname:  str
         """
         atom = self.map[oldname]
         atom.name = newname
@@ -164,10 +176,12 @@ class Residue(object):
         Uses an atom currently in the residue to seed the new atom object,
         then replaces the coordinates and name accordingly.
 
-        Args:
-            name:  The name of the new atom (string)
-            newcoords:  The x,y,z coordinates of the new atom (list)
-            type:  The type of atom, ATOM or HETATM
+        :param name:  name of the new atom
+        :type name:  str
+        :param newcoords:  x,y,z coordinates of the new atom
+        :type newcoords:  [float, float, float]
+        :param type_:  type of atom: ATOM or HETATM
+        :type type_:  str
         """
         oldatom = self.atoms[0]
         newatom = structures.Atom(oldatom, type_, self)
@@ -180,15 +194,23 @@ class Residue(object):
         self.add_atom(newatom)
 
     def get_atom(self, name):
-        """Retrieve an atom from the mapping
+        """Retrieve a residue atom based on its name.
 
-        Args:
-            resname: The name of the residue to retrieve (string)
+        :param resname:  name of the residue to retrieve
+        :type resname:  str
+        :return:  residue
+        :rtype:  structures.Atom
         """
         return self.map.get(name)
 
     def has_atom(self, name):
-        """Return True if atom in residue."""
+        """Return True if atom in residue.
+
+        :param name:  atom name in question
+        :type name:  str
+        :return:  True if atom in residue
+        :rtype:  bool
+        """
         return name in self.map
 
     @property
@@ -207,10 +229,10 @@ class Residue(object):
         return charge
 
     def rename_residue(self, name):
-        """Rename a given residue
+        """Rename the residue.
 
-        Args:
-            name:  The new name of the residue
+        :param name:  the new name of the residue
+        :type name:  str
         """
         self.name = name
         for atom in self.atoms:
@@ -218,25 +240,26 @@ class Residue(object):
 
     @classmethod
     def rotate_tetrahedral(cls, atom1, atom2, angle):
-        """Rotate about the atom1-atom2 bond by a given angle
+        """Rotate about the atom1-atom2 bond by a given angle.
+
         All atoms connected to atom2 will rotate.
 
-        Args:
-            atom1:  The first atom of the bond to rotate about (atom)
-            atom2:  The second atom of the bond to rotate about (atom)
-            angle:  The number of degrees to rotate (float)
+        :param atom1:  first atom of the bond to rotate about
+        :type atom1:  structures.Atom
+        :param atom2:  second atom of the bond to rotate about
+        :type atom2:  structures.Atom
+        :param angle:  degrees to rotate
+        :type angle:  float
         """
         moveatoms = []
         movecoords = []
         initcoords = util.subtract(atom2.coords, atom1.coords)
-
         # Determine which atoms to rotate
         for atom in atom2.bonds:
             if atom == atom1:
                 continue
             moveatoms.append(atom)
             movecoords.append(util.subtract(atom.coords, atom1.coords))
-
         newcoords = quat.qchichange(initcoords, movecoords, angle)
         for iatom, atom in enumerate(moveatoms):
             atom.x = newcoords[iatom][0] + atom1.x
@@ -244,69 +267,61 @@ class Residue(object):
             atom.z = newcoords[iatom][2] + atom1.z
 
     def pick_dihedral_angle(self, conflict_names, oldnum=None):
-        """Choose an angle number to use in debumping
+        """Choose an angle number to use in debumping.
 
-        Algorithm
-            Instead of simply picking a random chiangle, this function
-            uses a more intelligent method to improve efficiency.
-            The algorithm uses the names of the conflicting atoms
-            within the residue to determine which angle number
-            has the best chance of fixing the problem(s). The method
-            also insures that the same chiangle will not be run twice
-            in a row.
+        Instead of simply picking a random chiangle, this function
+        uses a more intelligent method to improve efficiency.
+        The algorithm uses the names of the conflicting atoms
+        within the residue to determine which angle number
+        has the best chance of fixing the problem(s). The method
+        also insures that the same chiangle will not be run twice
+        in a row.
 
-        Parameters
-            residue:  The residue that is being debumped (Residue)
-            conflict_names: A list of atom names that are currently
-                            conflicts (list)
-            oldnum:  The old dihedral angle number (int)
-        Returns
-            bestnum:  The new dihedral angle number (int)
+        :param residue:  residue that is being debumped
+        :type residue:  Residue
+        :param conflict_names: list of atom names that are currently
+            conflicts
+        :type conflict_names: [str]
+        :param oldnum:  old dihedral angle number
+        :type oldnum:  int
+        :return:  new dihedral angle number
+        :rtype:  int
         """
         bestnum = -1
         best = 0
         ilist = list(range(len(self.dihedrals)))
-
         if oldnum is not None and oldnum >= 0 and len(ilist) > 0:
             del ilist[oldnum]
             test_dihedral_indices = ilist[oldnum:] + ilist[:oldnum]
         else:
             test_dihedral_indices = ilist
-
         for i in test_dihedral_indices:
             if i == oldnum:
                 continue
             if self.dihedrals[i] is None:
                 continue
-
             score = 0
             atomnames = self.reference.dihedrals[i].split()
             pivot = atomnames[2]
-
             moveablenames = self.get_moveable_names(pivot)
-
             if conflict_names == moveablenames:
                 return i
-
             for name in conflict_names:
                 if name in moveablenames:
                     score += 1
                     if score > best:
                         best = score
                         bestnum = i
-
         return bestnum
 
     def set_donors_acceptors(self):
-        """Set the donors and acceptors within the residue"""
+        """Set the donors and acceptors within the residue."""
         if self.reference is None:
             return
-
         for atom in self.atoms:
             atomname = atom.name
             atom.hdonor = False
             atom.hacceptor = False
-
             if atomname.startswith("N"):
                 bonded = 0
                 for bondedatom in atom.bonds:
@@ -327,7 +342,7 @@ class Residue(object):
                         break
 
     def reorder(self):
-        """Reorder the atoms to start with N, CA, C, O if they exist"""
+        """Reorder the atoms to start with N, CA, C, O if they exist."""
         templist = []
         if self.has_atom("N"):
             templist.append(self.get_atom("N"))
@@ -337,16 +352,18 @@ class Residue(object):
             templist.append(self.get_atom("C"))
         if self.has_atom("O"):
             templist.append(self.get_atom("O"))
-
         # Add remaining atoms
         for atom in self.atoms:
             if atom.name not in ["N", "CA", "C", "O"]:
                 templist.append(atom)
-
         # Change the list pointer
         self.atoms = templist[:]
 
-    @classmethod
-    def letter_code(cls):
-        """Letter code for residue."""
+    @staticmethod
+    def letter_code():
+        """Default letter code for residue.
+
+        :return:  letter code for residue
+        :rtype:  str
+        """
         return 'X'

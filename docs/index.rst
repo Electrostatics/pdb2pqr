@@ -37,7 +37,7 @@ Contents
    supporting
    extending
    formats/index
-   api
+   api/index
    releases
 
 ------------------

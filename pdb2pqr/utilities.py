@@ -1,8 +1,14 @@
-"""Utilities for PDB2PQR Suite
+"""Utilities for the PDB2PQR software suite.
 
-I/O-related utilities/functions should go in io.py
+.. todo:
+    The functions in this module are great examples of why PDB2PQR needs
+    :mod:`numpy`.
+    More efforts should be made to subsitute with :mod:`numpy` data types and
+    functions wherever possible throughout the code base.
 
-Authors:  Todd Dolinsky, Yong Huang
+.. codeauthor::  Todd Dolinsky
+.. codeauthor::  Yong Huang
+.. codeauthor::  Nathan Baker
 """
 import math
 import logging
@@ -14,12 +20,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def sort_dict_by_value(inputdict):
-    """Sort a dictionary by its values
+    """Sort a dictionary by its values.
 
-    Args:
-        inputdict:  The dictionary to sort (inputdict)
-    Returns:
-        items: The dictionary sorted by value (list)
+    :param inputdict:  the dictionary to sort
+    :type inputdict:  dict
+    :return:  list of keys sorted by value
+    :rtype:  list
     """
     items = [(v, k) for k, v in inputdict.items()]
     items.sort()
@@ -29,21 +35,26 @@ def sort_dict_by_value(inputdict):
 
 
 def shortest_path(graph, start, end, path=[]):
-    """Uses recursion to find the shortest path from one node to another in
-    an unweighted graph.  Adapted from
-    http://www.python.org/doc/essays/graphs.html
+    """Find the shortest path between two nodes.
 
-    Args:
-        graph: A mapping of the graph to analyze, of the form
-               {0: [1,2], 1:[3,4], ...} . Each key has a list of edges.
-        start: The ID of the key to start the analysis from
-        end:   The ID of the key to end the analysis
-        path:  Optional argument used during the recursive step to keep the
-        current path up to that point
+    Uses recursion to find the shortest path from one node to another in an
+    unweighted graph.
+    Adapted from http://www.python.org/doc/essays/graphs.html
 
-    Returns:
-        List of the shortest path (list) Returns None if start and end are not
+    :param graph:  a mapping of the graph to analyze, of the form {0: [1,2],
+        1:[3,4], ...} . Each key has a list of edges.
+    :type graph:  dict
+    :param start:  the ID of the key to start the analysis from
+    :type start:  str
+    :param end:  the ID of the key to end the analysis
+    :type end:  str
+    :param path:  optional argument used during the recursive step to keep
+        the current path up to that point
+    :type path:  list
+
+    :return:  list of the shortest path or ``None`` if start and end are not
         connected
+    :rtype:  list
     """
     path = path + [start]
     if start == end:
@@ -63,11 +74,12 @@ def shortest_path(graph, start, end, path=[]):
 def analyze_connectivity(map_, key):
     """Analyze the connectivity of a given map using the key value.
 
-    Args:
-        map:  The map to analyze (dict)
-        key:  The key value (variable)
-    Returns:
-        list: A list of connected values to the key (list)
+    :param map:  map to analyze
+    :type map:  dict
+    :param key:  key value
+    :type key:  str
+    :return:  list of connected values to the key
+    :rtype:  list
     """
     clist = []
     keys = [key]
@@ -83,16 +95,17 @@ def analyze_connectivity(map_, key):
     return clist
 
 
-# TODO - upgrade with numpy
 def angle(coords1, coords2, coords3):
-    """Get the angle between three coordinates
+    """Get the angle between three coordinates.
 
-    Args:
-        coords1:  The first coordinate set (atom)
-        coords2:  The second (vertex) coordinate set (atom)
-        coords3:  The third coordinate set (atom)
-    Returns
-        angle:  The angle between the atoms (float)
+    :param coords1:  first coordinate set
+    :type coords1:  [float, float, float]
+    :param coords2:  second (vertex) coordinate set
+    :type coords2:  [float, float, float]
+    :param coords3:  third coordinate set
+    :type coords3:  [float, float, float]
+    :return:  angle between the atoms (in degrees)
+    :rtype:  float
     """
     diff32 = np.array(coords3) - np.array(coords2)
     diff12 = np.array(coords1) - np.array(coords2)
@@ -109,111 +122,119 @@ def angle(coords1, coords2, coords3):
 
 
 def distance(coords1, coords2):
-    """Calculate the distance between two coordinates, as denoted by
+    """Calculate the distance between two coordinates.
 
-        dist = sqrt((x2- x1)^2 + (y2 - y1)^2 + (z2 - z1)^2))
+    :param coords1:  coordinates of form [x,y,z]
+    :type coords1:  [float, float, float]
+    :param coords2:  coordinates of form [x,y,z]
+    :type coords2:  [float, float, float]
 
-    Args:
-        coords1: Coordinates of form [x,y,z]
-        coords2: Coordinates of form [x,y,z]
-    Returns:
-        dist:  Distance between the two coordinates (float)
+    :return:  distance between the two coordinates
+    :rtype:  float
     """
     coords1 = np.array(coords1)
     coords2 = np.array(coords2)
     return np.linalg.norm(coords1 - coords2)
 
 
-# TODO - eliminate and replace with numpy in code
 def add(coords1, coords2):
-    """Add one 3-dimensional point to another
+    """Add one 3-dimensional point to another.
 
-    Args:
-        coords1: coordinates of form [x,y,z]
-        coords2: coordinates of form [x,y,z]
-    Returns
-        list:  List of coordinates equal to coords2 + coords1 (list)
+    :param coords1:  coordinates of form [x,y,z]
+    :type coords1:  [float, float, float]
+    :param coords2:  coordinates of form [x,y,z]
+    :type coords2:  [float, float, float]
+    :return:  list of coordinates equal to coords2 + coords1
+    :rtype:  numpy.ndarray
     """
     return np.array(coords1) + np.array(coords2)
 
 
-# TODO - eliminate and replace with numpy in code
 def subtract(coords1, coords2):
-    """Subtract one 3-dimensional point from another
+    """Suntract one 3-dimensional point from another.
 
-    Args:
-        coords1: coordinates of form [x,y,z]
-        coords2: coordinates of form [x,y,z]
-    Returns
-        list:  List of coordinates equal to coords1 - coords2 (list)
+    :param coords1:  coordinates of form [x,y,z]
+    :type coords1:  [float, float, float]
+    :param coords2:  coordinates of form [x,y,z]
+    :type coords2:  [float, float, float]
+    :return:  list of coordinates equal to coords2 - coords1
+    :rtype:  numpy.ndarray
     """
     return np.array(coords1) - np.array(coords2)
 
 
-# TODO - eliminate and replace with numpy in code
 def cross(coords1, coords2):
-    """Find the cross product of two 3-dimensional points
+    """Find the cross-product of one 3-dimensional point with another.
 
-    Args:
-        coords1: coordinates of form [x,y,z]
-        coords2: coordinates of form [x,y,z]
-    Returns
-        list:  Cross product coords2 and coords1 (list)
+    :param coords1:  coordinates of form [x,y,z]
+    :type coords1:  [float, float, float]
+    :param coords2:  coordinates of form [x,y,z]
+    :type coords2:  [float, float, float]
+    :return:  list of coordinates equal to coords2 cross coords1
+    :rtype:  numpy.ndarray
     """
     return np.cross(np.array(coords1), np.array(coords2))
 
 
-# TODO - eliminate and replace with numpy in code
 def dot(coords1, coords2):
-    """Find the dot product of two 3-dimensional points
+    """Find the dot-product of one 3-dimensional point with another.
 
-    Args:
-        coords1: coordinates of form [x,y,z]
-        coords2: coordinates of form [x,y,z]
-    Returns
-        value:  Dot product coords2 and coords1 (float)
+    :param coords1:  coordinates of form [x,y,z]
+    :type coords1:  [float, float, float]
+    :param coords2:  coordinates of form [x,y,z]
+    :type coords2:  [float, float, float]
+    :return:  list of coordinates equal to the inner product of coords2 with
+        coords1
+    :rtype:  numpy.ndarray
     """
     return np.inner(np.array(coords1), np.array(coords2))
 
 
 def normalize(coords):
-    """Normalize a set of coordinates
+    """Normalize a set of coordinates to unit vector.
 
-    Args:
-        coords: coordinates of form [x,y,z]
-    Returns
-        list: normalized coordinates (list)
+    :param coords:  coordinates of form [x,y,z]
+    :type coords:  [float, float, float]
+    :return: normalized coordinates
+    :rtype:  numpy.ndarray
     """
     return coords/np.linalg.norm(coords)
 
 
 def factorial(num):
-    """Returns the factorial of the given number n"""
+    """Returns the factorial of the given number.
+
+    :param num:  number for which to compute factorial
+    :type num:  int
+    :return:  factorial of number
+    :rtype:  int
+    """
     if num <= 1:
         return 1
     return num*factorial(num-1)
 
 
 def dihedral(coords1, coords2, coords3, coords4):
-    """Calculate the angle using the four atoms
+    """Calculate the dihedral angle from four atoms' coordinates.
 
-    Args:
-        coords1: First of four coordinates of form [x,y,z]
-        coords2: Second of four
-        coords3: Third of four
-        coords4: Fourth of four
-    Returns
-        value: Size of the angle (float)
+    :param coords1:  one of four coordinates of form [x,y,z]
+    :type coords1:  [float, float, float]
+    :param coords2:  one of four coordinates of form [x,y,z]
+    :type coords2:  [float, float, float]
+    :param coords3:  one of four coordinates of form [x,y,z]
+    :type coords3:  [float, float, float]
+    :param coords4:  one of four coordinates of form [x,y,z]
+    :type coords4:  [float, float, float]
+    :return:  the angle (in degrees)
+    :rtype:  float
     """
     diff43 = np.array(coords4) - np.array(coords3)
     diff32 = np.array(coords3) - np.array(coords2)
     diff12 = np.array(coords1) - np.array(coords2)
-
     c12_32 = np.cross(diff12, diff32)
     c12_32 = normalize(c12_32)
     c43_32 = np.cross(diff43, diff32)
     c43_32 = normalize(c43_32)
-
     scal = np.inner(c12_32, c43_32)
     if np.absolute(scal + 1.0) < SMALL_NUMBER:
         value = 180.0
@@ -221,7 +242,6 @@ def dihedral(coords1, coords2, coords3, coords4):
         value = 0.0
     else:
         value = DIHEDRAL_WTF * math.acos(scal)
-
     chiral = np.inner(np.cross(c12_32, c43_32), diff32)
     if chiral < 0:
         value = value * -1.0

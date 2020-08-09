@@ -1,12 +1,18 @@
-"""XML handling for biomolecular residues.
+"""XML handling for biomolecular residue topology definitions.
 
-Authors:  Jens Erik Nielsen, Todd Dolinsky, Yong Huang
+.. codeauthor::  Jens Erik Nielsen
+.. codeauthor::  Todd Dolinsky
+.. codeauthor::  Yong Huang
 """
 import copy
 import re
+import logging
 from xml import sax
 from . import structures
 from . import residue
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class DefinitionHandler(sax.ContentHandler):
@@ -21,6 +27,11 @@ class DefinitionHandler(sax.ContentHandler):
         self.patches = []
 
     def startElement(self, name, _):
+        """Start XML element parsing.
+
+        :param name:  element name
+        :type name:  str
+        """
         if name == "residue":
             obj = DefinitionResidue()
             self.curholder = obj
@@ -37,6 +48,13 @@ class DefinitionHandler(sax.ContentHandler):
             self.curelement = name
 
     def endElement(self, name):
+        """End XML element parsing.
+
+        :param name:  element name
+        :type name:  str
+        :raises KeyError:  for invalid atom or residue names
+        :raises RuntimeError:  for unexpected XML features or format
+        """
         if name == "residue":  # Complete Residue object
             residue_ = self.curholder
             if not isinstance(residue_, DefinitionResidue):
@@ -48,7 +66,6 @@ class DefinitionHandler(sax.ContentHandler):
                 self.map[resname] = residue_
                 self.curholder = None
                 self.curobj = None
-
         elif name == "patch":  # Complete patch object
             patch = self.curholder
             if not isinstance(patch, Patch):
@@ -60,7 +77,6 @@ class DefinitionHandler(sax.ContentHandler):
                 self.patches.append(patch)
                 self.curholder = None
                 self.curobj = None
-
         elif name == "atom":  # Complete atom object
             atom = self.curatom
             if not isinstance(atom, DefinitionAtom):
@@ -72,16 +88,19 @@ class DefinitionHandler(sax.ContentHandler):
                 self.curholder.map[atomname] = atom
                 self.curatom = None
                 self.curobj = self.curholder
-
         else:  # Just free the current element namespace
             self.curelement = ""
-
         return self.map
 
     def characters(self, text):
+        """Parse text data in XML.
+
+        :param text:  text data to parse
+        :type text:  str
+        """
         if text.isspace():
             return
-
+        _LOGGER.debug("Got text for <%s>: %s", self.curelement, text)
         # If this is a float, make it so
         try:
             value = float(str(text))
@@ -103,36 +122,35 @@ class DefinitionHandler(sax.ContentHandler):
 
 
 class Definition:
-    """The Definition class contains the structured definitions found in the
-    files and several mappings for easy access to the information.
+    """Force field topology definitions.
+
+    The Definition class contains the structured definitions found in the files
+    and several mappings for easy access to the information.
     """
 
     def __init__(self, aa_file, na_file, patch_file):
         """Initialize object.
 
-        Args:
-            aa_file:  file object with amino acid definitions
-            na_file:  file object with nucleic acid definitions
-            patch_file:  file object with patch definitions
+        :param aa_file:  file-like object with amino acid definitions
+        :type aa_file:  file
+        :param na_file:  file-like object with nucleic acid definitions
+        :type na_file:  file
+        :param patch_file:  file-like object with patch definitions
+        :type patch_file:  file
         """
         self.map = {}
         self.patches = {}
-
         handler = DefinitionHandler()
         sax.make_parser()
-
         for def_file in [aa_file, na_file]:
             sax.parseString(def_file.read(), handler)
             self.map.update(handler.map)
-
         handler.map = {}
         sax.parseString(patch_file.read(), handler)
-
         # Apply specific patches to the reference object, allowing users
         # to specify protonation states in the PDB file
         for patch in handler.patches:
             if patch.newname != "":
-
                 # Find all residues matching applyto
                 resnames = list(self.map.keys())
                 for name in resnames:
@@ -141,22 +159,22 @@ class Definition:
                         continue
                     newname = patch.newname.replace("*", name)
                     self.add_patch(patch, name, newname)
-
             # Either way, make sure the main patch name is available
             self.add_patch(patch, patch.applyto, patch.name)
 
     def add_patch(self, patch, refname, newname):
-        """Add a patch to a definition residue.
+        """Add a patch to a topology definition residue.
 
-        Args:
-            patch:  The patch object to add (Patch)
-            refname:  The name of the object to add the patch to (string)
-            newname:  The name of the new (patched) object (string)
+        :param patch:  the patch object to add
+        :type patch:  Patch
+        :param refname:  the name of the object to add the patch to
+        :type refname:  str
+        :param newname:  the name of the new (patched) object
+        :type newname:  str
         """
         try:
             aadef = self.map[refname]  # The reference
             patch_residue = copy.deepcopy(aadef)
-
             # Add atoms from patch
             for atomname in patch.map:
                 patch_residue.map[atomname] = patch.map[atomname]
@@ -165,11 +183,9 @@ class Definition:
                         continue
                     if atomname not in patch_residue.map[bond].bonds:
                         patch_residue.map[bond].bonds.append(atomname)
-
             # Rename atoms as directed
             for key in patch.altnames:
                 patch_residue.altnames[key] = patch.altnames[key]
-
             # Remove atoms as directed
             for remove in patch.remove:
                 if not patch_residue.has_atom(remove):
@@ -179,23 +195,20 @@ class Definition:
                 for bond in removebonds:
                     if remove in patch_residue.map[bond].bonds:
                         patch_residue.map[bond].bonds.remove(remove)
-
             # Add the new dihedrals
             for dihedral in patch.dihedrals:
                 patch_residue.dihedrals.append(dihedral)
-
             # Point at the new reference
             self.map[newname] = patch_residue
-
             # Store the patch
             self.patches[newname] = patch
-
         except KeyError:  # Just store the patch
             self.patches[newname] = patch
 
 
 class Patch:
-    """Patch the definitionResidue class"""
+    """Residue patches for structure topologies."""
+
     def __init__(self):
         self.name = ""
         self.applyto = ""
@@ -206,9 +219,6 @@ class Patch:
         self.newname = ""
 
     def __str__(self):
-        """
-            A basic string representation for debugging
-        """
         text = "%s\n" % self.name
         text += "Apply to: %s\n" % self.applyto
         text += "Atoms to add: \n"
@@ -223,8 +233,8 @@ class Patch:
 
 
 class DefinitionResidue(residue.Residue):
-    """The DefinitionResidue class extends the Residue class to allow for a
-    trimmed down initializing function."""
+    """Force field toplogy representation for a residue."""
+
     def __init__(self):
         self.name = ""
         self.dihedrals = []
@@ -244,35 +254,49 @@ class DefinitionResidue(residue.Residue):
         return text
 
     def get_nearest_bonds(self, atomname):
+        """Get bonded atoms near a given atom.
+
+        :param atomname:  name of specific atom
+        :type atomname:  str
+        :return:  list of nearby bonded atom names
+        :rtype:  [str]
+        """
         bonds = []
         lev2bonds = []
         atom = self.map[atomname]
-
         # Get directly bonded (length = 1) atoms
         for bondedatom in atom.bonds:
             if bondedatom not in bonds:
                 bonds.append(bondedatom)
-
         # Get bonded atoms 2 bond lengths away
         for bondedatom in atom.bonds:
             for bond2 in self.map[bondedatom].bonds:
                 if bond2 not in bonds and bond2 != atomname:
                     bonds.append(bond2)
                     lev2bonds.append(bond2)
-
         # Get bonded atoms 3 bond lengths away
         for lev2atom in lev2bonds:
             for bond3 in self.map[lev2atom].bonds:
                 if bond3 not in bonds:
                     bonds.append(bond3)
-
         return bonds
 
 
 class DefinitionAtom(structures.Atom):
-    """A trimmed down version of the Atom class"""
+    """Store force field atom topology definitions."""
 
     def __init__(self, name=None, x=None, y=None, z=None):
+        """Initialize class.
+
+        :param name:  atom name
+        :type name:  str
+        :param x:  x-coordinate
+        :type x:  float
+        :param y:  y-coordinate
+        :type y:  float
+        :param z:  z-coordinate
+        :type z:  float
+        """
         self.name = name
         self.x = x
         self.y = y
@@ -295,7 +319,11 @@ class DefinitionAtom(structures.Atom):
 
     @property
     def is_backbone(self):
-        """Return true if atom name is in backbone, otherwise false"""
+        """Identify whether atom is in backbone.
+
+        :return:  true if atom name is in backbone, otherwise false
+        :rtype:  bool
+        """
         if self.name in structures.BACKBONE:
             return True
         return False

@@ -1,6 +1,10 @@
-"""Ligand support functions
+"""Ligand support functions.
 
-Jens Erik Nielsen, University College Dublin 2004
+.. todo::
+   Some of the definitions in this module belong in a configuration file other
+   than here.
+
+.. codeauthor:: Jens Erik Nielsen
 """
 import sys
 
@@ -8,8 +12,6 @@ import sys
 assert sys.version_info >= (3, 5)
 
 
-# TODO - this belongs in a configuration file somewhere other than here.
-#
 # When using these tables, the most specific Sybyl atom type should be used
 # first and then the generic element should be used
 RADII = {
@@ -46,6 +48,7 @@ RADII = {
         "Xe": 2.16}
 }
 
+
 # Numbers of valence electrons for the groups of the periodic table
 VALENCE_BY_GROUP = {1: 1, 2: 2, 13: 3, 14: 4, 15: 5, 16: 6, 17: 7, 18: 8}
 # Groups of the periodic table
@@ -59,11 +62,14 @@ ELEMENT_BY_GROUP = {
     17: ["F", "Cl", "Br", "I", "At", "Ts"],
     18: ["He", "Ne", "Ar", "Kr", "Xe", "Rn", "Og"]
 }
+
+
 # Valence electrons by element
 VALENCE_BY_ELEMENT = {}
 for group, elem_list in ELEMENT_BY_GROUP.items():
     for elem in elem_list:
         VALENCE_BY_ELEMENT[elem] = VALENCE_BY_GROUP[group]
+
 
 # Numbers of non-bonded electrons for Sybyl-type atoms.  Adapted from
 # https://onlinelibrary.wiley.com/doi/abs/10.1002/jcc.540100804 (Table I).

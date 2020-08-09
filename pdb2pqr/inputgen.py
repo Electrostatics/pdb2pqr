@@ -1,6 +1,7 @@
-"""Create an APBS input file using psize data
+"""Create an APBS input file using :mod:`psize` data.
 
-Authors: Todd Dolinsky based on original sed script by Nathan Baker
+.. codeauthor::  Todd Dolinsky
+.. codeauthor::  Nathan Baker
 """
 import pickle
 import logging
@@ -13,10 +14,28 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Elec:
-    """An object for the ELEC section of an APBS input file"""
+    """An object for the ELEC section of an APBS input file."""
 
     def __init__(
             self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
+        """Initialize object.
+
+        .. todo::  Remove hard-coded parameters.
+
+        :param pqrpath:  path to PQR file
+        :type pqrpath:  str
+        :param size:  parameter sizing object
+        :type size:  Psize
+        :param method:  solution method (e.g., mg-para, mg-auto, etc.)
+        :type method:  str
+        :param asyncflag:  perform an asynchronous parallel focusing
+            calculation
+        :type asyncflag:  bool
+        :param istrng:  ionic strength/concentration (M)
+        :type istring:  float
+        :param potdx:  whether to write out potential information in DX format
+        :type potdx:  bool
+        """
         # If this is an async or parallel calc, we want to use
         # the per-grid dime rather than the global dime.
         self.dime = size.ngrid
@@ -123,30 +142,35 @@ class Elec:
 
 
 class Input:
-    """The input class.  Each input object is one APBS input file."""
+    """Each object of this class is one APBS input file."""
 
     def __init__(
             self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
         """Initialize the input file class.
 
         Each input file contains a PQR name, a list of elec objects, and a
-        list of strings containing print statements.  For starters assume two
-        ELEC statements are needed, one for the inhomgenous and the other for
-        the homogenous dielectric calculations.
+        list of strings containing print statements.
+        For starters, assume two ELEC statements are needed, one for the
+        inhomgenous and the other for the homogenous dielectric calculations.
 
-        Users can edit the elec statements and the print statements.
+        .. note::
+            This assumes you have already run psize, either by
+            :func:`size.run_psize(...)` or :func:`size.parse_string(...)`
+            followed by :func:`size.set_all()`.
 
-        This assumes you have already run psize, either by
-            size.run_psize(/path/to/pqr) or
-
-            size.parse_string(string)
-            size.set_all()
-
-        Args:
-            pqrpath:   The path to the PQR file (string)
-            size:      The Psize object (psize)
-            method:    The method (para, auto, manual, async) to use
-            asyncflag: 1 if async is desired, 0 otherwise
+        :param pqrpath:  path to PQR file
+        :type pqrpath:  str
+        :param size:  parameter sizing object
+        :type size:  Psize
+        :param method:  solution method (e.g., mg-para, mg-auto, etc.)
+        :type method:  str
+        :param asyncflag:  perform an asynchronous parallel focusing
+            calculation
+        :type asyncflag:  bool
+        :param istrng:  ionic strength/concentration (M)
+        :type istring:  float
+        :param potdx:  whether to write out potential information in DX format
+        :type potdx:  bool
         """
         self.pqrpath = Path(pqrpath)
         self.pqrname = self.pqrpath.name
@@ -179,8 +203,8 @@ class Input:
     def print_input_files(self, output_path):
         """Generate the input file(s) associated with this object.
 
-        Args:
-            output_path:  location for generated files.
+        :param output_path:  location for generated files
+        :type output_path:  str
         """
         path = Path(output_path)
         base_name = path.stem
@@ -206,8 +230,10 @@ class Input:
                 out_file.write(str(self))
 
     def dump_pickle(self):
-        """Make a Python pickle associated with the APBS input parameters"""
-        # TODO - is this function still useful?
+        """Make a Python pickle associated with the APBS input parameters.
+
+        .. todo::  is this function still useful?
+        """
         base_pqr_name = self.pqrpath.stem
         outname = base_pqr_name + "-input.p"
         pfile = open(outname, "wb")
@@ -216,10 +242,10 @@ class Input:
 
 
 def split_input(filename):
-    """Split the parallel input file into multiple async file names
+    """Split the parallel input file into multiple async file names.
 
-    Args:
-        filename:  The path to the original parallel input file (string)
+    :param filename:  the path to the original parallel input file
+    :type filename:  str
     """
     nproc = 0
     with open(filename, "rt") as file_:
@@ -320,7 +346,9 @@ def main():
         size.run_psize(filename)
         input_ = Input(
             filename, size, args.method, args.asynch, args.istrng, args.potdx)
-        input_.print_input_files()
+        path = Path(filename)
+        output_path = path.parent + path.stem + Path(".in")
+        input_.print_input_files(output_path)
 
 
 if __name__ == "__main__":

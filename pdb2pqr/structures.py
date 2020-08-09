@@ -1,9 +1,10 @@
-"""Simple biomolecular structures
+"""Simple biomolecular structures.
 
 This module contains the simpler structure objects used in PDB2PQR and their
 associated methods.
 
-Author: Todd Dolinsky
+.. codeauthor:: Todd Dolinsky
+.. codeauthor:: Nathan Baker
 """
 from . import pdb
 from .config import BACKBONE
@@ -13,15 +14,14 @@ class Chain:
     """Chain class
 
     The chain class contains information about each chain within a given
-    Protein object.
+    :class:`Protein` object.
     """
 
     def __init__(self, chain_id):
-        """Initialize the class
+        """Initialize the class.
 
-        Args:
-            chain_id: The chain_id for this chain as denoted in the PDB
-            file (string)
+        :param chain_id:  ID for this chain as denoted in the PDB
+        :type chain_id:  str
         """
         self.chain_id = chain_id
         self.residues = []
@@ -30,14 +30,16 @@ class Chain:
     def add_residue(self, residue):
         """Add a residue to the chain
 
-        Args:
-            residue: The residue to be added (Residue)
+        :param residue:  residue to be added
+        :type residue:  Residue
         """
         self.residues.append(residue)
 
     def renumber_residues(self):
-        """Renumber Atoms based on actual Residue number and not PDB
-        res_seq"""
+        """Renumber atoms.
+
+        Renumber based on actual residue number and not PDB :makevar:`res_seq`
+        """
         count = 1
         for residue in self.residues:
             residue.set_res_seq(count)
@@ -45,10 +47,10 @@ class Chain:
 
     @property
     def atoms(self):
-        """Return a list of Atom objects contained in this chain
+        """Return a list of Atom objects contained in this chain.
 
-        Returns
-            atomlist: List of Atom objects (list)
+        :return: list of Atom objects
+        :rtype: [Atom]
         """
         atomlist = []
         for residue in self.residues:
@@ -65,23 +67,28 @@ class Chain:
 
 
 class Atom(pdb.ATOM):
-    """Class Atom
+    """Represent an atom.
 
-    The Atom class inherits from the ATOM object in pdb.py.  It is used
-    for adding fields not found in the pdb that may be useful for analysis.
-    Also simplifies code by combining ATOM and HETATM objects into a
-    single class.
+    The Atom class inherits from the :class:`ATOM` object in :mod:`pdb`.
+    This class used for adding fields not found in the PDB that may be useful
+    for analysis.
+    This class also simplifies code by combining :class:`ATOM` and
+    :class:`HETATM` objects into a single class.
     """
 
     def __init__(self, atom, type_, residue):
         """Initialize the new Atom object by using the old object.
 
-        Args:
-            atom:  The original ATOM object (ATOM)
-            type:  Either ATOM or HETATM (string)
-            residue:  A pointer back to the parent residue object (Residue)
+        .. todo:
+           Figure out why this function doesn't call ``super().__init__``
+
+        :param atom:  the original ATOM object
+        :type atom:  ATOM
+        :param type_:  either ATOM or HETATM
+        :type type_:  str
+        :param residue:  a pointer back to the parent residue object
+        :type residue:  Residue
         """
-        # BUG? 2020/07/06 intendo - should this call super().__init__ ?
         if type_ == "ATOM" or type_ == "HETATM":
             self.type = type_
         else:
@@ -123,12 +130,12 @@ class Atom(pdb.ATOM):
     def get_common_string_rep(self, chainflag=False):
         """Returns a string of the common column of the new atom type.
 
-        Uses the ATOM string output but changes the first field to either by
-        ATOM or HETATM as necessary. This is used to create the output for pqr
-        and pdb files.
+        Uses the :class:`ATOM` string output but changes the first field to
+        either be ``ATOM`` or ``HETATM`` as necessary.
+        This is used to create the output for PQR and PDB files.
 
-        Returns
-            outstr: String with ATOM/HETATM field set appropriately
+        :return:  string with ATOM/HETATM field set appropriately
+        :rtype:  str
         """
         outstr = ""
         tstr = self.type
@@ -141,13 +148,11 @@ class Atom(pdb.ATOM):
             outstr += str.ljust(tstr, 4)[:4]
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
-
         tstr = self.res_name
         if len(tstr) == 4:
             outstr += str.ljust(tstr, 4)[:4]
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
-
         outstr += " "
         if chainflag:
             tstr = self.chain_id
@@ -169,26 +174,17 @@ class Atom(pdb.ATOM):
         return outstr
 
     def __str__(self):
-        """Returns a string of the new atom type.
-
-        Uses the ATOM string output but changes the first field to either by
-        ATOM or HETATM as necessary.
-        This is used to create the output for pqr files!
-
-        Returns
-            str: String with ATOM/HETATM field set appropriately
-        """
         return self.get_pqr_string()
 
     def get_pqr_string(self, chainflag=False):
-        """Returns a string of the new atom type.
+        """Returns a string of the atom type.
 
-        Uses the ATOM string output but changes the first field to either by
-        ATOM or HETATM as necessary. This is used to create the output for pqr
-        files!
+        Uses the :class:`ATOM` string output but changes the first field to
+        either be ``ATOM`` or ``HETATM`` as necessary.
+        This is used to create the output for PQR files.
 
-        Returns
-            str: String with ATOM/HETATM field set appropriately
+        :return:  string with ATOM/HETATM field set appropriately
+        :rtype:  str
         """
         outstr = self.get_common_string_rep(chainflag=chainflag)
         if self.ffcharge is not None:
@@ -204,17 +200,17 @@ class Atom(pdb.ATOM):
         return outstr
 
     def get_pdb_string(self):
-        """Returns a string of the new atom type.
+        """Returns a string of the atom type.
 
-        Uses the ATOM string output but changes the first field to either by
-        ATOM or HETATM as necessary. This is for the pdb representation of the
-        atom. The propka30 module depends on this being correct.
+        Uses the :class:`ATOM` string output but changes the first field to
+        either be ``ATOM`` or ``HETATM`` as necessary.
+        This is for the PDB representation of the atom.
+        The :mod:`propka` module depends on this being correct.
 
-        Returns
-            str: String with ATOM/HETATM field set appropriately
+        :return:  string with ATOM/HETATM field set appropriately
+        :rtype:  str
         """
         outstr = self.get_common_string_rep(chainflag=True)
-
         tstr = "%6.2f" % self.occupancy
         outstr += str.ljust(tstr, 6)[:6]
         tstr = "%6.2f" % self.temp_factor
@@ -231,36 +227,49 @@ class Atom(pdb.ATOM):
 
     @property
     def coords(self):
-        """Return the x,y,z coordinates of the atom in list form
+        """Return the x,y,z coordinates of the atom.
 
-        TODO - this should be converted to numpy
+        .. todo:
+           All atom coordinates should be converted to :mod:`numpy` arrays
 
-        Returns
-            List of the coordinates (list)
+        :return:  list of the coordinates
+        :rtype:  [float, float, float]
         """
         return [self.x, self.y, self.z]
 
     def add_bond(self, bondedatom):
-        """Add a bond to the list of bonds
+        """Add a bond to the list of bonds.
 
-        Args:
-            bondedatom: The atom to bond to (Atom)
+        :param bondedatom:  the atom to bond to
+        :type bondedatom:  ATOM
         """
         self.bonds.append(bondedatom)
 
     @property
     def is_hydrogen(self):
-        """Is this atom a Hydrogen atom?"""
+        """Is this atom a Hydrogen atom?
+
+        :return:  whether this atom is a hydrogen
+        :rtype:  bool
+        """
         return self.name[0] == "H"
 
     @property
     def is_backbone(self):
-        """Return true if atom name is in backbone, otherwise false"""
+        """Return True if atom name is in backbone, otherwise False.
+
+        :return:  whether atom is in backbone
+        :rtype:  bool
+        """
         return self.name in BACKBONE
 
     @property
     def has_reference(self):
-        """Determine if the atom object has a reference object or not.
-            All known atoms should have reference objects.
+        """Determine if the object has a reference object or not.
+
+        All known atoms should have reference objects.
+
+        :return:  whether atom has reference object
+        :rtype:  bool
         """
         return self.reference is not None

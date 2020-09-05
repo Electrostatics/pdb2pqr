@@ -613,8 +613,7 @@ def main_driver(args):
         args=args, pqr_lines=results["lines"], header_lines=results["header"],
         missing_lines=results["missed_residues"], is_cif=is_cif)
     if args.apbs_input:
-        raise NotImplementedError("Missing argument for APBS input file.")
-        io.dump_apbs(args.output_pqr)
+        io.dump_apbs(args.output_pqr, args.apbs_input)
 
 
 def main():

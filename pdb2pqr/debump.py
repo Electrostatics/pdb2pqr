@@ -130,6 +130,8 @@ class Debump:
 
         Make sure that none of the added atoms were rebuilt on top of existing
         atoms. See each called function for more information.
+
+        :raises ValueError:  if missing (backbone) atoms are encountered
         """
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
@@ -137,7 +139,11 @@ class Debump:
         self.protein.calculate_dihedral_angles()
         self.protein.set_donors_acceptors()
         self.protein.update_internal_bonds()
-        self.protein.set_reference_distance()
+        try:
+            self.protein.set_reference_distance()
+        except ValueError as err:
+            err = "Protein structure is incomplete:  %s" % err
+            raise ValueError(err)
         # Determine which residues to debump
         for residue in self.protein.residues:
             if not isinstance(residue, aa.Amino):

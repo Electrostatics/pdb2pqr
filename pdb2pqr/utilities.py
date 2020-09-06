@@ -12,6 +12,7 @@
 """
 import math
 import logging
+from pathlib import Path
 import numpy as np
 from .config import SMALL_NUMBER, DIHEDRAL_WTF
 

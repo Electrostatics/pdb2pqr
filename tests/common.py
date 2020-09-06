@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy
 import pandas
 from pdb2pqr.main import build_parser, main_driver
+from pdb2pqr.structures import Atom
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -66,20 +67,14 @@ def pqr_to_dict(pqr_file):
     """
     pqr = []
     for line in pqr_file:
-        row_dict = {}
-        line = " ".join([line[:6], line[6:]])
-        words = line.strip().split()
-        label = words.pop(0)
-        if label in ["REMARK", "TER", "END", "HEADER", "TITLE", "COMPND",
-                     "SOURCE", "KEYWDS", "EXPDTA", "AUTHOR", "REVDAT",
-                     "JRNL"]:
-            pass
-        elif label in ["ATOM", "HETATM"]:
-            row_dict["atom_num"] = int(words.pop(0))
+        atom = Atom.from_pqr_line(line)
+        if atom is not None:
+            row_dict = {}
+            row_dict["atom_num"] = atom.serial
             # Many hydrogens are created in arbitrary order when attached to
             # the same heavy atom. Therefore, the last number in their name is
             # not meaningful
-            atom_name = words.pop(0).strip()
+            atom_name = atom.name
             if atom_name[0] == "H":
                 try:
                     int(atom_name[-1])
@@ -87,22 +82,14 @@ def pqr_to_dict(pqr_file):
                 except ValueError:
                     pass
             row_dict["atom_name"] = atom_name
-            row_dict["res_name"] = words.pop(0).strip()
-            num_or_chain = words.pop(0).strip()
-            try:
-                res_num = int(num_or_chain)
-                row_dict["res_num"] = res_num
-            except ValueError:
-                row_dict["chain"] = num_or_chain
-                row_dict["res_num"] = int(words.pop(0))
-            row_dict["x"] = float(words.pop(0))
-            row_dict["y"] = float(words.pop(0))
-            row_dict["z"] = float(words.pop(0))
-            row_dict["q"] = float(words.pop(0))
-            row_dict["r"] = float(words.pop(0))
+            row_dict["res_name"] = atom.res_name
+            row_dict["res_num"] = atom.res_seq
+            row_dict["x"] = atom.x
+            row_dict["y"] = atom.y
+            row_dict["z"] = atom.z
+            row_dict["q"] = atom.charge
+            row_dict["r"] = atom.radius
             pqr.append(row_dict)
-        else:
-            raise NotImplementedError(label, words)
     return pandas.DataFrame(pqr)
 
 

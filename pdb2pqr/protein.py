@@ -401,6 +401,9 @@ class Protein(object):
         This is necessary for determining which atoms are allowed to move
         during rotations.  Uses the :func:`shortest_path` algorithm found in
         :mod:`utilities`.
+
+        :raises ValueError:  if shortest path cannot be found (e.g., if the 
+            atoms are not connected)
         """
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
@@ -424,8 +427,13 @@ class Protein(object):
                         atom.name == "H3" or atom.name == "H2"):
                     atom.refdistance = 2
                 else:
-                    atom.refdistance = (
-                        len(util.shortest_path(map_, atom, caatom)) - 1)
+                    path = util.shortest_path(map_, atom, caatom)
+                    if path is not None:
+                        atom.refdistance = len(path) - 1
+                    else:
+                        raise ValueError(
+                            "Found gap in biomolecule structure for atom "
+                            "%s" % atom)
 
     def remove_hydrogens(self):
         """Remove hydrogens from the protein."""

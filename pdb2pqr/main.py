@@ -463,6 +463,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
     :type definition:  Definition
     :param is_cif:  indicates whether file is CIF format
     :type is_cif:  bool
+    :raises ValueError:  for missing atoms that prevent debumping
     :return:  dictionary with results
     :rtype:  dict
     """
@@ -486,7 +487,11 @@ def non_trivial(args, protein, ligand, definition, is_cif):
         protein.update_ss_bridges()
         if args.debump:
             _LOGGER.info("Debumping biomolecule.")
-            debumper.debump_protein()
+            try:
+                debumper.debump_protein()
+            except ValueError as err:
+                err = "Unable to debump protein. %s" % err
+                raise ValueError(err)
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
             protein.remove_hydrogens()
@@ -606,9 +611,14 @@ def main_driver(args):
             "header": "", "missed_residues": None, "protein": protein,
             "lines": io.print_protein_atoms(protein.atoms, args.keep_chain)}
     else:
-        results = non_trivial(
-            args=args, protein=protein, ligand=ligand, definition=definition,
-            is_cif=is_cif)
+        try:
+            results = non_trivial(
+                args=args, protein=protein, ligand=ligand, definition=definition,
+                is_cif=is_cif)
+        except ValueError as err:
+            _LOGGER.critical(err)
+            _LOGGER.critical("Giving up.")
+            return
     print_pqr(
         args=args, pqr_lines=results["lines"], header_lines=results["header"],
         missing_lines=results["missed_residues"], is_cif=is_cif)

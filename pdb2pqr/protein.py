@@ -840,7 +840,7 @@ class Protein(object):
     def hold_residues(self, hlist):
         """Set fixed state of specified residues.
 
-        :param hlist:  list of (res_seq, chainid, ins_code) specifying the 
+        :param hlist:  list of (res_seq, chainid, ins_code) specifying the
             residues for altering fixed state status.
         :type hlist:  [(str, str, str)]
         """

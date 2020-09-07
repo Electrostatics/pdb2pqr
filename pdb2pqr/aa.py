@@ -165,7 +165,7 @@ class Amino(residue.Residue):
         for bond in self.reference.map[bondname].bonds:
             if bond.startswith("H"):
                 hcount += 1
-            elif bond != 'C-1' and bond != 'N+1':
+            elif bond != "C-1" and bond != "N+1":
                 nextatomname = bond
         # Check if this is a tetrahedral group
         if hcount != 3 or nextatomname is None:
@@ -179,33 +179,48 @@ class Amino(residue.Residue):
             coords = [bondatom.coords, nextatom.coords]
             refcoords = [
                 self.reference.map[bondname].coords,
-                self.reference.map[nextatomname].coords]
+                self.reference.map[nextatomname].coords,
+            ]
             refatomcoords = atomref.coords
             newcoords = quat.find_coordinates(
-                2, coords, refcoords, refatomcoords)
+                2, coords, refcoords, refatomcoords
+            )
             self.create_atom(atomname, newcoords)
             # For LEU and ILE residues only: make sure the Hydrogens are in
             # staggered conformation instead of eclipsed.
             if isinstance(self, LEU):
                 hcoords = newcoords
-                cbatom = self.get_atom('CB')
-                ang = util.dihedral(cbatom.coords, nextatom.coords,
-                                    bondatom.coords, hcoords)
+                cbatom = self.get_atom("CB")
+                ang = util.dihedral(
+                    cbatom.coords, nextatom.coords, bondatom.coords, hcoords
+                )
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)
             elif isinstance(self, ILE):
                 hcoords = newcoords
-                cg1atom = self.get_atom('CG1')
-                cbatom = self.get_atom('CB')
-                if bondatom.name == 'CD1':
-                    ang = util.dihedral(cbatom.coords, nextatom.coords,
-                                        bondatom.coords, hcoords)
-                elif bondatom.name == 'CG2':
-                    ang = util.dihedral(cg1atom.coords, nextatom.coords,
-                                        bondatom.coords, hcoords)
+                cg1atom = self.get_atom("CG1")
+                cbatom = self.get_atom("CB")
+                if bondatom.name == "CD1":
+                    ang = util.dihedral(
+                        cbatom.coords,
+                        nextatom.coords,
+                        bondatom.coords,
+                        hcoords,
+                    )
+                elif bondatom.name == "CG2":
+                    ang = util.dihedral(
+                        cg1atom.coords,
+                        nextatom.coords,
+                        bondatom.coords,
+                        hcoords,
+                    )
                 else:
-                    ang = util.dihedral(cbatom.coords, nextatom.coords,
-                                        bondatom.coords, hcoords)
+                    ang = util.dihedral(
+                        cbatom.coords,
+                        nextatom.coords,
+                        bondatom.coords,
+                        hcoords,
+                    )
                 diffangle = 60 - ang
                 self.rotate_tetrahedral(nextatom, bondatom, diffangle)
             return True
@@ -269,7 +284,7 @@ class ALA(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'A'
+        return "A"
 
 
 class ARG(Amino):
@@ -295,7 +310,7 @@ class ARG(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'R'
+        return "R"
 
     def set_state(self):
         """Set forcefield name based on current titration state."""
@@ -327,7 +342,7 @@ class ASN(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'N'
+        return "N"
 
 
 class ASP(Amino):
@@ -353,7 +368,7 @@ class ASP(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'D'
+        return "D"
 
     def set_state(self):
         """Set forcefield name based on current titration state."""
@@ -387,7 +402,7 @@ class CYS(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'C'
+        return "C"
 
     def set_state(self):
         """Set forcefield name based on current state.
@@ -429,7 +444,7 @@ class GLN(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'Q'
+        return "Q"
 
 
 class GLU(Amino):
@@ -455,7 +470,7 @@ class GLU(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'E'
+        return "E"
 
     def set_state(self):
         """Set forcefield name based on current titration state."""
@@ -487,7 +502,7 @@ class GLY(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'G'
+        return "G"
 
 
 class HIS(Amino):
@@ -513,7 +528,7 @@ class HIS(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'H'
+        return "H"
 
     def set_state(self):
         """Set forcefield name based on current titration state.
@@ -527,18 +542,21 @@ class HIS(Amino):
         """
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
             if (
-                    self.get_atom("ND1").hdonor
-                    and not self.get_atom("ND1").hacceptor):
+                self.get_atom("ND1").hdonor
+                and not self.get_atom("ND1").hacceptor
+            ):
                 if self.has_atom("HE2"):
                     self.remove_atom("HE2")
             elif (
-                    self.get_atom("NE2").hdonor
-                    and not self.get_atom("NE2").hacceptor):
+                self.get_atom("NE2").hdonor
+                and not self.get_atom("NE2").hacceptor
+            ):
                 if self.has_atom("HD1"):
                     self.remove_atom("HD1")
             elif (
-                    self.get_atom("ND1").hacceptor
-                    and not self.get_atom("ND1").hdonor):
+                self.get_atom("ND1").hacceptor
+                and not self.get_atom("ND1").hdonor
+            ):
                 if self.has_atom("HD1"):
                     self.remove_atom("HD1")
             else:  # Default to HID
@@ -555,7 +573,8 @@ class HIS(Amino):
                 "Invalid type for %s! Missing both HD1 and HE2 atoms. If "
                 "you receive this error while using the --assign-only "
                 "option you can only resolve it by adding HD1, HE2 or "
-                "both to this residue.") % str(self)
+                "both to this residue."
+            ) % str(self)
             raise TypeError(errstr)
         Amino.set_state(self)
 
@@ -583,7 +602,7 @@ class ILE(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'I'
+        return "I"
 
 
 class LEU(Amino):
@@ -609,7 +628,7 @@ class LEU(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'L'
+        return "L"
 
 
 class LYS(Amino):
@@ -635,7 +654,7 @@ class LYS(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'K'
+        return "K"
 
     def set_state(self):
         """Set forcefield name based on current titration state."""
@@ -667,7 +686,7 @@ class MET(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'M'
+        return "M"
 
 
 class PHE(Amino):
@@ -693,7 +712,7 @@ class PHE(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'F'
+        return "F"
 
 
 class PRO(Amino):
@@ -719,7 +738,7 @@ class PRO(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'P'
+        return "P"
 
     def set_state(self):
         """Set forcefield name based on the current state.
@@ -758,7 +777,7 @@ class SER(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'S'
+        return "S"
 
 
 class THR(Amino):
@@ -784,7 +803,7 @@ class THR(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'T'
+        return "T"
 
 
 class TRP(Amino):
@@ -810,7 +829,7 @@ class TRP(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'W'
+        return "W"
 
 
 class TYR(Amino):
@@ -836,7 +855,7 @@ class TYR(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'Y'
+        return "Y"
 
     def set_state(self):
         """Set forcefield name based on current titration state."""
@@ -868,7 +887,7 @@ class VAL(Amino):
         :return:  amino acid 1-letter code
         :rtype:  str
         """
-        return 'V'
+        return "V"
 
 
 class WAT(residue.Residue):
@@ -877,7 +896,8 @@ class WAT(residue.Residue):
     .. todo:: Why is water in the amino acid module?
 
     """
-    water_residue_names = ['HOH', 'WAT']
+
+    water_residue_names = ["HOH", "WAT"]
 
     def __init__(self, atoms, ref):
         """Initialize object.

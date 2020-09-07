@@ -51,7 +51,7 @@ def generate_combinations(option_list):
         List of option combinations.
     """
     combos = []
-    for num in range(len(option_list)+1):
+    for num in range(len(option_list) + 1):
         combos += list(itertools.combinations(option_list, num))
     return combos
 
@@ -105,13 +105,19 @@ def pqr_distance(df1, df2):
         Dataframe of distances
     """
     if "chain" in df1.columns:
-        d_frame = df1.merge(df2,
-                            on=["atom_name", "res_name", "res_num", "chain"],
-                            how="inner", suffixes=("A", "B"))
+        d_frame = df1.merge(
+            df2,
+            on=["atom_name", "res_name", "res_num", "chain"],
+            how="inner",
+            suffixes=("A", "B"),
+        )
     else:
-        d_frame = df1.merge(df2,
-                            on=["atom_name", "res_name", "res_num"],
-                            how="inner", suffixes=("A", "B"))
+        d_frame = df1.merge(
+            df2,
+            on=["atom_name", "res_name", "res_num"],
+            how="inner",
+            suffixes=("A", "B"),
+        )
 
     # Calculate differences and drop original columns
     for c_val in ("x", "y", "z", "q", "r"):
@@ -161,22 +167,24 @@ def compare_pqr(pqr1_path, pqr2_path):
     _LOGGER.debug("Have %d unique atoms", len(grouped))
     df_min = grouped.min()
 
-    for col, what, cut in [("dp", "position", POS_CUT),
-                           ("dq", "charge", Q_CUT),
-                           ("dr", "radius", R_CUT)]:
+    for col, what, cut in [
+        ("dp", "position", POS_CUT),
+        ("dq", "charge", Q_CUT),
+        ("dr", "radius", R_CUT),
+    ]:
         for cut_ in [0.0, cut]:
-            df_c = df_min[df_min[col] > cut_].sort_values(
-                col, ascending=False)
+            df_c = df_min[df_min[col] > cut_].sort_values(col, ascending=False)
             ndiff = df_c.shape[0]
             result = "%d atoms have %s differences > %g" % (ndiff, what, cut_)
             if ndiff > 0:
                 _LOGGER.warning(result)
                 df_c = df_min[df_min[col] > cut_].sort_values(
-                    col, ascending=False)
-                summary = (
-                    [
-                        "%s: %.3E" % (key, val) for (key, val) in
-                        df_c[col].describe().to_dict().items()])
+                    col, ascending=False
+                )
+                summary = [
+                    "%s: %.3E" % (key, val)
+                    for (key, val) in df_c[col].describe().to_dict().items()
+                ]
                 _LOGGER.debug(summary)
                 if cut_ > 0:
                     raise ValueError(result)

@@ -29,13 +29,35 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
-TITRATION_DICT = {'ASH1c': '1', 'ASH1t': '2', 'ASH2c': '3', 'ASH2t': '4',
-                  'ASP': '0', 'GLH1c': '1', 'GLH1t': '2', 'GLH2c': '3',
-                  'GLH2t': '4', 'GLU': '0', 'ARG0': '1+2+3+4',
-                  'ARG': '1+2+3+4+5', 'LYS': '1', 'LYS0': '0', 'TYR': '1',
-                  'TYR-': '0', 'HSD': '1', 'HSE': '2', 'HSP': '1+2',
-                  'H3': '1', 'H2': '2', 'H3+H2': '1+2', 'CTR01c': '1',
-                  'CTR01t': '2', 'CTR02c': '3', 'CTR02t': '4', 'CTR-': '0'}
+TITRATION_DICT = {
+    "ASH1c": "1",
+    "ASH1t": "2",
+    "ASH2c": "3",
+    "ASH2t": "4",
+    "ASP": "0",
+    "GLH1c": "1",
+    "GLH1t": "2",
+    "GLH2c": "3",
+    "GLH2t": "4",
+    "GLU": "0",
+    "ARG0": "1+2+3+4",
+    "ARG": "1+2+3+4+5",
+    "LYS": "1",
+    "LYS0": "0",
+    "TYR": "1",
+    "TYR-": "0",
+    "HSD": "1",
+    "HSE": "2",
+    "HSP": "1+2",
+    "H3": "1",
+    "H2": "2",
+    "H3+H2": "1+2",
+    "CTR01c": "1",
+    "CTR01t": "2",
+    "CTR02c": "3",
+    "CTR02t": "4",
+    "CTR-": "0",
+}
 
 
 def create_handler(hyd_path=HYD_DEF_PATH):
@@ -87,7 +109,7 @@ class HydrogenRoutines:
         :param state_id:  the state id to switch to
         :type state_id:  int
         """
-        if states == 'pKa':
+        if states == "pKa":
             return self.pka_switchstate(amb, state_id)
 
         if state_id > len(states):
@@ -101,7 +123,8 @@ class HydrogenRoutines:
             boundname = conf.boundatom
             if residue.get_atom(hname) is not None:
                 _LOGGER.debug(
-                    'Removing %s %s %s', residue.name, residue.res_seq, hname)
+                    "Removing %s %s %s", residue.name, residue.res_seq, hname
+                )
                 residue.remove_atom(hname)
             residue.get_atom(boundname).hacceptor = 1
             residue.get_atom(boundname).hdonor = 0
@@ -134,7 +157,8 @@ class HydrogenRoutines:
                     raise KeyError("Could not find necessary atom!")
 
             newcoords = quat.find_coordinates(
-                3, refcoords, defcoords, defatomcoords)
+                3, refcoords, defcoords, defatomcoords
+            )
             boundname = conf.boundatom
             residue.create_atom(hname, newcoords, "ATOM")
             residue.addDebumpAtom(residue.get_atom(hname))
@@ -142,7 +166,7 @@ class HydrogenRoutines:
             residue.get_atom(boundname).hacceptor = 0
             residue.get_atom(boundname).hdonor = 1
             # Setting the SybylType for the newly built H
-            residue.get_atom(hname).sybyl_type = 'H'
+            residue.get_atom(hname).sybyl_type = "H"
             # formal charge for PEOE_PB
             residue.get_atom(hname).formalcharge = 0.0
             # flag the added hydrogen
@@ -161,7 +185,7 @@ class HydrogenRoutines:
         """
         titrationdict = TITRATION_DICT
         state_id = titrationdict[state_id_]
-        state_id = state_id.split('+')
+        state_id = state_id.split("+")
         new_state_id = []
         for i in state_id:
             new_state_id.append(int(i))
@@ -179,7 +203,7 @@ class HydrogenRoutines:
         for state_id in new_state_id:
             if state_id == 0:
                 continue
-            conf = hdef.conformations[state_id-1]
+            conf = hdef.conformations[state_id - 1]
             refcoords = []
             defcoords = []
             defatomcoords = []
@@ -207,7 +231,8 @@ class HydrogenRoutines:
                         raise KeyError("Could not find necessary atom!")
 
                 newcoords = quat.find_coordinates(
-                    3, refcoords, defcoords, defatomcoords)
+                    3, refcoords, defcoords, defatomcoords
+                )
                 residue.create_atom(hname, newcoords)
 
             boundname = conf.boundatom
@@ -215,7 +240,7 @@ class HydrogenRoutines:
             residue.get_atom(boundname).hdonor = 1
 
             # Setting the SybylType for the newly built H
-            residue.get_atom(hname).sybyl_type = 'H'
+            residue.get_atom(hname).sybyl_type = "H"
 
             # formal charge for PEOE_PB
             residue.get_atom(hname).formalcharge = 0.0
@@ -388,7 +413,7 @@ class HydrogenRoutines:
             return
         _LOGGER.debug("  Detecting potential hydrogen bonds")
         progress = 0.0
-        increment = 1.0/len(optlist)
+        increment = 1.0 / len(optlist)
         for obj in optlist:
             connectivity[obj] = []
             for atom in obj.atomlist:
@@ -426,7 +451,8 @@ class HydrogenRoutines:
                 if obj.residue.fixed:
                     continue
                 _LOGGER.debug(
-                    "%s has no nearby partners - fixing.", obj.residue)
+                    "%s has no nearby partners - fixing.", obj.residue
+                )
                 obj.finalize()
         # Determine the distinct networks
         networks = []
@@ -445,7 +471,7 @@ class HydrogenRoutines:
         if len(networks) > 0:
             _LOGGER.debug("Optimizing hydrogen bonds")
             progress = 0.0
-            increment = 1.0/len(networks)
+            increment = 1.0 / len(networks)
         # Work on the networks
         for network in networks:
             txt = ""
@@ -484,8 +510,7 @@ class HydrogenRoutines:
                                 # Only get one hbond pair
                                 if (hbond.atom2, hbond.atom1) not in seenlist:
                                     hbondmap[hbond] = hbond.dist
-                                    seenlist.append(
-                                        (hbond.atom1, hbond.atom2))
+                                    seenlist.append((hbond.atom1, hbond.atom2))
             hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
             for hbond in hbondlist:
@@ -577,110 +602,115 @@ class HydrogenRoutines:
                     tautomermap[tautomer.name] = tautomer
                     for conformer in tautomer.conformers:
                         conformermap[conformer.name] = conformer
-        if name == 'CYS':
-            _ = refmap['CYS']
-            atoms = ['HG']
-            refatoms = ['SG', 'CB']
-        elif name == 'HIS':
-            _ = refmap['HIS']
-            atoms = ['HD1', 'HE2']
+        if name == "CYS":
+            _ = refmap["CYS"]
+            atoms = ["HG"]
+            refatoms = ["SG", "CB"]
+        elif name == "HIS":
+            _ = refmap["HIS"]
+            atoms = ["HD1", "HE2"]
             for atom in atoms:
-                refatoms = ['ND1', 'CG', 'CE1']
-        elif name == 'LYS':
+                refatoms = ["ND1", "CG", "CE1"]
+        elif name == "LYS":
             _ = self.debumper.protein.reference_map[name]
-            patch_map = self.debumper.protein.patch_map['LYN']
+            patch_map = self.debumper.protein.patch_map["LYN"]
             atoms = patch_map.remove
-            refatoms = ['HZ1', 'HZ2', 'NZ']
-        elif name == 'TYR':
+            refatoms = ["HZ1", "HZ2", "NZ"]
+        elif name == "TYR":
             _ = self.debumper.protein.reference_map[name]
-            patch_map = self.debumper.protein.patch_map['TYM']
+            patch_map = self.debumper.protein.patch_map["TYM"]
             atoms = patch_map.remove
-            refatoms = ['OH', 'CZ', 'CE2']
-        elif name == 'WAT':
+            refatoms = ["OH", "CZ", "CE2"]
+        elif name == "WAT":
             _ = self.debumper.protein.reference_map[name]
-            patch_map = self.debumper.protein.patch_map['HOH']
-            atoms = ['H1', 'H2']
+            patch_map = self.debumper.protein.patch_map["HOH"]
+            atoms = ["H1", "H2"]
             refatoms = None
-        elif name == 'NTR':
-            ntrmap = {}    # map for N-TERM
+        elif name == "NTR":
+            ntrmap = {}  # map for N-TERM
             for tautomer in titrationstatemap["NTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     for conformeradds in conformermap[
-                            conformer.name].conformer_adds:
+                        conformer.name
+                    ].conformer_adds:
                         for atom in conformeradds.atoms:
                             ntrmap[atom.name] = atom
-            atoms = ['H3', 'H2']
-            refatoms = ['CA', 'H', 'N']
-        elif name == 'CTR':
+            atoms = ["H3", "H2"]
+            refatoms = ["CA", "H", "N"]
+        elif name == "CTR":
             hmap = {}  # map for h atoms
             nonhmap = {}  # map for refatoms
             conformernames = []
             for tautomer in titrationstatemap["CTER"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     for conformeradds in conformermap[
-                            conformer.name].conformer_adds:
+                        conformer.name
+                    ].conformer_adds:
                         for atom in conformeradds.atoms:
                             nonhmap[atom.name] = atom
             for tautomer in titrationstatemap["CTER0"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     conformernames.append(conformer.name)
                     for conformeradds in conformermap[
-                            conformer.name].conformer_adds:
+                        conformer.name
+                    ].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
-            atoms = ['HO']
-            refatoms = ['O', 'C', 'OXT']
-        elif name in ['SER', 'GLN', 'THR', 'ARG', 'ASN']:
+            atoms = ["HO"]
+            refatoms = ["O", "C", "OXT"]
+        elif name in ["SER", "GLN", "THR", "ARG", "ASN"]:
             _ = refmap[name]
-            if name == 'SER':
-                atoms = ['HG']
-                refatoms = ['OG', 'CB']
-            elif name == 'GLN':
-                atoms = ['HE21']
-                refatoms = ['NE2']
-            elif name == 'THR':
-                atoms = ['HG1']
-                refatoms = ['OG1', 'CB']
-            elif name == 'ARG':
-                atoms = ['HH11', 'HH12', 'HH21', 'HH22', 'HE']
+            if name == "SER":
+                atoms = ["HG"]
+                refatoms = ["OG", "CB"]
+            elif name == "GLN":
+                atoms = ["HE21"]
+                refatoms = ["NE2"]
+            elif name == "THR":
+                atoms = ["HG1"]
+                refatoms = ["OG1", "CB"]
+            elif name == "ARG":
+                atoms = ["HH11", "HH12", "HH21", "HH22", "HE"]
                 for atom in atoms:
-                    refatoms = ['NH1', 'NH2', 'CZ']
-            elif name == 'ASN':
-                atoms = ['HD21']
-                refatoms = ['ND2']
-        elif name == 'ASH':
-            hmap = {}    # map for h atoms
-            nonhmap = {}    # map for refatoms
-            conformernames = []
-            _ = refmap['ASP']
-            for tautomer in titrationstatemap["ASH"].tautomers:
-                for conformer in tautomermap[tautomer.name].conformers:
-                    for conformeradds in conformermap[
-                            conformer.name].conformer_adds:
-                        for atom in conformeradds.atoms:
-                            hmap[conformer.name, atom.name] = atom
-                            conformernames.append(conformer.name)
-            atoms = ['HD1', 'HD2']
-            refatoms = ['OD1', 'CG', 'OD2']
-        elif name == 'GLH':
+                    refatoms = ["NH1", "NH2", "CZ"]
+            elif name == "ASN":
+                atoms = ["HD21"]
+                refatoms = ["ND2"]
+        elif name == "ASH":
             hmap = {}  # map for h atoms
             nonhmap = {}  # map for refatoms
             conformernames = []
-            _ = refmap['GLU']
-            for tautomer in titrationstatemap["GLH"].tautomers:
+            _ = refmap["ASP"]
+            for tautomer in titrationstatemap["ASH"].tautomers:
                 for conformer in tautomermap[tautomer.name].conformers:
                     for conformeradds in conformermap[
-                            conformer.name].conformer_adds:
+                        conformer.name
+                    ].conformer_adds:
                         for atom in conformeradds.atoms:
                             hmap[conformer.name, atom.name] = atom
                             conformernames.append(conformer.name)
-            atoms = ['HE1', 'HE2']
-            refatoms = ['OE1', 'CD', 'OE2']
+            atoms = ["HD1", "HD2"]
+            refatoms = ["OD1", "CG", "OD2"]
+        elif name == "GLH":
+            hmap = {}  # map for h atoms
+            nonhmap = {}  # map for refatoms
+            conformernames = []
+            _ = refmap["GLU"]
+            for tautomer in titrationstatemap["GLH"].tautomers:
+                for conformer in tautomermap[tautomer.name].conformers:
+                    for conformeradds in conformermap[
+                        conformer.name
+                    ].conformer_adds:
+                        for atom in conformeradds.atoms:
+                            hmap[conformer.name, atom.name] = atom
+                            conformernames.append(conformer.name)
+            atoms = ["HE1", "HE2"]
+            refatoms = ["OE1", "CD", "OE2"]
         else:
             patch_map = self.debumper.protein.patch_map[name]
             atoms = list(patch_map.map.keys())
             atoms.sort()
-        if name in ['NTR']:
+        if name in ["NTR"]:
             for atom in atoms:
                 hname = atom
                 x = ntrmap[hname].x
@@ -694,20 +724,21 @@ class HydrogenRoutines:
 
                 # TODO - lots of arbitrary undefined numbers in this section
                 for atom_ in refatoms:
-                    if atom_ == 'N':
+                    if atom_ == "N":
                         natom = defns.DefinitionAtom(atom_, 1.201, 0.847, 0.0)
                         myconf.add_atom(natom)
-                    elif atom_ == 'CA':
+                    elif atom_ == "CA":
                         caatom = defns.DefinitionAtom(atom_, 0.0, 0.0, 0.0)
                         myconf.add_atom(caatom)
-                    elif atom_ == 'H':
+                    elif atom_ == "H":
                         caatom = defns.DefinitionAtom(
-                            atom_, 1.201, 1.847, 0.000)
+                            atom_, 1.201, 1.847, 0.000
+                        )
                         myconf.add_atom(caatom)
                     else:
                         pass
                 mydef.add_conf(myconf)
-        elif name in ['CTR']:
+        elif name in ["CTR"]:
             for conformer in conformernames:
                 for atom in atoms:
                     hname = atom
@@ -722,9 +753,10 @@ class HydrogenRoutines:
 
                     # TODO - the following code is almost nonsensical
                     for atom_ in refatoms:
-                        if atom_ == 'C':
+                        if atom_ == "C":
                             catom = defns.DefinitionAtom(
-                                atom_, -1.250, 0.881, 0.000)
+                                atom_, -1.250, 0.881, 0.000
+                            )
                             myconf.add_atom(catom)
                         else:
                             atomname = atom_
@@ -735,35 +767,37 @@ class HydrogenRoutines:
                             myconf.add_atom(atom2)
                     mydef.add_conf(myconf)
 
-        elif name in ['ASH', 'GLH']:
+        elif name in ["ASH", "GLH"]:
             for conformer in conformernames:
                 for atom in atoms:
                     hname = atom
-                    if ('1' in conformer and '1' in atom) or (
-                            '2' in conformer and '2' in atom):
+                    if ("1" in conformer and "1" in atom) or (
+                        "2" in conformer and "2" in atom
+                    ):
                         x = hmap[conformer, hname].x
                         y = hmap[conformer, hname].y
                         z = hmap[conformer, hname].z
                         bondatom = hmap[conformer, hname].bonds[0]
                         bondlength = 1.0
                         myconf = HydrogenConformation(
-                            hname, bondatom, bondlength)
+                            hname, bondatom, bondlength
+                        )
                         atom = defns.DefinitionAtom(hname, x, y, z)
                         myconf.add_atom(atom)
 
                         for atom_ in refatoms:
                             atomname = atom_
-                            if name == 'ASH':
-                                refresname = 'ASP'
-                            elif name == 'GLH':
-                                refresname = 'GLU'
+                            if name == "ASH":
+                                refresname = "ASP"
+                            elif name == "GLH":
+                                refresname = "GLU"
                             x = atommap[refresname, atom_].x
                             y = atommap[refresname, atom_].y
                             z = atommap[refresname, atom_].z
                             atom2 = defns.DefinitionAtom(atomname, x, y, z)
                             myconf.add_atom(atom2)
                         mydef.add_conf(myconf)
-        elif name in ['WAT']:
+        elif name in ["WAT"]:
             pass
         else:
             for atom in atoms:
@@ -777,10 +811,10 @@ class HydrogenRoutines:
                 atom = defns.DefinitionAtom(hname, x, y, z)
                 myconf.add_atom(atom)
                 if refatoms is not None:
-                    if name == 'HIS' and atom.name == 'HE2':
-                        refatoms = ['NE2', 'CE1', 'CD2']
-                    if name == 'ARG' and atom.name == 'HE':
-                        refatoms = ['NE', 'CZ', 'NH1']
+                    if name == "HIS" and atom.name == "HE2":
+                        refatoms = ["NE2", "CE1", "CD2"]
+                    if name == "ARG" and atom.name == "HE":
+                        refatoms = ["NE", "CZ", "NH1"]
                     # FIXME: 2020/07/06 intendo -  the "atom" is reused in
                     # the outer for loop and ambiguous
                     for atom in refatoms:
@@ -804,4 +838,4 @@ class HydrogenRoutines:
             res = mapping
             mydef = self.parse_hydrogen(res, topo)
             self.hydrodefs.append(mydef)
-            res = ''
+            res = ""

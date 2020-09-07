@@ -33,6 +33,7 @@ class TopologyHandler(sax.ContentHandler):
 
     .. todo:  Why isn't ``super().__init__`` called here?
     """
+
     def __init__(self):
         self.curr_element = None
         self.curr_atom = None
@@ -61,25 +62,30 @@ class TopologyHandler(sax.ContentHandler):
             elif tag_name == "residue":
                 if self.curr_residue is not None:
                     _LOGGER.info(
-                        "** Overwriting current topology_residue object!")
+                        "** Overwriting current topology_residue object!"
+                    )
                 self.curr_residue = TopologyResidue(self)
             elif tag_name == "reference":
                 if self.curr_reference is not None:
                     _LOGGER.info(
-                        "** Overwriting current TopologyReference object!")
+                        "** Overwriting current TopologyReference object!"
+                    )
                 self.curr_reference = TopologyReference(self.curr_residue)
             elif tag_name == "titrationstate":
                 if self.curr_titration_state is not None:
                     _LOGGER.info(
                         "** Overwriting current topology_titration_state "
-                        "object!")
+                        "object!"
+                    )
                 self.curr_titration_state = TopologyTitrationState(
-                    self.curr_residue)
+                    self.curr_residue
+                )
             elif tag_name == "tautomer":
                 if self.curr_tautomer is not None:
                     _LOGGER.info("** Overwriting current Tautomer object!")
                 self.curr_tautomer = TopologyTautomer(
-                    self.curr_titration_state)
+                    self.curr_titration_state
+                )
             elif tag_name == "conformer":
                 if self.curr_conformer is not None:
                     _LOGGER.info("** Overwriting current Conformer object!")
@@ -109,22 +115,26 @@ class TopologyHandler(sax.ContentHandler):
                 self.curr_element = tag_name
                 if self.curr_conformer_add is not None:
                     self.curr_dihedral = TopologyDihedral(
-                        self.curr_conformer_add)
+                        self.curr_conformer_add
+                    )
                 elif self.curr_conformer_remove is not None:
                     self.curr_dihedral = TopologyDihedral(
-                        self.curr_conformer_remove)
+                        self.curr_conformer_remove
+                    )
                 elif self.curr_reference is not None:
-                    self.curr_dihedral = TopologyDihedral(
-                        self.curr_reference)
+                    self.curr_dihedral = TopologyDihedral(self.curr_reference)
                 else:
                     _LOGGER.info(
-                        "** Don't know what to do with this dihedral!")
+                        "** Don't know what to do with this dihedral!"
+                    )
             elif tag_name == "add":
                 self.curr_conformer_add = TopologyConformerAdd(
-                    self.curr_conformer)
+                    self.curr_conformer
+                )
             elif tag_name == "remove":
                 self.curr_conformer_remove = TopologyConformerRemove(
-                    self.curr_conformer)
+                    self.curr_conformer
+                )
             elif tag_name == "incomplete":
                 self.incomplete = 1
             else:
@@ -200,7 +210,8 @@ class TopologyHandler(sax.ContentHandler):
                     self.curr_residue.name = text
                 else:
                     _LOGGER.info(
-                        "    *** Don't know what to do with name %s!", text)
+                        "    *** Don't know what to do with name %s!", text
+                    )
             elif self.curr_element == "x":
                 self.curr_atom.x = float(text)
             elif self.curr_element == "y":
@@ -227,7 +238,7 @@ class TopologyResidue:
     """
 
     def __init__(self, topology_):
-        """ Initialize with a Topology object.
+        """Initialize with a Topology object.
 
         :param topology_:  topology object
         """
@@ -386,6 +397,7 @@ class Topology:
     """Contains the structured definitions of residue reference coordinates
     as well as alternate titration, conformer, and tautomer states.
     """
+
     def __init__(self, topology_file):
         """Initialize object.
 

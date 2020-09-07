@@ -21,6 +21,7 @@ class Optimize:
     Individual optimization types inherit off of this class.
     Any functions used by multiple types appear here.
     """
+
     def __init__(self):
         self.residue = None
         self.optinstance = None
@@ -54,7 +55,7 @@ class Optimize:
         elif dotted < -1.0:  # If normalized, this is due to rounding error
             dotted = -1.0
         rad = abs(math.acos(dotted))
-        angle = rad*180.0/math.pi
+        angle = rad * 180.0 / math.pi
         if angle > 180.0:
             angle = 360.0 - angle
         return angle
@@ -138,7 +139,7 @@ class Optimize:
         for donorhatom in donorhs:
             dist = util.distance(donorhatom.coords, acceptor.coords)
             if dist > max_dha_dist and dist < max_ele_dist:
-                energy += max_ele_energy/(dist*dist)
+                energy += max_ele_energy / (dist * dist)
                 continue
             # Case 1: Both donor and acceptor hydrogens are present
             for acceptorhatom in acceptorhs:
@@ -151,21 +152,25 @@ class Optimize:
                 angle1 = Optimize.get_hbond_angle(acceptor, donor, donorhatom)
                 if angle1 <= adh_angle_cutoff:
                     angle2 = Optimize.get_hbond_angle(
-                        donorhatom, acceptorhatom, acceptor)
+                        donorhatom, acceptorhatom, acceptor
+                    )
                     if angle2 < dhaha_angle_cutoff:
                         angle2 = 1.0
                     else:
                         angle2 = (
-                            dhaha_angle_cutoff - angle2)/dhaha_angle_cutoff
-                    angleterm = (adh_angle_cutoff - angle1)/adh_angle_cutoff
-                    energy += max_hbond_energy/pow(dist, 3)*angleterm*angle2
+                            dhaha_angle_cutoff - angle2
+                        ) / dhaha_angle_cutoff
+                    angleterm = (adh_angle_cutoff - angle1) / adh_angle_cutoff
+                    energy += (
+                        max_hbond_energy / pow(dist, 3) * angleterm * angle2
+                    )
             # Case 2: Only donor hydrogens are present
             if len(acceptorhs) == 0:
                 # Assign energies based on A-D-H(D) angle alone
                 angle1 = Optimize.get_hbond_angle(acceptor, donor, donorhatom)
                 if angle1 <= adh_angle_cutoff:
-                    angleterm = (adh_angle_cutoff - angle1)/adh_angle_cutoff
-                    energy += max_hbond_energy/pow(dist, 2)*angleterm
+                    angleterm = (adh_angle_cutoff - angle1) / adh_angle_cutoff
+                    energy += max_hbond_energy / pow(dist, 2) * angleterm
         return energy
 
     def make_atom_with_no_bonds(self, atom, closeatom, addname):
@@ -188,7 +193,7 @@ class Optimize:
         vec = util.subtract(closeatom.coords, atom.coords)
         dist = util.distance(atom.coords, closeatom.coords)
         for i in range(3):
-            newcoords.append(vec[i]/dist + atom.coords[i])
+            newcoords.append(vec[i] / dist + atom.coords[i])
         residue.create_atom(addname, newcoords)
         newatom = residue.get_atom(addname)
         self.routines.cells.add_cell(newatom)
@@ -215,13 +220,14 @@ class Optimize:
         residue = atom.residue
         nextatom = atom.bonds[0]
         coords = [atom.coords, nextatom.coords]
-        refcoords = [residue.reference.map[atom.name].coords,
-                     residue.reference.map["H1"].coords]
+        refcoords = [
+            residue.reference.map[atom.name].coords,
+            residue.reference.map["H1"].coords,
+        ]
         refatomcoords = residue.reference.map["H2"].coords
 
         # Make the atom
-        newcoords = quat.find_coordinates(
-            2, coords, refcoords, refatomcoords)
+        newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
         residue.create_atom(addname, newcoords)
 
         # Set the bonds (since not in reference structure)
@@ -246,8 +252,10 @@ class Optimize:
         residue = atom.residue
         nextatom = atom.bonds[0]
         coords = [atom.coords, nextatom.coords]
-        refcoords = [residue.reference.map[atom.name].coords,
-                     residue.reference.map[nextatom.name].coords]
+        refcoords = [
+            residue.reference.map[atom.name].coords,
+            residue.reference.map[nextatom.name].coords,
+        ]
         refatomcoords = residue.reference.map[addname].coords
         # Make the atom
         newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
@@ -273,8 +281,10 @@ class Optimize:
                 break
         nextatom = atom.bonds[0]
         coords = [atom.coords, nextatom.coords]
-        refcoords = [residue.reference.map[atom.name].coords,
-                     residue.reference.map[nextatom.name].coords]
+        refcoords = [
+            residue.reference.map[atom.name].coords,
+            residue.reference.map[nextatom.name].coords,
+        ]
         refatomcoords = residue.reference.map[the_refname].coords
         # Make the atom
         newcoords = quat.find_coordinates(2, coords, refcoords, refatomcoords)
@@ -361,8 +371,7 @@ class Optimize:
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(
-                        acc, donor, donorhatom) < ANGLE_CUTOFF:
+                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
         for _ in range(72):
@@ -374,8 +383,10 @@ class Optimize:
         # Remove if geometry does not work
         if bestangle > (ANGLE_CUTOFF * 2.0):
             _LOGGER.debug(
-                "Removing due to geometry %.2f > %.2f", bestangle,
-                ANGLE_CUTOFF*2.0)
+                "Removing due to geometry %.2f > %.2f",
+                bestangle,
+                ANGLE_CUTOFF * 2.0,
+            )
             residue.remove_atom(newatom.name)
             return False
         # Otherwise set to best coordinates
@@ -459,8 +470,7 @@ class Optimize:
         residue.remove_atom(newname)
         return 0
 
-    def try_positions_with_two_bonds_lp(
-            self, acc, donor, newname, loc1, loc2):
+    def try_positions_with_two_bonds_lp(self, acc, donor, newname, loc1, loc2):
         """Attempt to place a :abbr:`LP (lone pair)` on an atom.
 
         Try placing an LP on a tetrahedral geometry with two existing bonds.
@@ -490,8 +500,7 @@ class Optimize:
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(
-                        acc, donor, donorhatom) < ANGLE_CUTOFF:
+                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
         # Try the first position
@@ -602,8 +611,7 @@ class Optimize:
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(
-                        acc, donor, donorhatom) < ANGLE_CUTOFF:
+                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
                     the_donorhatom = donorhatom
                     break
         residue.create_atom(newname, loc)

@@ -94,7 +94,8 @@ class Debump:
         for closeatom in closeatoms:
             closeresidue = closeatom.residue
             if closeresidue == residue and (
-                    closeatom in atom.bonds or atom in closeatom.bonds):
+                closeatom in atom.bonds or atom in closeatom.bonds
+            ):
                 continue
             if not isinstance(closeresidue, aa.Amino):
                 continue
@@ -103,26 +104,32 @@ class Debump:
                     continue
             # Also ignore if this is a donor/acceptor pair
             pair_ignored = False
-            if (atom.is_hydrogen and
-                    len(atom.bonds) != 0 and
-                    atom.bonds[0].hdonor and
-                    closeatom.hacceptor):
+            if (
+                atom.is_hydrogen
+                and len(atom.bonds) != 0
+                and atom.bonds[0].hdonor
+                and closeatom.hacceptor
+            ):
                 continue
-            if (closeatom.is_hydrogen and
-                    len(closeatom.bonds) != 0 and
-                    closeatom.bonds[0].hdonor and
-                    atom.hacceptor):
+            if (
+                closeatom.is_hydrogen
+                and len(closeatom.bonds) != 0
+                and closeatom.bonds[0].hdonor
+                and atom.hacceptor
+            ):
                 continue
             dist = util.distance(atom.coords, closeatom.coords)
             other_size = (
                 BUMP_HYDROGEN_SIZE
-                if closeatom.is_hydrogen else BUMP_HEAVY_SIZE)
+                if closeatom.is_hydrogen
+                else BUMP_HEAVY_SIZE
+            )
             cutoff = atom_size + other_size
             if dist < cutoff:
                 bumpscore = bumpscore + 1000.0
                 if pair_ignored:
-                    _LOGGER.debug('This bump is a donor/acceptor pair.')
-        _LOGGER.debug('BUMPSCORE %s', str(bumpscore))
+                    _LOGGER.debug("This bump is a donor/acceptor pair.")
+        _LOGGER.debug("BUMPSCORE %s", str(bumpscore))
         return bumpscore
 
     def debump_protein(self):
@@ -157,8 +164,10 @@ class Debump:
             _LOGGER.debug(
                 "Debumping cutoffs: %2.1f for heavy-heavy, %2.1f for "
                 "hydrogen-heavy, and %2.1f for hydrogen-hydrogen.",
-                BUMP_HEAVY_SIZE*2, BUMP_HYDROGEN_SIZE+BUMP_HEAVY_SIZE,
-                BUMP_HYDROGEN_SIZE*2)
+                BUMP_HEAVY_SIZE * 2,
+                BUMP_HYDROGEN_SIZE + BUMP_HEAVY_SIZE,
+                BUMP_HYDROGEN_SIZE * 2,
+            )
             if self.debump_residue(residue, conflict_names):
                 _LOGGER.debug("Debumping Successful!")
             else:
@@ -192,8 +201,12 @@ class Debump:
                 if write_conflict_info:
                     for repatom in nearatoms:
                         _LOGGER.debug(
-                            "%s %s is too close to %s %s", residue, atomname,
-                            repatom.residue, repatom.name)
+                            "%s %s is too close to %s %s",
+                            residue,
+                            atomname,
+                            repatom.residue,
+                            repatom.name,
+                        )
         return conflict_names
 
     def score_dihedral_angle(self, residue, anglenum):
@@ -237,12 +250,14 @@ class Debump:
         # Try to find a workable solution
         for _ in range(DEBUMP_ANGLE_TEST_COUNT):
             anglenum = residue.pick_dihedral_angle(
-                curr_conflict_names, anglenum)
+                curr_conflict_names, anglenum
+            )
             if anglenum == -1:
                 return False
             _LOGGER.debug(
                 "Using dihedral angle number %i to debump the residue.",
-                anglenum)
+                anglenum,
+            )
             bestscore = self.score_dihedral_angle(residue, anglenum)
             found_improved = False
             bestangle = orig_angle = residue.dihedrals[anglenum]
@@ -255,7 +270,8 @@ class Debump:
                 if score == 0:
                     if not self.find_residue_conflicts(residue):
                         _LOGGER.debug(
-                            "No conflicts found at angle %s", repr(newangle))
+                            "No conflicts found at angle %s", repr(newangle)
+                        )
                         return True
                     else:
                         bestangle = newangle
@@ -314,12 +330,16 @@ class Debump:
                     continue
             # Also ignore if this is a donor/acceptor pair
             if (
-                    atom.is_hydrogen and atom.bonds[0].hdonor
-                    and closeatom.hacceptor):
+                atom.is_hydrogen
+                and atom.bonds[0].hdonor
+                and closeatom.hacceptor
+            ):
                 continue
             if (
-                    closeatom.is_hydrogen and closeatom.bonds[0].hdonor
-                    and atom.hacceptor):
+                closeatom.is_hydrogen
+                and closeatom.bonds[0].hdonor
+                and atom.hacceptor
+            ):
                 continue
             dist = util.distance(atom.coords, closeatom.coords)
             if isinstance(closeresidue, aa.WAT):
@@ -333,8 +353,9 @@ class Debump:
         if bestdist > bestwatdist:
             txt = (
                 "Skipped atom during water optimization: %s in %s skipped "
-                "when optimizing %s in %s" % (
-                    bestwatatom.name, bestwatatom.residue, atom.name, residue))
+                "when optimizing %s in %s"
+                % (bestwatatom.name, bestwatatom.residue, atom.name, residue)
+            )
             _LOGGER.warning(txt)
         return bestatom
 
@@ -363,27 +384,37 @@ class Debump:
         for closeatom in closeatoms:
             closeresidue = closeatom.residue
             if closeresidue == residue and (
-                    closeatom in atom.bonds or atom in closeatom.bonds):
+                closeatom in atom.bonds or atom in closeatom.bonds
+            ):
                 continue
             if not isinstance(closeresidue, (aa.Amino, aa.WAT)):
                 continue
             if (
-                    isinstance(residue, aa.CYS)
-                    and residue.ss_bonded_partner == closeatom):
+                isinstance(residue, aa.CYS)
+                and residue.ss_bonded_partner == closeatom
+            ):
                 continue
             # Also ignore if this is a donor/acceptor pair
             if (
-                    atom.is_hydrogen and len(atom.bonds) != 0
-                    and atom.bonds[0].hdonor and closeatom.hacceptor):
+                atom.is_hydrogen
+                and len(atom.bonds) != 0
+                and atom.bonds[0].hdonor
+                and closeatom.hacceptor
+            ):
                 continue
             if (
-                    closeatom.is_hydrogen and len(closeatom.bonds) != 0
-                    and closeatom.bonds[0].hdonor and atom.hacceptor):
+                closeatom.is_hydrogen
+                and len(closeatom.bonds) != 0
+                and closeatom.bonds[0].hdonor
+                and atom.hacceptor
+            ):
                 continue
             dist = util.distance(atom.coords, closeatom.coords)
             other_size = (
                 BUMP_HYDROGEN_SIZE
-                if closeatom.is_hydrogen else BUMP_HEAVY_SIZE)
+                if closeatom.is_hydrogen
+                else BUMP_HEAVY_SIZE
+            )
             cutoff = atom_size + other_size
             if dist < cutoff:
                 nearatoms[closeatom] = cutoff - dist
@@ -422,9 +453,9 @@ class Debump:
         for iatom, atom_name in enumerate(moveablenames):
             atom = residue.get_atom(atom_name)
             self.cells.remove_cell(atom)
-            atom.x = (newcoords[iatom][0] + coordlist[1][0])
-            atom.y = (newcoords[iatom][1] + coordlist[1][1])
-            atom.z = (newcoords[iatom][2] + coordlist[1][2])
+            atom.x = newcoords[iatom][0] + coordlist[1][0]
+            atom.y = newcoords[iatom][1] + coordlist[1][1]
+            atom.z = newcoords[iatom][2] + coordlist[1][2]
             self.cells.add_cell(atom)
         # Set the new angle
         coordlist = []
@@ -434,5 +465,6 @@ class Debump:
             else:
                 raise ValueError("Error occurred while trying to debump!")
         dihed = util.dihedral(
-            coordlist[0], coordlist[1], coordlist[2], coordlist[3])
+            coordlist[0], coordlist[1], coordlist[2], coordlist[3]
+        )
         residue.dihedrals[anglenum] = dihed

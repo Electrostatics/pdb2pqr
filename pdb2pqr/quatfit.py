@@ -125,36 +125,39 @@ def qchichange(initcoords, refcoords, angle):
         left.append(0.0)
         right.append([0.0, 0.0, 0.0])
     # Convert to radians and normalize
-    radangle = math.pi * angle/180.0
+    radangle = math.pi * angle / 180.0
     normalized = normalize(initcoords)
     left[0] = normalized[0]
     left[1] = normalized[1]
     left[2] = normalized[2]
     # Construct the rotation matrix
-    right[0][0] = (
-        math.cos(radangle) + left[0]*left[0] * (1.0 - math.cos(radangle)))
-    right[1][1] = (
-        math.cos(radangle) + left[1]*left[1] * (1.0 - math.cos(radangle)))
-    right[2][2] = (
-        math.cos(radangle) + left[2]*left[2] * (1.0 - math.cos(radangle)))
-    right[1][0] = (
-        left[0]*left[1]*(1.0 - math.cos(radangle))
-        - left[2] * math.sin(radangle))
-    right[2][0] = (
-        left[0]*left[2]*(1.0 - math.cos(radangle))
-        + left[1] * math.sin(radangle))
-    right[0][1] = (
-        left[1]*left[0]*(1.0 - math.cos(radangle))
-        + left[2] * math.sin(radangle))
-    right[2][1] = (
-        left[1]*left[2]*(1.0 - math.cos(radangle))
-        - left[0] * math.sin(radangle))
-    right[0][2] = (
-        left[2]*left[0]*(1.0 - math.cos(radangle))
-        - left[1] * math.sin(radangle))
-    right[1][2] = (
-        left[2]*left[1]*(1.0 - math.cos(radangle))
-        + left[0] * math.sin(radangle))
+    right[0][0] = math.cos(radangle) + left[0] * left[0] * (
+        1.0 - math.cos(radangle)
+    )
+    right[1][1] = math.cos(radangle) + left[1] * left[1] * (
+        1.0 - math.cos(radangle)
+    )
+    right[2][2] = math.cos(radangle) + left[2] * left[2] * (
+        1.0 - math.cos(radangle)
+    )
+    right[1][0] = left[0] * left[1] * (1.0 - math.cos(radangle)) - left[
+        2
+    ] * math.sin(radangle)
+    right[2][0] = left[0] * left[2] * (1.0 - math.cos(radangle)) + left[
+        1
+    ] * math.sin(radangle)
+    right[0][1] = left[1] * left[0] * (1.0 - math.cos(radangle)) + left[
+        2
+    ] * math.sin(radangle)
+    right[2][1] = left[1] * left[2] * (1.0 - math.cos(radangle)) - left[
+        0
+    ] * math.sin(radangle)
+    right[0][2] = left[2] * left[0] * (1.0 - math.cos(radangle)) - left[
+        1
+    ] * math.sin(radangle)
+    right[1][2] = left[2] * left[1] * (1.0 - math.cos(radangle)) + left[
+        0
+    ] * math.sin(radangle)
     numpoints = len(refcoords)
     newcoords = rotmol(numpoints, refcoords, right)
     return newcoords
@@ -176,14 +179,20 @@ def rotmol(numpoints, coor, lrot):
     for i in range(numpoints):
         out.append([])
         out[i].append(
-            lrot[0][0] * coor[i][0] + lrot[1][0] * coor[i][1]
-            + lrot[2][0] * coor[i][2])
+            lrot[0][0] * coor[i][0]
+            + lrot[1][0] * coor[i][1]
+            + lrot[2][0] * coor[i][2]
+        )
         out[i].append(
-            lrot[0][1] * coor[i][0] + lrot[1][1] * coor[i][1]
-            + lrot[2][1] * coor[i][2])
+            lrot[0][1] * coor[i][0]
+            + lrot[1][1] * coor[i][1]
+            + lrot[2][1] * coor[i][2]
+        )
         out[i].append(
-            lrot[0][2] * coor[i][0] + lrot[1][2] * coor[i][1]
-            + lrot[2][2] * coor[i][2])
+            lrot[0][2] * coor[i][0]
+            + lrot[1][2] * coor[i][1]
+            + lrot[2][2] * coor[i][2]
+        )
     return out
 
 
@@ -285,7 +294,7 @@ def jacobi(amat, nrot):
             for i in range(j):
                 onorm = onorm + abs(amat[i][j])
         if dnorm != 0:
-            if onorm/dnorm <= 1e-12:
+            if onorm / dnorm <= 1e-12:
                 the_lrot = lrot
                 break
         for j in range(1, 4):
@@ -296,22 +305,22 @@ def jacobi(amat, nrot):
                     if abs(dma) + abs(bscl) <= abs(dma):
                         tscl = bscl / dma
                     else:
-                        qscl = 0.5 * dma/bscl
-                        tscl = 1.0/(abs(qscl) + math.sqrt(1 + qscl*qscl))
+                        qscl = 0.5 * dma / bscl
+                        tscl = 1.0 / (abs(qscl) + math.sqrt(1 + qscl * qscl))
                         if qscl < 0:
                             tscl = tscl * -1
-                    cscl = 1.0/math.sqrt(tscl*tscl + 1)
-                    sscl = tscl*cscl
+                    cscl = 1.0 / math.sqrt(tscl * tscl + 1)
+                    sscl = tscl * cscl
                     amat[i][j] = 0.0
                     for k in range(i):
                         atemp = cscl * amat[k][i] - sscl * amat[k][j]
                         amat[k][j] = sscl * amat[k][i] + cscl * amat[k][j]
                         amat[k][i] = atemp
-                    for k in range(i+1, j):
+                    for k in range(i + 1, j):
                         atemp = cscl * amat[i][k] - sscl * amat[k][j]
                         amat[k][j] = sscl * amat[i][k] + cscl * amat[k][j]
                         amat[i][k] = atemp
-                    for k in range(j+1, 4):
+                    for k in range(j + 1, 4):
                         atemp = cscl * amat[i][k] - sscl * amat[j][k]
                         amat[j][k] = sscl * amat[i][k] + cscl * amat[j][k]
                         amat[i][k] = atemp
@@ -320,17 +329,21 @@ def jacobi(amat, nrot):
                         vmat[k][j] = sscl * vmat[k][i] + cscl * vmat[k][j]
                         vmat[k][i] = vtemp
                     dtemp = (
-                        cscl * cscl * dvec[i] + sscl * sscl * dvec[j]
-                        - 2.0 * cscl * sscl * bscl)
+                        cscl * cscl * dvec[i]
+                        + sscl * sscl * dvec[j]
+                        - 2.0 * cscl * sscl * bscl
+                    )
                     dvec[j] = (
-                        sscl * sscl * dvec[i] + cscl * cscl * dvec[j]
-                        + 2.0 * cscl * sscl * bscl)
+                        sscl * sscl * dvec[i]
+                        + cscl * cscl * dvec[j]
+                        + 2.0 * cscl * sscl * bscl
+                    )
                     dvec[i] = dtemp
     nrot = the_lrot
     for j in range(3):
         k = j
         dtemp = dvec[k]
-        for i in range(j+1, 4):
+        for i in range(j + 1, 4):
             if dvec[i] < dtemp:
                 k = i
                 dtemp = dvec[k]
@@ -357,20 +370,29 @@ def q2mat(quat):
         for _ in range(3):
             urot[i].append(0.0)
     urot[0][0] = (
-        quat[0] * quat[0] + quat[1] * quat[1] - quat[2] * quat[2]
-        - quat[3] * quat[3])
+        quat[0] * quat[0]
+        + quat[1] * quat[1]
+        - quat[2] * quat[2]
+        - quat[3] * quat[3]
+    )
     urot[0][1] = 2.0 * (quat[1] * quat[2] - quat[0] * quat[3])
     urot[0][2] = 2.0 * (quat[1] * quat[3] + quat[0] * quat[2])
     urot[1][0] = 2.0 * (quat[2] * quat[1] + quat[0] * quat[3])
     urot[1][1] = (
-        quat[0] * quat[0] - quat[1] * quat[1] + quat[2] * quat[2]
-        - quat[3] * quat[3])
+        quat[0] * quat[0]
+        - quat[1] * quat[1]
+        + quat[2] * quat[2]
+        - quat[3] * quat[3]
+    )
     urot[1][2] = 2.0 * (quat[2] * quat[3] - quat[0] * quat[1])
     urot[2][0] = 2.0 * (quat[3] * quat[1] - quat[0] * quat[2])
     urot[2][1] = 2.0 * (quat[3] * quat[2] + quat[0] * quat[1])
     urot[2][2] = (
-        quat[0] * quat[0] - quat[1] * quat[1] - quat[2] * quat[2]
-        + quat[3] * quat[3])
+        quat[0] * quat[0]
+        - quat[1] * quat[1]
+        - quat[2] * quat[2]
+        + quat[3] * quat[3]
+    )
     return urot
 
 

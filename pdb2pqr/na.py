@@ -13,6 +13,7 @@ class Nucleic(residue.Residue):
     """This class provides standard features of the nucleic acids listed
     below.
     """
+
     def __init__(self, atoms, ref):
         sample_atom = atoms[-1]
 
@@ -123,7 +124,7 @@ class ADE(Nucleic):
         :return:  letter code for nucleic acid
         :rtype:  str
         """
-        return 'A'
+        return "A"
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
@@ -152,7 +153,7 @@ class CYT(Nucleic):
         :return:  letter code for nucleic acid
         :rtype:  str
         """
-        return 'C'
+        return "C"
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
@@ -181,7 +182,7 @@ class GUA(Nucleic):
         :return:  letter code for nucleic acid
         :rtype:  str
         """
-        return 'G'
+        return "G"
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
@@ -210,7 +211,7 @@ class THY(Nucleic):
         :return:  letter code for nucleic acid
         :rtype:  str
         """
-        return 'T'
+        return "T"
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
@@ -236,7 +237,7 @@ class URA(Nucleic):
         :return:  letter code for nucleic acid
         :rtype:  str
         """
-        return 'U'
+        return "U"
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
@@ -246,24 +247,29 @@ class URA(Nucleic):
 
 class RA(ADE):
     """Ribo-ADE"""
+
     pass
 
 
 class RC(CYT):
     """Ribo-CYT"""
+
     pass
 
 
 class RG(GUA):
     """Ribo-GUA"""
+
     pass
 
 
 class DT(THY):
     """Deoxyribo-THY"""
+
     pass
 
 
 class RU(URA):
     """Ribo-URA"""
+
     pass

@@ -47,6 +47,8 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
 def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
     """Run the PDB2PQR Suite"""
     raise DeprecationWarning("TODO - This function is deprecated")
+
+
 #     """Run the PDB2PQR Suite
 #     Args:
 #         pdblist: The list of objects that was read from the PDB file given

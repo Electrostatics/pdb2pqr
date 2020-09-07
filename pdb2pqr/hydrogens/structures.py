@@ -132,8 +132,12 @@ class Flip(optimize.Optimize):
                 return True
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
-            donor.name, acc.residue, acc.name)
+            "Working on %s %s (donor) to %s %s (acceptor)",
+            donor.residue,
+            donor.name,
+            acc.residue,
+            acc.name,
+        )
         if self.is_hbond(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 self.fix_flip(donor)
@@ -158,8 +162,12 @@ class Flip(optimize.Optimize):
         if not acc.hacceptor:
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
-            donor.name, acc.residue, acc.name)
+            "Working on %s %s (donor) to %s %s (acceptor)",
+            donor.residue,
+            donor.name,
+            acc.residue,
+            acc.name,
+        )
         if self.is_hbond(donor, acc):
             residue.fixed = donor.name
             self.fix_flip(donor)
@@ -182,8 +190,12 @@ class Flip(optimize.Optimize):
         if not donor.hdonor:
             return False
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
-            acc.name, donor.residue, donor.name)
+            "Working on %s %s (acceptor) to %s %s (donor)",
+            acc.residue,
+            acc.name,
+            donor.residue,
+            donor.name,
+        )
         if self.is_hbond(donor, acc):
             residue.fixed = acc.name
             self.fix_flip(acc)
@@ -211,14 +223,15 @@ class Flip(optimize.Optimize):
             flag = 1
         dstr = "fix_flip called for residue {:s}, bondatom {:s} and flag {:d}"
         _LOGGER.debug(dstr.format(str(residue), str(bondatom), flag))
-        residue.wasFlipped = (flag == 0)
+        residue.wasFlipped = flag == 0
         # Delete the appropriate atoms
         for atom in atomlist:
             atomname = atom.name
             if atomname.endswith("FLIP") and flag:  # Delete the other list
                 if residue.has_atom(atomname[:-4]):
                     self.routines.cells.remove_cell(
-                        residue.get_atom(atomname[:-4]))
+                        residue.get_atom(atomname[:-4])
+                    )
                     residue.remove_atom(atomname[:-4])
             elif atomname.endswith("FLIP"):  # Delete the flip
                 self.routines.cells.remove_cell(atom)
@@ -376,8 +389,12 @@ class Alcoholic(optimize.Optimize):
         if residue.has_atom(newname):
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
-            donor.name, acc.residue, acc.name)
+            "Working on %s %s (donor) to %s %s (acceptor)",
+            donor.residue,
+            donor.name,
+            acc.residue,
+            acc.name,
+        )
         # Act depending on the number of bonds
         if len(donor.bonds) == 1:  # No H or LP attached
             self.make_atom_with_one_bond_h(donor, newname)
@@ -386,7 +403,8 @@ class Alcoholic(optimize.Optimize):
         elif len(donor.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(donor)
             return self.try_positions_with_two_bonds_h(
-                donor, acc, newname, loc1, loc2)
+                donor, acc, newname, loc1, loc2
+            )
         elif len(donor.bonds) == 3:
             loc = self.get_position_with_three_bonds(donor)
             return self.try_positions_three_bonds_h(donor, acc, newname, loc)
@@ -414,8 +432,12 @@ class Alcoholic(optimize.Optimize):
         else:
             newname = "LP1"
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
-            acc.name, donor.residue, donor.name)
+            "Working on %s %s (acceptor) to %s %s (donor)",
+            acc.residue,
+            acc.name,
+            donor.residue,
+            donor.name,
+        )
         # Act depending on the number of bonds
         if len(acc.bonds) == 1:  # No H or LP attached
             self.make_atom_with_one_bond_lp(acc, newname)
@@ -424,7 +446,8 @@ class Alcoholic(optimize.Optimize):
         elif len(acc.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(acc)
             return self.try_positions_with_two_bonds_lp(
-                acc, donor, newname, loc1, loc2)
+                acc, donor, newname, loc1, loc2
+            )
         elif len(acc.bonds) == 3:
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
@@ -463,9 +486,9 @@ class Alcoholic(optimize.Optimize):
                 closeatoms = self.routines.cells.get_near_cells(atom)
                 energy = 0.0
                 for catom in closeatoms:
-                    energy += (
-                        self.get_pair_energy(atom, catom)
-                        + self.get_pair_energy(catom, atom))
+                    energy += self.get_pair_energy(
+                        atom, catom
+                    ) + self.get_pair_energy(catom, atom)
                 if energy < bestenergy:
                     bestenergy = energy
                     bestcoords = newatom.coords
@@ -482,9 +505,9 @@ class Alcoholic(optimize.Optimize):
             closeatoms = self.routines.cells.get_near_cells(atom)
             energy1 = 0.0
             for catom in closeatoms:
-                energy1 += (
-                    self.get_pair_energy(atom, catom)
-                    + self.get_pair_energy(catom, atom))
+                energy1 += self.get_pair_energy(
+                    atom, catom
+                ) + self.get_pair_energy(catom, atom)
             # Place at other location
             self.routines.cells.remove_cell(newatom)
             newatom.x = loc2[0]
@@ -493,9 +516,9 @@ class Alcoholic(optimize.Optimize):
             self.routines.cells.add_cell(newatom)
             energy2 = 0.0
             for catom in closeatoms:
-                energy2 += (
-                    self.get_pair_energy(atom, catom)
-                    + self.get_pair_energy(catom, atom))
+                energy2 += self.get_pair_energy(
+                    atom, catom
+                ) + self.get_pair_energy(catom, atom)
             # If this is worse, switch back
             if energy2 > energy1:
                 self.routines.cells.remove_cell(newatom)
@@ -619,8 +642,12 @@ class Water(optimize.Optimize):
         else:
             newname = "LP1"
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
-            acc.name, donor.residue, donor.name)
+            "Working on %s %s (acceptor) to %s %s (donor)",
+            acc.residue,
+            acc.name,
+            donor.residue,
+            donor.name,
+        )
         # Act depending on the number of bonds
         if len(acc.bonds) == 0:
             if self.is_hbond(donor, acc):
@@ -638,20 +665,23 @@ class Water(optimize.Optimize):
             return False
         elif len(acc.bonds) == 1:  # No H or LP attached
             _LOGGER.debug(
-                "Trying to add %s to %s with one bond", newname, acc.residue)
+                "Trying to add %s to %s with one bond", newname, acc.residue
+            )
             self.make_water_with_one_bond(acc, newname)
             newatom = acc.residue.get_atom(newname)
             return self.try_single_alcoholic_lp(acc, donor, newatom)
         elif len(acc.bonds) == 2:
             _LOGGER.debug(
-                "Trying to add %s to %s with two bonds", newname, acc.residue)
+                "Trying to add %s to %s with two bonds", newname, acc.residue
+            )
             loc1, loc2 = self.get_positions_with_two_bonds(acc)
             return self.try_positions_with_two_bonds_lp(
-                acc, donor, newname, loc1, loc2)
+                acc, donor, newname, loc1, loc2
+            )
         elif len(acc.bonds) == 3:
             _LOGGER.debug(
-                "Trying to add %s to %s with three bonds", newname,
-                acc.residue)
+                "Trying to add %s to %s with three bonds", newname, acc.residue
+            )
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
         return False
@@ -677,8 +707,12 @@ class Water(optimize.Optimize):
         else:
             newname = "H1"
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
-            donor.name, acc.residue, acc.name)
+            "Working on %s %s (donor) to %s %s (acceptor)",
+            donor.residue,
+            donor.name,
+            acc.residue,
+            acc.name,
+        )
         # Act depending on the number of bonds
         if len(donor.bonds) == 0:
             self.make_atom_with_no_bonds(donor, acc, newname)
@@ -694,7 +728,8 @@ class Water(optimize.Optimize):
         elif len(donor.bonds) == 2:
             loc1, loc2 = self.get_positions_with_two_bonds(donor)
             return self.try_positions_with_two_bonds_h(
-                donor, acc, newname, loc1, loc2)
+                donor, acc, newname, loc1, loc2
+            )
         elif len(donor.bonds) == 3:
             loc = self.get_position_with_three_bonds(donor)
             return self.try_positions_three_bonds_h(donor, acc, newname, loc)
@@ -720,8 +755,11 @@ class Water(optimize.Optimize):
         else:
             addname = "H2"
         _LOGGER.debug(
-            "Finalizing %s by adding %s (%i current O bonds)", residue,
-            addname, len(atom.bonds))
+            "Finalizing %s by adding %s (%i current O bonds)",
+            residue,
+            addname,
+            len(atom.bonds),
+        )
         if len(atom.bonds) == 0:
             newcoords = []
             # Build hydrogen away from closest atom
@@ -730,7 +768,7 @@ class Water(optimize.Optimize):
                 vec = util.subtract(atom.coords, closeatom.coords)
                 dist = util.distance(atom.coords, closeatom.coords)
                 for i in range(3):
-                    newcoords.append(vec[i]/dist + atom.coords[i])
+                    newcoords.append(vec[i] / dist + atom.coords[i])
             else:
                 newcoords = util.add(atom.coords, [1.0, 0.0, 0.0])
             residue.create_atom(addname, newcoords)
@@ -930,8 +968,12 @@ class Carboxylic(optimize.Optimize):
                 return True
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)", donor.residue,
-            donor.name, acc.residue, acc.name)
+            "Working on %s %s (donor) to %s %s (acceptor)",
+            donor.residue,
+            donor.name,
+            acc.residue,
+            acc.name,
+        )
         if self.is_hbond(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 self.fix(donor, acc)
@@ -981,8 +1023,12 @@ class Carboxylic(optimize.Optimize):
         if not donor.hdonor:
             return False
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)", acc.residue,
-            acc.name, donor.residue, donor.name)
+            "Working on %s %s (acceptor) to %s %s (donor)",
+            acc.residue,
+            acc.name,
+            donor.residue,
+            donor.name,
+        )
         # We want to ignore the Hs on the acceptor
         if self.is_carboxylic_hbond(donor, acc):
             # Eliminate the closer hydrogen
@@ -1009,7 +1055,8 @@ class Carboxylic(optimize.Optimize):
                 if residue.has_atom(hyds[0].name):
                     donorhatom = residue.get_atom(hyds[0].name)
                 elif len(self.hlist) != 0 and residue.has_atom(
-                        self.hlist[0].name):
+                    self.hlist[0].name
+                ):
                     donorhatom = residue.get_atom(self.hlist[0].name)
             # If only one H is left, we're done
             if len(self.hlist) == 1:
@@ -1040,14 +1087,15 @@ class Carboxylic(optimize.Optimize):
 
     def fix(self, donor, acc):
         """Fix the carboxylic residue."""
-        _LOGGER.debug(
-            "Fixing residue %s due to %s", donor.residue, donor.name)
+        _LOGGER.debug("Fixing residue %s due to %s", donor.residue, donor.name)
         residue = donor.residue
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
             if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(
-                        acc, donor, donorhatom) <= ANGLE_CUTOFF:
+                if (
+                    self.get_hbond_angle(acc, donor, donorhatom)
+                    <= ANGLE_CUTOFF
+                ):
                     the_donorhatom = donorhatom
                     break
         # Remove all the other available bonded hydrogens
@@ -1079,9 +1127,9 @@ class Carboxylic(optimize.Optimize):
             bondedatom = hydatom.bonds[0]
             closeatoms = self.routines.cells.get_near_cells(bondedatom)
             for catom in closeatoms:
-                energy += (
-                    self.get_pair_energy(bondedatom, catom)
-                    + self.get_pair_energy(catom, bondedatom))
+                energy += self.get_pair_energy(
+                    bondedatom, catom
+                ) + self.get_pair_energy(catom, bondedatom)
             if energy < bestenergy:
                 bestenergy = energy
                 bestatom = hydatom
@@ -1299,8 +1347,11 @@ class HydrogenAmbiguity:
 
     def __str__(self):
         text = "%s %i %s (%s)" % (
-            self.residue.name, self.residue.res_seq, self.residue.chain_id,
-            self.hdef.opttype)
+            self.residue.name,
+            self.residue.res_seq,
+            self.residue.chain_id,
+            self.hdef.opttype,
+        )
         return text
 
 

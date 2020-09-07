@@ -32,11 +32,12 @@ class BaseRecord:
 
     Verifies the received record type.
     """
+
     def __init__(self, line):
         record = line[0:6].strip()
         if record != self.__class__.__name__:
             raise ValueError(record)
-        self.original_text = line.rstrip('\r\n')
+        self.original_text = line.rstrip("\r\n")
 
     def __str__(self):
         return self.original_text
@@ -57,6 +58,7 @@ class END(BaseRecord):
     The END records are paired with MODEL records to group individual
     structures found in a coordinate entry.
     """
+
     def __init__(self, line):
         """Initialize with line.
 
@@ -214,7 +216,7 @@ class CONECT(BaseRecord):
 
 @register_line_parser
 class NUMMDL(BaseRecord):
-    """ NUMMDL class
+    """NUMMDL class
 
     The NUMMDL record indicates total number of models in a PDB entry.
     """
@@ -240,7 +242,7 @@ class NUMMDL(BaseRecord):
 
 @register_line_parser
 class ENDMDL(BaseRecord):
-    """ ENDMDL class
+    """ENDMDL class
 
     The ENDMDL records are paired with MODEL records to group individual
     structures found in a coordinate entry.
@@ -252,14 +254,14 @@ class ENDMDL(BaseRecord):
 
 @register_line_parser
 class TER(BaseRecord):
-    """ TER class
+    """TER class
 
     The TER record indicates the end of a list of ATOM/HETATM records for a
     chain.
     """
 
     def __init__(self, line):
-        """ Initialize by parsing line:
+        """Initialize by parsing line:
 
         +---------+--------+----------+--------------------------+
         | COLUMNS | TYPE   | FIELD    | DEFINITION               |
@@ -295,7 +297,7 @@ class TER(BaseRecord):
 
 @register_line_parser
 class SIGUIJ(BaseRecord):
-    """ SIGUIJ class
+    """SIGUIJ class
 
     The SIGUIJ records present the anisotropic temperature factors.
     """
@@ -431,7 +433,7 @@ class ANISOU(BaseRecord):
 
 @register_line_parser
 class SIGATM(BaseRecord):
-    """ SIGATM class
+    """SIGATM class
 
     The SIGATM records present the standard deviation of atomic parameters
     as they appear in ATOM and HETATM records.
@@ -501,7 +503,7 @@ class SIGATM(BaseRecord):
 
 @register_line_parser
 class HETATM(BaseRecord):
-    """ HETATM class
+    """HETATM class
 
     The HETATM records present the atomic coordinate records for atoms
     within "non-standard" groups. These records are used for water
@@ -509,7 +511,8 @@ class HETATM(BaseRecord):
     """
 
     def __init__(
-            self, line, sybyl_type="A.aaa", l_bonds=[], l_bonded_atoms=[]):
+        self, line, sybyl_type="A.aaa", l_bonds=[], l_bonded_atoms=[]
+    ):
         """Initialize by parsing line
 
         +---------+--------+-------------+-----------------------------------+
@@ -563,7 +566,7 @@ class HETATM(BaseRecord):
             self.res_seq = int(line[22:26].strip())
             self.ins_code = line[26].strip()
         except IndexError:
-            raise ValueError('Residue name must be less than 4 characters!')
+            raise ValueError("Residue name must be less than 4 characters!")
         self.x = float(line[30:38].strip())
         self.y = float(line[38:46].strip())
         self.z = float(line[46:54].strip())
@@ -592,7 +595,7 @@ class HETATM(BaseRecord):
 
 @register_line_parser
 class ATOM(BaseRecord):
-    """ ATOM class
+    """ATOM class
 
     The ATOM records present the atomic coordinates for standard residues.
     They also present the occupancy and temperature factor for each atom.
@@ -1032,7 +1035,7 @@ class SITE(BaseRecord):
 
 @register_line_parser
 class CISPEP(BaseRecord):
-    """ CISPEP field
+    """CISPEP field
 
     CISPEP records specify the prolines and other peptides found to be in
     the cis conformation. This record replaces the use of footnote records
@@ -1087,7 +1090,7 @@ class CISPEP(BaseRecord):
 
 @register_line_parser
 class SLTBRG(BaseRecord):
-    """ SLTBRG field
+    """SLTBRG field
 
     The SLTBRG records specify salt bridges in the entry.
     records and is provided here for convenience in searching.
@@ -1150,7 +1153,7 @@ class SLTBRG(BaseRecord):
 
 @register_line_parser
 class HYDBND(BaseRecord):
-    """ HYDBND field
+    """HYDBND field
 
     The HYDBND records specify hydrogen bonds in the entry.
     """
@@ -1678,7 +1681,7 @@ class HETNAM(BaseRecord):
     """HETNAM field
 
     This record gives the chemical name of the compound with the
-    given hetatm_id. """
+    given hetatm_id."""
 
     def __init__(self, line):
         """Initialize by parsing line
@@ -2223,7 +2226,7 @@ class AUTHOR(BaseRecord):
 
         :param line:  line with PDB class
         :type line:  str
-       """
+        """
         super().__init__(line)
         self.author_list = line[10:70].strip()
 
@@ -2473,7 +2476,7 @@ class OBSLTE(BaseRecord):
 
 @register_line_parser
 class HEADER(BaseRecord):
-    """ HEADER field
+    """HEADER field
 
     The HEADER record uniquely identifies a PDB entry through the id_code
     field. This record also provides a classification for the entry. Finally,
@@ -2530,13 +2533,13 @@ def read_atom(line):
 
     record = line[0:6].strip()
     newline = line[0:22]
-    newline = newline + str.rjust(words[size-iword-1], 4)
+    newline = newline + str.rjust(words[size - iword - 1], 4)
     newline = newline + str.rjust("", 3)
-    newline = newline + str.rjust(words[size-iword], 8)
-    newline = newline + str.rjust(words[size-iword+1], 8)
-    newline = newline + str.rjust(words[size-iword+2], 8)
-    newline = newline + str.rjust(words[size-iword+3], 6)
-    newline = newline + str.rjust(words[size-iword+4], 6)
+    newline = newline + str.rjust(words[size - iword], 8)
+    newline = newline + str.rjust(words[size - iword + 1], 8)
+    newline = newline + str.rjust(words[size - iword + 2], 8)
+    newline = newline + str.rjust(words[size - iword + 3], 6)
+    newline = newline + str.rjust(words[size - iword + 4], 6)
     klass = LINE_PARSERS[record]
     obj = klass(newline)
     return obj
@@ -2560,7 +2563,7 @@ def read_pdb(file_):
 
     while True:
         line = file_.readline().strip()
-        if line == '':
+        if line == "":
             break
 
         # We assume we have a method for each PDB record and can therefore
@@ -2576,7 +2579,8 @@ def read_pdb(file_):
             _LOGGER.error("Error parsing line: %s", details)
             _LOGGER.error("<%s>", line.strip())
             _LOGGER.error(
-                "Truncating remaining errors for record type:%s", record)
+                "Truncating remaining errors for record type:%s", record
+            )
         except IndexError as details:
             if record == "ATOM" or record == "HETATM":
                 try:

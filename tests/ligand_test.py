@@ -17,8 +17,12 @@ _LOGGER.warning("Need functional and regression test coverage for --ligand")
 
 ALL_LIGANDS = set(TORSION_RESULTS) | set(RING_RESULTS)
 ALL_LIGANDS |= {
-    "1HPX-ligand.mol2", "1QBS-ligand.mol2", "1US0-ligand.mol2", "adp.mol2",
-    "acetate.mol2"}
+    "1HPX-ligand.mol2",
+    "1QBS-ligand.mol2",
+    "1US0-ligand.mol2",
+    "adp.mol2",
+    "acetate.mol2",
+}
 ALL_LIGANDS = sorted(list(ALL_LIGANDS))
 
 
@@ -37,9 +41,7 @@ def test_peoe_charges():
     for atom in ligand.atoms.values():
         new_total_charge += atom.charge
         test_charges.append(atom.charge)
-    assert_almost_equal(
-        test_charges, CHARGES_1HPX, verbose=True
-    )
+    assert_almost_equal(test_charges, CHARGES_1HPX, verbose=True)
 
 
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
@@ -57,8 +59,11 @@ def test_assign_parameters(input_mol2):
     test_results = []
     for atom in ligand.atoms.values():
         test_row = {
-            "name": atom.name, "type": atom.type, "charge": atom.charge,
-            "radius": atom.radius}
+            "name": atom.name,
+            "type": atom.type,
+            "charge": atom.charge,
+            "radius": atom.radius,
+        }
         test_results.append(test_row)
         new_total_charge += atom.charge
     _LOGGER.debug("Test results: %s", test_results)
@@ -66,15 +71,19 @@ def test_assign_parameters(input_mol2):
     test_results = test_results.set_index("name")
     # _LOGGER.debug("Test results:\n%s", test_results.to_string())
     _LOGGER.info(
-        "Total charge: %5.2f -> %5.2f", old_total_charge, new_total_charge)
+        "Total charge: %5.2f -> %5.2f", old_total_charge, new_total_charge
+    )
     expected_results = pd.DataFrame(PARAMETER_RESULTS[input_mol2])
     expected_results = expected_results.set_index("name")
     assert_almost_equal(
         test_results["charge"].to_numpy(),
-        expected_results["charge"].to_numpy())
+        expected_results["charge"].to_numpy(),
+    )
     assert_almost_equal(
         test_results["radius"].to_numpy(),
-        expected_results["radius"].to_numpy(), verbose=True)
+        expected_results["radius"].to_numpy(),
+        verbose=True,
+    )
 
 
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
@@ -90,14 +99,14 @@ def test_formal_charge(input_mol2):
         try:
             expected_charge = expected_results[iatom]
         except IndexError:
-            err = (
-                "Missing result for {a.name}, {a.type}, {a.formal_charge}")
+            err = "Missing result for {a.name}, {a.type}, {a.formal_charge}"
             err = err.format(a=atom)
             raise IndexError(err)
         if not isclose(atom.formal_charge, expected_charge):
             err = (
                 "Atom {0.name} {0.type} with bond order "
-                "{0.bond_order}: expected {1}, got {2}")
+                "{0.bond_order}: expected {1}, got {2}"
+            )
             err = err.format(atom, expected_charge, atom.formal_charge)
             errors.append(err)
     if len(errors) > 0:
@@ -129,13 +138,20 @@ def test_torsions(input_mol2):
                 "Torsion test failed for {mol}:\n"
                 "Got: {test}\n"
                 "Expected: {expected}\n"
-                "Difference: {diff}").format(
-                    mol=input_mol2, test=sorted(list(test)),
-                    expected=sorted(list(expected)), diff=sorted(list(diff)))
+                "Difference: {diff}"
+            ).format(
+                mol=input_mol2,
+                test=sorted(list(test)),
+                expected=sorted(list(expected)),
+                diff=sorted(list(diff)),
+            )
             raise ValueError(err)
     except KeyError:
-        err = "No results for %s: %s", input_mol2, sorted(
-            list(ligand.torsions))
+        err = (
+            "No results for %s: %s",
+            input_mol2,
+            sorted(list(ligand.torsions)),
+        )
         raise KeyError(err)
 
 
@@ -150,8 +166,7 @@ def test_rings(input_mol2):
     try:
         benchmark = RING_RESULTS[input_mol2]
     except KeyError:
-        err = "Missing expected results for %s: %s" % (
-            input_mol2, test)
+        err = "Missing expected results for %s: %s" % (input_mol2, test)
         raise KeyError(err)
     diff = test ^ benchmark
     if len(diff) > 0:
@@ -159,10 +174,13 @@ def test_rings(input_mol2):
             "Ring test failed for {mol}:\n"
             "Got: {test}\n"
             "Expected: {expected}\n"
-            "Difference: {diff}").format(
-                mol=input_mol2, test=sorted(list(test)),
-                expected=sorted(list(benchmark)),
-                diff=sorted(list(diff)))
+            "Difference: {diff}"
+        ).format(
+            mol=input_mol2,
+            test=sorted(list(test)),
+            expected=sorted(list(benchmark)),
+            diff=sorted(list(diff)),
+        )
         raise ValueError(err)
     for atom_name in ligand.atoms:
         atom = ligand.atoms[atom_name]
@@ -171,8 +189,7 @@ def test_rings(input_mol2):
             _LOGGER.debug(str_)
 
 
-@pytest.mark.parametrize(
-    "input_pdb", ["1HPX"], ids=str)
+@pytest.mark.parametrize("input_pdb", ["1HPX"], ids=str)
 def test_ligand_protein(input_pdb, tmp_path):
     """PROPKA non-regression tests on proteins without ligands."""
     input_pdb = Path(input_pdb)
@@ -181,5 +198,8 @@ def test_ligand_protein(input_pdb, tmp_path):
     output_pqr = Path(input_pdb).stem + ".pqr"
     _LOGGER.debug("Running test in %s", tmp_path)
     common.run_pdb2pqr(
-        args=args, input_pdb=input_pdb, output_pqr=output_pqr,
-        tmp_path=tmp_path)
+        args=args,
+        input_pdb=input_pdb,
+        output_pqr=output_pqr,
+        tmp_path=tmp_path,
+    )

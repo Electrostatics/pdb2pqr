@@ -71,6 +71,7 @@ class Mol2Bond:
 
 class Mol2Atom:
     """MOL2 molecule atoms."""
+
     def __init__(self):
         self.serial = None
         self.name = None
@@ -117,7 +118,8 @@ class Mol2Atom:
         """Generate PDB line from MOL2."""
         pdb_fmt = (
             "HETATM{a.serial:5d}{a.name:>5s}{a.res_name:>4s} L"
-            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}")
+            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
+        )
         return pdb_fmt.format(a=self)
 
     def assign_radius(self, primary_dict, secondary_dict):
@@ -147,8 +149,8 @@ class Mol2Atom:
         else:
             err = (
                 "Unable to find radius parameter for self of type {type} in "
-                "radius dictionary: {ff}").format(
-                    type=self.type, ff=primary_dict)
+                "radius dictionary: {ff}"
+            ).format(type=self.type, ff=primary_dict)
             raise KeyError(err)
 
     @property
@@ -233,36 +235,57 @@ class Mol2Atom:
         nonbonded = NONBONDED_BY_TYPE[self.type]
         bond_order = self.bond_order
         formal_charge = valence - nonbonded - bond_order
-        if (self.type in ["N.pl3", "N.am"]) and (bond_order == 3) and (
-                formal_charge != 0):
+        if (
+            (self.type in ["N.pl3", "N.am"])
+            and (bond_order == 3)
+            and (formal_charge != 0)
+        ):
             # Planar nitrogen bond orders are not always correct in MOL2
             _LOGGER.warning("Correcting planar/amide bond order.")
             formal_charge = 0
-        elif (self.type in ["N.ar"]) and (bond_order == 4) and (
-                formal_charge != 0):
+        elif (
+            (self.type in ["N.ar"])
+            and (bond_order == 4)
+            and (formal_charge != 0)
+        ):
             # Aromatic nitrogen bond orders are not always correct in MOL2
             _LOGGER.warning("Correcting aromatic nitrogen bond order.")
             formal_charge = 0
-        elif (self.type in ["C.ar"]) and (bond_order == 5) and (
-                formal_charge != 0):
+        elif (
+            (self.type in ["C.ar"])
+            and (bond_order == 5)
+            and (formal_charge != 0)
+        ):
             # Aromatic carbon bond orders are not always correct in MOL2
             _LOGGER.warning("Correcting aromatic carbon bond order.")
             formal_charge = 0
-        elif (self.type in ["O.co2"]) and (bond_order == 1) and (
-                formal_charge != -0.5):
+        elif (
+            (self.type in ["O.co2"])
+            and (bond_order == 1)
+            and (formal_charge != -0.5)
+        ):
             # CO2 bond orders are hardly ever set correctly in MOL2
             formal_charge = -0.5
-        elif (self.type in ["C.2"]) and (bond_order == 5) and (
-                formal_charge == -1):
+        elif (
+            (self.type in ["C.2"])
+            and (bond_order == 5)
+            and (formal_charge == -1)
+        ):
             # CO2 bond orders are hardly ever set correctly in MOL2
             formal_charge = 0
-        elif (self.type in ["N.3"]) and (bond_order == 4) and (
-                formal_charge == -1):
+        elif (
+            (self.type in ["N.3"])
+            and (bond_order == 4)
+            and (formal_charge == -1)
+        ):
             # Tetravalent nitrogen atom types are sometimes wrong in MOL2
             _LOGGER.warning("Correcting ammonium atom type.")
             formal_charge = 1
-        elif (self.type in ["O.3"]) and (bond_order == 1) and (
-                formal_charge == 1):
+        elif (
+            (self.type in ["O.3"])
+            and (bond_order == 1)
+            and (formal_charge == 1)
+        ):
             # Phosphate groups are sometimes confused in MOL2
             # Assign negative charge to first O.3 with bond order 1
             # attached to phosphorous
@@ -283,6 +306,7 @@ class Mol2Atom:
 
 class Mol2Molecule:
     """Tripos MOL2 molecule."""
+
     def __init__(self):
         self.atoms = OrderedDict()
         self.bonds = []
@@ -294,7 +318,8 @@ class Mol2Molecule:
         self.res_seq = None
 
     def assign_parameters(
-            self, primary_dict=RADII["zap9"], secondary_dict=RADII["bondi"]):
+        self, primary_dict=RADII["zap9"], secondary_dict=RADII["bondi"]
+    ):
         """Assign charges and radii to atoms in molecule.
 
         Args:
@@ -362,7 +387,7 @@ class Mol2Molecule:
         :rtype:  list of str
         """
         n = path.index(min(path))
-        return path[n:]+path[:n]
+        return path[n:] + path[:n]
 
     def find_new_rings(self, path, rings, level=0):
         """Find new rings in molecule.
@@ -392,7 +417,7 @@ class Mol2Molecule:
                 if next_node not in path:
                     sub_path = [next_node]
                     sub_path.extend(path)
-                    rings = self.find_new_rings(sub_path, rings, level+1)
+                    rings = self.find_new_rings(sub_path, rings, level + 1)
                 elif len(path) > 2 and next_node == path[-1]:
                     path_ = self.rotate_to_smallest(path)
                     inv_path = tuple(self.rotate_to_smallest(path_[::-1]))
@@ -415,7 +440,7 @@ class Mol2Molecule:
         # Prune rings that are products of other rings
         # TODO - testing on molecules like phenalene shows that this is broken
         ring_sets = []
-        for i in range(2, len(rings)+1):
+        for i in range(2, len(rings) + 1):
             for combo in combinations(rings, i):
                 ring_set = set().union(*combo)
                 ring_sets.append(ring_set)
@@ -489,7 +514,9 @@ class Mol2Molecule:
                     atom.mol2charge = float(words[8])
                 except TypeError:
                     err = "Unable to parse %s as charge in atom line: %s" % (
-                        words[8], line)
+                        words[8],
+                        line,
+                    )
                     _LOGGER.warning(err)
             if atom.name in self.atoms:
                 duplicates.add(atom.name)
@@ -497,7 +524,8 @@ class Mol2Molecule:
                 self.atoms[atom.name] = atom
         if len(duplicates) > 0:
             raise KeyError(
-                "Found duplicate atoms names in MOL2 file: %s" % duplicates)
+                "Found duplicate atoms names in MOL2 file: %s" % duplicates
+            )
         return mol2_file
 
     def parse_bonds(self, mol2_file):
@@ -535,12 +563,13 @@ class Mol2Molecule:
             bond_id = int(words[0])
             atom_id1 = int(words[1])
             atom_id2 = int(words[2])
-            atom_name1 = atom_names[atom_id1-1]
+            atom_name1 = atom_names[atom_id1 - 1]
             atom1 = self.atoms[atom_name1]
-            atom_name2 = atom_names[atom_id2-1]
+            atom_name2 = atom_names[atom_id2 - 1]
             atom2 = self.atoms[atom_name2]
             bond = Mol2Bond(
-                atom1=atom1, atom2=atom2, bond_type=bond_type, bond_id=bond_id)
+                atom1=atom1, atom2=atom2, bond_type=bond_type, bond_id=bond_id
+            )
             atom1.bonds.append(bond)
             atom1.bonded_atom_names.append(atom_name2)
             atom1.bonded_atoms.append(atom2)

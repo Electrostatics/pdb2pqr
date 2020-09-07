@@ -41,141 +41,140 @@ def atom_site(block):
                 try:
                     line = ""
                     # 1  - 6 RECORD NAME (ATOM)
-                    line += (
-                        atoms.getValue("group_PDB", i) + " "
-                        * (6 - len(atoms.getValue("group_PDB", i))))
+                    line += atoms.getValue("group_PDB", i) + " " * (
+                        6 - len(atoms.getValue("group_PDB", i))
+                    )
                     # 7  - 11 ATOM SERIAL
-                    line += (
-                        " " * (5 - len(str(atoms.getValue("id", i))))
-                        + str(atoms.getValue("id", i)))
+                    line += " " * (
+                        5 - len(str(atoms.getValue("id", i)))
+                    ) + str(atoms.getValue("id", i))
                     # 12 - 13
                     line += "  "
                     # 14 - 16 ATOM NAME
-                    line += (
-                        atoms.getValue("label_atom_id", i) + " "
-                        * (3 - len(atoms.getValue("label_atom_id", i))))
+                    line += atoms.getValue("label_atom_id", i) + " " * (
+                        3 - len(atoms.getValue("label_atom_id", i))
+                    )
                     # 17 ALT LOCATION
                     if atoms.getValue("label_alt_id", i) == ".":
                         line += " "
                     else:
                         atoms.getValue("label_alt_id", i)
                     # 18 - 20 RES NAME
-                    line += (
-                        " " * (3 - len(atoms.getValue("label_comp_id", i)))
-                        + atoms.getValue("label_comp_id", i))
+                    line += " " * (
+                        3 - len(atoms.getValue("label_comp_id", i))
+                    ) + atoms.getValue("label_comp_id", i)
                     # 21
                     line += " "
                     # 22 CHAIN ID
-                    line += (
-                        " " * (1 - len(atoms.getValue("label_asym_id", i)))
-                        + atoms.getValue("label_asym_id", i))
+                    line += " " * (
+                        1 - len(atoms.getValue("label_asym_id", i))
+                    ) + atoms.getValue("label_asym_id", i)
                     # 23 - 26 RES SEQ ID
-                    line += (
-                        " " * (4 - len(str(atoms.getValue("auth_seq_id", i))))
-                        + str(atoms.getValue("auth_seq_id", i)))
+                    line += " " * (
+                        4 - len(str(atoms.getValue("auth_seq_id", i)))
+                    ) + str(atoms.getValue("auth_seq_id", i))
                     # 27 - 30
-                    line += " "*3
+                    line += " " * 3
                     # 31 - 38 X Coords
-                    line += (
-                        " " * (8 - len(str(atoms.getValue("Cartn_x", i))))
-                        + str(atoms.getValue("Cartn_x", i)))
+                    line += " " * (
+                        8 - len(str(atoms.getValue("Cartn_x", i)))
+                    ) + str(atoms.getValue("Cartn_x", i))
                     # 39 - 46 Y Coords
-                    line += (
-                        " " * (8 - len(str(atoms.getValue("Cartn_y", i))))
-                        + str(atoms.getValue("Cartn_y", i)))
+                    line += " " * (
+                        8 - len(str(atoms.getValue("Cartn_y", i)))
+                    ) + str(atoms.getValue("Cartn_y", i))
                     # 47 - 54 Z Coords
-                    line += (
-                        " " * (8 - len(str(atoms.getValue("Cartn_z", i))))
-                        + str(atoms.getValue("Cartn_z", i)))
+                    line += " " * (
+                        8 - len(str(atoms.getValue("Cartn_z", i)))
+                    ) + str(atoms.getValue("Cartn_z", i))
                     # 55 - 60 OCCUPANCY
-                    line += (
-                        " " * (6 - len(str(atoms.getValue("occupancy", i))))
-                        + str(atoms.getValue("occupancy", i)))
+                    line += " " * (
+                        6 - len(str(atoms.getValue("occupancy", i)))
+                    ) + str(atoms.getValue("occupancy", i))
                     # 61 - 66 TEMP FACTOR
-                    line += (
-                        " " * (6 - len(
-                            str(atoms.getValue("B_iso_or_equiv", i))))
-                        + str(atoms.getValue("B_iso_or_equiv", i)))
+                    line += " " * (
+                        6 - len(str(atoms.getValue("B_iso_or_equiv", i)))
+                    ) + str(atoms.getValue("B_iso_or_equiv", i))
                     # 67 - 76
                     line += " " * 10
                     # 77 - 78 ELEMENT SYMBOL
-                    line += (
-                        " " * (2 - len(atoms.getValue("type_symbol", i)))
-                        + atoms.getValue("type_symbol", i))
+                    line += " " * (
+                        2 - len(atoms.getValue("type_symbol", i))
+                    ) + atoms.getValue("type_symbol", i)
                     # 79 - 80 CHARGE OF ATOM
                     if atoms.getValue("pdbx_formal_charge", i) == "?":
-                        line += " "*2
+                        line += " " * 2
                     else:
                         atoms.getValue("pdbx_formal_charge", i)
                     pdb_arr.append(pdb.ATOM(line))
                 except KeyError:
                     _LOGGER.error(
-                        "atom_site: Error reading line: #%s#\n", line)
+                        "atom_site: Error reading line: #%s#\n", line
+                    )
             elif atoms.getValue("group_PDB", i) == "HETATM":
                 try:
                     line = ""
                     # 1  - 6 RECORD NAME (HETATM)
-                    line += (
-                        atoms.getValue("group_PDB", i) + ""
-                        * (6 - len(atoms.getValue("group_PDB", i))))
+                    line += atoms.getValue("group_PDB", i) + "" * (
+                        6 - len(atoms.getValue("group_PDB", i))
+                    )
                     # 7  - 11 ATOM SERIAL
-                    line += (
-                        " " * (5 - len(str(atoms.getValue("id", i))))
-                        + str(atoms.getValue("id", i)))
+                    line += " " * (
+                        5 - len(str(atoms.getValue("id", i)))
+                    ) + str(atoms.getValue("id", i))
                     # 12 - 13
                     line += "  "
                     # 14 - 16 ATOM NAME
-                    line += (
-                        atoms.getValue("label_atom_id", i)
-                        + " " * (3 - len(atoms.getValue("label_atom_id", i))))
+                    line += atoms.getValue("label_atom_id", i) + " " * (
+                        3 - len(atoms.getValue("label_atom_id", i))
+                    )
                     # 17 ALT LOCATION
                     if atoms.getValue("label_alt_id", i) == ".":
                         line += " "
                     else:
                         atoms.getValue("label_alt_id", i)
                     # 18 - 20 RES NAME
-                    line += (
-                        " " * (3 - len(atoms.getValue("label_comp_id", i)))
-                        + atoms.getValue("label_comp_id", i))
+                    line += " " * (
+                        3 - len(atoms.getValue("label_comp_id", i))
+                    ) + atoms.getValue("label_comp_id", i)
                     # 21
                     line += " "
                     # 22 CHAIN ID
-                    line += (
-                        " " * (1 - len(atoms.getValue("label_asym_id", i)))
-                        + atoms.getValue("label_asym_id", i))
+                    line += " " * (
+                        1 - len(atoms.getValue("label_asym_id", i))
+                    ) + atoms.getValue("label_asym_id", i)
                     # 23 - 26 RES SEQ ID
-                    line += (
-                        " " * (4 - len(str(atoms.getValue("auth_seq_id", i))))
-                        + str(atoms.getValue("auth_seq_id", i)))
+                    line += " " * (
+                        4 - len(str(atoms.getValue("auth_seq_id", i)))
+                    ) + str(atoms.getValue("auth_seq_id", i))
                     # 27 - 30
                     line += " " * 3
                     # 31 - 38 X Coords
-                    line += (
-                        " " * (8 - len(str(atoms.getValue("Cartn_x", i))))
-                        + str(atoms.getValue("Cartn_x", i)))
+                    line += " " * (
+                        8 - len(str(atoms.getValue("Cartn_x", i)))
+                    ) + str(atoms.getValue("Cartn_x", i))
                     # 39 - 46 Y Coords
-                    line += (
-                        " " * (8 - len(str(atoms.getValue("Cartn_y", i))))
-                        + str(atoms.getValue("Cartn_y", i)))
+                    line += " " * (
+                        8 - len(str(atoms.getValue("Cartn_y", i)))
+                    ) + str(atoms.getValue("Cartn_y", i))
                     # 47 - 54 Z Coords
-                    line += (
-                        " " * (8 - len(str(atoms.getValue("Cartn_z", i))))
-                        + str(atoms.getValue("Cartn_z", i)))
+                    line += " " * (
+                        8 - len(str(atoms.getValue("Cartn_z", i)))
+                    ) + str(atoms.getValue("Cartn_z", i))
                     # 55 - 60 OCCUPANCY
-                    line += (
-                        " " * (6 - len(str(atoms.getValue("occupancy", i))))
-                        + str(atoms.getValue("occupancy", i)))
+                    line += " " * (
+                        6 - len(str(atoms.getValue("occupancy", i)))
+                    ) + str(atoms.getValue("occupancy", i))
                     # 61 - 66 TEMP FACTOR
-                    line += (
-                        " " * (
-                            6 - len(str(atoms.getValue("B_iso_or_equiv", i))))
-                        + str(atoms.getValue("B_iso_or_equiv", i)))
+                    line += " " * (
+                        6 - len(str(atoms.getValue("B_iso_or_equiv", i)))
+                    ) + str(atoms.getValue("B_iso_or_equiv", i))
                     # 67 - 76
                     line += " " * (10)
                     # 77 - 78 ELEMENT SYMBOL
-                    line += (
-                        " " * (2 - len(atoms.getValue("type_symbol", i)))
-                        + atoms.getValue("type_symbol", i))
+                    line += " " * (
+                        2 - len(atoms.getValue("type_symbol", i))
+                    ) + atoms.getValue("type_symbol", i)
                     # 79 - 80 CHARGE OF ATOM
                     if atoms.getValue("pdbx_formal_charge", i) == "?":
                         line += " " * 2
@@ -204,163 +203,147 @@ def atom_site(block):
                         try:
                             line = ""
                             # 1  - 6 RECORD NAME (ATOM)
-                            line += (
-                                atoms.getValue("group_PDB", i)
-                                + " " * (6 - len(
-                                    atoms.getValue("group_PDB", i))))
+                            line += atoms.getValue("group_PDB", i) + " " * (
+                                6 - len(atoms.getValue("group_PDB", i))
+                            )
                             # 7  - 11 ATOM SERIAL
-                            line += (
-                                " " * (5 - len(str(atoms.getValue("id", i))))
-                                + str(atoms.getValue("id", i)))
+                            line += " " * (
+                                5 - len(str(atoms.getValue("id", i)))
+                            ) + str(atoms.getValue("id", i))
                             # 12 - 13
                             line += "  "
                             # 14 - 16 ATOM NAME
-                            line += (
-                                atoms.getValue("label_atom_id", i)
-                                + " " * (3 - len(
-                                    atoms.getValue("label_atom_id", i))))
+                            line += atoms.getValue(
+                                "label_atom_id", i
+                            ) + " " * (
+                                3 - len(atoms.getValue("label_atom_id", i))
+                            )
                             # 17 ALT LOCATION
                             if atoms.getValue("label_alt_id", i) == ".":
                                 line += " "
                             else:
                                 atoms.getValue("label_alt_id", i)
                             # 18 - 20 RES NAME
-                            line += (
-                                " " * (3 - len(
-                                    atoms.getValue("label_comp_id", i)))
-                                + atoms.getValue("label_comp_id", i))
+                            line += " " * (
+                                3 - len(atoms.getValue("label_comp_id", i))
+                            ) + atoms.getValue("label_comp_id", i)
                             # 21
                             line += " "
                             # 22 CHAIN ID
-                            line += (
-                                " " * (1 - len(atoms.getValue(
-                                    "label_asym_id", i)))
-                                + atoms.getValue("label_asym_id", i))
+                            line += " " * (
+                                1 - len(atoms.getValue("label_asym_id", i))
+                            ) + atoms.getValue("label_asym_id", i)
                             # 23 - 26 RES SEQ ID
-                            line += (
-                                " " * (4 - len(str(
-                                    atoms.getValue("auth_seq_id", i))))
-                                + str(atoms.getValue("auth_seq_id", i)))
+                            line += " " * (
+                                4 - len(str(atoms.getValue("auth_seq_id", i)))
+                            ) + str(atoms.getValue("auth_seq_id", i))
                             # 27 - 30
                             line += " " * 3
                             # 31 - 38 X Coords
-                            line += (
-                                " " * (8 - len(str(atoms.getValue(
-                                    "Cartn_x", i))))
-                                + str(atoms.getValue("Cartn_x", i)))
+                            line += " " * (
+                                8 - len(str(atoms.getValue("Cartn_x", i)))
+                            ) + str(atoms.getValue("Cartn_x", i))
                             # 39 - 46 Y Coords
-                            line += (
-                                " " * (8 - len(str(atoms.getValue(
-                                    "Cartn_y", i))))
-                                + str(atoms.getValue("Cartn_y", i)))
+                            line += " " * (
+                                8 - len(str(atoms.getValue("Cartn_y", i)))
+                            ) + str(atoms.getValue("Cartn_y", i))
                             # 47 - 54 Z Coords
-                            line += (
-                                " " * (8 - len(str(atoms.getValue(
-                                    "Cartn_z", i))))
-                                + str(atoms.getValue("Cartn_z", i)))
+                            line += " " * (
+                                8 - len(str(atoms.getValue("Cartn_z", i)))
+                            ) + str(atoms.getValue("Cartn_z", i))
                             # 55 - 60 OCCUPANCY
-                            line += (
-                                " " * (6 - len(str(atoms.getValue(
-                                    "occupancy", i))))
-                                + str(atoms.getValue("occupancy", i)))
+                            line += " " * (
+                                6 - len(str(atoms.getValue("occupancy", i)))
+                            ) + str(atoms.getValue("occupancy", i))
                             # 61 - 66 TEMP FACTOR
-                            line += (
-                                " " * (6 - len(str(atoms.getValue(
-                                    "B_iso_or_equiv", i))))
-                                + str(atoms.getValue("B_iso_or_equiv", i)))
+                            line += " " * (
+                                6
+                                - len(str(atoms.getValue("B_iso_or_equiv", i)))
+                            ) + str(atoms.getValue("B_iso_or_equiv", i))
                             # 67 - 76
                             line += " " * 10
                             # 77 - 78 ELEMENT SYMBOL
-                            line += (
-                                " " * (2 - len(atoms.getValue(
-                                    "type_symbol", i)))
-                                + atoms.getValue("type_symbol", i))
+                            line += " " * (
+                                2 - len(atoms.getValue("type_symbol", i))
+                            ) + atoms.getValue("type_symbol", i)
                             # 79 - 80 CHARGE OF ATOM
                             if atoms.getValue("pdbx_formal_charge", i) == "?":
-                                line += " "*2
+                                line += " " * 2
                             else:
                                 atoms.getValue("pdbx_formal_charge", i)
                             pdb_arr.append(pdb.ATOM(line))
                         except KeyError:
                             _LOGGER.error(
-                                "atom_site: Error reading line:\n%s", line)
+                                "atom_site: Error reading line:\n%s", line
+                            )
                             err_arr.append("ATOM")
                     elif atoms.getValue("group_PDB", i) == "HETATM":
                         try:
                             line = ""
                             # 1  - 6 RECORD NAME (HETATM)
-                            line += (
-                                atoms.getValue("group_PDB", i)
-                                + "" * (
-                                    6 - len(atoms.getValue("group_PDB", i))))
+                            line += atoms.getValue("group_PDB", i) + "" * (
+                                6 - len(atoms.getValue("group_PDB", i))
+                            )
                             # 7  - 11 ATOM SERIAL
-                            line += (
-                                " " * (5 - len(str(atoms.getValue(
-                                    "id", i))))
-                                + str(atoms.getValue("id", i)))
+                            line += " " * (
+                                5 - len(str(atoms.getValue("id", i)))
+                            ) + str(atoms.getValue("id", i))
                             # 12 - 13
                             line += "  "
                             # 14 - 16 ATOM NAME
-                            line += (
-                                atoms.getValue("label_atom_id", i)
-                                + " " * (3 - len(atoms.getValue(
-                                    "label_atom_id", i))))
+                            line += atoms.getValue(
+                                "label_atom_id", i
+                            ) + " " * (
+                                3 - len(atoms.getValue("label_atom_id", i))
+                            )
                             # 17      ALT LOCATION
                             if atoms.getValue("label_alt_id", i) == ".":
                                 line += " "
                             else:
                                 atoms.getValue("label_alt_id", i)
                             # 18 - 20 RES NAME
-                            line += (
-                                " " * (3 - len(atoms.getValue(
-                                    "label_comp_id", i)))
-                                + atoms.getValue("label_comp_id", i))
+                            line += " " * (
+                                3 - len(atoms.getValue("label_comp_id", i))
+                            ) + atoms.getValue("label_comp_id", i)
                             # 21
                             line += " "
                             # 22      CHAIN ID
-                            line += (
-                                " " * (1 - len(atoms.getValue(
-                                    "label_asym_id", i)))
-                                + atoms.getValue("label_asym_id", i))
+                            line += " " * (
+                                1 - len(atoms.getValue("label_asym_id", i))
+                            ) + atoms.getValue("label_asym_id", i)
                             # 23 - 26 RES SEQ ID
-                            line += (
-                                " " * (4 - len(str(
-                                    atoms.getValue("auth_seq_id", i))))
-                                + str(atoms.getValue("auth_seq_id", i)))
+                            line += " " * (
+                                4 - len(str(atoms.getValue("auth_seq_id", i)))
+                            ) + str(atoms.getValue("auth_seq_id", i))
                             # 27 - 30
                             line += " " * 3
                             # 31 - 38 X Coords
-                            line += (
-                                " " * (8 - len(str(atoms.getValue(
-                                    "Cartn_x", i))))
-                                + str(atoms.getValue("Cartn_x", i)))
+                            line += " " * (
+                                8 - len(str(atoms.getValue("Cartn_x", i)))
+                            ) + str(atoms.getValue("Cartn_x", i))
                             # 39 - 46 Y Coords
-                            line += (
-                                " " * (8 - len(str(atoms.getValue(
-                                    "Cartn_y", i))))
-                                + str(atoms.getValue("Cartn_y", i)))
+                            line += " " * (
+                                8 - len(str(atoms.getValue("Cartn_y", i)))
+                            ) + str(atoms.getValue("Cartn_y", i))
                             # 47 - 54 Z Coords
-                            line += (
-                                " " * (8 - len(str(atoms.getValue(
-                                    "Cartn_z", i))))
-                                + str(atoms.getValue("Cartn_z", i)))
+                            line += " " * (
+                                8 - len(str(atoms.getValue("Cartn_z", i)))
+                            ) + str(atoms.getValue("Cartn_z", i))
                             # 55 - 60 OCCUPANCY
-                            line += (
-                                " " * (6 - len(str(atoms.getValue(
-                                    "occupancy", i))))
-                                + str(atoms.getValue("occupancy", i)))
+                            line += " " * (
+                                6 - len(str(atoms.getValue("occupancy", i)))
+                            ) + str(atoms.getValue("occupancy", i))
                             # 61 - 66 TEMP FACTOR
-                            line += (
-                                " " * (6 - len(str(atoms.getValue(
-                                    "B_iso_or_equiv", i))))
-                                + str(atoms.getValue("B_iso_or_equiv", i)))
+                            line += " " * (
+                                6
+                                - len(str(atoms.getValue("B_iso_or_equiv", i)))
+                            ) + str(atoms.getValue("B_iso_or_equiv", i))
                             # 67 - 76
                             line += " " * 10
                             # 77 - 78 ELEMENT SYMBOL
-                            line += (
-                                " " * (2 - len(atoms.getValue(
-                                    "type_symbol", i)))
-                                + atoms.getValue("type_symbol", i))
+                            line += " " * (
+                                2 - len(atoms.getValue("type_symbol", i))
+                            ) + atoms.getValue("type_symbol", i)
                             # 79 - 80 CHARGE OF ATOM
                             if atoms.getValue("pdbx_formal_charge", i) == "?":
                                 line += " " * 2
@@ -369,7 +352,8 @@ def atom_site(block):
                             pdb_arr.append(pdb.HETATM(line))
                         except KeyError:
                             _LOGGER.error(
-                                "atom_site: Error reading line:\n%s", line)
+                                "atom_site: Error reading line:\n%s", line
+                            )
                             err_arr.append("HETATOM")
             try:
                 line = "ENDMDL"
@@ -400,7 +384,7 @@ def conect(block):
     err_arr = []
     struct_conn = block.getObj("struct_conn")
     atoms = block.getObj("atom_site")
-    if(struct_conn is None or atoms is None):
+    if struct_conn is None or atoms is None:
         return pdb_arr, err_arr
     for index in range(struct_conn.getRowCount()):
         atom_pair = []
@@ -408,13 +392,18 @@ def conect(block):
             # Retrieve all the information necessary to uniquely identify atom4
             atom_dict = {
                 "auth_seq_id": struct_conn.getValue(
-                    partner + "auth_seq_id", index),
+                    partner + "auth_seq_id", index
+                ),
                 "auth_comp_id": struct_conn.getValue(
-                    partner + "auth_comp_id", index),
+                    partner + "auth_comp_id", index
+                ),
                 "auth_asym_id": struct_conn.getValue(
-                    partner + "auth_asym_id", index),
+                    partner + "auth_asym_id", index
+                ),
                 "label_atom_id": struct_conn.getValue(
-                    partner + "label_atom_id", index)}
+                    partner + "label_atom_id", index
+                ),
+            }
             for i in range(atoms.getRowCount()):
                 found = True
                 for key in atom_dict:
@@ -424,9 +413,12 @@ def conect(block):
                     atom_pair.append(atoms.getValue("id", i))
         if len(atom_pair) == 2:
             pline = (
-                "CONECT" + " " * (5 - len(str(atom_pair[0])))
+                "CONECT"
+                + " " * (5 - len(str(atom_pair[0])))
                 + str(atom_pair[0])
-                + ' ' * (5 - len(str(atom_pair[1]))) + str(atom_pair[1]))
+                + " " * (5 - len(str(atom_pair[1])))
+                + str(atom_pair[1])
+            )
             try:
                 pdb_arr.append(pdb.CONECT(pline))
             except KeyError:
@@ -451,16 +443,17 @@ def header(block):
     entry_obj = block.getObj("entry")
     ridd = database_obj.getValue("recvd_initial_deposition_date")
     if len(ridd) > 9:
-        ridd = datetime.strptime(ridd, '%Y-%m-%d').strftime("%d-%b-%y").upper()
+        ridd = datetime.strptime(ridd, "%Y-%m-%d").strftime("%d-%b-%y").upper()
     line = "HEADER"
     line += " " * 4
-    line += (
-        struct_obj.getValue("pdbx_keywords")
-        + " " * (40 - len(struct_obj.getValue("pdbx_keywords"))))
+    line += struct_obj.getValue("pdbx_keywords") + " " * (
+        40 - len(struct_obj.getValue("pdbx_keywords"))
+    )
     line += " " * (9 - len(ridd)) + ridd
     line += " " * 3
-    line += " " * (
-        4 - len(entry_obj.getValue("id"))) + entry_obj.getValue("id")
+    line += " " * (4 - len(entry_obj.getValue("id"))) + entry_obj.getValue(
+        "id"
+    )
     try:
         header_arr.append(pdb.HEADER(line))
     except KeyError:
@@ -481,14 +474,16 @@ def title(block):
     title_err = []
     struct_obj = block.getObj("struct")
     title_string = struct_obj.getValue("title")
-    title_chunk = int(ceil(len(title_string)/70.0))
+    title_chunk = int(ceil(len(title_string) / 70.0))
     for i in range(title_chunk):
         line = "TITLE  "
-        if i+1 > 1:
-            line += " "*(2-len(str(i+1))) + str(i+1)
+        if i + 1 > 1:
+            line += " " * (2 - len(str(i + 1))) + str(i + 1)
         else:
             line += "  "
-        line += title_string[(i*70): minimum(len(title_string), (i+1)*70)]
+        line += title_string[
+            (i * 70) : minimum(len(title_string), (i + 1) * 70)  # noqa E203
+        ]
         try:
             title_arr.append(pdb.TITLE(line))
         except KeyError:
@@ -512,7 +507,7 @@ def compnd(block):
     for i in range(entity_obj.getRowCount()):
         line1 = "COMPND "
         if cont > 1:
-            line1 += " "*(3 - len(str(cont))) + str(cont)
+            line1 += " " * (3 - len(str(cont))) + str(cont)
         else:
             line1 += "   "
         line1 += "MOL_ID: " + str(entity_obj.getValue("id", i)) + ""
@@ -524,7 +519,7 @@ def compnd(block):
         cont += 1
         line2 = "COMPND "
         if cont > 1:
-            line2 += " "*(3 - len(str(cont))) + str(cont)
+            line2 += " " * (3 - len(str(cont))) + str(cont)
         else:
             line2 += "   "
         line2 += "MOLECULE: " + entity_obj.getValue("pdbx_description", i) + ""
@@ -568,12 +563,14 @@ def source(block):
         if src_obj.getValue("pdbx_gene_src_scientific_name", i) != "?":
             line = "SOURCE "
             if cont > 1:
-                line += " "*(3 - len(str(cont))) + str(cont)
+                line += " " * (3 - len(str(cont))) + str(cont)
             else:
                 line += "   "
             line += (
-                "ORGANISM_SCIENTIFIC: " + src_obj.getValue(
-                    "pdbx_gene_src_scientific_name", i) + "")
+                "ORGANISM_SCIENTIFIC: "
+                + src_obj.getValue("pdbx_gene_src_scientific_name", i)
+                + ""
+            )
             cont += 1
             try:
                 src_arr.append(pdb.SOURCE(line))
@@ -583,12 +580,14 @@ def source(block):
         if src_obj.getValue("gene_src_common_name", i) != "?":
             line = "SOURCE "
             if cont > 1:
-                line += " "*(3 - len(str(cont))) + str(cont)
+                line += " " * (3 - len(str(cont))) + str(cont)
             else:
                 line += "   "
             line += (
-                "ORGANISM_COMMON: " + src_obj.getValue(
-                    "gene_src_common_name", i) + "")
+                "ORGANISM_COMMON: "
+                + src_obj.getValue("gene_src_common_name", i)
+                + ""
+            )
             cont += 1
             try:
                 src_arr.append(pdb.SOURCE(line))
@@ -598,12 +597,14 @@ def source(block):
         if src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) != "?":
             line = "SOURCE "
             if cont > 1:
-                line += " "*(3 - len(str(cont))) + str(cont)
+                line += " " * (3 - len(str(cont))) + str(cont)
             else:
                 line += "   "
             line += (
-                "ORGANISM_TAXID: " + src_obj.getValue(
-                    "pdbx_gene_src_ncbi_taxonomy_id", i) + "")
+                "ORGANISM_TAXID: "
+                + src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i)
+                + ""
+            )
             cont += 1
             try:
                 src_arr.append(pdb.SOURCE(line))
@@ -625,14 +626,16 @@ def keywds(block):
     key_err = []
     key_obj = block.getObj("struct_keywords")
     key_string = key_obj.getValue("text")
-    key_chunk = int(ceil(len(key_string)/69.0))
+    key_chunk = int(ceil(len(key_string) / 69.0))
     for i in range(key_chunk):
         line = "KEYWDS  "
-        if i+1 > 1:
-            line += " " * (2-len(str(i+1))) + str(i+1)
+        if i + 1 > 1:
+            line += " " * (2 - len(str(i + 1))) + str(i + 1)
         else:
             line += "  "
-        line += key_string[(i*69): minimum(len(key_string), (i+1)*69)]
+        line += key_string[
+            (i * 69) : minimum(len(key_string), (i + 1) * 69)  # noqa E203
+        ]
         try:
             key_arr.append(pdb.KEYWDS(line))
         except KeyError:
@@ -676,9 +679,9 @@ def author(block):
     aut_obj = block.getObj("audit_author")
     for i in range(aut_obj.getRowCount()):
         line = "AUTHOR  "
-        line += (
-            "  " * (2 - len(str(aut_obj.getValue("pdbx_ordinal", i))))
-            + str(aut_obj.getValue("pdbx_ordinal", i)))
+        line += "  " * (
+            2 - len(str(aut_obj.getValue("pdbx_ordinal", i)))
+        ) + str(aut_obj.getValue("pdbx_ordinal", i))
         line += aut_obj.getValue("name", i)
         try:
             aut_arr.append(pdb.AUTHOR(line))
@@ -701,30 +704,30 @@ def cryst1(block):
     cry_obj = block.getObj("cell")
     sym_obj = block.getObj("symmetry")
     line = "CRYST1"
-    line += (
-        " " * (9 - len(str(cry_obj.getValue("length_a", 0))))
-        + cry_obj.getValue("length_a", 0))
-    line += (
-        " " * (9 - len(str(cry_obj.getValue("length_b", 0))))
-        + cry_obj.getValue("length_b", 0))
-    line += (
-        " " * (9 - len(str(cry_obj.getValue("length_c", 0))))
-        + cry_obj.getValue("length_c", 0))
-    line += (
-        " " * (7 - len(str(cry_obj.getValue("angle_alpha", 0))))
-        + cry_obj.getValue("angle_alpha", 0))
-    line += (
-        " " * (7 - len(str(cry_obj.getValue("angle_beta", 0))))
-        + cry_obj.getValue("angle_beta", 0))
-    line += (
-        " " * (7 - len(str(cry_obj.getValue("angle_gamma", 0))))
-        + cry_obj.getValue("angle_gamma", 0))
-    line += (
-        " " * (11 - len(str(sym_obj.getValue("space_group_name_H-M", 0))))
-        + sym_obj.getValue("space_group_name_H-M", 0))
-    line += (
-        " " * (4 - len(str(cry_obj.getValue("Z_PDB", 0))))
-        + cry_obj.getValue("Z_PDB", 0))
+    line += " " * (
+        9 - len(str(cry_obj.getValue("length_a", 0)))
+    ) + cry_obj.getValue("length_a", 0)
+    line += " " * (
+        9 - len(str(cry_obj.getValue("length_b", 0)))
+    ) + cry_obj.getValue("length_b", 0)
+    line += " " * (
+        9 - len(str(cry_obj.getValue("length_c", 0)))
+    ) + cry_obj.getValue("length_c", 0)
+    line += " " * (
+        7 - len(str(cry_obj.getValue("angle_alpha", 0)))
+    ) + cry_obj.getValue("angle_alpha", 0)
+    line += " " * (
+        7 - len(str(cry_obj.getValue("angle_beta", 0)))
+    ) + cry_obj.getValue("angle_beta", 0)
+    line += " " * (
+        7 - len(str(cry_obj.getValue("angle_gamma", 0)))
+    ) + cry_obj.getValue("angle_gamma", 0)
+    line += " " * (
+        11 - len(str(sym_obj.getValue("space_group_name_H-M", 0)))
+    ) + sym_obj.getValue("space_group_name_H-M", 0)
+    line += " " * (
+        4 - len(str(cry_obj.getValue("Z_PDB", 0)))
+    ) + cry_obj.getValue("Z_PDB", 0)
     try:
         cry_arr.append(pdb.CRYST1(line))
     except KeyError:
@@ -746,49 +749,49 @@ def scalen(block):
     sc_obj = block.getObj("atom_sites")
     scale1 = ""
     scale1 += "SCALE1    "
-    scale1 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[1][1]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[1][1]", 0)))
-    scale1 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[1][2]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[1][2]", 0)))
-    scale1 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[1][3]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[1][3]", 0)))
+    scale1 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[1][1]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[1][1]", 0))
+    scale1 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[1][2]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[1][2]", 0))
+    scale1 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[1][3]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[1][3]", 0))
     scale1 += "     "
-    scale1 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_vector[1]", 0))))
-        + str(sc_obj.getValue("fract_transf_vector[1]", 0)))
+    scale1 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_vector[1]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_vector[1]", 0))
     scale2 = ""
     scale2 += "SCALE2    "
-    scale2 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[2][1]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[2][1]", 0)))
-    scale2 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[2][2]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[2][2]", 0)))
-    scale2 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[2][3]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[2][3]", 0)))
+    scale2 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[2][1]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[2][1]", 0))
+    scale2 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[2][2]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[2][2]", 0))
+    scale2 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[2][3]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[2][3]", 0))
     scale2 += "     "
-    scale2 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_vector[2]", 0))))
-        + str(sc_obj.getValue("fract_transf_vector[2]", 0)))
+    scale2 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_vector[2]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_vector[2]", 0))
     scale3 = ""
     scale3 += "SCALE3    "
-    scale3 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[3][1]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[3][1]", 0)))
-    scale3 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[3][2]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[3][2]", 0)))
-    scale3 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_matrix[3][3]", 0))))
-        + str(sc_obj.getValue("fract_transf_matrix[3][3]", 0)))
+    scale3 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[3][1]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[3][1]", 0))
+    scale3 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[3][2]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[3][2]", 0))
+    scale3 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_matrix[3][3]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_matrix[3][3]", 0))
     scale3 += "     "
-    scale3 += (
-        " " * (10 - len(str(sc_obj.getValue("fract_transf_vector[3]", 0))))
-        + str(sc_obj.getValue("fract_transf_vector[3]", 0)))
+    scale3 += " " * (
+        10 - len(str(sc_obj.getValue("fract_transf_vector[3]", 0)))
+    ) + str(sc_obj.getValue("fract_transf_vector[3]", 0))
     try:
         sc_arr.append(pdb.SCALE1(scale1))
     except KeyError:
@@ -819,47 +822,47 @@ def origxn(block):
     or_err = []
     or_obj = block.getObj("database_PDB_matrix")
     orig1 = "ORIGX1    "
-    orig1 += (
-        " " * (10 - len(str(or_obj.getValue("origx[1][1]", 0))))
-        + str(or_obj.getValue("origx[1][1]", 0)))
-    orig1 += (
-        " " * (10 - len(str(or_obj.getValue("origx[1][2]", 0))))
-        + str(or_obj.getValue("origx[1][2]", 0)))
-    orig1 += (
-        " " * (10 - len(str(or_obj.getValue("origx[1][3]", 0))))
-        + str(or_obj.getValue("origx[1][3]", 0)))
+    orig1 += " " * (10 - len(str(or_obj.getValue("origx[1][1]", 0)))) + str(
+        or_obj.getValue("origx[1][1]", 0)
+    )
+    orig1 += " " * (10 - len(str(or_obj.getValue("origx[1][2]", 0)))) + str(
+        or_obj.getValue("origx[1][2]", 0)
+    )
+    orig1 += " " * (10 - len(str(or_obj.getValue("origx[1][3]", 0)))) + str(
+        or_obj.getValue("origx[1][3]", 0)
+    )
     orig1 += "     "
-    orig1 += (
-        " " * (10 - len(str(or_obj.getValue("origx_vector[1]", 0))))
-        + str(or_obj.getValue("origx_vector[1]", 0)))
+    orig1 += " " * (
+        10 - len(str(or_obj.getValue("origx_vector[1]", 0)))
+    ) + str(or_obj.getValue("origx_vector[1]", 0))
     orig2 = "ORIGX2    "
-    orig2 += (
-        " " * (10 - len(str(or_obj.getValue("origx[2][1]", 0))))
-        + str(or_obj.getValue("origx[2][1]", 0)))
-    orig2 += (
-        " " * (10 - len(str(or_obj.getValue("origx[2][2]", 0))))
-        + str(or_obj.getValue("origx[2][2]", 0)))
-    orig2 += (
-        " " * (10 - len(str(or_obj.getValue("origx[2][3]", 0))))
-        + str(or_obj.getValue("origx[2][3]", 0)))
+    orig2 += " " * (10 - len(str(or_obj.getValue("origx[2][1]", 0)))) + str(
+        or_obj.getValue("origx[2][1]", 0)
+    )
+    orig2 += " " * (10 - len(str(or_obj.getValue("origx[2][2]", 0)))) + str(
+        or_obj.getValue("origx[2][2]", 0)
+    )
+    orig2 += " " * (10 - len(str(or_obj.getValue("origx[2][3]", 0)))) + str(
+        or_obj.getValue("origx[2][3]", 0)
+    )
     orig2 += "     "
-    orig2 += (
-        " " * (10 - len(str(or_obj.getValue("origx_vector[2]", 0))))
-        + str(or_obj.getValue("origx_vector[2]", 0)))
+    orig2 += " " * (
+        10 - len(str(or_obj.getValue("origx_vector[2]", 0)))
+    ) + str(or_obj.getValue("origx_vector[2]", 0))
     orig3 = "ORIGX3    "
-    orig3 += (
-        " " * (10 - len(str(or_obj.getValue("origx[3][1]", 0))))
-        + str(or_obj.getValue("origx[3][1]", 0)))
-    orig3 += (
-        " " * (10 - len(str(or_obj.getValue("origx[3][2]", 0))))
-        + str(or_obj.getValue("origx[3][2]", 0)))
-    orig3 += (
-        " " * (10 - len(str(or_obj.getValue("origx[3][3]", 0))))
-        + str(or_obj.getValue("origx[3][3]", 0)))
+    orig3 += " " * (10 - len(str(or_obj.getValue("origx[3][1]", 0)))) + str(
+        or_obj.getValue("origx[3][1]", 0)
+    )
+    orig3 += " " * (10 - len(str(or_obj.getValue("origx[3][2]", 0)))) + str(
+        or_obj.getValue("origx[3][2]", 0)
+    )
+    orig3 += " " * (10 - len(str(or_obj.getValue("origx[3][3]", 0)))) + str(
+        or_obj.getValue("origx[3][3]", 0)
+    )
     orig3 += "     "
-    orig3 += (
-        " " * (10 - len(str(or_obj.getValue("origx_vector[3]", 0))))
-        + str(or_obj.getValue("origx_vector[3]", 0)))
+    orig3 += " " * (
+        10 - len(str(or_obj.getValue("origx_vector[3]", 0)))
+    ) + str(or_obj.getValue("origx_vector[3]", 0))
     try:
         or_arr.append(pdb.ORIGX1(orig1))
     except KeyError:
@@ -893,45 +896,45 @@ def cispep(block):
         return cis_arr, cis_err
     for i in range(cis_obj.getRowCount()):
         line = "CISPEP "
-        line += (
-            " " * (3 - len(str(cis_obj.getValue("pdbx_id", i))))
-            + str(cis_obj.getValue("pdbx_id", i)))
+        line += " " * (3 - len(str(cis_obj.getValue("pdbx_id", i)))) + str(
+            cis_obj.getValue("pdbx_id", i)
+        )
         line += " "
-        line += (
-            " " * (3 - len(cis_obj.getValue("auth_comp_id", i)))
-            + cis_obj.getValue("auth_comp_id", i))
+        line += " " * (
+            3 - len(cis_obj.getValue("auth_comp_id", i))
+        ) + cis_obj.getValue("auth_comp_id", i)
         line += " "
         line += cis_obj.getValue("auth_asym_id", i)
         line += " "
-        line += (
-            " " * (4 - len(str(cis_obj.getValue("auth_seq_id", i))))
-            + str(cis_obj.getValue("auth_seq_id", i)))
-        if cis_obj.getValue("pdbx_PDB_ins_code", i) != '?':
+        line += " " * (4 - len(str(cis_obj.getValue("auth_seq_id", i)))) + str(
+            cis_obj.getValue("auth_seq_id", i)
+        )
+        if cis_obj.getValue("pdbx_PDB_ins_code", i) != "?":
             line += cis_obj.getValue("pdbx_PDB_ins_code", i)
         else:
             line += " "
         line += "   "
-        line += (
-            " " * (3 - len(cis_obj.getValue("pdbx_auth_comp_id_2", i)))
-            + cis_obj.getValue("pdbx_auth_comp_id_2", i))
+        line += " " * (
+            3 - len(cis_obj.getValue("pdbx_auth_comp_id_2", i))
+        ) + cis_obj.getValue("pdbx_auth_comp_id_2", i)
         line += " "
         line += cis_obj.getValue("pdbx_auth_asym_id_2", i)
         line += " "
-        line += (
-            " " * (4 - len(str(cis_obj.getValue("pdbx_auth_seq_id_2", i))))
-            + str(cis_obj.getValue("pdbx_auth_seq_id_2", i)))
-        if cis_obj.getValue("pdbx_PDB_ins_code_2", i) != '?':
+        line += " " * (
+            4 - len(str(cis_obj.getValue("pdbx_auth_seq_id_2", i)))
+        ) + str(cis_obj.getValue("pdbx_auth_seq_id_2", i))
+        if cis_obj.getValue("pdbx_PDB_ins_code_2", i) != "?":
             line += cis_obj.getValue("pdbx_PDB_ins_code_2", i)
         else:
             line += " "
         line += " " * 7
-        line += (
-            " " * (3 - len(str(cis_obj.getValue("pdbx_PDB_model_num", i))))
-            + str(cis_obj.getValue("pdbx_PDB_model_num", i)))
+        line += " " * (
+            3 - len(str(cis_obj.getValue("pdbx_PDB_model_num", i)))
+        ) + str(cis_obj.getValue("pdbx_PDB_model_num", i))
         line += " " * 7
-        line += (
-            " " * (6 - len(str(cis_obj.getValue("pdbx_omega_angle", i))))
-            + str(cis_obj.getValue("pdbx_omega_angle", i)))
+        line += " " * (
+            6 - len(str(cis_obj.getValue("pdbx_omega_angle", i)))
+        ) + str(cis_obj.getValue("pdbx_omega_angle", i))
         try:
             cis_arr.append(pdb.CISPEP(line))
         except KeyError:
@@ -955,51 +958,49 @@ def ssbond(block):
         return ssb_arr, ssb_err
     for i in range(ssb_obj.getRowCount()):
         line = "SSBOND "
-        line += (
-            " " * (3 - len(str(ssb_obj.getValue("id", i)[-1])))
-            + str(ssb_obj.getValue("id", i)[-1]))
+        line += " " * (3 - len(str(ssb_obj.getValue("id", i)[-1]))) + str(
+            ssb_obj.getValue("id", i)[-1]
+        )
         line += " "
-        line += (
-            " " * (3 - len(ssb_obj.getValue("ptnr1_auth_comp_id", i)))
-            + ssb_obj.getValue("ptnr1_auth_comp_id", i))
+        line += " " * (
+            3 - len(ssb_obj.getValue("ptnr1_auth_comp_id", i))
+        ) + ssb_obj.getValue("ptnr1_auth_comp_id", i)
         line += " "
         line += ssb_obj.getValue("ptnr1_auth_asym_id", i)
         line += " "
-        line += (
-            " " * (4 - len(str(ssb_obj.getValue("ptnr1_auth_seq_id", i))))
-            + str(ssb_obj.getValue("ptnr1_auth_seq_id", i)))
-        if ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i) != '?':
+        line += " " * (
+            4 - len(str(ssb_obj.getValue("ptnr1_auth_seq_id", i)))
+        ) + str(ssb_obj.getValue("ptnr1_auth_seq_id", i))
+        if ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i) != "?":
             line += ssb_obj.getValue("pdbx_ptnr1_PDB_ins_code", i)
         else:
             line += " "
         line += " " * 3
-        line += (
-            " " * (3 - len(ssb_obj.getValue("ptnr2_auth_comp_id", i)))
-            + ssb_obj.getValue("ptnr2_auth_comp_id", i))
+        line += " " * (
+            3 - len(ssb_obj.getValue("ptnr2_auth_comp_id", i))
+        ) + ssb_obj.getValue("ptnr2_auth_comp_id", i)
         line += " "
         line += ssb_obj.getValue("ptnr2_auth_asym_id", i)
         line += " "
-        line += (
-            " " * (4 - len(str(ssb_obj.getValue("ptnr2_auth_seq_id", i))))
-            + str(ssb_obj.getValue("ptnr2_auth_seq_id", i)))
-        if ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i) != '?':
+        line += " " * (
+            4 - len(str(ssb_obj.getValue("ptnr2_auth_seq_id", i)))
+        ) + str(ssb_obj.getValue("ptnr2_auth_seq_id", i))
+        if ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i) != "?":
             line += ssb_obj.getValue("pdbx_ptnr2_PDB_ins_code", i)
         else:
             line += " "
         line += " " * 23
-        line += (
-            " " * (6 - len(ssb_obj.getValue("ptnr1_symmetry", i).replace(
-                "_", "")))
-            + ssb_obj.getValue("ptnr1_symmetry", i).replace("_", ""))
+        line += " " * (
+            6 - len(ssb_obj.getValue("ptnr1_symmetry", i).replace("_", ""))
+        ) + ssb_obj.getValue("ptnr1_symmetry", i).replace("_", "")
         line += " "
-        line += (
-            " " * (6 - len(ssb_obj.getValue("ptnr2_symmetry", i).replace(
-                "_", "")))
-            + ssb_obj.getValue("ptnr2_symmetry", i).replace("_", ""))
+        line += " " * (
+            6 - len(ssb_obj.getValue("ptnr2_symmetry", i).replace("_", ""))
+        ) + ssb_obj.getValue("ptnr2_symmetry", i).replace("_", "")
         line += " "
-        line += (
-            " " * (5 - len(str(ssb_obj.getValue("pdbx_dist_value", i))))
-            + str(ssb_obj.getValue("pdbx_dist_value", i)))
+        line += " " * (
+            5 - len(str(ssb_obj.getValue("pdbx_dist_value", i)))
+        ) + str(ssb_obj.getValue("pdbx_dist_value", i))
         try:
             ssb_arr.append(pdb.SSBOND(line))
         except KeyError:
@@ -1060,13 +1061,37 @@ def read_cif(cif_file):
             ato_pdb, ato_err = atom_site(block)
             con_pdb, con_err = conect(block)
             pdblist = (
-                head_pdb + title_pdb + cmpnd_pdb + src_pdb + key_pdb + ex_pdb
-                + aut_pdb + ssb_pdb + cis_pdb + cry_pdb + or_pdb + sc_pdb
-                + ato_pdb + con_pdb)
+                head_pdb
+                + title_pdb
+                + cmpnd_pdb
+                + src_pdb
+                + key_pdb
+                + ex_pdb
+                + aut_pdb
+                + ssb_pdb
+                + cis_pdb
+                + cry_pdb
+                + or_pdb
+                + sc_pdb
+                + ato_pdb
+                + con_pdb
+            )
             errlist = (
-                head_err + title_err + cmpnd_err + src_err + key_err + ex_err
-                + aut_err + ssb_err + cis_err + cry_err + or_err + sc_err
-                + ato_err + con_err)
+                head_err
+                + title_err
+                + cmpnd_err
+                + src_err
+                + key_err
+                + ex_err
+                + aut_err
+                + ssb_err
+                + cis_err
+                + cry_err
+                + or_err
+                + sc_err
+                + ato_err
+                + con_err
+            )
         return pdblist, errlist
     else:
         _LOGGER.error("Unknown error while reading CIF file.")

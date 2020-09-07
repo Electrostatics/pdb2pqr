@@ -17,7 +17,8 @@ class Elec:
     """An object for the ELEC section of an APBS input file."""
 
     def __init__(
-            self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
+        self, pqrpath, size, method, asyncflag, istrng=0, potdx=False
+    ):
         """Initialize object.
 
         .. todo::  Remove hard-coded parameters.
@@ -40,8 +41,13 @@ class Elec:
         # the per-grid dime rather than the global dime.
         self.dime = size.ngrid
         gmem = (
-            200.0 * self.dime[0] * self.dime[1]
-            * self.dime[2] / 1024.0 / 1024.0)
+            200.0
+            * self.dime[0]
+            * self.dime[1]
+            * self.dime[2]
+            / 1024.0
+            / 1024.0
+        )
         if method == "":  # method not named - use ceiling
             if gmem > size.gmemceil:
                 method = "mg-para"
@@ -90,26 +96,47 @@ class Elec:
         text = "elec %s\n" % self.label
         text += "    %s\n" % self.method
         text += "    dime %i %i %i\n" % (
-            self.dime[0], self.dime[1], self.dime[2])
+            self.dime[0],
+            self.dime[1],
+            self.dime[2],
+        )
         if self.method == "mg-manual":
             text += "    glen %.3f %.3f %.3f\n" % (
-                self.glen[0], self.glen[1], self.glen[2])
+                self.glen[0],
+                self.glen[1],
+                self.glen[2],
+            )
             text += "    gcent %s\n" % self.gcent
         elif self.method == "mg-auto":
             text += "    cglen %.4f %.4f %.4f\n" % (
-                self.cglen[0], self.cglen[1], self.cglen[2])
+                self.cglen[0],
+                self.cglen[1],
+                self.cglen[2],
+            )
             text += "    fglen %.4f %.4f %.4f\n" % (
-                self.fglen[0], self.fglen[1], self.fglen[2])
+                self.fglen[0],
+                self.fglen[1],
+                self.fglen[2],
+            )
             text += "    cgcent %s\n" % self.cgcent
             text += "    fgcent %s\n" % self.fgcent
         elif self.method == "mg-para":
             text += "    pdime %i %i %i\n" % (
-                self.pdime[0], self.pdime[1], self.pdime[2])
+                self.pdime[0],
+                self.pdime[1],
+                self.pdime[2],
+            )
             text += "    ofrac %.1f\n" % self.ofrac
             text += "    cglen %.4f %.4f %.4f\n" % (
-                self.cglen[0], self.cglen[1], self.cglen[2])
+                self.cglen[0],
+                self.cglen[1],
+                self.cglen[2],
+            )
             text += "    fglen %.4f %.4f %.4f\n" % (
-                self.fglen[0], self.fglen[1], self.fglen[2])
+                self.fglen[0],
+                self.fglen[1],
+                self.fglen[2],
+            )
             text += "    cgcent %s\n" % self.cgcent
             text += "    fgcent %s\n" % self.fgcent
             if self.asyncflag:
@@ -122,9 +149,11 @@ class Elec:
         text += "    bcfl %s\n" % self.bcfl
         if self.istrng > 0:
             for ion in self.ion:
-                text += (
-                    "    ion charge %.2f conc %.3f radius %.4f\n" % (
-                        ion[0], self.istrng, ion[1]))
+                text += "    ion charge %.2f conc %.3f radius %.4f\n" % (
+                    ion[0],
+                    self.istrng,
+                    ion[1],
+                )
         text += "    pdie %.4f\n" % self.pdie
         text += "    sdie %.4f\n" % self.sdie
         text += "    srfm %s\n" % self.srfm
@@ -145,7 +174,8 @@ class Input:
     """Each object of this class is one APBS input file."""
 
     def __init__(
-            self, pqrpath, size, method, asyncflag, istrng=0, potdx=False):
+        self, pqrpath, size, method, asyncflag, istrng=0, potdx=False
+    ):
         """Initialize the input file class.
 
         Each input file contains a PQR name, a list of elec objects, and a
@@ -262,7 +292,8 @@ def split_input(filename):
     if nproc == 0:
         errstr = "%s is not a valid APBS parallel input file!\n" % filename
         errstr = errstr + (
-            "The inputgen script was unable to asynchronize this file!")
+            "The inputgen script was unable to asynchronize this file!"
+        )
         raise RuntimeError(errstr)
     base_pqr_name = Path(filename).stem
     for iproc in range(nproc):
@@ -279,57 +310,94 @@ def build_parser():
         description=(
             "Use this script to generate new APBS input "
             "files or split an existing parallel input "
-            "file into multiple async files"),
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+            "file into multiple async files"
+        ),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parse.add_argument(
-        "--asynch", action="store_true",
-        help="Perform an asynchronous parallel calculation.")
+        "--asynch",
+        action="store_true",
+        help="Perform an asynchronous parallel calculation.",
+    )
     parse.add_argument(
-        "--split", action="store_true",
+        "--split",
+        action="store_true",
         help=(
             "Split an existing parallel input file to multiple "
-            "async input files."))
+            "async input files."
+        ),
+    )
     parse.add_argument(
-        "--potdx", action="store_true", help=(
-            "Create an input to compute an electrostatic potential map."))
+        "--potdx",
+        action="store_true",
+        help=("Create an input to compute an electrostatic potential map."),
+    )
     parse.add_argument(
-        "--method", help=(
-            "Force output file to write a specific APBS ELEC method."),
-        choices=["para", "auto", "manual", "async"])
+        "--method",
+        help=("Force output file to write a specific APBS ELEC method."),
+        choices=["para", "auto", "manual", "async"],
+    )
     parse.add_argument(
-        "--cfac", type=float, default=psize.CFAC,
+        "--cfac",
+        type=float,
+        default=psize.CFAC,
         help=(
             "Factor by which to expand molecular dimensions to "
-            "get coarse grid dimensions."))
+            "get coarse grid dimensions."
+        ),
+    )
     parse.add_argument(
-        "--fadd", type=float, default=psize.FADD,
+        "--fadd",
+        type=float,
+        default=psize.FADD,
         help=(
             "Amount to add to molecular dimensions to get fine "
-            "grid dimensions."))
+            "grid dimensions."
+        ),
+    )
     parse.add_argument(
-        "--space", type=float, default=psize.SPACE,
-        help="Desired fine mesh resolution")
+        "--space",
+        type=float,
+        default=psize.SPACE,
+        help="Desired fine mesh resolution",
+    )
     parse.add_argument(
-        "--gmemfac", type=int, default=psize.GMEMFAC,
+        "--gmemfac",
+        type=int,
+        default=psize.GMEMFAC,
         help=(
             "Number of bytes per grid point required for sequential "
-            "MG calculation"))
+            "MG calculation"
+        ),
+    )
     parse.add_argument(
-        "--gmemceil", type=int, default=psize.GMEMCEIL,
+        "--gmemceil",
+        type=int,
+        default=psize.GMEMCEIL,
         help=(
             "Max MB allowed for sequential MG calculation. Adjust "
             "this to force the script to perform faster calculations "
-            "(which require more parallelism)"))
+            "(which require more parallelism)"
+        ),
+    )
     parse.add_argument(
-        "--ofrac", type=float, default=psize.OFRAC,
-        help="Overlap factor between mesh partitions (parallel)")
+        "--ofrac",
+        type=float,
+        default=psize.OFRAC,
+        help="Overlap factor between mesh partitions (parallel)",
+    )
     parse.add_argument(
-        "--redfac", type=float, default=psize.REDFAC,
+        "--redfac",
+        type=float,
+        default=psize.REDFAC,
         help=(
             "The maximum factor by which a domain dimension can "
-            "be reduced during focusing"))
+            "be reduced during focusing"
+        ),
+    )
     parse.add_argument(
-        "--istrng", help="Ionic strength (M). Na+ anc Cl- ions will be used")
+        "--istrng", help="Ionic strength (M). Na+ anc Cl- ions will be used"
+    )
     parse.add_argument("filename")
     return parse
 
@@ -345,7 +413,8 @@ def main():
     else:
         size.run_psize(filename)
         input_ = Input(
-            filename, size, args.method, args.asynch, args.istrng, args.potdx)
+            filename, size, args.method, args.asynch, args.istrng, args.potdx
+        )
         path = Path(filename)
         output_path = path.parent + path.stem + Path(".in")
         input_.print_input_files(output_path)

@@ -12,7 +12,8 @@
 """
 import math
 import logging
-from pathlib import Path
+
+# from pathlib import Path
 import numpy as np
 from .config import SMALL_NUMBER, DIHEDRAL_WTF
 
@@ -199,7 +200,7 @@ def normalize(coords):
     :return: normalized coordinates
     :rtype:  numpy.ndarray
     """
-    return coords/np.linalg.norm(coords)
+    return coords / np.linalg.norm(coords)
 
 
 def factorial(num):
@@ -212,7 +213,7 @@ def factorial(num):
     """
     if num <= 1:
         return 1
-    return num*factorial(num-1)
+    return num * factorial(num - 1)
 
 
 def dihedral(coords1, coords2, coords3, coords4):

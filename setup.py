@@ -47,14 +47,19 @@ setuptools.setup(
     description=(
         "Automates many of the common tasks of preparing structures for "
         "continuum solvation calculations as well as many other types of "
-        "biomolecular structure modeling, analysis, and simulation."),
+        "biomolecular structure modeling, analysis, and simulation."
+    ),
     long_description=LONG_DESCRIPTION,
     install_requires=[
-        "propka >= 3.2", "pandas >= 1.0", "pytest>=5.4.1",
-        "mmcif_pdbx>=1.1.0"],
+        "propka >= 3.2",
+        "pandas >= 1.0",
+        "pytest>=5.4.1",
+        "mmcif_pdbx>=1.1.0",
+    ],
     url="http://www.poissonboltzmann.org",
     packages=setuptools.find_packages(
-        exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]),
+        exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]
+    ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
     license="BSD",
@@ -73,18 +78,20 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
-        "Topic :: Scientific/Engineering :: Chemistry"
+        "Topic :: Scientific/Engineering :: Chemistry",
     ],
     project_urls={
-        'Documentation': 'https://pdb2pqr.readthedocs.io/',
-        'Get help': 'https://github.com/Electrostatics/pdb2pqr/issues',
-        'Publications': 'https://pubmed.ncbi.nlm.nih.gov/?term=R01+GM069702',
-        'Funding': 'https://bit.ly/apbs-funding',
-        'Source': 'https://github.com/Electrostatics/pdb2pqr',
+        "Documentation": "https://pdb2pqr.readthedocs.io/",
+        "Get help": "https://github.com/Electrostatics/pdb2pqr/issues",
+        "Publications": "https://pubmed.ncbi.nlm.nih.gov/?term=R01+GM069702",
+        "Funding": "https://bit.ly/apbs-funding",
+        "Source": "https://github.com/Electrostatics/pdb2pqr",
     },
     keywords="science chemistry molecular biology",
     entry_points={
         "console_scripts": [
             "pdb2pqr30=pdb2pqr.main:main",
-            "dx2cube=pdb2pqr.main:dx_to_cube"]}
+            "dx2cube=pdb2pqr.main:dx_to_cube",
+        ]
+    },
 )

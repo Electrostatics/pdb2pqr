@@ -60,7 +60,9 @@ class Protein(object):
             if isinstance(record, (pdb.ATOM, pdb.HETATM)):
                 if record.chain_id == "":
                     if num_chains > 1 and record.res_name not in [
-                            "WAT", "HOH"]:
+                        "WAT",
+                        "HOH",
+                    ]:
                         # Assign a chain ID
                         record.chain_id = string.ascii_uppercase[count]
                 chain_id = record.chain_id
@@ -71,18 +73,22 @@ class Protein(object):
                 if chain_id not in chain_dict:
                     my_chain = struct.Chain(chain_id)
                     chain_dict[chain_id] = my_chain
-                if (res_seq != previous_atom.res_seq or
-                        ins_code != previous_atom.ins_code or
-                        chain_id != previous_atom.chain_id):
+                if (
+                    res_seq != previous_atom.res_seq
+                    or ins_code != previous_atom.ins_code
+                    or chain_id != previous_atom.chain_id
+                ):
                     my_residue = self.create_residue(
-                        residue, previous_atom.res_name)
+                        residue, previous_atom.res_name
+                    )
                     chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     residue = []
                 residue.append(record)
                 previous_atom = record
             elif isinstance(record, pdb.END):
                 my_residue = self.create_residue(
-                    residue, previous_atom.res_name)
+                    residue, previous_atom.res_name
+                )
                 chain_dict[previous_atom.chain_id].add_residue(my_residue)
                 residue = []
             elif isinstance(record, pdb.MODEL):
@@ -91,7 +97,8 @@ class Protein(object):
                     continue
                 if num_models > 1:
                     my_residue = self.create_residue(
-                        residue, previous_atom.res_name)
+                        residue, previous_atom.res_name
+                    )
                     chain_dict[previous_atom.chain_id].add_residue(my_residue)
                     break
             elif isinstance(record, pdb.TER):
@@ -219,6 +226,7 @@ class Protein(object):
         :type neutralc:  bool
         """
         # First assign the known termini
+        chain = None
         for chain in self.chains:
             self.assign_termini(chain, neutraln, neutralc)
         # Now determine if there are any hidden chains
@@ -236,11 +244,12 @@ class Protein(object):
                 # Look for ending termini
                 fixflag = 0
                 if isinstance(residue, aa.Amino):
-                    if (residue.has_atom("OXT") and not residue.is_c_term):
+                    if residue.has_atom("OXT") and not residue.is_c_term:
                         fixflag = 1
                 elif isinstance(residue, na.Nucleic):
-                    if ((residue.has_atom("H3T") or residue.name.endswith("3"))
-                            and not residue.is3term):
+                    if (
+                        residue.has_atom("H3T") or residue.name.endswith("3")
+                    ) and not residue.is3term:
                         fixflag = 1
                 if fixflag:
                     # Get an available chain ID
@@ -255,7 +264,8 @@ class Protein(object):
                         chainid = letters[id_] * id_length
                     if id_length > 1:
                         message = (
-                            'Warning: Reusing chain id: ' + chainid[0] + '')
+                            "Warning: Reusing chain id: " + chainid[0] + ""
+                        )
                         _LOGGER.warning(message)
                     # Make a new chain with these residues
                     newchain = struct.Chain(chainid[0])
@@ -291,7 +301,7 @@ class Protein(object):
                     id_ = 0
                 chainid = letters[id_] * id_length
             if id_length > 1:
-                message = 'Warning: Reusing chain id: ' + chainid[0]
+                message = "Warning: Reusing chain id: " + chainid[0]
                 _LOGGER.warning(message)
             # Use the new chain_id
             self.chainmap[chainid] = chain
@@ -332,7 +342,8 @@ class Protein(object):
                 if residue.has_atom(atomname):
                     continue
                 if isinstance(residue, aa.CYS) and (
-                        residue.ss_bonded and atomname == "HG"):
+                    residue.ss_bonded and atomname == "HG"
+                ):
                     continue
                 # If this hydrogen is part of a tetrahedral group,
                 # follow a different codepath
@@ -361,12 +372,14 @@ class Protein(object):
                         break
                 if len(coords) == 3:
                     newcoords = quat.find_coordinates(
-                        3, coords, refcoords, refatomcoords)
+                        3, coords, refcoords, refatomcoords
+                    )
                     residue.create_atom(atomname, newcoords)
                     count += 1
                 else:
                     _LOGGER.warning(
-                        "Couldn't rebuild %s in %s!", atomname, residue)
+                        "Couldn't rebuild %s in %s!", atomname, residue
+                    )
         _LOGGER.debug(" Added %i hydrogen atoms.", count)
 
     def set_donors_acceptors(self):
@@ -390,7 +403,8 @@ class Protein(object):
                         coords.append(residue.get_atom(atomname).coords)
                 if len(coords) == 4:
                     angle = util.dihedral(
-                        coords[0], coords[1], coords[2], coords[3])
+                        coords[0], coords[1], coords[2], coords[3]
+                    )
                 else:
                     angle = None
                 residue.add_dihedral_angle(angle)
@@ -402,7 +416,7 @@ class Protein(object):
         during rotations.  Uses the :func:`shortest_path` algorithm found in
         :mod:`utilities`.
 
-        :raises ValueError:  if shortest path cannot be found (e.g., if the 
+        :raises ValueError:  if shortest path cannot be found (e.g., if the
             atoms are not connected)
         """
         for residue in self.residues:
@@ -424,7 +438,8 @@ class Protein(object):
                 elif residue.is_c_term and atom.name == "HO":
                     atom.refdistance = 3
                 elif residue.is_n_term and (
-                        atom.name == "H3" or atom.name == "H2"):
+                    atom.name == "H3" or atom.name == "H2"
+                ):
                     atom.refdistance = 2
                 else:
                     path = util.shortest_path(map_, atom, caatom)
@@ -433,7 +448,8 @@ class Protein(object):
                     else:
                         raise ValueError(
                             "Found gap in biomolecule structure for atom "
-                            "%s" % atom)
+                            "%s" % atom
+                        )
 
     def remove_hydrogens(self):
         """Remove hydrogens from the protein."""
@@ -457,7 +473,7 @@ class Protein(object):
         :type neutralc:  bool
         """
         if len(chain.residues) == 0:
-            text = "Error: chain \"%s\" has 0 residues!" % chain.chain_id
+            text = 'Error: chain "%s" has 0 residues!' % chain.chain_id
             raise IndexError(text)
         # Set the N-Terminus/ 5' Terminus
         res0 = chain.residues[0]
@@ -542,7 +558,8 @@ class Protein(object):
                 res1 = chain.residues[i]
                 res2 = chain.residues[i + 1]
                 if not isinstance(res1, aa.Amino) or not isinstance(
-                        res2, aa.Amino):
+                    res2, aa.Amino
+                ):
                     continue
                 atom1 = res1.get_atom("C")
                 atom2 = res2.get_atom("N")
@@ -554,7 +571,9 @@ class Protein(object):
                     continue
                 if util.distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
                     text = "Gap in backbone detected between %s and %s!" % (
-                        res1, res2)
+                        res1,
+                        res2,
+                    )
                     _LOGGER.warning(text)
                     res2.peptide_c = None
                     res1.peptide_n = None
@@ -580,7 +599,7 @@ class Protein(object):
         """
         if patchname not in self.patch_map:
             raise KeyError("Unable to find patch %s!" % patchname)
-        _LOGGER.debug('PATCH INFO: %s patched with %s', residue, patchname)
+        _LOGGER.debug("PATCH INFO: %s patched with %s", residue, patchname)
         if patchname == "PEPTIDE":
             newreference = residue.reference
         else:
@@ -712,11 +731,13 @@ class Protein(object):
                 resname = residue.name
             for atom in residue.atoms:
                 rname, aname = forcefield_.get_names(resname, atom.name)
-                if resname not in ['LIG', 'WAT', 'ACE', 'NME'] and (
-                        rname is not None):
+                if resname not in ["LIG", "WAT", "ACE", "NME"] and (
+                    rname is not None
+                ):
                     try:
                         if (residue.is_n_term or residue.is_c_term) and (
-                                rname != residue.name):
+                            rname != residue.name
+                        ):
                             rname = residue.name
                     except AttributeError:
                         pass
@@ -734,7 +755,7 @@ class Protein(object):
         :param pkadic:  dictionary of pKa values for residues
         :type pkadic:  dict
         """
-        _LOGGER.info('Applying pKa values at a pH of %.2f:', ph)
+        _LOGGER.info("Applying pKa values at a pH of %.2f:", ph)
         formatted_pkadict = pprint.pformat(pkadic)
         _LOGGER.debug("%s", formatted_pkadict)
         for residue in self.residues:
@@ -751,8 +772,12 @@ class Protein(object):
                     del pkadic[key]
                     if ph >= value:
                         if force_field in [
-                                "amber", "charmm", "tyl06", "peoepb",
-                                "swanson"]:
+                            "amber",
+                            "charmm",
+                            "tyl06",
+                            "peoepb",
+                            "swanson",
+                        ]:
                             warn = ("N-terminal %s" % key, "neutral")
                             _LOGGER.warning(warn)
                         else:
@@ -765,8 +790,12 @@ class Protein(object):
                     del pkadic[key]
                     if ph < value:
                         if force_field in [
-                                "amber", "charmm", "tyl06", "peoepb",
-                                "swanson"]:
+                            "amber",
+                            "charmm",
+                            "tyl06",
+                            "peoepb",
+                            "swanson",
+                        ]:
                             warn = ("C-terminal %s" % key, "neutral")
                             _LOGGER.warning(warn)
                         else:
@@ -781,17 +810,24 @@ class Protein(object):
                         self.apply_patch("AR0", residue)
                         _LOGGER.warning(
                             "Neutral arginines are very rare. Please "
-                            "double-check your setup.")
+                            "double-check your setup."
+                        )
                     else:
                         warn = (key, "neutral")
                         _LOGGER.warning(warn)
                 elif resname == "ASP" and ph < value:
                     if residue.is_c_term and force_field in [
-                            "amber", "tyl06", "swanson"]:
+                        "amber",
+                        "tyl06",
+                        "swanson",
+                    ]:
                         warn = (key, "Protonated at C-Terminal")
                         _LOGGER.warning(warn)
                     elif residue.is_n_term and force_field in [
-                            "amber", "tyl06", "swanson"]:
+                        "amber",
+                        "tyl06",
+                        "swanson",
+                    ]:
                         warn = (key, "Protonated at N-Terminal")
                         _LOGGER.warning(warn)
                     else:
@@ -804,11 +840,17 @@ class Protein(object):
                         self.apply_patch("CYM", residue)
                 elif resname == "GLU" and ph < value:
                     if residue.is_c_term and force_field in [
-                            "amber", "tyl06", "swanson"]:
+                        "amber",
+                        "tyl06",
+                        "swanson",
+                    ]:
                         warn = (key, "Protonated at C-Terminal")
                         _LOGGER.warning(warn)
                     elif residue.is_n_term and force_field in [
-                            "amber", "tyl06", "swanson"]:
+                        "amber",
+                        "tyl06",
+                        "swanson",
+                    ]:
                         warn = (key, "Protonated at N-Terminal")
                         _LOGGER.warning(warn)
                     else:
@@ -820,8 +862,9 @@ class Protein(object):
                         warn = (key, "neutral")
                         _LOGGER.warning(warn)
                     elif (
-                            force_field in ["amber", "tyl06", "swanson"]
-                            and residue.is_c_term):
+                        force_field in ["amber", "tyl06", "swanson"]
+                        and residue.is_c_term
+                    ):
                         warn = (key, "neutral at C-Terminal")
                         _LOGGER.warning(warn)
                     elif force_field == "tyl06" and residue.is_n_term:
@@ -831,7 +874,12 @@ class Protein(object):
                         self.apply_patch("LYN", residue)
                 elif resname == "TYR" and ph >= value:
                     if force_field in [
-                            "charmm", "amber", "tyl06", "peoepb", "swanson"]:
+                        "charmm",
+                        "amber",
+                        "tyl06",
+                        "peoepb",
+                        "swanson",
+                    ]:
                         warn = (key, "negative")
                         _LOGGER.warning(warn)
                     else:
@@ -839,7 +887,8 @@ class Protein(object):
         if len(pkadic) > 0:
             warn = (
                 "PDB2PQR could not identify the following residues and residue"
-                " numbers as returned by PROPKA or PDB2PKA")
+                " numbers as returned by PROPKA or PDB2PKA"
+            )
             _LOGGER.warning(warn)
             for item in pkadic:
                 text = "             %s" % item
@@ -859,16 +908,18 @@ class Protein(object):
             if reskey in hlist:
                 hlist.remove(reskey)
                 if isinstance(residue, aa.Amino):
-                    residue.stateboolean = {'FIXEDSTATE': False}
+                    residue.stateboolean = {"FIXEDSTATE": False}
                     _LOGGER.debug(
-                        "Setting residue {:s} as fixed.".format(str(residue)))
+                        "Setting residue {:s} as fixed.".format(str(residue))
+                    )
                 else:
                     err = "Matched residue {:s} but not subclass of Amino."
                     _LOGGER.warning(err.format(str(residue)))
         if len(hlist) > 0:
             err = (
                 "The following fixed residues were not matched (possible "
-                "internal error): {:s}.")
+                "internal error): {:s}."
+            )
             _LOGGER.warning(err.format(str(hlist)))
 
     def create_residue(self, residue, resname):
@@ -918,13 +969,16 @@ class Protein(object):
             atomlist = list(residue.atoms)
             for atom in atomlist:
                 atomname = atom.name
-                if (atomname in ["OP1", "OP2"] and
-                        residue.reference.has_atom("O1P") and
-                        residue.reference.has_atom("O2P")):
+                if (
+                    atomname in ["OP1", "OP2"]
+                    and residue.reference.has_atom("O1P")
+                    and residue.reference.has_atom("O2P")
+                ):
                     continue
                 if not residue.reference.has_atom(atomname):
                     _LOGGER.warning(
-                        "Extra atom %s in %s! - ", atomname, residue)
+                        "Extra atom %s in %s! - ", atomname, residue
+                    )
                     residue.remove_atom(atomname)
                     _LOGGER.warning("Deleted this atom.")
             missing = residue.missing
@@ -967,19 +1021,25 @@ class Protein(object):
                             "generally caused by missing backbone atoms in "
                             "this protein; you must use an external program "
                             "to complete gaps in the protein backbone. Heavy "
-                            "atoms missing from {residue}:  {missing}")
-                        missing_str = ' '.join(missing)
+                            "atoms missing from {residue}:  {missing}"
+                        )
+                        missing_str = " ".join(missing)
                         err = text.format(residue=residue, missing=missing_str)
                         raise ValueError(err)
                 else:  # Rebuild the atom
                     newcoords = quat.find_coordinates(
-                        3, coords, refcoords, refatomcoords)
+                        3, coords, refcoords, refatomcoords
+                    )
                     residue.create_atom(atomname, newcoords)
                     _LOGGER.debug(
-                        "Added %s to %s at coordinates", atomname, residue)
+                        "Added %s to %s at coordinates", atomname, residue
+                    )
                     _LOGGER.debug(
-                        " %.3f %.3f %.3f", newcoords[0], newcoords[1],
-                        newcoords[2])
+                        " %.3f %.3f %.3f",
+                        newcoords[0],
+                        newcoords[1],
+                        newcoords[2],
+                    )
 
     def create_html_typemap(self, definition, outfilename):
         """Create an HTML typemap file at the desired location.
@@ -1006,12 +1066,14 @@ class Protein(object):
             file_.write("<BODY>\n")
             file_.write(
                 "<H3>This is a developmental page including the atom "
-                "type for the atoms in the PQR file.</H3><P>\n")
+                "type for the atoms in the PQR file.</H3><P>\n"
+            )
             file_.write("<TABLE CELLSPACING=2 CELLPADDING=2 BORDER=1>\n")
             file_.write(
                 "<tr><th>Atom Number</th><th>Atom Name</th><th>Residue "
                 "Name</th><th>Chain ID</th><th>AMBER Atom Type</th><th>"
-                "CHARMM Atom Type</th></tr>\n")
+                "CHARMM Atom Type</th></tr>\n"
+            )
             for atom in self.atoms:
                 if isinstance(atom.residue, (aa.Amino, aa.WAT, na.Nucleic)):
                     resname = atom.residue.ffname
@@ -1021,9 +1083,16 @@ class Protein(object):
                 charmmgroup = charmmff.get_group(resname, atom.name)
                 file_.write(
                     "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
-                    "<td>%s</td><td>%s</td></tr>\n" % (
-                        atom.serial, atom.name, resname, atom.chain_id,
-                        ambergroup, charmmgroup))
+                    "<td>%s</td><td>%s</td></tr>\n"
+                    % (
+                        atom.serial,
+                        atom.name,
+                        resname,
+                        atom.chain_id,
+                        ambergroup,
+                        charmmgroup,
+                    )
+                )
             file_.write("</table>\n")
             file_.write("</BODY></HTML>\n")
         # Return the original numbers back
@@ -1081,4 +1150,4 @@ class Protein(object):
         output = []
         for chain in self.chains:
             output.append(chain.get_summary())
-        return ' '.join(output)
+        return " ".join(output)

@@ -63,7 +63,11 @@ class Residue(object):
 
     def __str__(self):
         text = "%s %s %i%s" % (
-            self.name, self.chain_id, self.res_seq, self.ins_code)
+            self.name,
+            self.chain_id,
+            self.res_seq,
+            self.ins_code,
+        )
         return text
 
     def get_moveable_names(self, pivot):
@@ -88,19 +92,19 @@ class Residue(object):
         # If Nterm then update counter of hydrogens
         if self.is_n_term:
             count = 0
-            atoms = ['H', 'H2', 'H3']
+            atoms = ["H", "H2", "H3"]
             for atom in atoms:
                 for atom2 in self.atoms:
                     atomname = atom2.name
                     if atom == atomname:
-                        count = count+1
+                        count = count + 1
             self.is_n_term = count
         # If Cterm then update counter
         if self.is_c_term:
             self.is_c_term = None
             for atom in self.atoms:
                 atomname = atom.name
-                if atomname == 'HO':
+                if atomname == "HO":
                     self.is_c_term = 2
                     break
             if not self.is_c_term:
@@ -332,9 +336,9 @@ class Residue(object):
                 if not bonded and self.reference.name == "HIS":
                     atom.hacceptor = True
 
-            elif (atomname.startswith("O") or
-                  (atomname.startswith("S") and
-                   self.reference.name == "CYS")):
+            elif atomname.startswith("O") or (
+                atomname.startswith("S") and self.reference.name == "CYS"
+            ):
                 atom.hacceptor = True
                 for bondedatom in atom.bonds:
                     if bondedatom.is_hydrogen:
@@ -366,4 +370,4 @@ class Residue(object):
         :return:  letter code for residue
         :rtype:  str
         """
-        return 'X'
+        return "X"

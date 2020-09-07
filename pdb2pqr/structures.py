@@ -6,7 +6,7 @@ associated methods.
 .. codeauthor:: Todd Dolinsky
 .. codeauthor:: Nathan Baker
 """
-from . import pdb
+# from . import pdb
 from .config import BACKBONE
 
 
@@ -63,7 +63,7 @@ class Chain:
         output = []
         for residue in self.residues:
             output.append(residue.letter_code())
-        return ''.join(output)
+        return "".join(output)
 
 
 class Atom:
@@ -119,8 +119,7 @@ class Atom:
         if type_ == "ATOM" or type_ == "HETATM":
             self.type = type_
         else:
-            err = (
-                "Invalid atom type %s (Atom Class IN structures.py)!" % type_)
+            err = "Invalid atom type %s (Atom Class IN structures.py)!" % type_
             raise ValueError(err)
         if atom is not None:
             self.serial = atom.serial
@@ -160,8 +159,19 @@ class Atom:
         words = [w.strip() for w in line.split()]
         token = words.pop(0)
         if token in [
-            "REMARK", "TER", "END", "HEADER", "TITLE", "COMPND", "SOURCE",
-            "KEYWDS", "EXPDTA", "AUTHOR", "REVDAT", "JRNL"]:
+            "REMARK",
+            "TER",
+            "END",
+            "HEADER",
+            "TITLE",
+            "COMPND",
+            "SOURCE",
+            "KEYWDS",
+            "EXPDTA",
+            "AUTHOR",
+            "REVDAT",
+            "JRNL",
+        ]:
             return None
         if token in ["ATOM", "HETATM"]:
             atom.type = token
@@ -225,7 +235,7 @@ class Atom:
         if chainflag:
             tstr = self.chain_id
         else:
-            tstr = ''
+            tstr = ""
         outstr += str.ljust(tstr, 1)[:1]
         tstr = "%d" % self.res_seq
         outstr += str.rjust(tstr, 4)[:4]
@@ -284,7 +294,7 @@ class Atom:
         tstr = "%6.2f" % self.temp_factor
         outstr += str.rjust(tstr, 6)[:6]
         # padding between temp factor and seg_id
-        outstr += ' ' * 7
+        outstr += " " * 7
         tstr = self.seg_id
         outstr += str.ljust(tstr, 4)[:4]
         tstr = self.element

@@ -139,3 +139,9 @@ cython_debug/
 
 # IDE config files
 .vscode
+
+# Temporary files
+tmp*.pka
+
+# Generated files
+apbs.in

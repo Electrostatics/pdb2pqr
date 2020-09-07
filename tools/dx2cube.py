@@ -17,6 +17,66 @@ PARSER.add_argument(
 
 ARGS = PARSER.parse_args()
 
+def read_dx(dx_file):
+    """Read DX-format volumetric information.
+
+    The OpenDX file format is defined at 
+    <https://www.idvbook.com/wp-content/uploads/2010/12/opendx.pdf`.
+
+    .. note:: This function is not a general-format OpenDX file parser and
+       makes many assumptions about the input data type, grid structure, etc.
+
+    .. todo:: This function should be moved into the APBS code base.
+
+    :param dx_file:  file object for DX file, ready for reading as text
+    :type dx_file:  file
+    :returns:  dictionary with data from DX file
+    :rtype:  dict
+    :raises ValueError:  on parsing error
+    """
+    dx_dict = {
+        "grid spacing": [], "values": [], "number of grid points": None,
+        "lower left corner": None}
+    for line in dx_file:
+        words = [w.strip() for w in line.split()]
+        if words[0] == "#":
+            pass
+        elif words[0] == "object":
+            if words[1] == "1":
+                dx_dict["number of grid points"] = (
+                    int(words[5]), int(words[6]), int(words[7]))
+        elif words[0] == "origin":
+            dx_dict["lower left corner"] = [
+                float(words[1]), float(words[2]), float(words[3])]
+        elif words[0] == "delta":
+            spacing = [float(words[1]), float(words[2]), float(words[3])]
+            dx_dict["grid spacing"].append(spacing)
+        else:
+            dx_dict["values"].append(
+                [float(words[1]), float(words[2]), float(words[3])])
+    return dx_dict
+
+
+def dx_to_cube_(dx_path, cube_path):
+    """Convert DX file format to Cube file format.
+
+    The OpenDX file format is defined at 
+    <https://www.idvbook.com/wp-content/uploads/2010/12/opendx.pdf` and the
+    Cube file format is defined at
+    <https://docs.chemaxon.com/display/Gaussian_Cube_format.html>.
+
+
+    .. todo:: This function should be moved into the APBS code base.
+
+    :param dx_path:  path to input DX file
+    :type dx_path:  str
+    :param cube_path:  path to output Cube file
+    :type cube_path:  str
+    """
+    with open(dx_path, "rt") as dx_file:
+        dx_dict = read_dx(dx_file)
+    raise NotImplementedError()
+
 
 try:
     with open(ARGS.dx_input, 'r') as in_f,\

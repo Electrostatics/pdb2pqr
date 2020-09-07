@@ -10,6 +10,7 @@ from . import inputgen
 from . import cif
 from . import pdb
 from . import definitions as defns
+from .structures import Atom
 from .config import FORCE_FIELDS, TITLE_FORMAT_STRING, VERSION
 from .config import FILTER_WARNINGS_LIMIT, FILTER_WARNINGS
 from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
@@ -430,3 +431,19 @@ def setup_logger(output_pqr, level='DEBUG'):
         filename=log_file,
         level=getattr(logging, level)
         )
+
+
+def read_pqr(pqr_file):
+    """Read PQR file.
+
+    :param pqr_file:  file object ready for reading as text
+    :type pqr_file:  file
+    :returns:  list of atoms read from file
+    :rtype:  [Atom]
+    """
+    atoms = []
+    for line in pqr_file:
+        atom = Atom.from_pqr_line(line)
+        if atom is not None:
+            atoms.append(atom)
+    return atoms

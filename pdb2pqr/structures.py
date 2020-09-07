@@ -66,7 +66,7 @@ class Chain:
         return ''.join(output)
 
 
-class Atom(pdb.ATOM):
+class Atom:
     """Represent an atom.
 
     The Atom class inherits from the :class:`ATOM` object in :mod:`pdb`.
@@ -76,43 +76,36 @@ class Atom(pdb.ATOM):
     :class:`HETATM` objects into a single class.
     """
 
-    def __init__(self, atom, type_, residue):
+    def __init__(self, atom=None, type_="ATOM", residue=None):
         """Initialize the new Atom object by using the old object.
 
-        .. todo:
-           Figure out why this function doesn't call ``super().__init__``
-
-        :param atom:  the original ATOM object
+        :param atom:  the original ATOM object (could be None)
         :type atom:  ATOM
         :param type_:  either ATOM or HETATM
         :type type_:  str
-        :param residue:  a pointer back to the parent residue object
+        :param residue:  a pointer back to the parent residue object (could be
+            None)
         :type residue:  Residue
         """
-        if type_ == "ATOM" or type_ == "HETATM":
-            self.type = type_
-        else:
-            err = (
-                "Invalid atom type %s (Atom Class IN structures.py)!" % type_)
-            raise ValueError(err)
-        self.serial = atom.serial
-        self.name = atom.name
-        self.alt_loc = atom.alt_loc
-        self.res_name = atom.res_name
-        self.chain_id = atom.chain_id
-        self.res_seq = atom.res_seq
-        self.ins_code = atom.ins_code
-        self.x = atom.x
-        self.y = atom.y
-        self.z = atom.z
-        self.occupancy = atom.occupancy
-        self.temp_factor = atom.temp_factor
-        self.seg_id = atom.seg_id
-        self.element = atom.element
-        self.charge = atom.charge
+        self.type = None
+        self.serial = None
+        self.name = None
+        self.alt_loc = None
+        self.res_name = None
+        self.chain_id = None
+        self.res_seq = None
+        self.ins_code = None
+        self.x = None
+        self.y = None
+        self.z = None
+        self.occupancy = None
+        self.temp_factor = None
+        self.seg_id = None
+        self.element = None
+        self.charge = None
         self.bonds = []
         self.reference = None
-        self.residue = residue
+        self.residue = None
         self.radius = None
         self.ffcharge = None
         self.hdonor = 0
@@ -122,10 +115,85 @@ class Atom(pdb.ATOM):
         self.optimizeable = 0
         self.refdistance = 0
         self.id = None
+        self.mol2charge = None
+        if type_ == "ATOM" or type_ == "HETATM":
+            self.type = type_
+        else:
+            err = (
+                "Invalid atom type %s (Atom Class IN structures.py)!" % type_)
+            raise ValueError(err)
+        if atom is not None:
+            self.serial = atom.serial
+            self.name = atom.name
+            self.alt_loc = atom.alt_loc
+            self.res_name = atom.res_name
+            self.chain_id = atom.chain_id
+            self.res_seq = atom.res_seq
+            self.ins_code = atom.ins_code
+            self.x = atom.x
+            self.y = atom.y
+            self.z = atom.z
+            self.occupancy = atom.occupancy
+            self.temp_factor = atom.temp_factor
+            self.seg_id = atom.seg_id
+            self.element = atom.element
+            self.charge = atom.charge
+            self.residue = residue
+            try:
+                self.mol2charge = atom.mol2charge
+            except AttributeError:
+                self.mol2charge = None
+
+    @classmethod
+    def from_pqr_line(cls, line):
+        """Create an atom from a PQR line.
+
+        :param cls:  class for classmethod
+        :type cls:  Atom
+        :param line:  PQR line
+        :type line:  str
+        :returns:  new atom or None (for REMARK and similar lines)
+        :rtype:  Atom
+        :raises ValueError:  for problems parsing
+        """
+        atom = cls()
+        words = [w.strip() for w in line.split()]
+        token = words.pop(0)
+        if token in [
+            "REMARK", "TER", "END", "HEADER", "TITLE", "COMPND", "SOURCE",
+            "KEYWDS", "EXPDTA", "AUTHOR", "REVDAT", "JRNL"]:
+            return None
+        if token in ["ATOM", "HETATM"]:
+            atom.type = token
+        elif token[:4] == "ATOM":
+            atom.type = "ATOM"
+            words = [token[4:]] + words
+        elif token[:6] == "HETATM":
+            atom.type = "HETATM"
+            words = [token[6:]] + words
+        else:
+            err = "Unable to parse line: %s" % line
+            raise ValueError(err)
+        atom.serial = int(words.pop(0))
+        atom.name = words.pop(0)
+        atom.res_name = words.pop(0)
+        token = words.pop(0)
         try:
-            self.mol2charge = atom.mol2charge
-        except AttributeError:
-            self.mol2charge = None
+            atom.res_seq = int(token)
+        except ValueError:
+            atom.chain_id = token
+            atom.res_seq = int(words.pop(0))
+        token = words.pop(0)
+        try:
+            atom.x = float(token)
+        except ValueError:
+            atom.ins_code = token
+            atom.x = float(words.pop(0))
+        atom.y = float(words.pop(0))
+        atom.z = float(words.pop(0))
+        atom.charge = float(words.pop(0))
+        atom.radius = float(words.pop(0))
+        return atom
 
     def get_common_string_rep(self, chainflag=False):
         """Returns a string of the common column of the new atom type.

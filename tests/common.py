@@ -5,12 +5,12 @@ import hashlib
 from pathlib import Path
 import numpy
 import pandas
-from pdb2pqr.main import build_parser, main_driver
+from pdb2pqr.main import build_main_parser, main_driver
 from pdb2pqr.structures import Atom
 
 
 _LOGGER = logging.getLogger(__name__)
-PARSER = build_parser()
+PARSER = build_main_parser()
 
 
 # This is a list of legit FF names

@@ -36,7 +36,7 @@ _LOGGER.addFilter(io.DuplicateFilter())
 CHARGE_ERROR = 1e-3
 
 
-def build_parser():
+def build_main_parser():
     """Build an argument parser.
 
     .. todo::
@@ -628,6 +628,47 @@ def main_driver(args):
 
 def main():
     """Hook for command-line usage."""
-    parser = build_parser()
+    parser = build_main_parser()
     args = parser.parse_args()
     main_driver(args)
+
+
+def dx_to_cube():
+    """Convert DX file format to Cube file format.
+
+    The OpenDX file format is defined at 
+    <https://www.idvbook.com/wp-content/uploads/2010/12/opendx.pdf` and the
+    Cube file format is defined at
+    <https://docs.chemaxon.com/display/Gaussian_Cube_format.html>.
+
+    .. todo:: This function should be moved into the APBS code base.
+    """
+    desc = (
+        "{:s}\ndx2cube: converting OpenDX-format files to Gaussian Cube "
+        "format since (at least) 2015")
+    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
+    parser = argparse.ArgumentParser(
+        description=desc,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        'dx_input', help='name of the dx_input file')
+    parser.add_argument(
+        'pqr_input', help='name of the pqr_input file')
+    parser.add_argument(
+        'output', help='name of the output file')
+    parser.add_argument(
+        "--log-level", help="set logging level", default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+    args = parser.parse_args()
+    log_level = getattr(logging, args.log_level)
+    logging.basicConfig(level=log_level)
+    _LOGGER.debug("Got arguments: %s", args)
+    _LOGGER.info("Reading PQR from %s...", args.pqr_input)
+    with open(args.pqr_input, "rt") as pqr_file:
+        atom_list = io.read_pqr(pqr_file)
+    _LOGGER.info("Reading DX from %s...", args.dx_input)
+    with open(args.dx_input, "rt") as dx_file:
+        dx_dict = io.read_dx(dx_file)
+    _LOGGER.info("Writing Cube to %s...", args.output)
+    with open(args.output, "wt") as cube_file:
+        io.write_cube(cube_file, dx_dict, atom_list)

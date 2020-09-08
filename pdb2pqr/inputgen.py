@@ -8,6 +8,7 @@ import logging
 import argparse
 from pathlib import Path
 from . import psize
+from .config import TITLE_FORMAT_STRING, VERSION
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -275,61 +276,62 @@ def split_input(filename):
 
 def build_parser():
     """Build argument parser."""
+    desc = (
+        "{:s}\ninputgen: generating APBS input files since (at least) 2004"
+    )
+    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
     parse = argparse.ArgumentParser(
-        description=(
-            "Use this script to generate new APBS input "
-            "files or split an existing parallel input "
-            "file into multiple async files"),
+        description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parse.add_argument(
         "--asynch", action="store_true",
-        help="Perform an asynchronous parallel calculation.")
+        help="perform an asynchronous parallel calculation.")
     parse.add_argument(
         "--split", action="store_true",
         help=(
-            "Split an existing parallel input file to multiple "
+            "split an existing parallel input file to multiple "
             "async input files."))
     parse.add_argument(
         "--potdx", action="store_true", help=(
-            "Create an input to compute an electrostatic potential map."))
+            "create an input to compute an electrostatic potential map."))
     parse.add_argument(
         "--method", help=(
-            "Force output file to write a specific APBS ELEC method."),
+            "force output file to write a specific APBS ELEC method."),
         choices=["para", "auto", "manual", "async"])
     parse.add_argument(
         "--cfac", type=float, default=psize.CFAC,
         help=(
-            "Factor by which to expand molecular dimensions to "
+            "factor by which to expand molecular dimensions to "
             "get coarse grid dimensions."))
     parse.add_argument(
         "--fadd", type=float, default=psize.FADD,
         help=(
-            "Amount to add to molecular dimensions to get fine "
+            "amount to add to molecular dimensions to get fine "
             "grid dimensions."))
     parse.add_argument(
         "--space", type=float, default=psize.SPACE,
-        help="Desired fine mesh resolution")
+        help="desired fine mesh resolution")
     parse.add_argument(
         "--gmemfac", type=int, default=psize.GMEMFAC,
         help=(
-            "Number of bytes per grid point required for sequential "
+            "number of bytes per grid point required for sequential "
             "MG calculation"))
     parse.add_argument(
         "--gmemceil", type=int, default=psize.GMEMCEIL,
         help=(
-            "Max MB allowed for sequential MG calculation. Adjust "
+            "max MB allowed for sequential MG calculation; adjust "
             "this to force the script to perform faster calculations "
             "(which require more parallelism)"))
     parse.add_argument(
         "--ofrac", type=float, default=psize.OFRAC,
-        help="Overlap factor between mesh partitions (parallel)")
+        help="overlap factor between mesh partitions (parallel)")
     parse.add_argument(
         "--redfac", type=float, default=psize.REDFAC,
         help=(
-            "The maximum factor by which a domain dimension can "
+            "the maximum factor by which a domain dimension can "
             "be reduced during focusing"))
     parse.add_argument(
-        "--istrng", help="Ionic strength (M). Na+ anc Cl- ions will be used")
+        "--istrng", help="Ionic strength (M); Na+ and Cl- ions will be used")
     parse.add_argument("filename")
     return parse
 

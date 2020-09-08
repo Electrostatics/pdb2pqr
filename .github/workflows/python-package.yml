@@ -31,7 +31,7 @@ jobs:
     - name: Format code with black
       run: |
         # stop the build if code does not conform to black formatting
-        black . --check --line-length 79 --exclude "/versioneer.py|pdb2pqr/_version.py"
+        # black . --check --line-length 79 --exclude "/versioneer.py|pdb2pqr/_version.py"
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

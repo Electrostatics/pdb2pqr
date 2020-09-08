@@ -1,6 +1,10 @@
 #!/usr/bin/python
 """Get dimensions and other information from a PQR file.
 
+.. todo:: This code could be combined with :mod:`inputgen`.
+
+.. todo:: This code should be moved to the APBS code base.
+
 .. codeauthor:: Dave Sept
 .. codeauthor:: Nathan Baker
 .. codeauthor:: Todd Dolinksy
@@ -9,6 +13,7 @@
 from math import log
 import logging
 import argparse
+from .config import TITLE_FORMAT_STRING, VERSION
 
 
 CFAC = 1.7
@@ -367,40 +372,40 @@ class Psize:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             gmem = 200.0 * ngrid[0] * ngrid[1] * ngrid[2] / 1024 / 1024
             # Print the calculated entries
-            str_ = str_ + "############### MOLECULE INFO ##################\n"
+            str_ = str_ + "######## MOLECULE INFO ########\n"
             str_ = str_ + "Number of ATOM entries = %i\n" % self.gotatom
             str_ = str_ + "Number of HETATM entries (ignored) = %i\n" % (
                 self.gothet
             )
             str_ = str_ + "Total charge = %.3f e\n" % charge
-            str_ = str_ + "Dimensions = %.3f x %.3f x %.3f A\n" % (
+            str_ = str_ + "Dimensions = %.3f Å x %.3f Å x %.3f Å\n" % (
                 mol_length[0],
                 mol_length[1],
                 mol_length[2],
             )
-            str_ = str_ + "Center = %.3f x %.3f x %.3f A\n" % (
+            str_ = str_ + "Center = %.3f Å x %.3f Å x %.3f Å\n" % (
                 center[0],
                 center[1],
                 center[2],
             )
-            str_ = str_ + "Lower corner = %.3f x %.3f x %.3f A\n" % (
+            str_ = str_ + "Lower corner = %.3f Å x %.3f Å x %.3f Å\n" % (
                 minlen[0],
                 minlen[1],
                 minlen[2],
             )
-            str_ = str_ + "Upper corner = %.3f x %.3f x %.3f A\n" % (
+            str_ = str_ + "Upper corner = %.3f Å x %.3f Å x %.3f Å\n" % (
                 maxlen[0],
                 maxlen[1],
                 maxlen[2],
             )
             str_ = str_ + "\n"
-            str_ = str_ + "############ GENERAL CALCULATION INFO ###########\n"
-            str_ = str_ + "Coarse grid dims = %.3f x %.3f x %.3f A\n" % (
+            str_ = str_ + "######## GENERAL CALCULATION INFO ########\n"
+            str_ = str_ + "Coarse grid dims = %.3f Å x %.3f Å x %.3f Å\n" % (
                 coarse_length[0],
                 coarse_length[1],
                 coarse_length[2],
             )
-            str_ = str_ + "Fine grid dims = %.3f x %.3f x %.3f A\n" % (
+            str_ = str_ + "Fine grid dims = %.3f Å x %.3f Å x %.3f Å\n" % (
                 fine_length[0],
                 fine_length[1],
                 fine_length[2],
@@ -472,7 +477,7 @@ class Psize:
                 ntot = ngrid[0] * ngrid[1] * ngrid[2]
             str_ = str_ + "Number of focusing operations = %i\n" % nfocus
             str_ = str_ + "\n"
-            str_ = str_ + "############ ESTIMATED REQUIREMENTS ############\n"
+            str_ = str_ + "######## ESTIMATED REQUIREMENTS ########\n"
             str_ = str_ + "Memory per processor = %.3f MB\n" % (
                 200.0 * ntot / 1024 / 1024
             )
@@ -491,8 +496,14 @@ def build_parser():
     :return:  argument parser
     :rtype:  argparse.ArgumentParser
     """
+    desc = (
+        "{:s}\npsize: figuring out the size of electrostatics calculations "
+        "since (at least) 2002."
+    )
+    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
+
     parser = argparse.ArgumentParser(
-        description="Set size parameters for APBS",
+        description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(

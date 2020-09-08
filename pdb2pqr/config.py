@@ -5,7 +5,7 @@ VERSION = "3.0"
 
 # How to format PDB2PQR title in output
 TITLE_FORMAT_STRING = (
-    "PDB2PQR v{version} - biomolecular structure conversion software"
+    "PDB2PQR v{version}: biomolecular structure conversion software."
 )
 
 # Citation strings for PDB2PQR

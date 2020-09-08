@@ -27,6 +27,7 @@ to the biomedical community.
 
 import sys
 import setuptools
+import versioneer
 
 if sys.version_info[:2] < (3, 6):
     raise RuntimeError("Python version >= 3.6 is required.")
@@ -34,14 +35,10 @@ if sys.version_info[:2] < (3, 6):
 with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
-MAJOR = 3
-MINOR = 0
-MICRO = 1
-VERSION = "%d.%d.%d" % (MAJOR, MINOR, MICRO)
-
 setuptools.setup(
     name="pdb2pqr",
-    version=VERSION,
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="Jens Erik Nielsen, Nathan Baker, and many others.",
     author_email="nathanandrewbaker@gmail.com",
     description=(
@@ -62,6 +59,8 @@ setuptools.setup(
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
+    tests_require=["pytest"],
+    test_suite="tests",
     license="BSD",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",

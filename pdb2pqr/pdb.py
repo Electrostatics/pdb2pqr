@@ -2550,9 +2550,9 @@ def read_pdb(file_):
 
     :param file_:  open File-like object
     :type file_:  file
-    :return:  (a dictionary indexed by PDB record names, a list of record
-        names that couldn't be parsed)
-    :rtype:  (dict, list)
+    :return:  (a list of objects from this module, a list of record names that
+        couldn't be parsed)
+    :rtype:  (list, list)
     """
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of records we can't parse

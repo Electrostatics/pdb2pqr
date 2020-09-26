@@ -2164,6 +2164,11 @@ class REVDAT(BaseRecord):
     def __init__(self, line):
         """Initialize by parsing a line.
 
+        .. todo::
+
+           If multiple modifications are present, only the last one in the
+           file is preserved.
+
         +---------+--------+----------+--------------------------------------+
         | COLUMNS | TYPE   | FIELD    | DEFINITION                           |
         +=========+========+==========+======================================+
@@ -2198,7 +2203,9 @@ class REVDAT(BaseRecord):
         self.mod_num = int(line[7:10].strip())
         self.mod_date = line[13:22].strip()
         self.mod_id = line[23:28].strip()
-        self.mod_type = int(line[31].strip())
+        mod_type = line[31].strip()
+        if mod_type:
+            self.mod_type = int(mod_type)
         self.records = []
         self.records.append(line[39:45].strip())
         self.records.append(line[46:52].strip())

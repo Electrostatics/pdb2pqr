@@ -21,3 +21,4 @@ Parameter formats
    :maxdepth: 1
 
    xml-names
+   dat

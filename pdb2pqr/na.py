@@ -135,6 +135,10 @@ class ADE(Nucleic):
         Nucleic.set_state(self)
 
 
+DA = ADE
+RA = ADE
+
+
 class CYT(Nucleic):
     """Cytidine class"""
 
@@ -162,6 +166,10 @@ class CYT(Nucleic):
         else:
             self.ffname = "DC"
         Nucleic.set_state(self)
+
+
+DC = CYT
+RC = CYT
 
 
 class GUA(Nucleic):
@@ -193,6 +201,10 @@ class GUA(Nucleic):
         Nucleic.set_state(self)
 
 
+DG = GUA
+RG = GUA
+
+
 class THY(Nucleic):
     """Thymine class"""
 
@@ -217,6 +229,9 @@ class THY(Nucleic):
         """Set ribo- vs. deoxyribo- state of this residue."""
         self.ffname = "DT"
         Nucleic.set_state(self)
+
+
+DT = THY
 
 
 class URA(Nucleic):
@@ -245,31 +260,4 @@ class URA(Nucleic):
         Nucleic.set_state(self)
 
 
-class RA(ADE):
-    """Ribo-ADE"""
-
-    pass
-
-
-class RC(CYT):
-    """Ribo-CYT"""
-
-    pass
-
-
-class RG(GUA):
-    """Ribo-GUA"""
-
-    pass
-
-
-class DT(THY):
-    """Deoxyribo-THY"""
-
-    pass
-
-
-class RU(URA):
-    """Ribo-URA"""
-
-    pass
+RA = URA

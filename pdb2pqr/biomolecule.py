@@ -344,11 +344,18 @@ class Biomolecule(object):
                     residue.ss_bonded and atomname == "HG"
                 ):
                     continue
-                # If this hydrogen is part of a tetrahedral group,
-                # follow a different codepath
-                if residue.rebuild_tetrahedral(atomname):
-                    count += 1
-                    continue
+                if hasattr(residue, "rebuild_tetrahedral"):
+                    # If this hydrogen is part of a tetrahedral group,
+                    # follow a different codepath
+                    if residue.rebuild_tetrahedral(atomname):
+                        count += 1
+                        continue
+                else:
+                    _LOGGER.warning(
+                        "Tetrahedral hydrogen reconstruction not available "
+                        "for nucleic acids. Some hydrogens may be missing (if "
+                        "so, this is a bug)."
+                    )
                 # Otherwise use the standard quatfit methods
                 coords = []
                 refcoords = []
@@ -937,11 +944,17 @@ class Biomolecule(object):
         try:
             refobj = self.definition.map[resname]
             if refobj.name != resname:
-                klass = getattr(aa, refobj.name)
+                try:
+                    klass = getattr(aa, refobj.name)
+                except AttributeError:
+                    klass = getattr(na, refobj.name)
                 residue = klass(residue, refobj)
                 residue.reference = refobj
             else:
-                klass = getattr(aa, resname)
+                try:
+                    klass = getattr(aa, resname)
+                except AttributeError:
+                    klass = getattr(na, resname)
                 residue = klass(residue, refobj)
         except (KeyError, NameError):
             _LOGGER.debug("Parsing %s as new residue", resname)

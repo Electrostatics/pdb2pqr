@@ -10,15 +10,11 @@ _LOGGER = logging.getLogger(__name__)
 
 _LOGGER.warning("Need functional and regression test coverage for --userff")
 _LOGGER.warning("Need functional and regression test coverage for --usernames")
-_LOGGER.warning(
-    "Need functional and regression test coverage for --apbs-input"
-)
+_LOGGER.warning("Need functional and regression test coverage for --apbs-input")
 
 
 @pytest.mark.parametrize(
-    "input_pdb", [
-        "4UN3", "1K1I", "1AFS", "1FAS", "5DV8", "5D8V", "1E7G"
-    ], ids=str
+    "input_pdb", ["4UN3", "1K1I", "1AFS", "1FAS", "5DV8", "5D8V", "1E7G"], ids=str
 )
 def test_basic_apo(input_pdb, tmp_path):
     """Basic non-regression tests on biomolecules without ligands."""

@@ -127,7 +127,7 @@ class Mol2Atom:
 
         .. todo::
            It seems inconsistent that this function pulls radii from a
-           dictionary and the protein routines use force field files.
+           dictionary and the biomolecule routines use force field files.
 
         :param primary_dict:  primary dictionary of radii indexed by atom
             type or element

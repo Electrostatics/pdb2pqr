@@ -14,7 +14,7 @@ class Chain:
     """Chain class
 
     The chain class contains information about each chain within a given
-    :class:`Protein` object.
+    :class:`Biomolecule` object.
     """
 
     def __init__(self, chain_id):

@@ -190,8 +190,8 @@ def test_rings(input_mol2):
 
 
 @pytest.mark.parametrize("input_pdb", ["1HPX"], ids=str)
-def test_ligand_protein(input_pdb, tmp_path):
-    """PROPKA non-regression tests on proteins without ligands."""
+def test_ligand_biomolecule(input_pdb, tmp_path):
+    """PROPKA non-regression tests on biomolecules without ligands."""
     input_pdb = Path(input_pdb)
     ligand = Path("tests/data") / ("%s-ligand.mol2" % input_pdb.stem)
     args = "--log-level=INFO --ff=AMBER --drop-water --ligand=%s" % ligand

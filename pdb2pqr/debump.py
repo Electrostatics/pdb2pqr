@@ -28,15 +28,15 @@ class Debump:
         with clear responsibilities.
     """
 
-    def __init__(self, protein, definition=None):
+    def __init__(self, biomolecule, definition=None):
         """Initialize the Debump object.
 
-        :param protein:  the protein to debump
-        :type protein:  Protein
+        :param biomolecule:  the biomolecule to debump
+        :type biomolecule:  Biomolecule
         :param definition:  topology definition file
         :type definition:  Definition
         """
-        self.protein = protein
+        self.biomolecule = biomolecule
         self.definition = definition
         self.aadef = None
         self.cells = {}
@@ -54,11 +54,11 @@ class Debump:
         """
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
-        self.cells.assign_cells(self.protein)
-        self.protein.calculate_dihedral_angles()
-        self.protein.set_donors_acceptors()
-        self.protein.update_internal_bonds()
-        self.protein.set_reference_distance()
+        self.cells.assign_cells(self.biomolecule)
+        self.biomolecule.calculate_dihedral_angles()
+        self.biomolecule.set_donors_acceptors()
+        self.biomolecule.update_internal_bonds()
+        self.biomolecule.set_reference_distance()
         bumpscore = 0.0
         if not isinstance(residue, aa.Amino):
             return 0.0
@@ -132,7 +132,7 @@ class Debump:
         _LOGGER.debug("BUMPSCORE %s", str(bumpscore))
         return bumpscore
 
-    def debump_protein(self):
+    def debump_biomolecule(self):
         """Minimize bump score for molecule.
 
         Make sure that none of the added atoms were rebuilt on top of existing
@@ -142,17 +142,17 @@ class Debump:
         """
         # Do some setup
         self.cells = cells.Cells(CELL_SIZE)
-        self.cells.assign_cells(self.protein)
-        self.protein.calculate_dihedral_angles()
-        self.protein.set_donors_acceptors()
-        self.protein.update_internal_bonds()
+        self.cells.assign_cells(self.biomolecule)
+        self.biomolecule.calculate_dihedral_angles()
+        self.biomolecule.set_donors_acceptors()
+        self.biomolecule.update_internal_bonds()
         try:
-            self.protein.set_reference_distance()
+            self.biomolecule.set_reference_distance()
         except ValueError as err:
-            err = "Protein structure is incomplete:  %s" % err
+            err = "Biomolecular structure is incomplete:  %s" % err
             raise ValueError(err)
         # Determine which residues to debump
-        for residue in self.protein.residues:
+        for residue in self.biomolecule.residues:
             if not isinstance(residue, aa.Amino):
                 continue
             # Initialize variables

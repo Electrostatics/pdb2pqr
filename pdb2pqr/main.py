@@ -21,7 +21,7 @@ from . import aa
 from . import debump
 from . import hydrogens
 from . import forcefield
-from . import protein as prot
+from . import biomolecule as biomol
 from . import io
 from .ligand.mol2 import Mol2Molecule
 from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
@@ -161,7 +161,7 @@ def build_main_parser():
         action="store_true",
         default=False,
         help=(
-            "Make the N-terminus of this protein neutral (default is "
+            "Make the N-terminus of a protein neutral (default is "
             "charged). Requires PARSE force field."
         ),
     )
@@ -170,7 +170,7 @@ def build_main_parser():
         action="store_true",
         default=False,
         help=(
-            "Make the C-terminus of this protein neutral (default is "
+            "Make the C-terminus of a protein neutral (default is "
             "charged). Requires PARSE force field."
         ),
     )
@@ -178,7 +178,7 @@ def build_main_parser():
         "--drop-water",
         action="store_true",
         default=False,
-        help="Drop waters before processing protein.",
+        help="Drop waters before processing biomolecule.",
     )
     grp2.add_argument(
         "--include-header",
@@ -226,7 +226,7 @@ def build_main_parser():
         help="Resume run from state saved in output directory.",
     )
     grp4.add_argument(
-        "--pdie", default=8.0, help="Protein dielectric constant."
+        "--pdie", default=8.0, help="Solute dielectric constant."
     )
     grp4.add_argument(
         "--sdie", default=80.0, help="Solvent dielectric constant."
@@ -399,9 +399,9 @@ def setup_molecule(pdblist, definition, ligand_path):
     :type definition:  Definition
     :param ligand_path:  path to ligand (may be None)
     :type ligand_path:  str
-    :return: (protein object, definition object--revised if ligand was
+    :return: (biomolecule object, definition object--revised if ligand was
         parsed, ligand object--may be None)
-    :rtype: (Protein, Definition, Ligand)
+    :rtype: (Biomolecule, Definition, Ligand)
     """
     if ligand_path is not None:
         ligand = Mol2Molecule()
@@ -409,13 +409,13 @@ def setup_molecule(pdblist, definition, ligand_path):
             ligand.read(ligand_file)
     else:
         ligand = None
-    protein = prot.Protein(pdblist, definition)
+    biomolecule = biomol.Biomolecule(pdblist, definition)
     _LOGGER.info(
-        "Created protein object with %d residues and %d atoms.",
-        len(protein.residues),
-        len(protein.atoms),
+        "Created biomolecule object with %d residues and %d atoms.",
+        len(biomolecule.residues),
+        len(biomolecule.atoms),
     )
-    for residue in protein.residues:
+    for residue in biomolecule.residues:
         multoccupancy = False
         for atom in residue.atoms:
             if atom.alt_loc != "":
@@ -431,30 +431,30 @@ def setup_molecule(pdblist, definition, ligand_path):
                 "instances is being ignored." % residue
             )
             _LOGGER.warning(err)
-    return protein, definition, ligand
+    return biomolecule, definition, ligand
 
 
-def is_repairable(protein, has_ligand):
-    """Determine if the protein can be (or needs to be) repaired.
+def is_repairable(biomolecule, has_ligand):
+    """Determine if the biomolecule can be (or needs to be) repaired.
 
-    :param protein:  protein object
-    :type protein:  Protein
+    :param biomolecule:  biomolecule object
+    :type biomolecule:  biomol.Biomolecule
     :param has_ligand:  does the system contain a ligand?
     :type has_ligand:  bool
-    :return:  indication of whether protein can be repaired
+    :return:  indication of whether biomolecule can be repaired
     :rtype:  bool
     :raises ValueError: if there are insufficient heavy atoms or a significant
-        part of the protein is missing
+        part of the biomolecule is missing
     """
-    num_heavy = protein.num_heavy
-    num_missing = protein.num_missing_heavy
+    num_heavy = biomolecule.num_heavy
+    num_missing = biomolecule.num_missing_heavy
     if num_heavy == 0:
         if not has_ligand:
             err = (
                 "No biomolecule heavy atoms found and no ligand present. "
                 "Unable to proceed.  You may also see this message if "
                 "PDB2PQR does not have parameters for any residue in your "
-                "protein."
+                "biomolecule."
             )
             raise ValueError(err)
         else:
@@ -474,7 +474,7 @@ def is_repairable(protein, has_ligand):
         error += "heavy atoms to accurately repair the file."
         error += "The current repair limit is set at %g. " % REPAIR_LIMIT
         error += "You may also see this message if PDB2PQR does not have "
-        error += "parameters for enough residues in your protein."
+        error += "parameters for enough residues in your biomolecule."
         _LOGGER.error(error)
         return False
     return True
@@ -501,20 +501,20 @@ def drop_water(pdblist):
     return pdblist_new
 
 
-def run_propka(args, protein):
+def run_propka(args, biomolecule):
     """Run a PROPKA calculation.
 
     :param args:  command-line arguments
     :type args:  argparse.Namespace
-    :param protein:  protein object
-    :type protein:  Protein
+    :param biomolecule:  biomolecule object
+    :type biomolecule:  Biomolecule
     :return:  (DataFrame of assigned pKa values, string with filename of
         PROPKA-created pKa file)
     :rtype:  (pandas.DataFrame, str)
     """
     # TODO - eliminate need to write temporary file
-    lines = io.print_protein_atoms(
-        atomlist=protein.atoms, chainflag=args.keep_chain, pdbfile=True
+    lines = io.print_biomolecule_atoms(
+        atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
     with NamedTemporaryFile("wt", suffix=".pdb", delete=False) as pdb_file:
         for line in lines:
@@ -549,17 +549,17 @@ def run_propka(args, protein):
     return df, pka_filename
 
 
-def non_trivial(args, protein, ligand, definition, is_cif):
+def non_trivial(args, biomolecule, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
     .. todo::
        These routines should be generalized to biomolecules; none of them are
-       specific to proteins.
+       specific to biomolecules.
 
     :param args:  command-line arguments
     :type args:  argparse.Namespace
-    :param protein:  biomolecule
-    :type protein:  Protein
+    :param biomolecule:  biomolecule
+    :type biomolecule:  Biomolecule
     :param ligand:  ligand object or None
     :type ligand:  Mol2Molecule
     :param definition:  topology definition
@@ -576,32 +576,32 @@ def non_trivial(args, protein, ligand, definition, is_cif):
     )
     _LOGGER.info("Loading hydrogen topology definitions.")
     hydrogen_handler = hydrogens.create_handler()
-    debumper = debump.Debump(protein)
+    debumper = debump.Debump(biomolecule)
     if args.assign_only:
         # TODO - I don't understand why HIS needs to be set to HIP for
         # assign-only
-        protein.set_hip()
+        biomolecule.set_hip()
     else:
-        if is_repairable(protein, args.ligand is not None):
+        if is_repairable(biomolecule, args.ligand is not None):
             _LOGGER.info(
                 "Attempting to repair %d missing atoms in biomolecule.",
-                protein.num_missing_heavy,
+                biomolecule.num_missing_heavy,
             )
-            protein.repair_heavy()
+            biomolecule.repair_heavy()
         _LOGGER.info("Updating disulfide bridges.")
-        protein.update_ss_bridges()
+        biomolecule.update_ss_bridges()
         if args.debump:
             _LOGGER.info("Debumping biomolecule.")
             try:
-                debumper.debump_protein()
+                debumper.debump_biomolecule()
             except ValueError as err:
-                err = "Unable to debump protein. %s" % err
+                err = "Unable to debump biomolecule. %s" % err
                 raise ValueError(err)
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
-            protein.remove_hydrogens()
-            pka_df, _ = run_propka(args, protein)
-            protein.apply_pka_values(
+            biomolecule.remove_hydrogens()
+            pka_df, _ = run_propka(args, biomolecule)
+            biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
                 dict(zip(pka_df.group_label, pka_df.pKa)),
@@ -610,17 +610,17 @@ def non_trivial(args, protein, ligand, definition, is_cif):
             _LOGGER.info("Assigning titration states with PDB2PKA.")
             raise NotImplementedError("PDB2PKA not implemented.")
         _LOGGER.info("Adding hydrogens to biomolecule.")
-        protein.add_hydrogens()
+        biomolecule.add_hydrogens()
         if args.debump:
             _LOGGER.info("Debumping biomolecule (again).")
-            debumper.debump_protein()
+            debumper.debump_biomolecule()
         _LOGGER.info("Optimizing hydrogen bonds")
         hydrogen_routines = hydrogens.HydrogenRoutines(
             debumper, hydrogen_handler
         )
         if args.opt:
             hydrogen_routines.set_optimizeable_hydrogens()
-            protein.hold_residues(None)
+            biomolecule.hold_residues(None)
             hydrogen_routines.initialize_full_optimization()
             hydrogen_routines.optimize_hydrogens()
         else:
@@ -628,14 +628,14 @@ def non_trivial(args, protein, ligand, definition, is_cif):
             hydrogen_routines.optimize_hydrogens()
         hydrogen_routines.cleanup()
     _LOGGER.info("Applying force field to biomolecule states.")
-    protein.set_states()
-    matched_atoms, missing_atoms = protein.apply_force_field(forcefield_)
+    biomolecule.set_states()
+    matched_atoms, missing_atoms = biomolecule.apply_force_field(forcefield_)
     if args.ligand is not None:
         _LOGGER.info("Processing ligand.")
         _LOGGER.warning("Using ZAP9 forcefield for ligand radii.")
         ligand.assign_parameters()
         lig_atoms = []
-        for residue in protein.residues:
+        for residue in biomolecule.residues:
             tot_charge = 0
             for pdb_atom in residue.atoms:
                 # Only check residues with HETATM
@@ -655,7 +655,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
                     _LOGGER.warning(err)
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
-    for residue in protein.residues:
+    for residue in biomolecule.residues:
         if not isclose(
             residue.charge, int(residue.charge), abs_tol=CHARGE_ERROR
         ):
@@ -670,9 +670,9 @@ def non_trivial(args, protein, ligand, definition, is_cif):
             name_scheme = forcefield.Forcefield(args.ffout, definition, None)
         else:
             name_scheme = forcefield_
-        protein.apply_name_scheme(name_scheme)
+        biomolecule.apply_name_scheme(name_scheme)
     _LOGGER.info("Regenerating headers.")
-    reslist, charge = protein.charge
+    reslist, charge = biomolecule.charge
     if is_cif:
         header = io.print_pqr_header_cif(
             missing_atoms,
@@ -686,7 +686,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
         )
     else:
         header = io.print_pqr_header(
-            protein.pdblist,
+            biomolecule.pdblist,
             missing_atoms,
             reslist,
             charge,
@@ -697,7 +697,7 @@ def non_trivial(args, protein, ligand, definition, is_cif):
             include_old_header=args.include_header,
         )
     _LOGGER.info("Regenerating PDB lines.")
-    lines = io.print_protein_atoms(matched_atoms, args.keep_chain)
+    lines = io.print_biomolecule_atoms(matched_atoms, args.keep_chain)
     return {"lines": lines, "header": header, "missed_residues": missing_atoms}
 
 
@@ -724,12 +724,12 @@ def main_driver(args):
         _LOGGER.info("Dropping water from structure.")
         pdblist = drop_water(pdblist)
     _LOGGER.info("Setting up molecule.")
-    protein, definition, ligand = setup_molecule(
+    biomolecule, definition, ligand = setup_molecule(
         pdblist, definition, args.ligand
     )
-    _LOGGER.info("Setting termini states for protein chains.")
-    protein.set_termini(args.neutraln, args.neutralc)
-    protein.update_bonds()
+    _LOGGER.info("Setting termini states for biomolecule chains.")
+    biomolecule.set_termini(args.neutraln, args.neutralc)
+    biomolecule.update_bonds()
     if args.clean:
         _LOGGER.info(
             "Arguments specified cleaning only; skipping remaining steps."
@@ -737,14 +737,16 @@ def main_driver(args):
         results = {
             "header": "",
             "missed_residues": None,
-            "protein": protein,
-            "lines": io.print_protein_atoms(protein.atoms, args.keep_chain),
+            "biomolecule": biomolecule,
+            "lines": io.print_biomolecule_atoms(
+                biomolecule.atoms, args.keep_chain
+            ),
         }
     else:
         try:
             results = non_trivial(
                 args=args,
-                protein=protein,
+                biomolecule=biomolecule,
                 ligand=ligand,
                 definition=definition,
                 is_cif=is_cif,

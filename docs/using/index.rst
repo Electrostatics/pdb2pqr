@@ -11,7 +11,7 @@ Using PDB2PQR
 PDB2PQR is often used together with the `APBS software <https://github.com/Electrostatics/apbs>`_; e.g., ,in the following type of workflow
 
 #. Start with a `PDB ID`_ or locally generated PDB file (see :doc:`/formats/pdb`).
-#. Assign titration states and parameters with :program:`pdb2pqr` to convert the protein and ligands to PQR format (see :doc:`/formats/pqr`).
+#. Assign titration states and parameters with :program:`pdb2pqr` to convert the biomolecule and ligands to PQR format (see :doc:`/formats/pqr`).
 #. Perform electrostatics calculations with :program:`apbs` (can be done from within the `PDB2PQR web server <web-server>`_).
 #. Visualize results from within PDB2PQR web server or with :doc:`other-software`.
 

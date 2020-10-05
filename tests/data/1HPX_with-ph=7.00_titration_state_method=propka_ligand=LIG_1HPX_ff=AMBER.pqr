@@ -5,7 +5,7 @@ REMARK   1
 REMARK   1 pKas calculated by propka and assigned using pH 7.00
 REMARK   1
 REMARK   5
-REMARK   6 Total charge on this protein: 7.0000 e
+REMARK   6 Total charge on this biomolecule: 7.0000 e
 REMARK   6
 ATOM      1  N   PRO     1      12.435  14.677  30.369 -0.2020 1.8240
 ATOM      2  CA  PRO     1      11.739  15.379  29.269  0.1000 1.9080

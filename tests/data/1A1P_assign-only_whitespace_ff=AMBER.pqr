@@ -16,7 +16,7 @@ REMARK   5 an amino acid or nucleic acid; or, there are no parameters
 REMARK   5 available for the specific protonation state of this
 REMARK   5 residue in the selected forcefield.
 REMARK   5
-REMARK   6 Total charge on this protein: 1.0000 e
+REMARK   6 Total charge on this biomolecule: 1.0000 e
 REMARK   6
 ATOM      1  N    ILE     1      -7.158    5.359    0.606  0.0311 1.8240
 ATOM      2  CA   ILE     1      -5.843    5.515   -0.080  0.0257 1.9080

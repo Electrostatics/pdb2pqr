@@ -46,7 +46,7 @@ class DuplicateFilter(logging.Filter):
         return True
 
 
-def print_protein_atoms(atomlist, chainflag=False, pdbfile=False):
+def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """Get PDB-format text lines for specified atoms.
 
     :param atomlist:  the list of atoms to include
@@ -124,7 +124,7 @@ def print_pqr_header(
     :type atomlist:  [Atom]
     :param reslist:  a list of residues with non-integral charges
     :type reslist:  [Residue]
-    :param charge:  the total charge on the protein
+    :param charge:  the total charge on the biomolecule
     :type charge:  float
     :param force_field:  the forcefield name
     :type force_field:  str
@@ -209,7 +209,7 @@ def print_pqr_header(
         head += "REMARK   5\n"
     head += "\n".join(
         [
-            "REMARK   6 Total charge on this protein: %.4f e\n" % charge,
+            "REMARK   6 Total charge on this biomolecule: %.4f e\n" % charge,
             "REMARK   6",
             "",
         ]
@@ -238,7 +238,7 @@ def print_pqr_header_cif(
     :type atomlist:  [Atom]
     :param reslist:  a list of residues with non-integral charges
     :type reslist:  [Residue]
-    :param charge:  the total charge on the protein
+    :param charge:  the total charge on the biomolecule
     :type charge:  float
     :param force_field:  the forcefield name
     :type force_field:  str
@@ -322,7 +322,7 @@ def print_pqr_header_cif(
             ";",
             "3",
             ";",
-            "Total charge on this protein: %.4f e" % charge,
+            "Total charge on this biomolecule: %.4f e" % charge,
             ";",
             "",
         ]

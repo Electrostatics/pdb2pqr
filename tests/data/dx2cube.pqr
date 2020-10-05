@@ -12,7 +12,7 @@ REMARK   5          at least one of the instances is being ignored.
 REMARK   5 WARNING: multiple occupancies found in SER A 5,
 REMARK   5          at least one of the instances is being ignored.
 REMARK   5
-REMARK   6 Total charge on this protein: 4.0000 e
+REMARK   6 Total charge on this biomolecule: 4.0000 e
 REMARK   6
 ATOM      1  N   THR     1      46.148  16.581   2.104 -0.3200 2.0000
 ATOM      2  CA  THR     1      44.862  15.936   2.105  0.3300 2.0000

@@ -31,7 +31,7 @@ Pick a forcefield
 ^^^^^^^^^^^^^^^^^
 
 For most applications, the choice is easy: PARSE.
-This forcefield has been optimized for implicit solvent calculation and is probably the best choice for visualization of protein electrostatics and many common types of energetic calculations for proteins.
+This forcefield has been optimized for implicit solvent calculation and is probably the best choice for visualization of biomolecular electrostatics and many common types of energetic calculations for biomolecules.
 However, AMBER and CHARMM may be more appropriate if you are attempting to compare directly to simulations performed with those force fields, require nucleic acid support, are simulating ligands parameterized with those force fields, etc.
 
 It is also possible to upload a user-defined forcefield (e.g., to define radii and charges for ligands or unusual residues).

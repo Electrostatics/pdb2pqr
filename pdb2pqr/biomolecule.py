@@ -1,6 +1,4 @@
-"""Routines for PDB2PQR
-
-This module contains the protein object used in PDB2PQR and associated methods
+"""The biomolecule object used in PDB2PQR and associated methods.
 
 .. todo:: This module should be broken into separate files.
 
@@ -24,14 +22,14 @@ from .config import AA_NAMES, NA_NAMES, BONDED_SS_LIMIT, PEPTIDE_DIST
 _LOGGER = logging.getLogger(__name__)
 
 
-class Protein(object):
-    """Protein class.
+class Biomolecule(object):
+    """Biomolecule class.
 
-    The protein class represents the parsed PDB, and provides a hierarchy of
-    information - each Protein contains a list of Chain objects as provided in
-    the PDB file.  Each Chain then contains its associated list of Residue
-    objects, and each Residue contains a list of Atom objects, completing the
-    hierarchy.
+    This class represents the parsed PDB, and provides a hierarchy of
+    information - each Biomolecule object contains a list of Chain objects as
+    provided in the PDB file.  Each Chain then contains its associated list of
+    Residue objects, and each Residue contains a list of Atom objects,
+    completing the hierarchy.
     """
 
     def __init__(self, pdblist, definition):
@@ -151,7 +149,8 @@ class Protein(object):
         """Return number of biomolecular heavy atoms in structure.
 
         .. todo::
-           Figure out if this is redundant with :func:`Protein.num_bio_atoms`
+           Figure out if this is redundant with
+           :func:`Biomolecule.num_bio_atoms`
 
         .. note::
            Includes hydrogens (but those are stripped off eventually)
@@ -195,7 +194,7 @@ class Protein(object):
 
     @property
     def num_bio_atoms(self):
-        """Return the number of ATOM (not HETATM) records in the protein.
+        """Return the number of ATOM (not HETATM) records in the biomolecule.
 
         :return:  number of ATOM records
         :rtype:  int
@@ -213,7 +212,7 @@ class Protein(object):
                 self.apply_patch("HIP", residue)
 
     def set_termini(self, neutraln=False, neutralc=False):
-        """Set the termini for the protein.
+        """Set the termini for a protein.
 
         First set all known termini by looking at the ends of the chain. Then
         examine each residue, looking for internal chain breaks.
@@ -324,7 +323,7 @@ class Protein(object):
                 residue.set_state()
 
     def add_hydrogens(self):
-        """Add the hydrogens to the protein.
+        """Add the hydrogens to the biomolecule.
 
         This requires either the rebuild_tetrahedral function for tetrahedral
         geometries or the standard quatfit methods.  These methods use three
@@ -345,11 +344,18 @@ class Protein(object):
                     residue.ss_bonded and atomname == "HG"
                 ):
                     continue
-                # If this hydrogen is part of a tetrahedral group,
-                # follow a different codepath
-                if residue.rebuild_tetrahedral(atomname):
-                    count += 1
-                    continue
+                if hasattr(residue, "rebuild_tetrahedral"):
+                    # If this hydrogen is part of a tetrahedral group,
+                    # follow a different codepath
+                    if residue.rebuild_tetrahedral(atomname):
+                        count += 1
+                        continue
+                else:
+                    _LOGGER.warning(
+                        "Tetrahedral hydrogen reconstruction not available "
+                        "for nucleic acids. Some hydrogens may be missing (if "
+                        "so, this is a bug)."
+                    )
                 # Otherwise use the standard quatfit methods
                 coords = []
                 refcoords = []
@@ -383,12 +389,12 @@ class Protein(object):
         _LOGGER.debug(" Added %i hydrogen atoms.", count)
 
     def set_donors_acceptors(self):
-        """Set the donors and acceptors within the protein."""
+        """Set the donors and acceptors within the biomolecule."""
         for residue in self.residues:
             residue.set_donors_acceptors()
 
     def calculate_dihedral_angles(self):
-        """Calculate the dihedral angle for every residue in the protein."""
+        """Calculate dihedral angles for every residue in the biomolecule."""
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
                 continue
@@ -452,7 +458,7 @@ class Protein(object):
                         )
 
     def remove_hydrogens(self):
-        """Remove hydrogens from the protein."""
+        """Remove hydrogens from the biomolecule."""
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
@@ -465,7 +471,7 @@ class Protein(object):
 
         Assignment made by looking at the start and end residues.
 
-        :param chain:  chain of protein
+        :param chain:  chain of biomolecule
         :type chain:  Chain
         :param neutraln:  indicate whether to neutralize N-terminus
         :type neutraln:  bool
@@ -534,7 +540,7 @@ class Protein(object):
                             atom.add_bond(bondatom)
 
     def update_bonds(self):
-        """Update the bonding network of the protein.
+        """Update the bonding network of the biomolecule.
 
         This happens in 3 steps:
 
@@ -587,7 +593,7 @@ class Protein(object):
         detectatble on input.
 
         This version looks up the particular patch name in the patch_map
-        stored in the protein, and then applies the various commands to the
+        stored in the biomolecule, and then applies the various commands to the
         reference and actual residue structures.
 
         See the inline comments for a more detailed explanation.
@@ -692,7 +698,7 @@ class Protein(object):
                     residue.type = 2
 
     def apply_force_field(self, forcefield_):
-        """Apply the forcefield to the atoms within the protein.
+        """Apply the forcefield to the atoms within the biomolecule.
 
         :param forcefield_:  forcefield object
         :type forcefield_:  Forcefield
@@ -938,11 +944,17 @@ class Protein(object):
         try:
             refobj = self.definition.map[resname]
             if refobj.name != resname:
-                klass = getattr(aa, refobj.name)
+                try:
+                    klass = getattr(aa, refobj.name)
+                except AttributeError:
+                    klass = getattr(na, refobj.name)
                 residue = klass(residue, refobj)
                 residue.reference = refobj
             else:
-                klass = getattr(aa, resname)
+                try:
+                    klass = getattr(aa, resname)
+                except AttributeError:
+                    klass = getattr(na, resname)
                 residue = klass(residue, refobj)
         except (KeyError, NameError):
             _LOGGER.debug("Parsing %s as new residue", resname)
@@ -1019,9 +1031,10 @@ class Protein(object):
                             "Too few atoms present to reconstruct or cap "
                             "residue {residue} in structure! This error is "
                             "generally caused by missing backbone atoms in "
-                            "this protein; you must use an external program "
-                            "to complete gaps in the protein backbone. Heavy "
-                            "atoms missing from {residue}:  {missing}"
+                            "this biomolecule; you must use an external "
+                            "program to complete gaps in the biomolecule "
+                            "backbone. Heavy atoms missing from {residue}:  "
+                            "{missing}"
                         )
                         missing_str = " ".join(missing)
                         err = text.format(residue=residue, missing=missing_str)
@@ -1100,7 +1113,7 @@ class Protein(object):
             atom.serial = numcache[atom]
 
     def reserialize(self):
-        """Generate new serial numbers for atoms in the protein."""
+        """Generate new serial numbers for atoms in the biomolecule."""
         count = 1
         for atom in self.atoms:
             atom.serial = count
@@ -1121,7 +1134,7 @@ class Protein(object):
 
     @property
     def charge(self):
-        """Get the total charge on the protein
+        """Get the total charge on the biomolecule
 
         .. todo::
            Since the misslist is used to identify incorrect charge
@@ -1130,7 +1143,7 @@ class Protein(object):
            are (correctly) non-integer.
 
         :return:  (list of residues with non-integer charges,
-            the total charge on the protein)
+            the total charge on the biomolecule)
         :rtype:  (list, float)
         """
         charge = 0.0

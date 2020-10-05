@@ -29,7 +29,7 @@ Hydrogen bond optimization
 
 Unless otherwise indicated with ``--noopts``, PDB2PQR will attempt to add hydrogens in a way that optimizes hydrogen bonding.
 
-The hydrogen bonding network optimization seeks, as the name suggests, to optimize the hydrogen bonding network of the protein.
+The hydrogen bonding network optimization seeks, as the name suggests, to optimize the hydrogen bonding network of the biomolecule.
 Currently this entails manipulating the following residues:
 
 * Flipping the side chains of HIS (including user defined HIS states), ASN, and GLN residues;

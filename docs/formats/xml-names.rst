@@ -86,7 +86,7 @@ Caveats about atom naming
 
 In an ideal world each individual residue and atom would have a standard, distinct name.
 Unfortunately `several naming schemes for atoms exist <http://www.bmrb.wisc.edu/ref_info/atom_nom.tbl>`_, particularly for hydrogens.
-As such, in order to detect the presence/absence of atoms in a protein, an internal canonical naming scheme is used.
+As such, in order to detect the presence/absence of atoms in a biomolecule, an internal canonical naming scheme is used.
 The naming scheme used in PDB2PQR is the one recommended by the PDB itself, and derives from the IUPAC naming recommendations [#naming]_
 
 .. [#naming] J. L. Markley, et al., "Recommendations for the Presentation of NMR Structures of Proteins and Nucleic Acids," Pure & Appl. Chem., 70 (1998): 117-142.  DOI:`10.1046/j.1432-1327.1998.2560001.x <http://dx.doi.org/10.1046/j.1432-1327.1998.2560001.x>`_

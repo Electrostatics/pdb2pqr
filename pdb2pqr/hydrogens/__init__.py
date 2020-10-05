@@ -92,7 +92,7 @@ class HydrogenRoutines:
         :type handler:  HydrogenHandler
         """
         self.debumper = debumper
-        self.protein = debumper.protein
+        self.biomolecule = debumper.biomolecule
         self.optlist = []
         self.atomlist = []
         self.resmap = {}
@@ -261,7 +261,7 @@ class HydrogenRoutines:
         If there are any extra carboxlyic ``*1`` atoms, delete them.
         This may occur when no optimization is chosen.
         """
-        for residue in self.debumper.protein.residues:
+        for residue in self.debumper.biomolecule.residues:
             if not isinstance(residue, aa.Amino):
                 continue
             if residue.name == "GLH" or "GLH" in residue.patches:
@@ -318,7 +318,7 @@ class HydrogenRoutines:
            This function should not be used if full optimization is not taking
            place.
         """
-        for residue in self.protein.residues:
+        for residue in self.biomolecule.residues:
             optinstance = self.is_optimizeable(residue)
             if optinstance is None:
                 continue
@@ -334,15 +334,15 @@ class HydrogenRoutines:
         """
         # Do some setup
         self.debumper.cells = cells.Cells(5)
-        self.debumper.cells.assign_cells(self.protein)
-        self.protein.calculate_dihedral_angles()
-        self.protein.set_donors_acceptors()
-        self.protein.update_internal_bonds()
-        self.protein.set_reference_distance()
+        self.debumper.cells.assign_cells(self.biomolecule)
+        self.biomolecule.calculate_dihedral_angles()
+        self.biomolecule.set_donors_acceptors()
+        self.biomolecule.update_internal_bonds()
+        self.biomolecule.set_reference_distance()
         self.optlist = []
         self.atomlist = []
         # First initialize the various types
-        for residue in self.protein.residues:
+        for residue in self.biomolecule.residues:
             optinstance = self.is_optimizeable(residue)
             if isinstance(residue, aa.Amino):
                 if False in residue.stateboolean.values():
@@ -372,14 +372,14 @@ class HydrogenRoutines:
         _LOGGER.info("Initializing water bonding optimization...")
         # Do some setup
         self.debumper.cells = cells.Cells(5)
-        self.debumper.cells.assign_cells(self.protein)
-        self.protein.calculate_dihedral_angles()
-        self.protein.set_donors_acceptors()
-        self.protein.update_internal_bonds()
-        self.protein.set_reference_distance()
+        self.debumper.cells.assign_cells(self.biomolecule)
+        self.biomolecule.calculate_dihedral_angles()
+        self.biomolecule.set_donors_acceptors()
+        self.biomolecule.update_internal_bonds()
+        self.biomolecule.set_reference_distance()
         self.optlist = []
         # First initialize the various types
-        for residue in self.protein.residues:
+        for residue in self.biomolecule.residues:
             optinstance = self.is_optimizeable(residue)
             if optinstance is None:
                 continue
@@ -612,18 +612,18 @@ class HydrogenRoutines:
             for atom in atoms:
                 refatoms = ["ND1", "CG", "CE1"]
         elif name == "LYS":
-            _ = self.debumper.protein.reference_map[name]
-            patch_map = self.debumper.protein.patch_map["LYN"]
+            _ = self.debumper.biomolecule.reference_map[name]
+            patch_map = self.debumper.biomolecule.patch_map["LYN"]
             atoms = patch_map.remove
             refatoms = ["HZ1", "HZ2", "NZ"]
         elif name == "TYR":
-            _ = self.debumper.protein.reference_map[name]
-            patch_map = self.debumper.protein.patch_map["TYM"]
+            _ = self.debumper.biomolecule.reference_map[name]
+            patch_map = self.debumper.biomolecule.patch_map["TYM"]
             atoms = patch_map.remove
             refatoms = ["OH", "CZ", "CE2"]
         elif name == "WAT":
-            _ = self.debumper.protein.reference_map[name]
-            patch_map = self.debumper.protein.patch_map["HOH"]
+            _ = self.debumper.biomolecule.reference_map[name]
+            patch_map = self.debumper.biomolecule.patch_map["HOH"]
             atoms = ["H1", "H2"]
             refatoms = None
         elif name == "NTR":
@@ -707,7 +707,7 @@ class HydrogenRoutines:
             atoms = ["HE1", "HE2"]
             refatoms = ["OE1", "CD", "OE2"]
         else:
-            patch_map = self.debumper.protein.patch_map[name]
+            patch_map = self.debumper.biomolecule.patch_map[name]
             atoms = list(patch_map.map.keys())
             atoms.sort()
         if name in ["NTR"]:

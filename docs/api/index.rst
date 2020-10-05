@@ -38,7 +38,7 @@ Molecular structure modules
    hydrogens
    ligand
    na
-   protein
+   biomolecule
    residue
    structures
    topology

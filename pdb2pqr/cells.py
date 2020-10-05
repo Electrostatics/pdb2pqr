@@ -9,12 +9,11 @@ class Cells:
     """Accelerate the search for nearby atoms.
 
     A pure all versus all search is O(n^2) - for every atom, every other atom
-    must be searched.
-    This is rather inefficient, especially for large proteins where cells may
-    be tens of angstroms apart.
-    The cell class breaks down the xyz protein space into several 3-D cells of
-    desired size - then by simply examining atoms that fall into the adjacent
-    cells one can quickly find nearby cells.
+    must be searched. This is rather inefficient, especially for large
+    biomolecules where cells may be tens of angstroms apart. The cell class
+    breaks down the xyz biomolecule space into several 3-D cells of desired
+    size - then by simply examining atoms that fall into the adjacent cells
+    one can quickly find nearby cells.
     """
 
     def __init__(self, cellsize):
@@ -26,13 +25,13 @@ class Cells:
         self.cellmap = {}
         self.cellsize = cellsize
 
-    def assign_cells(self, protein):
+    def assign_cells(self, biomolecule):
         """Place each atom in a virtual cell for easy neighbor comparison.
 
-        :param protein:  protein with atoms to assign to cells
-        :type protein:  Protein
+        :param biomolecule:  biomolecule with atoms to assign to cells
+        :type biomolecule:  Biomolecule
         """
-        for atom in protein.atoms:
+        for atom in biomolecule.atoms:
             atom.cell = None
             self.add_cell(atom)
 

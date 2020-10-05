@@ -20,10 +20,10 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
     #     original_pdb_list=pdb_list, ff=force_field, ligand=ligand,
     #     **init_params)
     # TODO - this is a messed-up variable unpacking:
-    # output_dir, protein, routines, forcefield, apbs_setup, \
+    # output_dir, biomolecule, routines, forcefield, apbs_setup, \
     #     ligand_titratable_groups, maps, sd = results
     # mypkaRoutines = pka_routines.pKaRoutines(
-    #     protein, routines, forcefield, apbs_setup, output_dir, maps, sd,
+    #     biomolecule, routines, forcefield, apbs_setup, output_dir, maps, sd,
     #     restart=pdb2pka_params.get('clean_output'),
     #     pairene=pdb2pka_params.get('pairene'))
     # _LOGGER.info('Doing full pKa calculation')
@@ -40,11 +40,11 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
     #     key = ' '.join([tit_type, number_str, chain_id])
     #     residue_ph[key] = calc_ph
     # pformat(residue_ph)
-    # protein.apply_pka_values(ff, ph, residue_ph)
+    # biomolecule.apply_pka_values(ff, ph, residue_ph)
     # _LOGGER.debug('Finished running PDB2PKA.')
 
 
-def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
+def run_pdb2pqr(pdblist, my_biomolecule, my_definition, options, is_cif):
     """Run the PDB2PQR Suite"""
     raise DeprecationWarning("TODO - This function is deprecated")
 
@@ -53,7 +53,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #     Args:
 #         pdblist: The list of objects that was read from the PDB file given
 #                  as input (list)
-#         my_protein: Protein object
+#         my_biomolecule: Biomolecule object
 #         options: The name of the forcefield (string)
 #         is_cif:  Boolean indicating whether input is CIF
 
@@ -63,7 +63,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #         * lines:  The PQR file atoms (list)
 #         * missed_ligands:  A list of ligand residue names whose charges
 #                            could not be assigned (ligand)
-#         * protein:  The protein object
+#         * biomolecule:  The biomolecule object
 #     """
 #     pkaname = ""
 #     lines = []
@@ -82,7 +82,7 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #     ligsuccess = 0
 #     if options.ligand is not None:
 #         # If this is independent, we can assign charges and radii here
-#         for residue in my_protein.residues:
+#         for residue in my_biomolecule.residues:
 #             if isinstance(residue, aa.LIG):
 #                 templist = []
 #                 ligand.make_up2date(residue)
@@ -102,8 +102,8 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #                         "been left out of the PQR file.")
 
 #                     # remove the ligand
-#                     my_protein.residues.remove(residue)
-#                     for my_chain in my_protein.chains:
+#                     my_biomolecule.residues.remove(residue)
+#                     for my_chain in my_biomolecule.chains:
 #                         if residue in my_chain.residues:
 #                             my_chain.residues.remove(residue)
 #                 else:
@@ -134,5 +134,5 @@ def run_pdb2pqr(pdblist, my_protein, my_definition, options, is_cif):
 #     result_dict["header"] = header
 #     result_dict["lines"] = lines
 #     result_dict["missed_ligands"] = missedligandresidues
-#     result_dict["protein"] = my_protein
+#     result_dict["biomolecule"] = my_biomolecule
 #     return result_dict

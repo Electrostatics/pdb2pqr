@@ -19,7 +19,7 @@ _LOGGER.warning(
     "input_pdb", ["4UN3", "1K1I", "1AFS", "1FAS", "5DV8", "5D8V"], ids=str
 )
 def test_basic_apo(input_pdb, tmp_path):
-    """Basic non-regression tests on proteins without ligands."""
+    """Basic non-regression tests on biomolecules without ligands."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"
     output_pqr = Path(input_pdb).stem + ".pqr"
     common.run_pdb2pqr(

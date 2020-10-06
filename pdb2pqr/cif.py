@@ -30,6 +30,7 @@ def atom_site(block):
         by parser)
     :rtype:  ([Atom], [str])
     """
+    line = 0
     pdb_arr = []
     err_arr = []
     atoms = block.getObj("atom_site")
@@ -108,9 +109,7 @@ def atom_site(block):
                         atoms.getValue("pdbx_formal_charge", i)
                     pdb_arr.append(pdb.ATOM(line))
                 except KeyError:
-                    _LOGGER.error(
-                        "atom_site: Error reading line: #%s#\n", line
-                    )
+                    _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
             elif atoms.getValue("group_PDB", i) == "HETATM":
                 try:
                     line = ""
@@ -182,7 +181,7 @@ def atom_site(block):
                         atoms.getValue("pdbx_formal_charge", i)
                     pdb_arr.append(pdb.HETATM(line))
                 except KeyError:
-                    _LOGGER.error("atom_site: Error reading line:\n%s", line)
+                    _LOGGER.error(f"atom_site: Error reading line:\n{line}")
         return pdb_arr, err_arr
     # TODO - Given the return statement above, is this "else" ever reached?
     else:
@@ -194,7 +193,7 @@ def atom_site(block):
                 line += " " * (4 - len(str(j))) + str(j)
                 pdb_arr.append(pdb.MODEL(line))
             except ValueError:
-                _LOGGER.error("atom_site: Error readline line:\n%s", line)
+                _LOGGER.error(f"atom_site: Error readline line:\n{line}")
                 err_arr.append("MODEL")
 
             for i in range(atoms.getRowCount()):
@@ -274,7 +273,7 @@ def atom_site(block):
                             pdb_arr.append(pdb.ATOM(line))
                         except KeyError:
                             _LOGGER.error(
-                                "atom_site: Error reading line:\n%s", line
+                                f"atom_site: Error reading line:\n{line}"
                             )
                             err_arr.append("ATOM")
                     elif atoms.getValue("group_PDB", i) == "HETATM":
@@ -352,14 +351,14 @@ def atom_site(block):
                             pdb_arr.append(pdb.HETATM(line))
                         except KeyError:
                             _LOGGER.error(
-                                "atom_site: Error reading line:\n%s", line
+                                f"atom_site: Error reading line:\n{line}"
                             )
                             err_arr.append("HETATOM")
             try:
                 line = "ENDMDL"
                 pdb_arr.append(pdb.ENDMDL(line))
             except KeyError:
-                _LOGGER.error("atom_site: Error reading line:\n%s", line)
+                _LOGGER.error(f"atom_site: Error reading line:\n{line}")
                 err_arr.append("ENDMDL")
         return pdb_arr, err_arr
 
@@ -422,7 +421,7 @@ def conect(block):
             try:
                 pdb_arr.append(pdb.CONECT(pline))
             except KeyError:
-                _LOGGER.error("conect:   Error parsing line: \n%s", pline)
+                _LOGGER.error(f"conect:   Error parsing line: \n{pline}")
                 err_arr.append("conect")
     return pdb_arr, err_arr
 
@@ -457,7 +456,7 @@ def header(block):
     try:
         header_arr.append(pdb.HEADER(line))
     except KeyError:
-        _LOGGER.error("header:   Error parsing line: #%s#", line)
+        _LOGGER.error(f"header:   Error parsing line: #{line}#")
         header_err.append("header")
     return header_arr, header_err
 
@@ -487,7 +486,7 @@ def title(block):
         try:
             title_arr.append(pdb.TITLE(line))
         except KeyError:
-            _LOGGER.error("TITLE:    Error parsing line:\n%s", line)
+            _LOGGER.error(f"TITLE:    Error parsing line:\n{line}")
             title_err.append("title")
     return title_arr, title_err
 
@@ -514,7 +513,7 @@ def compnd(block):
         try:
             compnd_arr.append(pdb.COMPND(line1))
         except KeyError:
-            _LOGGER.error("compnd:    Error parsing line:\n%s", line1)
+            _LOGGER.error(f"compnd:    Error parsing line:\n{line1}")
             compnd_err.append("compnd")
         cont += 1
         line2 = "COMPND "
@@ -526,7 +525,7 @@ def compnd(block):
         try:
             compnd_arr.append(pdb.COMPND(line2))
         except KeyError:
-            _LOGGER.error("compnd:    Error parsing line:\n%s", line2)
+            _LOGGER.error(f"compnd:    Error parsing line:\n{line2}")
             compnd_err.append("compnd")
         cont += 1
     return compnd_arr, compnd_err
@@ -558,7 +557,7 @@ def source(block):
             try:
                 src_arr.append(pdb.SOURCE(line))
             except KeyError:
-                _LOGGER.error("source:  Error parsing line:\n%s", line)
+                _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
         if src_obj.getValue("pdbx_gene_src_scientific_name", i) != "?":
             line = "SOURCE "
@@ -575,7 +574,7 @@ def source(block):
             try:
                 src_arr.append(pdb.SOURCE(line))
             except KeyError:
-                _LOGGER.error("source:  Error parsing line:\n%s", line)
+                _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
         if src_obj.getValue("gene_src_common_name", i) != "?":
             line = "SOURCE "
@@ -592,7 +591,7 @@ def source(block):
             try:
                 src_arr.append(pdb.SOURCE(line))
             except KeyError:
-                _LOGGER.error("source:  Error parsing line:\n%s,", line)
+                _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
         if src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) != "?":
             line = "SOURCE "
@@ -609,7 +608,7 @@ def source(block):
             try:
                 src_arr.append(pdb.SOURCE(line))
             except KeyError:
-                _LOGGER.error("source:    Error parsing line:\n%s", line)
+                _LOGGER.error(f"source:    Error parsing line:\n{line}")
                 src_err.append("source")
     return src_arr, src_err
 
@@ -639,7 +638,7 @@ def keywds(block):
         try:
             key_arr.append(pdb.KEYWDS(line))
         except KeyError:
-            _LOGGER.error("keywds:    Error parsing line:\n%s", line)
+            _LOGGER.error(f"keywds:    Error parsing line:\n{line}")
             key_err.append("keywds")
     return key_arr, key_err
 
@@ -661,7 +660,7 @@ def expdata(block):
     try:
         ex_arr.append(pdb.EXPDTA(line))
     except KeyError:
-        _LOGGER.error("expdata:    Error parsing line:\n%s\n", line)
+        _LOGGER.error(f"expdata:    Error parsing line:\n{line}\n")
         ex_err.append("expdata")
     return ex_arr, ex_err
 
@@ -686,7 +685,7 @@ def author(block):
         try:
             aut_arr.append(pdb.AUTHOR(line))
         except KeyError:
-            _LOGGER.error("author:  Error parsing line:\n%s", line)
+            _LOGGER.error(f"author:  Error parsing line:\n{line}")
             aut_err.append("author")
     return aut_arr, aut_err
 
@@ -731,7 +730,7 @@ def cryst1(block):
     try:
         cry_arr.append(pdb.CRYST1(line))
     except KeyError:
-        _LOGGER.error("cif.cryst1:    Error parsing line:\n%s", line)
+        _LOGGER.error(f"cif.cryst1:    Error parsing line:\n{line}")
         cry_err.append(cryst1)
     return cry_arr, cry_err
 
@@ -795,17 +794,17 @@ def scalen(block):
     try:
         sc_arr.append(pdb.SCALE1(scale1))
     except KeyError:
-        _LOGGER.error("cif.scalen:    Error parsing line:\n%s", scale1)
+        _LOGGER.error(f"cif.scalen:    Error parsing line:\n{scale1}")
         sc_err.append("SCALE1")
     try:
         sc_arr.append(pdb.SCALE2(scale2))
     except KeyError:
-        _LOGGER.error("cif.scalen:    Error parsing line:\n%s", scale2)
+        _LOGGER.error(f"cif.scalen:    Error parsing line:\n{scale2}")
         sc_err.append("SCALE2")
     try:
         sc_arr.append(pdb.SCALE3(scale3))
     except KeyError:
-        _LOGGER.error("cif.scalen:    Error parsing line:\n%s", scale3)
+        _LOGGER.error(f"cif.scalen:    Error parsing line:\n{scale3}")
         sc_err.append("SCALE3")
     return sc_arr, sc_err
 
@@ -866,17 +865,17 @@ def origxn(block):
     try:
         or_arr.append(pdb.ORIGX1(orig1))
     except KeyError:
-        _LOGGER.error("cif.origxn:  Error parsing line:\n%s", orig1)
+        _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig1}")
         or_err.append("ORIGX1")
     try:
         or_arr.append(pdb.ORIGX2(orig2))
     except KeyError:
-        _LOGGER.error("cif.origxn:  Error parsing line:\n%s", orig2)
+        _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig2}")
         or_err.append("ORIGX2")
     try:
         or_arr.append(pdb.ORIGX3(orig3))
     except KeyError:
-        _LOGGER.error("cif.origxn:  Error parsing line:\n%s", orig3)
+        _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig3}")
         or_err.append("ORIGX3")
     return or_arr, or_err
 
@@ -938,7 +937,7 @@ def cispep(block):
         try:
             cis_arr.append(pdb.CISPEP(line))
         except KeyError:
-            _LOGGER.error("cif.cispep:    Erro parsing line:\n%s", line)
+            _LOGGER.error(f"cif.cispep:    Erro parsing line:\n{line}")
             cis_err.append("cispep")
     return cis_arr, cis_err
 
@@ -1004,7 +1003,7 @@ def ssbond(block):
         try:
             ssb_arr.append(pdb.SSBOND(line))
         except KeyError:
-            _LOGGER.error("cif.ssbond:    Error parsing line:\n%s", line)
+            _LOGGER.error(f"cif.ssbond:    Error parsing line:\n{line}")
             ssb_err.append("ssbond")
     return ssb_arr, ssb_err
 

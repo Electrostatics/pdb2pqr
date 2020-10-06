@@ -129,7 +129,7 @@ class Debump:
                 bumpscore = bumpscore + 1000.0
                 if pair_ignored:
                     _LOGGER.debug("This bump is a donor/acceptor pair.")
-        _LOGGER.debug("BUMPSCORE %s", str(bumpscore))
+        _LOGGER.debug(f"BUMPSCORE {str(bumpscore)}")
         return bumpscore
 
     def debump_biomolecule(self):
@@ -149,7 +149,7 @@ class Debump:
         try:
             self.biomolecule.set_reference_distance()
         except ValueError as err:
-            err = "Biomolecular structure is incomplete:  %s" % err
+            err = f"Biomolecular structure is incomplete:  {err}"
             raise ValueError(err)
         # Determine which residues to debump
         for residue in self.biomolecule.residues:
@@ -160,18 +160,17 @@ class Debump:
             if not conflict_names:
                 continue
             # Otherwise debump the residue
-            _LOGGER.debug("Starting to debump %s...", residue)
+            _LOGGER.debug(f"Starting to debump {residue}...")
             _LOGGER.debug(
-                "Debumping cutoffs: %2.1f for heavy-heavy, %2.1f for "
-                "hydrogen-heavy, and %2.1f for hydrogen-hydrogen.",
-                BUMP_HEAVY_SIZE * 2,
-                BUMP_HYDROGEN_SIZE + BUMP_HEAVY_SIZE,
-                BUMP_HYDROGEN_SIZE * 2,
+                f"Debumping cutoffs: {BUMP_HEAVY_SIZE * 2:2.1f} for "
+                f"heavy-heavy, {BUMP_HYDROGEN_SIZE + BUMP_HEAVY_SIZE:2.1f} "
+                f"for hydrogen-heavy, and {BUMP_HYDROGEN_SIZE * 2:2.1f} "
+                f"for hydrogen-hydrogen."
             )
             if self.debump_residue(residue, conflict_names):
                 _LOGGER.debug("Debumping Successful!")
             else:
-                text = "WARNING: Unable to debump %s", residue
+                text = f"WARNING: Unable to debump {residue}"
                 _LOGGER.warning(text)
         _LOGGER.debug("Done checking if we must debump any residues.")
 
@@ -201,11 +200,8 @@ class Debump:
                 if write_conflict_info:
                     for repatom in nearatoms:
                         _LOGGER.debug(
-                            "%s %s is too close to %s %s",
-                            residue,
-                            atomname,
-                            repatom.residue,
-                            repatom.name,
+                            f"{residue} {atomname} is too close to "
+                            f"{repatom.residue} {repatom.name}"
                         )
         return conflict_names
 
@@ -255,8 +251,8 @@ class Debump:
             if anglenum == -1:
                 return False
             _LOGGER.debug(
-                "Using dihedral angle number %i to debump the residue.",
-                anglenum,
+                f"Using dihedral angle number {anglenum} to debump "
+                "the residue."
             )
             bestscore = self.score_dihedral_angle(residue, anglenum)
             found_improved = False
@@ -270,7 +266,7 @@ class Debump:
                 if score == 0:
                     if not self.find_residue_conflicts(residue):
                         _LOGGER.debug(
-                            "No conflicts found at angle %s", repr(newangle)
+                            f"No conflicts found at angle {repr(newangle)}"
                         )
                         return True
                     else:
@@ -291,7 +287,7 @@ class Debump:
                 err = "Best score of {best} at angle {angle}."
                 err = err.format(best=repr(bestscore), angle=repr(bestangle))
                 _LOGGER.debug(err)
-                _LOGGER.debug("New conflict set: %s", str(curr_conflict_names))
+                _LOGGER.debug(f"New conflict set: {curr_conflict_names}")
             else:
                 _LOGGER.debug("No improvement found for this dihedral angle.")
         # If we're here, debumping was unsuccessful
@@ -352,9 +348,9 @@ class Debump:
                     bestatom = closeatom
         if bestdist > bestwatdist:
             txt = (
-                "Skipped atom during water optimization: %s in %s skipped "
-                "when optimizing %s in %s"
-                % (bestwatatom.name, bestwatatom.residue, atom.name, residue)
+                f"Skipped atom during water optimization: {bestwatatom.name} "
+                f"in {bestwatatom.residue} skipped "
+                f"when optimizing {atom.name} in {residue}"
             )
             _LOGGER.warning(txt)
         return bestatom

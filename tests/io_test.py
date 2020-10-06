@@ -31,18 +31,18 @@ def test_dx2cube(tmp_path):
     dx_path = DATA_DIR / "dx2cube.dx"
     cube_gen = tmp_path / "test.cube"
     cube_test = DATA_DIR / "dx2cube.cube"
-    _LOGGER.info(f"Reading PQR from {pqr_path}...")
+    _LOGGER.info("Reading PQR from %s...", pqr_path)
     with open(pqr_path, "rt") as pqr_file:
         atom_list = read_pqr(pqr_file)
-    _LOGGER.info(f"Reading DX from {dx_path}...")
+    _LOGGER.info("Reading DX from %s...", dx_path)
     with open(dx_path, "rt") as dx_file:
         dx_dict = read_dx(dx_file)
-    _LOGGER.info(f"Writing Cube to {cube_gen}...")
+    _LOGGER.info("Writing Cube to %s...", cube_gen)
     with open(cube_gen, "wt") as cube_file:
         write_cube(cube_file, dx_dict, atom_list)
-    _LOGGER.info(f"Reading this cube from {cube_gen}...")
+    _LOGGER.info("Reading this cube from %s...", cube_gen)
     this_lines = [line.strip() for line in open(cube_gen, "rt")]
-    _LOGGER.info(f"Reading test cube from {cube_test}...")
+    _LOGGER.info("Reading test cube from %s...", cube_test)
     test_lines = [line.strip() for line in open(cube_test, "rt")]
     differ = Differ()
     differences = []
@@ -51,6 +51,6 @@ def test_dx2cube(tmp_path):
             differences.append(line)
     if len(differences) > 0:
         for diff in differences:
-            _LOGGER.error(f"Found difference:  {diff}")
+            _LOGGER.error("Found difference:  %s", diff)
         raise ValueError()
     _LOGGER.info("No differences found in output")

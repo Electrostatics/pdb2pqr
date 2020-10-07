@@ -2575,6 +2575,7 @@ def read_pdb(file_):
 
         # We assume we have a method for each PDB record and can therefore
         # parse them automatically
+        record = ""
         try:
             record = line[0:6].strip()
             if record not in errlist:
@@ -2583,10 +2584,10 @@ def read_pdb(file_):
                 pdblist.append(obj)
         except KeyError as details:
             errlist.append(record)
-            _LOGGER.error("Error parsing line: %s", details)
-            _LOGGER.error("<%s>", line.strip())
+            _LOGGER.error(f"Error parsing line: {details}")
+            _LOGGER.error(f"<{line.strip()}>")
             _LOGGER.error(
-                "Truncating remaining errors for record type:%s", record
+                f"Truncating remaining errors for record type:{record}"
             )
         except IndexError as details:
             if record == "ATOM" or record == "HETATM":
@@ -2594,15 +2595,15 @@ def read_pdb(file_):
                     obj = read_atom(line)
                     pdblist.append(obj)
                 except IndexError as details:
-                    _LOGGER.error("Error parsing line: %s,", details)
-                    _LOGGER.error("<%s>", line.strip())
+                    _LOGGER.error(f"Error parsing line: {details},")
+                    _LOGGER.error(f"<{line.strip()}>")
             elif record == "SITE" or record == "TURN":
                 pass
             elif record == "SSBOND" or record == "LINK":
                 _LOGGER.error("Warning -- ignoring record:")
-                _LOGGER.error("<%s>", line.strip())
+                _LOGGER.error(f"<{line.strip()}>")
             else:
-                _LOGGER.error("Error parsing line: %s", details)
-                _LOGGER.error("<%s>", line.strip())
+                _LOGGER.error(f"Error parsing line: {details},")
+                _LOGGER.error(f"<{line.strip()}>")
 
     return pdblist, errlist

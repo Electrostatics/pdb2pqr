@@ -123,7 +123,7 @@ class HydrogenRoutines:
             boundname = conf.boundatom
             if residue.get_atom(hname) is not None:
                 _LOGGER.debug(
-                    "Removing %s %s %s", residue.name, residue.res_seq, hname
+                    f"Removing {residue.name} {residue.res_seq} {hname}"
                 )
                 residue.remove_atom(hname)
             residue.get_atom(boundname).hacceptor = 1
@@ -451,7 +451,7 @@ class HydrogenRoutines:
                 if obj.residue.fixed:
                     continue
                 _LOGGER.debug(
-                    "%s has no nearby partners - fixing.", obj.residue
+                    f"{obj.residue} has no nearby partners - fixing."
                 )
                 obj.finalize()
         # Determine the distinct networks
@@ -476,8 +476,8 @@ class HydrogenRoutines:
         for network in networks:
             txt = ""
             for obj in network:
-                txt += "%s, " % obj
-            _LOGGER.debug("Starting network %s", txt[:-2])
+                txt += f"{obj}, "
+            _LOGGER.debug(f"Starting network {txt[:-2]}")
             #  FIRST:  Only optimizeable to backbone atoms
             _LOGGER.debug("* Optimizeable to backbone *")
             hbondmap = {}
@@ -586,11 +586,17 @@ class HydrogenRoutines:
         map_ = self.map[res].map
         mydef = HydrogenDefinition(name, opttype, optangle, map_)
         patch_map = []
+        atoms = []
+        refatoms = []
+        conformernames = []
         refmap = {}
         titrationstatemap = {}
         tautomermap = {}
         conformermap = {}
         atommap = {}
+        ntrmap = {}
+        hmap = {}
+        nonhmap = {}
         # reference map from TOPOLOGY.xml
         for res_ in topo.residues:
             refmap[res_.name] = res_.reference
@@ -787,6 +793,7 @@ class HydrogenRoutines:
 
                         for atom_ in refatoms:
                             atomname = atom_
+                            refresname = ""
                             if name == "ASH":
                                 refresname = "ASP"
                             elif name == "GLH":

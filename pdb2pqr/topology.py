@@ -138,7 +138,7 @@ class TopologyHandler(sax.ContentHandler):
             elif tag_name == "incomplete":
                 self.incomplete = 1
             else:
-                _LOGGER.info("** NOT handling %s start tag", tag_name)
+                _LOGGER.info(f"** NOT handling {tag_name} start tag")
 
     def endElement(self, tag_name):
         """End parsing element.
@@ -183,7 +183,7 @@ class TopologyHandler(sax.ContentHandler):
             elif tag_name == "topology":
                 pass
             else:
-                _LOGGER.info("** NOT handling %s end tag", tag_name)
+                _LOGGER.info(f"** NOT handling {tag_name} end tag")
         else:
             if tag_name == "incomplete":
                 self.incomplete = 0
@@ -210,7 +210,7 @@ class TopologyHandler(sax.ContentHandler):
                     self.curr_residue.name = text
                 else:
                     _LOGGER.info(
-                        "    *** Don't know what to do with name %s!", text
+                        f"    *** Don't know what to do with name {text}!"
                     )
             elif self.curr_element == "x":
                 self.curr_atom.x = float(text)
@@ -225,7 +225,7 @@ class TopologyHandler(sax.ContentHandler):
             elif self.curr_element == "dihedral":
                 self.curr_dihedral.atom_list = text
             else:
-                _LOGGER.info("** NOT handling character text:  %s", text)
+                _LOGGER.info(f"** NOT handling character text:  {text}")
 
 
 class TopologyResidue:

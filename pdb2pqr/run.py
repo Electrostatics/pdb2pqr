@@ -12,7 +12,7 @@ def run_pdb2pka(ph, force_field, pdb_list, ligand, pdb2pka_params):
     # if force_field.lower() != 'parse':
     #     PDB2PKAError('PDB2PKA can only be run with the PARSE force field.')
 
-    # _LOGGER.info("Running PDB2PKA and applying at pH %.2f... ", ph)
+    # _LOGGER.info(f"Running PDB2PKA and applying at pH {ph:.2f}... ")
     # init_params = pdb2pka_params.copy()
     # init_params.pop('pairene')
     # init_params.pop('clean_output')
@@ -75,7 +75,7 @@ def run_pdb2pqr(pdblist, my_biomolecule, my_definition, options, is_cif):
 #     if options.pka_method == 'propka':
 #         pkaname = Path(outroot + ".propka")
 #         if pkaname.is_file():
-#             _LOGGER.warning("PROPKA file already exists: %s", pkaname)
+#             _LOGGER.warning(f"PROPKA file already exists: {pkaname}")
 
 #     start = time.time()
 
@@ -129,7 +129,7 @@ def run_pdb2pqr(pdblist, my_biomolecule, my_definition, options, is_cif):
 #         if atom.res_name not in missedligandresidues:
 #             missedligandresidues.append(atom.res_name)
 
-#     _LOGGER.debug("Total time taken: %.2f seconds", (time.time() - start))
+#     _LOGGER.debug(f"Total time taken: {(time.time() - start):.2f} seconds")
 #     result_dict = {}
 #     result_dict["header"] = header
 #     result_dict["lines"] = lines

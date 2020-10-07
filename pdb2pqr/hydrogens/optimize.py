@@ -28,7 +28,7 @@ class Optimize:
         self.routines = None
 
     def __str__(self):
-        txt = "%s (%s)" % (self.residue, self.optinstance.opttype)
+        txt = f"{self.residue} ({self.optinstance.opttype})"
         return txt
 
     @staticmethod
@@ -97,7 +97,7 @@ class Optimize:
             # Check the A-D-H(D) angle
             angle = self.get_hbond_angle(acc, donor, donorhatom)
             if angle <= ANGLE_CUTOFF:
-                _LOGGER.debug("Found HBOND! %.4f %.4f", dist, angle)
+                _LOGGER.debug(f"Found HBOND! {dist:.4f} {angle:.4f}")
                 return True
         # If we get here, no bond is formed
         return False
@@ -275,6 +275,7 @@ class Optimize:
         """
         # Initialize some variables
         residue = atom.residue
+        the_refname = ""
         for refname in atom.reference.bonds:
             if refname.startswith("H"):
                 the_refname = refname
@@ -364,6 +365,7 @@ class Optimize:
         pivot = acc.bonds[0]
         bestangle = 180.00
         bestcoords = []
+        the_donorhatom = ""
         # If a hydrogen bond was made, set at best distance
         if not self.is_hbond(donor, acc):
             residue.remove_atom(newatom.name)
@@ -383,9 +385,8 @@ class Optimize:
         # Remove if geometry does not work
         if bestangle > (ANGLE_CUTOFF * 2.0):
             _LOGGER.debug(
-                "Removing due to geometry %.2f > %.2f",
-                bestangle,
-                ANGLE_CUTOFF * 2.0,
+                f"Removing due to geometry {bestangle:.2f} > "
+                f"{ANGLE_CUTOFF * 2.0:.2f}"
             )
             residue.remove_atom(newatom.name)
             return False
@@ -494,6 +495,7 @@ class Optimize:
         bestangle = 180.00
         bestcoords = []
         residue = acc.residue
+        the_donorhatom = ""
         # If the donor/acceptor pair is not an hbond return
         if not self.is_hbond(donor, acc):
             return False
@@ -642,11 +644,11 @@ class OptimizationHolder:
         self.optangle = ""
 
     def __str__(self):
-        text = "%s\n" % self.name
-        text += "Type: %s\n" % self.opttype
+        text = f"{self.name}\n"
+        text += f"Type: {self.opttype}\n"
         if self.optangle != "":
-            text += "Optimization Angle: %s\n" % self.optangle
+            text += f"Optimization Angle: {self.optangle}\n"
         text += "Atoms: \n"
         for atomname in self.map:
-            text += "\t%s\n" % str(self.map[atomname])
+            text += f"\t{self.map[atomname]}\n"
         return text

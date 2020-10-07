@@ -119,7 +119,7 @@ class Atom:
         if type_ == "ATOM" or type_ == "HETATM":
             self.type = type_
         else:
-            err = "Invalid atom type %s (Atom Class IN structures.py)!" % type_
+            err = f"Invalid atom type {type_} (Atom Class IN structures.py)!"
             raise ValueError(err)
         if atom is not None:
             self.serial = atom.serial
@@ -182,7 +182,7 @@ class Atom:
             atom.type = "HETATM"
             words = [token[6:]] + words
         else:
-            err = "Unable to parse line: %s" % line
+            err = f"Unable to parse line: {line}"
             raise ValueError(err)
         atom.serial = int(words.pop(0))
         atom.name = words.pop(0)
@@ -218,7 +218,7 @@ class Atom:
         outstr = ""
         tstr = self.type
         outstr += str.ljust(tstr, 6)[:6]
-        tstr = "%d" % self.serial
+        tstr = f"{self.serial:d}"
         outstr += str.rjust(tstr, 5)[:5]
         outstr += " "
         tstr = self.name
@@ -237,17 +237,17 @@ class Atom:
         else:
             tstr = ""
         outstr += str.ljust(tstr, 1)[:1]
-        tstr = "%d" % self.res_seq
+        tstr = f"{self.res_seq:d}"
         outstr += str.rjust(tstr, 4)[:4]
         if self.ins_code != "":
-            outstr += "%s   " % self.ins_code
+            outstr += f"{self.ins_code}   "
         else:
             outstr += "    "
-        tstr = "%8.3f" % self.x
+        tstr = f"{self.x:8.3f}"
         outstr += str.ljust(tstr, 8)[:8]
-        tstr = "%8.3f" % self.y
+        tstr = f"{self.y:8.3f}"
         outstr += str.ljust(tstr, 8)[:8]
-        tstr = "%8.3f" % self.z
+        tstr = f"{self.z:8.3f}"
         outstr += str.ljust(tstr, 8)[:8]
         return outstr
 
@@ -266,12 +266,12 @@ class Atom:
         """
         outstr = self.get_common_string_rep(chainflag=chainflag)
         if self.ffcharge is not None:
-            ffcharge = "%.4f" % self.ffcharge
+            ffcharge = f"{self.ffcharge:.4f}"
         else:
             ffcharge = "0.0000"
         outstr += str.rjust(ffcharge, 8)[:8]
         if self.radius is not None:
-            ffradius = "%.4f" % self.radius
+            ffradius = f"{self.radius:.4f}"
         else:
             ffradius = "0.0000"
         outstr += str.rjust(ffradius, 7)[:7]
@@ -289,9 +289,9 @@ class Atom:
         :rtype:  str
         """
         outstr = self.get_common_string_rep(chainflag=True)
-        tstr = "%6.2f" % self.occupancy
+        tstr = f"{self.occupancy:6.2f}"
         outstr += str.ljust(tstr, 6)[:6]
-        tstr = "%6.2f" % self.temp_factor
+        tstr = f"{self.temp_factor:6.2f}"
         outstr += str.rjust(tstr, 6)[:6]
         # padding between temp factor and seg_id
         outstr += " " * 7

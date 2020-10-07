@@ -62,12 +62,7 @@ class Residue(object):
                 atom.res_name = "WAT"
 
     def __str__(self):
-        text = "%s %s %i%s" % (
-            self.name,
-            self.chain_id,
-            self.res_seq,
-            self.ins_code,
-        )
+        text = f"{self.name} {self.chain_id} {self.res_seq}{self.ins_code}"
         return text
 
     def get_moveable_names(self, pivot):
@@ -229,7 +224,7 @@ class Residue(object):
         """
         charge = (atom.ffcharge for atom in self.atoms if atom.ffcharge)
         charge = sum(charge)
-        charge = float("%.4f" % charge)
+        charge = float(f"{charge:.4f}")
         return charge
 
     def rename_residue(self, name):

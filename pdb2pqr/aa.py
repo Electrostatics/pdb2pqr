@@ -63,7 +63,7 @@ class Amino(residue.Residue):
                 atom = struct.Atom(atom_, "ATOM", self)
                 self.add_atom(atom)
             else:
-                _LOGGER.debug("Ignoring atom %s", atom_.name)
+                _LOGGER.debug(f"Ignoring atom {atom_.name}")
 
     def create_atom(self, atomname, newcoords):
         """Create an atom.
@@ -110,7 +110,7 @@ class Amino(residue.Residue):
                     if atom not in bondatom.bonds:
                         bondatom.bonds.append(atom)
         except KeyError:
-            _LOGGER.debug("Skipping atom reference for %s", atomname)
+            _LOGGER.debug(f"Skipping atom reference for {atomname}")
             atom.reference = None
 
     def add_dihedral_angle(self, value):
@@ -128,14 +128,14 @@ class Amino(residue.Residue):
         """
         if self.is_n_term:
             if "NEUTRAL-NTERM" in self.patches:
-                self.ffname = "NEUTRAL-N%s" % self.ffname
+                self.ffname = f"NEUTRAL-N{self.ffname}"
             else:
-                self.ffname = "N%s" % self.ffname
+                self.ffname = f"N{self.ffname}"
         elif self.is_c_term:
             if "NEUTRAL-CTERM" in self.patches:
-                self.ffname = "NEUTRAL-C%s" % self.ffname
+                self.ffname = f"NEUTRAL-C{self.ffname}"
             else:
-                self.ffname = "C%s" % self.ffname
+                self.ffname = f"C{self.ffname}"
         return
 
     def rebuild_tetrahedral(self, atomname):
@@ -540,6 +540,7 @@ class HIS(Amino):
         :makevar:`hdonor` flags.
         Otherwise HID is used as the default.
         """
+        errstr = ""
         if "HIP" not in self.patches and self.name not in ["HIP", "HSP"]:
             if (
                 self.get_atom("ND1").hdonor
@@ -569,12 +570,10 @@ class HIS(Amino):
         elif self.has_atom("HE2"):
             self.ffname = "HIE"
         else:
-            errstr = (
-                "Invalid type for %s! Missing both HD1 and HE2 atoms. If "
-                "you receive this error while using the --assign-only "
-                "option you can only resolve it by adding HD1, HE2 or "
-                "both to this residue."
-            ) % str(self)
+            errstr = f"Invalid type for {str(self)}! Missing both HD1 and HE2 "
+            "atoms. If you receive this error while using the --assign-only "
+            "option you can only resolve it by adding HD1, HE2 or both to "
+            "this residue."
             raise TypeError(errstr)
         Amino.set_state(self)
 
@@ -746,12 +745,12 @@ class PRO(Amino):
         Uses ``N*`` and ``C*`` for termini.
         """
         if self.is_n_term:
-            self.ffname = "N%s" % self.ffname
+            self.ffname = f"N{self.ffname}"
         elif self.is_c_term:
             if "NEUTRAL-CTERM" in self.patches:
-                self.ffname = "NEUTRAL-C%s" % self.ffname
+                self.ffname = f"NEUTRAL-C{self.ffname}"
             else:
-                self.ffname = "C%s" % self.ffname
+                self.ffname = f"C{self.ffname}"
 
 
 class SER(Amino):
@@ -977,7 +976,7 @@ class WAT(residue.Residue):
                     if atom not in bondatom.bonds:
                         bondatom.bonds.append(atom)
         except KeyError:
-            _LOGGER.debug("Ignoring reference for WAT atom %s", atomname)
+            _LOGGER.debug(f"Ignoring reference for WAT atom {atomname}")
             atom.reference = None
 
 
@@ -1062,5 +1061,5 @@ class LIG(residue.Residue):
                     if atom not in bondatom.bonds:
                         bondatom.bonds.append(atom)
         except KeyError:
-            _LOGGER.debug("Ignoring atom reference for ligand %s", atomname)
+            _LOGGER.debug(f"Ignoring atom reference for ligand {atomname}")
             atom.reference = None

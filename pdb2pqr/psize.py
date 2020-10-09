@@ -372,66 +372,39 @@ class Psize:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             gmem = 200.0 * ngrid[0] * ngrid[1] * ngrid[2] / 1024 / 1024
             # Print the calculated entries
-            str_ = str_ + "######## MOLECULE INFO ########\n"
-            str_ = str_ + "Number of ATOM entries = %i\n" % self.gotatom
-            str_ = str_ + "Number of HETATM entries (ignored) = %i\n" % (
-                self.gothet
-            )
-            str_ = str_ + "Total charge = %.3f e\n" % charge
-            str_ = str_ + "Dimensions = %.3f Å x %.3f Å x %.3f Å\n" % (
-                mol_length[0],
-                mol_length[1],
-                mol_length[2],
-            )
-            str_ = str_ + "Center = %.3f Å x %.3f Å x %.3f Å\n" % (
-                center[0],
-                center[1],
-                center[2],
-            )
-            str_ = str_ + "Lower corner = %.3f Å x %.3f Å x %.3f Å\n" % (
-                minlen[0],
-                minlen[1],
-                minlen[2],
-            )
-            str_ = str_ + "Upper corner = %.3f Å x %.3f Å x %.3f Å\n" % (
-                maxlen[0],
-                maxlen[1],
-                maxlen[2],
-            )
-            str_ = str_ + "\n"
-            str_ = str_ + "######## GENERAL CALCULATION INFO ########\n"
-            str_ = str_ + "Coarse grid dims = %.3f Å x %.3f Å x %.3f Å\n" % (
-                coarse_length[0],
-                coarse_length[1],
-                coarse_length[2],
-            )
-            str_ = str_ + "Fine grid dims = %.3f Å x %.3f Å x %.3f Å\n" % (
-                fine_length[0],
-                fine_length[1],
-                fine_length[2],
-            )
-            str_ = str_ + "Num. fine grid pts. = %d x %d x %d\n" % (
-                ngrid[0],
-                ngrid[1],
-                ngrid[2],
-            )
+            str_ += "######## MOLECULE INFO ########\n"
+            str_ += f"Number of ATOM entries = {self.gotatom:i}\n"
+            str_ += f"Number of HETATM entries (ignored) = {self.gothet:i}\n"
+            str_ += f"Total charge = {charge:.3f} e\n"
+            str_ += f"Dimensions = {mol_length[0]:.3f} Å x "
+            str_ += f"{mol_length[1]:.3f} Å x {mol_length[2]:.3f} Å\n"
+            str_ += f"Center = {center[0]:.3f} Å x {center[1]:.3f} Å x "
+            str_ += f"{center[2]:.3f} Å\n"
+            str_ += f"Lower corner = {minlen[0]:.3f} Å x {minlen[1]:.3f} Å x "
+            str_ += f"{minlen[2]:.3f} Å\n"
+            str_ += f"Upper corner = {maxlen[0]:.3f} Å x {maxlen[1]:.3f} Å x "
+            str_ += f"{maxlen[2]:.3f} Å\n"
+            str_ += "\n"
+            str_ += "######## GENERAL CALCULATION INFO ########\n"
+            str_ += f"Course grid dims = {coarse_length[0]:.3f} Å x "
+            str_ += f"{coarse_length[1]:.3f} Å x "
+            str_ += f"{coarse_length[2]:.3f} Å\n"
+            str_ += f"Fine grid dims = {fine_length[0]:.3f} Å x "
+            str_ += f"{fine_length[1]:.3f} Å x "
+            str_ += f"{fine_length[2]:.3f} Å\n"
+            str_ += f"Num. fine grid pts. = {ngrid[0]:d} Å x "
+            str_ += f"{ngrid[1]:d} Å x "
+            str_ += f"{ngrid[2]:d} Å\n"
+            str_ += "\n"
             if gmem > self.gmemceil:
-                str_ = str_ + (
-                    "Parallel solve required (%.3f MB > %.3f MB)\n"
-                    % (gmem, self.gmemceil)
-                )
-                str_ = str_ + (
-                    "Total processors required = %i\n"
-                    % (nproc[0] * nproc[1] * nproc[2])
-                )
-                str_ = str_ + (
-                    "Proc. grid = %d x %d x %d\n"
-                    % (nproc[0], nproc[1], nproc[2])
-                )
-                str_ = str_ + (
-                    "Grid pts. on each proc. = "
-                    "%d x %d x %d\n" % (nsmall[0], nsmall[1], nsmall[2])
-                )
+                str_ += f"Parallel solve required ({gmem:.3f} MB > "
+                str_ += f"{self.gmemceil:.3f} MB)\n"
+                str_ += "Total processors required = "
+                str_ += f"{nproc[0] * nproc[1] * nproc[2]:i}\n"
+                str_ += f"Proc. grid = {nproc[0]:d} x {nproc[1]:d} x "
+                str_ += f"{nproc[2]:d}\n"
+                str_ += f"Grid pts. on each proc. = {nsmall[0]:d} x "
+                str_ += f"{nsmall[1]:d} x {nsmall[2]:d}\n"
                 xglob = nproc[0] * round(
                     nsmall[0] / (1 + 2 * self.ofrac - 0.001)
                 )
@@ -447,46 +420,34 @@ class Psize:
                     yglob = nsmall[1]
                 if nproc[2] == 1:
                     zglob = nsmall[2]
-                str_ = str_ + "Fine mesh spacing = %g x %g x %g A\n" % (
-                    fine_length[0] / (xglob - 1),
-                    fine_length[1] / (yglob - 1),
-                    fine_length[2] / (zglob - 1),
-                )
-                str_ = (
-                    str_
-                    + (
-                        "Estimated mem. required for parallel solve = %.3f "
-                        "MB/proc.\n"
-                    )
-                    % nsmem
-                )
+                str_ += "Fine mesh spacing = "
+                str_ += f"{fine_length[0] / (xglob - 1):g} x "
+                str_ += f"{fine_length[1] / (yglob - 1):g} x "
+                str_ += f"{fine_length[2] / (zglob - 1):g} A\n"
+                str_ += "Estimated mem. required for parallel solve = "
+                str_ += f"{nsmem:.3f} MB/proc.\n"
                 ntot = nsmall[0] * nsmall[1] * nsmall[2]
             else:
-                str_ = str_ + (
-                    "Fine mesh spacing = %g x %g x %g A\n"
-                    % (
-                        fine_length[0] / (ngrid[0] - 1),
-                        fine_length[1] / (ngrid[1] - 1),
-                        fine_length[2] / (ngrid[2] - 1),
-                    )
-                )
-                str_ = str_ + (
-                    "Estimated mem. required for sequential solve = %.3f MB\n"
-                    % gmem
-                )
+                str_ += "Fine mesh spacing = "
+                str_ += f"{fine_length[0] / (ngrid[0] - 1):g} x "
+                str_ += f"{fine_length[1] / (ngrid[1] - 1):g} x "
+                str_ += f"{fine_length[2] / (ngrid[2] - 1):g} A\n"
+                str_ += "Estimated mem. required for sequential solve = "
+                str_ += f"{gmem:.3f} MB\n"
                 ntot = ngrid[0] * ngrid[1] * ngrid[2]
-            str_ = str_ + "Number of focusing operations = %i\n" % nfocus
-            str_ = str_ + "\n"
-            str_ = str_ + "######## ESTIMATED REQUIREMENTS ########\n"
-            str_ = str_ + "Memory per processor = %.3f MB\n" % (
-                200.0 * ntot / 1024 / 1024
-            )
-            str_ = str_ + ("Grid storage requirements (ASCII) = %.3f MB\n") % (
+            str_ += f"Number of focusing operations = {nfocus:i}\n"
+            str_ += "\n"
+            str_ += "######## ESTIMATED REQUIREMENTS ########\n"
+            str_ += "Memory per processor = "
+            str_ += f"{200.0 * ntot / 1024 / 1024:.3f} MB\n"
+            str_ += "Grid storage requirements (ASCII) = "
+            grid_storage_req = (
                 8.0 * 12 * nproc[0] * nproc[1] * nproc[2] * ntot / 1024 / 1024
             )
-            str_ = str_ + "\n"
+            str_ += f"{grid_storage_req:.3f} MB\n"
+            str_ += "\n"
         else:
-            str_ = str_ + "No ATOM entries in file!\n\n"
+            str_ = "No ATOM entries in file!\n\n"
         return str_
 
 

@@ -30,8 +30,8 @@ def generate_ff_combinations():
 
     Returns:
         list of combinations"""
-    ff_options = [None] + ["--ff=%s" % ff for ff in FF_LIST]
-    ffout_options = [None] + ["--ffout=%s" % ff for ff in FF_LIST]
+    ff_options = [None] + [f"--ff={ff}" for ff in FF_LIST]
+    ffout_options = [None] + [f"--ffout={ff}" for ff in FF_LIST]
     ff_combos = []
     for ff_opt in ff_options:
         for ffout_opt in ffout_options:
@@ -121,10 +121,10 @@ def pqr_distance(df1, df2):
 
     # Calculate differences and drop original columns
     for c_val in ("x", "y", "z", "q", "r"):
-        d_val = "d%s" % c_val
-        d2_val = "d%s2" % c_val
-        c_a = "%sA" % c_val
-        c_b = "%sB" % c_val
+        d_val = f"d{c_val}"
+        d2_val = f"d{c_val}2"
+        c_a = f"{c_val}A"
+        c_b = f"{c_val}B"
         d_frame[d_val] = d_frame[c_a] - d_frame[c_b]
         d_frame[d2_val] = d_frame[d_val] * d_frame[d_val]
         d_frame = d_frame.drop([d_val, c_a, c_b], axis="columns")
@@ -135,8 +135,8 @@ def pqr_distance(df1, df2):
 
     # Calculate norms of all measures and drop used columns
     for c_val in ("p", "q", "r"):
-        n_val = "d%s" % c_val
-        n2_val = "d%s2" % c_val
+        n_val = f"d{c_val}"
+        n2_val = f"d{c_val}2"
         d_frame[n_val] = numpy.sqrt(d_frame[n2_val])
         d_frame = d_frame.drop(n2_val, axis="columns")
 
@@ -154,17 +154,17 @@ def compare_pqr(pqr1_path, pqr2_path):
     """
     with open(pqr1_path, "rt", encoding="utf-8") as pqr1_file:
         df1 = pqr_to_dict(pqr1_file)
-        _LOGGER.debug("PQR 1 has shape %s", df1.shape)
+        _LOGGER.debug(f"PQR 1 has shape {df1.shape}")
 
     with open(pqr2_path, "rt", encoding="utf-8") as pqr2_file:
         df2 = pqr_to_dict(pqr2_file)
-        _LOGGER.debug("PQR 2 has shape %s", df2.shape)
+        _LOGGER.debug(f"PQR 2 has shape {df2.shape}")
 
     d_frame = pqr_distance(df1, df2)
-    _LOGGER.debug("Merged d_frame has shape %s", d_frame.shape)
+    _LOGGER.debug(f"Merged d_frame has shape {d_frame.shape}")
 
     grouped = d_frame.groupby(["res_name", "res_name", "atom_name"])
-    _LOGGER.debug("Have %d unique atoms", len(grouped))
+    _LOGGER.debug(f"Have {len(grouped):d} unique atoms")
     df_min = grouped.min()
 
     for col, what, cut in [
@@ -175,14 +175,14 @@ def compare_pqr(pqr1_path, pqr2_path):
         for cut_ in [0.0, cut]:
             df_c = df_min[df_min[col] > cut_].sort_values(col, ascending=False)
             ndiff = df_c.shape[0]
-            result = "%d atoms have %s differences > %g" % (ndiff, what, cut_)
+            result = f"{ndiff:d} atoms have {what} differences > {cut_:g}"
             if ndiff > 0:
                 _LOGGER.warning(result)
                 df_c = df_min[df_min[col] > cut_].sort_values(
                     col, ascending=False
                 )
                 summary = [
-                    "%s: %.3E" % (key, val)
+                    f"{key}: {val:.3E}"
                     for (key, val) in df_c[col].describe().to_dict().items()
                 ]
                 _LOGGER.debug(summary)
@@ -200,7 +200,7 @@ def run_pdb2pqr(args, input_pdb, tmp_path, output_pqr=None, expected_pqr=None):
         hash_ = hashlib.sha1(hash_str.encode("UTF-8")).hexdigest()
         output_pqr = hash_ + ".pqr"
     output_pqr = tmp_path / output_pqr
-    _LOGGER.debug("Writing output to %s", output_pqr)
+    _LOGGER.debug(f"Writing output to {output_pqr}")
     arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
     args = PARSER.parse_args(arg_str.split())
     main_driver(args)

@@ -61,14 +61,14 @@ class Flip(optimize.Optimize):
         self.routines.set_dihedral_angle(residue, anglenum, newangle)
         # Create new atoms at cached positions
         for name in map_:
-            newname = "%sFLIP" % name
+            newname = f"{name}FLIP"
             residue.create_atom(newname, map_[name])
             newatom = residue.get_atom(newname)
             self.routines.cells.add_cell(newatom)
             # Set the bonds
             newatom.reference = residue.reference.map[name]
             for bond in newatom.reference.bonds:
-                newbond = "%sFLIP" % bond
+                newbond = f"{bond}FLIP"
                 if residue.has_atom(newbond):
                     bondatom = residue.map[newbond]
                     if bondatom not in newatom.bonds:
@@ -92,7 +92,7 @@ class Flip(optimize.Optimize):
                 if atom.hdonor or atom.hacceptor:
                     self.atomlist.append(atom)
             # And the FLIP
-            atom = residue.get_atom("%sFLIP" % name)
+            atom = residue.get_atom(f"{name}FLIP")
             if not atom.is_hydrogen:
                 if atom.hdonor or atom.hacceptor:
                     self.atomlist.append(atom)
@@ -132,11 +132,8 @@ class Flip(optimize.Optimize):
                 return True
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)",
-            donor.residue,
-            donor.name,
-            acc.residue,
-            acc.name,
+            f"Working on {donor.residue} {donor.name} (donor) "
+            f"to {acc.residue} {acc.name} (acceptor)"
         )
         if self.is_hbond(donor, acc):
             if accobj.try_acceptor(acc, donor):
@@ -162,11 +159,8 @@ class Flip(optimize.Optimize):
         if not acc.hacceptor:
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)",
-            donor.residue,
-            donor.name,
-            acc.residue,
-            acc.name,
+            f"Working on {donor.residue} {donor.name} (donor) "
+            f"to {acc.residue} {acc.name} (acceptor)"
         )
         if self.is_hbond(donor, acc):
             residue.fixed = donor.name
@@ -190,11 +184,8 @@ class Flip(optimize.Optimize):
         if not donor.hdonor:
             return False
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)",
-            acc.residue,
-            acc.name,
-            donor.residue,
-            donor.name,
+            f"Working on {acc.residue} {acc.name} (acceptor) "
+            f"to {donor.residue} {donor.name} (donor)"
         )
         if self.is_hbond(donor, acc):
             residue.fixed = acc.name
@@ -389,11 +380,8 @@ class Alcoholic(optimize.Optimize):
         if residue.has_atom(newname):
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)",
-            donor.residue,
-            donor.name,
-            acc.residue,
-            acc.name,
+            f"Working on {donor.residue} {donor.name} (donor) "
+            f"to {acc.residue} {acc.name} (acceptor)"
         )
         # Act depending on the number of bonds
         if len(donor.bonds) == 1:  # No H or LP attached
@@ -432,11 +420,8 @@ class Alcoholic(optimize.Optimize):
         else:
             newname = "LP1"
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)",
-            acc.residue,
-            acc.name,
-            donor.residue,
-            donor.name,
+            f"Working on {acc.residue} {acc.name} (acceptor) "
+            f"to {donor.residue} {donor.name} (donor)"
         )
         # Act depending on the number of bonds
         if len(acc.bonds) == 1:  # No H or LP attached
@@ -569,7 +554,7 @@ class Water(optimize.Optimize):
         self.hbonds = []
         oxatom = residue.get_atom("O")
         if oxatom is None:
-            raise KeyError("Unable to find oxygen atom in %s!" % residue)
+            raise KeyError(f"Unable to find oxygen atom in {residue}!")
         oxatom.hdonor = 1
         oxatom.hacceptor = 1
         self.atomlist = [oxatom]
@@ -642,11 +627,8 @@ class Water(optimize.Optimize):
         else:
             newname = "LP1"
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)",
-            acc.residue,
-            acc.name,
-            donor.residue,
-            donor.name,
+            f"Working on {acc.residue} {acc.name} (acceptor) "
+            f"to {donor.residue} {donor.name} (donor)"
         )
         # Act depending on the number of bonds
         if len(acc.bonds) == 0:
@@ -660,19 +642,19 @@ class Water(optimize.Optimize):
                 # Point the LP to the best H
                 self.make_atom_with_no_bonds(acc, donorh, newname)
                 _LOGGER.warning("The best donorH was not picked (BUG?).")
-                _LOGGER.debug("Added %s to %s", newname, acc.residue)
+                _LOGGER.debug(f"Added {newname} to {acc.residue}")
                 return True
             return False
         elif len(acc.bonds) == 1:  # No H or LP attached
             _LOGGER.debug(
-                "Trying to add %s to %s with one bond", newname, acc.residue
+                f"Trying to add {newname} to {acc.residue} with one bond"
             )
             self.make_water_with_one_bond(acc, newname)
             newatom = acc.residue.get_atom(newname)
             return self.try_single_alcoholic_lp(acc, donor, newatom)
         elif len(acc.bonds) == 2:
             _LOGGER.debug(
-                "Trying to add %s to %s with two bonds", newname, acc.residue
+                f"Trying to add {newname} to {acc.residue} with two bonds"
             )
             loc1, loc2 = self.get_positions_with_two_bonds(acc)
             return self.try_positions_with_two_bonds_lp(
@@ -680,7 +662,7 @@ class Water(optimize.Optimize):
             )
         elif len(acc.bonds) == 3:
             _LOGGER.debug(
-                "Trying to add %s to %s with three bonds", newname, acc.residue
+                f"Trying to add {newname} to {acc.residue} with three bonds"
             )
             loc = self.get_position_with_three_bonds(acc)
             return self.try_positions_three_bonds_lp(acc, donor, newname, loc)
@@ -707,11 +689,8 @@ class Water(optimize.Optimize):
         else:
             newname = "H1"
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)",
-            donor.residue,
-            donor.name,
-            acc.residue,
-            acc.name,
+            f"Working on {donor.residue} {donor.name} (donor) "
+            f"to {acc.residue} {acc.name} (acceptor)"
         )
         # Act depending on the number of bonds
         if len(donor.bonds) == 0:
@@ -744,10 +723,10 @@ class Water(optimize.Optimize):
         residue = self.residue
         # Conditions for return
         if residue.fixed:
-            _LOGGER.debug("Residue %s already fixed", residue)
+            _LOGGER.debug(f"Residue {residue} already fixed")
             return
         if residue.has_atom("H2"):
-            _LOGGER.debug("Residue %s already has H2", residue)
+            _LOGGER.debug(f"Residue {residue} already has H2")
             return
         atom = residue.get_atom("O")
         if not residue.has_atom("H1"):
@@ -755,10 +734,8 @@ class Water(optimize.Optimize):
         else:
             addname = "H2"
         _LOGGER.debug(
-            "Finalizing %s by adding %s (%i current O bonds)",
-            residue,
-            addname,
-            len(atom.bonds),
+            f"Finalizing {residue} by adding {addname} ({len(atom.bonds)} "
+            "current O bonds)"
         )
         if len(atom.bonds) == 0:
             newcoords = []
@@ -920,8 +897,8 @@ class Carboxylic(optimize.Optimize):
             newangle = 180.0 + residue.dihedrals[anglenum]
             self.routines.set_dihedral_angle(residue, anglenum, newangle)
             # Rename the original atom and rebuild the new atom
-            residue.rename_atom(hname, "%s1" % hname)
-            newname = "%s2" % hname
+            residue.rename_atom(hname, f"{hname}1")
+            newname = f"{hname}2"
             residue.create_atom(newname, newcoords)
             newatom = residue.get_atom(newname)
             self.routines.cells.add_cell(newatom)
@@ -933,8 +910,8 @@ class Carboxylic(optimize.Optimize):
                 bondatom.bonds.append(newatom)
             # Break if this is the only atom to add
             self.atomlist.append(bondatom)
-            self.hlist.append(residue.get_atom("%s1" % hname))
-            self.hlist.append(residue.get_atom("%s2" % hname))
+            self.hlist.append(residue.get_atom(f"{hname}1"))
+            self.hlist.append(residue.get_atom(f"{hname}2"))
             if longflag:
                 break
         residue.set_donors_acceptors()
@@ -968,11 +945,8 @@ class Carboxylic(optimize.Optimize):
                 return True
             return False
         _LOGGER.debug(
-            "Working on %s %s (donor) to %s %s (acceptor)",
-            donor.residue,
-            donor.name,
-            acc.residue,
-            acc.name,
+            f"Working on {donor.residue} {donor.name} (donor) "
+            f"to {acc.residue} {acc.name} (acceptor)"
         )
         if self.is_hbond(donor, acc):
             if accobj.try_acceptor(acc, donor):
@@ -1004,7 +978,7 @@ class Carboxylic(optimize.Optimize):
             # Check the A-D-H(D) angle
             angle = self.get_hbond_angle(acc, donor, donorhatom)
             if angle <= ANGLE_CUTOFF:
-                _LOGGER.debug("Found HBOND! %.4f %.4f", dist, angle)
+                _LOGGER.debug(f"Found HBOND! {dist:.4f} {angle:.4f}")
                 return True
         # If we get here, no bond is formed
         return False
@@ -1023,11 +997,8 @@ class Carboxylic(optimize.Optimize):
         if not donor.hdonor:
             return False
         _LOGGER.debug(
-            "Working on %s %s (acceptor) to %s %s (donor)",
-            acc.residue,
-            acc.name,
-            donor.residue,
-            donor.name,
+            f"Working on {acc.residue} {acc.name} (acceptor) "
+            f"to {donor.residue} {donor.name} (donor)"
         )
         # We want to ignore the Hs on the acceptor
         if self.is_carboxylic_hbond(donor, acc):
@@ -1087,7 +1058,7 @@ class Carboxylic(optimize.Optimize):
 
     def fix(self, donor, acc):
         """Fix the carboxylic residue."""
-        _LOGGER.debug("Fixing residue %s due to %s", donor.residue, donor.name)
+        _LOGGER.debug(f"Fixing residue {donor.residue} due to {donor.name}")
         residue = donor.residue
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
@@ -1169,7 +1140,7 @@ class Carboxylic(optimize.Optimize):
         # PATCHES.xml expects *2 - if it's *1 that left, flip names
         if len(self.atomlist) == 2:
             if hydatom.name.endswith("1"):
-                residue.rename_atom(hydatom.name, "%s2" % hydatom.name[:-1])
+                residue.rename_atom(hydatom.name, f"{hydatom.name[:-1]}2")
                 bondname0 = self.atomlist[0].name
                 bondname1 = self.atomlist[1].name
                 tempname = "FLIP"
@@ -1195,8 +1166,8 @@ class Carboxylic(optimize.Optimize):
                     pass
             if hydatom.name.endswith("1"):
                 if hydatom.name[:-1] + "2" in residue.map.keys():
-                    residue.remove_atom("%s2" % hydatom.name[:-1])
-                residue.rename_atom(hydatom.name, "%s2" % hydatom.name[:-1])
+                    residue.remove_atom(f"{hydatom.name[:-1]}2")
+                residue.rename_atom(hydatom.name, f"{hydatom.name[:-1]}2")
                 bondname0 = self.atomlist[0].name
                 bondname1 = self.atomlist[1].name
                 tempname = "FLIP"
@@ -1238,10 +1209,10 @@ class PotentialBond:
         self.dist = dist
 
     def __str__(self):
-        txt = "%s %s" % (self.atom1.name, self.atom1.residue)
+        txt = f"{self.atom1.name} {self.atom1.residue}"
         txt += " to "
-        txt += "%s %s" % (self.atom2.name, self.atom2.residue)
-        txt += " (%.2f A)" % self.dist
+        txt += f"{self.atom2.name} {self.atom2.residue}"
+        txt += f" ({self.dist:.2f} A)"
         return txt
 
 
@@ -1271,13 +1242,13 @@ class HydrogenDefinition:
         self.conformations = []
 
     def __str__(self):
-        output = "Name:                  %s\n" % self.name
-        output += "Opttype:               %s\n" % self.opttype
-        output += "Optangle:              %s\n" % self.optangle
-        output += "map:                   %s\n" % self.map
+        output = f"Name:                  {self.name}\n"
+        output += f"Opttype:               {self.opttype}\n"
+        output += f"Optangle:              {self.optangle}\n"
+        output += f"map:                   {self.map}\n"
         output += "Conformations:\n"
         for conf in self.conformations:
-            output += "\n%s" % conf
+            output += f"\n{conf}"
         output += "*****************************************\n"
         return output
 
@@ -1310,11 +1281,11 @@ class HydrogenConformation:
         self.atoms = []
 
     def __str__(self):
-        output = "Hydrogen Name: %s\n" % self.hname
-        output += "Bound Atom:    %s\n" % self.boundatom
-        output += "Bond Length:   %.2f\n" % self.bondlength
+        output = f"Hydrogen Name: {self.hname}\n"
+        output += f"Bound Atom:    {self.boundatom}\n"
+        output += f"Bond Length:   {self.bondlength:.2f}\n"
         for atom in self.atoms:
-            output += "\t%s\n" % atom
+            output += f"\t{atom}\n"
         return output
 
     def add_atom(self, atom):
@@ -1346,12 +1317,8 @@ class HydrogenAmbiguity:
         self.routines = routines
 
     def __str__(self):
-        text = "%s %i %s (%s)" % (
-            self.residue.name,
-            self.residue.res_seq,
-            self.residue.chain_id,
-            self.hdef.opttype,
-        )
+        text = f"{self.residue.name} {self.residue.res_seq} "
+        text += f"{self.residue.chain_id} ({self.hdef.opttype})"
         return text
 
 

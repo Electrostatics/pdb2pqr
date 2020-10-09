@@ -4,10 +4,10 @@
 
 Authors:  Todd Dolinsky, Yong Huang
 """
-import string
 import logging
 import copy
 import pprint
+import string
 from . import residue as residue_
 from . import aa
 from . import na
@@ -139,7 +139,7 @@ class Biomolecule(object):
                     if residue.has_atom("OP1") and residue.has_atom("OP2"):
                         continue
                 if not residue.has_atom(refatomname):
-                    _LOGGER.debug("Missing %s in %s", refatomname, residue)
+                    _LOGGER.debug(f"Missing {refatomname} in {residue}")
                     natom += 1
                     residue.missing.append(refatomname)
         return natom
@@ -384,9 +384,9 @@ class Biomolecule(object):
                     count += 1
                 else:
                     _LOGGER.warning(
-                        "Couldn't rebuild %s in %s!", atomname, residue
+                        f"Couldn't rebuild {atomname} in {residue}!"
                     )
-        _LOGGER.debug(" Added %i hydrogen atoms.", count)
+        _LOGGER.debug(f" Added {count} hydrogen atoms.")
 
     def set_donors_acceptors(self):
         """Set the donors and acceptors within the biomolecule."""
@@ -432,6 +432,7 @@ class Biomolecule(object):
             map_ = {}
             caatom = residue.get_atom("CA")
             if caatom is None:
+                # TODO: What does the %s mean? Is it the residue name?
                 text = "Cannot set references to %s without CA atom!"
                 raise ValueError(text)
             # Set up the linked map
@@ -454,7 +455,7 @@ class Biomolecule(object):
                     else:
                         raise ValueError(
                             "Found gap in biomolecule structure for atom "
-                            "%s" % atom
+                            f"{atom}"
                         )
 
     def remove_hydrogens(self):
@@ -479,7 +480,7 @@ class Biomolecule(object):
         :type neutralc:  bool
         """
         if len(chain.residues) == 0:
-            text = 'Error: chain "%s" has 0 residues!' % chain.chain_id
+            text = f'Error: chain "{chain.chain_id}" has 0 residues!'
             raise IndexError(text)
         # Set the N-Terminus/ 5' Terminus
         res0 = chain.residues[0]
@@ -576,9 +577,8 @@ class Biomolecule(object):
                 if atom1 is None or atom2 is None:
                     continue
                 if util.distance(atom1.coords, atom2.coords) > PEPTIDE_DIST:
-                    text = "Gap in backbone detected between %s and %s!" % (
-                        res1,
-                        res2,
+                    text = (
+                        f"Gap in backbone detected between {res1} and {res2}!"
                     )
                     _LOGGER.warning(text)
                     res2.peptide_c = None
@@ -604,8 +604,8 @@ class Biomolecule(object):
         :type residue:  Residue
         """
         if patchname not in self.patch_map:
-            raise KeyError("Unable to find patch %s!" % patchname)
-        _LOGGER.debug("PATCH INFO: %s patched with %s", residue, patchname)
+            raise KeyError(f"Unable to find patch {patchname}!")
+        _LOGGER.debug(f"PATCH INFO: {residue} patched with {patchname}")
         if patchname == "PEPTIDE":
             newreference = residue.reference
         else:
@@ -671,13 +671,13 @@ class Biomolecule(object):
                 res1.ss_bonded = True
                 res1.ss_bonded_partner = partner
                 self.apply_patch("CYX", res1)
-                _LOGGER.debug("%s - %s", res1, res2)
+                _LOGGER.debug(f"{res1} - {res2}")
             elif numpartners > 1:
-                error = "WARNING: %s has multiple potential " % res1
+                error = f"WARNING: {res1} has multiple potential "
                 error += "SS-bridge partners"
                 _LOGGER.warning(error)
             elif numpartners == 0:
-                _LOGGER.debug("%s is a free cysteine", res1)
+                _LOGGER.debug(f"{res1} is a free cysteine")
 
     def update_residue_types(self):
         """Find the type of residue as notated in the Amino Acid definition.
@@ -761,9 +761,9 @@ class Biomolecule(object):
         :param pkadic:  dictionary of pKa values for residues
         :type pkadic:  dict
         """
-        _LOGGER.info("Applying pKa values at a pH of %.2f:", ph)
+        _LOGGER.info(f"Applying pKa values at a pH of {ph:.2f}:")
         formatted_pkadict = pprint.pformat(pkadic)
-        _LOGGER.debug("%s", formatted_pkadict)
+        _LOGGER.debug(f"{formatted_pkadict}")
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
                 continue
@@ -771,7 +771,7 @@ class Biomolecule(object):
             resnum = residue.res_seq
             chain_id = residue.chain_id
             if residue.is_n_term:
-                key = "N+ %i %s" % (resnum, chain_id)
+                key = f"N+ {resnum} {chain_id}"
                 key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
@@ -784,12 +784,12 @@ class Biomolecule(object):
                             "peoepb",
                             "swanson",
                         ]:
-                            warn = ("N-terminal %s" % key, "neutral")
+                            warn = f"N-terminal {key} neutral"
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-NTERM", residue)
             if residue.is_c_term:
-                key = "C- %i %s" % (resnum, chain_id)
+                key = f"C- {resnum} {chain_id}"
                 key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
@@ -802,11 +802,11 @@ class Biomolecule(object):
                             "peoepb",
                             "swanson",
                         ]:
-                            warn = ("C-terminal %s" % key, "neutral")
+                            warn = f"C-terminal {key} neutral"
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-CTERM", residue)
-            key = "%s %i %s" % (resname, resnum, chain_id)
+            key = f"{resname} {resnum} {chain_id}"
             key = key.strip()
             if key in pkadic:
                 value = pkadic[key]
@@ -897,7 +897,7 @@ class Biomolecule(object):
             )
             _LOGGER.warning(warn)
             for item in pkadic:
-                text = "             %s" % item
+                text = f"             {item}"
                 _LOGGER.warning(text)
 
     def hold_residues(self, hlist):
@@ -957,7 +957,7 @@ class Biomolecule(object):
                     klass = getattr(na, resname)
                 residue = klass(residue, refobj)
         except (KeyError, NameError):
-            _LOGGER.debug("Parsing %s as new residue", resname)
+            _LOGGER.debug(f"Parsing {resname} as new residue")
             residue = residue_.Residue(residue)
         return residue
 
@@ -988,9 +988,7 @@ class Biomolecule(object):
                 ):
                     continue
                 if not residue.reference.has_atom(atomname):
-                    _LOGGER.warning(
-                        "Extra atom %s in %s! - ", atomname, residue
-                    )
+                    _LOGGER.warning(f"Extra atom {atomname} in {residue}! - ")
                     residue.remove_atom(atomname)
                     _LOGGER.warning("Deleted this atom.")
             missing = residue.missing
@@ -1045,13 +1043,10 @@ class Biomolecule(object):
                     )
                     residue.create_atom(atomname, newcoords)
                     _LOGGER.debug(
-                        "Added %s to %s at coordinates", atomname, residue
-                    )
-                    _LOGGER.debug(
-                        " %.3f %.3f %.3f",
-                        newcoords[0],
-                        newcoords[1],
-                        newcoords[2],
+                        f"Added {atomname} to {residue} at coordinates "
+                        f"{newcoords[0]:.3f}, "
+                        f"{newcoords[1]:.3f}, "
+                        f"{newcoords[2]:.3f}"
                     )
 
     def create_html_typemap(self, definition, outfilename):
@@ -1095,16 +1090,12 @@ class Biomolecule(object):
                 ambergroup = amberff.get_group(resname, atom.name)
                 charmmgroup = charmmff.get_group(resname, atom.name)
                 file_.write(
-                    "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td>"
-                    "<td>%s</td><td>%s</td></tr>\n"
-                    % (
-                        atom.serial,
-                        atom.name,
-                        resname,
-                        atom.chain_id,
-                        ambergroup,
-                        charmmgroup,
-                    )
+                    f"<tr><td>{atom.serial}</td>"
+                    f"<td>{atom.name}</td>"
+                    f"<td>{resname}</td>"
+                    f"<td>{atom.chain_id}</td>"
+                    f"<td>{ambergroup}</td>"
+                    f"<td>{charmmgroup}</td></tr>\n"
                 )
             file_.write("</table>\n")
             file_.write("</BODY></HTML>\n")
@@ -1155,7 +1146,7 @@ class Biomolecule(object):
                 if isinstance(residue, na.Nucleic):
                     if residue.is3term or residue.is5term:
                         continue
-                if float("%i" % rescharge) != rescharge:
+                if float(f"{int(rescharge)}") != rescharge:
                     misslist.append(residue)
         return misslist, charge
 

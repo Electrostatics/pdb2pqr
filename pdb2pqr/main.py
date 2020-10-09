@@ -28,7 +28,7 @@ from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
 
-_LOGGER = logging.getLogger("PDB2PQR%s" % VERSION)
+_LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
@@ -246,8 +246,8 @@ def print_splash_screen(args):
     :param args:  command-line arguments
     :type args:  argparse.Namespace
     """
-    _LOGGER.debug("Args:  %s", args)
-    _LOGGER.info("%s", TITLE_FORMAT_STRING.format(version=VERSION))
+    _LOGGER.debug(f"Args:  {args}")
+    _LOGGER.info(TITLE_FORMAT_STRING.format(version=VERSION))
     for citation in CITATIONS:
         _LOGGER.info(citation)
 
@@ -263,12 +263,12 @@ def check_files(args):
     if args.usernames is not None:
         usernames = Path(args.usernames)
         if not usernames.is_file():
-            error = "User-provided names file does not exist: %s" % usernames
+            error = f"User-provided names file does not exist: {usernames}"
             raise FileNotFoundError(error)
     if args.userff is not None:
         userff = Path(args.userff)
         if not userff.is_file():
-            error = "User-provided forcefield file does not exist: %s" % userff
+            error = f"User-provided forcefield file does not exist: {userff}"
             raise FileNotFoundError(error)
         if args.usernames is None:
             err = "--usernames must be specified if using --userff"
@@ -278,7 +278,7 @@ def check_files(args):
     if args.ligand is not None:
         ligand = Path(args.ligand)
         if not ligand.is_file():
-            error = "Unable to find ligand file: %s" % ligand
+            error = f"Unable to find ligand file: {ligand}"
             raise FileNotFoundError(error)
 
 
@@ -291,8 +291,8 @@ def check_options(args):
     """
     if (args.ph < 0) or (args.ph > 14):
         err = (
-            "Specified pH (%s) is outside the range [1, 14] of this program"
-            % args.ph
+            f"Specified pH ({args.ph}) is outside the range "
+            "[1, 14] of this program"
         )
         raise RuntimeError(err)
     if args.neutraln and (args.ff is None or args.ff.lower() != "parse"):
@@ -323,11 +323,11 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
             _LOGGER.warning(
-                "Ignoring %d header lines in output.", len(header_lines)
+                f"Ignoring {len(header_lines)} header lines in output."
             )
         if missing_lines:
             _LOGGER.warning(
-                "Ignoring %d missing lines in output.", len(missing_lines)
+                f"Ignoring {len(missing_lines)} missing lines in output."
             )
         for line in pqr_lines:
             if args.whitespace:
@@ -411,24 +411,20 @@ def setup_molecule(pdblist, definition, ligand_path):
         ligand = None
     biomolecule = biomol.Biomolecule(pdblist, definition)
     _LOGGER.info(
-        "Created biomolecule object with %d residues and %d atoms.",
-        len(biomolecule.residues),
-        len(biomolecule.atoms),
+        f"Created biomolecule object with {len(biomolecule.residues)} "
+        f"residues and {len(biomolecule.atoms)} atoms."
     )
     for residue in biomolecule.residues:
         multoccupancy = False
         for atom in residue.atoms:
             if atom.alt_loc != "":
                 multoccupancy = True
-                txt = "Multiple occupancies found: %s in %s." % (
-                    atom.name,
-                    residue,
-                )
+                txt = f"Multiple occupancies found: {atom.name} in {residue}."
                 _LOGGER.warning(txt)
         if multoccupancy:
             err = (
-                "Multiple occupancies found in %s. At least one of the "
-                "instances is being ignored." % residue
+                f"Multiple occupancies found in {residue}. At least one of "
+                "the instances is being ignored."
             )
             _LOGGER.warning(err)
     return biomolecule, definition, ligand
@@ -469,10 +465,10 @@ def is_repairable(biomolecule, has_ligand):
         return False
     miss_frac = float(num_missing) / float(num_heavy)
     if miss_frac > REPAIR_LIMIT:
-        error = "This PDB file is missing too many (%i out of " % num_missing
-        error += "%i, %g) " % (num_heavy, miss_frac)
+        error = f"This PDB file is missing too many ({num_missing} out of "
+        error += f"{num_heavy:i}, {miss_frac:g}) "
         error += "heavy atoms to accurately repair the file."
-        error += "The current repair limit is set at %g. " % REPAIR_LIMIT
+        error += f"The current repair limit is set at {REPAIR_LIMIT:g}. "
         error += "You may also see this message if PDB2PQR does not have "
         error += "parameters for enough residues in your biomolecule."
         _LOGGER.error(error)
@@ -584,8 +580,8 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
     else:
         if is_repairable(biomolecule, args.ligand is not None):
             _LOGGER.info(
-                "Attempting to repair %d missing atoms in biomolecule.",
-                biomolecule.num_missing_heavy,
+                f"Attempting to repair {biomolecule.num_missing_heavy:d} "
+                "missing atoms in biomolecule.",
             )
             biomolecule.repair_heavy()
         _LOGGER.info("Updating disulfide bridges.")
@@ -595,7 +591,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             try:
                 debumper.debump_biomolecule()
             except ValueError as err:
-                err = "Unable to debump biomolecule. %s" % err
+                err = f"Unable to debump biomolecule. {err}"
                 raise ValueError(err)
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
@@ -665,7 +661,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             ).format(r=residue)
             raise ValueError(err)
     if args.ffout is not None:
-        _LOGGER.info("Applying custom naming scheme (%s).", args.ffout)
+        _LOGGER.info(f"Applying custom naming scheme ({args.ffout}).")
         if args.ffout != args.ff:
             name_scheme = forcefield.Forcefield(args.ffout, definition, None)
         else:
@@ -710,7 +706,7 @@ def main_driver(args):
     :type args:  argparse.Namespace
     """
     io.setup_logger(args.output_pqr, args.log_level)
-    _LOGGER.debug("Invoked with arguments: %s", args)
+    _LOGGER.debug(f"Invoked with arguments: {args}")
     print_splash_screen(args)
     _LOGGER.info("Checking and transforming input arguments.")
     args = transform_arguments(args)
@@ -718,7 +714,7 @@ def main_driver(args):
     check_options(args)
     _LOGGER.info("Loading topology files.")
     definition = io.get_definitions()
-    _LOGGER.info("Loading molecule: %s", args.input_path)
+    _LOGGER.info(f"Loading molecule: {args.input_path}")
     pdblist, is_cif = io.get_molecule(args.input_path)
     if args.drop_water:
         _LOGGER.info("Dropping water from structure.")
@@ -804,13 +800,13 @@ def dx_to_cube():
     args = parser.parse_args()
     log_level = getattr(logging, args.log_level)
     logging.basicConfig(level=log_level)
-    _LOGGER.debug("Got arguments: %s", args)
-    _LOGGER.info("Reading PQR from %s...", args.pqr_input)
+    _LOGGER.debug(f"Got arguments: {args}", args)
+    _LOGGER.info(f"Reading PQR from {args.pqr_input}...")
     with open(args.pqr_input, "rt") as pqr_file:
         atom_list = io.read_pqr(pqr_file)
-    _LOGGER.info("Reading DX from %s...", args.dx_input)
+    _LOGGER.info(f"Reading DX from {args.dx_input}...")
     with open(args.dx_input, "rt") as dx_file:
         dx_dict = io.read_dx(dx_file)
-    _LOGGER.info("Writing Cube to %s...", args.output)
+    _LOGGER.info(f"Writing Cube to {args.output}...")
     with open(args.output, "wt") as cube_file:
         io.write_cube(cube_file, dx_dict, atom_list)

@@ -214,7 +214,7 @@ class Forcefield:
                             "Unable to recognize user-defined forcefield file"
                         )
                         if defpath != "":
-                            txt += " %s!" % defpath
+                            txt += f" {defpath}!"
                         else:
                             txt += "!"
                         txt += " Please use a valid parameter file."
@@ -1057,12 +1057,12 @@ class ForcefieldAtom:
             return item
         except AttributeError:
             message = (
-                'Unable to access object "%s" in class ForcefieldAtom' % name
+                f'Unable to access object "{name}" in class ForcefieldAtom'
             )
             raise KeyError(message)
 
     def __str__(self):
-        txt = "%s:\n" % self.name
-        txt += "  Charge: %.4f\n" % self.charge
-        txt += "  Radius: %.4f" % self.radius
+        txt = f"{self.name}:\n"
+        txt += f"  Charge: {self.charge:.4f}\n"
+        txt += f"  Radius: {self.radius:.4f}"
         return txt

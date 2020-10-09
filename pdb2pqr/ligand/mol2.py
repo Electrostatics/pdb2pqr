@@ -43,7 +43,7 @@ class Mol2Bond:
         if bond_type in BOND_TYPES:
             self.type = bond_type
         else:
-            err = "Unknown bond type: %s" % bond_type
+            err = f"Unknown bond type: {bond_type}"
             raise ValueError(err)
 
     @property
@@ -217,7 +217,7 @@ class Mol2Atom:
             elif bond.type == "aromatic":
                 num_aromatic += 1
             else:
-                err = "Unknown bond type: %s" % bond.type
+                err = f"Unknown bond type: {bond.type}"
                 raise ValueError(err)
         if num_aromatic > 0:
             order = order + num_aromatic + 1
@@ -447,9 +447,9 @@ class Mol2Molecule:
         for ring in rings:
             ring_set = set(ring)
             if ring_set in ring_sets:
-                _LOGGER.debug("Fused ring: %s", ring)
+                _LOGGER.debug(f"Fused ring: {ring}")
             else:
-                _LOGGER.debug("Unfused ring: %s", ring)
+                _LOGGER.debug(f"Unfused ring: {ring}")
                 self.rings.add(ring)
         for ring in self.rings:
             for atom in ring:
@@ -475,7 +475,7 @@ class Mol2Molecule:
         for line in mol2_file:
             if "@<TRIPOS>ATOM" in line:
                 break
-            _LOGGER.debug("Skipping: %s", line.strip())
+            _LOGGER.debug(f"Skipping: {line.strip()}")
         duplicates = set()
         for line in mol2_file:
             line = line.strip()
@@ -485,7 +485,7 @@ class Mol2Molecule:
                 break
             words = line.split()
             if len(words) < 8:
-                err = "Bad entry in MOL2 file: %s" % line
+                err = f"Bad entry in MOL2 file: {line}"
                 raise ValueError(err)
             atom = Mol2Atom()
             atom.name = words[1]
@@ -495,7 +495,7 @@ class Mol2Molecule:
             if len(type_parts) == 2:
                 type_parts[1] = type_parts[1].lower()
             elif len(type_parts) > 2:
-                err = "Invalid atom type: %s" % atom_type
+                err = f"Invalid atom type: {atom_type}"
                 raise ValueError(err)
             atom.type = ".".join(type_parts)
             atom.chain_id = "L"
@@ -507,16 +507,14 @@ class Mol2Molecule:
                 atom.y = float(words[3])
                 atom.z = float(words[4])
             except ValueError as exc:
-                err = "Error (%s) parsing atom line: %s" % (exc, line)
+                err = f"Error ({exc}) parsing atom line: {line}"
                 raise ValueError(err)
             if len(line) > 8:
                 try:
                     atom.mol2charge = float(words[8])
                 except TypeError:
-                    err = "Unable to parse %s as charge in atom line: %s" % (
-                        words[8],
-                        line,
-                    )
+                    err = f"Unable to parse {words[8]} as charge in atom "
+                    err += f"line: {line}"
                     _LOGGER.warning(err)
             if atom.name in self.atoms:
                 duplicates.add(atom.name)
@@ -524,7 +522,7 @@ class Mol2Molecule:
                 self.atoms[atom.name] = atom
         if len(duplicates) > 0:
             raise KeyError(
-                "Found duplicate atoms names in MOL2 file: %s" % duplicates
+                f"Found duplicate atoms names in MOL2 file: {duplicates}"
             )
         return mol2_file
 
@@ -546,7 +544,7 @@ class Mol2Molecule:
                 break
             words = line.split()
             if len(words) < 4:
-                err = "Bond line too short: %s" % line
+                err = f"Bond line too short: {line}"
                 raise ValueError(err)
             bond_type = words[3]
             if bond_type == "1":
@@ -558,7 +556,7 @@ class Mol2Molecule:
             elif bond_type == "ar":
                 bond_type = "aromatic"
             else:
-                err = "Unknown bond type: %s" % bond_type
+                err = f"Unknown bond type: {bond_type}"
                 raise ValueError(err)
             bond_id = int(words[0])
             atom_id1 = int(words[1])

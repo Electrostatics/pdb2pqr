@@ -100,7 +100,7 @@ class DefinitionHandler(sax.ContentHandler):
         """
         if text.isspace():
             return
-        _LOGGER.debug("Got text for <%s>: %s", self.curelement, text)
+        _LOGGER.debug(f"Got text for <{self.curelement}>: {text}")
         # If this is a float, make it so
         try:
             value = float(str(text))
@@ -219,16 +219,16 @@ class Patch:
         self.newname = ""
 
     def __str__(self):
-        text = "%s\n" % self.name
-        text += "Apply to: %s\n" % self.applyto
+        text = f"{self.name}\n"
+        text += f"Apply to: {self.applyto}\n"
         text += "Atoms to add: \n"
         for atom in self.map:
-            text += "\t%s\n" % str(self.map[atom])
+            text += f"\t{str(self.map[atom])}\n"
         text += "Atoms to remove: \n"
         for remove in self.remove:
-            text += "\t%s\n" % remove
+            text += "\t{remove}\n"
         text += "Alternate naming map: \n"
-        text += "\t%s\n" % self.altnames
+        text += f"\t{self.altnames}\n"
         return text
 
 
@@ -242,15 +242,15 @@ class DefinitionResidue(residue.Residue):
         self.altnames = {}
 
     def __str__(self):
-        text = "%s\n" % self.name
+        text = f"{self.name}\n"
         text += "Atoms: \n"
         for atom in self.map:
-            text += "\t%s\n" % str(self.map[atom])
+            text += f"\t{str(self.map[atom])}\n"
         text += "Dihedrals: \n"
         for dihedral in self.dihedrals:
-            text += "\t%s\n" % dihedral
+            text += f"\t{dihedral}\n"
         text += "Alternate naming map: \n"
-        text += "\t%s\n" % self.altnames
+        text += f"\t{self.altnames}\n"
         return text
 
     def get_nearest_bonds(self, atomname):
@@ -312,9 +312,9 @@ class DefinitionAtom(structures.Atom):
         self.bonds = []
 
     def __str__(self):
-        text = "%s: %.3f %.3f %.3f" % (self.name, self.x, self.y, self.z)
+        text = f"{self.name}: {self.x:.3f} {self.y:.3f} {self.z:.3f}"
         for bond in self.bonds:
-            text += " %s" % bond
+            text += f" {bond}"
         return text
 
     @property

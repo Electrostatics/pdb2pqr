@@ -66,12 +66,12 @@ def test_assign_parameters(input_mol2):
         }
         test_results.append(test_row)
         new_total_charge += atom.charge
-    _LOGGER.debug("Test results: %s", test_results)
+    _LOGGER.debug(f"Test results: {test_results}")
     test_results = pd.DataFrame(test_results)
     test_results = test_results.set_index("name")
-    # _LOGGER.debug("Test results:\n%s", test_results.to_string())
+    # _LOGGER.debug(f"Test results:\n{test_results.to_string()}")
     _LOGGER.info(
-        "Total charge: %5.2f -> %5.2f", old_total_charge, new_total_charge
+        f"Total charge: {old_total_charge:5.2f} -> {new_total_charge:5.2f}"
     )
     expected_results = pd.DataFrame(PARAMETER_RESULTS[input_mol2])
     expected_results = expected_results.set_index("name")
@@ -110,7 +110,8 @@ def test_formal_charge(input_mol2):
             err = err.format(atom, expected_charge, atom.formal_charge)
             errors.append(err)
     if len(errors) > 0:
-        err = "Errors in test values:\n%s" % "\n".join(errors)
+        err = "Errors in test values:\n"
+        err += "\n".join(errors)
         raise ValueError(err)
 
 
@@ -135,23 +136,14 @@ def test_torsions(input_mol2):
         diff = test ^ expected
         if len(diff) > 0:
             err = (
-                "Torsion test failed for {mol}:\n"
-                "Got: {test}\n"
-                "Expected: {expected}\n"
-                "Difference: {diff}"
-            ).format(
-                mol=input_mol2,
-                test=sorted(list(test)),
-                expected=sorted(list(expected)),
-                diff=sorted(list(diff)),
+                f"Torsion test failed for {input_mol2}:\n"
+                f"Got: {sorted(list(test))}\n"
+                f"Expected: {sorted(list(expected))}\n"
+                f"Difference: {sorted(list(diff))}"
             )
             raise ValueError(err)
     except KeyError:
-        err = (
-            "No results for %s: %s",
-            input_mol2,
-            sorted(list(ligand.torsions)),
-        )
+        err = f"No results for {input_mol2}: {sorted(list(ligand.torsions))}"
         raise KeyError(err)
 
 
@@ -166,7 +158,7 @@ def test_rings(input_mol2):
     try:
         benchmark = RING_RESULTS[input_mol2]
     except KeyError:
-        err = "Missing expected results for %s: %s" % (input_mol2, test)
+        err = f"Missing expected results for {input_mol2}: {test}"
         raise KeyError(err)
     diff = test ^ benchmark
     if len(diff) > 0:
@@ -185,7 +177,7 @@ def test_rings(input_mol2):
     for atom_name in ligand.atoms:
         atom = ligand.atoms[atom_name]
         if atom.num_rings > 0:
-            str_ = "%d rings: %s" % (atom.num_rings, atom)
+            str_ = f"{atom.num_rings} rings: {atom}"
             _LOGGER.debug(str_)
 
 
@@ -193,10 +185,10 @@ def test_rings(input_mol2):
 def test_ligand_biomolecule(input_pdb, tmp_path):
     """PROPKA non-regression tests on biomolecules without ligands."""
     input_pdb = Path(input_pdb)
-    ligand = Path("tests/data") / ("%s-ligand.mol2" % input_pdb.stem)
-    args = "--log-level=INFO --ff=AMBER --drop-water --ligand=%s" % ligand
+    ligand = Path("tests/data") / f"{input_pdb.stem}-ligand.mol2"
+    args = f"--log-level=INFO --ff=AMBER --drop-water --ligand={ligand}"
     output_pqr = Path(input_pdb).stem + ".pqr"
-    _LOGGER.debug("Running test in %s", tmp_path)
+    _LOGGER.debug(f"Running test in {tmp_path}")
     common.run_pdb2pqr(
         args=args,
         input_pdb=input_pdb,

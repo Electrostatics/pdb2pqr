@@ -93,7 +93,7 @@ def electronegativity(charge, poly_terms, atom_type):
                 + poly_terms[2] * charge * charge
             )
         else:
-            err = "Cannot parse length-%d polynomial" % len(poly_terms)
+            err = f"Cannot parse length-{len(poly_terms):d} polynomial"
             raise IndexError(err)
     return chi
 
@@ -116,7 +116,7 @@ def assign_terms(atoms, term_dict):
             atom.poly_terms = term_dict[atom_type]
         except KeyError:
             raise KeyError(
-                "Unable to find polynomial terms for atom type %s" % atom_type
+                f"Unable to find polynomial terms for atom type {atom_type}"
             )
     return atoms
 

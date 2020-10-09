@@ -65,8 +65,9 @@ class Mol2Bond:
         return self.atoms[0].distance(self.atoms[1])
 
     def __str__(self):
-        fmt = "{b.atoms[0].name:s} {b.type:s}-bonded to {b.atoms[1].name:s}"
-        return fmt.format(b=self)
+        mol2 = f"{self.atoms[0].name:s} {self.type:s}-bonded to "
+        mol2 += f"{self.atoms[1].name:s}"
+        return mol2
 
 
 class Mol2Atom:
@@ -116,11 +117,11 @@ class Mol2Atom:
 
     def __str__(self):
         """Generate PDB line from MOL2."""
-        pdb_fmt = (
-            "HETATM{a.serial:5d}{a.name:>5s}{a.res_name:>4s} L"
-            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
+        mol2 = (
+            f"HETATM{self.serial:5d}{self.name:>5s}{self.res_name:>4s} L"
+            f"{self.res_seq!s:>5s}   {self.x:8.3f}{self.y:8.3f}{self.z:8.3f}"
         )
-        return pdb_fmt.format(a=self)
+        return mol2
 
     def assign_radius(self, primary_dict, secondary_dict):
         """Assign radius to atom.
@@ -148,9 +149,9 @@ class Mol2Atom:
             self.radius = radius
         else:
             err = (
-                "Unable to find radius parameter for self of type {type} in "
-                "radius dictionary: {ff}"
-            ).format(type=self.type, ff=primary_dict)
+                f"Unable to find radius parameter for self of type "
+                f"{self.type} in radius dictionary: {primary_dict}"
+            )
             raise KeyError(err)
 
     @property

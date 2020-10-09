@@ -915,18 +915,17 @@ class Biomolecule(object):
                 hlist.remove(reskey)
                 if isinstance(residue, aa.Amino):
                     residue.stateboolean = {"FIXEDSTATE": False}
-                    _LOGGER.debug(
-                        "Setting residue {:s} as fixed.".format(str(residue))
-                    )
+                    _LOGGER.debug(f"Setting residue {residue} as fixed.")
                 else:
-                    err = "Matched residue {:s} but not subclass of Amino."
-                    _LOGGER.warning(err.format(str(residue)))
+                    err = f"Matched residue {residue} but not subclass of "
+                    err += "Amino."
+                    _LOGGER.warning(err)
         if len(hlist) > 0:
             err = (
                 "The following fixed residues were not matched (possible "
-                "internal error): {:s}."
+                f"internal error): {hlist}."
             )
-            _LOGGER.warning(err.format(str(hlist)))
+            _LOGGER.warning(err)
 
     def create_residue(self, residue, resname):
         """Create a residue object.
@@ -1025,17 +1024,16 @@ class Biomolecule(object):
                         seenmap[atomname] = 1
                     missing.append(atomname)
                     if seenmap[atomname] > nummissing:
-                        text = (
+                        missing_str = " ".join(missing)
+                        err = (
                             "Too few atoms present to reconstruct or cap "
-                            "residue {residue} in structure! This error is "
+                            f"residue {residue} in structure! This error is "
                             "generally caused by missing backbone atoms in "
                             "this biomolecule; you must use an external "
                             "program to complete gaps in the biomolecule "
-                            "backbone. Heavy atoms missing from {residue}:  "
-                            "{missing}"
+                            f"backbone. Heavy atoms missing from {residue}:  "
+                            f"{missing_str}"
                         )
-                        missing_str = " ".join(missing)
-                        err = text.format(residue=residue, missing=missing_str)
                         raise ValueError(err)
                 else:  # Rebuild the atom
                     newcoords = quat.find_coordinates(

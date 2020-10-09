@@ -212,8 +212,9 @@ class Flip(optimize.Optimize):
         flag = 0
         if bondatom.name.endswith("FLIP"):
             flag = 1
-        dstr = "fix_flip called for residue {:s}, bondatom {:s} and flag {:d}"
-        _LOGGER.debug(dstr.format(str(residue), str(bondatom), flag))
+        dstr = f"fix_flip called for residue {residue}, bondatom {bondatom} "
+        dstr += f"and flag {flag:d}"
+        _LOGGER.debug(dstr)
         residue.wasFlipped = flag == 0
         # Delete the appropriate atoms
         for atom in atomlist:

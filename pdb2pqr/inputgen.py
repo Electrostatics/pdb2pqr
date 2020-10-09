@@ -8,7 +8,7 @@ import logging
 import argparse
 from pathlib import Path
 from . import psize
-from .config import TITLE_FORMAT_STRING, VERSION
+from .config import TITLE_STR
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -283,8 +283,8 @@ def split_input(filename):
 
 def build_parser():
     """Build argument parser."""
-    desc = "{:s}\ninputgen: generating APBS input files since (at least) 2004"
-    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
+    desc = f"{TITLE_STR}\ninputgen: generating APBS input files since "
+    desc += "(at least) 2004"
     parse = argparse.ArgumentParser(
         description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,

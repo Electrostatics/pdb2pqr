@@ -284,8 +284,7 @@ class Debump:
             self.set_dihedral_angle(residue, anglenum, bestangle)
             curr_conflict_names = self.find_residue_conflicts(residue)
             if found_improved:
-                err = "Best score of {best} at angle {angle}."
-                err = err.format(best=repr(bestscore), angle=repr(bestangle))
+                err = f"Best score of {bestscore} at angle {bestangle}."
                 _LOGGER.debug(err)
                 _LOGGER.debug(f"New conflict set: {curr_conflict_names}")
             else:

@@ -6,9 +6,7 @@ VERSION = _version.get_versions()["version"]
 
 
 # How to format PDB2PQR title in output
-TITLE_FORMAT_STRING = (
-    "PDB2PQR v{version}: biomolecular structure conversion software."
-)
+TITLE_STR = f"PDB2PQR v{VERSION}: biomolecular structure conversion software."
 
 # Citation strings for PDB2PQR
 CITATIONS = [

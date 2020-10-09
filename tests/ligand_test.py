@@ -99,15 +99,15 @@ def test_formal_charge(input_mol2):
         try:
             expected_charge = expected_results[iatom]
         except IndexError:
-            err = "Missing result for {a.name}, {a.type}, {a.formal_charge}"
-            err = err.format(a=atom)
+            err = f"Missing result for {atom.name}, {atom.type}, "
+            err += f"{atom.formal_charge}"
             raise IndexError(err)
         if not isclose(atom.formal_charge, expected_charge):
             err = (
-                "Atom {0.name} {0.type} with bond order "
-                "{0.bond_order}: expected {1}, got {2}"
+                f"Atom {atom.name} {atom.type} with bond order "
+                f"{atom.bond_order}: expected {expected_charge}, "
+                f"got {atom.formal_charge}"
             )
-            err = err.format(atom, expected_charge, atom.formal_charge)
             errors.append(err)
     if len(errors) > 0:
         err = "Errors in test values:\n"
@@ -163,15 +163,10 @@ def test_rings(input_mol2):
     diff = test ^ benchmark
     if len(diff) > 0:
         err = (
-            "Ring test failed for {mol}:\n"
-            "Got: {test}\n"
-            "Expected: {expected}\n"
-            "Difference: {diff}"
-        ).format(
-            mol=input_mol2,
-            test=sorted(list(test)),
-            expected=sorted(list(benchmark)),
-            diff=sorted(list(diff)),
+            f"Ring test failed for {input_mol2}:\n"
+            f"Got: {sorted(list(test))}\n"
+            f"Expected: {sorted(list(benchmark))}\n"
+            f"Difference: {sorted(list(diff))}"
         )
         raise ValueError(err)
     for atom_name in ligand.atoms:

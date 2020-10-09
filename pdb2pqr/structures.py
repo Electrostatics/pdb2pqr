@@ -40,10 +40,8 @@ class Chain:
 
         Renumber based on actual residue number and not PDB :makevar:`res_seq`
         """
-        count = 1
-        for residue in self.residues:
+        for count, residue in enumerate(self.residues, start=1):
             residue.set_res_seq(count)
-            count += 1
 
     @property
     def atoms(self):
@@ -60,9 +58,7 @@ class Chain:
         return atomlist
 
     def __str__(self):
-        output = []
-        for residue in self.residues:
-            output.append(residue.letter_code())
+        output = [residue.letter_code() for residue in self.residues]
         return "".join(output)
 
 
@@ -116,7 +112,7 @@ class Atom:
         self.refdistance = 0
         self.id = None
         self.mol2charge = None
-        if type_ == "ATOM" or type_ == "HETATM":
+        if type_ in ["ATOM", "HETATM"]:
             self.type = type_
         else:
             err = f"Invalid atom type {type_} (Atom Class IN structures.py)!"
@@ -232,17 +228,11 @@ class Atom:
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
         outstr += " "
-        if chainflag:
-            tstr = self.chain_id
-        else:
-            tstr = ""
+        tstr = self.chain_id if chainflag else ""
         outstr += str.ljust(tstr, 1)[:1]
         tstr = f"{self.res_seq:d}"
         outstr += str.rjust(tstr, 4)[:4]
-        if self.ins_code != "":
-            outstr += f"{self.ins_code}   "
-        else:
-            outstr += "    "
+        outstr += f"{self.ins_code}   " if self.ins_code != "" else "    "
         tstr = f"{self.x:8.3f}"
         outstr += str.ljust(tstr, 8)[:8]
         tstr = f"{self.y:8.3f}"
@@ -265,15 +255,13 @@ class Atom:
         :rtype:  str
         """
         outstr = self.get_common_string_rep(chainflag=chainflag)
-        if self.ffcharge is not None:
-            ffcharge = f"{self.ffcharge:.4f}"
-        else:
-            ffcharge = "0.0000"
+        ffcharge = (
+            f"{self.ffcharge:.4f}" if self.ffcharge is not None else "0.0000"
+        )
         outstr += str.rjust(ffcharge, 8)[:8]
-        if self.radius is not None:
-            ffradius = f"{self.radius:.4f}"
-        else:
-            ffradius = "0.0000"
+        ffradius = (
+            f"{self.radius:.4f}" if self.radius is not None else "0.0000"
+        )
         outstr += str.rjust(ffradius, 7)[:7]
         return outstr
 

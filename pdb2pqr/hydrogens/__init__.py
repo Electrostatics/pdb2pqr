@@ -186,9 +186,7 @@ class HydrogenRoutines:
         titrationdict = TITRATION_DICT
         state_id = titrationdict[state_id_]
         state_id = state_id.split("+")
-        new_state_id = []
-        for i in state_id:
-            new_state_id.append(int(i))
+        new_state_id = [int(i) for i in state_id]
         residue = getattr(amb, "residue")
         hdef = getattr(amb, "hdef")
         for conf in hdef.conformations:
@@ -211,12 +209,15 @@ class HydrogenRoutines:
                 continue
             hname = conf.hname
             for atom in conf.atoms:
-                if residue.is_n_term and residue.name == "PRO":
-                    if atom.name == "H":
-                        atom.name = "CD"
-                        atom.x = 1.874
-                        atom.y = 0.862
-                        atom.z = 1.306
+                if (
+                    residue.is_n_term
+                    and residue.name == "PRO"
+                    and atom.name == "H"
+                ):
+                    atom.name = "CD"
+                    atom.x = 1.874
+                    atom.y = 0.862
+                    atom.z = 1.306
 
             if not residue.rebuild_tetrahedral(hname):
                 for atom in conf.atoms:
@@ -300,11 +301,10 @@ class HydrogenRoutines:
                     break
 
         # If alcoholic, make sure the hydrogen is present
-        if optinstance is not None:
-            if optinstance.opttype == "Alcoholic":
-                atomname = list(optinstance.map.keys())[0]
-                if not residue.reference.has_atom(atomname):
-                    optinstance = None
+        if optinstance is not None and optinstance.opttype == "Alcoholic":
+            atomname = list(optinstance.map.keys())[0]
+            if not residue.reference.has_atom(atomname):
+                optinstance = None
         return optinstance
 
     def set_optimizeable_hydrogens(self):
@@ -345,17 +345,14 @@ class HydrogenRoutines:
         for residue in self.biomolecule.residues:
             optinstance = self.is_optimizeable(residue)
             if isinstance(residue, aa.Amino):
-                if False in residue.stateboolean.values():
-                    residue.fixed = 1
-                else:
-                    residue.fixed = 0
+                residue.fixed = (
+                    1 if False in residue.stateboolean.values() else 0
+                )
             if optinstance is None:
                 continue
 
             type_ = optinstance.opttype
-            if residue.fixed == 1:
-                pass
-            else:
+            if residue.fixed != 1:
                 klass = getattr(structures, type_)
                 myobj = klass(residue, optinstance, self.debumper)
                 self.atomlist += myobj.atomlist
@@ -717,13 +714,13 @@ class HydrogenRoutines:
             atoms = list(patch_map.map.keys())
             atoms.sort()
         if name in ["NTR"]:
+            bondlength = 1.0
             for atom in atoms:
                 hname = atom
                 x = ntrmap[hname].x
                 y = ntrmap[hname].y
                 z = ntrmap[hname].z
                 bondatom = ntrmap[hname].bonds[0]
-                bondlength = 1.0
                 myconf = HydrogenConformation(hname, bondatom, bondlength)
                 atom = defns.DefinitionAtom(hname, x, y, z)
                 myconf.add_atom(atom)
@@ -741,10 +738,9 @@ class HydrogenRoutines:
                             atom_, 1.201, 1.847, 0.000
                         )
                         myconf.add_atom(caatom)
-                    else:
-                        pass
                 mydef.add_conf(myconf)
         elif name in ["CTR"]:
+            bondlength = 1.0
             for conformer in conformernames:
                 for atom in atoms:
                     hname = atom
@@ -752,7 +748,6 @@ class HydrogenRoutines:
                     y = hmap[conformer, hname].y
                     z = hmap[conformer, hname].z
                     bondatom = hmap[conformer, hname].bonds[0]
-                    bondlength = 1.0
                     myconf = HydrogenConformation(hname, bondatom, bondlength)
                     atom = defns.DefinitionAtom(hname, x, y, z)
                     myconf.add_atom(atom)
@@ -804,16 +799,14 @@ class HydrogenRoutines:
                             atom2 = defns.DefinitionAtom(atomname, x, y, z)
                             myconf.add_atom(atom2)
                         mydef.add_conf(myconf)
-        elif name in ["WAT"]:
-            pass
-        else:
+        elif name not in ["WAT"]:
+            bondlength = 1.0
             for atom in atoms:
                 hname = atom
                 x = atommap[name, hname].x
                 y = atommap[name, hname].y
                 z = atommap[name, hname].z
                 bondatom = atommap[name, hname].bonds[0]
-                bondlength = 1.0
                 myconf = HydrogenConformation(hname, bondatom, bondlength)
                 atom = defns.DefinitionAtom(hname, x, y, z)
                 myconf.add_atom(atom)

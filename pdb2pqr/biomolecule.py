@@ -135,9 +135,12 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
-                if refatomname in ["O1P", "O2P"]:
-                    if residue.has_atom("OP1") and residue.has_atom("OP2"):
-                        continue
+                if (
+                    refatomname in ["O1P", "O2P"]
+                    and residue.has_atom("OP1")
+                    and residue.has_atom("OP2")
+                ):
+                    continue
                 if not residue.has_atom(refatomname):
                     _LOGGER.debug(f"Missing {refatomname} in {residue}")
                     natom += 1
@@ -167,9 +170,12 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
-                if refatomname in ["O1P", "O2P"]:
-                    if residue.has_atom("OP1") and residue.has_atom("OP2"):
-                        continue
+                if (
+                    refatomname in ["O1P", "O2P"]
+                    and residue.has_atom("OP1")
+                    and residue.has_atom("OP2")
+                ):
+                    continue
                 natom += 1
         return natom
 
@@ -199,11 +205,7 @@ class Biomolecule(object):
         :return:  number of ATOM records
         :rtype:  int
         """
-        natom = 0
-        for atom in self.atoms:
-            if atom.type == "ATOM":
-                natom += 1
-        return natom
+        return sum(1 for atom in self.atoms if atom.type == "ATOM")
 
     def set_hip(self):
         """Set all HIS states to HIP."""
@@ -486,9 +488,7 @@ class Biomolecule(object):
         res0 = chain.residues[0]
         if isinstance(res0, aa.Amino):
             res0.is_n_term = True
-            if isinstance(res0, aa.PRO):
-                self.apply_patch("NEUTRAL-NTERM", res0)
-            elif neutraln:
+            if isinstance(res0, aa.PRO) or neutraln:
                 self.apply_patch("NEUTRAL-NTERM", res0)
             else:
                 self.apply_patch("NTERM", res0)
@@ -655,13 +655,13 @@ class Biomolecule(object):
                 if atom is not None:
                     sg_partners[atom] = []
         for atom in sg_partners:
-            for partner in sg_partners:
+            for partner, value in sg_partners.items():
                 if atom == partner or sg_partners[atom] != []:
                     continue
                 dist = util.distance(atom.coords, partner.coords)
                 if dist < BONDED_SS_LIMIT:
                     sg_partners[atom].append(partner)
-                    sg_partners[partner].append(atom)
+                    value.append(atom)
         for atom in sg_partners:
             res1 = atom.residue
             numpartners = len(sg_partners[atom])
@@ -1058,9 +1058,7 @@ class Biomolecule(object):
         :type outfilename:  str
         """
         # Cache the initial atom numbers
-        numcache = {}
-        for atom in self.atoms:
-            numcache[atom] = atom.serial
+        numcache = {atom: atom.serial for atom in self.atoms}
         self.reserialize()
         amberff = forcefield.Forcefield("amber", definition, None)
         charmmff = forcefield.Forcefield("charmm", definition, None)
@@ -1103,10 +1101,8 @@ class Biomolecule(object):
 
     def reserialize(self):
         """Generate new serial numbers for atoms in the biomolecule."""
-        count = 1
-        for atom in self.atoms:
+        for count, atom in enumerate(self.atoms, start=1):
             atom.serial = count
-            count += 1
 
     @property
     def atoms(self):
@@ -1141,15 +1137,14 @@ class Biomolecule(object):
             for residue in chain.residues:
                 rescharge = residue.charge
                 charge += rescharge
-                if isinstance(residue, na.Nucleic):
-                    if residue.is3term or residue.is5term:
-                        continue
+                if isinstance(residue, na.Nucleic) and (
+                    residue.is3term or residue.is5term
+                ):
+                    continue
                 if float(f"{int(rescharge)}") != rescharge:
                     misslist.append(residue)
         return misslist, charge
 
     def __str__(self):
-        output = []
-        for chain in self.chains:
-            output.append(chain.get_summary())
+        output = [chain.get_summary() for chain in self.chains]
         return " ".join(output)

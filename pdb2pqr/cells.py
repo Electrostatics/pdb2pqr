@@ -43,20 +43,11 @@ class Cells:
         """
         size = self.cellsize
         x = atom.x
-        if x < 0:
-            x = (int(x) - 1) // size * size
-        else:
-            x = int(x) // size * size
+        x = (int(x) - 1) // size * size if x < 0 else int(x) // size * size
         y = atom.y
-        if y < 0:
-            y = (int(y) - 1) // size * size
-        else:
-            y = int(y) // size * size
+        y = (int(y) - 1) // size * size if y < 0 else int(y) // size * size
         z = atom.z
-        if z < 0:
-            z = (int(z) - 1) // size * size
-        else:
-            z = int(z) // size * size
+        z = (int(z) - 1) // size * size if z < 0 else int(z) // size * size
         key = (x, y, z)
         try:
             self.cellmap[key].append(atom)
@@ -84,15 +75,13 @@ class Cells:
         :return:  a list of nearby atoms
         :rtype:  [Atom]
         """
-        size = self.cellsize
         closeatoms = []
         cell = atom.cell
-        if cell is None:
-            return closeatoms
-        else:
+        if cell is not None:
             x = cell[0]
             y = cell[1]
             z = cell[2]
+            size = self.cellsize
             for i in range(-1 * size, 2 * size, size):
                 for j in range(-1 * size, 2 * size, size):
                     for k in range(-1 * size, 2 * size, size):
@@ -105,4 +94,5 @@ class Cells:
                                 closeatoms.append(atom2)
                         except KeyError:
                             pass
-            return closeatoms
+
+        return closeatoms

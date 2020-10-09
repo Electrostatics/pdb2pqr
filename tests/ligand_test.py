@@ -32,9 +32,10 @@ def test_peoe_charges():
     mol2_path = Path("tests/data/1HPX-ligand.mol2")
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-    old_total_charge = 0
-    for atom in ligand.atoms.values():
-        old_total_charge += atom.formal_charge
+    # WARNING: Nathan? The old_total_charge is never used
+    # old_total_charge = sum(
+    #    atom.formal_charge for atom in ligand.atoms.values()
+    # )
     ligand.assign_parameters()
     new_total_charge = 0
     test_charges = []
@@ -51,9 +52,9 @@ def test_assign_parameters(input_mol2):
     mol2_path = Path("tests/data") / input_mol2
     with open(mol2_path, "rt") as mol2_file:
         ligand.read(mol2_file)
-    old_total_charge = 0
-    for atom in ligand.atoms.values():
-        old_total_charge += atom.formal_charge
+    old_total_charge = sum(
+        atom.formal_charge for atom in ligand.atoms.values()
+    )
     ligand.assign_parameters()
     new_total_charge = 0
     test_results = []
@@ -109,7 +110,7 @@ def test_formal_charge(input_mol2):
                 f"got {atom.formal_charge}"
             )
             errors.append(err)
-    if len(errors) > 0:
+    if errors:
         err = "Errors in test values:\n"
         err += "\n".join(errors)
         raise ValueError(err)
@@ -125,10 +126,7 @@ def test_torsions(input_mol2):
     test = set()
     # Only test heavy-atom torsions
     for torsion in ligand.torsions:
-        has_hydrogen = False
-        for atom in torsion:
-            if atom.startswith("H"):
-                has_hydrogen = True
+        has_hydrogen = any(atom.startswith("H") for atom in torsion)
         if not has_hydrogen:
             test.add(torsion)
     try:

@@ -618,10 +618,9 @@ def write_cube(cube_file, data_dict, atom_list, comment="CPMD CUBE FILE."):
             f"{atom.serial:>4} {atom.charge:>11.6f} {atom.x:>11.6f} "
             f"{atom.y:>11.6f} {atom.z:>11.6f}\n"
         )
-    i = 0
     stride = 6
     values = data_dict["values"]
-    while i < len(values):
+    for i in range(0, len(values), 6):
         if i + stride < len(values):
             imax = i + 6
             words = [f"{val:< 13.5E}" for val in values[i:imax]]
@@ -629,4 +628,3 @@ def write_cube(cube_file, data_dict, atom_list, comment="CPMD CUBE FILE."):
         else:
             words = [f"{val:< 13.5E}" for val in values[i:]]
             cube_file.write(" ".join(words))
-        i = i + 6

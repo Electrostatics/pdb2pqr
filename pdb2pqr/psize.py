@@ -122,9 +122,7 @@ class Psize:
                 self.gotatom += 1
                 self.charge = self.charge + float(words[3])
                 rad = float(words[4])
-                center = []
-                for word in words[0:3]:
-                    center.append(float(word))
+                center = [float(word) for word in words[0:3]]
                 for i in range(3):
                     if (
                         self.minlen[i] is None
@@ -147,9 +145,7 @@ class Psize:
                         continue
                     self.charge = self.charge + float(words[3])
                     rad = float(words[4])
-                    center = []
-                    for word in words[0:3]:
-                        center.append(float(word))
+                    center = [float(word) for word in words[0:3]]
                     for i in range(3):
                         if (
                             self.minlen[i] is None
@@ -257,9 +253,7 @@ class Psize:
             memory
         :rtype:  [int, int, int]
         """
-        nsmall = []
-        for i in range(3):
-            nsmall.append(ngrid[i])
+        nsmall = [ngrid[i] for i in range(3)]
         while 1:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             if nsmem < self.gmemceil:

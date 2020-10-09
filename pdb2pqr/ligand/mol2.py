@@ -298,10 +298,7 @@ class Mol2Atom:
                 for atom in bond.atoms:
                     if atom.type[0] == "O" and atom.bond_order == 1:
                         o_atoms.append(atom.name)
-            if o_atoms.index(self.name) == 0:
-                formal_charge = -1
-            else:
-                formal_charge = 0
+            formal_charge = -1 if o_atoms.index(self.name) == 0 else 0
         return formal_charge
 
 
@@ -411,13 +408,9 @@ class Mol2Molecule:
             atom1 = bond.atoms[0].name
             atom2 = bond.atoms[1].name
             if start_node in (atom1, atom2):
-                if atom1 == start_node:
-                    next_node = atom2
-                else:
-                    next_node = atom1
+                next_node = atom2 if atom1 == start_node else atom1
                 if next_node not in path:
-                    sub_path = [next_node]
-                    sub_path.extend(path)
+                    sub_path = [next_node, *path]
                     rings = self.find_new_rings(sub_path, rings, level + 1)
                 elif len(path) > 2 and next_node == path[-1]:
                     path_ = self.rotate_to_smallest(path)
@@ -521,7 +514,7 @@ class Mol2Molecule:
                 duplicates.add(atom.name)
             else:
                 self.atoms[atom.name] = atom
-        if len(duplicates) > 0:
+        if duplicates:
             raise KeyError(
                 f"Found duplicate atoms names in MOL2 file: {duplicates}"
             )

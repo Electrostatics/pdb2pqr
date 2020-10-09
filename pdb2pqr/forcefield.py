@@ -193,10 +193,7 @@ class Forcefield:
         self.map = {}
         self.name = str(ff_name)
         defpath = ""
-        if userff is None:
-            defpath = io.test_dat_file(ff_name)
-        else:
-            defpath = userff
+        defpath = io.test_dat_file(ff_name) if userff is None else userff
         with open(defpath, "rt", encoding="utf-8") as ff_file:
             lines = ff_file.readlines()
             for line in lines:
@@ -213,10 +210,7 @@ class Forcefield:
                         txt = (
                             "Unable to recognize user-defined forcefield file"
                         )
-                        if defpath != "":
-                            txt += f" {defpath}!"
-                        else:
-                            txt += "!"
+                        txt += f" {defpath}!" if defpath != "" else "!"
                         txt += " Please use a valid parameter file."
                         raise ValueError(txt)
                     try:
@@ -259,9 +253,7 @@ class Forcefield:
         :return:  indication of whether resname is in map
         :rtype:  bool
         """
-        if resname in self.map:
-            return True
-        return False
+        return resname in self.map
 
     def get_residue(self, resname):
         """Return the residue object with the given resname.
@@ -401,10 +393,7 @@ class Forcefield:
         """
         atomname = name
         res_type = residue.type
-        if res_type == 4:
-            resname = residue.naname
-        else:
-            resname = residue.name
+        resname = residue.naname if res_type == 4 else residue.name
         # Residue Substitutions
         if residue.name == "CYS" and "HG" not in residue.map:
             resname = "CYX"
@@ -423,7 +412,7 @@ class Forcefield:
             resname = "HIE"
         elif residue.name == "HSD":
             resname = "HID"
-        elif residue.name == "GLU" or residue.name == "GLH":
+        elif residue.name in ["GLU", "GLH"]:
             if "HE1" in residue.map:
                 resname = "GLH"
                 if atomname == "HE1":
@@ -434,7 +423,7 @@ class Forcefield:
                     atomname = "OE1"
             elif "HE2" in residue.map:
                 resname = "GLH"
-        elif residue.name == "ASP" or residue.name == "ASH":
+        elif residue.name in ["ASP", "ASH"]:
             if "HD1" in residue.map:
                 resname = "ASH"
                 if atomname == "HD1":
@@ -450,21 +439,18 @@ class Forcefield:
         elif residue.is_n_term:
             resname = "N" + resname
         # Atom Substitutions
-        if resname == "WAT":
-            if atomname == "O":
-                atomname = "OW"
-            elif atomname == "H1":
-                atomname = "HW"
-            elif atomname == "H2":
-                atomname = "HW"
-        elif resname == "ILE":
+        if resname == "ILE":
             if atomname == "CD":
                 atomname = "CD1"
+        elif resname == "WAT":
+            if atomname == "O":
+                atomname = "OW"
+            elif atomname in ["H1", "H2"]:
+                atomname = "HW"
         # N-terminal
-        if resname[0] == "N" and resname != "NME":
-            if atomname == "H":
-                atomname = "H1"
-        if (resname == "CCYS" or resname == "NCYS") and atomname == "HG":
+        if resname[0] == "N" and resname != "NME" and atomname == "H":
+            atomname = "H1"
+        if resname in ["CCYS", "NCYS"] and atomname == "HG":
             atomname = "HSG"
         if resname == "CYM" and atomname == "H":
             atomname = "HN"
@@ -502,7 +488,7 @@ class Forcefield:
                     atomname = "HN2"
             elif resname == "PRO" and nterm == 1:
                 resname = "PRN"
-                if atomname == "H2" or atomname == "H3":
+                if atomname in ["H2", "H3"]:
                     atomname = "HN"
             elif nterm == 2:  # Neutral
                 # TODO - there are a lot of hard-coded repeated lists like this
@@ -717,15 +703,24 @@ class Forcefield:
                 atomname = "H2'"
             elif atomname in ["H2'2", "HO'2"]:
                 atomname = "H2''"
-            if residue.get_atom("O2'") is None:
-                if atomname in ["C2'", "H2'", "H2''"]:
-                    resname = "DEO1"
-            if residue.get_atom("H5T") is not None:
-                if atomname in ["H5T", "O5'", "C5'"]:
-                    resname = "5TER"
-            if residue.get_atom("H3T") is not None:
-                if atomname in ["H3T", "O3'", "C3'"]:
-                    resname = "3TER"
+            if residue.get_atom("O2'") is None and atomname in [
+                "C2'",
+                "H2'",
+                "H2''",
+            ]:
+                resname = "DEO1"
+            if residue.get_atom("H5T") is not None and atomname in [
+                "H5T",
+                "O5'",
+                "C5'",
+            ]:
+                resname = "5TER"
+            if residue.get_atom("H3T") is not None and atomname in [
+                "H3T",
+                "O3'",
+                "C3'",
+            ]:
+                resname = "3TER"
         # Terminal/Water Substitutions
         if residue.is_n_term:
             if resname == "GLY" and atomname in [
@@ -823,7 +818,7 @@ class Forcefield:
                 resname = "HSD"
             elif "HE2" in residue.map:
                 resname = "HSE"
-        elif resname == "GLU" or resname == "GLH":
+        elif resname in ["GLU", "GLH"]:
             if "HE1" in residue.map:
                 if atomname == "HE1":
                     atomname = "HE2"
@@ -858,7 +853,7 @@ class Forcefield:
                     resname = "GLUP"
                 else:
                     resname = "GLU"
-        elif resname == "ASP" or resname == "ASH":
+        elif resname in ["ASP", "ASH"]:
             if "HD1" in residue.map:
                 if atomname == "HD1":
                     atomname = "HD2"
@@ -995,9 +990,7 @@ class ForcefieldResidue:
         :return:  indication of whether atmo is present
         :rtype:  bool
         """
-        if atomname in self.atoms:
-            return True
-        return False
+        return atomname in self.atoms
 
     def get_atom(self, atomname):
         """Return the atom object with the given atomname.
@@ -1053,8 +1046,7 @@ class ForcefieldAtom:
         :raises KeyError:  if member does not exist
         """
         try:
-            item = getattr(self, name)
-            return item
+            return getattr(self, name)
         except AttributeError:
             message = (
                 f'Unable to access object "{name}" in class ForcefieldAtom'

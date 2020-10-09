@@ -69,8 +69,7 @@ def pqr_to_dict(pqr_file):
     for line in pqr_file:
         atom = Atom.from_pqr_line(line)
         if atom is not None:
-            row_dict = {}
-            row_dict["atom_num"] = atom.serial
+            row_dict = {"atom_num": atom.serial}
             # Many hydrogens are created in arbitrary order when attached to
             # the same heavy atom. Therefore, the last number in their name is
             # not meaningful

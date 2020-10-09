@@ -128,10 +128,7 @@ class ADE(Nucleic):
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
-        if self.has_atom("O2'"):
-            self.ffname = "RA"
-        else:
-            self.ffname = "DA"
+        self.ffname = "RA" if self.has_atom("O2'") else "DA"
         Nucleic.set_state(self)
 
 
@@ -161,10 +158,7 @@ class CYT(Nucleic):
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
-        if self.has_atom("O2'"):
-            self.ffname = "RC"
-        else:
-            self.ffname = "DC"
+        self.ffname = "RC" if self.has_atom("O2'") else "DC"
         Nucleic.set_state(self)
 
 
@@ -194,10 +188,7 @@ class GUA(Nucleic):
 
     def set_state(self):
         """Set ribo- vs. deoxyribo- state of this residue."""
-        if self.has_atom("O2'"):
-            self.ffname = "RG"
-        else:
-            self.ffname = "DG"
+        self.ffname = "RG" if self.has_atom("O2'") else "DG"
         Nucleic.set_state(self)
 
 

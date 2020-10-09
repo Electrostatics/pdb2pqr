@@ -67,9 +67,8 @@ def shortest_path(graph, start, end, path=[]):
     for node in graph[start]:
         if node not in path:
             newpath = shortest_path(graph, node, end, path)
-            if newpath:
-                if not shortest or len(newpath) < len(shortest):
-                    shortest = newpath
+            if newpath and (not shortest or len(newpath) < len(shortest)):
+                shortest = newpath
     return shortest
 
 
@@ -85,7 +84,7 @@ def analyze_connectivity(map_, key):
     """
     clist = []
     keys = [key]
-    while len(keys) > 0:
+    while keys:
         key = keys[0]
         if key not in clist:
             clist.append(key)
@@ -246,5 +245,5 @@ def dihedral(coords1, coords2, coords3, coords4):
         value = DIHEDRAL_WTF * math.acos(scal)
     chiral = np.inner(np.cross(c12_32, c43_32), diff32)
     if chiral < 0:
-        value = value * -1.0
+        value *= -1.0
     return value

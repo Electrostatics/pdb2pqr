@@ -331,7 +331,7 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             )
         for line in pqr_lines:
             if args.whitespace:
-                if line[0:4] == "ATOM":
+                if line[0:4] == "ATOM" or line[0:6] == "HETATM":
                     newline = (
                         line[0:6]
                         + " "
@@ -344,25 +344,8 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
                         + line[46:]
                     )
                     outfile.write(newline)
-                elif line[0:6] == "HETATM":
-                    newline = (
-                        line[0:6]
-                        + " "
-                        + line[6:16]
-                        + " "
-                        + line[16:38]
-                        + " "
-                        + line[38:46]
-                        + " "
-                        + line[46:]
-                    )
-                    outfile.write(newline)
-                elif line[0:3] == "TER" and is_cif:
-                    pass
             else:
-                if line[0:3] == "TER" and is_cif:
-                    pass
-                else:
+                if line[0:3] != "TER" or not is_cif:
                     outfile.write(line)
         if is_cif:
             outfile.write("#\n")
@@ -490,9 +473,11 @@ def drop_water(pdblist):
     pdblist_new = []
     for record in pdblist:
         record_type = record.record_type()
-        if record_type in ["HETATM", "ATOM", "SIGATM", "SEQADV"]:
-            if record.res_name in aa.WAT.water_residue_names:
-                continue
+        if (
+            record_type in ["HETATM", "ATOM", "SIGATM", "SEQADV"]
+            and record.res_name in aa.WAT.water_residue_names
+        ):
+            continue
         pdblist_new.append(record)
     return pdblist_new
 
@@ -618,10 +603,9 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             hydrogen_routines.set_optimizeable_hydrogens()
             biomolecule.hold_residues(None)
             hydrogen_routines.initialize_full_optimization()
-            hydrogen_routines.optimize_hydrogens()
         else:
             hydrogen_routines.initialize_wat_optimization()
-            hydrogen_routines.optimize_hydrogens()
+        hydrogen_routines.optimize_hydrogens()
         hydrogen_routines.cleanup()
     _LOGGER.info("Applying force field to biomolecule states.")
     biomolecule.set_states()

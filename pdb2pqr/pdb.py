@@ -1861,8 +1861,7 @@ class SEQRES(BaseRecord):
         self.ser_num = int(line[8:10].strip())
         self.chain_id = line[11].strip()
         self.num_res = int(line[13:17].strip())
-        self.res_name = []
-        self.res_name.append(line[19:22].strip())
+        self.res_name = [line[19:22].strip()]
         self.res_name.append(line[23:26].strip())
         self.res_name.append(line[27:30].strip())
         self.res_name.append(line[31:34].strip())
@@ -2142,8 +2141,7 @@ class SPRSDE(BaseRecord):
         super().__init__(line)
         self.super_date = line[11:20].strip()
         self.id_code = line[21:25].strip()
-        self.super_id_codes = []
-        self.super_id_codes.append(line[31:35].strip())
+        self.super_id_codes = [line[31:35].strip()]
         self.super_id_codes.append(line[36:40].strip())
         self.super_id_codes.append(line[41:45].strip())
         self.super_id_codes.append(line[46:50].strip())
@@ -2206,8 +2204,7 @@ class REVDAT(BaseRecord):
         mod_type = line[31].strip()
         if mod_type:
             self.mod_type = int(mod_type)
-        self.records = []
-        self.records.append(line[39:45].strip())
+        self.records = [line[39:45].strip()]
         self.records.append(line[46:52].strip())
         self.records.append(line[53:59].strip())
         self.records.append(line[60:66].strip())
@@ -2470,8 +2467,7 @@ class OBSLTE(BaseRecord):
         super().__init__(line)
         self.replace_date = line[11:20].strip()
         self.id_code = line[21:25].strip()
-        self.replace_id_codes = []
-        self.replace_id_codes.append(line[31:35].strip())
+        self.replace_id_codes = [line[31:35].strip()]
         self.replace_id_codes.append(line[36:40].strip())
         self.replace_id_codes.append(line[41:45].strip())
         self.replace_id_codes.append(line[46:50].strip())
@@ -2527,11 +2523,12 @@ def read_atom(line):
     words = str.split(line)
     size = len(words) - 1
     consec = 0
+    iword = 0
     for i in range(size):
         entry = words[size - i]
         try:
             _ = float(entry)
-            consec = consec + 1
+            consec += 1
             if consec == 5:
                 iword = i
                 break
@@ -2548,8 +2545,7 @@ def read_atom(line):
     newline = newline + str.rjust(words[size - iword + 3], 6)
     newline = newline + str.rjust(words[size - iword + 4], 6)
     klass = LINE_PARSERS[record]
-    obj = klass(newline)
-    return obj
+    return klass(newline)
 
 
 def read_pdb(file_):
@@ -2590,20 +2586,19 @@ def read_pdb(file_):
                 f"Truncating remaining errors for record type:{record}"
             )
         except IndexError as details:
-            if record == "ATOM" or record == "HETATM":
+            if record in ["ATOM", "HETATM"]:
                 try:
                     obj = read_atom(line)
                     pdblist.append(obj)
                 except IndexError as details:
                     _LOGGER.error(f"Error parsing line: {details},")
                     _LOGGER.error(f"<{line.strip()}>")
-            elif record == "SITE" or record == "TURN":
+            elif record in ["SITE", "TURN"]:
                 pass
-            elif record == "SSBOND" or record == "LINK":
+            elif record in ["SSBOND", "LINK"]:
                 _LOGGER.error("Warning -- ignoring record:")
                 _LOGGER.error(f"<{line.strip()}>")
             else:
                 _LOGGER.error(f"Error parsing line: {details},")
                 _LOGGER.error(f"<{line.strip()}>")
-
     return pdblist, errlist

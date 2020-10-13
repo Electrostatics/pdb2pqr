@@ -28,8 +28,7 @@ class Optimize:
         self.routines = None
 
     def __str__(self):
-        txt = f"{self.residue} ({self.optinstance.opttype})"
-        return txt
+        return f"{self.residue} ({self.optinstance.opttype})"
 
     @staticmethod
     def get_hbond_angle(atom1, atom2, atom3):
@@ -165,7 +164,7 @@ class Optimize:
                         max_hbond_energy / pow(dist, 3) * angleterm * angle2
                     )
             # Case 2: Only donor hydrogens are present
-            if len(acceptorhs) == 0:
+            if not acceptorhs:
                 # Assign energies based on A-D-H(D) angle alone
                 angle1 = Optimize.get_hbond_angle(acceptor, donor, donorhatom)
                 if angle1 <= adh_angle_cutoff:
@@ -187,13 +186,11 @@ class Optimize:
         :param addname:  the name of the atom to add
         :type addname:  str
         """
-        newcoords = []
         residue = atom.residue
         # Place along line, 1 A away
         vec = util.subtract(closeatom.coords, atom.coords)
         dist = util.distance(atom.coords, closeatom.coords)
-        for i in range(3):
-            newcoords.append(vec[i] / dist + atom.coords[i])
+        newcoords = [vec[i] / dist + atom.coords[i] for i in range(3)]
         residue.create_atom(addname, newcoords)
         newatom = residue.get_atom(addname)
         self.routines.cells.add_cell(newatom)
@@ -372,10 +369,12 @@ class Optimize:
             return False
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
-                    the_donorhatom = donorhatom
-                    break
+            if (
+                donorhatom.is_hydrogen
+                and self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF
+            ):
+                the_donorhatom = donorhatom
+                break
         for _ in range(72):
             residue.rotate_tetrahedral(pivot, acc, 5.0)
             angle = abs(self.get_hbond_angle(the_donorhatom, acc, newatom))
@@ -501,10 +500,12 @@ class Optimize:
             return False
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
-                    the_donorhatom = donorhatom
-                    break
+            if (
+                donorhatom.is_hydrogen
+                and self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF
+            ):
+                the_donorhatom = donorhatom
+                break
         # Try the first position
         residue.create_atom(newname, loc1)
         newatom = residue.get_atom(newname)
@@ -612,13 +613,16 @@ class Optimize:
             return False
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.is_hydrogen:
-                if self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF:
-                    the_donorhatom = donorhatom
-                    break
+            if (
+                donorhatom.is_hydrogen
+                and self.get_hbond_angle(acc, donor, donorhatom) < ANGLE_CUTOFF
+            ):
+                the_donorhatom = donorhatom
+                break
         residue.create_atom(newname, loc)
         newatom = residue.get_atom(newname)
         # Remove if geometry does not work
+        # WARNING: Nathan? What if the the_donorhatom is not set?
         angle = abs(self.get_hbond_angle(the_donorhatom, acc, newatom))
         if angle > (ANGLE_CUTOFF * 2.0):
             residue.remove_atom(newname)

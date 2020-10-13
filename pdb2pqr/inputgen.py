@@ -8,7 +8,7 @@ import logging
 import argparse
 from pathlib import Path
 from . import psize
-from .config import TITLE_FORMAT_STRING, VERSION
+from .config import TITLE_STR
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -98,17 +98,17 @@ class Elec:
         text += f"    {self.method}\n"
         text += f"    dime {int(self.dime[0])} {int(self.dime[1])} "
         text += f"{int(self.dime[2])}\n"
-        if self.method == "mg-manual":
-            text += f"    glen {self.glen[0]:.3f} {self.glen[1]:.3f} "
-            text += f"{self.glen[2]:.3f}\n"
-            text += f"    gcent {self.gcent}\n"
-        elif self.method == "mg-auto":
+        if self.method == "mg-auto":
             text += f"    cglen {self.cglen[0]:.4f} {self.cglen[1]:.4f} "
             text += f"{self.cglen[2]:.4f}\n"
             text += f"    fglen {self.fglen[0]:.4f} {self.fglen[1]:.4f} "
             text += f"{self.fglen[2]:.4f}\n"
             text += f"    cgcent {self.cgcent}\n"
             text += f"    fgcent {self.fgcent}\n"
+        elif self.method == "mg-manual":
+            text += f"    glen {self.glen[0]:.3f} {self.glen[1]:.3f} "
+            text += f"{self.glen[2]:.3f}\n"
+            text += f"    gcent {self.gcent}\n"
         elif self.method == "mg-para":
             text += f"    pdime {int(self.pdime[0])} {int(self.pdime[1])} "
             text += f"{int(self.pdime[2])}\n"
@@ -122,10 +122,7 @@ class Elec:
             if self.asyncflag:
                 text += f"    async {self.async_}\n"
         text += f"    mol {int(self.mol)}\n"
-        if self.lpbe:
-            text += "    lpbe\n"
-        else:
-            text += "    npbe\n"
+        text += "    lpbe\n" if self.lpbe else "    npbe\n"
         text += f"    bcfl {self.bcfl}\n"
         if self.istrng > 0:
             for ion in self.ion:
@@ -243,9 +240,8 @@ class Input:
         """
         base_pqr_name = self.pqrpath.stem
         outname = base_pqr_name + "-input.p"
-        pfile = open(outname, "wb")
-        pickle.dump(self, pfile)
-        pfile.close()
+        with open(outname, "wb") as pfile:
+            pickle.dump(self, pfile)
 
 
 def split_input(filename):
@@ -276,15 +272,14 @@ def split_input(filename):
     for iproc in int(range(nproc)):
         outname = base_pqr_name + f"-PE{iproc}.in"
         outtext = text.replace("mg-para\n", f"mg-para\n    async {iproc}\n")
-        outfile = open(outname, "w")
-        outfile.write(outtext)
-        outfile.close()
+        with open(outname, "w") as outfile:
+            outfile.write(outtext)
 
 
 def build_parser():
     """Build argument parser."""
-    desc = "{:s}\ninputgen: generating APBS input files since (at least) 2004"
-    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
+    desc = f"{TITLE_STR}\ninputgen: generating APBS input files since "
+    desc += "(at least) 2004"
     parse = argparse.ArgumentParser(
         description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,

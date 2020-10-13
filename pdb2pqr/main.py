@@ -24,7 +24,7 @@ from . import forcefield
 from . import biomolecule as biomol
 from . import io
 from .ligand.mol2 import Mol2Molecule
-from .config import VERSION, TITLE_FORMAT_STRING, CITATIONS, FORCE_FIELDS
+from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
 
@@ -46,7 +46,7 @@ def build_main_parser():
     :returns:  argument parser
     :rtype:  argparse.ArgumentParser
     """
-    desc = TITLE_FORMAT_STRING.format(version=VERSION)
+    desc = TITLE_STR
     pars = argparse.ArgumentParser(
         description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -247,7 +247,7 @@ def print_splash_screen(args):
     :type args:  argparse.Namespace
     """
     _LOGGER.debug(f"Args:  {args}")
-    _LOGGER.info(TITLE_FORMAT_STRING.format(version=VERSION))
+    _LOGGER.info(TITLE_STR)
     for citation in CITATIONS:
         _LOGGER.info(citation)
 
@@ -331,7 +331,7 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             )
         for line in pqr_lines:
             if args.whitespace:
-                if line[0:4] == "ATOM":
+                if line[0:4] == "ATOM" or line[0:6] == "HETATM":
                     newline = (
                         line[0:6]
                         + " "
@@ -344,25 +344,8 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
                         + line[46:]
                     )
                     outfile.write(newline)
-                elif line[0:6] == "HETATM":
-                    newline = (
-                        line[0:6]
-                        + " "
-                        + line[6:16]
-                        + " "
-                        + line[16:38]
-                        + " "
-                        + line[38:46]
-                        + " "
-                        + line[46:]
-                    )
-                    outfile.write(newline)
-                elif line[0:3] == "TER" and is_cif:
-                    pass
             else:
-                if line[0:3] == "TER" and is_cif:
-                    pass
-                else:
+                if line[0:3] != "TER" or not is_cif:
                     outfile.write(line)
         if is_cif:
             outfile.write("#\n")
@@ -490,9 +473,11 @@ def drop_water(pdblist):
     pdblist_new = []
     for record in pdblist:
         record_type = record.record_type()
-        if record_type in ["HETATM", "ATOM", "SIGATM", "SEQADV"]:
-            if record.res_name in aa.WAT.water_residue_names:
-                continue
+        if (
+            record_type in ["HETATM", "ATOM", "SIGATM", "SEQADV"]
+            and record.res_name in aa.WAT.water_residue_names
+        ):
+            continue
         pdblist_new.append(record)
     return pdblist_new
 
@@ -618,10 +603,9 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             hydrogen_routines.set_optimizeable_hydrogens()
             biomolecule.hold_residues(None)
             hydrogen_routines.initialize_full_optimization()
-            hydrogen_routines.optimize_hydrogens()
         else:
             hydrogen_routines.initialize_wat_optimization()
-            hydrogen_routines.optimize_hydrogens()
+        hydrogen_routines.optimize_hydrogens()
         hydrogen_routines.cleanup()
     _LOGGER.info("Applying force field to biomolecule states.")
     biomolecule.set_states()
@@ -645,9 +629,9 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     lig_atoms.append(pdb_atom)
                 except KeyError:
                     err = (
-                        "Can't find HETATM {r.name} {r.res_seq} {a.name} "
-                        "in MOL2 file"
-                    ).format(r=residue, a=pdb_atom)
+                        f"Can't find HETATM {residue.name} {residue.res_seq} "
+                        f"{pdb_atom.name} in MOL2 file"
+                    )
                     _LOGGER.warning(err)
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
@@ -656,9 +640,9 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             residue.charge, int(residue.charge), abs_tol=CHARGE_ERROR
         ):
             err = (
-                "Residue {r.name} {r.res_seq} charge is "
-                "non-integer: {r.charge}"
-            ).format(r=residue)
+                f"Residue {residue.name} {residue.res_seq} charge is "
+                f"non-integer: {residue.charge}"
+            )
             raise ValueError(err)
     if args.ffout is not None:
         _LOGGER.info(f"Applying custom naming scheme ({args.ffout}).")
@@ -779,11 +763,8 @@ def dx_to_cube():
 
     .. todo:: This function should be moved into the APBS code base.
     """
-    desc = (
-        "{:s}\ndx2cube: converting OpenDX-format files to Gaussian Cube "
-        "format since (at least) 2015"
-    )
-    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
+    desc = f"{TITLE_STR}\ndx2cube: converting OpenDX-format files to "
+    desc += "Gaussian Cube format since (at least) 2015"
     parser = argparse.ArgumentParser(
         description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,

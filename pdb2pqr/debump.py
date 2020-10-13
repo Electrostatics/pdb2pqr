@@ -67,7 +67,7 @@ class Debump:
             atomname = atom.name
             if atomname[0] != "H":
                 continue
-            bumpscore = bumpscore + self.get_bump_score_atom(atom)
+            bumpscore += self.get_bump_score_atom(atom)
         return bumpscore
 
     def get_bump_score_atom(self, atom):
@@ -99,11 +99,11 @@ class Debump:
                 continue
             if not isinstance(closeresidue, aa.Amino):
                 continue
-            if isinstance(residue, aa.CYS):
-                if residue.ss_bonded_partner == closeatom:
-                    continue
-            # Also ignore if this is a donor/acceptor pair
-            pair_ignored = False
+            if (
+                isinstance(residue, aa.CYS)
+                and residue.ss_bonded_partner == closeatom
+            ):
+                continue
             if (
                 atom.is_hydrogen
                 and len(atom.bonds) != 0
@@ -126,7 +126,9 @@ class Debump:
             )
             cutoff = atom_size + other_size
             if dist < cutoff:
-                bumpscore = bumpscore + 1000.0
+                bumpscore += 1000.0
+                # Also ignore if this is a donor/acceptor pair
+                pair_ignored = False
                 if pair_ignored:
                     _LOGGER.debug("This bump is a donor/acceptor pair.")
         _LOGGER.debug(f"BUMPSCORE {str(bumpscore)}")
@@ -284,8 +286,7 @@ class Debump:
             self.set_dihedral_angle(residue, anglenum, bestangle)
             curr_conflict_names = self.find_residue_conflicts(residue)
             if found_improved:
-                err = "Best score of {best} at angle {angle}."
-                err = err.format(best=repr(bestscore), angle=repr(bestangle))
+                err = f"Best score of {bestscore} at angle {bestangle}."
                 _LOGGER.debug(err)
                 _LOGGER.debug(f"New conflict set: {curr_conflict_names}")
             else:
@@ -321,9 +322,11 @@ class Debump:
                 continue
             if not isinstance(closeresidue, (aa.Amino, aa.WAT)):
                 continue
-            if isinstance(residue, aa.CYS):
-                if residue.ss_bonded_partner == closeatom:
-                    continue
+            if (
+                isinstance(residue, aa.CYS)
+                and residue.ss_bonded_partner == closeatom
+            ):
+                continue
             # Also ignore if this is a donor/acceptor pair
             if (
                 atom.is_hydrogen

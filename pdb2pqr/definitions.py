@@ -226,7 +226,7 @@ class Patch:
             text += f"\t{str(self.map[atom])}\n"
         text += "Atoms to remove: \n"
         for remove in self.remove:
-            text += "\t{remove}\n"
+            text += f"\t{remove}\n"
         text += "Alternate naming map: \n"
         text += f"\t{self.altnames}\n"
         return text
@@ -324,6 +324,4 @@ class DefinitionAtom(structures.Atom):
         :return:  true if atom name is in backbone, otherwise false
         :rtype:  bool
         """
-        if self.name in structures.BACKBONE:
-            return True
-        return False
+        return self.name in structures.BACKBONE

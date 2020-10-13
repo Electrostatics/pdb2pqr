@@ -404,10 +404,10 @@ def conect(block):
                 ),
             }
             for i in range(atoms.getRowCount()):
-                found = True
-                for key in atom_dict:
-                    if atoms.getValue(key, i) != atom_dict[key]:
-                        found = False
+                found = all(
+                    atoms.getValue(key, i) == atom_dict[key]
+                    for key in atom_dict
+                )
                 if found:
                     atom_pair.append(atoms.getValue("id", i))
         if len(atom_pair) == 2:
@@ -476,10 +476,7 @@ def title(block):
     title_chunk = int(ceil(len(title_string) / 70.0))
     for i in range(title_chunk):
         line = "TITLE  "
-        if i + 1 > 1:
-            line += " " * (2 - len(str(i + 1))) + str(i + 1)
-        else:
-            line += "  "
+        line += " " * (2 - len(str(i + 1))) + str(i + 1) if i > 0 else "  "
         line += title_string[
             (i * 70) : minimum(len(title_string), (i + 1) * 70)  # noqa E203
         ]
@@ -505,10 +502,7 @@ def compnd(block):
     cont = 1
     for i in range(entity_obj.getRowCount()):
         line1 = "COMPND "
-        if cont > 1:
-            line1 += " " * (3 - len(str(cont))) + str(cont)
-        else:
-            line1 += "   "
+        line1 += " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
         line1 += "MOL_ID: " + str(entity_obj.getValue("id", i)) + ""
         try:
             compnd_arr.append(pdb.COMPND(line1))
@@ -517,10 +511,7 @@ def compnd(block):
             compnd_err.append("compnd")
         cont += 1
         line2 = "COMPND "
-        if cont > 1:
-            line2 += " " * (3 - len(str(cont))) + str(cont)
-        else:
-            line2 += "   "
+        line2 += " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
         line2 += "MOLECULE: " + entity_obj.getValue("pdbx_description", i) + ""
         try:
             compnd_arr.append(pdb.COMPND(line2))
@@ -548,10 +539,9 @@ def source(block):
     for i in range(src_obj.getRowCount()):
         if src_obj.getValue("entity_id", 0) != "?":
             line = "SOURCE "
-            if cont > 1:
-                line += " " * (3 - len(str(cont))) + str(cont)
-            else:
-                line += "   "
+            line += (
+                " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
+            )
             line += "MOL_ID: " + str(src_obj.getValue("entity_id", i)) + ""
             cont += 1
             try:
@@ -561,10 +551,9 @@ def source(block):
                 src_err.append("source")
         if src_obj.getValue("pdbx_gene_src_scientific_name", i) != "?":
             line = "SOURCE "
-            if cont > 1:
-                line += " " * (3 - len(str(cont))) + str(cont)
-            else:
-                line += "   "
+            line += (
+                " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
+            )
             line += (
                 "ORGANISM_SCIENTIFIC: "
                 + src_obj.getValue("pdbx_gene_src_scientific_name", i)
@@ -578,10 +567,9 @@ def source(block):
                 src_err.append("source")
         if src_obj.getValue("gene_src_common_name", i) != "?":
             line = "SOURCE "
-            if cont > 1:
-                line += " " * (3 - len(str(cont))) + str(cont)
-            else:
-                line += "   "
+            line += (
+                " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
+            )
             line += (
                 "ORGANISM_COMMON: "
                 + src_obj.getValue("gene_src_common_name", i)
@@ -595,10 +583,9 @@ def source(block):
                 src_err.append("source")
         if src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i) != "?":
             line = "SOURCE "
-            if cont > 1:
-                line += " " * (3 - len(str(cont))) + str(cont)
-            else:
-                line += "   "
+            line += (
+                " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
+            )
             line += (
                 "ORGANISM_TAXID: "
                 + src_obj.getValue("pdbx_gene_src_ncbi_taxonomy_id", i)
@@ -628,10 +615,7 @@ def keywds(block):
     key_chunk = int(ceil(len(key_string) / 69.0))
     for i in range(key_chunk):
         line = "KEYWDS  "
-        if i + 1 > 1:
-            line += " " * (2 - len(str(i + 1))) + str(i + 1)
-        else:
-            line += "  "
+        line += " " * (2 - len(str(i + 1))) + str(i + 1) if i > 0 else "  "
         line += key_string[
             (i * 69) : minimum(len(key_string), (i + 1) * 69)  # noqa E203
         ]
@@ -1022,8 +1006,6 @@ def count_models(block):
         tmp = atom_obj.getValue("pdbx_PDB_model_num", i)
         if tmp not in model_num:
             model_num.append(tmp)
-        else:
-            pass
     return model_num
 
 
@@ -1091,7 +1073,7 @@ def read_cif(cif_file):
                 + ato_err
                 + con_err
             )
-        return pdblist, errlist
     else:
         _LOGGER.error("Unknown error while reading CIF file.")
-        return pdblist, errlist
+
+    return pdblist, errlist

@@ -62,8 +62,7 @@ class Residue(object):
                 atom.res_name = "WAT"
 
     def __str__(self):
-        text = f"{self.name} {self.chain_id} {self.res_seq}{self.ins_code}"
-        return text
+        return f"{self.name} {self.chain_id} {self.res_seq}{self.ins_code}"
 
     def get_moveable_names(self, pivot):
         """Return all atom names that are further away than the pivot atom.
@@ -75,12 +74,8 @@ class Residue(object):
         :return:  names of atoms further away than pivot atom
         :rtype:  [str]
         """
-        movenames = []
         refdist = self.get_atom(pivot).refdistance
-        for atom in self.atoms:
-            if atom.refdistance > refdist:
-                movenames.append(atom.name)
-        return movenames
+        return [atom.name for atom in self.atoms if atom.refdistance > refdist]
 
     def update_terminus_status(self):
         """Update the :makevar:`is_n_terms` and :makevar:`is_c_term` flags."""
@@ -92,7 +87,7 @@ class Residue(object):
                 for atom2 in self.atoms:
                     atomname = atom2.name
                     if atom == atomname:
-                        count = count + 1
+                        count += 1
             self.is_n_term = count
         # If Cterm then update counter
         if self.is_c_term:
@@ -289,7 +284,7 @@ class Residue(object):
         bestnum = -1
         best = 0
         ilist = list(range(len(self.dihedrals)))
-        if oldnum is not None and oldnum >= 0 and len(ilist) > 0:
+        if oldnum is not None and oldnum >= 0 and ilist:
             del ilist[oldnum]
             test_dihedral_indices = ilist[oldnum:] + ilist[:oldnum]
         else:

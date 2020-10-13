@@ -13,7 +13,7 @@
 from math import log
 import logging
 import argparse
-from .config import TITLE_FORMAT_STRING, VERSION
+from .config import TITLE_STR
 
 
 CFAC = 1.7
@@ -122,9 +122,7 @@ class Psize:
                 self.gotatom += 1
                 self.charge = self.charge + float(words[3])
                 rad = float(words[4])
-                center = []
-                for word in words[0:3]:
-                    center.append(float(word))
+                center = [float(word) for word in words[0:3]]
                 for i in range(3):
                     if (
                         self.minlen[i] is None
@@ -147,9 +145,7 @@ class Psize:
                         continue
                     self.charge = self.charge + float(words[3])
                     rad = float(words[4])
-                    center = []
-                    for word in words[0:3]:
-                        center.append(float(word))
+                    center = [float(word) for word in words[0:3]]
                     for i in range(3):
                         if (
                             self.minlen[i] is None
@@ -257,9 +253,7 @@ class Psize:
             memory
         :rtype:  [int, int, int]
         """
-        nsmall = []
-        for i in range(3):
-            nsmall.append(ngrid[i])
+        nsmall = [ngrid[i] for i in range(3)]
         while 1:
             nsmem = 200.0 * nsmall[0] * nsmall[1] * nsmall[2] / 1024 / 1024
             if nsmem < self.gmemceil:
@@ -373,8 +367,8 @@ class Psize:
             gmem = 200.0 * ngrid[0] * ngrid[1] * ngrid[2] / 1024 / 1024
             # Print the calculated entries
             str_ += "######## MOLECULE INFO ########\n"
-            str_ += f"Number of ATOM entries = {self.gotatom:i}\n"
-            str_ += f"Number of HETATM entries (ignored) = {self.gothet:i}\n"
+            str_ += f"Number of ATOM entries = {self.gotatom}\n"
+            str_ += f"Number of HETATM entries (ignored) = {self.gothet}\n"
             str_ += f"Total charge = {charge:.3f} e\n"
             str_ += f"Dimensions = {mol_length[0]:.3f} Å x "
             str_ += f"{mol_length[1]:.3f} Å x {mol_length[2]:.3f} Å\n"
@@ -400,7 +394,7 @@ class Psize:
                 str_ += f"Parallel solve required ({gmem:.3f} MB > "
                 str_ += f"{self.gmemceil:.3f} MB)\n"
                 str_ += "Total processors required = "
-                str_ += f"{nproc[0] * nproc[1] * nproc[2]:i}\n"
+                str_ += f"{nproc[0] * nproc[1] * nproc[2]}\n"
                 str_ += f"Proc. grid = {nproc[0]:d} x {nproc[1]:d} x "
                 str_ += f"{nproc[2]:d}\n"
                 str_ += f"Grid pts. on each proc. = {nsmall[0]:d} x "
@@ -435,7 +429,7 @@ class Psize:
                 str_ += "Estimated mem. required for sequential solve = "
                 str_ += f"{gmem:.3f} MB\n"
                 ntot = ngrid[0] * ngrid[1] * ngrid[2]
-            str_ += f"Number of focusing operations = {nfocus:i}\n"
+            str_ += f"Number of focusing operations = {nfocus}\n"
             str_ += "\n"
             str_ += "######## ESTIMATED REQUIREMENTS ########\n"
             str_ += "Memory per processor = "
@@ -457,11 +451,8 @@ def build_parser():
     :return:  argument parser
     :rtype:  argparse.ArgumentParser
     """
-    desc = (
-        "{:s}\npsize: figuring out the size of electrostatics calculations "
-        "since (at least) 2002."
-    )
-    desc = desc.format(TITLE_FORMAT_STRING.format(version=VERSION))
+    desc = f"{TITLE_STR}\npsize: figuring out the size of electrostatics "
+    desc += "calculations since (at least) 2002."
 
     parser = argparse.ArgumentParser(
         description=desc,

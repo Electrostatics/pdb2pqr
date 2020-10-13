@@ -73,8 +73,7 @@ def qtransform(numpoints, defcoords, refcenter, fitcenter, rotation):
         defcoords = [defcoords]
     fitcoords = translate(numpoints, defcoords, fitcenter, 1)
     rotated = rotmol(numpoints, fitcoords, rotation)
-    newcoords = translate(numpoints, rotated, refcenter, 2)
-    return newcoords
+    return translate(numpoints, rotated, refcenter, 2)
 
 
 def qfit(numpoints, refcoords, defcoords):
@@ -159,8 +158,7 @@ def qchichange(initcoords, refcoords, angle):
         0
     ] * math.sin(radangle)
     numpoints = len(refcoords)
-    newcoords = rotmol(numpoints, refcoords, right)
-    return newcoords
+    return rotmol(numpoints, refcoords, right)
 
 
 def rotmol(numpoints, coor, lrot):
@@ -235,18 +233,17 @@ def qtrfit(numpoints, defcoords, refcoords, nrot):
     xzyx = 0.0
     xzyy = 0.0
     xzyz = 0.0
-    quat = []
     cmat = []
     for i in range(numpoints):
-        xxyx = xxyx + defcoords[i][0] * refcoords[i][0]
-        xxyy = xxyy + defcoords[i][0] * refcoords[i][1]
-        xxyz = xxyz + defcoords[i][0] * refcoords[i][2]
-        xyyx = xyyx + defcoords[i][1] * refcoords[i][0]
-        xyyy = xyyy + defcoords[i][1] * refcoords[i][1]
-        xyyz = xyyz + defcoords[i][1] * refcoords[i][2]
-        xzyx = xzyx + defcoords[i][2] * refcoords[i][0]
-        xzyy = xzyy + defcoords[i][2] * refcoords[i][1]
-        xzyz = xzyz + defcoords[i][2] * refcoords[i][2]
+        xxyx += defcoords[i][0] * refcoords[i][0]
+        xxyy += defcoords[i][0] * refcoords[i][1]
+        xxyz += defcoords[i][0] * refcoords[i][2]
+        xyyx += defcoords[i][1] * refcoords[i][0]
+        xyyy += defcoords[i][1] * refcoords[i][1]
+        xyyz += defcoords[i][1] * refcoords[i][2]
+        xzyx += defcoords[i][2] * refcoords[i][0]
+        xzyy += defcoords[i][2] * refcoords[i][1]
+        xzyz += defcoords[i][2] * refcoords[i][2]
     for i in range(4):
         cmat.append([])
         for _ in range(4):
@@ -262,8 +259,7 @@ def qtrfit(numpoints, defcoords, refcoords, nrot):
     cmat[2][3] = xyyz + xzyy
     cmat[3][3] = xzyz - xxyx - xyyy
     _, vmat = jacobi(cmat, nrot)  # diagonalize c
-    for i in range(4):
-        quat.append(vmat[i][3])
+    quat = [vmat[i][3] for i in range(4)]
     lrot = q2mat(quat)
     return quat, lrot
 
@@ -279,10 +275,11 @@ def jacobi(amat, nrot):
     """
     vmat = []
     dvec = []
+    the_lrot = 0
     for j in range(4):
         dvec.append(0)
         vmat.append([])
-        for i in range(4):
+        for _ in range(4):
             vmat[j].append(0.0)
         vmat[j][j] = 1.0
         dvec[j] = amat[j][j]
@@ -290,13 +287,12 @@ def jacobi(amat, nrot):
         dnorm = 0.0
         onorm = 0.0
         for j in range(4):
-            dnorm = dnorm + abs(dvec[j])
+            dnorm += abs(dvec[j])
             for i in range(j):
-                onorm = onorm + abs(amat[i][j])
-        if dnorm != 0:
-            if onorm / dnorm <= 1e-12:
-                the_lrot = lrot
-                break
+                onorm += abs(amat[i][j])
+        if dnorm != 0 and onorm / dnorm <= 1e-12:
+            the_lrot = lrot
+            break
         for j in range(1, 4):
             for i in range(j):
                 bscl = amat[i][j]
@@ -407,10 +403,8 @@ def center(numpoints, refcoords):
     :return:  (center of the set of points, moved refcoords relative to
         refcenter)
     """
-    refcenter = []
     relcoords = []
-    for i in range(3):
-        refcenter.append(0.0)
+    refcenter = [0.0 for _ in range(3)]
     for i in range(numpoints):
         refcenter[0] += refcoords[i][0]
         refcenter[1] += refcoords[i][1]
@@ -442,6 +436,7 @@ def translate(numpoints, refcoords, center_, mode):
     :rtype:  [[float, float, float]]
     """
     relcoords = []
+    modif = 0
     if mode == 1:
         modif = -1
     elif mode == 2:

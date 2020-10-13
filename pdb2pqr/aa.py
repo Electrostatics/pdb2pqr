@@ -200,23 +200,16 @@ class Amino(residue.Residue):
                 hcoords = newcoords
                 cg1atom = self.get_atom("CG1")
                 cbatom = self.get_atom("CB")
-                if bondatom.name == "CD1":
+                if bondatom.name == "CD1" or bondatom.name != "CG2":
                     ang = util.dihedral(
                         cbatom.coords,
-                        nextatom.coords,
-                        bondatom.coords,
-                        hcoords,
-                    )
-                elif bondatom.name == "CG2":
-                    ang = util.dihedral(
-                        cg1atom.coords,
                         nextatom.coords,
                         bondatom.coords,
                         hcoords,
                     )
                 else:
                     ang = util.dihedral(
-                        cbatom.coords,
+                        cg1atom.coords,
                         nextatom.coords,
                         bondatom.coords,
                         hcoords,
@@ -239,10 +232,12 @@ class Amino(residue.Residue):
             return True
         elif numbonds == 3:
             # Find the one spot the atom can be
-            hatoms = []
-            for bond in bondatom.reference.bonds:
-                if self.has_atom(bond) and bond.startswith("H"):
-                    hatoms.append(self.get_atom(bond))
+            hatoms = [
+                self.get_atom(bond)
+                for bond in bondatom.reference.bonds
+                if self.has_atom(bond) and bond.startswith("H")
+            ]
+
             # If this is more than two something is wrong
             if len(hatoms) != 2:
                 return False

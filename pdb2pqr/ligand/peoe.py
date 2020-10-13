@@ -72,10 +72,7 @@ def electronegativity(charge, poly_terms, atom_type):
     """
     chi = None
     if abs(charge) > MAX_CHARGE:
-        if charge < 0:
-            charge = -1.0 * MAX_CHARGE
-        else:
-            charge = MAX_CHARGE
+        charge = -1.0 * MAX_CHARGE if charge < 0 else MAX_CHARGE
     if (atom_type == "H") and isclose(charge, DEFAULT_H_CHARGE):
         chi = DEFAULT_H_ELECTRONEG
     else:

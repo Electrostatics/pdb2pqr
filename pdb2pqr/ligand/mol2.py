@@ -65,8 +65,9 @@ class Mol2Bond:
         return self.atoms[0].distance(self.atoms[1])
 
     def __str__(self):
-        fmt = "{b.atoms[0].name:s} {b.type:s}-bonded to {b.atoms[1].name:s}"
-        return fmt.format(b=self)
+        mol2 = f"{self.atoms[0].name:s} {self.type:s}-bonded to "
+        mol2 += f"{self.atoms[1].name:s}"
+        return mol2
 
 
 class Mol2Atom:
@@ -116,11 +117,11 @@ class Mol2Atom:
 
     def __str__(self):
         """Generate PDB line from MOL2."""
-        pdb_fmt = (
-            "HETATM{a.serial:5d}{a.name:>5s}{a.res_name:>4s} L"
-            "{a.res_seq!s:>5s}   {a.x:8.3f}{a.y:8.3f}{a.z:8.3f}"
+        mol2 = (
+            f"HETATM{self.serial:5d}{self.name:>5s}{self.res_name:>4s} L"
+            f"{self.res_seq!s:>5s}   {self.x:8.3f}{self.y:8.3f}{self.z:8.3f}"
         )
-        return pdb_fmt.format(a=self)
+        return mol2
 
     def assign_radius(self, primary_dict, secondary_dict):
         """Assign radius to atom.
@@ -148,9 +149,9 @@ class Mol2Atom:
             self.radius = radius
         else:
             err = (
-                "Unable to find radius parameter for self of type {type} in "
-                "radius dictionary: {ff}"
-            ).format(type=self.type, ff=primary_dict)
+                f"Unable to find radius parameter for self of type "
+                f"{self.type} in radius dictionary: {primary_dict}"
+            )
             raise KeyError(err)
 
     @property
@@ -297,10 +298,7 @@ class Mol2Atom:
                 for atom in bond.atoms:
                     if atom.type[0] == "O" and atom.bond_order == 1:
                         o_atoms.append(atom.name)
-            if o_atoms.index(self.name) == 0:
-                formal_charge = -1
-            else:
-                formal_charge = 0
+            formal_charge = -1 if o_atoms.index(self.name) == 0 else 0
         return formal_charge
 
 
@@ -410,13 +408,9 @@ class Mol2Molecule:
             atom1 = bond.atoms[0].name
             atom2 = bond.atoms[1].name
             if start_node in (atom1, atom2):
-                if atom1 == start_node:
-                    next_node = atom2
-                else:
-                    next_node = atom1
+                next_node = atom2 if atom1 == start_node else atom1
                 if next_node not in path:
-                    sub_path = [next_node]
-                    sub_path.extend(path)
+                    sub_path = [next_node, *path]
                     rings = self.find_new_rings(sub_path, rings, level + 1)
                 elif len(path) > 2 and next_node == path[-1]:
                     path_ = self.rotate_to_smallest(path)
@@ -520,7 +514,7 @@ class Mol2Molecule:
                 duplicates.add(atom.name)
             else:
                 self.atoms[atom.name] = atom
-        if len(duplicates) > 0:
+        if duplicates:
             raise KeyError(
                 f"Found duplicate atoms names in MOL2 file: {duplicates}"
             )

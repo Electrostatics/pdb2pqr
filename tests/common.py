@@ -69,8 +69,7 @@ def pqr_to_dict(pqr_file):
     for line in pqr_file:
         atom = Atom.from_pqr_line(line)
         if atom is not None:
-            row_dict = {}
-            row_dict["atom_num"] = atom.serial
+            row_dict = {"atom_num": atom.serial}
             # Many hydrogens are created in arbitrary order when attached to
             # the same heavy atom. Therefore, the last number in their name is
             # not meaningful
@@ -194,14 +193,13 @@ def compare_pqr(pqr1_path, pqr2_path):
 
 def run_pdb2pqr(args, input_pdb, tmp_path, output_pqr=None, expected_pqr=None):
     """Basic code for invoking PDB2PQR."""
-    arg_str = args + " {inp} {out}"
     if output_pqr is None:
-        hash_str = str(args) + str(input_pdb)
+        hash_str = f"{args}{input_pdb}"
         hash_ = hashlib.sha1(hash_str.encode("UTF-8")).hexdigest()
-        output_pqr = hash_ + ".pqr"
+        output_pqr = f"{hash_}.pqr"
     output_pqr = tmp_path / output_pqr
     _LOGGER.debug(f"Writing output to {output_pqr}")
-    arg_str = arg_str.format(inp=input_pdb, out=output_pqr)
+    arg_str = f"{args} {input_pdb} {output_pqr}"
     args = PARSER.parse_args(arg_str.split())
     main_driver(args)
     if expected_pqr is not None:

@@ -42,12 +42,7 @@ class Flip(optimize.Optimize):
         moveablenames = residue.get_moveable_names(pivot)
         # HO in CTERM shouldn't be in the list of flip atoms
         if residue.is_c_term:
-            newmoveablenames = []
-            for name in moveablenames:
-                if name == "HO":
-                    pass
-                else:
-                    newmoveablenames.append(name)
+            newmoveablenames = [name for name in moveablenames if name != "HO"]
             moveablenames = newmoveablenames
         # Cache current coordinates
         for name in moveablenames:
@@ -60,9 +55,9 @@ class Flip(optimize.Optimize):
         newangle = 180.0 + residue.dihedrals[anglenum]
         self.routines.set_dihedral_angle(residue, anglenum, newangle)
         # Create new atoms at cached positions
-        for name in map_:
+        for name, value in map_.items():
             newname = f"{name}FLIP"
-            residue.create_atom(newname, map_[name])
+            residue.create_atom(newname, value)
             newatom = residue.get_atom(newname)
             self.routines.cells.add_cell(newatom)
             # Set the bonds
@@ -88,20 +83,21 @@ class Flip(optimize.Optimize):
         for name in moveablenames:
             # Get the atom
             atom = residue.get_atom(name)
-            if not atom.is_hydrogen:
-                if atom.hdonor or atom.hacceptor:
-                    self.atomlist.append(atom)
+            if not atom.is_hydrogen and (atom.hdonor or atom.hacceptor):
+                self.atomlist.append(atom)
             # And the FLIP
             atom = residue.get_atom(f"{name}FLIP")
-            if not atom.is_hydrogen:
-                if atom.hdonor or atom.hacceptor:
-                    self.atomlist.append(atom)
+            if not atom.is_hydrogen and (atom.hdonor or atom.hacceptor):
+                self.atomlist.append(atom)
         # Special case: Neutral unassigned HIS can be acceptors
-        if isinstance(residue, aa.HIS):
-            if residue.name == "HIS" and len(residue.patches) == 1:
-                for atom in self.atomlist:
-                    if atom.name.startswith("N"):
-                        atom.hacceptor = 1
+        if (
+            isinstance(residue, aa.HIS)
+            and residue.name == "HIS"
+            and len(residue.patches) == 1
+        ):
+            for atom in self.atomlist:
+                if atom.name.startswith("N"):
+                    atom.hacceptor = 1
 
     def try_both(self, donor, acc, accobj):
         """Try to optimize both donor and acceptor bonds.
@@ -124,13 +120,9 @@ class Flip(optimize.Optimize):
         """
         # If one residue if fixed, use other functions
         if donor.residue.fixed:
-            if accobj.try_acceptor(acc, donor):
-                return True
-            return False
+            return bool(accobj.try_acceptor(acc, donor))
         if acc.residue.fixed:
-            if self.try_donor(donor, acc):
-                return True
-            return False
+            return bool(self.try_donor(donor, acc))
         _LOGGER.debug(
             f"Working on {donor.residue} {donor.name} (donor) "
             f"to {acc.residue} {acc.name} (acceptor)"
@@ -203,17 +195,16 @@ class Flip(optimize.Optimize):
         :param bondatom:  atom to flip
         :type bondatom:  Atom
         """
-        # Initialize some variables
-        atomlist = []
         residue = bondatom.residue
-        for atom in residue.atoms:
-            atomlist.append(atom)
+        # Initialize some variables
+        atomlist = [atom for atom in residue.atoms]
         # Set a flag to see whether to delete the FLIPs or not
         flag = 0
         if bondatom.name.endswith("FLIP"):
             flag = 1
-        dstr = "fix_flip called for residue {:s}, bondatom {:s} and flag {:d}"
-        _LOGGER.debug(dstr.format(str(residue), str(bondatom), flag))
+        dstr = f"fix_flip called for residue {residue}, bondatom {bondatom} "
+        dstr += f"and flag {flag:d}"
+        _LOGGER.debug(dstr)
         residue.wasFlipped = flag == 0
         # Delete the appropriate atoms
         for atom in atomlist:
@@ -240,9 +231,7 @@ class Flip(optimize.Optimize):
         residue = self.residue
         if residue.fixed:
             return
-        atomlist = []
-        for atom in residue.atoms:
-            atomlist.append(atom)
+        atomlist = [atom for atom in residue.atoms]
         for atom in atomlist:
             if atom.name.endswith("FLIP"):
                 self.routines.cells.remove_cell(atom)
@@ -345,13 +334,9 @@ class Alcoholic(optimize.Optimize):
         # If one residue if fixed, use other functions
         residue = donor.residue
         if donor.residue.fixed:
-            if accobj.try_acceptor(acc, donor):
-                return True
-            return False
+            return bool(accobj.try_acceptor(acc, donor))
         if acc.residue.fixed:
-            if self.try_donor(donor, acc):
-                return True
-            return False
+            return bool(self.try_donor(donor, acc))
         if self.try_donor(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 _LOGGER.debug("NET BOND SUCCESSFUL!")
@@ -526,9 +511,7 @@ class Alcoholic(optimize.Optimize):
         self.finalize()
         residue.fixed = 1
         # Remove all LP atoms
-        atomlist = []
-        for atom in residue.atoms:
-            atomlist.append(atom)
+        atomlist = [atom for atom in residue.atoms]
         for atom in atomlist:
             if atom.name.startswith("LP"):
                 residue.remove_atom(atom.name)
@@ -579,13 +562,9 @@ class Water(optimize.Optimize):
         # If one residue if fixed, use other functions
         residue = donor.residue
         if donor.residue.fixed:
-            if accobj.try_acceptor(acc, donor):
-                return True
-            return False
+            return bool(accobj.try_acceptor(acc, donor))
         if acc.residue.fixed:
-            if self.try_donor(donor, acc):
-                return True
-            return False
+            return bool(self.try_donor(donor, acc))
         if self.try_donor(donor, acc):
             if accobj.try_acceptor(acc, donor):
                 _LOGGER.debug("NET BOND SUCCESSFUL!")
@@ -640,6 +619,7 @@ class Water(optimize.Optimize):
                     if dist < bestdist:
                         bestdist = dist
                 # Point the LP to the best H
+                # WARNING: Nathan? What if donorh is not set?
                 self.make_atom_with_no_bonds(acc, donorh, newname)
                 _LOGGER.warning("The best donorH was not picked (BUG?).")
                 _LOGGER.debug(f"Added {newname} to {acc.residue}")
@@ -813,9 +793,7 @@ class Water(optimize.Optimize):
         self.finalize()
         residue = self.residue
 
-        atomlist = []
-        for atom in residue.atoms:
-            atomlist.append(atom)
+        atomlist = [atom for atom in residue.atoms]
         for atom in atomlist:
             if atom.name.startswith("LP"):
                 residue.remove_atom(atom.name)
@@ -867,6 +845,7 @@ class Carboxylic(optimize.Optimize):
             if not pivotatom.is_hydrogen:
                 the_pivatom = pivotatom
                 break
+        # WARNING: What if the_pivatom is not set?
         dist1 = util.distance(the_pivatom.coords, bondatom1.coords)
         dist2 = util.distance(the_pivatom.coords, bondatom2.coords)
         order = [hname1, hname2]
@@ -883,6 +862,7 @@ class Carboxylic(optimize.Optimize):
                 if dihedral.endswith(hname):
                     the_dihedral = dihedral
                     break
+            # WARNING: What if the_dihedral is not set?
             anglenum = residue.reference.dihedrals.index(the_dihedral)
             if anglenum == -1:
                 raise IndexError("Unable to find Carboxylic dihedral angle!")
@@ -937,13 +917,9 @@ class Carboxylic(optimize.Optimize):
         """
         # If one residue if fixed, use other functions
         if donor.residue.fixed:
-            if accobj.try_acceptor(acc, donor):
-                return True
-            return False
+            return bool(accobj.try_acceptor(acc, donor))
         if acc.residue.fixed:
-            if self.try_donor(donor, acc):
-                return True
-            return False
+            return bool(self.try_donor(donor, acc))
         _LOGGER.debug(
             f"Working on {donor.residue} {donor.name} (donor) "
             f"to {acc.residue} {acc.name} (acceptor)"
@@ -1002,13 +978,10 @@ class Carboxylic(optimize.Optimize):
         )
         # We want to ignore the Hs on the acceptor
         if self.is_carboxylic_hbond(donor, acc):
-            # Eliminate the closer hydrogen
-            hyds = []
             dist = None
             donorhatom = None
-            for hatom in self.hlist:
-                if hatom.is_hydrogen:
-                    hyds.append(hatom)
+            # Eliminate the closer hydrogen
+            hyds = [hatom for hatom in self.hlist if hatom.is_hydrogen]
             if len(hyds) < 2:
                 return True
             dist = util.distance(hyds[0].coords, donor.coords)
@@ -1062,13 +1035,11 @@ class Carboxylic(optimize.Optimize):
         residue = donor.residue
         # Grab the H(D) that caused the bond
         for donorhatom in donor.bonds:
-            if donorhatom.is_hydrogen:
-                if (
-                    self.get_hbond_angle(acc, donor, donorhatom)
-                    <= ANGLE_CUTOFF
-                ):
-                    the_donorhatom = donorhatom
-                    break
+            if donorhatom.is_hydrogen and (
+                self.get_hbond_angle(acc, donor, donorhatom) <= ANGLE_CUTOFF
+            ):
+                the_donorhatom = donorhatom
+                break
         # Remove all the other available bonded hydrogens
         hydrogens = self.hlist[:]
         for atom in hydrogens:
@@ -1077,6 +1048,7 @@ class Carboxylic(optimize.Optimize):
                 self.hlist.remove(atom)
                 residue.remove_atom(atom.name)
         # Rename the atoms
+        # WARNING: Nathan? What if the_donorhatom is not set?
         self.rename(the_donorhatom)
         residue.fixed = 1
 
@@ -1157,13 +1129,12 @@ class Carboxylic(optimize.Optimize):
                 residue.rename_atom(tempname, bondname1)
         elif len(self.atomlist) == 1:
             # Appending the other bondatom to self.atomlist
+            # WARNING: Nathan? What if hname is not set?
             hnames = [hname[:-1] + "1", hname[:-1] + "2"]
             for hname in hnames:
                 bondatom = residue.get_atom(optinstance.map[hname].bond)
                 if bondatom.name != self.atomlist[0].name:
                     self.atomlist.append(bondatom)
-                else:
-                    pass
             if hydatom.name.endswith("1"):
                 if hydatom.name[:-1] + "2" in residue.map.keys():
                     residue.remove_atom(f"{hydatom.name[:-1]}2")

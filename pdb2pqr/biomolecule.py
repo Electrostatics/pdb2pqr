@@ -771,7 +771,7 @@ class Biomolecule(object):
             resnum = residue.res_seq
             chain_id = residue.chain_id
             if residue.is_n_term:
-                key = f"N+ {resnum} {chain_id}"
+                key = f"N+  {resnum:>3} {chain_id}"
                 key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
@@ -789,7 +789,7 @@ class Biomolecule(object):
                         else:
                             self.apply_patch("NEUTRAL-NTERM", residue)
             if residue.is_c_term:
-                key = f"C- {resnum} {chain_id}"
+                key = f"C-  {resnum:>3} {chain_id}"
                 key = key.strip()
                 if key in pkadic:
                     value = pkadic[key]
@@ -806,7 +806,7 @@ class Biomolecule(object):
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-CTERM", residue)
-            key = f"{resname} {resnum} {chain_id}"
+            key = f"{resname:<3} {resnum:>3} {chain_id}"
             key = key.strip()
             if key in pkadic:
                 value = pkadic[key]

@@ -49,6 +49,8 @@ class DuplicateFilter(logging.Filter):
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """Get PDB-format text lines for specified atoms.
 
+    .. note:: this function modifies ``Atom.serial``
+
     :param atomlist:  the list of atoms to include
     :type atomlist:  [Atom]
     :param chainflag:  flag whether to print chainid or not
@@ -58,14 +60,14 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """
     text = []
     currentchain_id = None
-    for atom in atomlist:
+    for iatom, atom in enumerate(atomlist):
         # Print the "TER" records between chains
         if currentchain_id is None:
             currentchain_id = atom.chain_id
         elif atom.chain_id != currentchain_id:
             currentchain_id = atom.chain_id
             text.append("TER\n")
-
+        atom.serial = iatom + 1
         if pdbfile is True:
             text.append(f"{atom.get_pdb_string()}\n")
         else:

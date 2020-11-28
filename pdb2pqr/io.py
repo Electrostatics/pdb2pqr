@@ -49,12 +49,10 @@ class DuplicateFilter(logging.Filter):
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """Get PDB-format text lines for specified atoms.
 
-    :param atomlist:  the list of atoms to include
-    :type atomlist:  [Atom]
-    :param chainflag:  flag whether to print chainid or not
-    :type chainflag:  bool
+    :param [Atom] atomlist:  the list of atoms to include
+    :param bool chainflag:  flag whether to print chainid or not
     :return:  list of strings, each representing an atom PDB line
-    :type:  [str]
+    :rtype:  [str]
     """
     text = []
     currentchain_id = None

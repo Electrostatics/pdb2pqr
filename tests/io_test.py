@@ -3,7 +3,7 @@ import logging
 from difflib import Differ
 from pathlib import Path
 import pytest
-from pdb2pqr.io import read_pqr, read_dx, write_cube
+from pdb2pqr.io import read_pqr, read_dx, write_cube, read_qcd
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,6 +23,16 @@ def test_read_pqr(input_pqr):
     """
     with open(input_pqr, "rt") as pqr_file:
         read_pqr(pqr_file)
+
+
+def test_read_qcd():
+    """Test that :func:`read_pqr` doesn't raise an error.
+
+    Doesn't test functionality.
+    """
+    qcd_path = DATA_DIR / "dummy.qcd"
+    with open(qcd_path, "rt") as qcd_file:
+        read_qcd(qcd_file)
 
 
 def test_dx2cube(tmp_path):

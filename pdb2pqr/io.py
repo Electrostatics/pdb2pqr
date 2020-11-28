@@ -531,6 +531,23 @@ def read_pqr(pqr_file):
     return atoms
 
 
+def read_qcd(qcd_file):
+    """Read QCD (UHDB QCARD format) file.
+
+    :param file qcd_file:  file object ready for reading as text
+    :returns:  list of atoms read from file
+    :rtype:  [Atom]
+    """
+    atoms = []
+    atom_serial = 1
+    for line in qcd_file:
+        atom = Atom.from_qcd_line(line, atom_serial)
+        if atom is not None:
+            atoms.append(atom)
+            atom_serial += 1
+    return atoms
+
+
 def read_dx(dx_file):
     """Read DX-format volumetric information.
 

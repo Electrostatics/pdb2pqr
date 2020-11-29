@@ -201,6 +201,57 @@ class Atom:
         atom.radius = float(words.pop(0))
         return atom
 
+    @classmethod
+    def from_qcd_line(cls, line, atom_serial):
+        """Create an atom from a QCD (UHBD QCARD format) line.
+
+        :param Atom cls:  class for classmethod
+        :param str line:  PQR line
+        :param int atom_serial:  atom serial number
+        :returns:  new atom or None (for REMARK and similar lines)
+        :rtype:  Atom
+        :raises ValueError:  for problems parsing
+        """
+        atom = cls()
+        words = [w.strip() for w in line.split()]
+        token = words.pop(0)
+        if token in [
+            "REMARK",
+            "TER",
+            "END",
+            "HEADER",
+            "TITLE",
+            "COMPND",
+            "SOURCE",
+            "KEYWDS",
+            "EXPDTA",
+            "AUTHOR",
+            "REVDAT",
+            "JRNL",
+        ]:
+            return None
+        if token in ["ATOM", "HETATM"]:
+            atom.type = token
+        elif token[:4] == "ATOM":
+            atom.type = "ATOM"
+            words = [token[4:]] + words
+        elif token[:6] == "HETATM":
+            atom.type = "HETATM"
+            words = [token[6:]] + words
+        else:
+            err = f"Unable to parse line: {line}"
+            raise ValueError(err)
+        atom.serial = int(atom_serial)
+        atom.res_seq = int(words.pop(0))
+        atom.res_name = words.pop(0)
+        atom.name = words.pop(0)
+        atom.x = float(words.pop(0))
+        atom.y = float(words.pop(0))
+        atom.z = float(words.pop(0))
+        atom.charge = float(words.pop(0))
+        atom.radius = float(words.pop(0))
+        return atom
+
     def get_common_string_rep(self, chainflag=False):
         """Returns a string of the common column of the new atom type.
 

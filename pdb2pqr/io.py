@@ -49,14 +49,10 @@ class DuplicateFilter(logging.Filter):
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """Get PDB-format text lines for specified atoms.
 
-    .. note:: this function modifies ``Atom.serial``
-
-    :param atomlist:  the list of atoms to include
-    :type atomlist:  [Atom]
-    :param chainflag:  flag whether to print chainid or not
-    :type chainflag:  bool
+    :param [Atom] atomlist:  the list of atoms to include
+    :param bool chainflag:  flag whether to print chainid or not
     :return:  list of strings, each representing an atom PDB line
-    :type:  [str]
+    :rtype:  [str]
     """
     text = []
     currentchain_id = None
@@ -505,16 +501,24 @@ def setup_logger(output_pqr, level="DEBUG"):
     Setup logger to output the log file to the same directory as PQR
     output.
 
-    :param output_pqr:  path to PQR file
-    :type output_pqr:  str
-    :param level:  logging level
-    :type level:  str
+    :param str output_pqr:  path to PQR file
+    :param str level:  logging level
     """
     # Get the output logging location
     output_pth = Path(output_pqr)
     log_file = Path(output_pth.parent, output_pth.stem + ".log")
     _LOGGER.info(f"Logs stored: {log_file}")
-    logging.basicConfig(filename=log_file, level=getattr(logging, level))
+    logging.basicConfig(
+        filename=log_file,
+        format="%(asctime)s %(levelname)s:%(filename)s:%(lineno)d:%(funcName)s:%(message)s",
+        level=getattr(logging, level),
+    )
+    console = logging.StreamHandler()
+    formatter = logging.Formatter("%(levelname)s:%(message)s")
+    console.setFormatter(formatter)
+    console.setLevel(level=getattr(logging, level))
+    logging.getLogger('').addHandler(console)
+    logging.getLogger('').addFilter(DuplicateFilter())
 
 
 def read_pqr(pqr_file):
@@ -530,6 +534,23 @@ def read_pqr(pqr_file):
         atom = Atom.from_pqr_line(line)
         if atom is not None:
             atoms.append(atom)
+    return atoms
+
+
+def read_qcd(qcd_file):
+    """Read QCD (UHDB QCARD format) file.
+
+    :param file qcd_file:  file object ready for reading as text
+    :returns:  list of atoms read from file
+    :rtype:  [Atom]
+    """
+    atoms = []
+    atom_serial = 1
+    for line in qcd_file:
+        atom = Atom.from_qcd_line(line, atom_serial)
+        if atom is not None:
+            atoms.append(atom)
+            atom_serial += 1
     return atoms
 
 

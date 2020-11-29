@@ -29,7 +29,6 @@ from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
-_LOGGER.addFilter(io.DuplicateFilter())
 
 
 # Round-off error when determining if charge is integral
@@ -138,6 +137,14 @@ def build_main_parser():
         help=(
             "Create a template APBS input file based on the generated PQR "
             "file at the specified location."
+        ),
+    )
+    grp2.add_argument(
+        "--pdb-output",
+        default=None,
+        help=(
+            "Create a PDB file based on input. This will be missing charges "
+            "and radii"
         ),
     )
     grp2.add_argument(
@@ -304,20 +311,16 @@ def check_options(args):
 
 
 def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
-    """Print output to specified file
+    """Print PQR-format output to specified file
 
-    .. todo::  Move this to another module (utilities)
+    .. todo::  Move this to another module (io)
 
-    :param args:  command-line arguments
-    :type args:  argparse.Namespace
-    :param pqr_lines:  output lines (records)
-    :type pqr_lines:  list
-    :param header_lines:  header lines
-    :type header_lines:  [str]
-    :param missing_lines:  lines describing missing atoms (should go in header)
-    :type missing_lines:  [str]
-    :param is_cif:  flag indicating CIF format
-    :type is_cif:  bool
+    :param argparse.Namespace args:  command-line arguments
+    :param [str] pqr_lines:  output lines (records)
+    :param [str] header_lines:  header lines
+    :param [str] missing_lines:  lines describing missing atoms (should go
+        in header)
+    :param bool is_cif:  flag indicating CIF format
     """
     with open(args.output_pqr, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
@@ -349,6 +352,33 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
                     outfile.write(line)
         if is_cif:
             outfile.write("#\n")
+
+
+def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
+    """Print PDB-format output to specified file
+
+    .. todo::  Move this to another module (io)
+
+    :param argparse.Namespace args:  command-line arguments
+    :param [str]] pdb_lines:  output lines (records)
+    :param [str] header_lines:  header lines
+    :param [str] missing_lines:  lines describing missing atoms (should go in
+        header)
+    :param bool is_cif:  flag indicating CIF format
+    """
+    with open(args.pdb_output, "wt") as outfile:
+        # Adding whitespaces if --whitespace is in the options
+        if header_lines:
+            _LOGGER.warning(
+                f"Ignoring {len(header_lines)} header lines in output."
+            )
+        if missing_lines:
+            _LOGGER.warning(
+                f"Ignoring {len(missing_lines)} missing lines in output."
+            )
+        for line in pdb_lines:
+            if line[0:3] != "TER" or not is_cif:
+                outfile.write(line)
 
 
 def transform_arguments(args):
@@ -742,6 +772,16 @@ def main_driver(args):
         missing_lines=results["missed_residues"],
         is_cif=is_cif,
     )
+    if args.pdb_output:
+        print_pdb(
+            args=args,
+            pdb_lines=io.print_biomolecule_atoms(
+                biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
+            ),
+            header_lines=results["header"],
+            missing_lines=results["missed_residues"],
+            is_cif=is_cif,
+        )
     if args.apbs_input:
         io.dump_apbs(args.output_pqr, args.apbs_input)
 

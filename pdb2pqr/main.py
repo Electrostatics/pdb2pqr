@@ -29,7 +29,6 @@ from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
-_LOGGER.addFilter(io.DuplicateFilter())
 
 
 # Round-off error when determining if charge is integral

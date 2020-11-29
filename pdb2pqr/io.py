@@ -501,16 +501,24 @@ def setup_logger(output_pqr, level="DEBUG"):
     Setup logger to output the log file to the same directory as PQR
     output.
 
-    :param output_pqr:  path to PQR file
-    :type output_pqr:  str
-    :param level:  logging level
-    :type level:  str
+    :param str output_pqr:  path to PQR file
+    :param str level:  logging level
     """
     # Get the output logging location
     output_pth = Path(output_pqr)
     log_file = Path(output_pth.parent, output_pth.stem + ".log")
     _LOGGER.info(f"Logs stored: {log_file}")
-    logging.basicConfig(filename=log_file, level=getattr(logging, level))
+    logging.basicConfig(
+        filename=log_file,
+        format="%(asctime)s %(levelname)s:%(filename)s:%(lineno)d:%(funcName)s:%(message)s",
+        level=getattr(logging, level),
+    )
+    console = logging.StreamHandler()
+    formatter = logging.Formatter("%(levelname)s:%(message)s")
+    console.setFormatter(formatter)
+    console.setLevel(level=getattr(logging, level))
+    logging.getLogger('').addHandler(console)
+    logging.getLogger('').addFilter(DuplicateFilter())
 
 
 def read_pqr(pqr_file):

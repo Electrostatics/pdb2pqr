@@ -6,9 +6,11 @@ from .. import utilities as util
 from .. import aa
 from ..config import ANGLE_CUTOFF, DIST_CUTOFF
 from . import optimize
+from . import io
 
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.addFilter(io.DuplicateFilter())
 
 
 class Flip(optimize.Optimize):

@@ -152,7 +152,7 @@ def build_main_parser():
         "--ligand",
         help=(
             "Calculate the parameters for the specified MOL2-format ligand at "
-            "the path specified by this option.  PDB2PKA must be compiled."
+            "the path specified by this option."
         ),
     )
     grp2.add_argument(
@@ -203,7 +203,7 @@ def build_main_parser():
     grp3.add_argument(
         "--titration-state-method",
         dest="pka_method",
-        choices=("propka", "pdb2pka"),
+        choices=("propka"),
         help=(
             "Method used to calculate titration states. If a titration state "
             "method is selected, titratable residue charge states will be set "
@@ -220,29 +220,6 @@ def build_main_parser():
             "pH values to use when applying the results of the selected pH "
             "calculation method."
         ),
-    )
-    grp4 = pars.add_argument_group(title="PDB2PKA method options")
-    grp4.add_argument(
-        "--pdb2pka-out",
-        default="pdb2pka_output",
-        help="Output directory for PDB2PKA results.",
-    )
-    grp4.add_argument(
-        "--pdb2pka-resume",
-        action="store_true",
-        default=False,
-        help="Resume run from state saved in output directory.",
-    )
-    grp4.add_argument(
-        "--pdie", default=8.0, help="Solute dielectric constant."
-    )
-    grp4.add_argument(
-        "--sdie", default=80.0, help="Solvent dielectric constant."
-    )
-    grp4.add_argument(
-        "--pairene",
-        default=1.0,
-        help="Cutoff energy in kT for pairwise pKa interaction energies.",
     )
     pars = propka.lib.build_parser(pars)
     return pars
@@ -646,9 +623,6 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 args.ph,
                 dict(zip(pka_df.group_label, pka_df.pKa)),
             )
-        elif args.pka_method == "pdb2pka":
-            _LOGGER.info("Assigning titration states with PDB2PKA.")
-            raise NotImplementedError("PDB2PKA not implemented.")
         _LOGGER.info("Adding hydrogens to biomolecule.")
         biomolecule.add_hydrogens()
         if args.debump:

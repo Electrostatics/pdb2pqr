@@ -220,17 +220,6 @@ def build_main_parser():
             "calculation method."
         ),
     )
-    grp4.add_argument(
-        "--pdie", default=8.0, help="Solute dielectric constant."
-    )
-    grp4.add_argument(
-        "--sdie", default=80.0, help="Solvent dielectric constant."
-    )
-    grp4.add_argument(
-        "--pairene",
-        default=1.0,
-        help="Cutoff energy in kT for pairwise pKa interaction energies.",
-    )
     pars = propka.lib.build_parser(pars)
     return pars
 

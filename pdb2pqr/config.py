@@ -105,7 +105,7 @@ FILTER_WARNINGS = [
 
 # The number of times one of the warning strings should be printed before
 # supressing further output.
-FILTER_WARNINGS_LIMIT = 20
+FILTER_WARNINGS_LIMIT = 10
 
 # Expected location for topology definition file
 TOPOLOGY_DEF_PATH = "TOPOLOGY.xml"

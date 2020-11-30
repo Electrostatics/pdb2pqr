@@ -14,9 +14,10 @@ from pathlib import Path
 from math import isclose
 import pandas
 import propka.lib
+import propka.output as pk_out
+import propka.input as pk_in
 from propka.parameters import Parameters
 from propka.molecular_container import MolecularContainer
-from propka.input import read_parameter_file, read_molecule_file
 from . import aa
 from . import debump
 from . import hydrogens
@@ -519,8 +520,7 @@ def run_propka(args, biomolecule):
     :type args:  argparse.Namespace
     :param biomolecule:  biomolecule object
     :type biomolecule:  Biomolecule
-    :return:  (DataFrame of assigned pKa values, string with filename of
-        PROPKA-created pKa file)
+    :return:  (DataFrame of assigned pKa values, pKa information from PROPKA)
     :rtype:  (pandas.DataFrame, str)
     """
     # TODO - eliminate need to write temporary file
@@ -531,14 +531,42 @@ def run_propka(args, biomolecule):
         for line in lines:
             pdb_file.write(line)
         pdb_path = pdb_file.name
-    parameters = read_parameter_file(args.parameters, Parameters())
+    parameters = pk_in.read_parameter_file(args.parameters, Parameters())
     molecule = MolecularContainer(parameters, args)
-    molecule = read_molecule_file(pdb_path, molecule)
+    molecule = pk_in.read_molecule_file(pdb_path, molecule)
     molecule.calculate_pka()
 
-    pka_filename = Path(pdb_path).stem + ".pka"
-    molecule.write_pka(filename=pka_filename)
+    # Extract pKa information from PROPKA
+    # write_pka( self, self.version.parameters, filename=filename, conformation='AVR', reference=reference)
+    lines = []
+    # lines.append(f"{pk_out.get_propka_header()}")
+    # lines.append(f"{pk_out.get_references_header()}")
+    # lines.append(
+    #     pk_out.get_determinant_section(
+    #         molecule, 'AVR', molecule.version.parameters
+    #     )
+    # )
+    # lines.append(
+    #     pk_out.get_summary_section(
+    #         molecule, "AVR", molecule.version.parameters
+    #     )
+    # )
+    # lines.append(pk_out.get_the_line())
+    lines.append(
+        pk_out.get_folding_profile_section(
+            molecule,
+            conformation="AVR",
+            reference="neutral",
+            window=[0.0, 14.0, 1.0],
+        )
+    )
+    lines.append(
+        pk_out.get_charge_profile_section(molecule, conformation="AVR")
+    )
+    lines.append(pk_out.get_the_line())
+    pka_str = "\n".join(lines)
 
+    # Summarize in pKas in DataFrame for later use
     conformation = molecule.conformations["AVR"]
     rows = []
     for group in conformation.groups:
@@ -557,7 +585,7 @@ def run_propka(args, biomolecule):
             row_dict["coupled_group"] = None
         rows.append(row_dict)
     df = pandas.DataFrame(rows)
-    return df, pka_filename
+    return df, pka_str
 
 
 def non_trivial(args, biomolecule, ligand, definition, is_cif):
@@ -611,7 +639,8 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
         if args.pka_method == "propka":
             _LOGGER.info("Assigning titration states with PROPKA.")
             biomolecule.remove_hydrogens()
-            pka_df, _ = run_propka(args, biomolecule)
+            pka_df, pka_str = run_propka(args, biomolecule)
+            _LOGGER.info(f"PROPKA information:\n{pka_str}")
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,

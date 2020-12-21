@@ -82,6 +82,7 @@ class Amino(residue.Residue):
         newatom.x = newcoords[0]
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]
+        newatom.element = atomname[0]
         newatom.name = atomname
         newatom.occupancy = 1.00
         newatom.temp_factor = 0.00

@@ -164,29 +164,6 @@ class Residue(object):
         self.map[newname] = atom
         del self.map[oldname]
 
-    def create_atom(self, name, newcoords, type_):
-        """Add a new atom object to the residue.
-
-        Uses an atom currently in the residue to seed the new atom object,
-        then replaces the coordinates and name accordingly.
-
-        :param name:  name of the new atom
-        :type name:  str
-        :param newcoords:  x,y,z coordinates of the new atom
-        :type newcoords:  [float, float, float]
-        :param type_:  type of atom: ATOM or HETATM
-        :type type_:  str
-        """
-        oldatom = self.atoms[0]
-        newatom = structures.Atom(oldatom, type_, self)
-        newatom.x = newcoords[0]
-        newatom.y = newcoords[1]
-        newatom.z = newcoords[2]
-        newatom.name = name
-        newatom.occupancy = 1.00
-        newatom.temp_factor = 0.00
-        self.add_atom(newatom)
-
     def get_atom(self, name):
         """Retrieve a residue atom based on its name.
 

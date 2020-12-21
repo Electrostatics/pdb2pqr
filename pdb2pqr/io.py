@@ -517,8 +517,8 @@ def setup_logger(output_pqr, level="DEBUG"):
     formatter = logging.Formatter("%(levelname)s:%(message)s")
     console.setFormatter(formatter)
     console.setLevel(level=getattr(logging, level))
-    logging.getLogger('').addHandler(console)
-    logging.getLogger('').addFilter(DuplicateFilter())
+    logging.getLogger("").addHandler(console)
+    logging.getLogger("").addFilter(DuplicateFilter())
 
 
 def read_pqr(pqr_file):

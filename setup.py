@@ -59,7 +59,7 @@ setuptools.setup(
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
-    tests_require=["pytest"],
+    tests_require=["pytest", "testfixtures"],
     test_suite="tests",
     license="BSD",
     classifiers=[

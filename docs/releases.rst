@@ -9,8 +9,6 @@ Upcoming release
 Additions
 =========
 
-* Added code of conduct document.
-
 * Created Sphinx documentation of usage and API at http://pdb2pqr.readthedocs.io (`#88 <https://github.com/Electrostatics/pdb2pqr/pull/88>`_, `#90 <https://github.com/Electrostatics/pdb2pqr/pull/90>`_).
 
 * Added support for reading QCD-format structure files (`#137 <https://github.com/Electrostatics/pdb2pqr/pull/137>`_).
@@ -18,6 +16,8 @@ Additions
 * Added versioneer support for versioning (`#104 <https://github.com/Electrostatics/pdb2pqr/pull/104>`_).
 
 * Made several APBS tools available as PDB2PQR scripts:  :file:`dx2cube` (`#98 <https://github.com/Electrostatics/pdb2pqr/pull/98>`_), :file:`inputgen` (`#105 <https://github.com/Electrostatics/pdb2pqr/pull/105>`_), :file:`psize` (`#106 <https://github.com/Electrostatics/pdb2pqr/pull/106>`_)
+
+* Added code of conduct document (`#62 <https://github.com/Electrostatics/pdb2pqr/pull/62>`_).
 
 Fixes
 =====

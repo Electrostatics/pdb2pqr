@@ -203,7 +203,7 @@ def build_main_parser():
     grp3.add_argument(
         "--titration-state-method",
         dest="pka_method",
-        choices=("propka"),
+        choices=(["propka"]),
         help=(
             "Method used to calculate titration states. If a titration state "
             "method is selected, titratable residue charge states will be set "
@@ -601,7 +601,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
         if is_repairable(biomolecule, args.ligand is not None):
             _LOGGER.info(
                 f"Attempting to repair {biomolecule.num_missing_heavy:d} "
-                "missing atoms in biomolecule.",
+                "missing atoms in biomolecule."
             )
             biomolecule.repair_heavy()
         _LOGGER.info("Updating disulfide bridges.")

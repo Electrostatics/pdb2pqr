@@ -127,10 +127,6 @@ class Debump:
             cutoff = atom_size + other_size
             if dist < cutoff:
                 bumpscore += 1000.0
-                # Also ignore if this is a donor/acceptor pair
-                pair_ignored = False
-                if pair_ignored:
-                    _LOGGER.debug("This bump is a donor/acceptor pair.")
         _LOGGER.debug(f"BUMPSCORE {str(bumpscore)}")
         return bumpscore
 

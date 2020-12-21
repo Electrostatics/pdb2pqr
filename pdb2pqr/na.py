@@ -61,6 +61,7 @@ class Nucleic(residue.Residue):
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]
         newatom.name = atomname
+        newatom.element = atomname[0]
         newatom.occupancy = 1.0
         newatom.temp_factor = 0.0
         newatom.added = 1

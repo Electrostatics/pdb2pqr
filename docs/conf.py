@@ -24,8 +24,6 @@ copyright = "2020, Battelle Memorial Institute"
 author = "Nathan Baker and many others"
 
 # The full version, including alpha/beta/rc tags
-release = "3.0.0"
-
 
 # -- General configuration ---------------------------------------------------
 

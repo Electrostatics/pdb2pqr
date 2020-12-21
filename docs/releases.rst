@@ -6,13 +6,108 @@ Release history
 Upcoming release
 ****************
 
+Additions
+=========
+
+* Added code of conduct document.
+
+* Created Sphinx documentation of usage and API at http://pdb2pqr.readthedocs.io (`#88 <https://github.com/Electrostatics/pdb2pqr/pull/88>`_, `#90 <https://github.com/Electrostatics/pdb2pqr/pull/90>`_).
+
+* Added support for reading QCD-format structure files (`#137 <https://github.com/Electrostatics/pdb2pqr/pull/137>`_).
+
+* Added versioneer support for versioning (`#104 <https://github.com/Electrostatics/pdb2pqr/pull/104>`_).
+
+* Made several APBS tools available as PDB2PQR scripts:  :file:`dx2cube` (`#98 <https://github.com/Electrostatics/pdb2pqr/pull/98>`_), :file:`inputgen` (`#105 <https://github.com/Electrostatics/pdb2pqr/pull/105>`_), :file:`psize` (`#106 <https://github.com/Electrostatics/pdb2pqr/pull/106>`_)
+
+Fixes
+=====
+
+* Updated very out-of-date change log (`#153 <https://github.com/Electrostatics/pdb2pqr/issues/153>`_)
+
+* Fixed atom-ordering problem in PDB output (`#134 <https://github.com/Electrostatics/pdb2pqr/pull/134>`_).
+
+* Fixed REDVAT PDB record parsing (`#119 <https://github.com/Electrostatics/pdb2pqr/pull/119>`_).
+
+* Fixed broken ``--apbs-input`` option (`#94 <https://github.com/Electrostatics/pdb2pqr/pull/94>`_)
+
+* Fixed OS-specific file handing (`#78 <https://github.com/Electrostatics/pdb2pqr/pull/78>`_).
+
+Changes
+=======
+
+* Enabled additional PROPKA output (`#143 <https://github.com/Electrostatics/pdb2pqr/pull/143>`_).
+
+* Moved mmCIF support to external module :mod:`mmcif-pdbx` (`#135 <https://github.com/Electrostatics/pdb2pqr/pull/135>`_).
+
+* Added formal PQR parser (`#97 <https://github.com/Electrostatics/pdb2pqr/pull/97>`_).
+
+* Made failure due to missing backbone atoms more graceful (`#95 <https://github.com/Electrostatics/pdb2pqr/pull/95>`_).
+
+* Moved some logging output from stdout/stderr to files (`#74 <https://github.com/Electrostatics/pdb2pqr/pull/74>`_).
+
+* Increased testing (`#70 <https://github.com/Electrostatics/pdb2pqr/pull/70>`_, `#73 <https://github.com/Electrostatics/pdb2pqr/pull/70>`_).
+
+* Continued de-linting and refactoring (`#56 <https://github.com/Electrostatics/pdb2pqr/pull/56>`_, `#122 <https://github.com/Electrostatics/pdb2pqr/pull/122>`_).
+
+
 ******************
 3.0.1 (2020-07-03)
 ******************
 
+Fixes
+=====
+
+* Fixed packaging problem
+
 ******************
 3.0.0 (2020-07-03)
 ******************
+
+Additions
+=========
+
+* Added ability to read mmCIF files.
+
+Fixes
+=====
+
+* Updated URL used to fetch PDB files from RCSB.
+
+* Fixed naming error for CYS hydrogen.
+
+* Replaced Python pickle with portable JSON.
+
+Changes
+=======
+
+* Upgraded to Python 3.
+
+* Changed primary distribution mechanism into Python package (`#45 <https://github.com/Electrostatics/pdb2pqr/pull/45>`_)
+
+* Upgraded web interface.
+
+* Upgraded to PROPKA 3.1 (and converted to :mod:`pip` dependency rather than submodule).
+
+* Removed PDB2PKA support.
+
+* Added coverage tests to testing.
+
+* Removed support for extensions.
+
+* Significant code refactoring.
+
+* Changed output from :func:`print` to :mod:`logging`.
+
+* Provided additional warnings when dropping HETATM entries.
+
+* Improved build system.
+
+* Increased list of proteins used in testing.
+
+* Removed Opal support.
+
+* Added GitHub actions for continuous integration testing.
+
 
 ***************
 2.1.1 (2016-03)

@@ -6,9 +6,6 @@
 PDB2PQR
 =======
 
-:Release: |release|
-:Date: |today|
-
 ========
 Overview
 ========

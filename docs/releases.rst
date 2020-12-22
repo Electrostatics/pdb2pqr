@@ -2,38 +2,48 @@
 Release history
 ###############
 
-****************
-Upcoming release
-****************
+******************
+3.1.0 (2020-12-22)
+******************
 
 Additions
 =========
 
 * Created Sphinx documentation of usage and API at http://pdb2pqr.readthedocs.io (`#88 <https://github.com/Electrostatics/pdb2pqr/pull/88>`_, `#90 <https://github.com/Electrostatics/pdb2pqr/pull/90>`_).
 
+* New command line tools added with documentation (`#163 <https://github.com/Electrostatics/pdb2pqr/pull/163>`_).
+
 * Added support for reading QCD-format structure files (`#137 <https://github.com/Electrostatics/pdb2pqr/pull/137>`_).
 
 * Added versioneer support for versioning (`#104 <https://github.com/Electrostatics/pdb2pqr/pull/104>`_).
 
-* Made several APBS tools available as PDB2PQR scripts:  :file:`dx2cube` (`#98 <https://github.com/Electrostatics/pdb2pqr/pull/98>`_), :file:`inputgen` (`#105 <https://github.com/Electrostatics/pdb2pqr/pull/105>`_), :file:`psize` (`#106 <https://github.com/Electrostatics/pdb2pqr/pull/106>`_)
+* Made several APBS tools available as PDB2PQR scripts:  :file:`dx2cube` (`#98 <https://github.com/Electrostatics/pdb2pqr/pull/98>`_), :file:`inputgen` (`#105 <https://github.com/Electrostatics/pdb2pqr/pull/105>`_), :file:`psize` (`#106 <https://github.com/Electrostatics/pdb2pqr/pull/106>`_).
 
 * Added code of conduct document (`#62 <https://github.com/Electrostatics/pdb2pqr/pull/62>`_).
 
 Fixes
 =====
 
-* Updated very out-of-date change log (`#153 <https://github.com/Electrostatics/pdb2pqr/issues/153>`_)
+* Fixed faulty no-op logic in debumping routines (`#162 <https://github.com/Electrostatics/pdb2pqr/pull/162>`_)
+
+* Fixed problem with element type in PDB output (`#159 <https://github.com/Electrostatics/pdb2pqr/pull/159>`_)
+
+* Updated very out-of-date change log (`#153 <https://github.com/Electrostatics/pdb2pqr/issues/153>`_).
 
 * Fixed atom-ordering problem in PDB output (`#134 <https://github.com/Electrostatics/pdb2pqr/pull/134>`_).
 
 * Fixed REDVAT PDB record parsing (`#119 <https://github.com/Electrostatics/pdb2pqr/pull/119>`_).
 
-* Fixed broken ``--apbs-input`` option (`#94 <https://github.com/Electrostatics/pdb2pqr/pull/94>`_)
+* Fixed broken ``--apbs-input`` option (`#94 <https://github.com/Electrostatics/pdb2pqr/pull/94>`_).
 
 * Fixed OS-specific file handing (`#78 <https://github.com/Electrostatics/pdb2pqr/pull/78>`_).
 
 Changes
 =======
+
+* PDB2PKA is still removed from the code base while refactoring for a code base that is more friendly to multiple platforms.
+
+* Added Python 3.9 to testing (`#161 <https://github.com/Electrostatics/pdb2pqr/pull/161>`_).
 
 * Enabled additional PROPKA output (`#143 <https://github.com/Electrostatics/pdb2pqr/pull/143>`_).
 

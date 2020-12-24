@@ -29,6 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
+#: A dictionary of the titration states for residues
 TITRATION_DICT = {
     "ASH1c": "1",
     "ASH1t": "2",

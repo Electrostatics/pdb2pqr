@@ -16,12 +16,24 @@ import argparse
 from .config import TITLE_STR
 
 
-CFAC = 1.7
+#: The number of Angstroms added to the molecular dimensions to determine the
+#: find grid dimensions
 FADD = 20.0
+#: The fine grid dimensions are multiplied by this constant to calculate the
+#: coarse grid dimensions
+CFAC = 1.7
+#: Desired fine grid spacing (in Angstroms)
 SPACE = 0.50
+#: Approximate memory usage (in bytes) can be estimated by multiplying the 
+#: number of grid points by this constant
 GMEMFAC = 200
+#: Maxmimum memory (in MB) to be used for a calculation
 GMEMCEIL = 400
+#: The fractional overlap between grid partitions in a parallel focusing
+#: calculation
 OFRAC = 0.1
+#: The maximum factor by which a domain can be "shrunk" during a focusing
+#: calculation
 REDFAC = 0.25
 _LOGGER = logging.getLogger(__name__)
 

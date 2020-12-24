@@ -1,14 +1,14 @@
 """Configuration information for PDB2PQR."""
 from . import _version
 
-# PDB2PQR version number.
+#: PDB2PQR version number.
 VERSION = _version.get_versions()["version"]
 
 
-# How to format PDB2PQR title in output
+#: How to format PDB2PQR title in output
 TITLE_STR = f"PDB2PQR v{VERSION}: biomolecular structure conversion software."
 
-# Citation strings for PDB2PQR
+#: Citation strings for PDB2PQR
 CITATIONS = [
     (
         "Please cite:  Jurrus E, et al.  Improvements to the APBS "
@@ -22,10 +22,10 @@ CITATIONS = [
     ),
 ]
 
-# Standard force field names
+#: Standard force field names
 FORCE_FIELDS = ["amber", "charmm", "parse", "tyl06", "peoepb", "swanson"]
 
-# Standard amino acid names
+#: Standard amino acid names
 AA_NAMES = [
     "ALA",
     "ARG",
@@ -60,7 +60,7 @@ AA_NAMES = [
     "VAL",
 ]
 
-# Standard nucleic acid names
+#: Standard nucleic acid names
 NA_NAMES = [
     "A",
     "A5",
@@ -87,70 +87,81 @@ NA_NAMES = [
     "DT",
 ]
 
-# Standard backbone atom names
+#: Standard backbone atom names
 BACKBONE = ["N", "CA", "C", "O", "O2", "HA", "HN", "H", "tN"]
 
-# A small number used by some math routines.
+#: A small number used by some math routines.
 SMALL_NUMBER = 1.0e-7
 
-# A number of unknown origin used in dihedral angle calculations
+#: A number of unknown origin used in dihedral angle calculations
 DIHEDRAL_WTF = 57.2958
 
-# The start of warning strings to be filtered.
+#: The start of warning strings to be filtered.
 FILTER_WARNINGS = [
     "Skipped atom during water optimization",
     "The best donorH was not picked",
     "Multiple occupancies found",
 ]
 
-# The number of times one of the warning strings should be printed before
-# supressing further output.
+#: Number of times warning string is printed before supressing further output
 FILTER_WARNINGS_LIMIT = 10
 
-# Expected location for topology definition file
+#: Expected location for topology definition file
 TOPOLOGY_DEF_PATH = "TOPOLOGY.xml"
 
-# Expected location for amino acid topology definition file
+#: Expected location for amino acid topology definition file
 AA_DEF_PATH = "AA.xml"
 
-# Expected location for nucleic acid topology definition file
+#: Expected location for nucleic acid topology definition file
 NA_DEF_PATH = "NA.xml"
 
-# Expected location for hydrogens topology definition file
+#: Expected location for hydrogens topology definition file
 HYD_DEF_PATH = "HYDROGENS.xml"
 
-# Expected location for topology patch definition file
+#: Expected location for topology patch definition file
 PATCH_DEF_PATH = "PATCHES.xml"
 
-# Number of angle steps to scan when debumping
+#: Number of angle steps to scan when debumping
 DEBUMP_ANGLE_STEPS = 72
 
-# Size of debumping step
+#: Size of debumping step
 DEBUMP_ANGLE_STEP_SIZE = float(360 // DEBUMP_ANGLE_STEPS)
 
-# Debump angle test
+#: Debump angle test
 DEBUMP_ANGLE_TEST_COUNT = 10
 
-# Size of cells used for neighbor lookups
+#: Size of cells used for neighbor lookups
 CELL_SIZE = 2
 
-# Debumping hydrogen size
+#: Debumping hydrogen size
 BUMP_HYDROGEN_SIZE = 0.5
 
-# Debumping heavy atom size
+#: Debumping heavy atom size
 BUMP_HEAVY_SIZE = 1.0
 
-# Disulfide bond distance limit
+#: Disulfide bond distance limit
 BONDED_SS_LIMIT = 2.5
 
-# Peptide bond distance limit
+#: Peptide bond distance limit
 PEPTIDE_DIST = 1.7
 
-# Limit on fraction of molecule missing before giving up on repairs
+#: Limit on fraction of molecule missing before giving up on repairs
 REPAIR_LIMIT = 0.1
 
-# Cutoff for A - D - H(D) hydrogen bond angle
+#: Cutoff for A - D - H(D) hydrogen bond angle
 ANGLE_CUTOFF = 20.0
 
-# Cutoff for H(D) to A hydrogen bond distance
+#: Cutoff for H(D) to A hydrogen bond distance
 DIST_CUTOFF = 3.3
+
+#: Avogadro's number
+AVOGADRO = 6.02214076e23
+
+#: Electron charge (in C)
+ELEC_CHARGE = 1.602176634e-19
+
+#: Vacuum permittivity (in F/m)
+VACUUM_PERMIT = 8.8541878128e-12
+
+#: Boltzmann constant (in J/K)
+BOLTZMANN = 1.380649e-23

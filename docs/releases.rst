@@ -2,6 +2,15 @@
 Release history
 ###############
 
+****************
+Upcoming release
+****************
+
+Changes
+=======
+
+* Improved documentation of constants in modules.
+
 ******************
 3.1.0 (2020-12-22)
 ******************
@@ -240,7 +249,7 @@ Fixes
 
 * Fixed how hydrogens are added by PDB2PKA for state changes in some cases.
 
-* Fixed :mode:`psize` error check.
+* Fixed :mod:`psize` error check.
 
 * Will now build properly without ligand support if :mod:`numpy` is not installed.
 
@@ -818,7 +827,7 @@ Known issues
 
 * The install directory name cannot contain dots.
 
-* For python 2.2, if PDB2PQR cannot find module :mod:`sets, then :mod:`sets` needs to be copied from :file:`.../python2.2/site-packages/MYSQLdb/sets.py` to :file:``.../lib/python2.2`
+* For python 2.2, if PDB2PQR cannot find module :mod:`sets`, then :mod:`sets` needs to be copied from :file:`.../python2.2/site-packages/MYSQLdb/sets.py` to :file:`.../lib/python2.2`
 
 ***************
 1.2.1 (2007-04)

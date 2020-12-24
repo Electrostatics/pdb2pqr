@@ -12,8 +12,9 @@ import sys
 assert sys.version_info >= (3, 5)
 
 
-# When using these tables, the most specific Sybyl atom type should be used
-# first and then the generic element should be used
+#: Radii for different atom types.
+#: When using these tables, the most specific Sybyl atom type should be used
+#: first and then the generic element should be used
 RADII = {
     # NOTE - these are not the original PARSE radii but they are the ones
     # included in the previous version of PDB2PKA so I'm preserving them for
@@ -30,8 +31,8 @@ RADII = {
         "P": 1.90,
         "Cl": 1.75,
     },
-    # These are the PARSE radii from Table 4 of
-    # http://doi.org/10.1021/j100058a043
+    #: These are the PARSE radii from Table 4 of
+    #: http://doi.org/10.1021/j100058a043
     "parse": {
         "C.1": 2.00,
         "C.2": 2.00,
@@ -42,9 +43,9 @@ RADII = {
         "N": 1.50,
         "S": 1.85,
     },
-    # These are the ZAP radii from Table 2 of
-    # http://doi.org/10.1021/jm070549%2B. Bondi radii should be used for
-    # atoms not found in this table.
+    #: These are the ZAP radii from Table 2 of
+    #: http://doi.org/10.1021/jm070549%2B. Bondi radii should be used for
+    #: atoms not found in this table.
     "zap9": {
         "C": 1.87,
         "H": 1.10,
@@ -55,8 +56,8 @@ RADII = {
         "Cl": 1.82,
         "I": 2.65,
     },
-    # These are the Bondi radii from Table 2 of
-    # http://doi.org/10.1021/jm070549%2B
+    #: These are the Bondi radii from Table 2 of
+    #: http://doi.org/10.1021/jm070549%2B
     "bondi-zap": {
         "C": 1.7,
         "H": 1.20,
@@ -67,9 +68,9 @@ RADII = {
         "Cl": 1.75,
         "I": 1.98,
     },
-    # These are the Bondi radii from Table I of
-    # http://doi.org/10.1021/j100785a001. NOTE - there are some variations to
-    # the halogens in Table V that we might want to consider in the future.
+    #: These are the Bondi radii from Table I of
+    #: http://doi.org/10.1021/j100785a001. NOTE - there are some variations to
+    #: the halogens in Table V that we might want to consider in the future.
     "bondi": {
         "H": 1.20,
         "He": 1.40,
@@ -94,9 +95,11 @@ RADII = {
 }
 
 
-# Numbers of valence electrons for the groups of the periodic table
+#: Numbers of valence electrons for the groups of the periodic table
 VALENCE_BY_GROUP = {1: 1, 2: 2, 13: 3, 14: 4, 15: 5, 16: 6, 17: 7, 18: 8}
-# Groups of the periodic table
+
+
+#: Groups of the periodic table
 ELEMENT_BY_GROUP = {
     1: ["H", "Li", "Na", "K", "Rb", "Cs", "Fr"],
     2: ["Be", "Mg", "Ca", "Sr", "Ba", "Ra"],
@@ -109,15 +112,15 @@ ELEMENT_BY_GROUP = {
 }
 
 
-# Valence electrons by element
+#: Valence electrons by element
 VALENCE_BY_ELEMENT = {}
 for group, elem_list in ELEMENT_BY_GROUP.items():
     for elem in elem_list:
         VALENCE_BY_ELEMENT[elem] = VALENCE_BY_GROUP[group]
 
 
-# Numbers of non-bonded electrons for Sybyl-type atoms.  Adapted from
-# https://onlinelibrary.wiley.com/doi/abs/10.1002/jcc.540100804 (Table I).
+#: Numbers of non-bonded electrons for Sybyl-type atoms.  Adapted from
+#: https://onlinelibrary.wiley.com/doi/abs/10.1002/jcc.540100804 (Table I).
 NONBONDED_BY_TYPE = {
     "Al": 0,
     "Br": 6,

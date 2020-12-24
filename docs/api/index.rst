@@ -63,6 +63,7 @@ Other modules
    :maxdepth: 2
 
    cells
+   config
    debump
    main
    psize

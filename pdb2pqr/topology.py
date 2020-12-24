@@ -12,6 +12,7 @@ import logging
 
 
 _LOGGER = logging.getLogger(__name__)
+#: File name of topology XML data
 TOPOLOGYPATH = "TOPOLOGY.xml"
 
 

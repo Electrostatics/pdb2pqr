@@ -50,8 +50,8 @@ setuptools.setup(
     install_requires=[
         "propka >= 3.2",
         "pandas >= 1.0",
-        "pytest>=5.4.1",
         "mmcif_pdbx>=1.1.2",
+        "requests",
     ],
     url="http://www.poissonboltzmann.org",
     packages=setuptools.find_packages(

@@ -2578,13 +2578,16 @@ def read_pdb(file_):
                 klass = LINE_PARSERS[record]
                 obj = klass(line)
                 pdblist.append(obj)
-        except KeyError as details:
-            errlist.append(record)
-            _LOGGER.error(f"Error parsing line: {details}")
-            _LOGGER.error(f"<{line.strip()}>")
-            _LOGGER.error(
-                f"Truncating remaining errors for record type:{record}"
-            )
+        except (KeyError, ValueError) as details:
+            if record not in ["HETATM", "ATOM"]:
+                errlist.append(record)
+                _LOGGER.error(f"Error parsing line: {details}")
+                _LOGGER.error(f"<{line.strip()}>")
+                _LOGGER.error(
+                    f"Truncating remaining errors for record type:{record}"
+                )
+            else:
+                raise details
         except IndexError as details:
             if record in ["ATOM", "HETATM"]:
                 try:

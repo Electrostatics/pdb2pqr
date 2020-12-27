@@ -11,6 +11,8 @@ Changes
 
 * Improved documentation of constants in modules.
 
+* Improved handling of improperly formatted PDB records that are not ``HETATM`` or ``ATOM``.
+
 ******************
 3.1.0 (2020-12-22)
 ******************

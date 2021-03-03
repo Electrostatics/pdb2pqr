@@ -49,8 +49,8 @@ setuptools.setup(
     long_description=LONG_DESCRIPTION,
     install_requires=[
         "propka >= 3.2",
-        "pandas >= 1.0",
         "mmcif_pdbx>=1.1.2",
+        "numpy",
         "requests",
     ],
     url="http://www.poissonboltzmann.org",
@@ -59,7 +59,11 @@ setuptools.setup(
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
-    tests_require=["pytest", "testfixtures"],
+    tests_require=[
+        "pandas >= 1.0",
+        "pytest",
+        "testfixtures",
+    ],
     test_suite="tests",
     license="BSD",
     classifiers=[

@@ -12,7 +12,6 @@ from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 from math import isclose
-import pandas
 import propka.lib
 import propka.output as pk_out
 import propka.input as pk_in
@@ -497,8 +496,8 @@ def run_propka(args, biomolecule):
     :type args:  argparse.Namespace
     :param biomolecule:  biomolecule object
     :type biomolecule:  Biomolecule
-    :return:  (DataFrame of assigned pKa values, pKa information from PROPKA)
-    :rtype:  (pandas.DataFrame, str)
+    :return:  (DataFrame-convertible table of assigned pKa values, pKa information from PROPKA)
+    :rtype:  (list, str)
     """
     # TODO - eliminate need to write temporary file
     lines = io.print_biomolecule_atoms(
@@ -561,8 +560,7 @@ def run_propka(args, biomolecule):
         else:
             row_dict["coupled_group"] = None
         rows.append(row_dict)
-    df = pandas.DataFrame(rows)
-    return df, pka_str
+    return rows, pka_str
 
 
 def non_trivial(args, biomolecule, ligand, definition, is_cif):
@@ -621,7 +619,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
-                dict(zip(pka_df.group_label, pka_df.pKa)),
+                dict((row['group_label'], row['pKa']) for row in pka_df),
             )
         _LOGGER.info("Adding hydrogens to biomolecule.")
         biomolecule.add_hydrogens()

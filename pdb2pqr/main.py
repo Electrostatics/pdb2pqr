@@ -456,7 +456,7 @@ def is_repairable(biomolecule, has_ligand):
     miss_frac = float(num_missing) / float(num_heavy)
     if miss_frac > REPAIR_LIMIT:
         error = f"This PDB file is missing too many ({num_missing} out of "
-        error += f"{num_heavy:i}, {miss_frac:g}) "
+        error += f"{num_heavy:d}, {miss_frac:g}) "
         error += "heavy atoms to accurately repair the file."
         error += f"The current repair limit is set at {REPAIR_LIMIT:g}. "
         error += "You may also see this message if PDB2PQR does not have "

@@ -649,22 +649,23 @@ class ATOM(BaseRecord):
         :type line:  str
         """
         super().__init__(line)
-        self.serial = int(line[6:11].strip())
-        self.name = line[12:16].strip()
-        self.alt_loc = line[16].strip()
-        self.res_name = line[17:20].strip()
-        self.chain_id = line[21].strip()
-        self.res_seq = int(line[22:26].strip())
-        self.ins_code = line[26].strip()
-        self.x = float(line[30:38].strip())
-        self.y = float(line[38:46].strip())
-        self.z = float(line[46:54].strip())
+        line = line.split()
+        self.serial = int(line[1])
+        self.name = line[2]
+        self.alt_loc = line[3] if line[3] != "_" else ""
+        self.res_name = line[4]
+        self.chain_id = line[5]
+        self.res_seq = int(line[6])
+        self.ins_code = line[7] if line[7] != "_" else ""
+        self.x = float(line[8])
+        self.y = float(line[9])
+        self.z = float(line[10])
         try:
-            self.occupancy = float(line[54:60].strip())
-            self.temp_factor = float(line[60:66].strip())
-            self.seg_id = line[72:76].strip()
-            self.element = line[76:78].strip()
-            self.charge = line[78:80].strip()
+            self.occupancy = float(line[11])
+            self.temp_factor = float(line[12])
+            self.seg_id = line[13] if line[13] != "_" else ""
+            self.element = line[14]
+            self.charge = line[15] if line[15] != "_" else ""
         except (ValueError, IndexError):
             self.occupancy = 0.00
             self.temp_factor = 0.00

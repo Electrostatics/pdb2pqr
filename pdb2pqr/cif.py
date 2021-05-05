@@ -19,6 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 def create_cif_atom_line(atoms, idx):
 
     SUCCESS, FAILURE = True, False
+    empty = [".","", "?", None]
     try:
         line = []
         # 1  - 6 RECORD NAME (ATOM)
@@ -26,16 +27,16 @@ def create_cif_atom_line(atoms, idx):
         # 7  - 11 ATOM SERIAL
         line.append(atoms.get_value("id", idx))
         # 14 - 16 ATOM NAME
-        line.append(str(atoms.get_value("label_atom_id", idx))) # bug - switch from label to auth
+        line.append(str(atoms.get_value("label_atom_id", idx))) # bug - TODO switch from label to auth
         # 17 ALT LOCATION
-        if atoms.get_value("label_alt_id", idx)in [".","", "?", None]:
+        if atoms.get_value("label_alt_id", idx)in empty:
             line.append("_")
         else:
             line.append(atoms.get_value("label_alt_id", idx))
         # 18 - 20 RES NAME
-        line.append(atoms.get_value("label_comp_id", idx)) # bug - switch from label to auth
+        line.append(atoms.get_value("label_comp_id", idx)) # bug - TODO switch from label to auth
         # 22 CHAIN ID
-        line.append(atoms.get_value("label_asym_id", idx)) # bug - switch from label to auth
+        line.append(atoms.get_value("label_asym_id", idx)) # bug - TODO switch from label to auth
         # 23 - 26 RES SEQ ID
         line.append(str(atoms.get_value("auth_seq_id", idx)))
         # 27 RES SEQ ID
@@ -55,7 +56,7 @@ def create_cif_atom_line(atoms, idx):
         # 77 - 78 ELEMENT SYMBOL
         line.append(atoms.get_value("type_symbol", idx))
         # 79 - 80 CHARGE OF ATOM
-        if atoms.get_value("pdbx_formal_charge", idx) in ["?", "", ".", None]:
+        if atoms.get_value("pdbx_formal_charge", idx) in empty:
             line.append("_")
         else:
             line.append(str(atoms.get_value("pdbx_formal_charge", idx)))
@@ -85,7 +86,6 @@ def atom_site(block):
     atoms = block.get_object("atom_site")
     num_model_arr = count_models(block)
     if len(num_model_arr) == 1:
-        # TODO - this part of the conditional should be a separate function
         for i in range(atoms.row_count):
             line, success = create_cif_atom_line(atoms, i)
             if atoms.get_value("group_PDB", i) == "ATOM":
@@ -99,9 +99,7 @@ def atom_site(block):
                 else: 
                     err_arr.append("HETATM")
         return pdb_arr, err_arr
-    # TODO - Given the return statement above, is this "else" ever reached?
     else:
-        # TODO - this part of the conditional should be a separate function
         for j in num_model_arr:
             try:
                 line = "MODEL "
@@ -293,7 +291,7 @@ def compnd(block):
         cont += 1
     return compnd_arr, compnd_err
 
-
+# TODO rewrite this. This is prone to fail. 
 def source(block):
     """Handle SOURCE block.
 
@@ -344,7 +342,7 @@ def source(block):
             )
             line += (
                 "ORGANISM_COMMON: "
-                + src_obj.get_value("gene_src_common_name", i)
+                + (src_obj.get_value("gene_src_common_name", i) or "")
                 + ""
             )
             cont += 1
@@ -565,6 +563,25 @@ def scalen(block):
     return sc_arr, sc_err
 
 
+def parse_origx_category_into_lines(origx, is_origx=True):
+
+    orig1, orig2, orig3 = ["ORIGX1"], ["ORIGX2"], ["ORIGX3"]
+    tags1, tags2, tags3 = [], [], []
+    if is_origx:
+        tags1 = ['origx[1][1]', 'origx[1][2]', 'origx[1][3]', "origx_vector[1]"]
+        tags2 = ['origx[2][1]', 'origx[2][2]', 'origx[2][3]', "origx_vector[2]"]
+        tags3 = ['origx[3][1]', 'origx[3][2]', 'origx[3][3]', "origx_vector[3]"]
+    else:
+        tags1 = ['matrix[1][1]', 'matrix[1][2]', 'matrix[1][3]', "vector[1]"]
+        tags2 = ['matrix[2][1]', 'matrix[2][2]', 'matrix[2][3]', "vector[2]"]
+        tags3 = ['matrix[3][1]', 'matrix[3][2]', 'matrix[3][3]', "vector[3]"]
+    for (tag1, tag2, tag3) in zip(tags1, tags2, tags3):
+        orig1.append(str(origx.get_value(tag1)))
+        orig2.append(str(origx.get_value(tag2)))
+        orig3.append(str(origx.get_value(tag3)))
+    return "  ".join(orig1), "  ".join(orig2), "  ".join(orig3)
+
+
 def origxn(block):
     """Handle ORIGXn block.
 
@@ -575,61 +592,24 @@ def origxn(block):
     """
     or_arr = []
     or_err = []
+    is_origx = True
     or_obj = block.get_object("database_PDB_matrix")
-    orig1 = "ORIGX1    "
-    orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][1]", 0)))) + str(
-        or_obj.get_value("origx[1][1]", 0)
-    )
-    orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][2]", 0)))) + str(
-        or_obj.get_value("origx[1][2]", 0)
-    )
-    orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][3]", 0)))) + str(
-        or_obj.get_value("origx[1][3]", 0)
-    )
-    orig1 += "     "
-    orig1 += " " * (
-        10 - len(str(or_obj.get_value("origx_vector[1]", 0)))
-    ) + str(or_obj.get_value("origx_vector[1]", 0))
-    orig2 = "ORIGX2    "
-    orig2 += " " * (10 - len(str(or_obj.get_value("origx[2][1]", 0)))) + str(
-        or_obj.get_value("origx[2][1]", 0)
-    )
-    orig2 += " " * (10 - len(str(or_obj.get_value("origx[2][2]", 0)))) + str(
-        or_obj.get_value("origx[2][2]", 0)
-    )
-    orig2 += " " * (10 - len(str(or_obj.get_value("origx[2][3]", 0)))) + str(
-        or_obj.get_value("origx[2][3]", 0)
-    )
-    orig2 += "     "
-    orig2 += " " * (
-        10 - len(str(or_obj.get_value("origx_vector[2]", 0)))
-    ) + str(or_obj.get_value("origx_vector[2]", 0))
-    orig3 = "ORIGX3    "
-    orig3 += " " * (10 - len(str(or_obj.get_value("origx[3][1]", 0)))) + str(
-        or_obj.get_value("origx[3][1]", 0)
-    )
-    orig3 += " " * (10 - len(str(or_obj.get_value("origx[3][2]", 0)))) + str(
-        or_obj.get_value("origx[3][2]", 0)
-    )
-    orig3 += " " * (10 - len(str(or_obj.get_value("origx[3][3]", 0)))) + str(
-        or_obj.get_value("origx[3][3]", 0)
-    )
-    orig3 += "     "
-    orig3 += " " * (
-        10 - len(str(or_obj.get_value("origx_vector[3]", 0)))
-    ) + str(or_obj.get_value("origx_vector[3]", 0))
+    if or_obj is None: 
+        or_obj = block.get_object("pdbx_struct_oper_list")
+        is_origx = False
+    orig1, orig2, orig3 = parse_origx_category_into_lines(or_obj, is_origx)
     try:
-        or_arr.append(pdb.ORIGX1(orig1))
+        or_arr.append(pdb.CIF_ORIGX1(orig1))
     except KeyError:
         _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig1}")
         or_err.append("ORIGX1")
     try:
-        or_arr.append(pdb.ORIGX2(orig2))
+        or_arr.append(pdb.CIF_ORIGX2(orig2))
     except KeyError:
         _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig2}")
         or_err.append("ORIGX2")
     try:
-        or_arr.append(pdb.ORIGX3(orig3))
+        or_arr.append(pdb.CIF_ORIGX3(orig3))
     except KeyError:
         _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig3}")
         or_err.append("ORIGX3")

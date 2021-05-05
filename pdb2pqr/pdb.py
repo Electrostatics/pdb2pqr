@@ -950,6 +950,52 @@ class ORIGX1(ORIGXn):
     """ORIGX3 PDB entry"""
 
 
+class CIF_ORIGXn(BaseRecord):
+    """ORIGXn class
+
+    The ORIGXn (n = 1, 2, or 3) records present the transformation from the
+    orthogonal coordinates contained in the entry to the submitted
+    coordinates.
+    """
+
+    def __init__(self, line, name):
+        """Initialize by parsing line
+
+        :param line:  line with CIF class
+        :type line:  str
+        """
+        self.__class__.__name__ = name
+        super().__init__(line)
+        line = line.split()
+        self.on1 = float(line[1].strip())
+        self.on2 = float(line[2].strip())
+        self.on3 = float(line[3].strip())
+        self.tn = float(line[4].strip())
+
+
+@register_line_parser
+class CIF_ORIGX1(CIF_ORIGXn):
+    """ORIGX2 CIF entry"""
+
+    def __init__(self, line, name="ORIGX1"):
+        super().__init__(line, name)
+
+@register_line_parser
+class CIF_ORIGX2(CIF_ORIGXn):
+    """ORIGX3 CIF entry"""
+
+    def __init__(self, line, name="ORIGX2"):
+        super().__init__(line, name)
+
+
+@register_line_parser
+class CIF_ORIGX3(CIF_ORIGXn):
+    """ORIGX3 CIF entry"""
+
+    def __init__(self, line, name="ORIGX3"):
+        super().__init__(line, name)
+
+
 @register_line_parser
 class CRYST1(BaseRecord):
     """CRYST1 class

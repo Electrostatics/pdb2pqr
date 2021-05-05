@@ -45,9 +45,9 @@ class Residue(object):
         self.dihedrals = []
         atomclass = ""
         for atom in atoms:
-            if isinstance(atom, pdb.ATOM):
+            if isinstance(atom, (pdb.ATOM, pdb.CIF_ATOM)):
                 atomclass = "ATOM"
-            elif isinstance(atom, pdb.HETATM):
+            elif isinstance(atom, (pdb.HETATM, pdb.CIF_HETATM)):
                 atomclass = "HETATM"
             atom = structures.Atom(atom, atomclass, self)
             atomname = atom.name

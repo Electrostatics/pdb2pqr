@@ -596,7 +596,6 @@ class HETATM(BaseRecord):
 @register_line_parser
 class ATOM(BaseRecord):
     """ATOM class
-
     The ATOM records present the atomic coordinates for standard residues.
     They also present the occupancy and temperature factor for each atom.
     Heterogen coordinates use the HETATM record type. The element symbol is
@@ -606,7 +605,6 @@ class ATOM(BaseRecord):
 
     def __init__(self, line):
         """Initialize by parsing line
-
         +---------+--------+-------------+-----------------------------------+
         | COLUMNS | TYPE   | FIELD       | DEFINITION                        |
         +=========+========+=============+===================================+
@@ -644,10 +642,52 @@ class ATOM(BaseRecord):
         +---------+--------+-------------+-----------------------------------+
         | 79-80   | string | charge      | Charge on the atom.               |
         +---------+--------+-------------+-----------------------------------+
+        :param line:  line with PDB class
+        :type line:  str
+        """
+        super().__init__(line)
+        self.serial = int(line[6:11].strip())
+        self.name = line[12:16].strip()
+        self.alt_loc = line[16].strip()
+        self.res_name = line[17:20].strip()
+        self.chain_id = line[21].strip()
+        self.res_seq = int(line[22:26].strip())
+        self.ins_code = line[26].strip()
+        self.x = float(line[30:38].strip())
+        self.y = float(line[38:46].strip())
+        self.z = float(line[46:54].strip())
+        try:
+            self.occupancy = float(line[54:60].strip())
+            self.temp_factor = float(line[60:66].strip())
+            self.seg_id = line[72:76].strip()
+            self.element = line[76:78].strip()
+            self.charge = line[78:80].strip()
+        except (ValueError, IndexError):
+            self.occupancy = 0.00
+            self.temp_factor = 0.00
+            self.seg_id = ""
+            self.element = ""
+            self.charge = ""
+
+
+@register_line_parser
+class CIF_ATOM(BaseRecord):
+    """ATOM class
+
+    The ATOM records present the atomic coordinates for standard residues.
+    They also present the occupancy and temperature factor for each atom.
+    Heterogen coordinates use the HETATM record type. The element symbol is
+    always present on each ATOM record; segment identifier and charge are
+    optional.
+    """
+
+    def __init__(self, line, name='ATOM'):
+        """Initialize by splitting line into list and indexing
 
         :param line:  line with PDB class
         :type line:  str
         """
+        self.__class__.__name__= name
         super().__init__(line)
         line = line.split()
         self.serial = int(line[1])
@@ -672,6 +712,24 @@ class ATOM(BaseRecord):
             self.seg_id = ""
             self.element = ""
             self.charge = ""
+
+
+@register_line_parser
+class CIF_HETATM(CIF_ATOM):
+    """HETATM class
+
+    The HETATM records present the atomic coordinate records for atoms
+    within "non-standard" groups. These records are used for water
+    molecules and atoms presented in HET groups.
+    """
+
+    def __init__(self, line, name='HETATM'):
+        """Initialize by splitting line into list and indexing
+
+        :param line:  line with PDB class
+        :type line:  str
+        """
+        super().__init__(line, name)
 
 
 @register_line_parser

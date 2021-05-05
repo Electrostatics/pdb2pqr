@@ -55,7 +55,7 @@ class Biomolecule(object):
             if isinstance(record, pdb.TER):
                 num_chains += 1
         for record in pdblist:
-            if isinstance(record, (pdb.ATOM, pdb.HETATM)):
+            if isinstance(record, (pdb.ATOM, pdb.HETATM, pdb.CIF_ATOM, pdb.CIF_HETATM)):
                 if record.chain_id == "":
                     if num_chains > 1 and record.res_name not in [
                         "WAT",

@@ -16,6 +16,55 @@ from . import pdb
 _LOGGER = logging.getLogger(__name__)
 
 
+def create_cif_atom_line(atoms, idx):
+
+    SUCCESS, FAILURE = True, False
+    try:
+        line = []
+        # 1  - 6 RECORD NAME (ATOM)
+        line.append(atoms.get_value("group_PDB", idx))
+        # 7  - 11 ATOM SERIAL
+        line.append(atoms.get_value("id", idx))
+        # 14 - 16 ATOM NAME
+        line.append(str(atoms.get_value("label_atom_id", idx))) # bug - switch from label to auth
+        # 17 ALT LOCATION
+        if atoms.get_value("label_alt_id", idx)in [".","", "?", None]:
+            line.append("_")
+        else:
+            line.append(atoms.get_value("label_alt_id", idx))
+        # 18 - 20 RES NAME
+        line.append(atoms.get_value("label_comp_id", idx)) # bug - switch from label to auth
+        # 22 CHAIN ID
+        line.append(atoms.get_value("label_asym_id", idx)) # bug - switch from label to auth
+        # 23 - 26 RES SEQ ID
+        line.append(str(atoms.get_value("auth_seq_id", idx)))
+        # 27 RES SEQ ID
+        line.append("_")
+        # 31 - 38 X Coords
+        line.append(str(atoms.get_value("Cartn_x", idx)))
+        # 39 - 46 Y Coords
+        line.append(str(atoms.get_value("Cartn_y", idx)))
+        # 47 - 54 Z Coords
+        line.append(str(atoms.get_value("Cartn_z", idx)))
+        # 55 - 60 OCCUPANCY
+        line.append(str(atoms.get_value("occupancy", idx)))
+        # 61 - 66 TEMP FACTOR
+        line.append(str(atoms.get_value("B_iso_or_equiv", idx)))
+        # 73 - 76 SEG ID
+        line.append("_")
+        # 77 - 78 ELEMENT SYMBOL
+        line.append(atoms.get_value("type_symbol", idx))
+        # 79 - 80 CHARGE OF ATOM
+        if atoms.get_value("pdbx_formal_charge", idx) in ["?", "", ".", None]:
+            line.append("_")
+        else:
+            line.append(str(atoms.get_value("pdbx_formal_charge", idx)))
+        return "  ".join(line), SUCCESS
+    except KeyError:
+        _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
+        return "", FAILURE
+
+
 def atom_site(block):
     """Handle ATOM_SITE block.
 
@@ -38,122 +87,17 @@ def atom_site(block):
     if len(num_model_arr) == 1:
         # TODO - this part of the conditional should be a separate function
         for i in range(atoms.row_count):
+            line, success = create_cif_atom_line(atoms, i)
             if atoms.get_value("group_PDB", i) == "ATOM":
-                try:
-                    line = []
-                    # 1  - 6 RECORD NAME (ATOM)
-                    line.append(atoms.get_value("group_PDB", i))
-                    # 7  - 11 ATOM SERIAL
-                    line.append(atoms.get_value("id", i))
-                    # 14 - 16 ATOM NAME
-                    line.append(str(atoms.get_value("label_atom_id", i)))
-                    # 17 ALT LOCATION
-                    if atoms.get_value("label_alt_id", i)in [".","", "?", None]:
-                        line.append("_")
-                    else:
-                        line.append(atoms.get_value("label_alt_id", i))
-                    # 18 - 20 RES NAME
-                    line.append(atoms.get_value("label_comp_id", i))
-                    # 22 CHAIN ID
-                    line.append(atoms.get_value("label_asym_id", i))
-                    # 23 - 26 RES SEQ ID
-                    line.append(str(atoms.get_value("auth_seq_id", i)))
-                    # 27 RES SEQ ID
-                    line.append("_")
-                    # 31 - 38 X Coords
-                    line.append(str(atoms.get_value("Cartn_x", i)))
-                    # 39 - 46 Y Coords
-                    line.append(str(atoms.get_value("Cartn_y", i)))
-                    # 47 - 54 Z Coords
-                    line.append(str(atoms.get_value("Cartn_z", i)))
-                    # 55 - 60 OCCUPANCY
-                    line.append(str(atoms.get_value("occupancy", i)))
-                    # 61 - 66 TEMP FACTOR
-                    line.append(str(atoms.get_value("B_iso_or_equiv", i)))
-                    # 73 - 76 SEG ID
-                    line.append("_")
-                    # 77 - 78 ELEMENT SYMBOL
-                    line.append(atoms.get_value("type_symbol", i))
-                    # 79 - 80 CHARGE OF ATOM
-                    if atoms.get_value("pdbx_formal_charge", i) in ["?", "", ".", None]:
-                        line.append("_")
-                    else:
-                        line.append(str(atoms.get_value("pdbx_formal_charge", i)))
-                    pdb_arr.append(pdb.ATOM("  ".join(line)))
-                except KeyError:
-                    _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
+                if success:
+                    pdb_arr.append(pdb.CIF_ATOM(line, name="ATOM"))
+                else:
+                    err_arr.append("ATOM")
             elif atoms.get_value("group_PDB", i) == "HETATM":
-                try:
-                    line = ""
-                    # 1  - 6 RECORD NAME (HETATM)
-                    line += atoms.get_value("group_PDB", i) + "" * (
-                        6 - len(atoms.get_value("group_PDB", i))
-                    )
-                    # 7  - 11 ATOM SERIAL
-                    line += " " * (
-                        5 - len(str(atoms.get_value("id", i)))
-                    ) + str(atoms.get_value("id", i))
-                    # 12 - 13
-                    line += "  "
-                    # 14 - 16 ATOM NAME
-                    line += atoms.get_value("label_atom_id", i) + " " * (
-                        3 - len(atoms.get_value("label_atom_id", i))
-                    )
-                    # 17 ALT LOCATION
-                    if atoms.get_value("label_alt_id", i) == ".":
-                        line += " "
-                    else:
-                        atoms.get_value("label_alt_id", i)
-                    # 18 - 20 RES NAME
-                    line += " " * (
-                        3 - len(atoms.get_value("label_comp_id", i))
-                    ) + atoms.get_value("label_comp_id", i)
-                    # 21
-                    line += " "
-                    # 22 CHAIN ID
-                    line += " " * (
-                        1 - len(atoms.get_value("label_asym_id", i))
-                    ) + atoms.get_value("label_asym_id", i)
-                    # 23 - 26 RES SEQ ID
-                    line += " " * (
-                        4 - len(str(atoms.get_value("auth_seq_id", i)))
-                    ) + str(atoms.get_value("auth_seq_id", i))
-                    # 27 - 30
-                    line += " " * 4
-                    # 31 - 38 X Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_x", i)))
-                    ) + str(atoms.get_value("Cartn_x", i))
-                    # 39 - 46 Y Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_y", i)))
-                    ) + str(atoms.get_value("Cartn_y", i))
-                    # 47 - 54 Z Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_z", i)))
-                    ) + str(atoms.get_value("Cartn_z", i))
-                    # 55 - 60 OCCUPANCY
-                    line += " " * (
-                        6 - len(str(atoms.get_value("occupancy", i)))
-                    ) + str(atoms.get_value("occupancy", i))
-                    # 61 - 66 TEMP FACTOR
-                    line += " " * (
-                        6 - len(str(atoms.get_value("B_iso_or_equiv", i)))
-                    ) + str(atoms.get_value("B_iso_or_equiv", i))
-                    # 67 - 76
-                    line += " " * (10)
-                    # 77 - 78 ELEMENT SYMBOL
-                    line += " " * (
-                        2 - len(atoms.get_value("type_symbol", i))
-                    ) + atoms.get_value("type_symbol", i)
-                    # 79 - 80 CHARGE OF ATOM
-                    if atoms.get_value("pdbx_formal_charge", i) == "?":
-                        line += " " * 2
-                    else:
-                        atoms.get_value("pdbx_formal_charge", i)
-                    pdb_arr.append(pdb.HETATM(line))
-                except KeyError:
-                    _LOGGER.error(f"atom_site: Error reading line:\n{line}")
+                if success:
+                    pdb_arr.append(pdb.CIF_ATOM(line, name="HETATM"))
+                else: 
+                    err_arr.append("HETATM")
         return pdb_arr, err_arr
     # TODO - Given the return statement above, is this "else" ever reached?
     else:
@@ -167,169 +111,19 @@ def atom_site(block):
             except ValueError:
                 _LOGGER.error(f"atom_site: Error readline line:\n{line}")
                 err_arr.append("MODEL")
-
             for i in range(atoms.row_count):
                 if atoms.get_value("pdbx_PDB_model_num", i) == j:
+                    line, success = create_cif_atom_line(atoms, i)
                     if atoms.get_value("group_PDB", i) == "ATOM":
-                        try:
-                            line = ""
-                            # 1  - 6 RECORD NAME (ATOM)
-                            line += atoms.get_value("group_PDB", i) + " " * (
-                                6 - len(atoms.get_value("group_PDB", i))
-                            )
-                            # 7  - 11 ATOM SERIAL
-                            line += " " * (
-                                5 - len(str(atoms.get_value("id", i)))
-                            ) + str(atoms.get_value("id", i))
-                            # 12 - 13
-                            line += "  "
-                            # 14 - 16 ATOM NAME
-                            line += atoms.get_value(
-                                "label_atom_id", i
-                            ) + " " * (
-                                3 - len(atoms.get_value("label_atom_id", i))
-                            )
-                            # 17 ALT LOCATION
-                            if atoms.get_value("label_alt_id", i) == ".":
-                                line += " "
-                            else:
-                                atoms.get_value("label_alt_id", i)
-                            # 18 - 20 RES NAME
-                            line += " " * (
-                                3 - len(atoms.get_value("label_comp_id", i))
-                            ) + atoms.get_value("label_comp_id", i)
-                            # 21
-                            line += " "
-                            # 22 CHAIN ID
-                            line += " " * (
-                                1 - len(atoms.get_value("label_asym_id", i))
-                            ) + atoms.get_value("label_asym_id", i)
-                            # 23 - 26 RES SEQ ID
-                            line += " " * (
-                                4 - len(str(atoms.get_value("auth_seq_id", i)))
-                            ) + str(atoms.get_value("auth_seq_id", i))
-                            # 27 - 30
-                            line += " " * 3
-                            # 31 - 38 X Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_x", i)))
-                            ) + str(atoms.get_value("Cartn_x", i))
-                            # 39 - 46 Y Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_y", i)))
-                            ) + str(atoms.get_value("Cartn_y", i))
-                            # 47 - 54 Z Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_z", i)))
-                            ) + str(atoms.get_value("Cartn_z", i))
-                            # 55 - 60 OCCUPANCY
-                            line += " " * (
-                                6 - len(str(atoms.get_value("occupancy", i)))
-                            ) + str(atoms.get_value("occupancy", i))
-                            # 61 - 66 TEMP FACTOR
-                            line += " " * (
-                                6
-                                - len(
-                                    str(atoms.get_value("B_iso_or_equiv", i))
-                                )
-                            ) + str(atoms.get_value("B_iso_or_equiv", i))
-                            # 67 - 76
-                            line += " " * 10
-                            # 77 - 78 ELEMENT SYMBOL
-                            line += " " * (
-                                2 - len(atoms.get_value("type_symbol", i))
-                            ) + atoms.get_value("type_symbol", i)
-                            # 79 - 80 CHARGE OF ATOM
-                            if atoms.get_value("pdbx_formal_charge", i) == "?":
-                                line += " " * 2
-                            else:
-                                atoms.get_value("pdbx_formal_charge", i)
-                            pdb_arr.append(pdb.ATOM(line))
-                        except KeyError:
-                            _LOGGER.error(
-                                f"atom_site: Error reading line:\n{line}"
-                            )
+                        if success:
+                            pdb_arr.append(pdb.CIF_ATOM(line, name="ATOM"))
+                        else:
                             err_arr.append("ATOM")
                     elif atoms.get_value("group_PDB", i) == "HETATM":
-                        try:
-                            line = ""
-                            # 1  - 6 RECORD NAME (HETATM)
-                            line += atoms.get_value("group_PDB", i) + "" * (
-                                6 - len(atoms.get_value("group_PDB", i))
-                            )
-                            # 7  - 11 ATOM SERIAL
-                            line += " " * (
-                                5 - len(str(atoms.get_value("id", i)))
-                            ) + str(atoms.get_value("id", i))
-                            # 12 - 13
-                            line += "  "
-                            # 14 - 16 ATOM NAME
-                            line += atoms.get_value(
-                                "label_atom_id", i
-                            ) + " " * (
-                                3 - len(atoms.get_value("label_atom_id", i))
-                            )
-                            # 17      ALT LOCATION
-                            if atoms.get_value("label_alt_id", i) == ".":
-                                line += " "
-                            else:
-                                atoms.get_value("label_alt_id", i)
-                            # 18 - 20 RES NAME
-                            line += " " * (
-                                3 - len(atoms.get_value("label_comp_id", i))
-                            ) + atoms.get_value("label_comp_id", i)
-                            # 21
-                            line += " "
-                            # 22      CHAIN ID
-                            line += " " * (
-                                1 - len(atoms.get_value("label_asym_id", i))
-                            ) + atoms.get_value("label_asym_id", i)
-                            # 23 - 26 RES SEQ ID
-                            line += " " * (
-                                4 - len(str(atoms.get_value("auth_seq_id", i)))
-                            ) + str(atoms.get_value("auth_seq_id", i))
-                            # 27 - 30
-                            line += " " * 3
-                            # 31 - 38 X Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_x", i)))
-                            ) + str(atoms.get_value("Cartn_x", i))
-                            # 39 - 46 Y Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_y", i)))
-                            ) + str(atoms.get_value("Cartn_y", i))
-                            # 47 - 54 Z Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_z", i)))
-                            ) + str(atoms.get_value("Cartn_z", i))
-                            # 55 - 60 OCCUPANCY
-                            line += " " * (
-                                6 - len(str(atoms.get_value("occupancy", i)))
-                            ) + str(atoms.get_value("occupancy", i))
-                            # 61 - 66 TEMP FACTOR
-                            line += " " * (
-                                6
-                                - len(
-                                    str(atoms.get_value("B_iso_or_equiv", i))
-                                )
-                            ) + str(atoms.get_value("B_iso_or_equiv", i))
-                            # 67 - 76
-                            line += " " * 10
-                            # 77 - 78 ELEMENT SYMBOL
-                            line += " " * (
-                                2 - len(atoms.get_value("type_symbol", i))
-                            ) + atoms.get_value("type_symbol", i)
-                            # 79 - 80 CHARGE OF ATOM
-                            if atoms.get_value("pdbx_formal_charge", i) == "?":
-                                line += " " * 2
-                            else:
-                                atoms.get_value("pdbx_formal_charge", i)
-                            pdb_arr.append(pdb.HETATM(line))
-                        except KeyError:
-                            _LOGGER.error(
-                                f"atom_site: Error reading line:\n{line}"
-                            )
-                            err_arr.append("HETATOM")
+                        if success:
+                            pdb_arr.append(pdb.CIF_ATOM(line, name="HETATM"))
+                        else: 
+                            err_arr.append("HETATM")      
             try:
                 line = "ENDMDL"
                 pdb_arr.append(pdb.ENDMDL(line))

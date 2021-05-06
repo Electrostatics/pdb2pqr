@@ -936,6 +936,10 @@ class ORIGXn(BaseRecord):
 
 
 @register_line_parser
+class ORIGX1(ORIGXn):
+    """ORIGX3 PDB entry"""
+
+@register_line_parser
 class ORIGX2(ORIGXn):
     """ORIGX2 PDB entry"""
 
@@ -943,12 +947,6 @@ class ORIGX2(ORIGXn):
 @register_line_parser
 class ORIGX3(ORIGXn):
     """ORIGX3 PDB entry"""
-
-
-@register_line_parser
-class ORIGX1(ORIGXn):
-    """ORIGX3 PDB entry"""
-
 
 class CIF_ORIGXn(BaseRecord):
     """ORIGXn class

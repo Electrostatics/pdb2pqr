@@ -27,20 +27,23 @@ def create_cif_atom_line(atoms, idx):
         # 7  - 11 ATOM SERIAL
         line.append(atoms.get_value("id", idx))
         # 14 - 16 ATOM NAME
-        line.append(str(atoms.get_value("label_atom_id", idx))) # bug - TODO switch from label to auth
+        line.append(str(atoms.get_value("auth_atom_id", idx))) 
         # 17 ALT LOCATION
-        if atoms.get_value("label_alt_id", idx)in empty:
+        if atoms.get_value("label_alt_id", idx) in empty:
             line.append("_")
         else:
             line.append(atoms.get_value("label_alt_id", idx))
         # 18 - 20 RES NAME
-        line.append(atoms.get_value("label_comp_id", idx)) # bug - TODO switch from label to auth
+        line.append(atoms.get_value("auth_comp_id", idx)) 
         # 22 CHAIN ID
-        line.append(atoms.get_value("label_asym_id", idx)) # bug - TODO switch from label to auth
+        line.append(atoms.get_value("auth_asym_id", idx)) 
         # 23 - 26 RES SEQ ID
         line.append(str(atoms.get_value("auth_seq_id", idx)))
-        # 27 RES SEQ ID
-        line.append("_")
+        # 27 RES INSERT CODE
+        if atoms.get_value("pdbx_PDB_ins_code", idx) in empty:
+            line.append("_")
+        else:
+            line.append(atoms.get_value("pdbx_PDB_ins_code", idx))        
         # 31 - 38 X Coords
         line.append(str(atoms.get_value("Cartn_x", idx)))
         # 39 - 46 Y Coords

@@ -46,7 +46,7 @@ class DuplicateFilter(logging.Filter):
         return True
 
 
-def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
+def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False, ciffile=False):
     """Get PDB-format text lines for specified atoms.
 
     :param [Atom] atomlist:  the list of atoms to include
@@ -54,6 +54,9 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     :return:  list of strings, each representing an atom PDB line
     :rtype:  [str]
     """
+
+    if pdbfile and ciffile:
+        raise ValueError('Cannot be both a pdb and cif file. Pick one.')
     text = []
     currentchain_id = None
     for iatom, atom in enumerate(atomlist):
@@ -66,6 +69,8 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
         atom.serial = iatom + 1
         if pdbfile is True:
             text.append(f"{atom.get_pdb_string()}\n")
+        if ciffile is True:
+            text.append(f"{atom.get_cif_string()}\n")
         else:
             text.append(f"{atom.get_pqr_string(chainflag=chainflag)}\n")
     text.append("TER\nEND")
@@ -689,6 +694,9 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
                     )
                     outfile.write(newline)
             else:
+                if is_cif:
+                    line = [col if col != "_" else "." for col in line.split()]
+                    line = " ".join(line) + "\n"
                 if line[0:3] != "TER" or not is_cif:
                     outfile.write(line)
         if is_cif:
@@ -716,5 +724,8 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
                 f"Ignoring {len(missing_lines)} missing lines in output."
             )
         for line in pdb_lines:
+            if is_cif:
+                line = [col if col != "_" else "." for col in line.split()]
+                line = " ".join(line) + "\n"
             if line[0:3] != "TER" or not is_cif:
                 outfile.write(line)

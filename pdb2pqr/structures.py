@@ -292,6 +292,35 @@ class Atom:
         outstr += str.ljust(tstr, 8)[:8]
         return outstr
 
+    def get_common_cif_string_rep(self, chainflag=False):
+        """Returns a string of the common column of the new atom type.
+
+        Uses the :class:`ATOM` string output but changes the first field to
+        either be ``ATOM`` or ``HETATM`` as necessary.
+        This is used to create the output for CIF file.
+
+        :return:  string with ATOM/HETATM field set appropriately
+        :rtype:  str
+        """
+        # TODO add model number, label tags
+        out = [
+            self.type,                                          # 1  - 6 RECORD NAME (ATOM)
+            str(self.serial),                                   # 7  - 11 ATOM SERIAL
+            self.name,                                          # 14 - 16 ATOM NAME
+            self.alt_loc if self.alt_loc != "" else "_",        # 17 ALT LOCATION
+            self.res_name,                                      # 18 - 20 RES NAME
+            self.chain_id,                                      # 22 CHAIN ID
+            str(self.res_seq),                                  # 23 - 26 RES SEQ ID
+            self.ins_code if self.alt_loc != "" else "_",       # 27 RES INSERT CODE
+            str(round(self.x, 3)),                              # 31 - 38 X Coords
+            str(round(self.y, 3)),                              # 39 - 46 Y Coords
+            str(round(self.z, 3)),                              # 47 - 54 Z Coords
+            str(self.occupancy),                                # 55 - 60 OCCUPANCY      
+            str(self.temp_factor),                              # 61 - 66 TEMP FACTOR
+            self.element,                                       # 77 - 78 ELEMENT SYMBOL
+        ]
+        return "  ".join(out)
+
     def __str__(self):
         return self.get_pqr_string()
 
@@ -315,6 +344,21 @@ class Atom:
         )
         outstr += str.rjust(ffradius, 7)[:7]
         return outstr
+
+    def get_cif_string(self, chainflag=False):
+        """Returns a string of the atom type.
+
+        Uses the :class:`ATOM` string output but changes the first field to
+        either be ``ATOM`` or ``HETATM`` as necessary.
+        This is used to create the output for PQR files.
+
+        :return:  string with ATOM/HETATM field set appropriately
+        :rtype:  str
+        """
+        out = self.get_common_cif_string_rep(chainflag=chainflag).split()
+        out.append(str(self.ffcharge) if self.ffcharge is not None else "0.0000")
+        out.append(str(self.radius)   if self.radius   is not None else "0.0000")
+        return "  ".join(out)
 
     def get_pdb_string(self):
         """Returns a string of the atom type.

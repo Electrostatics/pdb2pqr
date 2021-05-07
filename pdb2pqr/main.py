@@ -287,50 +287,6 @@ def check_options(args):
         raise RuntimeError(err)
 
 
-def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
-    """Print PQR-format output to specified file
-
-    .. todo::  Move this to another module (io)
-
-    :param argparse.Namespace args:  command-line arguments
-    :param [str] pqr_lines:  output lines (records)
-    :param [str] header_lines:  header lines
-    :param [str] missing_lines:  lines describing missing atoms (should go
-        in header)
-    :param bool is_cif:  flag indicating CIF format
-    """
-    with open(args.output_pqr, "wt") as outfile:
-        # Adding whitespaces if --whitespace is in the options
-        if header_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(header_lines)} header lines in output."
-            )
-        if missing_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(missing_lines)} missing lines in output."
-            )
-        for line in pqr_lines:
-            if args.whitespace:
-                if line[0:4] == "ATOM" or line[0:6] == "HETATM":
-                    newline = (
-                        line[0:6]
-                        + " "
-                        + line[6:16]
-                        + " "
-                        + line[16:38]
-                        + " "
-                        + line[38:46]
-                        + " "
-                        + line[46:]
-                    )
-                    outfile.write(newline)
-            else:
-                if line[0:3] != "TER" or not is_cif:
-                    outfile.write(line)
-        if is_cif:
-            outfile.write("#\n")
-
-
 def transform_arguments(args):
     """Transform arguments with logic not provided by argparse.
 
@@ -681,7 +637,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             include_old_header=args.include_header,
         )
     _LOGGER.info("Regenerating PDB lines.")
-    lines = io.print_biomolecule_atoms(matched_atoms, args.keep_chain)
+    lines = io.print_biomolecule_atoms(matched_atoms, args.keep_chain, ciffile=is_cif)
     return {"lines": lines, "header": header, "missed_residues": missing_atoms}
 
 

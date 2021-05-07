@@ -331,33 +331,6 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             outfile.write("#\n")
 
 
-def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
-    """Print PDB-format output to specified file
-
-    .. todo::  Move this to another module (io)
-
-    :param argparse.Namespace args:  command-line arguments
-    :param [str]] pdb_lines:  output lines (records)
-    :param [str] header_lines:  header lines
-    :param [str] missing_lines:  lines describing missing atoms (should go in
-        header)
-    :param bool is_cif:  flag indicating CIF format
-    """
-    with open(args.pdb_output, "wt") as outfile:
-        # Adding whitespaces if --whitespace is in the options
-        if header_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(header_lines)} header lines in output."
-            )
-        if missing_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(missing_lines)} missing lines in output."
-            )
-        for line in pdb_lines:
-            if line[0:3] != "TER" or not is_cif:
-                outfile.write(line)
-
-
 def transform_arguments(args):
     """Transform arguments with logic not provided by argparse.
 
@@ -766,7 +739,7 @@ def main_driver(args):
             _LOGGER.critical(err)
             _LOGGER.critical("Giving up.")
             return
-    print_pqr(
+    io.print_pqr(
         args=args,
         pqr_lines=results["lines"],
         header_lines=results["header"],
@@ -774,7 +747,7 @@ def main_driver(args):
         is_cif=is_cif,
     )
     if args.pdb_output:
-        print_pdb(
+        io.print_pdb(
             args=args,
             pdb_lines=io.print_biomolecule_atoms(
                 biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True

@@ -6,7 +6,7 @@ import io
 from collections import Counter
 from pathlib import Path
 from sys import path as sys_path
-import requests
+import gemmi 
 from . import psize
 from . import inputgen
 from . import cif
@@ -729,3 +729,112 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
                 line = " ".join(line) + "\n"
             if line[0:3] != "TER" or not is_cif:
                 outfile.write(line)
+
+def generate_atom_site_columns(pdb_lines):
+
+    col_idx = {
+        'group_PDB': 0, 
+        'id': 1,
+        'type_symbol': 13,
+
+        'label_atom_id': 2,
+        'label_alt_id': 3, 
+        'label_comp_id': 4,
+        'label_asym_id': -1, #TODO add to Atom/pdb_line
+        'label_entity_id': -1, # TODO add to Atom/pdb_line
+        'label_seq_id': -1, # TODO add to Atom/pdb_line
+
+        'pdbx_PDB_ins_code': 7,
+        
+        'Cartn_x': 8,
+        'Cartn_y': 9,
+        'Cartn_z': 10,
+
+        'occupancy': 11,
+        'B_iso_or_equiv': 12,
+        'pdbx_formal_charge': -1, # this will not be added to the file should be set to '?'
+
+        'auth_seq_id': 6,
+        'auth_comp_id': 4, 
+        'auth_asym_id': 5,
+        'auth_atom_id': 2,
+
+        'pdbx_PDB_model_num': -1, # TODO add to Atom/pdb_line
+    }
+
+    group_PDB, id_, type_symbol = [], [], []
+    label_atom_id, label_alt_id, label_comp_id = [], [], []
+    label_asym_id, label_entity_id, label_seq_id = [], [], []
+    pdbx_PDB_ins_code = []
+    Cartn_x, Cartn_y, Cartn_z = [], [], []
+    occupancy, B_iso_or_equiv, pdbx_formal_charge = [], [], []
+    auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id = [], [], [], []
+    pdbx_PDB_model_num = []
+
+#     # TODO assert len(line.split()) 2 lengths allowed - with pqr and radii and without it. 
+
+    for line in pdb_lines:
+        line = line.split()
+
+        if len(line) != 16:
+            continue
+
+        group_PDB.append(line[col_idx['group_PDB']])
+        id_.append(line[col_idx['id']])
+        type_symbol.append(line[col_idx['type_symbol']])
+
+        label_atom_id.append(line[col_idx['label_atom_id']])
+        label_alt_id.append(line[col_idx['label_alt_id']])
+        label_comp_id.append(line[col_idx['label_comp_id']])
+
+        label_asym_id.append(line[col_idx['auth_asym_id']]) # TODO switch this to label not auth
+        label_entity_id.append('?')
+        label_seq_id.append(line[col_idx['auth_seq_id']]) # TODO switch this to label not auth
+
+        pdbx_PDB_ins_code.append(line[col_idx['pdbx_PDB_ins_code']])
+
+        Cartn_x.append(line[col_idx['Cartn_x']])
+        Cartn_y.append(line[col_idx['Cartn_y']])
+        Cartn_z.append(line[col_idx['Cartn_z']])
+
+        occupancy.append(line[col_idx['occupancy']])
+        B_iso_or_equiv.append(line[col_idx['B_iso_or_equiv']])
+        pdbx_formal_charge.append('?')
+
+        auth_seq_id.append(line[col_idx['auth_seq_id']])        
+        auth_comp_id.append(line[col_idx['auth_comp_id']])
+        auth_asym_id.append(line[col_idx['auth_asym_id']])
+        auth_atom_id.append(line[col_idx['auth_atom_id']])
+
+        pdbx_PDB_model_num.append('?')
+
+
+    return (
+        group_PDB, id_, type_symbol, label_atom_id, label_alt_id, label_comp_id, 
+        label_asym_id, label_entity_id, label_seq_id, pdbx_PDB_ins_code, 
+        Cartn_x, Cartn_y, Cartn_z, occupancy, B_iso_or_equiv, pdbx_formal_charge, 
+        auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id, pdbx_PDB_model_num
+    )
+
+       
+
+
+
+
+def print_cif(args, pqr_lines, header_lines, missing_lines):
+
+    doc = gemmi.cif.read_file(args.input_path)
+
+    # TODO replace block.table with these new list. 
+
+    block = doc.sole_block()
+
+    table = block.find_mmcif_category("_atom_site.")
+
+    new_cols = generate_atom_site_columns(pqr_lines)
+
+    loop = table.loop
+
+    loop.set_all_values(new_cols)
+    
+    doc.write_file(args.output_pqr + ".gemmi", gemmi.cif.Style.Pdbx)

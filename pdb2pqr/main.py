@@ -702,6 +702,12 @@ def main_driver(args):
         missing_lines=results["missed_residues"],
         is_cif=is_cif,
     )
+    io.print_cif(
+        args=args,
+        pqr_lines=results["lines"],
+        header_lines=results["header"],
+        missing_lines=results["missed_residues"],
+    )
     if args.pdb_output:
         io.print_pdb(
             args=args,

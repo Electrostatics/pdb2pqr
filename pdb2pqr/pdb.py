@@ -690,28 +690,36 @@ class CIF_ATOM(BaseRecord):
         self.__class__.__name__= name
         super().__init__(line)
         line = line.split()
+
+        self.group_PDB = line[0]
         self.serial = int(line[1])
-        self.name = line[2]
-        self.alt_loc = line[3] if line[3] != "_" else ""
-        self.res_name = line[4]
-        self.chain_id = line[5]
-        self.res_seq = int(line[6])
-        self.ins_code = line[7] if line[7] != "_" else ""
-        self.x = float(line[8])
-        self.y = float(line[9])
-        self.z = float(line[10])
-        try:
-            self.occupancy = float(line[11])
-            self.temp_factor = float(line[12])
-            self.seg_id = line[13] if line[13] != "_" else ""
-            self.element = line[14]
-            self.charge = line[15] if line[15] != "_" else ""
-        except (ValueError, IndexError):
-            self.occupancy = 0.00
-            self.temp_factor = 0.00
-            self.seg_id = ""
-            self.element = ""
-            self.charge = ""
+        self.element = line[2]
+
+        self.label_name = line[3]
+        self.alt_loc = line[4] if line[4] != "_" else ""
+        self.label_res_name = line[5]
+
+        self.label_chain_id = line[6]
+        self.label_entity_id = line[7]
+        self.label_res_seq = int(line[8]) if line[8].isnumeric() else ""
+
+        self.ins_code = line[9] if line[9] != "_" else ""
+
+        self.x = float(line[10])
+        self.y = float(line[11])
+        self.z = float(line[12])
+
+        self.occupancy = float(line[13])
+        self.temp_factor = float(line[14])
+        self.charge = line[15] if line[15] != "_" else ""
+
+        self.res_seq = int(line[16])
+        self.res_name = line[17]
+        self.chain_id = line[18]
+        self.name = line[19]
+
+        self.model_num = int(line[20])
+        self.seg_id = ""
 
 
 @register_line_parser

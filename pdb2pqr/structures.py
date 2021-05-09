@@ -134,6 +134,21 @@ class Atom:
             self.element = atom.element
             self.charge = atom.charge
             self.residue = residue
+            self.label_name = atom
+
+            # CIF specific 
+            self.group_PDB = atom.group_PDB if hasattr(atom, 'group_PDB') else None
+            self.label_name = atom.label_name if hasattr(atom, 'label_name') else None
+            self.label_res_name = atom.label_res_name if hasattr(atom, 'label_res_name') else None
+            self.label_chain_id = atom.label_chain_id if hasattr(atom, 'label_chain_id') else None
+            self.label_entity_id = atom.label_entity_id if hasattr(atom, 'label_entity_id') else None
+            self.label_res_seq = atom.label_res_seq if hasattr(atom, 'label_res_seq') else None
+            self.model_num = atom.model_num if hasattr(atom, 'model_num') else None
+
+
+
+
+
             try:
                 self.mol2charge = atom.mol2charge
             except AttributeError:

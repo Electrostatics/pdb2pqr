@@ -26,43 +26,64 @@ def create_cif_atom_line(atoms, idx):
         line.append(atoms.get_value("group_PDB", idx))
         # 7  - 11 ATOM SERIAL
         line.append(atoms.get_value("id", idx))
-        # 14 - 16 ATOM NAME
-        line.append(str(atoms.get_value("auth_atom_id", idx))) 
+        # 77 - 78 ELEMENT SYMBOL
+        line.append(atoms.get_value("type_symbol", idx))
+
+        # LABEL ATOM NAME - 
+        line.append(str(atoms.get_value("label_atom_id", idx)))
         # 17 ALT LOCATION
         if atoms.get_value("label_alt_id", idx) in empty:
             line.append("_")
         else:
             line.append(atoms.get_value("label_alt_id", idx))
-        # 18 - 20 RES NAME
-        line.append(atoms.get_value("auth_comp_id", idx)) 
-        # 22 CHAIN ID
-        line.append(atoms.get_value("auth_asym_id", idx)) 
-        # 23 - 26 RES SEQ ID
-        line.append(str(atoms.get_value("auth_seq_id", idx)))
+        # 18 - 20 RES NAME - using AUTH instead of LABEL
+        line.append(atoms.get_value("auth_comp_id", idx))
+
+        # LABEL_ASYM_ID
+        line.append(atoms.get_value("label_asym_id", idx))
+        # LABEL_ENTITY_ID
+        line.append(atoms.get_value("label_entity_id", idx))
+        # LABEL_SEQ_ID 
+        if atoms.get_value("label_seq_id", idx) in empty:
+            line.append("_")
+        else:
+            line.append(atoms.get_value("label_seq_id", idx))
+            
         # 27 RES INSERT CODE
         if atoms.get_value("pdbx_PDB_ins_code", idx) in empty:
             line.append("_")
         else:
             line.append(atoms.get_value("pdbx_PDB_ins_code", idx))        
+
         # 31 - 38 X Coords
         line.append(str(atoms.get_value("Cartn_x", idx)))
         # 39 - 46 Y Coords
         line.append(str(atoms.get_value("Cartn_y", idx)))
         # 47 - 54 Z Coords
         line.append(str(atoms.get_value("Cartn_z", idx)))
+
         # 55 - 60 OCCUPANCY
         line.append(str(atoms.get_value("occupancy", idx)))
         # 61 - 66 TEMP FACTOR
         line.append(str(atoms.get_value("B_iso_or_equiv", idx)))
-        # 73 - 76 SEG ID
-        line.append("_")
-        # 77 - 78 ELEMENT SYMBOL
-        line.append(atoms.get_value("type_symbol", idx))
         # 79 - 80 CHARGE OF ATOM
         if atoms.get_value("pdbx_formal_charge", idx) in empty:
             line.append("_")
         else:
             line.append(str(atoms.get_value("pdbx_formal_charge", idx)))
+
+        # 23 - 26 RES SEQ ID
+        line.append(str(atoms.get_value("auth_seq_id", idx)))
+        # 18 - 20 RES NAME - using AUTH instead of LABEL
+        line.append(atoms.get_value("auth_comp_id", idx))
+        # 22 CHAIN ID
+        line.append(atoms.get_value("auth_asym_id", idx)) 
+        # 14 - 16 ATOM NAME - using AUTH instead of LABEL
+        line.append(str(atoms.get_value("auth_atom_id", idx))) 
+
+        # MODEL_NUM
+        line.append(str(atoms.get_value("pdbx_PDB_model_num", idx))) 
+
         return "  ".join(line), SUCCESS
     except KeyError:
         _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")

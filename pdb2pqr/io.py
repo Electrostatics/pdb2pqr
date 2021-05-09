@@ -69,11 +69,12 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False, ciffile=Fa
         atom.serial = iatom + 1
         if pdbfile is True:
             text.append(f"{atom.get_pdb_string()}\n")
-        if ciffile is True:
+        elif ciffile is True:
             text.append(f"{atom.get_cif_string()}\n")
         else:
             text.append(f"{atom.get_pqr_string(chainflag=chainflag)}\n")
-    text.append("TER\nEND")
+    if not ciffile:
+        text.append("TER\nEND")
     return text
 
 

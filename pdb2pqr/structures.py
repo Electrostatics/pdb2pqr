@@ -317,22 +317,28 @@ class Atom:
         :return:  string with ATOM/HETATM field set appropriately
         :rtype:  str
         """
-        # TODO add model number, label tags
         out = [
-            self.type,                                          # 1  - 6 RECORD NAME (ATOM)
-            str(self.serial),                                   # 7  - 11 ATOM SERIAL
-            self.name,                                          # 14 - 16 ATOM NAME
-            self.alt_loc if self.alt_loc != "" else "_",        # 17 ALT LOCATION
-            self.res_name,                                      # 18 - 20 RES NAME
-            self.chain_id,                                      # 22 CHAIN ID
-            str(self.res_seq),                                  # 23 - 26 RES SEQ ID
-            self.ins_code if self.alt_loc != "" else "_",       # 27 RES INSERT CODE
-            str(round(self.x, 3)),                              # 31 - 38 X Coords
-            str(round(self.y, 3)),                              # 39 - 46 Y Coords
-            str(round(self.z, 3)),                              # 47 - 54 Z Coords
-            str(self.occupancy),                                # 55 - 60 OCCUPANCY      
-            str(self.temp_factor),                              # 61 - 66 TEMP FACTOR
-            self.element,                                       # 77 - 78 ELEMENT SYMBOL
+            self.group_PDB,                                                 # 1  - 6 RECORD NAME (ATOM)
+            str(self.serial),                                               # 7  - 11 ATOM SERIAL
+            self.element,                                                   # 77 - 78 ELEMENT SYMBOL
+            self.label_name,
+            self.alt_loc if self.alt_loc != "" else ".",                    # 17 ALT LOCATION
+            self.label_res_name,
+            self.label_chain_id,
+            self.label_entity_id,
+            str(self.label_res_seq) if self.label_res_seq != "" else ".",
+            self.ins_code if self.alt_loc != "" else ".",                   # 27 RES INSERT CODE
+            str(round(self.x, 3)),                                          # 31 - 38 X Coords
+            str(round(self.y, 3)),                                          # 39 - 46 Y Coords
+            str(round(self.z, 3)),                                          # 47 - 54 Z Coords
+            str(self.occupancy),                                            # 55 - 60 OCCUPANCY      
+            str(self.temp_factor),                                          # 61 - 66 TEMP FACTOR
+            str(self.charge) if self.charge != "" else "?",                 # 79 - 80 CHARGE OF ATOM      
+            str(self.res_seq),                                              # 23 - 26 RES SEQ ID
+            self.res_name,                                                  # 18 - 20 RES NAME
+            self.chain_id,                                                  # 22 CHAIN ID
+            self.name,                                                      # 14 - 16 ATOM NAME
+            str(self.model_num)            
         ]
         return "  ".join(out)
 

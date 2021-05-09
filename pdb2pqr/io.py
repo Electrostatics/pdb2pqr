@@ -736,31 +736,31 @@ def generate_atom_site_columns(pdb_lines):
     col_idx = {
         'group_PDB': 0, 
         'id': 1,
-        'type_symbol': 13,
+        'type_symbol': 2,
 
-        'label_atom_id': 2,
-        'label_alt_id': 3, 
-        'label_comp_id': 4,
-        'label_asym_id': -1, #TODO add to Atom/pdb_line
-        'label_entity_id': -1, # TODO add to Atom/pdb_line
-        'label_seq_id': -1, # TODO add to Atom/pdb_line
+        'label_atom_id': 3,
+        'label_alt_id': 4, 
+        'label_comp_id': 5,
+        'label_asym_id': 6, 
+        'label_entity_id': 7, 
+        'label_seq_id': 8, 
 
-        'pdbx_PDB_ins_code': 7,
+        'pdbx_PDB_ins_code': 9,
         
-        'Cartn_x': 8,
-        'Cartn_y': 9,
-        'Cartn_z': 10,
+        'Cartn_x': 10,
+        'Cartn_y': 11,
+        'Cartn_z': 12,
 
-        'occupancy': 11,
-        'B_iso_or_equiv': 12,
-        'pdbx_formal_charge': -1, # this will not be added to the file should be set to '?'
+        'occupancy': 13,
+        'B_iso_or_equiv': 14,
+        'pdbx_formal_charge': 15, # this will not be added to the file should be set to '?'
 
-        'auth_seq_id': 6,
-        'auth_comp_id': 4, 
-        'auth_asym_id': 5,
-        'auth_atom_id': 2,
+        'auth_seq_id': 16,
+        'auth_comp_id': 17, 
+        'auth_asym_id': 18,
+        'auth_atom_id': 19,
 
-        'pdbx_PDB_model_num': -1, # TODO add to Atom/pdb_line
+        'pdbx_PDB_model_num': 20, 
     }
 
     group_PDB, id_, type_symbol = [], [], []
@@ -777,7 +777,9 @@ def generate_atom_site_columns(pdb_lines):
     for line in pdb_lines:
         line = line.split()
 
-        if len(line) != 16:
+        # 23: no partial_charge and radii columns
+        # 25: includes partial_charge and radii_columns
+        if not len(line) in [23, 25]:
             continue
 
         group_PDB.append(line[col_idx['group_PDB']])
@@ -807,7 +809,7 @@ def generate_atom_site_columns(pdb_lines):
         auth_asym_id.append(line[col_idx['auth_asym_id']])
         auth_atom_id.append(line[col_idx['auth_atom_id']])
 
-        pdbx_PDB_model_num.append('?')
+        pdbx_PDB_model_num.append(line[col_idx['pdbx_PDB_model_num']])
 
 
     return (
@@ -826,8 +828,6 @@ def print_cif(args, pqr_lines, header_lines, missing_lines):
 
     doc = gemmi.cif.read_file(args.input_path)
 
-    # TODO replace block.table with these new list. 
-
     block = doc.sole_block()
 
     table = block.find_mmcif_category("_atom_site.")
@@ -837,5 +837,4 @@ def print_cif(args, pqr_lines, header_lines, missing_lines):
     loop = table.loop
 
     loop.set_all_values(new_cols)
-    
     doc.write_file(args.output_pqr + ".gemmi", gemmi.cif.Style.Pdbx)

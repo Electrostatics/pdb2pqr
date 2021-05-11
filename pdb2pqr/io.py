@@ -738,7 +738,7 @@ def generate_atom_site_columns(pdb_lines):
         'id': 1,
         'type_symbol': 2,
 
-        'label_atom_id': 3,
+        'label_atom_id': 19,    # Not using label_atom_id; just auth_atom_id
         'label_alt_id': 4, 
         'label_comp_id': 5,
         'label_asym_id': 6, 
@@ -790,9 +790,9 @@ def generate_atom_site_columns(pdb_lines):
         label_alt_id.append(line[col_idx['label_alt_id']])
         label_comp_id.append(line[col_idx['label_comp_id']])
 
-        label_asym_id.append(line[col_idx['auth_asym_id']]) # TODO switch this to label not auth
-        label_entity_id.append('?')
-        label_seq_id.append(line[col_idx['auth_seq_id']]) # TODO switch this to label not auth
+        label_asym_id.append(line[col_idx['label_asym_id']]) 
+        label_entity_id.append(line[col_idx['label_entity_id']])
+        label_seq_id.append(line[col_idx['label_seq_id']]) 
 
         pdbx_PDB_ins_code.append(line[col_idx['pdbx_PDB_ins_code']])
 
@@ -802,7 +802,7 @@ def generate_atom_site_columns(pdb_lines):
 
         occupancy.append(line[col_idx['occupancy']])
         B_iso_or_equiv.append(line[col_idx['B_iso_or_equiv']])
-        pdbx_formal_charge.append('?')
+        pdbx_formal_charge.append(line[col_idx['pdbx_formal_charge']])
 
         auth_seq_id.append(line[col_idx['auth_seq_id']])        
         auth_comp_id.append(line[col_idx['auth_comp_id']])
@@ -837,4 +837,5 @@ def print_cif(args, pqr_lines, header_lines, missing_lines):
     loop = table.loop
 
     loop.set_all_values(new_cols)
+
     doc.write_file(args.output_pqr + ".gemmi", gemmi.cif.Style.Pdbx)

@@ -637,8 +637,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             include_old_header=args.include_header,
         )
     _LOGGER.info("Regenerating PDB lines.")
-    all_atoms = matched_atoms + missing_atoms
-    lines = io.print_biomolecule_atoms(all_atoms, args.keep_chain, ciffile=is_cif)
+    lines = io.print_biomolecule_atoms(matched_atoms, args.keep_chain, missing_atoms=missing_atoms, ciffile=is_cif)
     return {"lines": lines, "header": header, "missed_residues": missing_atoms}
 
 
@@ -703,11 +702,12 @@ def main_driver(args):
         missing_lines=results["missed_residues"],
         is_cif=is_cif,
     )
-    io.print_cif(
-        args=args,
-        pqr_lines=results["lines"],
-        header_lines=results["header"],
-        missing_lines=results["missed_residues"],
+    if is_cif:
+        io.print_cif(
+            args=args,
+            pqr_lines=results["lines"],
+            header_lines=results["header"],
+            missing_lines=results["missed_residues"],
     )
     if args.pdb_output:
         io.print_pdb(

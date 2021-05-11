@@ -46,7 +46,7 @@ class DuplicateFilter(logging.Filter):
         return True
 
 
-def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False, ciffile=False):
+def print_biomolecule_atoms(atomlist, chainflag=False, missing_atoms=None, pdbfile=False, ciffile=False):
     """Get PDB-format text lines for specified atoms.
 
     :param [Atom] atomlist:  the list of atoms to include
@@ -59,6 +59,9 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False, ciffile=Fa
         raise ValueError('Cannot be both a pdb and cif file. Pick one.')
     text = []
     currentchain_id = None
+    if ciffile and isinstance(missing_atoms, (list, tuple)) and len(missing_atoms) > 0:
+        if isinstance(missing_atoms[0], Atom):
+            atomlist = atomlist + missing_atoms
     for iatom, atom in enumerate(atomlist):
         # Print the "TER" records between chains
         if currentchain_id is None:
@@ -731,6 +734,7 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
             if line[0:3] != "TER" or not is_cif:
                 outfile.write(line)
 
+
 def generate_atom_site_columns(pdb_lines):
 
     col_idx = {
@@ -738,7 +742,7 @@ def generate_atom_site_columns(pdb_lines):
         'id': 1,
         'type_symbol': 2,
 
-        'label_atom_id': 19,    # Not using label_atom_id; just auth_atom_id
+        'label_atom_id': 19,    # Not using label_atom_id but auth_atom_id -- leads to bugs for added H atoms
         'label_alt_id': 4, 
         'label_comp_id': 5,
         'label_asym_id': 6, 
@@ -753,7 +757,7 @@ def generate_atom_site_columns(pdb_lines):
 
         'occupancy': 13,
         'B_iso_or_equiv': 14,
-        'pdbx_formal_charge': 15, # this will not be added to the file should be set to '?'
+        'pdbx_formal_charge': 15,
 
         'auth_seq_id': 16,
         'auth_comp_id': 17, 
@@ -828,18 +832,29 @@ def generate_atom_site_columns(pdb_lines):
         pqr_charge, pqr_radius
     )
 
-       
+
+def pdb2pqr_cif_category(args, block, missing_lines):
+
+    block.set_pair('_pdb2pqr_params.version','3.1')
+    block.set_pair('_pdb2pqr_params.forcefield', args.ff)
+    block.set_pair('_pdb2pqr_params.missing_atoms', str(len(missing_lines)))
+    return block
 
 
 
 
 def print_cif(args, pqr_lines, header_lines, missing_lines):
 
+    inp_file = Path(args.input_path)
+    out_file = Path(args.output_pqr)
+    out_cif = out_file.parent / (inp_file.stem + '.pqr.cif')
+
     doc = gemmi.cif.read_file(args.input_path)
     block = doc.sole_block()
+    block = pdb2pqr_cif_category(args, block, missing_lines)
     table = block.find_mmcif_category("_atom_site.")
-    tags = [tag.split('.')[1] for tag in table.tags] + ['pqr_charge', 'pqr_radius']
+    tags = [tag.split('.')[1] for tag in table.tags] + ['pqr_partial_charge', 'pqr_radius']
     loop = block.init_loop('_atom_site.', tags) 
     new_cols = generate_atom_site_columns(pqr_lines)
     loop.set_all_values(new_cols)
-    doc.write_file(args.output_pqr + ".gemmi", gemmi.cif.Style.Pdbx)
+    doc.write_file(str(out_cif), gemmi.cif.Style.Pdbx)

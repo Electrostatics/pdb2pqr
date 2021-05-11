@@ -761,6 +761,9 @@ def generate_atom_site_columns(pdb_lines):
         'auth_atom_id': 19,
 
         'pdbx_PDB_model_num': 20, 
+
+        'pqr_charge': 21,
+        'pqr_radius': 22
     }
 
     group_PDB, id_, type_symbol = [], [], []
@@ -771,15 +774,14 @@ def generate_atom_site_columns(pdb_lines):
     occupancy, B_iso_or_equiv, pdbx_formal_charge = [], [], []
     auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id = [], [], [], []
     pdbx_PDB_model_num = []
-
-#     # TODO assert len(line.split()) 2 lengths allowed - with pqr and radii and without it. 
+    pqr_charge, pqr_radius = [], []
 
     for line in pdb_lines:
         line = line.split()
 
-        # 23: no partial_charge and radii columns
-        # 25: includes partial_charge and radii_columns
-        if not len(line) in [23, 25]:
+        # 21: no partial_charge and radii columns
+        # 23: includes partial_charge and radii_columns
+        if not len(line) in [21, 23]:
             continue
 
         group_PDB.append(line[col_idx['group_PDB']])
@@ -811,12 +813,19 @@ def generate_atom_site_columns(pdb_lines):
 
         pdbx_PDB_model_num.append(line[col_idx['pdbx_PDB_model_num']])
 
+        if len(line) == 23 and float(line[col_idx['pqr_radius']]) != 0.0:
+            pqr_charge.append(line[col_idx['pqr_charge']])
+            pqr_radius.append(line[col_idx['pqr_radius']])
+        else:
+            pqr_charge.append('?')
+            pqr_radius.append('?')
 
     return (
         group_PDB, id_, type_symbol, label_atom_id, label_alt_id, label_comp_id, 
         label_asym_id, label_entity_id, label_seq_id, pdbx_PDB_ins_code, 
         Cartn_x, Cartn_y, Cartn_z, occupancy, B_iso_or_equiv, pdbx_formal_charge, 
-        auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id, pdbx_PDB_model_num
+        auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id, pdbx_PDB_model_num,
+        pqr_charge, pqr_radius
     )
 
        
@@ -827,15 +836,10 @@ def generate_atom_site_columns(pdb_lines):
 def print_cif(args, pqr_lines, header_lines, missing_lines):
 
     doc = gemmi.cif.read_file(args.input_path)
-
     block = doc.sole_block()
-
     table = block.find_mmcif_category("_atom_site.")
-
+    tags = [tag.split('.')[1] for tag in table.tags] + ['pqr_charge', 'pqr_radius']
+    loop = block.init_loop('_atom_site.', tags) 
     new_cols = generate_atom_site_columns(pqr_lines)
-
-    loop = table.loop
-
     loop.set_all_values(new_cols)
-
     doc.write_file(args.output_pqr + ".gemmi", gemmi.cif.Style.Pdbx)

@@ -6,7 +6,7 @@ import io
 from collections import Counter
 from pathlib import Path
 from sys import path as sys_path
-import gemmi 
+import pdbx
 from . import psize
 from . import inputgen
 from . import cif
@@ -735,7 +735,7 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
                 outfile.write(line)
 
 
-def generate_atom_site_columns(pdb_lines):
+def format_atom_site_rows(pdb_lines):
 
     col_idx = {
         'group_PDB': 0, 
@@ -770,75 +770,65 @@ def generate_atom_site_columns(pdb_lines):
         'pqr_radius': 22
     }
 
-    group_PDB, id_, type_symbol = [], [], []
-    label_atom_id, label_alt_id, label_comp_id = [], [], []
-    label_asym_id, label_entity_id, label_seq_id = [], [], []
-    pdbx_PDB_ins_code = []
-    Cartn_x, Cartn_y, Cartn_z = [], [], []
-    occupancy, B_iso_or_equiv, pdbx_formal_charge = [], [], []
-    auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id = [], [], [], []
-    pdbx_PDB_model_num = []
-    pqr_charge, pqr_radius = [], []
-
+    out_lines = []
     for line in pdb_lines:
         line = line.split()
 
         # 21: no partial_charge and radii columns
         # 23: includes partial_charge and radii_columns
         if not len(line) in [21, 23]:
-            continue
+            continue 
 
-        group_PDB.append(line[col_idx['group_PDB']])
-        id_.append(line[col_idx['id']])
-        type_symbol.append(line[col_idx['type_symbol']])
+        out_line = [
+            line[col_idx['group_PDB']],
+            line[col_idx['id']],
+            line[col_idx['type_symbol']],
 
-        label_atom_id.append(line[col_idx['label_atom_id']])
-        label_alt_id.append(line[col_idx['label_alt_id']])
-        label_comp_id.append(line[col_idx['label_comp_id']])
+            line[col_idx['label_atom_id']],
+            line[col_idx['label_alt_id']] if line[col_idx['label_alt_id']] != '.' else '',
+            line[col_idx['label_comp_id']],
 
-        label_asym_id.append(line[col_idx['label_asym_id']]) 
-        label_entity_id.append(line[col_idx['label_entity_id']])
-        label_seq_id.append(line[col_idx['label_seq_id']]) 
+            line[col_idx['label_asym_id']],
+            line[col_idx['label_entity_id']],
+            line[col_idx['label_seq_id']] if line[col_idx['label_seq_id']] != '.' else '',
 
-        pdbx_PDB_ins_code.append(line[col_idx['pdbx_PDB_ins_code']])
+            line[col_idx['pdbx_PDB_ins_code']] if line[col_idx['pdbx_PDB_ins_code']] != '.' else None,
 
-        Cartn_x.append(line[col_idx['Cartn_x']])
-        Cartn_y.append(line[col_idx['Cartn_y']])
-        Cartn_z.append(line[col_idx['Cartn_z']])
+            line[col_idx['Cartn_x']],
+            line[col_idx['Cartn_y']],
+            line[col_idx['Cartn_z']],
 
-        occupancy.append(line[col_idx['occupancy']])
-        B_iso_or_equiv.append(line[col_idx['B_iso_or_equiv']])
-        pdbx_formal_charge.append(line[col_idx['pdbx_formal_charge']])
+            line[col_idx['occupancy']],
+            line[col_idx['B_iso_or_equiv']],
+            line[col_idx['pdbx_formal_charge']] if line[col_idx['pdbx_formal_charge']] != '?' else None,
 
-        auth_seq_id.append(line[col_idx['auth_seq_id']])        
-        auth_comp_id.append(line[col_idx['auth_comp_id']])
-        auth_asym_id.append(line[col_idx['auth_asym_id']])
-        auth_atom_id.append(line[col_idx['auth_atom_id']])
+            line[col_idx['auth_seq_id']],
+            line[col_idx['auth_comp_id']],
+            line[col_idx['auth_asym_id']],
+            line[col_idx['auth_atom_id']],
 
-        pdbx_PDB_model_num.append(line[col_idx['pdbx_PDB_model_num']])
+            line[col_idx['pdbx_PDB_model_num']],
+        ]
 
         if len(line) == 23 and float(line[col_idx['pqr_radius']]) != 0.0:
-            pqr_charge.append(line[col_idx['pqr_charge']])
-            pqr_radius.append(line[col_idx['pqr_radius']])
+            out_line.append(line[col_idx['pqr_charge']])
+            out_line.append(line[col_idx['pqr_radius']])
         else:
-            pqr_charge.append('?')
-            pqr_radius.append('?')
+            out_line.append(None)
+            out_line.append(None)
+        
+        out_lines.append(out_line)
 
-    return (
-        group_PDB, id_, type_symbol, label_atom_id, label_alt_id, label_comp_id, 
-        label_asym_id, label_entity_id, label_seq_id, pdbx_PDB_ins_code, 
-        Cartn_x, Cartn_y, Cartn_z, occupancy, B_iso_or_equiv, pdbx_formal_charge, 
-        auth_seq_id, auth_comp_id, auth_asym_id, auth_atom_id, pdbx_PDB_model_num,
-        pqr_charge, pqr_radius
-    )
+    return out_lines
 
 
-def pdb2pqr_cif_category(args, block, missing_lines):
+def pdb2pqr_cif_metadata(ff, missing_lines):
 
-    block.set_pair('_pdb2pqr_params.version','3.1')
-    block.set_pair('_pdb2pqr_params.forcefield', args.ff)
-    block.set_pair('_pdb2pqr_params.missing_atoms', str(len(missing_lines)))
-    return block
+    category_name = 'pdb2pqr_metadata'
+    attributes = ['version', 'forcefield', 'missing_atoms']
+    rows = [['3.1', ff, str(len(missing_lines))]]
+    return pdbx.DataCategory(category_name, attributes, rows)
+
 
 
 
@@ -849,12 +839,14 @@ def print_cif(args, pqr_lines, header_lines, missing_lines):
     out_file = Path(args.output_pqr)
     out_cif = out_file.parent / (inp_file.stem + '.pqr.cif')
 
-    doc = gemmi.cif.read_file(args.input_path)
-    block = doc.sole_block()
-    block = pdb2pqr_cif_category(args, block, missing_lines)
-    table = block.find_mmcif_category("_atom_site.")
-    tags = [tag.split('.')[1] for tag in table.tags] + ['pqr_partial_charge', 'pqr_radius']
-    loop = block.init_loop('_atom_site.', tags) 
-    new_cols = generate_atom_site_columns(pqr_lines)
-    loop.set_all_values(new_cols)
-    doc.write_file(str(out_cif), gemmi.cif.Style.Pdbx)
+    with inp_file.open() as fin, out_cif.open('wt') as fout:
+        pdbdata = pdbx.load(fin)
+
+        pqr_metadata = pdb2pqr_cif_metadata(args.ff, missing_lines)
+        pdbdata[0].append(pqr_metadata)
+
+        atom_site = pdbdata[0].get_object('atom_site')
+        atom_site.attribute_list.extend(['pqr_partial_charge', 'pqr_radius'])
+        atom_site.set_row_list(format_atom_site_rows(pqr_lines))
+
+        pdbx.dump(pdbdata, fout)

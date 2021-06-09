@@ -945,6 +945,7 @@ class WAT(residue.Residue):
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]
         newatom.name = atomname
+        newatom.element = atomname[0]
         newatom.occupancy = 1.00
         newatom.temp_factor = 0.00
         newatom.added = 1
@@ -1030,6 +1031,7 @@ class LIG(residue.Residue):
         newatom.y = newcoords[1]
         newatom.z = newcoords[2]
         newatom.name = atomname
+        newatom.element = atomname[0]
         newatom.occupancy = 1.00
         newatom.temp_factor = 0.00
         newatom.added = 1

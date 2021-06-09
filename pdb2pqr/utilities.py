@@ -115,6 +115,8 @@ def angle(coords1, coords2, coords3):
     dotted = np.inner(norm1, norm2)
     if dotted > 1.0:  # If normalized, this is due to rounding error
         dotted = 1.0
+    elif dotted < -1.0:
+        dotted = -1.0
     rad = np.absolute(np.arccos(dotted))
     value = rad * 180.0 / np.pi
     if value > 180.0:

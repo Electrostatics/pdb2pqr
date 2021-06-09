@@ -63,9 +63,15 @@ class Biomolecule(object):
                     ]:
                         # Assign a chain ID
                         try:
-                            record.chain_id = (string.ascii_uppercase+string.ascii_lowercase+string.digits)[count]
+                            record.chain_id = (
+                                string.ascii_uppercase
+                                + string.ascii_lowercase
+                                + string.digits
+                            )[count]
                         except:
-                            raise Exception("Too many chains, sorry. Consider preparing subsets.")
+                            raise Exception(
+                                "Too many chains, sorry. Consider preparing subsets."
+                            )
 
                 chain_id = record.chain_id
                 res_seq = record.res_seq

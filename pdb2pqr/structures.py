@@ -328,18 +328,7 @@ class Atom:
         :rtype:  str
         """
         outstr = self.get_common_string_rep(chainflag=True)
-        tstr = f"{self.occupancy:6.2f}"
-        outstr += str.ljust(tstr, 6)[:6]
-        tstr = f"{self.temp_factor:6.2f}"
-        outstr += str.rjust(tstr, 6)[:6]
-        # padding between temp factor and seg_id
-        outstr += " " * 7
-        tstr = self.seg_id
-        outstr += str.ljust(tstr, 4)[:4]
-        tstr = self.element
-        outstr += str.ljust(tstr, 2)[:2]
-        tstr = str(self.charge)
-        outstr += str.ljust(tstr, 2)[:2]
+        outstr += f"{self.occupancy:>6.2f}{self.temp_factor:>6.2f}      {self.seg_id:4.4s}{self.element:>2.2s}{self.charge:2.2s}"
         return outstr
 
     @property

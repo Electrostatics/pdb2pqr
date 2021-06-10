@@ -201,6 +201,6 @@ def run_pdb2pqr(args, input_pdb, tmp_path, output_pqr=None, expected_pqr=None):
     _LOGGER.debug(f"Writing output to {output_pqr}")
     arg_str = f"{args} {input_pdb} {output_pqr}"
     args = PARSER.parse_args(arg_str.split())
-    main_driver(args)
+    _ = main_driver(args)
     if expected_pqr is not None:
         compare_pqr(output_pqr, expected_pqr)

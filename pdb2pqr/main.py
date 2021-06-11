@@ -760,6 +760,7 @@ def main_driver(args):
             "lines": io.print_biomolecule_atoms(
                 biomolecule.atoms, args.keep_chain
             ),
+            "pka_df": None,
         }
     else:
         try:

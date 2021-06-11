@@ -19,4 +19,4 @@ logging.captureWarnings(True)
 if __name__ == "__main__":
     PARSER = build_main_parser()
     ARGS = PARSER.parse_args()
-    main_driver(ARGS)
+    _ = main_driver(ARGS)

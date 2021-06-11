@@ -549,12 +549,14 @@ def run_propka(args, biomolecule):
         row_dict = OrderedDict()
         atom = group.atom
         row_dict["res_num"] = atom.res_num
+        row_dict["ins_code"] = atom.icode
         row_dict["res_name"] = atom.res_name
         row_dict["chain_id"] = atom.chain_id
         row_dict["group_label"] = group.label
         row_dict["group_type"] = getattr(group, "type", None)
         row_dict["pKa"] = group.pka_value
         row_dict["model_pKa"] = group.model_pka
+        row_dict["buried"] = group.buried
         if group.coupled_titrating_group:
             row_dict["coupled_group"] = group.coupled_titrating_group.label
         else:
@@ -591,6 +593,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
     _LOGGER.info("Loading hydrogen topology definitions.")
     hydrogen_handler = hydrogens.create_handler()
     debumper = debump.Debump(biomolecule)
+    pka_df = None
     if args.assign_only:
         # TODO - I don't understand why HIS needs to be set to HIP for
         # assign-only
@@ -619,7 +622,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
-                dict((row['group_label'], row['pKa']) for row in pka_df),
+                dict((row["group_label"], row["pKa"]) for row in pka_df),
             )
         _LOGGER.info("Adding hydrogens to biomolecule.")
         biomolecule.add_hydrogens()
@@ -709,7 +712,12 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
         )
     _LOGGER.info("Regenerating PDB lines.")
     lines = io.print_biomolecule_atoms(matched_atoms, args.keep_chain)
-    return {"lines": lines, "header": header, "missed_residues": missing_atoms}
+    return {
+        "lines": lines,
+        "header": header,
+        "missed_residues": missing_atoms,
+        "pka_df": pka_df,
+    }
 
 
 def main_driver(args):
@@ -785,13 +793,14 @@ def main_driver(args):
         )
     if args.apbs_input:
         io.dump_apbs(args.output_pqr, args.apbs_input)
+    return results["missed_residues"], results["pka_df"], biomolecule
 
 
 def main():
     """Hook for command-line usage."""
     parser = build_main_parser()
     args = parser.parse_args()
-    main_driver(args)
+    _ = main_driver(args)
 
 
 def dx_to_cube():

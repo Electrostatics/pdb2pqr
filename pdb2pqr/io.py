@@ -430,14 +430,13 @@ def get_pdb_file(name):
     path = Path(name)
     if path.is_file():
         return open(path, "rt", encoding="utf-8")
-    else:
-        url_path = f"https://files.rcsb.org/download/{path.stem}.pdb"
-        _LOGGER.debug(f"Attempting to fetch PDB from {url_path}")
-        resp = requests.get(url_path)
-        if resp.status_code != 200:
-            errstr = f"Got code {resp.status_code} while retrieving {url_path}"
-            raise IOError(errstr)
-        return io.StringIO(resp.text)
+    url_path = f"https://files.rcsb.org/download/{path.stem}.pdb"
+    _LOGGER.debug(f"Attempting to fetch PDB from {url_path}")
+    resp = requests.get(url_path)
+    if resp.status_code != 200:
+        errstr = f"Got code {resp.status_code} while retrieving {url_path}"
+        raise IOError(errstr)
+    return io.StringIO(resp.text)
 
 
 def get_molecule(input_path):
@@ -510,7 +509,10 @@ def setup_logger(output_pqr, level="DEBUG"):
     _LOGGER.info(f"Logs stored: {log_file}")
     logging.basicConfig(
         filename=log_file,
-        format="%(asctime)s %(levelname)s:%(filename)s:%(lineno)d:%(funcName)s:%(message)s",
+        format=(
+            "%(asctime)s %(levelname)s:%(filename)s:",
+            "%(lineno)d:%(funcName)s:%(message)s",
+        ),
         level=getattr(logging, level),
     )
     console = logging.StreamHandler()

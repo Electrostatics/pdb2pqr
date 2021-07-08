@@ -324,9 +324,8 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
                         + line[46:]
                     )
                     outfile.write(newline)
-            else:
-                if line[0:3] != "TER" or not is_cif:
-                    outfile.write(line)
+            elif line[0:3] != "TER" or not is_cif:
+                outfile.write(line)
         if is_cif:
             outfile.write("#\n")
 
@@ -513,7 +512,13 @@ def run_propka(args, biomolecule):
     molecule.calculate_pka()
 
     # Extract pKa information from PROPKA
-    # write_pka( self, self.version.parameters, filename=filename, conformation='AVR', reference=reference)
+    # write_pka(
+    #    self,
+    #    self.version.parameters,
+    #    filename=filename,
+    #    conformation="AVR",
+    #    reference=reference,
+    # )
     lines = []
     # lines.append(f"{pk_out.get_propka_header()}")
     # lines.append(f"{pk_out.get_references_header()}")
@@ -622,8 +627,9 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
-                dict((row["group_label"], row["pKa"]) for row in pka_df),
+                {row["group_label"]: row["pKa"] for row in pka_df},
             )
+
         _LOGGER.info("Adding hydrogens to biomolecule.")
         biomolecule.add_hydrogens()
         if args.debump:

@@ -29,10 +29,8 @@ def sort_dict_by_value(inputdict):
     :return:  list of keys sorted by value
     :rtype:  list
     """
-    items = [(v, k) for k, v in inputdict.items()]
-    items.sort()
-    items.reverse()
-    items = [k for v, k in items]
+    items = sorted(inputdict.items(), key=lambda x: x[1], reverse=True)
+    items = [v for v, k in items]
     return items
 
 

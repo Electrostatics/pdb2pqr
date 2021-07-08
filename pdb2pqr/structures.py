@@ -328,7 +328,8 @@ class Atom:
         :rtype:  str
         """
         outstr = self.get_common_string_rep(chainflag=True)
-        outstr += f"{self.occupancy:>6.2f}{self.temp_factor:>6.2f}      {self.seg_id:4.4s}{self.element:>2.2s}{self.charge:2.2s}"
+        outstr += f"{self.occupancy:>6.2f}{self.temp_factor:>6.2f}      "
+        outstr += f"{self.seg_id:4.4s}{self.element:>2.2s}{self.charge:2.2s}"
         return outstr
 
     @property

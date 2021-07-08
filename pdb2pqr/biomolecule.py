@@ -70,7 +70,8 @@ class Biomolecule(object):
                             )[count]
                         except IndexError:
                             raise Exception(
-                                "Too many chains exist in biomolecule. Consider preparing subsets."
+                                "Too many chains exist in biomolecule. "
+                                "Consider preparing subsets."
                             )
 
                 chain_id = record.chain_id

@@ -506,13 +506,14 @@ def setup_logger(output_pqr, level="DEBUG"):
     # Get the output logging location
     output_pth = Path(output_pqr)
     log_file = Path(output_pth.parent, output_pth.stem + ".log")
+    log_format = (
+        "%(asctime)s %(levelname)s:%(filename)s:"
+        "%(lineno)d:%(funcName)s:%(message)s"
+    )
     _LOGGER.info(f"Logs stored: {log_file}")
     logging.basicConfig(
         filename=log_file,
-        format=(
-            "%(asctime)s %(levelname)s:%(filename)s:",
-            "%(lineno)d:%(funcName)s:%(message)s",
-        ),
+        format=log_format,
         level=getattr(logging, level),
     )
     console = logging.StreamHandler()

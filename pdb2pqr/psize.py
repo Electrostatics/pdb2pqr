@@ -24,7 +24,7 @@ FADD = 20.0
 CFAC = 1.7
 #: Desired fine grid spacing (in Angstroms)
 SPACE = 0.50
-#: Approximate memory usage (in bytes) can be estimated by multiplying the 
+#: Approximate memory usage (in bytes) can be estimated by multiplying the
 #: number of grid points by this constant
 GMEMFAC = 200
 #: Maxmimum memory (in MB) to be used for a calculation

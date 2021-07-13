@@ -15,7 +15,5 @@ exclude = '''
     | build
     | dist
   )/
-  | versioneer.py
-  | pdb2pqr/_version.py  # Exclude files from versioneer
 )
 '''

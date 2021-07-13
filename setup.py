@@ -64,6 +64,17 @@ setup(
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
+    extras_require={
+        "dev": ["check-manifest"],
+        "test": [
+            "black",
+            "coverage",
+            "flake8",
+            "pandas >= 1.0",
+            "pytest",
+            "testfixtures",
+        ],
+    },
     tests_require=[
         "pandas >= 1.0",
         "pytest",

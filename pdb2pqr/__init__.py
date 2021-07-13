@@ -8,11 +8,7 @@ For more information, see http://www.poissonboltzmann.org/
 import logging
 from sys import version_info
 from .main import main_driver, build_main_parser
-from ._version import get_versions
-
-
-__version__ = get_versions()["version"]
-del get_versions
+from ._version import __version__  # noqa: F401
 
 
 assert version_info >= (3, 5)

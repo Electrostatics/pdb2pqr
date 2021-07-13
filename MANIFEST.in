@@ -1,4 +1,2 @@
 include README.md
-
-include versioneer.py
-include pdb2pqr/_version.py
+include setup.py setup.cfg

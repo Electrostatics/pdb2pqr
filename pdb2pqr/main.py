@@ -495,7 +495,8 @@ def run_propka(args, biomolecule):
     :type args:  argparse.Namespace
     :param biomolecule:  biomolecule object
     :type biomolecule:  Biomolecule
-    :return:  (DataFrame-convertible table of assigned pKa values, pKa information from PROPKA)
+    :return:  (DataFrame-convertible table of assigned pKa values,
+               pKa information from PROPKA)
     :rtype:  (list, str)
     """
     # TODO - eliminate need to write temporary file

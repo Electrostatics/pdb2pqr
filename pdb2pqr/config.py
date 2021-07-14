@@ -1,8 +1,8 @@
 """Configuration information for PDB2PQR."""
-from . import _version
+from ._version import __version__
 
 #: PDB2PQR version number.
-VERSION = _version.get_versions()["version"]
+VERSION = __version__
 
 
 #: How to format PDB2PQR title in output

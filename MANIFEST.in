@@ -1,4 +1,26 @@
-include README.md
-
-include versioneer.py
-include pdb2pqr/_version.py
+include setup.py setup.cfg
+include *.md
+include *.sh
+include COPYING
+include pdb2pka
+include pytest.ini
+include .pylintrc
+recursive-include docs *.bat
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include examples README
+recursive-include examples *.mol2
+recursive-include examples *.pdb
+recursive-include examples *.sh
+recursive-include tests *.cif
+recursive-include tests *.cube
+recursive-include tests *.dat
+recursive-include tests *.dx
+recursive-include tests *.md
+recursive-include tests *.mol2
+recursive-include tests *.names
+recursive-include tests *.pdb
+recursive-include tests *.pqr
+recursive-include tests *.py
+recursive-include tests *.qcd

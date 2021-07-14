@@ -25,20 +25,25 @@ broaden the accessibility of biomolecular solvation and electrostatics analyses
 to the biomedical community.
 """
 
-import sys
-import setuptools
-import versioneer
+from sys import version_info
+from setuptools import find_packages, setup
 
-if sys.version_info[:2] < (3, 6):
+# NOTE: The following reads the version number and makes
+#       if available to the packaging tools before installation.
+#       REF: https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package  # noqa: E501
+#       This makes __version__ valid below
+with open("pdb2pqr/_version.py") as fobj:
+    exec(fobj.read())
+
+if version_info[:2] < (3, 6):
     raise RuntimeError("Python version >= 3.6 is required.")
 
-with open("README.md", "r") as f:
-    LONG_DESCRIPTION = f.read()
+with open("README.md", "r") as fobj:
+    LONG_DESCRIPTION = fobj.read()
 
-setuptools.setup(
+setup(
     name="pdb2pqr",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version=__version__,  # noqa: F821
     author="Jens Erik Nielsen, Nathan Baker, and many others.",
     author_email="nathanandrewbaker@gmail.com",
     description=(
@@ -48,17 +53,28 @@ setuptools.setup(
     ),
     long_description=LONG_DESCRIPTION,
     install_requires=[
-        "propka >= 3.2",
         "mmcif_pdbx>=1.1.2",
         "numpy",
+        "propka >= 3.2",
         "requests",
     ],
     url="http://www.poissonboltzmann.org",
-    packages=setuptools.find_packages(
+    packages=find_packages(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
     python_requires=">=3.5",
+    extras_require={
+        "dev": ["check-manifest"],
+        "test": [
+            "black",
+            "coverage",
+            "flake8",
+            "pandas >= 1.0",
+            "pytest",
+            "testfixtures",
+        ],
+    },
     tests_require=[
         "pandas >= 1.0",
         "pytest",

@@ -10,16 +10,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import pdb2pqr
-
-
 # -- Project information -----------------------------------------------------
 
 project = "pdb2pqr"
 copyright = "2020, Battelle Memorial Institute"
 author = "Nathan Baker and many others"
-release = pdb2pqr.__version__
-
+release = "3.2.0"
 
 # The full version, including alpha/beta/rc tags
 

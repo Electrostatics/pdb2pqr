@@ -2,16 +2,31 @@
 Release history
 ###############
 
-****************
-Upcoming release
-****************
+******************
+3.2.0 (2021-08-04)
+******************
+
+Additions
+=========
+
+* Added documentation on how to contribute (`#183 <https://github.com/Electrostatics/pdb2pqr/pull/183>`_).
+
+Fixes
+=====
+
+* Fixed problematic ``PotentialBond`` sourcing (`#206 <https://github.com/Electrostatics/pdb2pqr/pull/206>`_).
+* Fixed missing ``HN`` atom in ``CYM`` residue (`#197 <https://github.com/Electrostatics/pdb2pqr/pull/197>`_).
+* Fixed assignment of elements in created atoms (`#195 <https://github.com/Electrostatics/pdb2pqr/pull/195>`_).
+* Fixed double-letter element PDB parsing error (`#194 <https://github.com/Electrostatics/pdb2pqr/pull/194>`_).
+* Fixed broken links in documentation (`#184 <https://github.com/Electrostatics/pdb2pqr/issues/184>`_).
 
 Changes
 =======
 
 * Improved documentation of constants in modules.
-
-* Improved handling of improperly formatted PDB records that are not ``HETATM`` or ``ATOM``.
+* Improved handling of improperly formatted PDB records that are not ``HETATM`` or ``ATOM`` (`#170 <https://github.com/Electrostatics/pdb2pqr/issues/170>`_, `#210 <https://github.com/Electrostatics/pdb2pqr/issues/210>`_).
+* Removed versioneer (`#209 <https://github.com/Electrostatics/pdb2pqr/issues/209>_`)
+* Removed Pandas requirement (`#179 <https://github.com/Electrostatics/pdb2pqr/issues/179>`_)
 
 ******************
 3.1.0 (2020-12-22)

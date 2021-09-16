@@ -3,6 +3,15 @@ Release history
 ###############
 
 ******************
+3.2.2 (2021-09-16)
+******************
+
+Fixes
+=====
+
+* Updated Sphinx configuration to build API source code documentation.
+
+******************
 3.2.0 (2021-08-04)
 ******************
 

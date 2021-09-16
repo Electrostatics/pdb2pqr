@@ -102,7 +102,7 @@ We're now ready to look at the 1HPV crystal structure from above and parameteriz
 
 #. Hit the "Submit" button.
 
-#. Once the calculations are complete, you should see a web page with a link to the new PQR file with a warning about debumping P81 (but no warnings about ligand parameterization!). 
+#. Once the calculations are complete, you should see a web page with a link to the new PQR file with a warning about debumping P81 (but no warnings about ligand parameterization!).
 
 As a second example, we use the PDB structure `1ABF <http://www.rcsb.org/pdb/explore.do?structureId=1abf>`_ of L-arabinose binding protein in complex with a sugar ligand at 1.90 Å resolution.
 To parameterize both this protein and its ligand:
@@ -115,4 +115,4 @@ To parameterize both this protein and its ligand:
 
 #. Hit the "Submit" button.
 
-#. Once the calculations are complete, you should see a web page with a link to the new PQR file with a warning about debumping P66, K295, and K306 (but no warnings about ligand parameterization!). 
+#. Once the calculations are complete, you should see a web page with a link to the new PQR file with a warning about debumping P66, K295, and K306 (but no warnings about ligand parameterization!).

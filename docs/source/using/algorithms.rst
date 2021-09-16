@@ -10,16 +10,16 @@ Unless otherwise instructed with ``--nodebump``, PDB2PQR will attempt to remove 
 
 To determine if a residue needs to be debumped, PDB2PQR compares its atoms to all nearby atoms.
 With the exception of donor/acceptor pairs and CYS residue SS bonded pairs, a residue needs to be debumped if any of its atoms are within cutoff distance of any other atoms.
-The cutoff is 1.0 angstrom for hydrogen/hydrogen collisions, 1.5 angstrom for hydrogen/heavy collisions, and 2.0 angstrom otherwise. 
+The cutoff is 1.0 angstrom for hydrogen/hydrogen collisions, 1.5 angstrom for hydrogen/heavy collisions, and 2.0 angstrom otherwise.
 
 Considering the atoms that are conflicted, PDB2PQR changes selected dihedral angle configurations in increments of 5.0 degrees, looking for positions where the residue does not conflict with other atoms.
 If modifying a dihedral angle does not result in a debumped configuration then the dihedral angle is reset and the next one is tried.
-If 10 angles are tried without success the algorithm reports failure. 
+If 10 angles are tried without success the algorithm reports failure.
 
 .. warning::
 
    It should be noted that this is not an optimal solution.
-   This method is not guaranteed to find a solution if it exists and will accept the first completely debumped state found, not the optimal state. 
+   This method is not guaranteed to find a solution if it exists and will accept the first completely debumped state found, not the optimal state.
 
    Additionally, PDB2PQR does not consider water atoms when looking for conflicts.
 

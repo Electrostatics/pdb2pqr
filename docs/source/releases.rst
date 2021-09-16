@@ -522,7 +522,7 @@ Fixes
 
 * Fixed ``--username`` command line option.
 
-* Fixed ambiguous user created forcefield and name handling. Now ``--username`` is required if ``--userff`` is used. 
+* Fixed ambiguous user created forcefield and name handling. Now ``--username`` is required if ``--userff`` is used.
 
 * Fixed :file:`querystatus.py` not redirecting to generated error page.
 
@@ -568,7 +568,7 @@ Fixes
 
 * Fixed a minor bug: when starting :file:`pka.py` from pdb2pka directory using command like ``python pka.py [options] inputfile``, we need to make sure scriptpath does not end with "/".
 
-* Fixed a bug which caused "coercing to Unicode: need string or buffer, instance found" when submitting PDB2PQR jobs with user-defined force fields on Opal based web server. 
+* Fixed a bug which caused "coercing to Unicode: need string or buffer, instance found" when submitting PDB2PQR jobs with user-defined force fields on Opal based web server.
 
 * Fixed a bug in :file:`main_cgi.py`, now Opal-based PDB2PQR jobs should also be logged in :file:`usage.txt` file.
 
@@ -622,7 +622,7 @@ Fixes
 * Verbosity outputs should be stdouts, not stderrs in web server interface.
   Corrected this in :file:`src/routines.py`.
 
-* Fixed a bug in :file:`psize.py`: for a pqr file with no ATOM entries but only HETATM entries in it, :file:`inputgen.py` should still create an APBS input file with reasonable grid lengths. 
+* Fixed a bug in :file:`psize.py`: for a pqr file with no ATOM entries but only HETATM entries in it, :file:`inputgen.py` should still create an APBS input file with reasonable grid lengths.
 
 * Added special handling for special mol2 formats (unwanted white spaces or blank lines in ATOM or BOND records).
 
@@ -657,7 +657,7 @@ Additions
 * Added radius for Chlorine in ligff.py.
 
 * Added PEOEPB forcefield, data provided by Paul Czodrowski.
-* Updated inputgen.py to write out the electrostatic potential for APBS input file. 
+* Updated inputgen.py to write out the electrostatic potential for APBS input file.
 
 Fixes
 =====
@@ -666,21 +666,21 @@ Fixes
 
 * Fixed a bug in :file:`configure.ac`, so that PDB2PQR no longer checks for :file:`Numpy.pth` at configure stage.
 
-* Updated :file:`pdb2pka/substruct/Makefile.am`. 
+* Updated :file:`pdb2pka/substruct/Makefile.am`.
 
 * Fixed :func:`isBackbone` bug in :file:`definitions.py`.
 
 * Fixed a bug for :class:`Carboxylic` residues in :file:`hydrogens.py`.
 
-* Fixed a bug in :file:`routines.py`, which caused hydrogens added in LEU and ILE in eclipsed conformation rather than staggered. 
+* Fixed a bug in :file:`routines.py`, which caused hydrogens added in LEU and ILE in eclipsed conformation rather than staggered.
 
-* Fixed a bug in :file:`configure.ac`, now it is OK to configure with double slashes in the prefix path, e.g.,  ``--prefix=/foo/bar//another/path`` 
+* Fixed a bug in :file:`configure.ac`, now it is OK to configure with double slashes in the prefix path, e.g.,  ``--prefix=/foo/bar//another/path``
 
-* Fixed a bug in nucleic acid naming scheme. 
+* Fixed a bug in nucleic acid naming scheme.
 
 * Fixed a bug involving MET, GLY as NTERM, CTERM with ``--ffout`` option.
 
-* Fixed a bug for PRO as C-terminus with PARSE forcefield. 
+* Fixed a bug for PRO as C-terminus with PARSE forcefield.
 
 * Fixed a bug for ND1 in HIS as hacceptor.
 
@@ -701,7 +701,7 @@ Changes
 
 * Allowed amino acid chains with only one residue, using ``--assign-only`` option.
 
-* Updated :file:`server.py.in` so that the ligand option is also recorded in :file:`usage.txt`. 
+* Updated :file:`server.py.in` so that the ligand option is also recorded in :file:`usage.txt`.
 
 * Updated HE21, HE22 coordinates in GLN according to the results from AMBER Leap program.
 
@@ -709,16 +709,16 @@ Changes
 
 * Updated :file:`configure.ac`, :file:`pdb2pqr-opal.py`; added :file:`AppService_client.py` and :file:`AppService_types.py` with Samir Unni's changes, which fixed earlier problems in invoking Opal services.
 
-* Applied two patches from Manuel Prinz to :file:`pdb2pka/pMC_mult.h` and :file:`pdb2pka/ligand_topology.py`. 
+* Applied two patches from Manuel Prinz to :file:`pdb2pka/pMC_mult.h` and :file:`pdb2pka/ligand_topology.py`.
 
-* Updated :file:`PARSE.DAT:file:` with the source of parameters. 
+* Updated :file:`PARSE.DAT:file:` with the source of parameters.
 
 * Created a :file:`contrib` folder with :mod:`numpy-1.1.0` package.
   PDB2PQR will install numpy by default unless any of the following conditions is met:
 
   * Working version of NumPy dectected by autoconf.
   * User requests no installation with ``--disable-pdb2pka`` option.
-  * User specifies external NumPy installation.  
+  * User specifies external NumPy installation
 
 * Merged Samir Unni's branch.
   Now PDB2PQR Opal and APBS Opal services are available (through ``--with-opal`` and/or ``--with-apbs``, ``--with-apbs-opal`` options at configure stage).
@@ -733,7 +733,7 @@ Changes
 
 * Updated :file:`na.py` and :file:`PATCHES.xml` so that PDB2PQR handles three lettered RNA residue names (ADE, CYT, GUA, THY, and URA) as well.
 
-* Updated NA.xml with HO2' added as an alternative name for H2'', and H5" added as an alternative name for H5''. 
+* Updated NA.xml with HO2' added as an alternative name for H2'', and H5" added as an alternative name for H5''.
 
 * Updated version numbers in html/ and doc/pydoc/ .
 
@@ -795,7 +795,7 @@ Changes
 
 * :makevar:`SRCPATH` is automatically set to the current working directory.
   :makevar:`WEBSITE` is automatically set to http://fully_qualified_domain_name/pdb2pqr.
-  Path to CGI is automcailly set to http://fully_qualified_domain_name/pdb2pqr/pdb2pqr.cgi.  
+  Path to CGI is automcailly set to http://fully_qualified_domain_name/pdb2pqr/pdb2pqr.cgi.
 
 * In version 1.2.1, there were 3 variables that needed to be changed to set up a server at a location different from agave.wustl.edu.
   :makevar:`LOCALPATH`, :makevar:`WEBSITE`, and the location of the CGI file.
@@ -812,23 +812,23 @@ Changes
 * :file:`configure` now automatically copies :file:`pdb2pqr.py` to :file:`pdb2pqr.cgi`.
 
 * :file:`configure` now automatically copies :file:`html/server.html` to :file:`index.html` after variable substitution.
-  In :file:`src/server.py.in` (:file:`src/server.py`), :makevar:`WEBNAME` is changed to :file:`index.html`. 
+  In :file:`src/server.py.in` (:file:`src/server.py`), :makevar:`WEBNAME` is changed to :file:`index.html`.
 
 * :file:`${HOME}/pdb2pqr` is the default prefix for a regular user
 
 * :file:`/var/www/html` is the default prefix for root
 
-* http://FQDN/pdb2pqr as default website.  
+* http://FQDN/pdb2pqr as default website.
 
 * ``make install`` runs ``make`` first, and the copies the approprite files to ``--prefix``.
 
-* If root did not specify ``--prefix`` and :file:`/var/www/html/pdb2pqr` already exists, then a warning is issued, and the user may choose to quit or overwrite that directory.  
+* If root did not specify ``--prefix`` and :file:`/var/www/html/pdb2pqr` already exists, then a warning is issued, and the user may choose to quit or overwrite that directory.
 
-* Similary, if a regular user did not specify ``--prefix`` and :file:`${HOME}/pdb2pqr` already exists, then a warning is issued, and the user may choose to quit or overwrite that directory. 
+* Similary, if a regular user did not specify ``--prefix`` and :file:`${HOME}/pdb2pqr` already exists, then a warning is issued, and the user may choose to quit or overwrite that directory.
 
 * If root does not specify ``--prefix`` to be a directory to be inside :file:`/var/www/html` (for example, ``--prefix=/share/apps/pdb2pqr``), then a symbolic link will be made to :file:`/var/www/html/pdb2pqr` during ``make install``.
 
-* :file:`configure` option ``--with-url`` can be specified either as something like http://sandstone.ucsd.edu/pdb2pqr-test or sandstone.ucsd.edu/pdb2pqr-test. 
+* :file:`configure` option ``--with-url`` can be specified either as something like http://sandstone.ucsd.edu/pdb2pqr-test or sandstone.ucsd.edu/pdb2pqr-test.
   It also doesn't matter if there's a '/' at the end.
 
 * If user is root, and the last part of URL and prefix are different, for example, ``--with-url=athena.nbcr.net/test0 --prefix=/var/www/html/pdb2pqr-test``, then a warning will be issued saying the server will be viewable from the URL specified, but not the URL based on pdb2pqr-test.
@@ -856,7 +856,7 @@ Additions
 * Added ligand examples to examples/ directory
 
 * Added native support for the TYL06 forcefield.
-  For more information on this forcefield please see Tan C, Yang L, Luo R.  How well does Poisson-Boltzmann implicit solvent agree with explicit solvent? A quantitative analysis. Journal of Physical Chemistry B.  110 (37), 18680-7, 2006. 
+  For more information on this forcefield please see Tan C, Yang L, Luo R.  How well does Poisson-Boltzmann implicit solvent agree with explicit solvent? A quantitative analysis. Journal of Physical Chemistry B.  110 (37), 18680-7, 2006.
 
 * Added a new HTML output page which relays the different atom types between the AMBER and CHARMM forcefields for a generated PQR file (thanks to the anonymous reviewers of the latest PDB2PQR paper).
 
@@ -894,7 +894,7 @@ Fixes
 * Fixed charge assignment error when dealing with LYN in AMBER.
 
 * Fixed crash when a chain has a single amino acid residue.
-  The code now reports the offending chain and residue before exiting. 
+  The code now reports the offending chain and residue before exiting.
 
 * Fixed hydrogen optimization bug where waters with no nearby atoms at certain orientations caused missing hydrogens.
 
@@ -927,7 +927,7 @@ Fixes
 
 * Fixed a bug which prevented PDB2PQR from recognizing atoms from nucleic acids with "*" in their atom names. (thanks to Jaichen Wang)
 
-* Fixed a bug in the hydrogen bonding routines where a misnamed object led to a crash for very specific cases. (thanks to Josh Swamidass) 
+* Fixed a bug in the hydrogen bonding routines where a misnamed object led to a crash for very specific cases. (thanks to Josh Swamidass)
 
 ***************
 1.1.0 (2006-04)
@@ -947,7 +947,7 @@ Additions
 
 Fixes
 =====
-* Updated :file:`psize.py` to use centers and radii when calculating grid sizes (thanks to John Mongan) 
+* Updated :file:`psize.py` to use centers and radii when calculating grid sizes (thanks to John Mongan)
 
 * Fixed bug where PDB2PQR could not read PropKa results from chains with more than 1000 residues (thanks to Michael Widmann)
 
@@ -985,14 +985,14 @@ Additions
 
 * Added ability for users to add their own forcefield files.  This should be particularly useful for HETATMs.
 
-* Added :makevar:`sdens` keyword to :file:`inputgen.py` to make PDB2PQR compatibile with APBS 0.4.0. 
+* Added :makevar:`sdens` keyword to :file:`inputgen.py` to make PDB2PQR compatibile with APBS 0.4.0.
 
 * Added a new examples directory with a basic runthrough on how to use the various features in PDB2PQR.
 
 Fixes
 =====
 
-* Fixed a bug that was unable to handle N-Terminal PRO residues with hydrogens already present. 
+* Fixed a bug that was unable to handle N-Terminal PRO residues with hydrogens already present.
 
 * Fixed two instances in the PropKa routines where warnings were improperly handled due to a misspelling.
 
@@ -1022,4 +1022,3 @@ There are several changes to the various "non-official" versions previously avai
 * SourceForge has been chosen as a centralized location for all things related to PDB2PQR, including downloads, mailing lists, and bug reports.
 
 * Several additions to the code have been made, including pKa support via PropKa, a new hydrogen optimization algorithm which should increase both accuracy and speed, and general bug fixes.
-

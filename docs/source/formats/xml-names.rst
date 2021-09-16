@@ -16,7 +16,7 @@ In this file you will see sections like:</p>
 
    <residue>
      <name>WAT</name>
-     <useresname>TP3M</useresname> 
+     <useresname>TP3M</useresname>
      <atom>
        <name>O</name>
        <useatomname>OH2</useatomname>
@@ -58,7 +58,7 @@ This section replaces HIP/HID/HIE with HSP/HSD/HSE by first matching the HI([PDE
 Second, sections are cumulative - since CHARMM, for instance, has a patch-based naming scheme, one single canonical residue name can map to multiple forcefield-scheme names. Let's look at how to map an SS-bonded Cysteine (canonical name CYX) to the CHARMM naming scheme:
 
 .. code-block:: xml
-   
+
    <residue>
      <name>CYX</name>
      <useresname>CYS</useresname>

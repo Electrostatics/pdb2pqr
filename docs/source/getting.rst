@@ -40,7 +40,7 @@ You can also download the source code from `GitHub <https://github.com/Electrost
 
    pip install .
 
-from the top-level of the source code directory. 
+from the top-level of the source code directory.
 Note that developers may want to install the code in "editable" mode with
 
 .. code-block:: bash

@@ -9,15 +9,24 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+#
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("../.."))
+
+import pdb2pqr  # noqa: E402
+
 
 # -- Project information -----------------------------------------------------
 
 project = "pdb2pqr"
-copyright = "2020, Battelle Memorial Institute"
+copyright = "2021, Battelle Memorial Institute"
 author = "Nathan Baker and many others"
-release = "3.2.0"
 
 # The full version, including alpha/beta/rc tags
+release = pdb2pqr._version.__version__
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -41,9 +50,8 @@ autodoc_default_options = {"special-members": "__init__"}
 todo_include_todos = True
 todo_emit_warnings = False
 show_authors = True
-
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates']
+templates_path = ["_templates"]
 master_doc = "index"
 
 # List of patterns, relative to source directory, that match files and
@@ -62,7 +70,6 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
-
+html_static_path = ["_static"]
 # Enable intersphinx mapping
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}

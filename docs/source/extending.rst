@@ -37,7 +37,7 @@ Please be sure to run PDB2PQR tests, as described in :ref:`testing-label`, befor
 Helping with to-do items
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-A list of "to-do" items for the code is available in `GitHub Issues <https://github.com/Electrostatics/pdb2pqr/issues>`_. 
+A list of "to-do" items for the code is available in `GitHub Issues <https://github.com/Electrostatics/pdb2pqr/issues>`_.
 A loosely maintained list auto-generated from the documentation is also presented below.
 
 .. todolist::

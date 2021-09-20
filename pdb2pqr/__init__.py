@@ -7,7 +7,7 @@ For more information, see http://www.poissonboltzmann.org/
 """
 import logging
 from sys import version_info
-from .main import main_driver, build_main_parser
+from .main import main
 from ._version import __version__  # noqa: F401
 
 
@@ -19,6 +19,4 @@ logging.captureWarnings(True)
 
 
 if __name__ == "__main__":
-    PARSER = build_main_parser()
-    ARGS = PARSER.parse_args()
-    _ = main_driver(ARGS)
+    main()

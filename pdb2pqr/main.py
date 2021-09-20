@@ -809,9 +809,8 @@ def main():
     """Hook for command-line usage."""
     parser = build_main_parser()
     args = parser.parse_args()
-    _ = main_driver(args)
-    if _ == 1:
-        sys.exit(_)
+    if main_driver(args) == 1:
+        sys.exit(1)
 
 
 def dx_to_cube():

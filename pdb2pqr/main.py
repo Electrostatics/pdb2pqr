@@ -8,6 +8,7 @@ It was created to avoid cluttering the __init__.py file.
 """
 import logging
 import argparse
+import sys
 from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 from pathlib import Path
@@ -781,7 +782,7 @@ def main_driver(args):
         except ValueError as err:
             _LOGGER.critical(err)
             _LOGGER.critical("Giving up.")
-            return
+            return 1
     print_pqr(
         args=args,
         pqr_lines=results["lines"],
@@ -809,6 +810,8 @@ def main():
     parser = build_main_parser()
     args = parser.parse_args()
     _ = main_driver(args)
+    if _ == 1:
+        sys.exit(_)
 
 
 def dx_to_cube():

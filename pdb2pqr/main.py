@@ -48,6 +48,7 @@ def build_main_parser():
     """
     desc = TITLE_STR
     pars = argparse.ArgumentParser(
+        prog="pdb2pqr",
         description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         conflict_handler="resolve",

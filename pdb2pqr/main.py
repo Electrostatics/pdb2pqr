@@ -50,6 +50,7 @@ def build_main_parser():
     pars = argparse.ArgumentParser(
         description=desc,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        conflict_handler="resolve",
     )
     pars.add_argument(
         "input_path",
@@ -222,6 +223,12 @@ def build_main_parser():
         ),
     )
     pars = propka.lib.build_parser(pars)
+
+    # Override version flag set by PROPKA
+    pars.add_argument(
+        "--version", action="version", version=f"%(prog)s {VERSION}"
+    )
+
     return pars
 
 

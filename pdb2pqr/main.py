@@ -380,7 +380,7 @@ def transform_arguments(args):
         args.debump = False
         args.opt = False
     if args.userff is not None:
-        args.userff = args.userff.lower()
+        args.userff = args.userff
     elif args.ff is not None:
         args.ff = args.ff.lower()
     if args.ffout is not None:

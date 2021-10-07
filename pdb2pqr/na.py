@@ -252,4 +252,4 @@ class URA(Nucleic):
         Nucleic.set_state(self)
 
 
-RA = URA
+RU = URA

@@ -380,7 +380,7 @@ def transform_arguments(args):
         args.debump = False
         args.opt = False
     if args.userff is not None:
-        args.userff = args.userff.lower()
+        args.userff = args.userff
     elif args.ff is not None:
         args.ff = args.ff.lower()
     if args.ffout is not None:
@@ -685,15 +685,15 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     _LOGGER.warning(err)
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
-    for residue in biomolecule.residues:
-        if not isclose(
-            residue.charge, int(residue.charge), abs_tol=CHARGE_ERROR
-        ):
-            err = (
-                f"Residue {residue.name} {residue.res_seq} charge is "
-                f"non-integer: {residue.charge}"
-            )
-            raise ValueError(err)
+    total_charge = sum([residue.charge for residue in biomolecule.residues])
+    if not isclose(
+        total_charge, int(total_charge), abs_tol=CHARGE_ERROR
+    ):
+        err = (
+            f"Biomolecue charge is "
+            f"non-integer: {total_charge}"
+        )
+        raise ValueError(err)
     if args.ffout is not None:
         _LOGGER.info(f"Applying custom naming scheme ({args.ffout}).")
         if args.ffout != args.ff:

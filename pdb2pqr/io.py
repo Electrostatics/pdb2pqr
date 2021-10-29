@@ -457,6 +457,7 @@ def get_molecule(input_path):
         is_cif = True
     else:
         pdblist, errlist = pdb.read_pdb(input_file)
+    input_file.close()
     if len(pdblist) == 0 and len(errlist) == 0:
         raise RuntimeError(f"Unable to find file {path}!")
     if len(errlist) != 0:

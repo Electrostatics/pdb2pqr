@@ -348,8 +348,9 @@ class Biomolecule(object):
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
+
             reskey = (residue.res_seq, residue.chain_id, residue.ins_code)
-            if reskey in hlist:
+            if hlist is not None and reskey in hlist:
                 continue
 
             for atomname in residue.reference.map:

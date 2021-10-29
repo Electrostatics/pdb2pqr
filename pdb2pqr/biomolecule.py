@@ -335,7 +335,7 @@ class Biomolecule(object):
             if isinstance(residue, (aa.Amino, na.Nucleic)):
                 residue.set_state()
 
-    def add_hydrogens(self):
+    def add_hydrogens(self, hlist=None):
         """Add the hydrogens to the biomolecule.
 
         This requires either the rebuild_tetrahedral function for tetrahedral
@@ -348,6 +348,11 @@ class Biomolecule(object):
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
+
+            reskey = (residue.res_seq, residue.chain_id, residue.ins_code)
+            if hlist is not None and reskey in hlist:
+                continue
+
             for atomname in residue.reference.map:
                 if not atomname.startswith("H"):
                     continue

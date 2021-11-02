@@ -566,10 +566,12 @@ class HIS(Amino):
         elif self.has_atom("HE2"):
             self.ffname = "HIE"
         else:
-            errstr = f"Invalid type for {str(self)}! Missing both HD1 and HE2 "
-            "atoms. If you receive this error while using the --assign-only "
-            "option you can only resolve it by adding HD1, HE2 or both to "
-            "this residue."
+            errstr = (
+                f"Invalid type for {str(self)}! Missing both HD1 and HE2 "
+                "atoms. If you receive this error while using the "
+                "--assign-only option you can only resolve it by adding HD1, "
+                "HE2 or both to this residue."
+            )
             raise TypeError(errstr)
         Amino.set_state(self)
 

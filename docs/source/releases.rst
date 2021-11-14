@@ -3,6 +3,25 @@ Release history
 ###############
 
 ******************
+3.3.0 (2021-11-13)
+******************
+
+Fixes
+=====
+
+* Fix bug on multi-line error string output (`#241 <https://github.com/Electrostatics/pdb2pqr/pull/241>`_).
+* Close dangling file object (`#239 <https://github.com/Electrostatics/pdb2pqr/pull/239>`_).
+* Check for integer charge over entire molecule rather than individual residues.  Some nucleic acid forcefields have fractional charges--that balance--at the terminii (`#234 <https://github.com/Electrostatics/pdb2pqr/pull/234>`_).
+* Fix typographical error that affects RNA loading (`#232 <https://github.com/Electrostatics/pdb2pqr/pull/232>`_).
+* Ensure that ``--version`` returns PDB2PQR version rather than PROPKA version (`#231 <https://github.com/Electrostatics/pdb2pqr/pull/231>`_).
+
+Changes
+=======
+
+* Allow users to disable protonation changes for some residues (`#238 <https://github.com/Electrostatics/pdb2pqr/pull/238>`_).
+* Return error code on critical error (`#227 <https://github.com/Electrostatics/pdb2pqr/pull/227>`_).
+
+******************
 3.2.2 (2021-09-16)
 ******************
 

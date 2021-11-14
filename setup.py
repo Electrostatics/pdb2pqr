@@ -57,6 +57,7 @@ setup(
         "numpy",
         "propka >= 3.2",
         "requests",
+        "docutils < 0.18"
     ],
     url="http://www.poissonboltzmann.org",
     packages=find_packages(

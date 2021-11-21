@@ -822,7 +822,7 @@ class Biomolecule(object):
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-CTERM", residue)
-            key = f"{resname:<3} {resnum:>3} {chain_id}"
+            key = f"{resname} {resnum} {chain_id}"
             key = key.strip()
             if key in pkadic:
                 value = pkadic[key]

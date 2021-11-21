@@ -2,6 +2,15 @@
 Release history
 ###############
 
+***************
+Current version
+***************
+
+Fixes
+=====
+
+* Fix bug for application of pKa predictions to proteins with more than 999 residues (`#250 <https://github.com/Electrostatics/pdb2pqr/issues/250>`_).
+
 ******************
 3.3.1 (2021-11-13)
 ******************

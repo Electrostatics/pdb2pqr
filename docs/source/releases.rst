@@ -3,6 +3,15 @@ Release history
 ###############
 
 ******************
+3.3.3 (2021-11-24)
+******************
+
+Fixes
+=====
+
+* Fix bug for calculating grid lengths (`#254 <https://github.com/Electrostatics/pdb2pqr/issues/254>`_).
+
+******************
 3.3.2 (2021-11-21)
 ******************
 

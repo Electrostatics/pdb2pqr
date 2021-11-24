@@ -127,48 +127,21 @@ class Psize:
         """
         for line in lines:
             if line.find("ATOM") == 0:
-                subline = line[30:].replace("-", " -")
-                words = subline.split()
-                if len(words) < 5:
-                    continue
                 self.gotatom += 1
-                self.charge = self.charge + float(words[3])
-                rad = float(words[4])
-                center = [float(word) for word in words[0:3]]
-                for i in range(3):
-                    if (
-                        self.minlen[i] is None
-                        or center[i] - rad < self.minlen[i]
-                    ):
-                        self.minlen[i] = center[i] - rad
-                    if (
-                        self.maxlen[i] is None
-                        or center[i] + rad > self.maxlen[i]
-                    ):
-                        self.maxlen[i] = center[i] + rad
             elif line.find("HETATM") == 0:
                 self.gothet = self.gothet + 1
-                # Special handling for no ATOM entries in the pqr file, only
-                # HETATM entries
-                if self.gotatom == 0:
-                    subline = line[30:].replace("-", " -")
-                    words = subline.split()
-                    if len(words) < 5:
-                        continue
-                    self.charge = self.charge + float(words[3])
-                    rad = float(words[4])
-                    center = [float(word) for word in words[0:3]]
-                    for i in range(3):
-                        if (
-                            self.minlen[i] is None
-                            or center[i] - rad < self.minlen[i]
-                        ):
-                            self.minlen[i] = center[i] - rad
-                        if (
-                            self.maxlen[i] is None
-                            or center[i] + rad > self.maxlen[i]
-                        ):
-                            self.maxlen[i] = center[i] + rad
+            subline = line[30:].replace("-", " -")
+            words = subline.split()
+            if len(words) < 5:
+                continue
+            self.charge = self.charge + float(words[3])
+            rad = float(words[4])
+            center = [float(word) for word in words[0:3]]
+            for i in range(3):
+                if self.minlen[i] is None or center[i] - rad < self.minlen[i]:
+                    self.minlen[i] = center[i] - rad
+                if self.maxlen[i] is None or center[i] + rad > self.maxlen[i]:
+                    self.maxlen[i] = center[i] + rad
 
     def set_length(self, maxlen, minlen):
         """Compute molecular dimensions, adjusting for zero-length values.

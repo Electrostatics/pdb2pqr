@@ -637,7 +637,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
-                {f"{row['res_name']} {row['res_num']} {row['chain_id']}": row["pKa"] for row in pka_df},
+                {f"{row['res_name']} {row['res_num']} {row['chain_id']}": row["pKa"] for row in pka_df if row["group_label"].startswith(row["res_name"])},
             )
 
         _LOGGER.info("Adding hydrogens to biomolecule.")

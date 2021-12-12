@@ -3,6 +3,15 @@ Release history
 ###############
 
 ******************
+3.4.0 (2021-12-11)
+******************
+
+Fixes
+=====
+
+* Fix bug for wrong pKas assigned to terminal residues (`#245 <https://github.com/Electrostatics/pdb2pqr/pull/245>`_)
+
+******************
 3.3.3 (2021-11-24)
 ******************
 

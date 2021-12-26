@@ -2,6 +2,15 @@
 Release history
 ###############
 
+***************
+Current version
+***************
+
+Fixes
+=====
+
+* Fix bug for incorrect assignment of ASN HD21 and HD22 (`#242 <https://github.com/Electrostatics/pdb2pqr/issues/242>`_)
+
 ******************
 3.4.0 (2021-12-11)
 ******************

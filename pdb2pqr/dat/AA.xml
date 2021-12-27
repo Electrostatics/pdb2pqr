@@ -437,16 +437,16 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <bond>CB</bond>
     </atom>
     <atom>
-      <name>HD21</name>
-      <altname>1HD2</altname>
+      <name>HD22</name>
+      <altname>2HD2</altname>
       <x>0.657</x>
       <y>-2.905</y>
       <z>2.741</z>
       <bond>ND2</bond>
     </atom>
     <atom>
-      <name>HD22</name>
-      <altname>2HD2</altname>
+      <name>HD21</name>
+      <altname>1HD2</altname>
       <x>2.108</x>
       <y>-3.514</y>
       <z>2.018</z>

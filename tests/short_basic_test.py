@@ -45,6 +45,19 @@ def test_basic_cif(input_pdb, tmp_path):
     )
 
 
+@pytest.mark.parametrize("input_pdb", ["4E8M"], ids=str)
+def test_nucleic_only(input_pdb, tmp_path):
+    """Non-regression tests on structures that contain only nucleic acids."""
+    args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr(
+        args=args,
+        input_pdb=input_pdb,
+        output_pqr=output_pqr,
+        tmp_path=tmp_path,
+    )
+
+
 @pytest.mark.parametrize("input_pdb", ["1EJG", "3U7T"], ids=str)
 @pytest.mark.xfail
 def test_broken_backbone(input_pdb, tmp_path):

@@ -790,7 +790,7 @@ def main_driver(args):
         except ValueError as err:
             _LOGGER.critical(err)
             _LOGGER.critical("Giving up.")
-            return 1
+            raise RuntimeError from err
     print_pqr(
         args=args,
         pqr_lines=results["lines"],

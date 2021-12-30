@@ -686,12 +686,11 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
     total_charge = sum([residue.charge for residue in biomolecule.residues])
-    if not isclose(
-        total_charge, int(total_charge), abs_tol=CHARGE_ERROR
-    ):
+    charge_diff = abs(total_charge - round(total_charge))
+    if charge_diff > CHARGE_ERROR:
         err = (
-            f"Biomolecue charge is "
-            f"non-integer: {total_charge}"
+            f"Biomolecule charge is non-integer: {total_charge} "
+            f"({charge_diff} exceeds limit {CHARGE_ERROR}"
         )
         raise ValueError(err)
     if args.ffout is not None:

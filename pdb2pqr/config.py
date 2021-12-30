@@ -87,6 +87,9 @@ NA_NAMES = [
     "DT",
 ]
 
+#: Rename RNA residues to match PDB nomenclature (https://pdb101.rcsb.org/learn/guide-to-understanding-pdb-data/primary-sequences-and-the-pdb-format)
+RNA_MAPPING = {"A": "RA", "C": "RC", "G": "RG", "U": "RU"}
+
 #: Standard backbone atom names
 BACKBONE = ["N", "CA", "C", "O", "O2", "HA", "HN", "H", "tN"]
 

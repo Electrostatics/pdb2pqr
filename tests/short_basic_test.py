@@ -45,7 +45,13 @@ def test_basic_cif(input_pdb, tmp_path):
     )
 
 
-@pytest.mark.parametrize("input_pdb", ["1NAJ", "4E8M"], ids=str)
+# 1NAJ:  DNA without ANISOU records
+# 7BNA:  DNA with ANISOU records
+# 5V0O:  RNA without ANISOU records
+# 4E8M:  RNA with ANISOU records
+@pytest.mark.parametrize(
+    "input_pdb", ["1NAJ", "7BNA", "5V0O", "4E8M"], ids=str
+)
 def test_nucleic_only(input_pdb, tmp_path):
     """Non-regression tests on structures that contain only nucleic acids."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"

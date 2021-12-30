@@ -101,6 +101,7 @@ FILTER_WARNINGS = [
     "Skipped atom during water optimization",
     "The best donorH was not picked",
     "Multiple occupancies found",
+    "Tetrahedral hydrogen reconstruction"
 ]
 
 #: Number of times warning string is printed before supressing further output

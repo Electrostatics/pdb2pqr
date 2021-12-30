@@ -345,6 +345,7 @@ class Biomolecule(object):
         available.
         """
         count = 0
+        warn_tetrahedral = False
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
@@ -369,11 +370,13 @@ class Biomolecule(object):
                         count += 1
                         continue
                 else:
-                    _LOGGER.warning(
-                        "Tetrahedral hydrogen reconstruction not available "
-                        "for nucleic acids. Some hydrogens may be missing (if "
-                        "so, this is a bug)."
-                    )
+                    if not warn_tetrahedral:
+                        _LOGGER.warning(
+                            "Tetrahedral hydrogen reconstruction not "
+                            "available for nucleic acids. Some hydrogens may "
+                            "be missing (if " "so, this is a bug)."
+                        )
+                    warn_tetrahedral = True
                 # Otherwise use the standard quatfit methods
                 coords = []
                 refcoords = []

@@ -11,6 +11,7 @@ import string
 from . import residue as residue_
 from . import aa
 from . import na
+from . import io
 from . import utilities as util
 from . import structures as struct
 from . import pdb
@@ -20,6 +21,7 @@ from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, RNA_MAPPING
 
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.addFilter(io.DuplicateFilter())
 
 
 class Biomolecule(object):

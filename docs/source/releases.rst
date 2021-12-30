@@ -11,6 +11,11 @@ Fixes
 
 * Address problem where critical failures are missed in testing (`#262 <https://github.com/Electrostatics/pdb2pqr/issues/262>`_).  This doesn't represent a change to the (documented) API but will change functionality for external code that isn't ready to handle the raised error.
 
+Changes
+=======
+
+* Supress excessive "Tetrahedral hydrogen reconstruction not available for nucleic acids" warnings (`#253 <https://github.com/Electrostatics/pdb2pqr/issues/253>_`).
+
 ******************
 3.4.1 (2021-12-27)
 ******************

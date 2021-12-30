@@ -16,7 +16,7 @@ from . import structures as struct
 from . import pdb
 from . import forcefield
 from . import quatfit as quat
-from .config import AA_NAMES, NA_NAMES, BONDED_SS_LIMIT, PEPTIDE_DIST
+from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, RNA_MAPPING
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -175,7 +175,6 @@ class Biomolecule(object):
         natom = 0
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
-                print(f"FOUND random thing {residue}!")
                 continue
             for refatomname in residue.reference.map:
                 if refatomname.startswith("H"):
@@ -346,7 +345,6 @@ class Biomolecule(object):
         available.
         """
         count = 0
-        warn_tetrahedral = False
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
                 continue
@@ -371,13 +369,11 @@ class Biomolecule(object):
                         count += 1
                         continue
                 else:
-                    if not warn_tetrahedral:
-                        _LOGGER.warning(
-                            "Tetrahedral hydrogen reconstruction not "
-                            "available for nucleic acids. Some hydrogens may "
-                            "be missing (if so, this is a bug)."
-                        )
-                    warn_tetrahedral = True
+                    _LOGGER.warning(
+                        "Tetrahedral hydrogen reconstruction not available "
+                        "for nucleic acids. Some hydrogens may be missing "
+                        "(if so, this is a bug)."
+                    )
                 # Otherwise use the standard quatfit methods
                 coords = []
                 refcoords = []
@@ -713,7 +709,6 @@ class Biomolecule(object):
         for residue in self.residues:
             if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 resname = residue.ffname
-                print(resname)
             else:
                 resname = residue.name
             for atom in residue.atoms:
@@ -943,9 +938,10 @@ class Biomolecule(object):
         :return:  the residue object
         :rtype:  Residue
         """
+        if (resname not in self.definition.map) and (resname in RNA_MAPPING):
+            resname = RNA_MAPPING[resname]
         try:
             refobj = self.definition.map[resname]
-            print(f"resname = {resname}, refobj.name = {refobj.name}.")
             if refobj.name != resname:
                 try:
                     klass = getattr(aa, refobj.name)
@@ -954,15 +950,17 @@ class Biomolecule(object):
                 residue = klass(residue, refobj)
                 residue.reference = refobj
             else:
-                print(f"Trying to create residue with name {resname}.")
                 try:
                     klass = getattr(aa, resname)
                 except AttributeError:
                     klass = getattr(na, resname)
                 residue = klass(residue, refobj)
+            residue.rename_residue(resname)
         except (KeyError, NameError):
-            print(f"Got KeyError for {resname}.")
-            _LOGGER.debug(f"Parsing {resname} as new residue")
+            warn(
+                f"Unable to find amino or nucleic acid definition "
+                f"for {resname}.  Parsing as new residue."
+            )
             residue = residue_.Residue(residue)
         return residue
 

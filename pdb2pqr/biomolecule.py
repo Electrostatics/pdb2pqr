@@ -17,7 +17,7 @@ from . import structures as struct
 from . import pdb
 from . import forcefield
 from . import quatfit as quat
-from .config import AA_NAMES, NA_NAMES, BONDED_SS_LIMIT, PEPTIDE_DIST
+from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, RNA_MAPPING
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -148,6 +148,8 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
+                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
+                # terms.  Why not just use those?
                 if (
                     refatomname in ["O1P", "O2P"]
                     and residue.has_atom("OP1")
@@ -183,6 +185,8 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
+                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
+                # terms.  Why not just use those?
                 if (
                     refatomname in ["O1P", "O2P"]
                     and residue.has_atom("OP1")
@@ -373,8 +377,8 @@ class Biomolecule(object):
                 else:
                     _LOGGER.warning(
                         "Tetrahedral hydrogen reconstruction not available "
-                        "for nucleic acids. Some hydrogens may be missing (if "
-                        "so, this is a bug)."
+                        "for nucleic acids. Some hydrogens may be missing "
+                        "(if so, this is a bug)."
                     )
                 # Otherwise use the standard quatfit methods
                 coords = []
@@ -697,24 +701,6 @@ class Biomolecule(object):
             elif numpartners == 0:
                 _LOGGER.debug(f"{res1} is a free cysteine")
 
-    def update_residue_types(self):
-        """Find the type of residue as notated in the Amino Acid definition.
-
-        .. todo::
-           Why are we setting residue types to numeric values (see code)?
-        """
-        for chain in self.chains:
-            for residue in chain.residues:
-                name = residue.name
-                if name in AA_NAMES:
-                    residue.type = 1
-                elif name == "WAT":
-                    residue.type = 3
-                elif name in NA_NAMES:
-                    residue.type = 4
-                else:  # Residue is a ligand or unknown
-                    residue.type = 2
-
     def apply_force_field(self, forcefield_):
         """Apply the forcefield to the atoms within the biomolecule.
 
@@ -958,6 +944,8 @@ class Biomolecule(object):
         :return:  the residue object
         :rtype:  Residue
         """
+        if (resname not in self.definition.map) and (resname in RNA_MAPPING):
+            resname = RNA_MAPPING[resname]
         try:
             refobj = self.definition.map[resname]
             if refobj.name != resname:
@@ -973,8 +961,12 @@ class Biomolecule(object):
                 except AttributeError:
                     klass = getattr(na, resname)
                 residue = klass(residue, refobj)
+            residue.rename_residue(resname)
         except (KeyError, NameError):
-            _LOGGER.debug(f"Parsing {resname} as new residue")
+            _LOGGER.warning(
+                f"Unable to find amino or nucleic acid definition "
+                f"for {resname}.  Parsing as new residue."
+            )
             residue = residue_.Residue(residue)
         return residue
 
@@ -998,6 +990,8 @@ class Biomolecule(object):
             atomlist = list(residue.atoms)
             for atom in atomlist:
                 atomname = atom.name
+                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
+                # terms.  Why not just use those?
                 if (
                     atomname in ["OP1", "OP2"]
                     and residue.reference.has_atom("O1P")

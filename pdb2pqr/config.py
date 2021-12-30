@@ -87,6 +87,9 @@ NA_NAMES = [
     "DT",
 ]
 
+#: Rename RNA residues to match PDB nomenclature (https://pdb101.rcsb.org/learn/guide-to-understanding-pdb-data/primary-sequences-and-the-pdb-format)
+RNA_MAPPING = {"A": "RA", "C": "RC", "G": "RG", "U": "RU"}
+
 #: Standard backbone atom names
 BACKBONE = ["N", "CA", "C", "O", "O2", "HA", "HN", "H", "tN"]
 
@@ -101,7 +104,8 @@ FILTER_WARNINGS = [
     "Skipped atom during water optimization",
     "The best donorH was not picked",
     "Multiple occupancies found",
-    "Tetrahedral hydrogen reconstruction"
+    "Tetrahedral hydrogen reconstruction",
+    "Unable to find amino or nucleic acid definition for"
 ]
 
 #: Number of times warning string is printed before supressing further output

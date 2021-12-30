@@ -375,11 +375,7 @@ class Biomolecule(object):
                         _LOGGER.warning(
                             "Tetrahedral hydrogen reconstruction not "
                             "available for nucleic acids. Some hydrogens may "
-<<<<<<< Updated upstream
-                            "be missing (if " "so, this is a bug)."
-=======
                             "be missing (if so, this is a bug)."
->>>>>>> Stashed changes
                         )
                     warn_tetrahedral = True
                 # Otherwise use the standard quatfit methods

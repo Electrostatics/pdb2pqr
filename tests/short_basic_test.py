@@ -45,9 +45,8 @@ def test_basic_cif(input_pdb, tmp_path):
     )
 
 
-# This does not work for 4E8M
 @pytest.mark.parametrize(
-    "input_pdb", ["1NAJ", "7BNA", "5V0O", "1AQO"], ids=str
+    "input_pdb", ["1NAJ", "7BNA", "5V0O", "1AQO", "4E8M"], ids=str
 )
 def test_nucleic_only(input_pdb, tmp_path):
     """Non-regression tests on structures that contain only nucleic acids."""

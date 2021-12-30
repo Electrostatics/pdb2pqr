@@ -15,10 +15,26 @@ import logging
 
 # from pathlib import Path
 import numpy as np
-from .config import SMALL_NUMBER, DIHEDRAL_WTF
+from .config import SMALL_NUMBER, DIHEDRAL_WTF, CHARGE_ERROR
 
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def noninteger_charge(charge, error_tol=CHARGE_ERROR) -> str:
+    """Test whether a charge is an integer.
+
+    :param float charge:  value to test
+    :param float error_tol:  absolute error tolerance
+    :returns:  string with descripton of problem or empty string if no problem
+    """
+    abs_error = abs(charge - round(charge))
+    if abs_error > abs(error_tol):
+        return (
+            f"{charge} deviates by {abs_error} from integral, exceeding error "
+            f"tolerance {error_tol}"
+        )
+    return ""
 
 
 def sort_dict_by_value(inputdict):

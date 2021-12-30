@@ -25,15 +25,12 @@ from . import forcefield
 from . import biomolecule as biomol
 from . import io
 from .ligand.mol2 import Mol2Molecule
+from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
-
-
-# Round-off error when determining if charge is integral
-CHARGE_ERROR = 1e-3
 
 
 def build_main_parser():
@@ -686,13 +683,9 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
     total_charge = sum([residue.charge for residue in biomolecule.residues])
-    charge_diff = abs(total_charge - round(total_charge))
-    if charge_diff > CHARGE_ERROR:
-        err = (
-            f"Biomolecule charge is non-integer: {total_charge} "
-            f"({charge_diff} exceeds limit {CHARGE_ERROR}"
-        )
-        raise ValueError(err)
+    charge_err = noninteger_charge(total_charge)
+    if charge_err:
+        raise ValueError(charge_err)
     if args.ffout is not None:
         _LOGGER.info(f"Applying custom naming scheme ({args.ffout}).")
         if args.ffout != args.ff:

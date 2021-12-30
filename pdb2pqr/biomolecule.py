@@ -8,6 +8,7 @@ import logging
 import copy
 import pprint
 import string
+
 from . import residue as residue_
 from . import aa
 from . import na
@@ -720,6 +721,11 @@ class Biomolecule(object):
                     hitlist.append(atom)
                 else:
                     misslist.append(atom)
+            charge_err = util.noninteger_charge(residue.charge)
+            if charge_err:
+                _LOGGER.warning(
+                    f"Residue {residue} has non-integer charge: {charge_err}. "
+                )
         return hitlist, misslist
 
     def apply_name_scheme(self, forcefield_):
@@ -1142,7 +1148,7 @@ class Biomolecule(object):
                     residue.is3term or residue.is5term
                 ):
                     continue
-                if float(f"{int(rescharge)}") != rescharge:
+                if util.noninteger_charge(rescharge):
                     misslist.append(residue)
         return misslist, charge
 

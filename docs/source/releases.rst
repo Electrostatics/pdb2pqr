@@ -18,6 +18,7 @@ Changes
 
 * Supress excessive "Tetrahedral hydrogen reconstruction not available for nucleic acids" warnings (`#253 <https://github.com/Electrostatics/pdb2pqr/issues/253>_`).
 * Increased verbosity of output (warnings and information) for missing and reconstructed atoms.
+* Standardized testing for non-integer residue charges.
 
 ******************
 3.4.1 (2021-12-27)

@@ -695,24 +695,6 @@ class Biomolecule(object):
             elif numpartners == 0:
                 _LOGGER.debug(f"{res1} is a free cysteine")
 
-    def update_residue_types(self):
-        """Find the type of residue as notated in the Amino Acid definition.
-
-        .. todo::
-           Why are we setting residue types to numeric values (see code)?
-        """
-        for chain in self.chains:
-            for residue in chain.residues:
-                name = residue.name
-                if name in AA_NAMES:
-                    residue.type = 1
-                elif name == "WAT":
-                    residue.type = 3
-                elif name in NA_NAMES:
-                    residue.type = 4
-                else:  # Residue is a ligand or unknown
-                    residue.type = 2
-
     def apply_force_field(self, forcefield_):
         """Apply the forcefield to the atoms within the biomolecule.
 

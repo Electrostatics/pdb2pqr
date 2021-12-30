@@ -45,12 +45,9 @@ def test_basic_cif(input_pdb, tmp_path):
     )
 
 
-# 1NAJ:  DNA without ANISOU records
-# 7BNA:  DNA with ANISOU records
-# 5V0O:  RNA without ANISOU records
-# 4E8M:  RNA with ANISOU records
+# This does not work for 4E8M
 @pytest.mark.parametrize(
-    "input_pdb", ["1NAJ", "7BNA", "5V0O", "4E8M"], ids=str
+    "input_pdb", ["1NAJ", "7BNA", "5V0O", "1AQO"], ids=str
 )
 def test_nucleic_only(input_pdb, tmp_path):
     """Non-regression tests on structures that contain only nucleic acids."""

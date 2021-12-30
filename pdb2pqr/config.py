@@ -104,7 +104,8 @@ FILTER_WARNINGS = [
     "Skipped atom during water optimization",
     "The best donorH was not picked",
     "Multiple occupancies found",
-    "Tetrahedral hydrogen reconstruction"
+    "Tetrahedral hydrogen reconstruction",
+    "Unable to find amino or nucleic acid definition for"
 ]
 
 #: Number of times warning string is printed before supressing further output

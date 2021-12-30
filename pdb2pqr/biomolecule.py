@@ -148,6 +148,8 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
+                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
+                # terms.  Why not just use those?
                 if (
                     refatomname in ["O1P", "O2P"]
                     and residue.has_atom("OP1")
@@ -183,6 +185,8 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
+                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
+                # terms.  Why not just use those?
                 if (
                     refatomname in ["O1P", "O2P"]
                     and residue.has_atom("OP1")
@@ -959,7 +963,7 @@ class Biomolecule(object):
                 residue = klass(residue, refobj)
             residue.rename_residue(resname)
         except (KeyError, NameError):
-            warn(
+            _LOGGER.warning(
                 f"Unable to find amino or nucleic acid definition "
                 f"for {resname}.  Parsing as new residue."
             )
@@ -986,6 +990,8 @@ class Biomolecule(object):
             atomlist = list(residue.atoms)
             for atom in atomlist:
                 atomname = atom.name
+                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
+                # terms.  Why not just use those?
                 if (
                     atomname in ["OP1", "OP2"]
                     and residue.reference.has_atom("O1P")

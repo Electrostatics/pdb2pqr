@@ -34,7 +34,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <nucleicacids>
   <residue>
-    <name>RA</name>
+    <name>A</name>
     <atom>
       <name>P</name>
       <x>2.314489</x>
@@ -345,7 +345,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <dihedral>C1' C2' O2' H2''</dihedral>
   </residue>
   <residue>
-    <name>RC</name>
+    <name>C</name>
     <atom>
       <name>P</name>
       <x>2.314489</x>
@@ -1263,7 +1263,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     <dihedral>C6 C5 C7 H71</dihedral>
   </residue>
   <residue>
-    <name>RU</name>
+    <name>U</name>
     <atom>
       <name>P</name>
       <x>2.314489</x>

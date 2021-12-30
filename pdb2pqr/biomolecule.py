@@ -175,6 +175,7 @@ class Biomolecule(object):
         natom = 0
         for residue in self.residues:
             if not isinstance(residue, (aa.Amino, na.Nucleic)):
+                print(f"FOUND random thing {residue}!")
                 continue
             for refatomname in residue.reference.map:
                 if refatomname.startswith("H"):
@@ -374,7 +375,11 @@ class Biomolecule(object):
                         _LOGGER.warning(
                             "Tetrahedral hydrogen reconstruction not "
                             "available for nucleic acids. Some hydrogens may "
+<<<<<<< Updated upstream
                             "be missing (if " "so, this is a bug)."
+=======
+                            "be missing (if so, this is a bug)."
+>>>>>>> Stashed changes
                         )
                     warn_tetrahedral = True
                 # Otherwise use the standard quatfit methods
@@ -712,6 +717,7 @@ class Biomolecule(object):
         for residue in self.residues:
             if isinstance(residue, (aa.Amino, aa.WAT, na.Nucleic)):
                 resname = residue.ffname
+                print(resname)
             else:
                 resname = residue.name
             for atom in residue.atoms:
@@ -943,6 +949,7 @@ class Biomolecule(object):
         """
         try:
             refobj = self.definition.map[resname]
+            print(f"resname = {resname}, refobj.name = {refobj.name}.")
             if refobj.name != resname:
                 try:
                     klass = getattr(aa, refobj.name)
@@ -951,12 +958,14 @@ class Biomolecule(object):
                 residue = klass(residue, refobj)
                 residue.reference = refobj
             else:
+                print(f"Trying to create residue with name {resname}.")
                 try:
                     klass = getattr(aa, resname)
                 except AttributeError:
                     klass = getattr(na, resname)
                 residue = klass(residue, refobj)
         except (KeyError, NameError):
+            print(f"Got KeyError for {resname}.")
             _LOGGER.debug(f"Parsing {resname} as new residue")
             residue = residue_.Residue(residue)
         return residue

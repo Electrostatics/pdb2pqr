@@ -135,6 +135,7 @@ class ADE(Nucleic):
 
 DA = ADE
 RA = ADE
+A = ADE
 
 
 class CYT(Nucleic):
@@ -165,6 +166,7 @@ class CYT(Nucleic):
 
 DC = CYT
 RC = CYT
+C = CYT
 
 
 class GUA(Nucleic):
@@ -195,6 +197,7 @@ class GUA(Nucleic):
 
 DG = GUA
 RG = GUA
+G = GUA
 
 
 class THY(Nucleic):
@@ -253,3 +256,4 @@ class URA(Nucleic):
 
 
 RU = URA
+U = URA

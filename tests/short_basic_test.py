@@ -45,7 +45,7 @@ def test_basic_cif(input_pdb, tmp_path):
     )
 
 
-@pytest.mark.parametrize("input_pdb", ["4E8M"], ids=str)
+@pytest.mark.parametrize("input_pdb", ["1NAJ", "4E8M"], ids=str)
 def test_nucleic_only(input_pdb, tmp_path):
     """Non-regression tests on structures that contain only nucleic acids."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"

@@ -2239,6 +2239,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
     </atom>
     <atom>
       <name>HG</name>
+      <altname>HG1</altname>
       <x>0.067</x>
       <y>0.691</y>
       <z>2.262</z>

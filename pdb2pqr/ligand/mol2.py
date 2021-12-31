@@ -547,8 +547,28 @@ class Mol2Molecule:
                 bond_type = "double"
             elif bond_type == "3":
                 bond_type = "triple"
+            elif bond_type == "am":
+                raise NotImplementedError(
+                    "PDB2PQR does not currently support the amide (am) bond "
+                    "type."
+                )
             elif bond_type == "ar":
                 bond_type = "aromatic"
+            elif bond_type == "du":
+                raise NotImplementedError(
+                    "PDB2PQR does not currently support the dummy (du) bond "
+                    "type."
+                )
+            elif bond_type == "un":
+                raise NotImplementedError(
+                    "PDB2PQR does not currently support the unknown (un) bond "
+                    "type."
+                )
+            elif bond_type == "nc":
+                raise NotImplementedError(
+                    "PDB2PQR does not currently support the not-connected "
+                    "(nc) bond type."
+                )
             else:
                 err = f"Unknown bond type: {bond_type}"
                 raise ValueError(err)

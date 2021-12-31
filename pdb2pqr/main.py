@@ -12,7 +12,6 @@ import sys
 from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 from pathlib import Path
-from math import isclose
 import propka.lib
 import propka.output as pk_out
 import propka.input as pk_in

@@ -12,7 +12,6 @@ import sys
 from collections import OrderedDict
 from tempfile import NamedTemporaryFile
 from pathlib import Path
-from math import isclose
 import propka.lib
 import propka.output as pk_out
 import propka.input as pk_in
@@ -150,8 +149,9 @@ def build_main_parser():
     grp2.add_argument(
         "--ligand",
         help=(
-            "Calculate the parameters for the specified MOL2-format ligand at "
-            "the path specified by this option."
+            "Calculate the parameters for a single MOL2-format ligand at the "
+            "path specified by this option.  The MOL2 ligand name should "
+            "match only one ligand in the PDB file."
         ),
     )
     grp2.add_argument(

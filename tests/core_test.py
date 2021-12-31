@@ -85,6 +85,7 @@ def test_basic_cif(input_pdb, tmp_path):
 
 
 @pytest.mark.parametrize("input_pdb", list(LONG_SET), ids=str)
+@pytest.mark.long_test
 def test_long_pdb(input_pdb, tmp_path):
     """Non-regression tests on short list of PDB-format biomolecules."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"

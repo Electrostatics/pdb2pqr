@@ -682,7 +682,15 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     _LOGGER.warning(err)
                     missing_atoms.append(pdb_atom)
         matched_atoms += lig_atoms
-    total_charge = sum([residue.charge for residue in biomolecule.residues])
+    total_charge = 0
+    for residue in biomolecule.residues:
+        charge = residue.charge
+        charge_err = noninteger_charge(charge)
+        if charge_err:
+            _LOGGER.warning(
+                f"Residue {residue} has non-integer charge:  {charge_err}"
+            )
+        total_charge += charge
     charge_err = noninteger_charge(total_charge)
     if charge_err:
         raise ValueError(charge_err)

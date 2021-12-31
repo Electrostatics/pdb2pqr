@@ -12,7 +12,6 @@ from ligand_results import FORMAL_CHARGE_RESULTS, PARAMETER_RESULTS
 
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.warning("Need functional and regression test coverage for --ligand")
 
 
 ALL_LIGANDS = set(TORSION_RESULTS) | set(RING_RESULTS)

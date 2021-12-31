@@ -65,4 +65,5 @@ or `pytest <https://docs.pytest.org/en/stable/>`_
 
     python -m pytest
 
-from the top level of the source directory.
+from the top level of the source directory. 
+These commands run basic tests; more extensive testing can be performed by adding the ``--run-long`` option to these commands.

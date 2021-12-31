@@ -52,6 +52,7 @@ setup(
         "biomolecular structure modeling, analysis, and simulation."
     ),
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",

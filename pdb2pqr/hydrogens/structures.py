@@ -615,15 +615,14 @@ class Water(optimize.Optimize):
         if len(acc.bonds) == 0:
             if self.is_hbond(donor, acc):
                 # Find the best donor hydrogen and use that
-                bestdist = util.distance(acc.coords, donor.coords)
-                for donorh in donor.bonds:
+                best_donorh = donor.bonds[0]
+                best_dist = util.distance(acc.coords, best_donorh.coords)
+                for donorh in donor.bonds[1:]:
                     dist = util.distance(acc.coords, donorh.coords)
-                    if dist < bestdist:
-                        bestdist = dist
-                # Point the LP to the best H
-                # WARNING: Nathan? What if donorh is not set?
-                self.make_atom_with_no_bonds(acc, donorh, newname)
-                _LOGGER.warning("The best donorH was not picked (BUG?).")
+                    if dist < best_dist:
+                        best_dist = dist
+                        best_donorh = donorh
+                self.make_atom_with_no_bonds(acc, best_donorh, newname)
                 _LOGGER.debug(f"Added {newname} to {acc.residue}")
                 return True
             return False

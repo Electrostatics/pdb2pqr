@@ -8,6 +8,7 @@ import logging
 import copy
 import pprint
 import string
+
 from . import residue as residue_
 from . import aa
 from . import na
@@ -148,16 +149,14 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
-                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
-                # terms.  Why not just use those?
-                if (
-                    refatomname in ["O1P", "O2P"]
-                    and residue.has_atom("OP1")
-                    and residue.has_atom("OP2")
-                ):
+                if refatomname == "O1P" and residue.has_atom("OP1"):
+                    continue
+                if refatomname == "O2P" and residue.has_atom("OP2"):
                     continue
                 if not residue.has_atom(refatomname):
-                    _LOGGER.debug(f"Missing {refatomname} in {residue}")
+                    _LOGGER.warning(
+                        f"Missing atom {refatomname} in residue {residue}"
+                    )
                     natom += 1
                     residue.missing.append(refatomname)
         return natom
@@ -185,13 +184,9 @@ class Biomolecule(object):
                     continue
                 if refatomname in ["N+1", "C-1"]:
                     continue
-                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
-                # terms.  Why not just use those?
-                if (
-                    refatomname in ["O1P", "O2P"]
-                    and residue.has_atom("OP1")
-                    and residue.has_atom("OP2")
-                ):
+                if refatomname == "O1P" and residue.has_atom("OP1"):
+                    continue
+                if refatomname == "O2P" and residue.has_atom("OP2"):
                     continue
                 natom += 1
         return natom
@@ -726,6 +721,11 @@ class Biomolecule(object):
                     hitlist.append(atom)
                 else:
                     misslist.append(atom)
+            charge_err = util.noninteger_charge(residue.charge)
+            if charge_err:
+                _LOGGER.warning(
+                    f"Residue {residue} has non-integer charge: {charge_err}. "
+                )
         return hitlist, misslist
 
     def apply_name_scheme(self, forcefield_):
@@ -990,13 +990,9 @@ class Biomolecule(object):
             atomlist = list(residue.atoms)
             for atom in atomlist:
                 atomname = atom.name
-                # TODO - this is odd logic.  OP1/OP2 are the preferred PDB
-                # terms.  Why not just use those?
-                if (
-                    atomname in ["OP1", "OP2"]
-                    and residue.reference.has_atom("O1P")
-                    and residue.reference.has_atom("O2P")
-                ):
+                if atomname in ["O1P", "OP1"] and residue.has_atom("OP1"):
+                    continue
+                if atomname in ["O2P", "OP2"] and residue.has_atom("OP2"):
                     continue
                 if not residue.reference.has_atom(atomname):
                     _LOGGER.warning(f"Extra atom {atomname} in {residue}! - ")
@@ -1052,10 +1048,9 @@ class Biomolecule(object):
                         3, coords, refcoords, refatomcoords
                     )
                     residue.create_atom(atomname, newcoords)
-                    _LOGGER.debug(
-                        f"Added {atomname} to {residue} at coordinates "
-                        f"{newcoords[0]:.3f}, "
-                        f"{newcoords[1]:.3f}, "
+                    _LOGGER.info(
+                        f"Added atom {atomname} to residue {residue} at "
+                        f"coordinates {newcoords[0]:.3f}, {newcoords[1]:.3f}, "
                         f"{newcoords[2]:.3f}"
                     )
 
@@ -1153,7 +1148,7 @@ class Biomolecule(object):
                     residue.is3term or residue.is5term
                 ):
                     continue
-                if float(f"{int(rescharge)}") != rescharge:
+                if util.noninteger_charge(rescharge):
                     misslist.append(residue)
         return misslist, charge
 

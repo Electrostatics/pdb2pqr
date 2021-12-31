@@ -11,11 +11,14 @@ Fixes
 
 * Address problem where critical failures are missed in testing (`#262 <https://github.com/Electrostatics/pdb2pqr/issues/262>`_).  This doesn't represent a change to the (documented) API but will change functionality for external code that isn't ready to handle the raised error.
 * Fixes calculation of non-integer charge (`#264 <https://github.com/Electrostatics/pdb2pqr/issues/264>_`).
+* Fixes problem with missing RNA phosphate oxygens (`#267 <https://github.com/Electrostatics/pdb2pqr/issues/267>_`).
 
 Changes
 =======
 
 * Supress excessive "Tetrahedral hydrogen reconstruction not available for nucleic acids" warnings (`#253 <https://github.com/Electrostatics/pdb2pqr/issues/253>_`).
+* Increased verbosity of output (warnings and information) for missing and reconstructed atoms.
+* Standardized testing for non-integer residue charges.
 
 ******************
 3.4.1 (2021-12-27)

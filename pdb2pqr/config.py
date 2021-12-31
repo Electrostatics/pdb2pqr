@@ -170,3 +170,6 @@ VACUUM_PERMIT = 8.8541878128e-12
 
 #: Boltzmann constant (in J/K)
 BOLTZMANN = 1.380649e-23
+
+#: Charge deviation considered to be non-integer
+CHARGE_ERROR = 1e-3

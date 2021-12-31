@@ -500,24 +500,3 @@ def build_parser():
     )
     parser.add_argument("mol_path", help="Path to PQR file.")
     return parser
-
-
-def main():
-    """Main driver for module."""
-    parser = build_parser()
-    args = parser.parse_args()
-
-    psize = Psize(
-        cfac=args.cfac,
-        fadd=args.fadd,
-        space=args.space,
-        gmemfac=args.gmemfac,
-        gmemceil=args.gmemceil,
-        ofrac=args.ofrac,
-        redfac=args.redfac,
-    )
-    print(psize)
-
-
-if __name__ == "__main__":
-    main()

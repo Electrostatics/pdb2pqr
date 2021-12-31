@@ -20,6 +20,7 @@ Changes
 * Increased verbosity of output (warnings and information) for missing and reconstructed atoms.
 * Standardized testing and output for troubleshooting with non-integer residue charges.
 * Added ``HG1`` as alternate name for serine hydroxyl hydrogen (`#214 <https://github.com/Electrostatics/pdb2pqr/issues/214>_`).
+* Removed non-functional command line version of ``psize`` (`#181 <https://github.com/Electrostatics/pdb2pqr/issues/181>_`).
 
 ******************
 3.4.1 (2021-12-27)

@@ -111,7 +111,6 @@ setup(
         "console_scripts": [
             "pdb2pqr30=pdb2pqr.main:main",
             "dx2cube=pdb2pqr.main:dx_to_cube",
-            "psize=pdb2pqr.psize:main",
             "inputgen=pdb2pqr.inputgen:main",
         ]
     },

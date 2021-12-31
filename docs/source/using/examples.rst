@@ -63,6 +63,11 @@ Parameterizing ligands with the PDB2PQR web server
 
 This section outlines the parameterization of ligands using the PEOE_PB methods (see `Czodrowski et al, 2006 <http://dx.doi.org/10.1002/prot.21110>`_ for more information).
 
+.. warning::
+
+   PDB2PQR is unable to process more than one ligand per structure.
+   This limitation includes structures with multiple copies of the same ligand--only one copy of the ligand will be processed.
+
 The PDB structure `1HPX <http://www.rcsb.org/pdb/explore.do?structureId=1hpx>`_ includes HIV-1 protease complexed with an inhibitor at 2.0 Å resolution.
 HIV-1 protease has two chains; residue D25 is anionic on one chain and neutral on the other -- these titration states are important in the role of D25 as an acid in the catalytic mechanism.
 

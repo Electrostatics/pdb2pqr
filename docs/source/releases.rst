@@ -24,6 +24,7 @@ Changes
 * Removed non-functional command line version of ``psize`` (`#181 <https://github.com/Electrostatics/pdb2pqr/issues/181>_`).
 * Provided clearer error messages for unsupported MOL2 bond types (`#178 <https://github.com/Electrostatics/pdb2pqr/issues/178>_`).
 * Updated list of visualization tools to include `NGL Viewer <http://nglviewer.org/ngl/>_` (`#38 <https://github.com/Electrostatics/pdb2pqr/issues/38>_`).
+* Updated documentation to warn users against using more than one ligand in calculations (`#23 <https://github.com/Electrostatics/pdb2pqr/issues/23>_`).
 
 ******************
 3.4.1 (2021-12-27)

@@ -12,6 +12,7 @@ Fixes
 * Addressed problem where critical failures are missed in testing (`#262 <https://github.com/Electrostatics/pdb2pqr/issues/262>`_).  This doesn't represent a change to the (documented) API but will change functionality for external code that isn't ready to handle the raised error.
 * Fixed calculation of non-integer charge (`#264 <https://github.com/Electrostatics/pdb2pqr/issues/264>_`).
 * Fixed problem with missing RNA phosphate oxygens (`#267 <https://github.com/Electrostatics/pdb2pqr/issues/267>_`).
+* Fixed problem with non-optimal hydrogen bond orientation for non-bonded atoms; mainly affects water orientation. (`#9 <https://github.com/Electrostatics/pdb2pqr/issues/9>_`).
 
 Changes
 =======

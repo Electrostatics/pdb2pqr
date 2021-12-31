@@ -1,11 +1,7 @@
 """Tests for PROPKA functionality."""
-import logging
 from pathlib import Path
 import pytest
 import common
-
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize(

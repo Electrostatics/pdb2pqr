@@ -174,8 +174,3 @@ _LOGGER.error(
     "Need to reinstate the --apbs-input test with a temporary directory "
     "as path"
 )
-
-
-@pytest.mark.slow
-def test_slow():
-    _LOGGER.warning("Need to add/mark slow tests")

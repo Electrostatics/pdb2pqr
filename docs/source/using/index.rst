@@ -67,12 +67,6 @@ inputgen
 
 Generates an APBS input file with recommended settings.
 
-"""""
-psize
-"""""
-
-Provides size information about the molecular system and suggests APBS settings.
-
 -----------------------
 Examples and algorithms
 -----------------------

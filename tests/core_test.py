@@ -44,7 +44,7 @@ LONG_PROTEIN_SET = {
 LONG_NUCLEIC_SET = {"5V0O"}
 LONG_SET = LONG_PROTEIN_SET | LONG_NUCLEIC_SET
 #: Tests that should fail (broken backbones)
-BROKEN_SET = {"1EJG", "3U7T"}
+BROKEN_SET = {"1EJG", "3U7T", "1EJG", "4MGP", "2V75"}
 
 
 @pytest.mark.parametrize("input_pdb", list(SHORT_SET), ids=str)

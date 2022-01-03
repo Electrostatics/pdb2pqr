@@ -509,13 +509,15 @@ def run_propka(args, biomolecule):
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
-    with NamedTemporaryFile("wt", suffix=".pdb", delete=False) as pdb_file:
+    with NamedTemporaryFile("wt", suffix=".pdb") as pdb_file:
         for line in lines:
             pdb_file.write(line)
         pdb_path = pdb_file.name
-    parameters = pk_in.read_parameter_file(args.parameters, Parameters())
-    molecule = MolecularContainer(parameters, args)
-    molecule = pk_in.read_molecule_file(pdb_path, molecule)
+
+        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+        molecule = MolecularContainer(parameters, args)
+        molecule = pk_in.read_molecule_file(pdb_path, molecule)
+
     molecule.calculate_pka()
 
     # Extract pKa information from PROPKA

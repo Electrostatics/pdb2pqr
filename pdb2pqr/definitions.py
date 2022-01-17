@@ -101,11 +101,14 @@ class DefinitionHandler(sax.ContentHandler):
         if text.isspace():
             return
         _LOGGER.debug(f"Got text for <{self.curelement}>: {text}")
-        # If this is a float, make it so
-        try:
-            value = float(str(text))
-        except ValueError:
-            value = str(text)
+
+        # If this is a float, make it so. Except for residue names which should stay string
+        value = str(text)
+        if self.curelement != "name":
+            try:
+                value = float(value)
+            except ValueError:
+                pass
 
         # Special cases - lists and dictionaries
         if self.curelement == "bond":

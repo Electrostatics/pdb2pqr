@@ -25,6 +25,7 @@ class DefinitionHandler(sax.ContentHandler):
         self.curobj = None
         self.map = {}
         self.patches = []
+        self.content = ""
 
     def startElement(self, name, _):
         """Start XML element parsing.
@@ -88,8 +89,31 @@ class DefinitionHandler(sax.ContentHandler):
                 self.curholder.map[atomname] = atom
                 self.curatom = None
                 self.curobj = self.curholder
-        else:  # Just free the current element namespace
-            self.curelement = ""
+        elif (self.curobj is not None) and (self.content.strip() != ""):
+            self.content = self.content.strip()
+            _LOGGER.debug(
+                f"Got text for {self.curholder.name} <{name}>: {self.content}"
+            )
+            if name == "bond":
+                self.curobj.bonds.append(self.content)
+            elif name == "dihedral":
+                self.curobj.dihedrals.append(self.content)
+            elif name == "altname":
+                self.curholder.altnames[self.content] = self.curatom.name
+            elif name == "remove":
+                self.curobj.remove.append(self.content)
+            elif name == "name":
+                self.curobj.name = self.content
+            elif self.curelement != "":
+                try:
+                    self.content = float(self.content)
+                except ValueError:
+                    pass
+                setattr(self.curobj, self.curelement, self.content)
+
+        self.content = ""
+        self.curelement = ""
+
         return self.map
 
     def characters(self, text):
@@ -98,30 +122,7 @@ class DefinitionHandler(sax.ContentHandler):
         :param text:  text data to parse
         :type text:  str
         """
-        if text.isspace():
-            return
-        _LOGGER.debug(f"Got text for <{self.curelement}>: {text}")
-
-        # If this is a float, make it so. Except for residue names which should stay string
-        value = str(text)
-        if self.curelement != "name":
-            try:
-                value = float(value)
-            except ValueError:
-                pass
-
-        # Special cases - lists and dictionaries
-        if self.curelement == "bond":
-            self.curobj.bonds.append(value)
-        elif self.curelement == "dihedral":
-            self.curobj.dihedrals.append(value)
-        elif self.curelement == "altname":
-            self.curholder.altnames[value] = self.curatom.name
-        elif self.curelement == "remove":
-            self.curobj.remove.append(value)
-        else:
-            setattr(self.curobj, self.curelement, value)
-        return
+        self.content += text
 
 
 class Definition:

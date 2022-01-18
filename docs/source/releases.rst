@@ -3,6 +3,16 @@ Release history
 ###############
 
 ******************
+3.5.1 (2022-01-17)
+******************
+
+Changes
+=======
+
+* Add support for integer-only residue names (`#291 <https://github.com/Electrostatics/pdb2pqr/pull/291>_`).
+* Remove temporary files created by PDB2PQR (`#286 <https://github.com/Electrostatics/pdb2pqr/pull/286>_`).
+
+******************
 3.5.0 (2022-01-01)
 ******************
 

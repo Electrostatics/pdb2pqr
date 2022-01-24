@@ -27,7 +27,6 @@ from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
-import os
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")

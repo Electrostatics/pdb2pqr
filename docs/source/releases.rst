@@ -3,6 +3,15 @@ Release history
 ###############
 
 ******************
+3.5.2 (2022-01-23)
+******************
+
+Fixes
+=====
+
+* Fixes problems with XML parsing of large files (`#293 <https://github.com/Electrostatics/pdb2pqr/issues/293>_`)
+
+******************
 3.5.1 (2022-01-17)
 ******************
 

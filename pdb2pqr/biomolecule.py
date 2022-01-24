@@ -249,9 +249,12 @@ class Biomolecule(object):
             chain = self.chains[ch_num]
             reslist = []
             origlist = []
+
             # origlist holds the original residue list for the chain
             for residue in chain.residues:
                 origlist.append(residue)
+
+            seen_chains = []
             for residue in origlist:
                 reslist.append(residue)
                 # Look for ending termini
@@ -265,21 +268,24 @@ class Biomolecule(object):
                     ) and not residue.is3term:
                         fixflag = 1
                 if fixflag:
-                    # Get an available chain ID
-                    chainid = letters[0]
-                    id_ = 0
-                    id_length = 1
-                    while chainid in self.chainmap:
-                        id_ += 1
-                        if id_ >= len(letters):
-                            id_length += 1
-                            id_ = 0
-                        chainid = letters[id_] * id_length
-                    if id_length > 1:
-                        message = (
-                            "Warning: Reusing chain id: " + chainid[0] + ""
-                        )
-                        _LOGGER.warning(message)
+                    chainid = residue.chain_id
+                    if chainid in seen_chains:
+                        # Get an available chain ID
+                        chainid = letters[0]
+                        id_ = 0
+                        id_length = 1
+                        while chainid in self.chainmap:
+                            id_ += 1
+                            if id_ >= len(letters):
+                                id_length += 1
+                                id_ = 0
+                            chainid = letters[id_] * id_length
+                        if id_length > 1:
+                            message = (
+                                "Warning: Reusing chain id: " + chainid[0] + ""
+                            )
+                            _LOGGER.warning(message)
+
                     # Make a new chain with these residues
                     newchain = struct.Chain(chainid[0])
                     self.chainmap[chainid] = newchain
@@ -292,6 +298,8 @@ class Biomolecule(object):
                     self.assign_termini(newchain, neutraln, neutralc)
                     reslist = []
                     ch_num += 1
+                    seen_chains.append(residue.chain_id)
+
             ch_num += 1
         # Update the final chain's chain_id if it is "" unless it's all water
         if "" in self.chainmap:

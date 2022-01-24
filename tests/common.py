@@ -260,7 +260,7 @@ def run_propka_for_tests(input_pdb, compare_file, pH):
         )
 
     for key in results:
-        if abs(results[key] - compare[key]) > 1e-6:
+        if abs(results[key] - compare[key]) > 1e-3:
             raise RuntimeError(
-                f"PROPKA test error. pKa values changed more than 1e-6 for group {key}: new {results[key]} reference {compare[key]}"
+                f"PROPKA test error. pKa values changed more than 1e-3 for group {key}: new {results[key]} reference {compare[key]}"
             )

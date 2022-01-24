@@ -27,6 +27,7 @@ from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
+import os
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
@@ -509,14 +510,16 @@ def run_propka(args, biomolecule):
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
-    with NamedTemporaryFile("wt", suffix=".pdb") as pdb_file:
+    pdb_path = NamedTemporaryFile(suffix=".pdb", delete=True).name
+    with open(pdb_path, "w") as fpdb:
         for line in lines:
-            pdb_file.write(line)
-        pdb_path = pdb_file.name
+            fpdb.write(line)
 
-        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
-        molecule = MolecularContainer(parameters, args)
-        molecule = pk_in.read_molecule_file(pdb_path, molecule)
+    parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+    molecule = MolecularContainer(parameters, args)
+    molecule = pk_in.read_molecule_file(pdb_path, molecule)
+
+    os.remove(pdb_path)
 
     molecule.calculate_pka()
 

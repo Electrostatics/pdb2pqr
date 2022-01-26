@@ -27,6 +27,7 @@ from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
+import os
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
@@ -509,14 +510,17 @@ def run_propka(args, biomolecule):
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
-    with NamedTemporaryFile("wt", suffix=".pdb") as pdb_file:
-        for line in lines:
-            pdb_file.write(line)
-        pdb_path = pdb_file.name
 
-        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
-        molecule = MolecularContainer(parameters, args)
-        molecule = pk_in.read_molecule_file(pdb_path, molecule)
+    pdb_path = NamedTemporaryFile(suffix=".pdb", delete=True).name
+    with open(pdb_path, "w") as fpdb:
+        for line in lines:
+            fpdb.write(line)
+
+    parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+    molecule = MolecularContainer(parameters, args)
+    molecule = pk_in.read_molecule_file(pdb_path, molecule)
+
+    os.remove(pdb_path)
 
     molecule.calculate_pka()
 
@@ -636,7 +640,13 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             biomolecule.apply_pka_values(
                 forcefield_.name,
                 args.ph,
-                {f"{row['res_name']} {row['res_num']} {row['chain_id']}": row["pKa"] for row in pka_df if row["group_label"].startswith(row["res_name"])},
+                {
+                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
+                        "pKa"
+                    ]
+                    for row in pka_df
+                    if row["group_label"].startswith(row["res_name"])
+                },
             )
 
         _LOGGER.info("Adding hydrogens to biomolecule.")

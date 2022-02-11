@@ -116,4 +116,5 @@ def test_protonated_terminals(input_pdb, expected_pqr, tmp_path):
         output_pqr=output_pqr,
         expected_pqr=common.DATA_DIR / expected_pqr,
         tmp_path=tmp_path,
+        compare_resnames=True,
     )

@@ -159,6 +159,12 @@ def compare_pqr(pqr1_path, pqr2_path):
         df2 = pqr_to_dict(pqr2_file)
         _LOGGER.debug(f"PQR 2 has shape {df2.shape}")
 
+    diff_resname = df1.res_name != df2.res_name
+    if any(diff_resname):
+        raise ValueError(
+            f"PQR files have different residue names\n{df1.res_name[diff_resname]}\nreference\n{df2.res_name[diff_resname]}"
+        )
+
     d_frame = pqr_distance(df1, df2)
     _LOGGER.debug(f"Merged d_frame has shape {d_frame.shape}")
 

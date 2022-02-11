@@ -108,7 +108,7 @@ def test_broken_backbone(input_pdb, tmp_path):
 )
 def test_protonated_terminals(input_pdb, expected_pqr, tmp_path):
     """Tests for terminal residue protonation."""
-    args = "--log-level=INFO --ff=AMBER"
+    args = "--log-level=INFO --ff=AMBER --ffout AMBER"
     output_pqr = Path(input_pdb).stem + ".pqr"
     common.run_pdb2pqr(
         args=args,

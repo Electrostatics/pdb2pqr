@@ -748,7 +748,10 @@ class Biomolecule(object):
                         if (residue.is_n_term or residue.is_c_term) and (
                             rname != residue.name
                         ):
-                            rname = residue.name
+                            if len(rname) == 4 and rname[0] in ("C", "N"):
+                                rname = rname[1:]
+                            else:
+                                rname = residue.name
                     except AttributeError:
                         pass
                 if aname is not None and rname is not None:

@@ -96,7 +96,7 @@ BACKBONE = ["N", "CA", "C", "O", "O2", "HA", "HN", "H", "tN"]
 #: A small number used by some math routines.
 SMALL_NUMBER = 1.0e-7
 
-#: A number of unknown origin used in dihedral angle calculations
+#: Convert radians to degrees
 RADIANS_TO_DEGREES = 57.2958
 
 #: The start of warning strings to be filtered.

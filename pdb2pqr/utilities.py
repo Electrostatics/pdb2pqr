@@ -15,7 +15,7 @@ import logging
 
 # from pathlib import Path
 import numpy as np
-from .config import SMALL_NUMBER, DIHEDRAL_WTF, CHARGE_ERROR
+from .config import SMALL_NUMBER, RADIANS_TO_DEGREES, CHARGE_ERROR
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -258,7 +258,7 @@ def dihedral(coords1, coords2, coords3, coords4):
     elif np.absolute(scal - 1.0) < SMALL_NUMBER:
         value = 0.0
     else:
-        value = DIHEDRAL_WTF * math.acos(scal)
+        value = RADIANS_TO_DEGREES * math.acos(scal)
     chiral = np.inner(np.cross(c12_32, c43_32), diff32)
     if chiral < 0:
         value *= -1.0

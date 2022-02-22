@@ -749,8 +749,13 @@ class Biomolecule(object):
                             rname != residue.name
                         ):
                             if len(rname) == 4 and rname[0] in ("C", "N"):
+                                # Remove the C/N prefix to keep the protonation state of the residue
+                                # in the terminal residues
                                 rname = rname[1:]
                             else:
+                                # This is the old code which will overwrite the protonation state
+                                # of the residue but have wrong hydrogens. Not sure if needed but
+                                # nobody seems to know.
                                 rname = residue.name
                     except AttributeError:
                         pass

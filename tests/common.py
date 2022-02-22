@@ -142,7 +142,7 @@ def pqr_distance(df1, df2):
     return d_frame
 
 
-def compare_pqr(pqr1_path, pqr2_path):
+def compare_pqr(pqr1_path, pqr2_path, compare_resnames=False):
     """Compare two PQR files.
 
     Assume that atom numbering/ordering does not matter.
@@ -158,6 +158,13 @@ def compare_pqr(pqr1_path, pqr2_path):
     with open(pqr2_path, "rt", encoding="utf-8") as pqr2_file:
         df2 = pqr_to_dict(pqr2_file)
         _LOGGER.debug(f"PQR 2 has shape {df2.shape}")
+
+    if compare_resnames:
+        diff_resname = df1.res_name != df2.res_name
+        if any(diff_resname):
+            raise ValueError(
+                f"PQR files have different residue names\n{df1.res_name[diff_resname]}\nreference\n{df2.res_name[diff_resname]}"
+            )
 
     d_frame = pqr_distance(df1, df2)
     _LOGGER.debug(f"Merged d_frame has shape {d_frame.shape}")
@@ -191,7 +198,14 @@ def compare_pqr(pqr1_path, pqr2_path):
                 _LOGGER.info(result)
 
 
-def run_pdb2pqr(args, input_pdb, tmp_path, output_pqr=None, expected_pqr=None):
+def run_pdb2pqr(
+    args,
+    input_pdb,
+    tmp_path,
+    output_pqr=None,
+    expected_pqr=None,
+    compare_resnames=False,
+):
     """Basic code for invoking PDB2PQR."""
     if output_pqr is None:
         hash_str = f"{args}{input_pdb}"
@@ -203,7 +217,9 @@ def run_pdb2pqr(args, input_pdb, tmp_path, output_pqr=None, expected_pqr=None):
     args = PARSER.parse_args(arg_str.split())
     _ = main_driver(args)
     if expected_pqr is not None:
-        compare_pqr(output_pqr, expected_pqr)
+        compare_pqr(
+            output_pqr, expected_pqr, compare_resnames=compare_resnames
+        )
 
 
 def run_propka_for_tests(input_pdb, compare_file, pH):

@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 import common
 
-
+# fmt: off
 #: Protein-nucleic acid complexes
 PROTEIN_NUCLEIC_SET = {"4UN3"}
 #: Proteins without nucleic acids
@@ -45,6 +45,7 @@ LONG_NUCLEIC_SET = {"5V0O"}
 LONG_SET = LONG_PROTEIN_SET | LONG_NUCLEIC_SET
 #: Tests that should fail (broken backbones)
 BROKEN_SET = {"1EJG", "3U7T", "1EJG", "4MGP", "2V75"}
+# fmt: on
 
 
 @pytest.mark.parametrize("input_pdb", list(SHORT_SET), ids=str)
@@ -98,4 +99,22 @@ def test_broken_backbone(input_pdb, tmp_path):
         input_pdb=input_pdb,
         output_pqr=output_pqr,
         tmp_path=tmp_path,
+    )
+
+
+@pytest.mark.parametrize(
+    "input_pdb, expected_pqr",
+    [pytest.param("cterm_hid.pdb", "cterm_hid_out.pqr", id="C-terminal HID")],
+)
+def test_protonated_terminals(input_pdb, expected_pqr, tmp_path):
+    """Tests for terminal residue protonation."""
+    args = "--log-level=INFO --ff=AMBER --ffout AMBER"
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr(
+        args=args,
+        input_pdb=common.DATA_DIR / input_pdb,
+        output_pqr=output_pqr,
+        expected_pqr=common.DATA_DIR / expected_pqr,
+        tmp_path=tmp_path,
+        compare_resnames=True,
     )

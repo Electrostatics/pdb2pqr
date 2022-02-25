@@ -505,9 +505,11 @@ class Biomolecule(object):
         res0 = chain.residues[0]
         reslast = chain.residues[-1]
         # Check if chain is cyclic. Amide distance ranges between 1.325 - 1.346
-        if util.distance(res0.map["N"].coords, reslast.map["C"].coords) < 1.35:
-            # If the chain is cyclic, don't apply termini.
-            return
+        if "N" in res0.map and "C" in reslast.map:
+            dist = util.distance(res0.map["N"].coords, reslast.map["C"].coords)
+            if dist < 1.35:
+                # If the chain is cyclic, don't apply termini.
+                return
 
         # Set the N-Terminus/ 5' Terminus
         if isinstance(res0, aa.Amino):

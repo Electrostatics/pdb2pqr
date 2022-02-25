@@ -515,8 +515,13 @@ class Biomolecule(object):
         if isinstance(res0, aa.Amino):
             res0.is_n_term = True
             # If N is bonded to more than one heavy atom switch to neutral-nterm
-            heavy_bonds = [a for a in res0.map["N"].bonds if a.name[0] != "H"]
-            if neutraln or len(heavy_bonds) > 1:
+            heavy_n_bonds = []
+            if "N" in res0.map:
+                heavy_n_bonds = [
+                    a for a in res0.map["N"].bonds if a.name[0] != "H"
+                ]
+
+            if neutraln or len(heavy_n_bonds) > 1:
                 self.apply_patch("NEUTRAL-NTERM", res0)
             else:
                 self.apply_patch("NTERM", res0)

@@ -118,3 +118,27 @@ def test_protonated_terminals(input_pdb, expected_pqr, tmp_path):
         tmp_path=tmp_path,
         compare_resnames=True,
     )
+
+
+@pytest.mark.parametrize(
+    "input_pdb, expected_pqr",
+    [
+        pytest.param(
+            "5vav_cyclic_peptide.pdb",
+            "5vav_cyclic_peptide_out.pqr",
+            id="Cyclic peptide",
+        )
+    ],
+)
+def test_cyclic_peptide(input_pdb, expected_pqr, tmp_path):
+    """Tests for cyclic peptide protonation."""
+    args = "--log-level=INFO --ff=AMBER --ffout AMBER"
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr(
+        args=args,
+        input_pdb=common.DATA_DIR / input_pdb,
+        output_pqr=output_pqr,
+        expected_pqr=common.DATA_DIR / expected_pqr,
+        tmp_path=tmp_path,
+        compare_resnames=True,
+    )

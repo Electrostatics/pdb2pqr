@@ -501,11 +501,27 @@ class Biomolecule(object):
         if len(chain.residues) == 0:
             text = f'Error: chain "{chain.chain_id}" has 0 residues!'
             raise IndexError(text)
-        # Set the N-Terminus/ 5' Terminus
+
         res0 = chain.residues[0]
+        reslast = chain.residues[-1]
+        # Check if chain is cyclic. Amide distance ranges between 1.325 - 1.346
+        if "N" in res0.map and "C" in reslast.map:
+            dist = util.distance(res0.map["N"].coords, reslast.map["C"].coords)
+            if dist < 1.35:
+                # If the chain is cyclic, don't apply termini.
+                return
+
+        # Set the N-Terminus/ 5' Terminus
         if isinstance(res0, aa.Amino):
             res0.is_n_term = True
-            if isinstance(res0, aa.PRO) or neutraln:
+            # If N is bonded to more than one heavy atom switch to neutral-nterm
+            heavy_n_bonds = []
+            if "N" in res0.map:
+                heavy_n_bonds = [
+                    a for a in res0.map["N"].bonds if a.name[0] != "H"
+                ]
+
+            if neutraln or len(heavy_n_bonds) > 1:
                 self.apply_patch("NEUTRAL-NTERM", res0)
             else:
                 self.apply_patch("NTERM", res0)
@@ -513,7 +529,6 @@ class Biomolecule(object):
             res0.is5term = True
             self.apply_patch("5TERM", res0)
         # Set the C-Terminus/ 3' Terminus
-        reslast = chain.residues[-1]
         if isinstance(reslast, aa.Amino):
             reslast.is_c_term = True
             if neutralc:
@@ -752,6 +767,9 @@ class Biomolecule(object):
                                 # Remove the C/N prefix to keep the protonation state of the residue
                                 # in the terminal residues
                                 rname = rname[1:]
+                            elif rname.startswith("NEUTRAL-"):
+                                # Remove the NEUTRAL-C and NEUTRAL-N prefixes to keep protonation state
+                                rname = rname[9:]
                             else:
                                 # This is the old code which will overwrite the protonation state
                                 # of the residue but have wrong hydrogens. Not sure if needed but

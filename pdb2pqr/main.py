@@ -510,12 +510,13 @@ def run_propka(args, biomolecule):
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
 
-    pdb_path = "input.pdb"
     with StringIO() as fpdb:
         fpdb.writelines(lines)
         parameters = pk_in.read_parameter_file(args.parameters, Parameters())
         molecule = MolecularContainer(parameters, args)
-        molecule = pk_in.read_molecule_file(pdb_path, molecule, fpdb)
+        # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
+        molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
+
 
 
     molecule.calculate_pka()

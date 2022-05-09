@@ -10,7 +10,7 @@ import logging
 import argparse
 import sys
 from collections import OrderedDict
-from tempfile import NamedTemporaryFile
+from io import StringIO
 from pathlib import Path
 import propka.lib
 import propka.output as pk_out
@@ -27,7 +27,6 @@ from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT
-import os
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
@@ -506,21 +505,19 @@ def run_propka(args, biomolecule):
                pKa information from PROPKA)
     :rtype:  (list, str)
     """
-    # TODO - eliminate need to write temporary file
+
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
 
-    pdb_path = NamedTemporaryFile(suffix=".pdb", delete=True).name
-    with open(pdb_path, "w") as fpdb:
-        for line in lines:
-            fpdb.write(line)
+    with StringIO() as fpdb:
+        fpdb.writelines(lines)
+        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+        molecule = MolecularContainer(parameters, args)
+        # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
+        molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
 
-    parameters = pk_in.read_parameter_file(args.parameters, Parameters())
-    molecule = MolecularContainer(parameters, args)
-    molecule = pk_in.read_molecule_file(pdb_path, molecule)
 
-    os.remove(pdb_path)
 
     molecule.calculate_pka()
 

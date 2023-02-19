@@ -35,8 +35,8 @@ from setuptools import find_packages, setup
 with open("pdb2pqr/_version.py") as fobj:
     exec(fobj.read())
 
-if version_info[:2] < (3, 6):
-    raise RuntimeError("Python version >= 3.6 is required.")
+if version_info[:2] < (3, 8):
+    raise RuntimeError("Python version >= 3.8 is required.")
 
 with open("README.md", "r") as fobj:
     LONG_DESCRIPTION = fobj.read()
@@ -56,7 +56,7 @@ setup(
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",
-        "propka >= 3.2",
+        "propka >= 3.5",
         "requests",
         "docutils < 0.18"
     ],
@@ -93,10 +93,10 @@ setup(
         "Operating System :: MacOS",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemistry",
     ],

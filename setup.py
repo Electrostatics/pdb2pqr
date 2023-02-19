@@ -56,7 +56,7 @@ setup(
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",
-        "propka >= 3.2",
+        "propka >= 3.5",
         "requests",
         "docutils < 0.18"
     ],

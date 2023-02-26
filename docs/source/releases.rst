@@ -2,6 +2,23 @@
 Release history
 ###############
 
+***************
+Current version
+***************
+
+Fixes
+=====
+
+* Fix problems with protonated terminal residue naming (`#301 <https://github.com/Electrostatics/pdb2pqr/pull/301>_`)
+* Fix problem with terminal histidine protonation (`#301 <https://github.com/Electrostatics/pdb2pqr/pull/301>_`)
+
+Changes
+=======
+
+* Update Python version support for compatibility with PROPKA (`#342 <https://github.com/Electrostatics/pdb2pqr/issues/342>_`)
+* Eliminate need for extra temporary file (`#315 <https://github.com/Electrostatics/pdb2pqr/pull/315>_`)
+* Add support for cyclic peptides (`#307 <https://github.com/Electrostatics/pdb2pqr/pull/307>_`)
+
 ******************
 3.5.2 (2022-01-23)
 ******************

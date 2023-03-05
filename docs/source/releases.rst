@@ -2,9 +2,9 @@
 Release history
 ###############
 
-***************
-Current version
-***************
+******************
+3.6.0 (2023-03-05)
+******************
 
 Fixes
 =====
@@ -15,6 +15,7 @@ Fixes
 Changes
 =======
 
+* Rename ``pdb2pqr30`` to ``pdb2pqr``
 * Update Python version support for compatibility with PROPKA (`#342 <https://github.com/Electrostatics/pdb2pqr/issues/342>_`);
   minimal supported Python is 3.8, highest tested is 3.11
 * Eliminate need for extra temporary file (`#315 <https://github.com/Electrostatics/pdb2pqr/pull/315>_`)

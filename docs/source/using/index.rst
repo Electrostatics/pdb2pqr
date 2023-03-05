@@ -28,14 +28,14 @@ Command line use
 
 .. code-block:: bash
 
-   pdb2pqr30 [options] --ff={forcefield} {path} {output-path}
+   pdb2pqr [options] --ff={forcefield} {path} {output-path}
 
 This module takes a PDB file as input and performs optimizations before yielding a new PQR-style file in ``{output-path}``.
 If ``{path}`` is a `PDB ID`_ it will automatically be retrieved from the online PDB archive.
 
-In addition to the required ``{path}`` and ``{output-path}`` arguments, :program:`pdb2pqr30` requires one of the following options:
+In addition to the required ``{path}`` and ``{output-path}`` arguments, :program:`pdb2pqr` requires one of the following options:
 
-* ``--ff=FIELD_NAME`` specifying the forcefield to use.  Run ``pdb2pqr30 --help`` to see specific options.
+* ``--ff=FIELD_NAME`` specifying the forcefield to use.  Run ``pdb2pqr --help`` to see specific options.
 
 * ``--userff=USER_FIELD_FILE`` specifying a user-created forcefield file. Requires ``--usernames`` and overrides ``--ff``.
 
@@ -46,7 +46,7 @@ Information about additional options can be obtained by running:
 
 .. code-block:: bash
 
-   pdb2pqr30 --help
+   pdb2pqr --help
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Additional command-line tools

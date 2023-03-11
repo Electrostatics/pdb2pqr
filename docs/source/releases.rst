@@ -15,7 +15,7 @@ Fixes
 Changes
 =======
 
-* Rename ``pdb2pqr30`` to ``pdb2pqr``
+* Rename ``pdb2pqr30`` to ``pdb2pqr``. The old ``pdb2pqr30`` executable is still available but will be deprecated in a future release.
 * Update Python version support for compatibility with PROPKA (`#342 <https://github.com/Electrostatics/pdb2pqr/issues/342>_`);
   minimal supported Python is 3.8, highest tested is 3.11
 * Eliminate need for extra temporary file (`#315 <https://github.com/Electrostatics/pdb2pqr/pull/315>_`)

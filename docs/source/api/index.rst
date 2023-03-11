@@ -8,7 +8,7 @@ API Reference
 .. module:: pdb2pqr
 
 
-The :program:`pdb2pqr30` command provides a command-line interface to PDB2PQR's functionality.
+The :program:`pdb2pqr` command provides a command-line interface to PDB2PQR's functionality.
 It is built on classes and functions in the :mod:`pdb2pqr` module.
 The API of :mod:`pdb2pqr` is documented here for developers who might want to directly use the PDB2PQR code.
 

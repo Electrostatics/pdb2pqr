@@ -28,7 +28,7 @@ Most users who want to use the software offline should install it via :program:`
 
 from within your favorite `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_.
 
-The PIP package provides the :mod:`pdb2pqr` Python module as well as the :program:`pdb2pqr30` program which can be used from the command line.
+The PIP package provides the :mod:`pdb2pqr` Python module as well as the :program:`pdb2pqr` program which can be used from the command line.
 
 -----------------------------
 Installation from source code

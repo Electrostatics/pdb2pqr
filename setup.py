@@ -110,6 +110,7 @@ setup(
     keywords="science chemistry molecular biology",
     entry_points={
         "console_scripts": [
+            "pdb2pqr=pdb2pqr.main:main",
             "pdb2pqr30=pdb2pqr.main:main",
             "dx2cube=pdb2pqr.main:dx_to_cube",
             "inputgen=pdb2pqr.inputgen:main",

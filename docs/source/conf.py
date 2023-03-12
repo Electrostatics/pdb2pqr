@@ -21,7 +21,7 @@ import pdb2pqr  # noqa: E402
 # -- Project information -----------------------------------------------------
 
 project = "pdb2pqr"
-copyright = "2022, Battelle Memorial Institute"
+copyright = "2023, Nathan A. Baker"
 author = "Nathan Baker and many others"
 
 # The full version, including alpha/beta/rc tags

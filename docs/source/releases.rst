@@ -9,17 +9,17 @@ Release history
 Fixes
 =====
 
-* Fix problems with protonated terminal residue naming (`#301 <https://github.com/Electrostatics/pdb2pqr/pull/301>_`)
-* Fix problem with terminal histidine protonation (`#301 <https://github.com/Electrostatics/pdb2pqr/pull/301>_`)
+* Fix problems with protonated terminal residue naming (`#301 <https://github.com/Electrostatics/pdb2pqr/pull/301>`_)
+* Fix problem with terminal histidine protonation (`#301 <https://github.com/Electrostatics/pdb2pqr/pull/301>`_)
 
 Changes
 =======
 
 * Rename ``pdb2pqr30`` to ``pdb2pqr``. The old ``pdb2pqr30`` executable is still available but will be deprecated in a future release.
-* Update Python version support for compatibility with PROPKA (`#342 <https://github.com/Electrostatics/pdb2pqr/issues/342>_`);
+* Update Python version support for compatibility with PROPKA (`#342 <https://github.com/Electrostatics/pdb2pqr/issues/342>`_);
   minimal supported Python is 3.8, highest tested is 3.11
-* Eliminate need for extra temporary file (`#315 <https://github.com/Electrostatics/pdb2pqr/pull/315>_`)
-* Add support for cyclic peptides (`#307 <https://github.com/Electrostatics/pdb2pqr/pull/307>_`)
+* Eliminate need for extra temporary file (`#315 <https://github.com/Electrostatics/pdb2pqr/pull/315>`_)
+* Add support for cyclic peptides (`#307 <https://github.com/Electrostatics/pdb2pqr/pull/307>`_)
 
 ******************
 3.5.2 (2022-01-23)
@@ -28,7 +28,7 @@ Changes
 Fixes
 =====
 
-* Fixes problems with XML parsing of large files (`#293 <https://github.com/Electrostatics/pdb2pqr/issues/293>_`)
+* Fixes problems with XML parsing of large files (`#293 <https://github.com/Electrostatics/pdb2pqr/issues/293>`_)
 
 ******************
 3.5.1 (2022-01-17)
@@ -37,8 +37,8 @@ Fixes
 Changes
 =======
 
-* Add support for integer-only residue names (`#291 <https://github.com/Electrostatics/pdb2pqr/pull/291>_`).
-* Remove temporary files created by PDB2PQR (`#286 <https://github.com/Electrostatics/pdb2pqr/pull/286>_`).
+* Add support for integer-only residue names (`#291 <https://github.com/Electrostatics/pdb2pqr/pull/291>`_).
+* Remove temporary files created by PDB2PQR (`#286 <https://github.com/Electrostatics/pdb2pqr/pull/286>`_).
 
 ******************
 3.5.0 (2022-01-01)
@@ -62,7 +62,7 @@ Changes
 * Removed non-functional command line version of ``psize`` (`#181 <https://github.com/Electrostatics/pdb2pqr/issues/181>`_).
 * Provided clearer error messages for unsupported MOL2 bond types (`#178 <https://github.com/Electrostatics/pdb2pqr/issues/178>`_).
 * Added ``--run-long`` option to tests and cleaned up test warning messages.
-* Updated list of visualization tools to include `NGL Viewer <http://nglviewer.org/ngl/>_` (`#38 <https://github.com/Electrostatics/pdb2pqr/issues/38>`_).
+* Updated list of visualization tools to include `NGL Viewer <http://nglviewer.org/ngl/>`_ (`#38 <https://github.com/Electrostatics/pdb2pqr/issues/38>`_).
 * Updated documentation to warn users against using more than one ligand in calculations (`#23 <https://github.com/Electrostatics/pdb2pqr/issues/23>`_).
 
 ******************
@@ -152,7 +152,7 @@ Changes
 
 * Improved documentation of constants in modules.
 * Improved handling of improperly formatted PDB records that are not ``HETATM`` or ``ATOM`` (`#170 <https://github.com/Electrostatics/pdb2pqr/issues/170>`_, `#210 <https://github.com/Electrostatics/pdb2pqr/issues/210>`_).
-* Removed versioneer (`#209 <https://github.com/Electrostatics/pdb2pqr/issues/209>_`)
+* Removed versioneer (`#209 <https://github.com/Electrostatics/pdb2pqr/issues/209>`_)
 * Removed Pandas requirement (`#179 <https://github.com/Electrostatics/pdb2pqr/issues/179>`_)
 
 ******************

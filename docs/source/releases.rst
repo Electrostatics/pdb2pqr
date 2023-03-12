@@ -48,22 +48,22 @@ Fixes
 =====
 
 * Addressed problem where critical failures are missed in testing (`#262 <https://github.com/Electrostatics/pdb2pqr/issues/262>`_).  This doesn't represent a change to the (documented) API but will change functionality for external code that isn't ready to handle the raised error.
-* Fixed calculation of non-integer charge (`#264 <https://github.com/Electrostatics/pdb2pqr/issues/264>_`).
-* Fixed problem with missing RNA phosphate oxygens (`#267 <https://github.com/Electrostatics/pdb2pqr/issues/267>_`).
-* Fixed problem with non-optimal hydrogen bond orientation for non-bonded atoms; mainly affects water orientation. (`#9 <https://github.com/Electrostatics/pdb2pqr/issues/9>_`).
+* Fixed calculation of non-integer charge (`#264 <https://github.com/Electrostatics/pdb2pqr/issues/264>`_).
+* Fixed problem with missing RNA phosphate oxygens (`#267 <https://github.com/Electrostatics/pdb2pqr/issues/267>`_).
+* Fixed problem with non-optimal hydrogen bond orientation for non-bonded atoms; mainly affects water orientation. (`#9 <https://github.com/Electrostatics/pdb2pqr/issues/9>`_).
 
 Changes
 =======
 
-* Supressed excessive "Tetrahedral hydrogen reconstruction not available for nucleic acids" warnings (`#253 <https://github.com/Electrostatics/pdb2pqr/issues/253>_`).
+* Supressed excessive "Tetrahedral hydrogen reconstruction not available for nucleic acids" warnings (`#253 <https://github.com/Electrostatics/pdb2pqr/issues/253>`_).
 * Increased verbosity of output (warnings and information) for missing and reconstructed atoms.
 * Standardized testing and output for troubleshooting with non-integer residue charges.
-* Added ``HG1`` as alternate name for serine hydroxyl hydrogen (`#214 <https://github.com/Electrostatics/pdb2pqr/issues/214>_`).
-* Removed non-functional command line version of ``psize`` (`#181 <https://github.com/Electrostatics/pdb2pqr/issues/181>_`).
-* Provided clearer error messages for unsupported MOL2 bond types (`#178 <https://github.com/Electrostatics/pdb2pqr/issues/178>_`).
+* Added ``HG1`` as alternate name for serine hydroxyl hydrogen (`#214 <https://github.com/Electrostatics/pdb2pqr/issues/214>`_).
+* Removed non-functional command line version of ``psize`` (`#181 <https://github.com/Electrostatics/pdb2pqr/issues/181>`_).
+* Provided clearer error messages for unsupported MOL2 bond types (`#178 <https://github.com/Electrostatics/pdb2pqr/issues/178>`_).
 * Added ``--run-long`` option to tests and cleaned up test warning messages.
-* Updated list of visualization tools to include `NGL Viewer <http://nglviewer.org/ngl/>_` (`#38 <https://github.com/Electrostatics/pdb2pqr/issues/38>_`).
-* Updated documentation to warn users against using more than one ligand in calculations (`#23 <https://github.com/Electrostatics/pdb2pqr/issues/23>_`).
+* Updated list of visualization tools to include `NGL Viewer <http://nglviewer.org/ngl/>_` (`#38 <https://github.com/Electrostatics/pdb2pqr/issues/38>`_).
+* Updated documentation to warn users against using more than one ligand in calculations (`#23 <https://github.com/Electrostatics/pdb2pqr/issues/23>`_).
 
 ******************
 3.4.1 (2021-12-27)

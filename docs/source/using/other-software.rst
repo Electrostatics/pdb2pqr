@@ -12,7 +12,7 @@ Examples of visualization software that work with output from PDB2PQR and APBS:
 
 * `PyMOL <https://pymol.org/>`_
 * `VMD <https://www.ks.uiuc.edu/Research/vmd/>`_
-* `NGL Viewer <http://nglviewer.org/ngl/>_`
+* `NGL Viewer <http://nglviewer.org/ngl/>`_
 * `Chimera <https://www.cgl.ucsf.edu/chimera/>`_
 * `PMV <http://mgltools.scripps.edu/packages/pmv>`_
 

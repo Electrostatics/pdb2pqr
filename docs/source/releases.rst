@@ -2,6 +2,15 @@
 Release history
 ###############
 
+***************
+Current version
+***************
+
+Fixes
+=====
+
+* Fixed broken link in documentation (`#363 <https://github.com/Electrostatics/pdb2pqr/issues/363>`_)
+
 ******************
 3.6.1 (2023-03-12)
 ******************

@@ -279,13 +279,15 @@ def check_options(args):
     :type args:  argparse.Namespace
     :raises RuntimeError:  silly option combinations were encountered.
     """
-    for option in IGNORED_PROPKA_OPTIONS:
+    for option, new_value in IGNORED_PROPKA_OPTIONS.items():
         if option in args:
-            _LOGGER.warn(
-                f"PROPKA option '{option}' is not processed correctly by "
-                f"PDB2PQR. Ignoring."
-            )
-            args.__dict__.pop(option)
+            value = getattr(args, option)
+            if value:
+                _LOGGER.warning(
+                    f"PROPKA option '{option}' {getattr(args, option)} is not "
+                    f"processed correctly by PDB2PQR. Ignoring."
+                )
+                setattr(args, option, new_value)
     if (args.ph < 0) or (args.ph > 14):
         err = (
             f"Specified pH ({args.ph}) is outside the range "

@@ -48,6 +48,13 @@ Information about additional options can be obtained by running:
 
    pdb2pqr --help
 
+.. note::
+
+   `PROPKA <https://github.com/jensengroup/propka>`_ options are exposed via the PDB2PQR command line for convenience.
+   However, not all of these options are supported in PDB2PQR.
+   We have tried to add warning or error messages when unsupported PROPKA options are passed to the code but we may have missed some.
+   Please `file an issue <https://github.com/Electrostatics/pdb2pqr/issues>`_ if you find a PROPKA option that is not working in PDB2PQR.
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Additional command-line tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

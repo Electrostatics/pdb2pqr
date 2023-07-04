@@ -5,6 +5,19 @@ from ._version import __version__
 VERSION = __version__
 
 
+#: Options for PROPKA that PDB2PQR cannot handle
+IGNORED_PROPKA_OPTIONS = {
+    "thermophiles": None,
+    "chains": None,
+    "alignment": None,
+    "mutations": None,
+    "mutator": None,
+    "mutator_options": None,
+    "reuse_ligand_mol2_file": False,
+    "keep_protons": False,
+    "protonate_all": False
+}
+
 #: How to format PDB2PQR title in output
 TITLE_STR = f"PDB2PQR v{VERSION}: biomolecular structure conversion software."
 

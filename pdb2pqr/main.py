@@ -26,7 +26,7 @@ from . import io
 from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
-from .config import REPAIR_LIMIT
+from .config import REPAIR_LIMIT, IGNORED_PROPKA_OPTIONS
 
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
@@ -279,6 +279,15 @@ def check_options(args):
     :type args:  argparse.Namespace
     :raises RuntimeError:  silly option combinations were encountered.
     """
+    for option, new_value in IGNORED_PROPKA_OPTIONS.items():
+        if option in args:
+            value = getattr(args, option)
+            if value:
+                _LOGGER.warning(
+                    f"PROPKA option '{option}' {getattr(args, option)} is not "
+                    f"processed correctly by PDB2PQR. Ignoring."
+                )
+                setattr(args, option, new_value)
     if (args.ph < 0) or (args.ph > 14):
         err = (
             f"Specified pH ({args.ph}) is outside the range "

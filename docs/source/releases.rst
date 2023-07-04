@@ -6,6 +6,11 @@ Release history
 Current version
 ***************
 
+Changes
+=======
+
+* Added warnings about ignored PROPKA options (`#365 <https://github.com/Electrostatics/pdb2pqr/issues/365>`_)
+
 Fixes
 =====
 

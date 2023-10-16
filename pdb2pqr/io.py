@@ -359,19 +359,20 @@ def test_for_file(name, type_):
         return ""
     test_names = [name, name.upper(), name.lower()]
     test_suffixes = ["", f".{type_.upper()}", f".{type_.lower()}"]
-    test_dirs = [
-        Path(p).joinpath("pdb2pqr", "dat") for p in sys_path + [Path.cwd()]
-    ]
+
+    module_path = Path(__file__)
+    dirpath_dat = module_path.parent / 'dat'
+
+    assert dirpath_dat.is_dir()
+
     if name.lower() in FORCE_FIELDS:
         name = name.upper()
-    for test_dir in test_dirs:
-        test_dir = Path(test_dir)
-        for test_name in test_names:
-            for test_suffix in test_suffixes:
-                test_path = test_dir / (test_name + test_suffix)
-                if test_path.is_file():
-                    _LOGGER.debug(f"Found {type_} file {test_path}")
-                    return test_path
+    for test_name in test_names:
+        for test_suffix in test_suffixes:
+            test_path = dirpath_dat / (test_name + test_suffix)
+            if test_path.is_file():
+                _LOGGER.debug(f"Found {type_} file {test_path}")
+                return test_path
     err = f"Unable to find {type_} file for {name}"
     raise FileNotFoundError(err)
 

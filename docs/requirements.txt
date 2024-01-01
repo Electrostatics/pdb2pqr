@@ -3,3 +3,4 @@ sphinx_rtd_theme==1.1.1
 sphinx_sitemap==2.5.1
 readthedocs-sphinx-search==0.1.1
 propka
+numpy

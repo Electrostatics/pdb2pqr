@@ -51,7 +51,7 @@ for ff in ["CHARMM", "AMBER", "PARSE", "SWANSON", "TYL06"]:
     for pdb in ["1AJJ", "1BX8"]:
         for pH in [2, 7, 14]:
             options = {"pdb": pdb, "ff": ff, "pH": pH}
-            if ff is "CHARMM":
+            if ff == "CHARMM":
                 NAMING_TESTS.append(pytest.param(options, marks=pytest.mark.xfail(reason="CHARMM force field is broken!")))
             else:
                 NAMING_TESTS.append(pytest.param(options))

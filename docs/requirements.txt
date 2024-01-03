@@ -1,0 +1,8 @@
+sphinx==5.3.0
+sphinx_rtd_theme==1.1.1
+sphinx_sitemap==2.5.1
+readthedocs-sphinx-search==0.1.1
+propka >= 3.5
+numpy
+pdbx
+mmcif_pdbx>=1.1.2

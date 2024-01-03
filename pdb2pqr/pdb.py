@@ -649,7 +649,15 @@ class ATOM(BaseRecord):
         :type line:  str
         """
         super().__init__(line)
-        self.serial = int(line[6:11].strip())
+        try:
+            self.serial = int(line[6:11].strip())
+        except ValueError:
+            try:
+                self.serial = int(line[6:11].strip(), 16)
+            except ValueError:
+                _LOGGER.error(f"Error parsing atom number: {line[6:11].strip()}.")
+                _LOGGER.error("Use integers or VMD's hexadecimal notation")
+                raise ValueError(f"Error parsing atom number: {line[6:11].strip()}. Use integers or VMD's hexadecimal notation")
         self.name = line[12:16].strip()
         self.alt_loc = line[16].strip()
         self.res_name = line[17:20].strip()

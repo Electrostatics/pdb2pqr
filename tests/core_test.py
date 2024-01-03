@@ -142,3 +142,24 @@ def test_cyclic_peptide(input_pdb, expected_pqr, tmp_path):
         tmp_path=tmp_path,
         compare_resnames=True,
     )
+
+
+@pytest.mark.parametrize(
+    "input_pdb, expected_pqr",
+    [pytest.param("5urf-assembly1.pdb", "5urf-assembly1.pqr", id="HEX Atom Id")],
+)
+@pytest.mark.long_test
+def test_hex_pdb(input_pdb, expected_pqr, tmp_path):
+    """Tests for HEX ATOM Id."""
+    args = "--log-level=ERROR --ff=AMBER --ffout AMBER"
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr(
+        args=args,
+        input_pdb=common.DATA_DIR / input_pdb,
+        output_pqr=output_pqr,
+        expected_pqr=common.DATA_DIR / expected_pqr,
+        tmp_path=tmp_path,
+        compare_resnames=True,
+    )
+
+

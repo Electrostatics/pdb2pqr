@@ -45,6 +45,16 @@ LONG_NUCLEIC_SET = {"5V0O"}
 LONG_SET = LONG_PROTEIN_SET | LONG_NUCLEIC_SET
 #: Tests that should fail (broken backbones)
 BROKEN_SET = {"1EJG", "3U7T", "1EJG", "4MGP", "2V75"}
+#: Tests for naming residues with different protonation states
+NAMING_TESTS = []
+for ff in ["CHARMM", "AMBER", "PARSE", "SWANSON", "TYL06"]:
+    for pdb in ["1AJJ", "1BX8"]:
+        for pH in [2, 7, 14]:
+            options = {"pdb": pdb, "ff": ff, "pH": pH}
+            if ff == "CHARMM":
+                NAMING_TESTS.append(pytest.param(options, marks=pytest.mark.xfail(reason="CHARMM force field is broken!")))
+            else:
+                NAMING_TESTS.append(pytest.param(options))
 # fmt: on
 
 
@@ -134,6 +144,30 @@ def test_cyclic_peptide(input_pdb, expected_pqr, tmp_path):
     """Tests for cyclic peptide protonation."""
     args = "--log-level=INFO --ff=AMBER --ffout AMBER"
     output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr(
+        args=args,
+        input_pdb=common.DATA_DIR / input_pdb,
+        output_pqr=output_pqr,
+        expected_pqr=common.DATA_DIR / expected_pqr,
+        tmp_path=tmp_path,
+        compare_resnames=True,
+    )
+
+
+@pytest.mark.parametrize("naming_test", NAMING_TESTS, ids=str)
+def test_ph_naming(naming_test, tmp_path):
+    """Non-regression tests on naming schemes at different pH values."""
+    args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"
+    input_pdb = naming_test["pdb"] + ".pdb"
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    expected_pqr = (
+        f"{naming_test['pdb']}_pH{naming_test['pH']}_{naming_test['ff']}.pqr"
+    )
+    args = (
+        f"--log-level=INFO --ff={naming_test['ff']} --ffout={naming_test['ff']} "
+        f"--drop-water --whitespace --with-ph={naming_test['pH']} "
+        f"--titration-state-method=propka"
+    )
     common.run_pdb2pqr(
         args=args,
         input_pdb=common.DATA_DIR / input_pdb,

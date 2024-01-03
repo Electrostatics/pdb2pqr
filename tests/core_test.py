@@ -168,7 +168,6 @@ def test_ph_naming(naming_test, tmp_path):
         f"--drop-water --whitespace --with-ph={naming_test['pH']} "
         f"--titration-state-method=propka"
     )
-    print(args, input_pdb, output_pqr)
     common.run_pdb2pqr(
         args=args,
         input_pdb=common.DATA_DIR / input_pdb,

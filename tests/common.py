@@ -162,6 +162,8 @@ def compare_pqr(pqr1_path, pqr2_path, compare_resnames=False):
     if compare_resnames:
         diff_resname = df1.res_name != df2.res_name
         if any(diff_resname):
+            _LOGGER.error(f"Got residue names:\n{df1[diff_resname]}")
+            _LOGGER.error(f"Expected residue names:\n{df2[diff_resname]}")
             raise ValueError(
                 f"PQR files have different residue names\n{df1.res_name[diff_resname]}\nreference\n{df2.res_name[diff_resname]}"
             )

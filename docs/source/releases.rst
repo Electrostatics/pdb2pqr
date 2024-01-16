@@ -2,6 +2,15 @@
 Release history
 ###############
 
+***************
+Current version
+***************
+
+Fixes
+=====
+
+* Updated Sphinx versions (`#384 <https://github.com/Electrostatics/pdb2pqr/issues/384>`_)
+
 ******************
 3.6.2 (2023-12-31)
 ******************

@@ -180,25 +180,21 @@ class Atom:
         else:
             err = f"Unable to parse line: {line}"
             raise ValueError(err)
-        atom.serial = int(words.pop(0))
-        atom.name = words.pop(0)
-        atom.res_name = words.pop(0)
-        token = words.pop(0)
+        atom.serial = line[6:11].strip()
         try:
-            atom.res_seq = int(token)
-        except ValueError:
-            atom.chain_id = token
-            atom.res_seq = int(words.pop(0))
-        token = words.pop(0)
-        try:
-            atom.x = float(token)
-        except ValueError:
-            atom.ins_code = token
-            atom.x = float(words.pop(0))
-        atom.y = float(words.pop(0))
-        atom.z = float(words.pop(0))
-        atom.charge = float(words.pop(0))
-        atom.radius = float(words.pop(0))
+            atom.serial = int(atom.serial)
+        except:
+            atom.serial = int(atom.serial, 16)
+        atom.name = line[12:16].strip()
+        atom.res_name = line[17:21].strip()
+        atom.chain_id = line[21:22]
+        atom.res_seq = int(line[22:26].strip())
+        atom.ins_code = line[26:27]
+        atom.x = float(line[30:38].strip())
+        atom.y = float(line[38:46].strip())
+        atom.z = float(line[46:54].strip()) 
+        atom.charge = float(line[54:62].strip()) 
+        atom.radius = float(line[62:69].strip())
         return atom
 
     @classmethod
@@ -265,7 +261,10 @@ class Atom:
         outstr = ""
         tstr = self.type
         outstr += str.ljust(tstr, 6)[:6]
-        tstr = f"{self.serial:d}"
+        if self.serial > 99999:
+            tstr = f"{hex(self.serial)[2:]}" 
+        else:
+            tstr = f"{self.serial:d}"
         outstr += str.rjust(tstr, 5)[:5]
         outstr += " "
         tstr = self.name

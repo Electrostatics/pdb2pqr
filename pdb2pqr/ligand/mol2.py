@@ -17,7 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 # These are the allowed bond types
-BOND_TYPES = {"single", "double", "triple", "aromatic"}
+BOND_TYPES = {"single", "double", "triple", "aromatic", "amide"}
 # This is the maximum deviation from an ideal bond distance
 BOND_DIST = 2.0
 
@@ -217,6 +217,8 @@ class Mol2Atom:
                 order += 3
             elif bond.type == "aromatic":
                 num_aromatic += 1
+            elif bond.type == "amide" : # TODO: check order for amide
+                order += 1
             else:
                 err = f"Unknown bond type: {bond.type}"
                 raise ValueError(err)
@@ -266,7 +268,8 @@ class Mol2Atom:
             and (formal_charge != -0.5)
         ):
             # CO2 bond orders are hardly ever set correctly in MOL2
-            formal_charge = -0.5
+#            formal_charge = -0.5
+             formal_charge = -1
         elif (
             (self.type in ["C.2"])
             and (bond_order == 5)
@@ -454,8 +457,8 @@ class Mol2Molecule:
 
         :param mol2_file:  file-like object with MOL2 data
         """
-        mol2_file = self.parse_atoms(mol2_file)
-        mol2_file = self.parse_bonds(mol2_file)
+        self.parse_atoms(mol2_file)
+        self.parse_bonds(mol2_file)
 
     def parse_atoms(self, mol2_file):
         """Parse @<TRIPOS>ATOM section of file.
@@ -475,7 +478,7 @@ class Mol2Molecule:
             line = line.strip()
             if not line:
                 continue
-            if "@<TRIPOS>BOND" in line:
+            if "@<TRIPOS>" in line:
                 break
             words = line.split()
             if len(words) < 8:
@@ -530,6 +533,11 @@ class Mol2Molecule:
         :return:  file-like object advanced to SUBSTRUCTURE section
         """
         atom_names = list(self.atoms.keys())
+        # read before bonds section
+        for line in mol2_file:
+            if "@<TRIPOS>BOND" in line:
+                break
+
         for line in mol2_file:
             line = line.strip()
             if not line:
@@ -548,10 +556,13 @@ class Mol2Molecule:
             elif bond_type == "3":
                 bond_type = "triple"
             elif bond_type == "am":
-                raise NotImplementedError(
-                    "PDB2PQR does not currently support the amide (am) bond "
-                    "type."
-                )
+                bond_type = "amide" # Todo: amide bond processing
+
+#                raise NotImplementedError(
+#                    "PDB2PQR does not currently support the amide (am) bond "
+#                    "type."
+#                )
+
             elif bond_type == "ar":
                 bond_type = "aromatic"
             elif bond_type == "du":

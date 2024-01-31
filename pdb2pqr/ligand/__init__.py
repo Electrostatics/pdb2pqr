@@ -8,7 +8,6 @@
 """
 import sys
 
-
 assert sys.version_info >= (3, 5)
 
 
@@ -129,6 +128,7 @@ NONBONDED_BY_TYPE = {
     "C.3": 0,
     "C.ar": 0,
     "Ca": 0,
+    "C.cat": 0,
     "Cl": 6,
     "F": 6,
     "H": 0,

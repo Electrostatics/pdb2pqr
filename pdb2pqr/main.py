@@ -6,28 +6,31 @@ It was created to avoid cluttering the __init__.py file.
 
 .. codeauthor:: Nathan Baker (et al.)
 """
-import logging
 import argparse
+import logging
 import sys
 from collections import OrderedDict
 from io import StringIO
 from pathlib import Path
+
+import propka.input as pk_in
 import propka.lib
 import propka.output as pk_out
-import propka.input as pk_in
-from propka.parameters import Parameters
 from propka.molecular_container import MolecularContainer
-from . import aa
-from . import debump
-from . import hydrogens
-from . import forcefield
+from propka.parameters import Parameters
+
+from . import aa, debump, forcefield, hydrogens, io
 from . import biomolecule as biomol
-from . import io
+from .config import (
+    CITATIONS,
+    FORCE_FIELDS,
+    IGNORED_PROPKA_OPTIONS,
+    REPAIR_LIMIT,
+    TITLE_STR,
+    VERSION,
+)
 from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
-from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
-from .config import REPAIR_LIMIT, IGNORED_PROPKA_OPTIONS
-
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
 
@@ -113,8 +116,7 @@ def build_main_parser():
         action="store_true",
         default=False,
         help=(
-            "Only assign charges and radii - do not add atoms, "
-            "debump, or optimize."
+            "Only assign charges and radii - do not add atoms, " "debump, or optimize."
         ),
     )
     grp2.add_argument(
@@ -127,9 +129,7 @@ def build_main_parser():
     )
     grp2.add_argument(
         "--usernames",
-        help=(
-            "The user-created names file to use. Required if using --userff"
-        ),
+        help=("The user-created names file to use. Required if using --userff"),
     )
     grp2.add_argument(
         "--apbs-input",
@@ -223,9 +223,7 @@ def build_main_parser():
     pars = propka.lib.build_parser(pars)
 
     # Override version flag set by PROPKA
-    pars.add_argument(
-        "--version", action="version", version=f"%(prog)s {VERSION}"
-    )
+    pars.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
 
     return pars
 
@@ -290,8 +288,7 @@ def check_options(args):
                 setattr(args, option, new_value)
     if (args.ph < 0) or (args.ph > 14):
         err = (
-            f"Specified pH ({args.ph}) is outside the range "
-            "[1, 14] of this program"
+            f"Specified pH ({args.ph}) is outside the range " "[1, 14] of this program"
         )
         raise RuntimeError(err)
     if args.neutraln and (args.ff is None or args.ff.lower() != "parse"):
@@ -317,13 +314,9 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
     with open(args.output_pqr, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(header_lines)} header lines in output."
-            )
+            _LOGGER.warning(f"Ignoring {len(header_lines)} header lines in output.")
         if missing_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(missing_lines)} missing lines in output."
-            )
+            _LOGGER.warning(f"Ignoring {len(missing_lines)} missing lines in output.")
         for line in pqr_lines:
             if args.whitespace:
                 if line[0:4] == "ATOM" or line[0:6] == "HETATM":
@@ -360,13 +353,9 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
     with open(args.pdb_output, "wt") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(header_lines)} header lines in output."
-            )
+            _LOGGER.warning(f"Ignoring {len(header_lines)} header lines in output.")
         if missing_lines:
-            _LOGGER.warning(
-                f"Ignoring {len(missing_lines)} missing lines in output."
-            )
+            _LOGGER.warning(f"Ignoring {len(missing_lines)} missing lines in output.")
         for line in pdb_lines:
             if line[0:3] != "TER" or not is_cif:
                 outfile.write(line)
@@ -526,8 +515,6 @@ def run_propka(args, biomolecule):
         # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
         molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
 
-
-
     molecule.calculate_pka()
 
     # Extract pKa information from PROPKA
@@ -560,9 +547,7 @@ def run_propka(args, biomolecule):
             window=[0.0, 14.0, 1.0],
         )
     )
-    lines.append(
-        pk_out.get_charge_profile_section(molecule, conformation="AVR")
-    )
+    lines.append(pk_out.get_charge_profile_section(molecule, conformation="AVR"))
     lines.append(pk_out.get_the_line())
     pka_str = "\n".join(lines)
 
@@ -647,9 +632,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 forcefield_.name,
                 args.ph,
                 {
-                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
-                        "pKa"
-                    ]
+                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row["pKa"]
                     for row in pka_df
                     if row["group_label"].startswith(row["res_name"])
                 },
@@ -661,9 +644,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             _LOGGER.info("Debumping biomolecule (again).")
             debumper.debump_biomolecule()
         _LOGGER.info("Optimizing hydrogen bonds")
-        hydrogen_routines = hydrogens.HydrogenRoutines(
-            debumper, hydrogen_handler
-        )
+        hydrogen_routines = hydrogens.HydrogenRoutines(debumper, hydrogen_handler)
         if args.opt:
             hydrogen_routines.set_optimizeable_hydrogens()
             biomolecule.hold_residues(None)
@@ -705,9 +686,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
         charge = residue.charge
         charge_err = noninteger_charge(charge)
         if charge_err:
-            _LOGGER.warning(
-                f"Residue {residue} has non-integer charge:  {charge_err}"
-            )
+            _LOGGER.warning(f"Residue {residue} has non-integer charge:  {charge_err}")
         total_charge += charge
     charge_err = noninteger_charge(total_charge)
     if charge_err:
@@ -777,23 +756,17 @@ def main_driver(args):
         _LOGGER.info("Dropping water from structure.")
         pdblist = drop_water(pdblist)
     _LOGGER.info("Setting up molecule.")
-    biomolecule, definition, ligand = setup_molecule(
-        pdblist, definition, args.ligand
-    )
+    biomolecule, definition, ligand = setup_molecule(pdblist, definition, args.ligand)
     _LOGGER.info("Setting termini states for biomolecule chains.")
     biomolecule.set_termini(args.neutraln, args.neutralc)
     biomolecule.update_bonds()
     if args.clean:
-        _LOGGER.info(
-            "Arguments specified cleaning only; skipping remaining steps."
-        )
+        _LOGGER.info("Arguments specified cleaning only; skipping remaining steps.")
         results = {
             "header": "",
             "missed_residues": None,
             "biomolecule": biomolecule,
-            "lines": io.print_biomolecule_atoms(
-                biomolecule.atoms, args.keep_chain
-            ),
+            "lines": io.print_biomolecule_atoms(biomolecule.atoms, args.keep_chain),
             "pka_df": None,
         }
     else:

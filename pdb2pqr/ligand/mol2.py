@@ -6,12 +6,11 @@ http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
 import logging
 from collections import OrderedDict
 from itertools import combinations
+
 from numpy import array
 from numpy.linalg import norm
-from . import peoe
-from . import VALENCE_BY_ELEMENT, NONBONDED_BY_TYPE
-from . import RADII
 
+from . import NONBONDED_BY_TYPE, RADII, VALENCE_BY_ELEMENT, peoe
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -217,7 +216,7 @@ class Mol2Atom:
                 order += 3
             elif bond.type == "aromatic":
                 num_aromatic += 1
-            elif bond.type == "amide" : # TODO: check order for amide
+            elif bond.type == "amide":  # TODO: check order for amide
                 order += 1
             else:
                 err = f"Unknown bond type: {bond.type}"
@@ -238,6 +237,7 @@ class Mol2Atom:
         nonbonded = NONBONDED_BY_TYPE[self.type]
         bond_order = self.bond_order
         formal_charge = valence - nonbonded - bond_order
+
         if (
             (self.type in ["N.pl3", "N.am"])
             and (bond_order == 3)
@@ -246,50 +246,26 @@ class Mol2Atom:
             # Planar nitrogen bond orders are not always correct in MOL2
             _LOGGER.warning("Correcting planar/amide bond order.")
             formal_charge = 0
-        elif (
-            (self.type in ["N.ar"])
-            and (bond_order == 4)
-            and (formal_charge != 0)
-        ):
+        elif (self.type in ["N.ar"]) and (bond_order == 4) and (formal_charge != 0):
             # Aromatic nitrogen bond orders are not always correct in MOL2
             _LOGGER.warning("Correcting aromatic nitrogen bond order.")
             formal_charge = 0
-        elif (
-            (self.type in ["C.ar"])
-            and (bond_order == 5)
-            and (formal_charge != 0)
-        ):
+        elif (self.type in ["C.ar"]) and (bond_order == 5) and (formal_charge != 0):
             # Aromatic carbon bond orders are not always correct in MOL2
             _LOGGER.warning("Correcting aromatic carbon bond order.")
             formal_charge = 0
-        elif (
-            (self.type in ["O.co2"])
-            and (bond_order == 1)
-            and (formal_charge != -0.5)
-        ):
+        elif (self.type in ["O.co2"]) and (bond_order == 1) and (formal_charge != -0.5):
             # CO2 bond orders are hardly ever set correctly in MOL2
-#            formal_charge = -0.5
-             formal_charge = -1
-        elif (
-            (self.type in ["C.2"])
-            and (bond_order == 5)
-            and (formal_charge == -1)
-        ):
+            #            formal_charge = -0.5
+            formal_charge = -1
+        elif (self.type in ["C.2"]) and (bond_order == 5) and (formal_charge == -1):
             # CO2 bond orders are hardly ever set correctly in MOL2
             formal_charge = 0
-        elif (
-            (self.type in ["N.3"])
-            and (bond_order == 4)
-            and (formal_charge == -1)
-        ):
+        elif (self.type in ["N.3"]) and (bond_order == 4) and (formal_charge == -1):
             # Tetravalent nitrogen atom types are sometimes wrong in MOL2
             _LOGGER.warning("Correcting ammonium atom type.")
             formal_charge = 1
-        elif (
-            (self.type in ["O.3"])
-            and (bond_order == 1)
-            and (formal_charge == 1)
-        ):
+        elif (self.type in ["O.3"]) and (bond_order == 1) and (formal_charge == 1):
             # Phosphate groups are sometimes confused in MOL2
             # Assign negative charge to first O.3 with bond order 1
             # attached to phosphorous
@@ -457,8 +433,8 @@ class Mol2Molecule:
 
         :param mol2_file:  file-like object with MOL2 data
         """
-        self.parse_atoms(mol2_file)
-        self.parse_bonds(mol2_file)
+        mol2_file = self.parse_atoms(mol2_file)
+        mol2_file = self.parse_bonds(mol2_file)
 
     def parse_atoms(self, mol2_file):
         """Parse @<TRIPOS>ATOM section of file.
@@ -479,6 +455,10 @@ class Mol2Molecule:
             if not line:
                 continue
             if "@<TRIPOS>" in line:
+                if "@<TRIPOS>BOND" in line:
+                    at_bond_section = True
+                else:
+                    at_bond_section = False
                 break
             words = line.split()
             if len(words) < 8:
@@ -517,10 +497,12 @@ class Mol2Molecule:
                 duplicates.add(atom.name)
             else:
                 self.atoms[atom.name] = atom
+        if at_bond_section is False:
+            for line in mol2_file:
+                if "@<TRIPOS>BOND" in line:
+                    break
         if duplicates:
-            raise KeyError(
-                f"Found duplicate atoms names in MOL2 file: {duplicates}"
-            )
+            raise KeyError(f"Found duplicate atoms names in MOL2 file: {duplicates}")
         return mol2_file
 
     def parse_bonds(self, mol2_file):
@@ -534,9 +516,6 @@ class Mol2Molecule:
         """
         atom_names = list(self.atoms.keys())
         # read before bonds section
-        for line in mol2_file:
-            if "@<TRIPOS>BOND" in line:
-                break
 
         for line in mol2_file:
             line = line.strip()
@@ -556,24 +535,22 @@ class Mol2Molecule:
             elif bond_type == "3":
                 bond_type = "triple"
             elif bond_type == "am":
-                bond_type = "amide" # Todo: amide bond processing
+                bond_type = "amide"  # Todo: amide bond processing
 
-#                raise NotImplementedError(
-#                    "PDB2PQR does not currently support the amide (am) bond "
-#                    "type."
-#                )
+            #                raise NotImplementedError(
+            #                    "PDB2PQR does not currently support the amide (am) bond "
+            #                    "type."
+            #                )
 
             elif bond_type == "ar":
                 bond_type = "aromatic"
             elif bond_type == "du":
                 raise NotImplementedError(
-                    "PDB2PQR does not currently support the dummy (du) bond "
-                    "type."
+                    "PDB2PQR does not currently support the dummy (du) bond " "type."
                 )
             elif bond_type == "un":
                 raise NotImplementedError(
-                    "PDB2PQR does not currently support the unknown (un) bond "
-                    "type."
+                    "PDB2PQR does not currently support the unknown (un) bond " "type."
                 )
             elif bond_type == "nc":
                 raise NotImplementedError(

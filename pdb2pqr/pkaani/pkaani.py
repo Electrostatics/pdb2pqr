@@ -24,8 +24,12 @@ def calculate_pka(pdbfiles,writefile=None):
     
     # device to run the training
     device = torch.device('cpu')
-    
-    print(os.path.dirname("."))
+
+    print("Please cite the original source of pKa-ANI if you use it:")
+    print('''# Gokcan, H.; Isayev, O. Prediction of Protein pKa with 
+          Representation Learning. Chemical Science, 2022, 13, 2462–2474. 
+          https://doi.org/10.1039/d1sc05610g.''')
+
 
     print("Loading pKa-ANI Models and ANI-2x...")
     #FEATURES
@@ -85,7 +89,8 @@ def calculate_pka(pdbfiles,writefile=None):
             
         #find titratable residues
         pkares,pkach=get_titratable(a_type,res,res_no,chainid)
-        
+        pka_res_chain = [(i, j) for i, j in zip(pkares, pkach)]
+
         #   divide atoms into groups by residue number
         #   this will be used to get activation and aev indices
         #   ca_list: the indices of CA atoms
@@ -100,18 +105,17 @@ def calculate_pka(pdbfiles,writefile=None):
         #                   array([ 8,  9, 10, 11]), 
         #                   array([12, 13, 14, 15, 16, 17, 18, 19, 20])]
         
-        ca_list=[]
-        chlist=[]
+        atom_list = []
         for i,a in enumerate(a_type):
             if((str(a)=='CA') and type_atm[i].strip()=='ATOM'):
-                ca_list.append(res_no[i])
-                chlist.append(chainid[i])
+                atom_list.append((res_no[i], chainid[i]))
+
       
     
         
         pdball_resi=[]
-        for i,r in enumerate(ca_list):
-            ilist=np.array(np.where((res_no == r) & (chainid == chlist[i])))
+        for i,r in enumerate(atom_list):
+            ilist=np.array(np.where((res_no == r[1]) & (chainid == r[1])))
             pdball_resi.append(ilist.flatten())
         
         nk,ck,ok=0,0,0 # counters for activation indices
@@ -130,20 +134,12 @@ def calculate_pka(pdbfiles,writefile=None):
         #now we are looping over residues
         #then if the residue is titratable 
         # we get aev, NN activation, and atom indices    
-        for i,r in enumerate(ca_list):
-            index=pdball_resi[i]
-            lres=str(res[index[0]].strip())
-            lchid=str(chainid[index[0]]).strip()
+        for i,r in enumerate(atom_list):
+            index = pdball_resi[i]
+            lres=res[index[0]]
+            lchid=str(r[1])
 
-
-            if(r in list(pkares)):
-               matchChain = pkares.index(r)            
-               # the pkares list is a list of CA atoms in all chains, need to
-               # make sure that the chains match so only the titratable residue
-               # pKas are calculated. If the chain doesnt match, go to next residue.
-               if (lchid != pkach[matchChain]):
-                  continue
-               
+            if(r in pka_res_chain):               
                pkaressize=pkaressize+1
                res_aevi=all_aevi[i]           
                res_acti=all_acti[i]

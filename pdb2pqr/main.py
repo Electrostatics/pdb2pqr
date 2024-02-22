@@ -622,8 +622,6 @@ def run_pkaani(args, biomolecule):
             row_dict["pKa"] = pKa_dict[key][1]
             rows.append(row_dict)
 
-    for i in rows:
-        print(i)
     return rows
 
 

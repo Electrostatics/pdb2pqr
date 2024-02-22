@@ -64,7 +64,7 @@ setup(
     packages=find_packages(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]
     ),
-    package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
+    package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names", "dat/*.joblib"]},
     python_requires=">=3.5",
     extras_require={
         "dev": ["check-manifest"],

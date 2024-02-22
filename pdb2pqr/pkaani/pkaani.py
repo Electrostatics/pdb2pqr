@@ -25,10 +25,17 @@ def calculate_pka(pdbfiles,writefile=None):
     # device to run the training
     device = torch.device('cpu')
 
+    print(
+       '''\n\n
+pKa-ANI pKas are calculated using a method published by Hattice Gokcan and Oleksandr Isayev, \
+based on the torchANI framework developed by Adrian Roitberg's research group. 
+          ''')
     print("Please cite the original source of pKa-ANI if you use it:")
-    print('''# Gokcan, H.; Isayev, O. Prediction of Protein pKa with 
-          Representation Learning. Chemical Science, 2022, 13, 2462–2474. 
-          https://doi.org/10.1039/d1sc05610g.''')
+    print('''
+Gokcan, H.; Isayev, O. Prediction of Protein pKa with 
+Representation Learning. Chemical Science, 2022, 13, 2462–2474. 
+https://doi.org/10.1039/d1sc05610g.\n\n
+          ''')
 
 
     print("Loading pKa-ANI Models and ANI-2x...")
@@ -115,7 +122,7 @@ def calculate_pka(pdbfiles,writefile=None):
         
         pdball_resi=[]
         for i,r in enumerate(atom_list):
-            ilist=np.array(np.where((res_no == r[1]) & (chainid == r[1])))
+            ilist=np.array(np.where((res_no == r[0]) & (chainid == r[1])))
             pdball_resi.append(ilist.flatten())
         
         nk,ck,ok=0,0,0 # counters for activation indices
@@ -137,7 +144,7 @@ def calculate_pka(pdbfiles,writefile=None):
         for i,r in enumerate(atom_list):
             index = pdball_resi[i]
             lres=res[index[0]]
-            lchid=str(r[1])
+            lchid=r[1]
 
             if(r in pka_res_chain):               
                pkaressize=pkaressize+1

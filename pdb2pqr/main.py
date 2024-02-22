@@ -606,20 +606,20 @@ def run_pkaani(args, biomolecule):
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
     
-    with StringIO() as fpdb:
-        fpdb.writelines(lines)
-        with open("snapshot.pdb", mode="w") as f:
-            print(fpdb.getvalue(), file=f)
-
-        pka = calculate_pka_pkaani(["snapshot.pdb"])
-        pKa_dict = pka["snapshot.pdb"]
+    # converting the PDB representation to a file object, and then 
+    # passing that file object into pKa-ANI
+    with StringIO() as fileObj:
+        fileObj.writelines(lines)
+        # returning buffer position to beginning so atom data can be read.
+        fileObj.seek(0)
+        pka = calculate_pka_pkaani(fileObj)
         rows = []
-        for key in pKa_dict:
+        for key in pka:
             row_dict = OrderedDict()
             row_dict["res_num"] = key[1]
-            row_dict["res_name"] = pKa_dict[key][0]
+            row_dict["res_name"] = pka[key][0]
             row_dict["chain_id"] = key[0]
-            row_dict["pKa"] = pKa_dict[key][1]
+            row_dict["pKa"] = pka[key][1]
             rows.append(row_dict)
 
     return rows

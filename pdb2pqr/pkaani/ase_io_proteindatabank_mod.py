@@ -23,7 +23,7 @@ import numpy as np
 from ase.atoms import Atoms
 from ase.geometry import cellpar_to_cell
 from ase.io.espresso import label_to_symbol
-from ase.utils import reader, writer
+from ase.utils import writer
 
 
 def read_atom_line(line_full):
@@ -94,7 +94,6 @@ def read_atom_line(line_full):
     return symbol, name, altloc, resname, coord, occupancy, bfactor, resseq,chainid,type_atm
     #HATICE
 
-@reader
 def read_proteindatabank(fileobj, index=-1, read_arrays=True):
     """Read PDB files."""
     images = []

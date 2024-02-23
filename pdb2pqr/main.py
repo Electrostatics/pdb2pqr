@@ -622,6 +622,9 @@ def run_pkaani(args, biomolecule):
             row_dict["pKa"] = pka[key][1]
             rows.append(row_dict)
 
+    # only for testing, getting all the pKas so we can see if things are being protonated properly
+    # for row in rows:
+    #     print(row)
     return rows
 
 

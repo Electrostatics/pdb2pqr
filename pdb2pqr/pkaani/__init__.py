@@ -6,6 +6,11 @@
 Program Name: pKa-ANI
 """
 
-__all__ = ['ani_descriptors','ase_io_proteindatabank_mod', 'pkaani','run','prep_pdb']
+__all__ = [
+    "ani_descriptors",
+    "ase_io_proteindatabank_mod",
+    "pkaani",
+    "run",
+    "prep_pdb",
+]
 __version__ = "0.1.0"
-

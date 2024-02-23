@@ -52,19 +52,21 @@ setup(
         "biomolecular structure modeling, analysis, and simulation."
     ),
     long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",
         "propka >= 3.5",
         "requests",
-        "docutils < 0.18"
+        "docutils < 0.18",
     ],
     url="http://www.poissonboltzmann.org",
     packages=find_packages(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]
     ),
-    package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names", "dat/*.joblib"]},
+    package_data={
+        "pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names", "dat/*.joblib"]
+    },
     python_requires=">=3.5",
     extras_require={
         "dev": ["check-manifest"],

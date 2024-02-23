@@ -6,6 +6,7 @@ It was created to avoid cluttering the __init__.py file.
 
 .. codeauthor:: Nathan Baker (et al.)
 """
+
 import logging
 import argparse
 import sys
@@ -527,8 +528,6 @@ def run_propka(args, biomolecule):
         # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
         molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
 
-
-
     molecule.calculate_pka()
 
     # Extract pKa information from PROPKA
@@ -589,6 +588,7 @@ def run_propka(args, biomolecule):
         rows.append(row_dict)
         return rows, pka_str
 
+
 def run_pkaani(args, biomolecule):
     """Run a pKa-ANI calculation.
 
@@ -598,15 +598,15 @@ def run_pkaani(args, biomolecule):
     :type biomolecule:  Biomolecule
     :return:  (DataFrame-convertible table of assigned pKa values,
                pKa information from pKa-ANI)
-    :rtype:  ()
+    :rtype:  list of OrderedDicts
     """
     # pKa-ANI has its own way of parsing PDBs, will just pass the PDB
     # file to that and have it handle the parsing and PDB calculation
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
-    
-    # converting the PDB representation to a file object, and then 
+
+    # converting the PDB representation to a file object, and then
     # passing that file object into pKa-ANI
     with StringIO() as fileObj:
         fileObj.writelines(lines)
@@ -701,7 +701,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 forcefield_.name,
                 args.ph,
                 # no need for if clause, pka_df necessarily contains only the titratable residues
-                # as defined by pKa-ANI (HIS/ASP/GLU/TYR/LYS) 
+                # as defined by pKa-ANI (HIS/ASP/GLU/TYR/LYS)
                 {
                     f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
                         "pKa"

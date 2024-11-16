@@ -7,7 +7,7 @@ For more information, see http://www.poissonboltzmann.org/
 """
 import logging
 from sys import version_info
-from .main import main
+from .main import main as pdb2pqr_main
 from ._version import __version__  # noqa: F401
 
 
@@ -19,4 +19,4 @@ logging.captureWarnings(True)
 
 
 if __name__ == "__main__":
-    main()
+    pdb2pqr_main()

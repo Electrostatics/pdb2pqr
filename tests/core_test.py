@@ -168,6 +168,16 @@ def test_ph_naming(naming_test, tmp_path):
         f"--drop-water --whitespace --with-ph={naming_test['pH']} "
         f"--titration-state-method=propka"
     )
+
+@pytest.mark.parametrize(
+    "input_pdb, expected_pqr",
+    [pytest.param("5urf-assembly1.pdb", "5urf-assembly1.pqr", id="HEX Atom Id")],
+)
+@pytest.mark.long_test
+def test_hex_pdb(input_pdb, expected_pqr, tmp_path):
+    """Tests for HEX ATOM Id."""
+    args = "--log-level=ERROR --ff=AMBER --ffout AMBER"
+    output_pqr = Path(input_pdb).stem + ".pqr"
     common.run_pdb2pqr(
         args=args,
         input_pdb=common.DATA_DIR / input_pdb,

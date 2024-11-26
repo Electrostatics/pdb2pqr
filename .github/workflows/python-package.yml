@@ -43,7 +43,7 @@ jobs:
           ruff check . --exit-zero --statistics
       - name: Test with pytest and coverage
         run: |
-          coverage run --source=pdb2pqr -m pytest
+          coverage run -m pytest
           coverage report -m | tee coverage.txt
           coverage html
       - name: Upload coverage results

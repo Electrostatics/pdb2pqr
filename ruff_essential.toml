@@ -1,0 +1,10 @@
+# ruff config that must pass. Use it with CI as follows:
+# `ruff check --config ruff_essential.toml .`
+
+[lint]
+select = [
+  "E9",
+  "F63",
+  "F7",
+  "F82",
+]

@@ -30,11 +30,18 @@ Run your code through the following steps:
 
 ```bash
 # in the project root directory
-ruff --select I --fix .
+ruff check --select I --fix .
 ruff format .
 ```
 
-2. Linting tools: [pylint](https://www.pylint.org/) and [astral-sh/ruff](https://github.com/astral-sh/ruff)
+2. Linting tools: [astral-sh/ruff](https://github.com/astral-sh/ruff)
+
+```bash
+# The essential lints must pass
+ruff check --config ruff_essential.toml .
+# Follow the optional lints as much as possible
+ruff check .
+```
 
 ## Submit a pull request
 

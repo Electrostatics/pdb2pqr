@@ -15,7 +15,118 @@ omit = [
   "tests/",
 ]
 
+[tool.pyright]
+typeCheckingMode = "standard"
+useLibraryCodeForTypes = true
+autoImportCompletions = true
+
+pythonVersion = "3.8"
+# pythonPlatform = "Linux"
+
+[tool.ruff]
+namespace-packages = ["tests"]  # for INP rule, suppress on these directories
+
+[tool.ruff.lint]
+# OPTIONALLY ADD MORE LATER
+select = [
+  # flake8
+  "E",
+  "F",
+  "W",
+  "B",    # Bugbear
+  "D",    # Docstring
+  "N",    # Naming
+  "C4",   # flake8-comprehensions
+  "UP",   # pyupgrade
+  "SIM",  # simplify
+  "RUF",  # ruff-specific
+  "RET501",  # return
+  "RET502",  # return
+  "RET503",  # return
+  "PTH",  # path
+  "NPY",  # numpy
+  "PD",   # pandas
+  "PYI",  # type stubs for pyright/pylance
+  "PT",   # pytest
+  "PIE",  #
+  "LOG",  # logging
+  "COM818",  # comma misplaced
+  "COM819",  # comma
+  "DTZ",  # datetime
+  "YTT",
+  "ASYNC",
+  "FBT",  # boolean trap
+  "A",    # Shadowing python builtins
+  "EXE",  # executable (shebang)
+  "FA",   # future annotations
+  "ISC",  # Implicit string concatenation
+  "ICN",  # Import convention 
+  "INP",  # Implicit namespace package (no __init__.py)
+  "Q",    # Quotes
+  "RSE",  # raise
+  "SLOT", # __slots__
+  "PL",   # Pylint
+  "TRY",  # try
+  "FAST", # FastAPI
+  "AIR",  # airflow
+  "DOC",  # docstring
+  "TID",  # tidy-imports
+
+  # Not important
+  "T20",  # print statements
+]
+
+ignore = [
+  "E402",    # Module level import not at top of file
+  "W293",    # Blank line contains whitespace
+  "W291",    # Trailing whitespace
+  "D10",     # Missing docstring in public module / function / etc.
+  "D200",    # One-line docstring should fit on one line with quotes
+  "D417",    # require documentation for every function parameter.
+  "D401",    # require an imperative mood for all docstrings.
+  "DOC201",  # missing Return field in docstring
+  "PTH123",  # Path.open should be used instead of built-in open
+  "PT006",   # Pytest parameterize style
+  "N812",    # Lowercase `functional` imported as non-lowercase `F` (import torch.nn.functional as F)
+  "NPY002",  # legacy numpy random
+  "UP017",   # datetime.timezone.utc -> datetime.UTC
+  "SIM108",  # use ternary operator instead of if-else
+  "TRY003",  # long message in except
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+    "F401", # Ignore seemingly unused imports (they're meant for re-export)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
 [tool.ruff.lint.pycodestyle]
-# ruff will enforce line length to be 88, except for docstrings and comments.
+# Black or ruff will enforce line length to be 88, except for docstrings and comments.
 # We set it to 120 so we have more space for docstrings and comments.
 max-line-length = 120
+
+[tool.ruff.lint.isort]
+## Uncomment this if you want to use Python < 3.10
+required-imports = [
+  "from __future__ import annotations",
+]
+
+# [tool.ruff.lint.flake8-tidy-imports]
+# Ban certain modules from being imported at module level, instead requiring
+# that they're imported lazily (e.g., within a function definition, if TYPE_CHECKING, etc.)
+# banned-module-level-imports = ["torch"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"os.system".msg = "Use subprocess.run or subprocess.Popen instead"
+
+[tool.ruff.lint.pylint]
+max-args = 10
+max-bool-expr = 10
+max-statements = 100
+max-returns = 10
+max-public-methods = 30
+max-nested-blocks = 10
+max-locals = 30
+max-branches = 24

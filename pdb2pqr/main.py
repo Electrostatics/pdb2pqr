@@ -10,8 +10,10 @@ import logging
 import argparse
 import sys
 from collections import OrderedDict
+from collections.abc import Sequence
 from io import StringIO
 from pathlib import Path
+from os import PathLike
 import propka.lib
 import propka.output as pk_out
 import propka.input as pk_in
@@ -220,7 +222,7 @@ def build_main_parser():
             "calculation method."
         ),
     )
-    pars = propka.lib.build_parser(pars)
+    pars: argparse.ArgumentParser = propka.lib.build_parser(pars)
 
     # Override version flag set by PROPKA
     pars.add_argument(
@@ -754,7 +756,7 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
     }
 
 
-def main_driver(args):
+def main_driver(args: argparse.Namespace):
     """Main driver for running program from the command line.
 
     Validate inputs, launch PDB2PQR, handle output.
@@ -762,7 +764,6 @@ def main_driver(args):
     :param args:  command-line arguments
     :type args:  argparse.Namespace
     """
-    io.setup_logger(args.output_pqr, args.log_level)
     _LOGGER.debug(f"Invoked with arguments: {args}")
     print_splash_screen(args)
     _LOGGER.info("Checking and transforming input arguments.")
@@ -835,8 +836,25 @@ def main():
     """Hook for command-line usage."""
     parser = build_main_parser()
     args = parser.parse_args()
+    io.setup_logger(args.output_pqr, args.log_level)
     if main_driver(args) == 1:
         sys.exit(1)
+
+
+def run_pdb2pqr(args: Sequence[str | PathLike]):
+    """Run PDB2PQR with a list of arguments.
+
+    Logger is not set up so that it can be called multiple times.
+
+    :param args:  list of command-line arguments
+    :type args:  list
+    :return:  results of PDB2PQR run
+    :rtype:  tuple
+    """
+    args_strlist = [str(arg) for arg in args]
+    parser = build_main_parser()
+    args_parsed = parser.parse_args(args_strlist)
+    return main_driver(args_parsed)
 
 
 def dx_to_cube():

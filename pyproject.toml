@@ -24,6 +24,7 @@ pythonVersion = "3.8"
 
 [tool.ruff]
 namespace-packages = ["tests"]  # for INP rule, suppress on these directories
+line-length = 79
 
 [tool.ruff.lint]
 # OPTIONALLY ADD MORE LATER
@@ -102,7 +103,7 @@ ignore = [
 convention = "pep257"
 
 [tool.ruff.lint.pycodestyle]
-# Black or ruff will enforce line length to be 88, except for docstrings and comments.
+# ruff formatter will enforce line length to be 79, except for docstrings and comments.
 # We set it to 120 so we have more space for docstrings and comments.
 max-line-length = 120
 

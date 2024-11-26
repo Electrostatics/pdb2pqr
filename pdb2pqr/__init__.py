@@ -5,11 +5,13 @@ yielding a new PDB-style file as output.
 
 For more information, see http://www.poissonboltzmann.org/
 """
+
 import logging
 from sys import version_info
-from .main import main as pdb2pqr_main
-from ._version import __version__  # noqa: F401
 
+from ._version import __version__  # noqa: F401
+from .main import main as pdb2pqr_main
+from .main import run_pdb2pqr  # noqa: F401
 
 assert version_info >= (3, 5)
 

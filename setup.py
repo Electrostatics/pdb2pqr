@@ -26,6 +26,7 @@ to the biomedical community.
 """
 
 from sys import version_info
+
 from setuptools import find_packages, setup
 
 # NOTE: The following reads the version number and makes
@@ -52,13 +53,13 @@ setup(
         "biomolecular structure modeling, analysis, and simulation."
     ),
     long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",
         "propka >= 3.5",
         "requests",
-        "docutils < 0.18"
+        "docutils < 0.18",
     ],
     url="http://www.poissonboltzmann.org",
     packages=find_packages(
@@ -70,7 +71,7 @@ setup(
         "dev": ["check-manifest"],
         "test": [
             "ruff",
-            "coverage",
+            "coverage[toml]",
             "pandas >= 1.0",
             "pytest",
             "testfixtures",

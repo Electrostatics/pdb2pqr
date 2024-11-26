@@ -1,20 +1,19 @@
 #!/bin/bash
 
-scriptname=`basename $0`
-tmpfile=$(mktemp ./${basename}.$$)
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+tmpfile=$(mktemp)
 
-cat .github/workflows/python-package.yml | grep black  | grep check | sed -e "s/^\s+//" -e "s/\"/'/g"  >  $tmpfile
-cat .github/workflows/python-package.yml | grep flake8 | grep count | sed -e "s/^\s+//" -e "s/10/200/" >> $tmpfile
+echo "ruff check --select I --fix '$SCRIPT_DIR'" > "$tmpfile"
+echo "ruff format '$SCRIPT_DIR'" >> "$tmpfile"
+cat .github/workflows/python-package.yml | grep 'ruff check' | sed -e "s/^\s+//" >> "$tmpfile"
 
 echo "Run these commands:"
-cat $tmpfile
+cat "$tmpfile"
 
-while IFS= read command
+while IFS= read -r command
 do
-  echo "Command 1: #${command}#"
-  command=`echo $command | sed -e "s/\s+//"`
-  echo "Command 2: #${command}#"
-  $command
+  echo "Command: #${command}#"
+  eval "$command"
 done < "$tmpfile"
 
 rm -f "$tmpfile"

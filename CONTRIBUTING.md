@@ -26,8 +26,15 @@ Work on the code until your test, as well as all previous tests, pass.
 
 Run your code through the following steps:
 
-1. Formatting tools:  [psf/black](https://github.com/psf/black)
-2. Linting tools: [pylint](https://www.pylint.org/) and [flake8](https://flake8.pycqa.org/en/latest/)
+1. Formatting tools: [astral-sh/ruff](https://github.com/astral-sh/ruff)
+
+```bash
+# in the project root directory
+ruff --select I --fix .
+ruff format .
+```
+
+2. Linting tools: [pylint](https://www.pylint.org/) and [astral-sh/ruff](https://github.com/astral-sh/ruff)
 
 ## Submit a pull request
 

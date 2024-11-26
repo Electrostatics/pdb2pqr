@@ -9,13 +9,17 @@ on:
   pull_request:
     branches: [master]
 
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'noci')"
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ['3.11']
 
     steps:
       - uses: actions/checkout@v4
@@ -25,16 +29,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install black flake8 pytest coverage
-          pip install -e .
-          pip install -e .[test]
-      - name: Lint with flake8
+          pip install uv
+          uv venv
+          source .venv/bin/activate
+          # keep the virtual environment activated
+          echo "source .venv/bin/activate" >> ~/.bash_profile
+          uv pip install -e '.[test]'
+      - name: Lint with ruff
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          ruff check . --select=E9,F63,F7,F82 --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --statistics
+          ruff check . --exit-zero --statistics
       - name: Test with pytest and coverage
         run: |
           coverage run --source=pdb2pqr -m pytest

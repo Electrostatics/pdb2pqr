@@ -69,9 +69,8 @@ setup(
     extras_require={
         "dev": ["check-manifest"],
         "test": [
-            "black",
+            "ruff",
             "coverage",
-            "flake8",
             "pandas >= 1.0",
             "pytest",
             "testfixtures",

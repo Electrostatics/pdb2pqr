@@ -1,5 +1,4 @@
 [tool.pytest.ini_options]
-addopts = "--cov=pdb2pqr"
 testpaths = ["tests"]
 log_cli = true
 log_cli_level = "INFO"

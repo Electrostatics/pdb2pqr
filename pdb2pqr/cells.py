@@ -1,6 +1,8 @@
 """Cell list to facilitate neighbor searching."""
-import logging
 
+from __future__ import annotations
+
+import logging
 
 _LOGGER = logging.getLogger(__name__)
 

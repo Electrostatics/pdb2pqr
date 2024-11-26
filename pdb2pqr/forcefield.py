@@ -6,11 +6,14 @@ forcefield is considered a chain of residues of atoms.
 .. codeauthor::  Todd Dolinsky
 .. codeauthor::  Yong Huang
 """
-import re
-import logging
-from xml import sax
-from . import io
 
+from __future__ import annotations
+
+import logging
+import re
+from xml import sax
+
+from . import io
 
 _LOGGER = logging.getLogger(__name__)
 

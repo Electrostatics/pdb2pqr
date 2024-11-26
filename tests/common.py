@@ -1,13 +1,17 @@
 """Common routines and variables for testing"""
-import logging
-import itertools
+
+from __future__ import annotations
+
 import hashlib
+import itertools
+import logging
 from pathlib import Path
+
 import numpy
 import pandas
+
 from pdb2pqr.main import build_main_parser, main_driver
 from pdb2pqr.structures import Atom
-
 
 _LOGGER = logging.getLogger(__name__)
 PARSER = build_main_parser()
@@ -225,9 +229,10 @@ def run_pdb2pqr(
 
 
 def run_propka_for_tests(input_pdb, compare_file, pH):
-    from pdb2pqr import io
-    from pdb2pqr.main import setup_molecule, run_propka
     from propka.lib import build_parser
+
+    from pdb2pqr import io
+    from pdb2pqr.main import run_propka, setup_molecule
 
     propka_parser = build_parser()
     propka_parser.add_argument(

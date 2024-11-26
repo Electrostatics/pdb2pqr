@@ -1,13 +1,15 @@
 """Topology-related classes for hydrogen optimization."""
+
+from __future__ import annotations
+
 import logging
 from xml import sax
+
+from .. import aa
 from .. import definitions as defns
 from .. import utilities as util
-from .. import aa
 from ..config import ANGLE_CUTOFF, DIST_CUTOFF
-from . import optimize
-from . import io
-
+from . import io, optimize
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())

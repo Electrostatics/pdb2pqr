@@ -1,4 +1,4 @@
-""" PDB parsing class
+"""PDB parsing class
 
 This module parses PDBs in accordance to PDB Format Description Version 2.2
 (1996); it is not very forgiving.  Each class in this module corresponds
@@ -9,8 +9,10 @@ the classes is taken directly from the above PDB Format Description.
 .. codeauthor::  Yong Huang
 .. codeauthor::  Nathan Baker
 """
-import logging
 
+from __future__ import annotations
+
+import logging
 
 _LOGGER = logging.getLogger(__name__)
 

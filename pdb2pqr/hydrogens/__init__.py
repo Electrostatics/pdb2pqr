@@ -10,20 +10,25 @@ This is an module for hydrogen optimization routines.
 .. codeauthor:: Yong Huang
 .. codeauthor:: Nathan Baker
 """
+
+from __future__ import annotations
+
 __author__ = "Todd Dolinsky, Jens Erik Nielsen, Yong Huang, Nathan Baker"
 import logging
 from xml import sax
-from .. import io
-from .. import aa
-from .. import cells
+
+from .. import aa, cells, io
 from .. import definitions as defns
-from .. import utilities as util
 from .. import quatfit as quat
+from .. import utilities as util
 from ..config import HYD_DEF_PATH
 from . import structures
-from .structures import HydrogenConformation, HydrogenDefinition
-from .structures import HydrogenHandler, PotentialBond
-
+from .structures import (
+    HydrogenConformation,
+    HydrogenDefinition,
+    HydrogenHandler,
+    PotentialBond,
+)
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())

@@ -3,12 +3,14 @@
 .. codeauthor:: Todd Dolinsky
 .. codeauthor:: Nathan Baker
 """
-import logging
-from . import pdb
-from . import structures
-from . import utilities as util
-from . import quatfit as quat
 
+from __future__ import annotations
+
+import logging
+
+from . import pdb, structures
+from . import quatfit as quat
+from . import utilities as util
 
 _LOGGER = logging.getLogger(__name__)
 

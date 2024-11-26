@@ -6,12 +6,16 @@ This methods use the pdbx/cif parser provided by WWPDB
 .. todo:  Why do we have this module when we have pdbx?
 .. codeauthor::  Juan Brandi
 """
+
+from __future__ import annotations
+
 import logging
 from datetime import datetime
-from numpy import minimum, ceil
-import pdbx
-from . import pdb
 
+import pdbx
+from numpy import ceil, minimum
+
+from . import pdb
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -482,7 +486,7 @@ def title(block):
         line = "TITLE  "
         line += " " * (2 - len(str(i + 1))) + str(i + 1) if i > 0 else "  "
         line += title_string[
-            (i * 70) : minimum(len(title_string), (i + 1) * 70)  # noqa E203
+            (i * 70) : minimum(len(title_string), (i + 1) * 70)
         ]
         try:
             title_arr.append(pdb.TITLE(line))
@@ -622,9 +626,7 @@ def keywds(block):
     for i in range(key_chunk):
         line = "KEYWDS  "
         line += " " * (2 - len(str(i + 1))) + str(i + 1) if i > 0 else "  "
-        line += key_string[
-            (i * 69) : minimum(len(key_string), (i + 1) * 69)  # noqa E203
-        ]
+        line += key_string[(i * 69) : minimum(len(key_string), (i + 1) * 69)]
         try:
             key_arr.append(pdb.KEYWDS(line))
         except KeyError:

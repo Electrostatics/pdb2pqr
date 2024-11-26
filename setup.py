@@ -25,6 +25,8 @@ broaden the accessibility of biomolecular solvation and electrostatics analyses
 to the biomedical community.
 """
 
+from __future__ import annotations
+
 from sys import version_info
 
 from setuptools import find_packages, setup
@@ -35,9 +37,6 @@ from setuptools import find_packages, setup
 #       This makes __version__ valid below
 with open("pdb2pqr/_version.py") as fobj:
     exec(fobj.read())
-
-if version_info[:2] < (3, 8):
-    raise RuntimeError("Python version >= 3.8 is required.")
 
 with open("README.md", "r") as fobj:
     LONG_DESCRIPTION = fobj.read()

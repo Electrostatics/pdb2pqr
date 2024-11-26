@@ -4,22 +4,20 @@
 
 Authors:  Todd Dolinsky, Yong Huang
 """
-import logging
+
+from __future__ import annotations
+
 import copy
+import logging
 import pprint
 import string
 
-from . import residue as residue_
-from . import aa
-from . import na
-from . import io
-from . import utilities as util
-from . import structures as struct
-from . import pdb
-from . import forcefield
+from . import aa, forcefield, io, na, pdb
 from . import quatfit as quat
+from . import residue as residue_
+from . import structures as struct
+from . import utilities as util
 from .config import BONDED_SS_LIMIT, PEPTIDE_DIST, RNA_MAPPING
-
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())

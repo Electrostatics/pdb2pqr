@@ -1,22 +1,29 @@
 """Functions related to reading and writing data."""
-import logging
+
+from __future__ import annotations
+
 import io
+import logging
 
 # import argparse
 from collections import Counter
 from pathlib import Path
 from sys import path as sys_path
-import requests
-from . import psize
-from . import inputgen
-from . import cif
-from . import pdb
-from . import definitions as defns
-from .structures import Atom
-from .config import FORCE_FIELDS, TITLE_STR
-from .config import FILTER_WARNINGS_LIMIT, FILTER_WARNINGS
-from .config import AA_DEF_PATH, NA_DEF_PATH, PATCH_DEF_PATH
 
+import requests
+
+from . import cif, inputgen, pdb, psize
+from . import definitions as defns
+from .config import (
+    AA_DEF_PATH,
+    FILTER_WARNINGS,
+    FILTER_WARNINGS_LIMIT,
+    FORCE_FIELDS,
+    NA_DEF_PATH,
+    PATCH_DEF_PATH,
+    TITLE_STR,
+)
+from .structures import Atom
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -361,7 +368,7 @@ def test_for_file(name, type_):
     test_suffixes = ["", f".{type_.upper()}", f".{type_.lower()}"]
 
     module_path = Path(__file__)
-    dirpath_dat = module_path.parent / 'dat'
+    dirpath_dat = module_path.parent / "dat"
 
     assert dirpath_dat.is_dir()
 

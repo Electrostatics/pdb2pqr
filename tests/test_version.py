@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import re
+
 import pdb2pqr
 from pdb2pqr import __version__
 

@@ -10,11 +10,14 @@
 .. codeauthor:: Todd Dolinksy
 .. codeauthor:: Yong Huang
 """
-from math import log
-import logging
-import argparse
-from .config import TITLE_STR
 
+from __future__ import annotations
+
+import argparse
+import logging
+from math import log
+
+from .config import TITLE_STR
 
 #: The number of Angstroms added to the molecular dimensions to determine the
 #: find grid dimensions

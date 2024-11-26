@@ -1,3 +1,14 @@
+[tool.pytest.ini_options]
+addopts = "--cov=pdb2pqr"
+testpaths = ["tests"]
+log_cli = true
+log_cli_level = "INFO"
+
+markers = """
+    long_test: marks tests as long (select with '-m "long_test"')
+    serial
+"""
+
 [tool.ruff.lint.pycodestyle]
 # ruff will enforce line length to be 88, except for docstrings and comments.
 # We set it to 120 so we have more space for docstrings and comments.

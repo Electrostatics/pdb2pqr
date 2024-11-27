@@ -22,6 +22,8 @@ autoImportCompletions = true
 pythonVersion = "3.8"
 # pythonPlatform = "Linux"
 
+reportDuplicateImport = true
+
 [tool.ruff]
 namespace-packages = ["tests"]  # for INP rule, suppress on these directories
 line-length = 79

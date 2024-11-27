@@ -1,6 +1,8 @@
 """Expected results for ligand tests"""
-from io import StringIO
 
+from __future__ import annotations
+
+from io import StringIO
 
 TORSION_RESULTS = {
     "acetylcholine.mol2": {

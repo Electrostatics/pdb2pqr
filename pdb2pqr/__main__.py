@@ -5,8 +5,12 @@ yielding a new PDB-style file as output.
 
 For more information, see http://www.poissonboltzmann.org/
 """
+
+from __future__ import annotations
+
 import logging
 from sys import version_info
+
 from pdb2pqr.main import main
 
 assert version_info >= (3, 5)

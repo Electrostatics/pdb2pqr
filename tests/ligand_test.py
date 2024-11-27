@@ -1,15 +1,24 @@
 """Tests for ligand functionality."""
+
+from __future__ import annotations
+
 import logging
 from math import isclose
 from pathlib import Path
-import pytest
-import pandas as pd
-from numpy.testing import assert_almost_equal
-from pdb2pqr.ligand.mol2 import Mol2Molecule
-import common
-from ligand_results import TORSION_RESULTS, RING_RESULTS, CHARGES_1HPX
-from ligand_results import FORMAL_CHARGE_RESULTS, PARAMETER_RESULTS
 
+import common
+import pandas as pd
+import pytest
+from ligand_results import (
+    CHARGES_1HPX,
+    FORMAL_CHARGE_RESULTS,
+    PARAMETER_RESULTS,
+    RING_RESULTS,
+    TORSION_RESULTS,
+)
+from numpy.testing import assert_almost_equal
+
+from pdb2pqr.ligand.mol2 import Mol2Molecule
 
 _LOGGER = logging.getLogger(__name__)
 

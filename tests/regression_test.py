@@ -1,8 +1,11 @@
 """Regression tests for PDB2PQR behavior."""
-import logging
-import pytest
-import common
 
+from __future__ import annotations
+
+import logging
+
+import common
+import pytest
 
 _LOGGER = logging.getLogger(__name__)
 

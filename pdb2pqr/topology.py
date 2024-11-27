@@ -7,9 +7,11 @@
 .. codeauthor::  Nathan Baker
 .. codeauthor::  Yong Huang
 """
-from xml import sax
-import logging
 
+from __future__ import annotations
+
+import logging
+from xml import sax
 
 _LOGGER = logging.getLogger(__name__)
 #: File name of topology XML data

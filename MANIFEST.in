@@ -3,8 +3,6 @@ include *.md
 include *.sh
 include COPYING
 include pdb2pka
-include pytest.ini
-include .pylintrc
 recursive-include docs *.bat
 recursive-include docs *.py
 recursive-include docs *.rst

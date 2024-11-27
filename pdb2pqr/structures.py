@@ -6,7 +6,10 @@ associated methods.
 .. codeauthor:: Todd Dolinsky
 .. codeauthor:: Nathan Baker
 """
+
 # from . import pdb
+from __future__ import annotations
+
 from .config import BACKBONE
 
 

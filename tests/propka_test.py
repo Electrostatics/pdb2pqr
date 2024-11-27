@@ -1,7 +1,11 @@
 """Tests for PROPKA functionality."""
+
+from __future__ import annotations
+
 from pathlib import Path
-import pytest
+
 import common
+import pytest
 
 
 @pytest.mark.parametrize(

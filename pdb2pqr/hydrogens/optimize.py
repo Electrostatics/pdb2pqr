@@ -5,12 +5,15 @@
 .. codeauthor:: Yong Huang
 .. codeauthor:: Nathan Baker
 """
+
+from __future__ import annotations
+
 import logging
 import math
+
 from .. import quatfit as quat
 from .. import utilities as util
 from ..config import ANGLE_CUTOFF, DIST_CUTOFF
-
 
 _LOGGER = logging.getLogger(__name__)
 

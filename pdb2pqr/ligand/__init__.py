@@ -6,11 +6,8 @@
 
 .. codeauthor:: Jens Erik Nielsen
 """
-import sys
 
-
-assert sys.version_info >= (3, 5)
-
+from __future__ import annotations
 
 #: Radii for different atom types.
 #: When using these tables, the most specific Sybyl atom type should be used

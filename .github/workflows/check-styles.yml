@@ -1,0 +1,60 @@
+# Check ruff format and isort applied correctly
+
+name: Style checking
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  ruff-format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ruff
+        run: |
+          pip3 install ruff --break-system-packages
+      - name: Run ruff
+        run: |
+          set +e  # Do not exit shell on ruff failure
+          out=$(ruff format --check --diff . 2> app_stderr.txt)
+
+          exit_code=$?
+          err=$(<app_stderr.txt)
+
+          # Display the raw output in the step
+          echo "${out}"
+          echo "${err}"
+
+          # Display the Markdown output in the job summary
+          { echo "\`\`\`diff"; echo "${out}"; echo "${err}"; echo "\`\`\`"; } >> "$GITHUB_STEP_SUMMARY"
+
+          # Exit with the exit-code returned by ruff
+          exit ${exit_code}
+
+  ruff-isort:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ruff
+        run: |
+          pip3 install ruff --break-system-packages
+      - name: Run ruff
+        run: |
+          set +e  # Do not exit shell on ruff failure
+          out=$(ruff check --select I --diff . 2> app_stderr.txt)
+
+          exit_code=$?
+          err=$(<app_stderr.txt)
+
+          # Display the raw output in the step
+          echo "${out}"
+          echo "${err}"
+
+          # Display the Markdown output in the job summary
+          { echo "\`\`\`diff"; echo "${out}"; echo "${err}"; echo "\`\`\`"; } >> "$GITHUB_STEP_SUMMARY"
+
+          # Exit with the exit-code returned by ruff
+          exit ${exit_code}

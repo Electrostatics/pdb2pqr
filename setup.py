@@ -65,7 +65,7 @@ setup(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
-    python_requires=">=3.5",
+    python_requires=">=3.8",
     extras_require={
         "dev": ["check-manifest"],
         "test": [

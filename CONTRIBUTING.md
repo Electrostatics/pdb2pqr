@@ -43,6 +43,10 @@ ruff check --config ruff_essential.toml .
 ruff check .
 ```
 
+3. Type checker: [basedpyright](https://github.com/DetachHead/basedpyright)
+
+Enable type inlay hints in your editor and write typed code. Types don't need to be always explicit, but they should be able to be inferred by the type checker.
+
 ## Submit a pull request
 
 1. Commit your changes to Git and push your branch to the Github repo.

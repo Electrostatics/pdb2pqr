@@ -11,8 +11,6 @@
 .. codeauthor:: Yong Huang
 """
 
-from __future__ import annotations
-
 import argparse
 import logging
 from math import log

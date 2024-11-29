@@ -6,8 +6,6 @@ This module contains the base amino acid structures for pdb2pqr.
 .. codeauthor:: Nathan Baker
 """
 
-from __future__ import annotations
-
 import logging
 
 from . import quatfit as quat

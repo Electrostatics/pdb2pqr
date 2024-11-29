@@ -1,7 +1,5 @@
 """Common routines and variables for testing"""
 
-from __future__ import annotations
-
 import hashlib
 import itertools
 import logging
@@ -33,7 +31,8 @@ def generate_ff_combinations():
     """Generate combinations of force field options.
 
     Returns:
-        list of combinations"""
+        list of combinations
+    """
     ff_options = [None] + [f"--ff={ff}" for ff in FF_LIST]
     ffout_options = [None] + [f"--ffout={ff}" for ff in FF_LIST]
     ff_combos = []

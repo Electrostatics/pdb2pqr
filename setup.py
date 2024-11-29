@@ -25,8 +25,6 @@ broaden the accessibility of biomolecular solvation and electrostatics analyses
 to the biomedical community.
 """
 
-from __future__ import annotations
-
 from sys import version_info
 
 from setuptools import find_packages, setup

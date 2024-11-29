@@ -7,8 +7,6 @@ It was created to avoid cluttering the __init__.py file.
 .. codeauthor:: Nathan Baker (et al.)
 """
 
-from __future__ import annotations
-
 import argparse
 import logging
 import sys
@@ -520,7 +518,6 @@ def run_propka(args, biomolecule):
                pKa information from PROPKA)
     :rtype:  (list, str)
     """
-
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )

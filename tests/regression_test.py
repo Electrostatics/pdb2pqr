@@ -1,7 +1,5 @@
 """Regression tests for PDB2PQR behavior."""
 
-from __future__ import annotations
-
 import logging
 
 import common

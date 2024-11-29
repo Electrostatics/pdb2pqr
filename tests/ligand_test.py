@@ -1,7 +1,5 @@
 """Tests for ligand functionality."""
 
-from __future__ import annotations
-
 import logging
 from math import isclose
 from pathlib import Path

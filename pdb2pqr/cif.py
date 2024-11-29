@@ -7,8 +7,6 @@ This methods use the pdbx/cif parser provided by WWPDB
 .. codeauthor::  Juan Brandi
 """
 
-from __future__ import annotations
-
 import logging
 from datetime import datetime
 

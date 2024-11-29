@@ -7,8 +7,6 @@
 .. codeauthor:: Jens Erik Nielsen
 """
 
-from __future__ import annotations
-
 #: Radii for different atom types.
 #: When using these tables, the most specific Sybyl atom type should be used
 #: first and then the generic element should be used

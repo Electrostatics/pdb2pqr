@@ -109,17 +109,6 @@ convention = "pep257"
 # We set it to 120 so we have more space for docstrings and comments.
 max-line-length = 120
 
-[tool.ruff.lint.isort]
-## Uncomment this if you want to use Python < 3.10
-required-imports = [
-  "from __future__ import annotations",
-]
-
-# [tool.ruff.lint.flake8-tidy-imports]
-# Ban certain modules from being imported at module level, instead requiring
-# that they're imported lazily (e.g., within a function definition, if TYPE_CHECKING, etc.)
-# banned-module-level-imports = ["torch"]
-
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "os.system".msg = "Use subprocess.run or subprocess.Popen instead"
 

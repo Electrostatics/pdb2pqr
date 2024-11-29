@@ -8,8 +8,6 @@
 .. codeauthor::  Yong Huang
 """
 
-from __future__ import annotations
-
 import logging
 from xml import sax
 

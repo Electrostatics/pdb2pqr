@@ -11,8 +11,6 @@ This is an module for hydrogen optimization routines.
 .. codeauthor:: Nathan Baker
 """
 
-from __future__ import annotations
-
 __author__ = "Todd Dolinsky, Jens Erik Nielsen, Yong Huang, Nathan Baker"
 import logging
 from xml import sax

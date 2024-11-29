@@ -6,8 +6,6 @@ yielding a new PDB-style file as output.
 For more information, see http://www.poissonboltzmann.org/
 """
 
-from __future__ import annotations
-
 import logging
 
 from ._version import __version__

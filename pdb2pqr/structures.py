@@ -8,7 +8,6 @@ associated methods.
 """
 
 # from . import pdb
-from __future__ import annotations
 
 from .config import BACKBONE
 

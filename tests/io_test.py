@@ -1,7 +1,5 @@
 """Tests of I/O functions."""
 
-from __future__ import annotations
-
 import logging
 from difflib import Differ
 from pathlib import Path

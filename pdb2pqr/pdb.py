@@ -10,8 +10,6 @@ the classes is taken directly from the above PDB Format Description.
 .. codeauthor::  Nathan Baker
 """
 
-from __future__ import annotations
-
 import logging
 
 _LOGGER = logging.getLogger(__name__)
@@ -1683,7 +1681,8 @@ class HETNAM(BaseRecord):
     """HETNAM field
 
     This record gives the chemical name of the compound with the
-    given hetatm_id."""
+    given hetatm_id.
+    """
 
     def __init__(self, line):
         """Initialize by parsing line

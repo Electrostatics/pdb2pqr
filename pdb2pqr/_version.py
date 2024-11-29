@@ -6,6 +6,4 @@ Store the version here so:
 * we can import it into your module
 """
 
-from __future__ import annotations
-
 __version__ = "3.6.2"

@@ -20,8 +20,6 @@ Jan Labanowski, jkl@osc.edu, jkl@ohstpy.bitnet, ohstpy::jkl
 .. codeauthor:: Todd Dolinsky
 """
 
-from __future__ import annotations
-
 import math
 
 from .utilities import normalize

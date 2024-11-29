@@ -1,7 +1,5 @@
 """Functions related to reading and writing data."""
 
-from __future__ import annotations
-
 import io
 import logging
 

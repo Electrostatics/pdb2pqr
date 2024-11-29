@@ -4,8 +4,6 @@ For further information look at (web page exists: 25 August 2005):
 http://www.tripos.com/index.php?family=modules,SimplePage,,,&page=sup_mol2&s=0
 """
 
-from __future__ import annotations
-
 import logging
 from collections import OrderedDict
 from itertools import combinations

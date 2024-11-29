@@ -1,7 +1,5 @@
 """Topology-related classes for hydrogen optimization."""
 
-from __future__ import annotations
-
 import logging
 from xml import sax
 
@@ -659,7 +657,8 @@ class Water(optimize.Optimize):
         :param acc:  hydrogen bond acceptor
         :type acc:  Atom
         :return:  indication of whether addition was successful
-        :rtype:  bool"""
+        :rtype:  bool
+        """
         residue = self.residue
         # Do some error checking
         if not acc.hacceptor:
@@ -970,7 +969,8 @@ class Carboxylic(optimize.Optimize):
         :param acc:  hydrogen bond acceptor
         :type acc:  Atom
         :return:  indication of whether addition was successful
-        :rtype:  bool"""
+        :rtype:  bool
+        """
         residue = acc.residue
         # Do some error checking
         if not donor.hdonor:

@@ -7,8 +7,6 @@ forcefield is considered a chain of residues of atoms.
 .. codeauthor::  Yong Huang
 """
 
-from __future__ import annotations
-
 import logging
 import re
 from xml import sax

@@ -1,7 +1,5 @@
 """Configuration information for PDB2PQR."""
 
-from __future__ import annotations
-
 from ._version import __version__
 
 #: PDB2PQR version number.

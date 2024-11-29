@@ -5,8 +5,6 @@
 Authors:  Todd Dolinsky, Yong Huang
 """
 
-from __future__ import annotations
-
 import copy
 import logging
 import pprint
@@ -23,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
-class Biomolecule(object):
+class Biomolecule:
     """Biomolecule class.
 
     This class represents the parsed PDB, and provides a hierarchy of

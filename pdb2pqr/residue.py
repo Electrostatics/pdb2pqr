@@ -4,8 +4,6 @@
 .. codeauthor:: Nathan Baker
 """
 
-from __future__ import annotations
-
 import logging
 
 from . import pdb, structures
@@ -15,7 +13,7 @@ from . import utilities as util
 _LOGGER = logging.getLogger(__name__)
 
 
-class Residue(object):
+class Residue:
     """Residue class
 
     .. todo::

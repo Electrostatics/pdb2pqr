@@ -9,10 +9,6 @@ on:
   pull_request:
     branches: [master]
 
-defaults:
-  run:
-    shell: bash -leo pipefail {0}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,12 +25,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install uv
-          uv venv
-          source .venv/bin/activate
-          # keep the virtual environment activated
-          echo "source .venv/bin/activate" >> ~/.bash_profile
-          uv pip install -e '.[test]'
+          python -m pip install --upgrade pip
+          pip install -e '.[test]'
       - name: Lint with ruff
         run: |
           # stop the build if there are Python syntax errors or undefined names

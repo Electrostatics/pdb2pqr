@@ -65,7 +65,7 @@ def test_short_pdb(input_pdb, tmp_path):
     """Non-regression tests on short list of PDB-format biomolecules."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"
     output_pqr = Path(input_pdb).stem + ".pqr"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,
@@ -78,7 +78,7 @@ def test_basic_cif(input_pdb, tmp_path):
     """Non-regression tests on short list of CIF-format biomolecules."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"
     output_pqr = Path(input_pdb).stem + ".cif"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,
@@ -92,7 +92,7 @@ def test_long_pdb(input_pdb, tmp_path):
     """Non-regression tests on short list of PDB-format biomolecules."""
     args = "--log-level=INFO --ff=AMBER --drop-water --apbs-input=apbs.in"
     output_pqr = Path(input_pdb).stem + ".pqr"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,
@@ -106,7 +106,7 @@ def test_broken_backbone(input_pdb, tmp_path):
     """Test graceful failure of optimization with missing backbone atoms."""
     args = "--log-level=INFO --ff=AMBER --drop-water"
     output_pqr = Path(input_pdb).stem + ".pqr"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,
@@ -122,7 +122,7 @@ def test_protonated_terminals(input_pdb, expected_pqr, tmp_path):
     """Tests for terminal residue protonation."""
     args = "--log-level=INFO --ff=AMBER --ffout AMBER"
     output_pqr = Path(input_pdb).stem + ".pqr"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=common.DATA_DIR / input_pdb,
         output_pqr=output_pqr,
@@ -146,7 +146,7 @@ def test_cyclic_peptide(input_pdb, expected_pqr, tmp_path):
     """Tests for cyclic peptide protonation."""
     args = "--log-level=INFO --ff=AMBER --ffout AMBER"
     output_pqr = Path(input_pdb).stem + ".pqr"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=common.DATA_DIR / input_pdb,
         output_pqr=output_pqr,
@@ -170,7 +170,7 @@ def test_ph_naming(naming_test, tmp_path):
         f"--drop-water --whitespace --with-ph={naming_test['pH']} "
         f"--titration-state-method=propka"
     )
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=common.DATA_DIR / input_pdb,
         output_pqr=output_pqr,

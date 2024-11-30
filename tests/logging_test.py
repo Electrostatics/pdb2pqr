@@ -21,7 +21,7 @@ def test_log_output_in_pqr_location(
     args = "--log-level=INFO --ff=AMBER"
     input_path = common.DATA_DIR / input_file
     output_pqr = output_file
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_path,
         output_pqr=output_pqr,

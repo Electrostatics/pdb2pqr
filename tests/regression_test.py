@@ -29,7 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 )
 def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS."""
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,
@@ -87,7 +87,7 @@ def test_basic(args, input_pdb, output_pqr, expected_pqr, tmp_path):
 )
 def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace for different forcefields."""
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,
@@ -153,7 +153,7 @@ def test_forcefields(args, input_pdb, output_pqr, expected_pqr, tmp_path):
 )
 def test_other_options(args, input_pdb, output_pqr, expected_pqr, tmp_path):
     """Basic code to run 1AFS with --whitespace."""
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,

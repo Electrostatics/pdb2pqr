@@ -188,7 +188,7 @@ def test_ligand_biomolecule(input_pdb, tmp_path):
     args = f"--log-level=INFO --ff=AMBER --drop-water --ligand={ligand}"
     output_pqr = Path(input_pdb).stem + ".pqr"
     _LOGGER.debug(f"Running test in {tmp_path}")
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,

@@ -203,7 +203,7 @@ def compare_pqr(pqr1_path, pqr2_path, compare_resnames=False):
                 _LOGGER.info(result)
 
 
-def run_pdb2pqr(
+def run_pdb2pqr_for_tests(
     args,
     input_pdb,
     tmp_path,
@@ -212,6 +212,8 @@ def run_pdb2pqr(
     compare_resnames=False,
 ):
     """Basic code for invoking PDB2PQR."""
+    from pdb2pqr import io
+
     if output_pqr is None:
         hash_str = f"{args}{input_pdb}"
         hash_ = hashlib.sha1(hash_str.encode("UTF-8")).hexdigest()
@@ -220,6 +222,7 @@ def run_pdb2pqr(
     _LOGGER.debug(f"Writing output to {output_pqr}")
     arg_str = f"{args} {input_pdb} {output_pqr}"
     args = PARSER.parse_args(arg_str.split())
+    io.setup_logger(args.output_pqr, args.log_level)
     _ = main_driver(args)
     if expected_pqr is not None:
         compare_pqr(

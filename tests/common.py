@@ -203,7 +203,7 @@ def compare_pqr(pqr1_path, pqr2_path, compare_resnames=False):
                 _LOGGER.info(result)
 
 
-def run_pdb2pqr(
+def run_pdb2pqr_for_tests(
     args,
     input_pdb,
     tmp_path,

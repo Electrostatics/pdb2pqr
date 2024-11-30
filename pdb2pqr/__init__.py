@@ -10,6 +10,7 @@ import logging
 
 from ._version import __version__
 from .main import main as pdb2pqr_main
+from .main import run_pdb2pqr
 
 _LOGGER = logging.getLogger(__name__)
 logging.captureWarnings(capture=True)

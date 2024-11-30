@@ -16,7 +16,7 @@ def test_propka_apo(input_pdb, tmp_path):
         "--titration-state-method=propka"
     )
     output_pqr = Path(input_pdb).stem + ".pqr"
-    common.run_pdb2pqr(
+    common.run_pdb2pqr_for_tests(
         args=args,
         input_pdb=input_pdb,
         output_pqr=output_pqr,

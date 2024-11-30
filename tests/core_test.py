@@ -1,7 +1,9 @@
 """Basic tests of simple core functionality."""
+
 from pathlib import Path
-import pytest
+
 import common
+import pytest
 
 # fmt: off
 #: Protein-nucleic acid complexes

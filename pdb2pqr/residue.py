@@ -3,17 +3,17 @@
 .. codeauthor:: Todd Dolinsky
 .. codeauthor:: Nathan Baker
 """
-import logging
-from . import pdb
-from . import structures
-from . import utilities as util
-from . import quatfit as quat
 
+import logging
+
+from . import pdb, structures
+from . import quatfit as quat
+from . import utilities as util
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Residue(object):
+class Residue:
     """Residue class
 
     .. todo::

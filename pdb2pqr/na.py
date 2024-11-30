@@ -5,6 +5,7 @@ This module contains the base nucleic acid structures for pdb2pqr.
 .. codeauthor::  Todd Dolinsky
 .. codeauthor::  Nathan Baker
 """
+
 from . import residue
 from . import structures as struct
 

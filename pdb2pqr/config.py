@@ -1,4 +1,5 @@
 """Configuration information for PDB2PQR."""
+
 from ._version import __version__
 
 #: PDB2PQR version number.
@@ -15,7 +16,7 @@ IGNORED_PROPKA_OPTIONS = {
     "mutator_options": None,
     "reuse_ligand_mol2_file": False,
     "keep_protons": False,
-    "protonate_all": False
+    "protonate_all": False,
 }
 
 #: How to format PDB2PQR title in output

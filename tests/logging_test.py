@@ -1,7 +1,8 @@
-""" Test log caching file in the same directory as the pqr output location """
+"""Test log caching file in the same directory as the pqr output location"""
+
+import common
 import pytest
 from testfixtures import log_capture
-import common
 
 
 @log_capture()

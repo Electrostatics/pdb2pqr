@@ -5,12 +5,13 @@ This module contains the base amino acid structures for pdb2pqr.
 .. codeauthor:: Todd Dolinsky
 .. codeauthor:: Nathan Baker
 """
+
 import logging
+
+from . import quatfit as quat
 from . import residue
 from . import structures as struct
 from . import utilities as util
-from . import quatfit as quat
-
 
 _LOGGER = logging.getLogger(__name__)
 

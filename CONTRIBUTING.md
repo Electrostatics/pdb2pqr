@@ -26,8 +26,26 @@ Work on the code until your test, as well as all previous tests, pass.
 
 Run your code through the following steps:
 
-1. Formatting tools:  [psf/black](https://github.com/psf/black)
-2. Linting tools: [pylint](https://www.pylint.org/) and [flake8](https://flake8.pycqa.org/en/latest/)
+1. Formatting tools: [astral-sh/ruff](https://github.com/astral-sh/ruff)
+
+```bash
+# in the project root directory
+ruff check --select I --fix .
+ruff format .
+```
+
+2. Linting tools: [astral-sh/ruff](https://github.com/astral-sh/ruff)
+
+```bash
+# The essential lints must pass
+ruff check --config ruff_essential.toml .
+# Follow the optional lints as much as possible
+ruff check .
+```
+
+3. Type checker: [basedpyright](https://github.com/DetachHead/basedpyright)
+
+Enable type inlay hints in your editor and write typed code. Types don't need to be always explicit, but they should be able to be inferred by the type checker.
 
 ## Submit a pull request
 

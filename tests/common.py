@@ -1,13 +1,15 @@
 """Common routines and variables for testing"""
-import logging
-import itertools
+
 import hashlib
+import itertools
+import logging
 from pathlib import Path
+
 import numpy
 import pandas
+
 from pdb2pqr.main import build_main_parser, main_driver
 from pdb2pqr.structures import Atom
-
 
 _LOGGER = logging.getLogger(__name__)
 PARSER = build_main_parser()
@@ -29,7 +31,8 @@ def generate_ff_combinations():
     """Generate combinations of force field options.
 
     Returns:
-        list of combinations"""
+        list of combinations
+    """
     ff_options = [None] + [f"--ff={ff}" for ff in FF_LIST]
     ffout_options = [None] + [f"--ffout={ff}" for ff in FF_LIST]
     ff_combos = []
@@ -225,9 +228,10 @@ def run_pdb2pqr(
 
 
 def run_propka_for_tests(input_pdb, compare_file, pH):
-    from pdb2pqr import io
-    from pdb2pqr.main import setup_molecule, run_propka
     from propka.lib import build_parser
+
+    from pdb2pqr import io
+    from pdb2pqr.main import run_propka, setup_molecule
 
     propka_parser = build_parser()
     propka_parser.add_argument(

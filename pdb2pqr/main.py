@@ -6,28 +6,32 @@ It was created to avoid cluttering the __init__.py file.
 
 .. codeauthor:: Nathan Baker (et al.)
 """
-import logging
+
 import argparse
+import logging
 import sys
 from collections import OrderedDict
 from io import StringIO
 from pathlib import Path
+
+import propka.input as pk_in
 import propka.lib
 import propka.output as pk_out
-import propka.input as pk_in
-from propka.parameters import Parameters
 from propka.molecular_container import MolecularContainer
-from . import aa
-from . import debump
-from . import hydrogens
-from . import forcefield
+from propka.parameters import Parameters
+
+from . import aa, debump, forcefield, hydrogens, io
 from . import biomolecule as biomol
-from . import io
+from .config import (
+    CITATIONS,
+    FORCE_FIELDS,
+    IGNORED_PROPKA_OPTIONS,
+    REPAIR_LIMIT,
+    TITLE_STR,
+    VERSION,
+)
 from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
-from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
-from .config import REPAIR_LIMIT, IGNORED_PROPKA_OPTIONS
-
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
 
@@ -514,7 +518,6 @@ def run_propka(args, biomolecule):
                pKa information from PROPKA)
     :rtype:  (list, str)
     """
-
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
@@ -525,8 +528,6 @@ def run_propka(args, biomolecule):
         molecule = MolecularContainer(parameters, args)
         # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
         molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
-
-
 
     molecule.calculate_pka()
 

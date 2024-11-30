@@ -1,6 +1,6 @@
 """Routines for running the code with a given set of options and PDB files."""
-import logging
 
+import logging
 
 _LOGGER = logging.getLogger(__name__)
 

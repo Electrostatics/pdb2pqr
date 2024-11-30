@@ -10,13 +10,14 @@
 .. codeauthor::  Yong Huang
 .. codeauthor::  Nathan Baker
 """
-import math
+
 import logging
+import math
 
 # from pathlib import Path
 import numpy as np
-from .config import SMALL_NUMBER, RADIANS_TO_DEGREES, CHARGE_ERROR
 
+from .config import CHARGE_ERROR, RADIANS_TO_DEGREES, SMALL_NUMBER
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -26,6 +26,7 @@ to the biomedical community.
 """
 
 from sys import version_info
+
 from setuptools import find_packages, setup
 
 # NOTE: The following reads the version number and makes
@@ -34,9 +35,6 @@ from setuptools import find_packages, setup
 #       This makes __version__ valid below
 with open("pdb2pqr/_version.py") as fobj:
     exec(fobj.read())
-
-if version_info[:2] < (3, 8):
-    raise RuntimeError("Python version >= 3.8 is required.")
 
 with open("README.md", "r") as fobj:
     LONG_DESCRIPTION = fobj.read()
@@ -52,26 +50,25 @@ setup(
         "biomolecular structure modeling, analysis, and simulation."
     ),
     long_description=LONG_DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     install_requires=[
         "mmcif_pdbx>=1.1.2",
         "numpy",
         "propka >= 3.5",
         "requests",
-        "docutils < 0.18"
+        "docutils < 0.18",
     ],
     url="http://www.poissonboltzmann.org",
     packages=find_packages(
         exclude=["pdb2pka", "*.pdb2pka", "pdb2pka.*", "*.pdb2pka.*"]
     ),
     package_data={"pdb2pqr": ["dat/*.xml", "dat/*.DAT", "dat/*.names"]},
-    python_requires=">=3.5",
+    python_requires=">=3.8",
     extras_require={
         "dev": ["check-manifest"],
         "test": [
-            "black",
-            "coverage",
-            "flake8",
+            "ruff",
+            "coverage[toml]",
             "pandas >= 1.0",
             "pytest",
             "testfixtures",

@@ -1,4 +1,4 @@
-""" PDB parsing class
+"""PDB parsing class
 
 This module parses PDBs in accordance to PDB Format Description Version 2.2
 (1996); it is not very forgiving.  Each class in this module corresponds
@@ -9,8 +9,8 @@ the classes is taken directly from the above PDB Format Description.
 .. codeauthor::  Yong Huang
 .. codeauthor::  Nathan Baker
 """
-import logging
 
+import logging
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -1681,7 +1681,8 @@ class HETNAM(BaseRecord):
     """HETNAM field
 
     This record gives the chemical name of the compound with the
-    given hetatm_id."""
+    given hetatm_id.
+    """
 
     def __init__(self, line):
         """Initialize by parsing line

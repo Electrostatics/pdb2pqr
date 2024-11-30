@@ -3,13 +3,14 @@
 .. codeauthor::  Todd Dolinsky
 .. codeauthor::  Nathan Baker
 """
-import pickle
-import logging
+
 import argparse
+import logging
+import pickle
 from pathlib import Path
+
 from . import psize
 from .config import TITLE_STR
-
 
 _LOGGER = logging.getLogger(__name__)
 

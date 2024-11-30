@@ -4,13 +4,13 @@
 .. codeauthor::  Todd Dolinsky
 .. codeauthor::  Yong Huang
 """
-import copy
-import re
-import logging
-from xml import sax
-from . import structures
-from . import residue
 
+import copy
+import logging
+import re
+from xml import sax
+
+from . import residue, structures
 
 _LOGGER = logging.getLogger(__name__)
 

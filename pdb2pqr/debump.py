@@ -5,16 +5,21 @@
 .. codeauthor::  Yong Huang
 .. codeauthor::  Nathan Baker
 """
-import logging
-from . import aa
-from . import utilities as util
-from . import io
-from . import quatfit as quat
-from . import cells
-from .config import DEBUMP_ANGLE_STEP_SIZE, DEBUMP_ANGLE_STEPS
-from .config import DEBUMP_ANGLE_TEST_COUNT, SMALL_NUMBER, CELL_SIZE
-from .config import BUMP_HYDROGEN_SIZE, BUMP_HEAVY_SIZE
 
+import logging
+
+from . import aa, cells, io
+from . import quatfit as quat
+from . import utilities as util
+from .config import (
+    BUMP_HEAVY_SIZE,
+    BUMP_HYDROGEN_SIZE,
+    CELL_SIZE,
+    DEBUMP_ANGLE_STEP_SIZE,
+    DEBUMP_ANGLE_STEPS,
+    DEBUMP_ANGLE_TEST_COUNT,
+    SMALL_NUMBER,
+)
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())

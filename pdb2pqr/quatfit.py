@@ -19,7 +19,9 @@ Jan Labanowski, jkl@osc.edu, jkl@ohstpy.bitnet, ohstpy::jkl
 .. codeauthor:: Jens Erik Nielsen
 .. codeauthor:: Todd Dolinsky
 """
+
 import math
+
 from .utilities import normalize
 
 

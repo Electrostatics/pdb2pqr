@@ -1,10 +1,12 @@
 """Tests of I/O functions."""
+
 import logging
 from difflib import Differ
 from pathlib import Path
-import pytest
-from pdb2pqr.io import read_pqr, read_dx, write_cube, read_qcd
 
+import pytest
+
+from pdb2pqr.io import read_dx, read_pqr, read_qcd, write_cube
 
 _LOGGER = logging.getLogger(__name__)
 DATA_DIR = Path("tests/data")

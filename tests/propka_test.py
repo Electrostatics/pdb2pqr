@@ -1,7 +1,9 @@
 """Tests for PROPKA functionality."""
+
 from pathlib import Path
-import pytest
+
 import common
+import pytest
 
 
 @pytest.mark.parametrize(

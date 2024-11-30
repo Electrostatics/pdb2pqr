@@ -6,9 +6,9 @@ application of adapted PEOE charges to estimate pKa values of functional
 groups in protein–ligand complexes. Proteins, 65, 424-437, 2006.
 https://doi.org/10.1002/prot.21110
 """
+
 import logging
 from math import isclose
-
 
 _LOGGER = logging.getLogger(__name__)
 

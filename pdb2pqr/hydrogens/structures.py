@@ -1,13 +1,13 @@
 """Topology-related classes for hydrogen optimization."""
+
 import logging
 from xml import sax
+
+from .. import aa
 from .. import definitions as defns
 from .. import utilities as util
-from .. import aa
 from ..config import ANGLE_CUTOFF, DIST_CUTOFF
-from . import optimize
-from . import io
-
+from . import io, optimize
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
@@ -657,7 +657,8 @@ class Water(optimize.Optimize):
         :param acc:  hydrogen bond acceptor
         :type acc:  Atom
         :return:  indication of whether addition was successful
-        :rtype:  bool"""
+        :rtype:  bool
+        """
         residue = self.residue
         # Do some error checking
         if not acc.hacceptor:
@@ -968,7 +969,8 @@ class Carboxylic(optimize.Optimize):
         :param acc:  hydrogen bond acceptor
         :type acc:  Atom
         :return:  indication of whether addition was successful
-        :rtype:  bool"""
+        :rtype:  bool
+        """
         residue = acc.residue
         # Do some error checking
         if not donor.hdonor:

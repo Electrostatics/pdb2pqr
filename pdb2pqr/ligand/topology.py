@@ -1,6 +1,6 @@
 """Ligand topology classes."""
-import logging
 
+import logging
 
 _LOGGER = logging.getLogger(__name__)
 

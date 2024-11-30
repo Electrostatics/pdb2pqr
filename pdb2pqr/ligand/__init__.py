@@ -6,11 +6,6 @@
 
 .. codeauthor:: Jens Erik Nielsen
 """
-import sys
-
-
-assert sys.version_info >= (3, 5)
-
 
 #: Radii for different atom types.
 #: When using these tables, the most specific Sybyl atom type should be used

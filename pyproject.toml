@@ -85,6 +85,7 @@ ignore = [
   "D10",     # Missing docstring in public module / function / etc.
   "D200",    # One-line docstring should fit on one line with quotes
   "D417",    # require documentation for every function parameter.
+  "D400",    # First line should end with a period
   "D401",    # require an imperative mood for all docstrings.
   "DOC201",  # missing Return field in docstring
   "PTH123",  # Path.open should be used instead of built-in open

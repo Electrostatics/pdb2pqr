@@ -7,4 +7,5 @@ select = [
   "F63",
   "F7",
   "F82",
+  "FA102",  # Python 3.10-style union typing is used so we need to import `from __future__ import annotations`
 ]

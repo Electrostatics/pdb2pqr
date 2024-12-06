@@ -23,7 +23,7 @@ def test_read_pqr(input_pqr):
     :param input_pqr:  path to PQR file to test
     :type input_pqr:  str
     """
-    with open(input_pqr, "rt") as pqr_file:
+    with open(input_pqr) as pqr_file:
         read_pqr(pqr_file)
 
 
@@ -33,7 +33,7 @@ def test_read_qcd():
     Doesn't test functionality.
     """
     qcd_path = DATA_DIR / "dummy.qcd"
-    with open(qcd_path, "rt") as qcd_file:
+    with open(qcd_path) as qcd_file:
         read_qcd(qcd_file)
 
 
@@ -44,18 +44,18 @@ def test_dx2cube(tmp_path):
     cube_gen = tmp_path / "test.cube"
     cube_test = DATA_DIR / "dx2cube.cube"
     _LOGGER.info(f"Reading PQR from {pqr_path}...")
-    with open(pqr_path, "rt") as pqr_file:
+    with open(pqr_path) as pqr_file:
         atom_list = read_pqr(pqr_file)
     _LOGGER.info(f"Reading DX from {dx_path}...")
-    with open(dx_path, "rt") as dx_file:
+    with open(dx_path) as dx_file:
         dx_dict = read_dx(dx_file)
     _LOGGER.info(f"Writing Cube to {cube_gen}...")
-    with open(cube_gen, "wt") as cube_file:
+    with open(cube_gen, "w") as cube_file:
         write_cube(cube_file, dx_dict, atom_list)
     _LOGGER.info(f"Reading this cube from {cube_gen}...")
-    this_lines = [line.strip() for line in open(cube_gen, "rt")]
+    this_lines = [line.strip() for line in open(cube_gen)]
     _LOGGER.info(f"Reading test cube from {cube_test}...")
-    test_lines = [line.strip() for line in open(cube_test, "rt")]
+    test_lines = [line.strip() for line in open(cube_test)]
     differ = Differ()
     differences = [
         line
@@ -66,5 +66,5 @@ def test_dx2cube(tmp_path):
     if differences:
         for diff in differences:
             _LOGGER.error(f"Found difference:  {diff}")
-        raise ValueError()
+        raise ValueError
     _LOGGER.info("No differences found in output")

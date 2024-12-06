@@ -112,7 +112,7 @@ class Psize:
         :param filename:  string with path to PDB- or PQR-format file.
         :type filename:  str
         """
-        with open(filename, "rt", encoding="utf-8") as file_:
+        with open(filename, encoding="utf-8") as file_:
             self.parse_lines(file_.readlines())
 
     def parse_lines(self, lines):
@@ -158,8 +158,7 @@ class Psize:
         """
         for i in range(3):
             self.mol_length[i] = maxlen[i] - minlen[i]
-            if self.mol_length[i] < 0.1:
-                self.mol_length[i] = 0.1
+            self.mol_length[i] = max(self.mol_length[i], 0.1)
         return self.mol_length
 
     def set_coarse_grid_dims(self, mol_length):
@@ -186,8 +185,7 @@ class Psize:
         """
         for i in range(3):
             self.fine_length[i] = mol_length[i] + self.fadd
-            if self.fine_length[i] > coarse_length[i]:
-                self.fine_length[i] = coarse_length[i]
+            self.fine_length[i] = min(self.fine_length[i], coarse_length[i])
         return self.fine_length
 
     def set_center(self, maxlen, minlen):
@@ -218,8 +216,7 @@ class Psize:
         for i in range(3):
             temp_num[i] = int(fine_length[i] / self.space + 0.5)
             self.ngrid[i] = 32 * (int((temp_num[i] - 1) / 32.0 + 0.5)) + 1
-            if self.ngrid[i] < 33:
-                self.ngrid[i] = 33
+            self.ngrid[i] = max(self.ngrid[i], 33)
         return self.ngrid
 
     def set_smallest(self, ngrid):
@@ -275,8 +272,7 @@ class Psize:
         return self.proc_grid
 
     def set_focus(self, fine_length, nproc, coarse_length):
-        """Calculate the number of levels of focusing required for each
-        processor subdomain.
+        """Calculate the number of levels of focusing required for each processor subdomain.
 
         :param fine_length:  fine grid length
         :type fine_length:  [float, float, float]
@@ -293,10 +289,8 @@ class Psize:
                 + 1.0
             )
         nfocus = nfoc[0]
-        if nfoc[1] > nfocus:
-            nfocus = nfoc[1]
-        if nfoc[2] > nfocus:
-            nfocus = nfoc[2]
+        nfocus = max(nfoc[1], nfocus)
+        nfocus = max(nfoc[2], nfocus)
         if nfocus > 0:
             nfocus = nfocus + 1
         self.nfocus = nfocus

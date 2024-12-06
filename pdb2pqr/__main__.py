@@ -7,15 +7,11 @@ For more information, see http://www.poissonboltzmann.org/
 """
 
 import logging
-from sys import version_info
 
 from pdb2pqr.main import main
 
-assert version_info >= (3, 5)
-
-
 _LOGGER = logging.getLogger(__name__)
-logging.captureWarnings(True)
+logging.captureWarnings(capture=True)
 
 
 if __name__ == "__main__":

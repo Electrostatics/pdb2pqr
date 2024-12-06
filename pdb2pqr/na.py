@@ -11,9 +11,7 @@ from . import structures as struct
 
 
 class Nucleic(residue.Residue):
-    """This class provides standard features of the nucleic acids listed
-    below.
-    """
+    """This class provides standard features of the nucleic acids listed below."""
 
     def __init__(self, atoms, ref):
         sample_atom = atoms[-1]

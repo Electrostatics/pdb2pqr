@@ -565,8 +565,10 @@ class HETATM(BaseRecord):
             self.chain_id = line[21].strip()
             self.res_seq = int(line[22:26].strip())
             self.ins_code = line[26].strip()
-        except IndexError:
-            raise ValueError("Residue name must be less than 4 characters!")
+        except IndexError as e:
+            raise ValueError(
+                "Residue name must be less than 4 characters!"
+            ) from e
         self.x = float(line[30:38].strip())
         self.y = float(line[38:46].strip())
         self.z = float(line[46:54].strip())

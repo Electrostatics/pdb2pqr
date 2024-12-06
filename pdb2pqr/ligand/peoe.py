@@ -3,7 +3,7 @@
 The PEOE method is described in:  Paul Czodrowski, Ingo Dramburg,
 Christoph A. Sotriffer  Gerhard Klebe. Development, validation, and
 application of adapted PEOE charges to estimate pKa values of functional
-groups in protein–ligand complexes. Proteins, 65, 424-437, 2006.
+groups in protein-ligand complexes. Proteins, 65, 424-437, 2006.
 https://doi.org/10.1002/prot.21110
 """
 
@@ -111,10 +111,10 @@ def assign_terms(atoms, term_dict):
             atom_type = "O.OH"
         try:
             atom.poly_terms = term_dict[atom_type]
-        except KeyError:
+        except KeyError as e:
             raise KeyError(
                 f"Unable to find polynomial terms for atom type {atom_type}"
-            )
+            ) from e
     return atoms
 
 

@@ -1,4 +1,5 @@
 """PDB2PQR Version number.
+
 Store the version here so:
 
 * we don't load dependencies by storing it in :file:`__init__.py`

@@ -99,15 +99,7 @@ class TopologyHandler(sax.ContentHandler):
                 self.curr_atom = TopologyAtom(self.curr_reference)
             else:
                 _LOGGER.info("** Don't know what to do with this atom!")
-        elif tag_name == "x":
-            self.curr_element = tag_name
-        elif tag_name == "y":
-            self.curr_element = tag_name
-        elif tag_name == "z":
-            self.curr_element = tag_name
-        elif tag_name == "bond":
-            self.curr_element = tag_name
-        elif tag_name == "altname":
+        elif tag_name in ("x", "y", "z", "bond", "altname"):
             self.curr_element = tag_name
         elif tag_name == "dihedral":
             self.curr_element = tag_name
@@ -142,17 +134,7 @@ class TopologyHandler(sax.ContentHandler):
         """
         if not self.incomplete:
             self.curr_element = None
-            if tag_name == "x":
-                pass
-            elif tag_name == "y":
-                pass
-            elif tag_name == "z":
-                pass
-            elif tag_name == "name":
-                pass
-            elif tag_name == "bond":
-                pass
-            elif tag_name == "altname":
+            if tag_name in ("x", "y", "z", "name", "bond", "altname"):
                 pass
             elif tag_name == "atom":
                 self.curr_atom = None
@@ -174,9 +156,8 @@ class TopologyHandler(sax.ContentHandler):
                 self.curr_residue = None
             elif tag_name != "topology":
                 _LOGGER.info(f"** NOT handling {tag_name} end tag")
-        else:
-            if tag_name == "incomplete":
-                self.incomplete = 0
+        elif tag_name == "incomplete":
+            self.incomplete = 0
 
     def characters(self, text):
         """Parse characters in topology XML file.

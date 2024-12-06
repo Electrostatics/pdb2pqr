@@ -79,8 +79,7 @@ def qtransform(numpoints, defcoords, refcenter, fitcenter, rotation):
 
 
 def qfit(numpoints, refcoords, defcoords):
-    """Method for getting new atom coordinates from sets of reference and
-    definition coordinates.
+    """Method for getting new atom coordinates from sets of reference and definition coordinates.
 
     .. todo::  Remove hard-coded parameters of function.
 

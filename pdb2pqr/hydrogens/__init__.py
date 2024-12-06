@@ -74,7 +74,7 @@ def create_handler(hyd_path=HYD_DEF_PATH):
     """
     handler = HydrogenHandler()
     hyd_path = io.test_dat_file(hyd_path)
-    with open(hyd_path, "rt") as hyd_file:
+    with open(hyd_path) as hyd_file:
         sax.make_parser()
         sax.parseString(hyd_file.read(), handler)
     return handler
@@ -120,8 +120,8 @@ class HydrogenRoutines:
             raise IndexError("Invalid State ID!")
 
         # First Remove all Hs
-        residue = getattr(amb, "residue")
-        hdef = getattr(amb, "hdef")
+        residue = amb.residue
+        hdef = amb.hdef
         for conf in hdef.conformations:
             hname = conf.hname
             boundname = conf.boundatom
@@ -176,10 +176,12 @@ class HydrogenRoutines:
             # flag the added hydrogen
             residue.get_atom(hname).titratableH = True
             residue.get_atom(hname).addIntraBond(boundname)
+        return None
 
     @classmethod
     def pka_switchstate(cls, amb, state_id_):
         """Switch a residue to a new state by first removing all hydrogens.
+
         This routine is used in pKa calculations only!
 
         :param amb:  the amibiguity to switch
@@ -191,8 +193,8 @@ class HydrogenRoutines:
         state_id = titrationdict[state_id_]
         state_id = state_id.split("+")
         new_state_id = [int(i) for i in state_id]
-        residue = getattr(amb, "residue")
-        hdef = getattr(amb, "hdef")
+        residue = amb.residue
+        hdef = amb.hdef
         for conf in hdef.conformations:
             hname = conf.hname
             boundname = conf.boundatom
@@ -278,6 +280,7 @@ class HydrogenRoutines:
 
     def is_optimizeable(self, residue):
         """Check to see if the given residue is optimizeable.
+
         There are three ways to identify a residue:
 
         1. By name (i.e., HIS)
@@ -306,7 +309,7 @@ class HydrogenRoutines:
 
         # If alcoholic, make sure the hydrogen is present
         if optinstance is not None and optinstance.opttype == "Alcoholic":
-            atomname = list(optinstance.map.keys())[0]
+            atomname = next(iter(optinstance.map.keys()))
             if not residue.reference.has_atom(atomname):
                 optinstance = None
         return optinstance
@@ -425,12 +428,18 @@ class HydrogenRoutines:
                         continue
                     if not (closeatom.hacceptor or closeatom.hdonor):
                         continue
-                    if atom.hdonor and not atom.hacceptor:
-                        if not closeatom.hacceptor:
-                            continue
-                    if atom.hacceptor:
-                        if not atom.hdonor and not closeatom.hdonor:
-                            continue
+                    if (
+                        atom.hdonor
+                        and not atom.hacceptor
+                        and not closeatom.hacceptor
+                    ):
+                        continue
+                    if (
+                        atom.hacceptor
+                        and not atom.hdonor
+                        and not closeatom.hdonor
+                    ):
+                        continue
                     dist = util.distance(atom.coords, closeatom.coords)
                     if dist < 4.3:
                         residue = atom.residue
@@ -505,13 +514,14 @@ class HydrogenRoutines:
             seenlist = []
             for obj in network:
                 for hbond in obj.hbonds:
-                    if hbond.atom2 in self.atomlist:
-                        if not isinstance(hbond.atom1.residue, aa.WAT):
-                            if not isinstance(hbond.atom2.residue, aa.WAT):
-                                # Only get one hbond pair
-                                if (hbond.atom2, hbond.atom1) not in seenlist:
-                                    hbondmap[hbond] = hbond.dist
-                                    seenlist.append((hbond.atom1, hbond.atom2))
+                    if hbond.atom2 in self.atomlist and not isinstance(
+                        hbond.atom1.residue, aa.WAT
+                    ):
+                        if not isinstance(hbond.atom2.residue, aa.WAT):
+                            # Only get one hbond pair
+                            if (hbond.atom2, hbond.atom1) not in seenlist:
+                                hbondmap[hbond] = hbond.dist
+                                seenlist.append((hbond.atom1, hbond.atom2))
             hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
             for hbond in hbondlist:
@@ -536,11 +546,12 @@ class HydrogenRoutines:
             for obj in network:
                 for hbond in obj.hbonds:
                     residue = hbond.atom1.residue
-                    if isinstance(residue, aa.WAT):
-                        if isinstance(hbond.atom2.residue, aa.WAT):
-                            if (hbond.atom2, hbond.atom1) not in seenlist:
-                                hbondmap[hbond] = hbond.dist
-                                seenlist.append((hbond.atom1, hbond.atom2))
+                    if isinstance(residue, aa.WAT) and isinstance(
+                        hbond.atom2.residue, aa.WAT
+                    ):
+                        if (hbond.atom2, hbond.atom1) not in seenlist:
+                            hbondmap[hbond] = hbond.dist
+                            seenlist.append((hbond.atom1, hbond.atom2))
             hbondlist = util.sort_dict_by_value(hbondmap)
             hbondlist.reverse()
             for hbond in hbondlist:

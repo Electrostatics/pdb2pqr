@@ -17,4 +17,4 @@ class Topology:
         self.atom_dict = {}
         for atom in molecule.atoms:
             self.atom_dict[atom.name] = atom
-            raise NotImplementedError()
+            raise NotImplementedError

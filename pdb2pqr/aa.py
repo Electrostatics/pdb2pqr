@@ -138,7 +138,6 @@ class Amino(residue.Residue):
                 self.ffname = f"NEUTRAL-C{self.ffname}"
             else:
                 self.ffname = f"C{self.ffname}"
-        return
 
     def rebuild_tetrahedral(self, atomname):
         """Rebuild a tetrahedral hydrogen group.
@@ -167,7 +166,7 @@ class Amino(residue.Residue):
         for bond in self.reference.map[bondname].bonds:
             if bond.startswith("H"):
                 hcount += 1
-            elif bond != "C-1" and bond != "N+1":
+            elif bond not in ("C-1", "N+1"):
                 nextatomname = bond
         # Check if this is a tetrahedral group
         if hcount != 3 or nextatomname is None:
@@ -275,7 +274,7 @@ class ALA(Amino):
         Amino.__init__(self, atoms, ref)
         self.reference = ref
 
-    def letter_code(self):
+    def letter_code(self) -> str:
         """Return letter code for amino acid.
 
         :return:  amino acid 1-letter code
@@ -407,9 +406,7 @@ class CYS(Amino):
         If SS-bonded, use CYX.  If negatively charged, use CYM.  If HG is not
         present, use CYX.
         """
-        if "CYX" in self.patches or self.name == "CYX":
-            self.ffname = "CYX"
-        elif self.ss_bonded:
+        if "CYX" in self.patches or self.name == "CYX" or self.ss_bonded:
             self.ffname = "CYX"
         elif "CYM" in self.patches or self.name == "CYM":
             self.ffname = "CYM"
@@ -548,10 +545,7 @@ class HIS(Amino):
             elif (
                 self.get_atom("NE2").hdonor
                 and not self.get_atom("NE2").hacceptor
-            ):
-                if self.has_atom("HD1"):
-                    self.remove_atom("HD1")
-            elif (
+            ) or (
                 self.get_atom("ND1").hacceptor
                 and not self.get_atom("ND1").hdonor
             ):
@@ -568,7 +562,7 @@ class HIS(Amino):
             self.ffname = "HIE"
         else:
             errstr = (
-                f"Invalid type for {str(self)}! Missing both HD1 and HE2 "
+                f"Invalid type for {self!s}! Missing both HD1 and HE2 "
                 "atoms. If you receive this error while using the "
                 "--assign-only option you can only resolve it by adding HD1, "
                 "HE2 or both to this residue."

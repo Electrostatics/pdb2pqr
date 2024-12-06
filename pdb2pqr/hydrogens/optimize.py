@@ -427,6 +427,7 @@ class Optimize:
 
     def try_positions_with_two_bonds_h(self, donor, acc, newname, loc1, loc2):
         """Try adding a new hydrogen to the two potential locations.
+
         If both form hydrogen bonds, place at whatever returns the best bond as
         determined by get_pair_energy.
 

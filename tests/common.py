@@ -247,7 +247,7 @@ def run_propka_for_tests(input_pdb, compare_file, pH):
     definition = io.get_definitions()
     pdblist, _ = io.get_molecule(input_pdb)
     biomolecule, definition, _ = setup_molecule(pdblist, definition, None)
-    biomolecule.set_termini(False, False)
+    biomolecule.set_termini(neutraln=False, neutralc=False)
     biomolecule.update_bonds()
 
     biomolecule.remove_hydrogens()

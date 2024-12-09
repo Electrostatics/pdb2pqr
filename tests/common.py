@@ -5,8 +5,8 @@ import itertools
 import logging
 from pathlib import Path
 
-import numpy
-import pandas
+import numpy as np
+import pandas as pd
 
 from pdb2pqr.main import build_main_parser, main_driver
 from pdb2pqr.structures import Atom
@@ -92,12 +92,11 @@ def pqr_to_dict(pqr_file):
             row_dict["q"] = atom.charge
             row_dict["r"] = atom.radius
             pqr.append(row_dict)
-    return pandas.DataFrame(pqr)
+    return pd.DataFrame(pqr)
 
 
 def pqr_distance(df1, df2):
-    """Calculate distances between positions, charges, and radii from two PQR
-    dataframes.
+    """Calculate distances between positions, charges, and radii from two PQR dataframes.
 
     Args:
         df1:  PQR dataframe
@@ -139,7 +138,7 @@ def pqr_distance(df1, df2):
     for c_val in ("p", "q", "r"):
         n_val = f"d{c_val}"
         n2_val = f"d{c_val}2"
-        d_frame[n_val] = numpy.sqrt(d_frame[n2_val])
+        d_frame[n_val] = np.sqrt(d_frame[n2_val])
         d_frame = d_frame.drop(n2_val, axis="columns")
 
     return d_frame
@@ -154,11 +153,11 @@ def compare_pqr(pqr1_path, pqr2_path, compare_resnames=False):
         pqr1_path:  Path to first PQR
         par2_path:  Path to second PQR
     """
-    with open(pqr1_path, "rt", encoding="utf-8") as pqr1_file:
+    with open(pqr1_path, encoding="utf-8") as pqr1_file:
         df1 = pqr_to_dict(pqr1_file)
         _LOGGER.debug(f"PQR 1 has shape {df1.shape}")
 
-    with open(pqr2_path, "rt", encoding="utf-8") as pqr2_file:
+    with open(pqr2_path, encoding="utf-8") as pqr2_file:
         df2 = pqr_to_dict(pqr2_file)
         _LOGGER.debug(f"PQR 2 has shape {df2.shape}")
 
@@ -247,7 +246,7 @@ def run_propka_for_tests(input_pdb, compare_file, pH):
     definition = io.get_definitions()
     pdblist, _ = io.get_molecule(input_pdb)
     biomolecule, definition, _ = setup_molecule(pdblist, definition, None)
-    biomolecule.set_termini(False, False)
+    biomolecule.set_termini(neutraln=False, neutralc=False)
     biomolecule.update_bonds()
 
     biomolecule.remove_hydrogens()
@@ -265,7 +264,7 @@ def run_propka_for_tests(input_pdb, compare_file, pH):
     #         f.write(f"{key},{val}\n")
 
     compare = {}
-    with open(compare_file, "r") as f:
+    with open(compare_file) as f:
         for line in f.readlines()[1:]:
             line = line.strip()
             if len(line) == 0:

@@ -5,6 +5,7 @@
 .. codeauthor::  Yong Huang
 """
 
+import contextlib
 import copy
 import logging
 import re
@@ -105,10 +106,8 @@ class DefinitionHandler(sax.ContentHandler):
             elif name == "name":
                 self.curobj.name = self.content
             elif self.curelement != "":
-                try:
+                with contextlib.suppress(ValueError):
                     self.content = float(self.content)
-                except ValueError:
-                    pass
                 setattr(self.curobj, self.curelement, self.content)
 
         self.content = ""
@@ -227,7 +226,7 @@ class Patch:
         text += f"Apply to: {self.applyto}\n"
         text += "Atoms to add: \n"
         for atom in self.map:
-            text += f"\t{str(self.map[atom])}\n"
+            text += f"\t{self.map[atom]!s}\n"
         text += "Atoms to remove: \n"
         for remove in self.remove:
             text += f"\t{remove}\n"
@@ -249,7 +248,7 @@ class DefinitionResidue(residue.Residue):
         text = f"{self.name}\n"
         text += "Atoms: \n"
         for atom in self.map:
-            text += f"\t{str(self.map[atom])}\n"
+            text += f"\t{self.map[atom]!s}\n"
         text += "Dihedrals: \n"
         for dihedral in self.dihedrals:
             text += f"\t{dihedral}\n"

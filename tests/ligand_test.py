@@ -29,14 +29,14 @@ ALL_LIGANDS |= {
     "adp.mol2",
     "acetate.mol2",
 }
-ALL_LIGANDS = sorted(list(ALL_LIGANDS))
+ALL_LIGANDS = sorted(ALL_LIGANDS)
 
 
 def test_peoe_charges():
     """Specifically test PEOE charges."""
     ligand = Mol2Molecule()
     mol2_path = Path("tests/data/1HPX-ligand.mol2")
-    with open(mol2_path, "rt") as mol2_file:
+    with open(mol2_path) as mol2_file:
         ligand.read(mol2_file)
     # WARNING: Nathan? The old_total_charge is never used
     # old_total_charge = sum(
@@ -56,7 +56,7 @@ def test_assign_parameters(input_mol2):
     """Tests to break basic ligand functionality."""
     ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
-    with open(mol2_path, "rt") as mol2_file:
+    with open(mol2_path) as mol2_file:
         ligand.read(mol2_file)
     old_total_charge = sum(
         atom.formal_charge for atom in ligand.atoms.values()
@@ -98,17 +98,17 @@ def test_formal_charge(input_mol2):
     """Testing formal charge calculation."""
     ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
-    with open(mol2_path, "rt") as mol2_file:
+    with open(mol2_path) as mol2_file:
         ligand.read(mol2_file)
     expected_results = FORMAL_CHARGE_RESULTS[input_mol2]
     errors = []
     for iatom, atom in enumerate(ligand.atoms.values()):
         try:
             expected_charge = expected_results[iatom]
-        except IndexError:
+        except IndexError as e:
             err = f"Missing result for {atom.name}, {atom.type}, "
             err += f"{atom.formal_charge}"
-            raise IndexError(err)
+            raise IndexError(err) from e
         if not isclose(atom.formal_charge, expected_charge):
             err = (
                 f"Atom {atom.name} {atom.type} with bond order "
@@ -127,7 +127,7 @@ def test_torsions(input_mol2):
     """Test assignment of torsion angles."""
     ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
-    with open(mol2_path, "rt") as mol2_file:
+    with open(mol2_path) as mol2_file:
         ligand.read(mol2_file)
     test = set()
     # Only test heavy-atom torsions
@@ -141,14 +141,14 @@ def test_torsions(input_mol2):
         if len(diff) > 0:
             err = (
                 f"Torsion test failed for {input_mol2}:\n"
-                f"Got: {sorted(list(test))}\n"
-                f"Expected: {sorted(list(expected))}\n"
-                f"Difference: {sorted(list(diff))}"
+                f"Got: {sorted(test)}\n"
+                f"Expected: {sorted(expected)}\n"
+                f"Difference: {sorted(diff)}"
             )
             raise ValueError(err)
-    except KeyError:
-        err = f"No results for {input_mol2}: {sorted(list(ligand.torsions))}"
-        raise KeyError(err)
+    except KeyError as e:
+        err = f"No results for {input_mol2}: {sorted(ligand.torsions)}"
+        raise KeyError(err) from e
 
 
 @pytest.mark.parametrize("input_mol2", ALL_LIGANDS)
@@ -156,21 +156,21 @@ def test_rings(input_mol2):
     """Test assignment of torsion angles."""
     ligand = Mol2Molecule()
     mol2_path = Path("tests/data") / input_mol2
-    with open(mol2_path, "rt") as mol2_file:
+    with open(mol2_path) as mol2_file:
         ligand.read(mol2_file)
     test = ligand.rings
     try:
         benchmark = RING_RESULTS[input_mol2]
-    except KeyError:
+    except KeyError as e:
         err = f"Missing expected results for {input_mol2}: {test}"
-        raise KeyError(err)
+        raise KeyError(err) from e
     diff = test ^ benchmark
     if len(diff) > 0:
         err = (
             f"Ring test failed for {input_mol2}:\n"
-            f"Got: {sorted(list(test))}\n"
-            f"Expected: {sorted(list(benchmark))}\n"
-            f"Difference: {sorted(list(diff))}"
+            f"Got: {sorted(test)}\n"
+            f"Expected: {sorted(benchmark)}\n"
+            f"Difference: {sorted(diff)}"
         )
         raise ValueError(err)
     for atom_name in ligand.atoms:

@@ -19,7 +19,7 @@ class Elec:
     """An object for the ELEC section of an APBS input file."""
 
     def __init__(
-        self, pqrpath, size, method, asyncflag, istrng=0, potdx=False
+        self, pqrpath, size, method, asyncflag, istrng=0, *, potdx=False
     ):
         """Initialize object.
 
@@ -149,7 +149,7 @@ class Input:
     """Each object of this class is one APBS input file."""
 
     def __init__(
-        self, pqrpath, size, method, asyncflag, istrng=0, potdx=False
+        self, pqrpath, size, method, asyncflag, istrng=0, *, potdx=False
     ):
         """Initialize the input file class.
 
@@ -181,11 +181,11 @@ class Input:
         self.pqrname = self.pqrpath.name
         self.asyncflag = asyncflag
         # Initialize variables to default elec values
-        elec1 = Elec(pqrpath, size, method, asyncflag, istrng, potdx)
+        elec1 = Elec(pqrpath, size, method, asyncflag, istrng, potdx=potdx)
         if not potdx:
-            elec2 = Elec(pqrpath, size, method, asyncflag, istrng, potdx)
-            setattr(elec2, "sdie", 2.0)
-            setattr(elec2, "write", [])
+            elec2 = Elec(pqrpath, size, method, asyncflag, istrng, potdx=potdx)
+            elec2.sdie = 2.0
+            elec2.write = []
         else:
             elec2 = ""
         self.elecs = [elec1, elec2]
@@ -218,7 +218,7 @@ class Input:
             # Temporarily disable async flag
             for elec in self.elecs:
                 elec.asyncflag = False
-            with open(outname, "wt") as out_file:
+            with open(outname, "w") as out_file:
                 out_file.write(str(self))
             # Now make the async files
             elec = self.elecs[0]
@@ -228,10 +228,10 @@ class Input:
                 for elec in self.elecs:
                     elec.asyncflag = True
                     elec.async_ = i
-                with open(outname, "wt") as out_file:
+                with open(outname, "w") as out_file:
                     out_file.write(str(self))
         else:
-            with open(path, "wt") as out_file:
+            with open(path, "w") as out_file:
                 out_file.write(str(self))
 
     def dump_pickle(self):
@@ -252,7 +252,7 @@ def split_input(filename):
     :type filename:  str
     """
     nproc = 0
-    with open(filename, "rt") as file_:
+    with open(filename) as file_:
         text = ""
         while True:
             line = file_.readline()
@@ -384,10 +384,15 @@ def main():
     else:
         size.run_psize(filename)
         input_ = Input(
-            filename, size, args.method, args.asynch, args.istrng, args.potdx
+            filename,
+            size,
+            args.method,
+            args.asynch,
+            args.istrng,
+            potdx=args.potdx,
         )
         path = Path(filename)
-        output_path = path.parent + path.stem + Path(".in")
+        output_path = f"{path.parent}/{path.stem}.in"
         input_.print_input_files(output_path)
 
 

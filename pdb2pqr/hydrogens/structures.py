@@ -199,7 +199,7 @@ class Flip(optimize.Optimize):
         """
         residue = bondatom.residue
         # Initialize some variables
-        atomlist = [atom for atom in residue.atoms]
+        atomlist = list(residue.atoms)
         # Set a flag to see whether to delete the FLIPs or not
         flag = 0
         if bondatom.name.endswith("FLIP"):
@@ -233,7 +233,7 @@ class Flip(optimize.Optimize):
         residue = self.residue
         if residue.fixed:
             return
-        atomlist = [atom for atom in residue.atoms]
+        atomlist = list(residue.atoms)
         for atom in atomlist:
             if atom.name.endswith("FLIP"):
                 self.routines.cells.remove_cell(atom)
@@ -290,8 +290,7 @@ class Alcoholic(optimize.Optimize):
     """The class for alcoholic residue."""
 
     def __init__(self, residue, optinstance, routines):
-        """Initialize the alcoholic class by removing the alcoholic hydrogen
-        if it exists.
+        """Initialize the alcoholic class by removing the alcoholic hydrogen if it exists.
 
         :param residue:  the residue to optimize
         :type residue:  Residue
@@ -307,7 +306,7 @@ class Alcoholic(optimize.Optimize):
         self.routines = routines
         self.atomlist = []
         self.hbonds = []
-        name = list(optinstance.map.keys())[0]
+        name = next(iter(optinstance.map.keys()))
         self.hname = name
         bondname = residue.reference.get_atom(name).bonds[0]
         self.atomlist.append(residue.get_atom(bondname))
@@ -513,7 +512,7 @@ class Alcoholic(optimize.Optimize):
         self.finalize()
         residue.fixed = 1
         # Remove all LP atoms
-        atomlist = [atom for atom in residue.atoms]
+        atomlist = list(residue.atoms)
         for atom in atomlist:
             if atom.name.startswith("LP"):
                 residue.remove_atom(atom.name)
@@ -795,7 +794,7 @@ class Water(optimize.Optimize):
         self.finalize()
         residue = self.residue
 
-        atomlist = [atom for atom in residue.atoms]
+        atomlist = list(residue.atoms)
         for atom in atomlist:
             if atom.name.startswith("LP"):
                 residue.remove_atom(atom.name)
@@ -1242,12 +1241,12 @@ class HydrogenConformation:
     hydrogen conformations as specified in the hydrogen data file.
     """
 
-    def __init__(self, hname, boundatom, bondlength):
+    def __init__(self, hname: str, boundatom: str, bondlength: float):
         """
         Args:
-            hname      : The hydrogen name (string)
-            boundatom  : The atom the hydrogen is bound to (string)
-            bondlength : The bond length (float)
+            hname: The hydrogen name
+            boundatom: The atom the hydrogen is bound to
+            bondlength: The bond length
         """
         self.hname = hname
         self.boundatom = boundatom

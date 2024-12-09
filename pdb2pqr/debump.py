@@ -132,7 +132,7 @@ class Debump:
             cutoff = atom_size + other_size
             if dist < cutoff:
                 bumpscore += 1000.0
-        _LOGGER.debug(f"BUMPSCORE {str(bumpscore)}")
+        _LOGGER.debug(f"BUMPSCORE {bumpscore!s}")
         return bumpscore
 
     def debump_biomolecule(self):
@@ -159,7 +159,9 @@ class Debump:
             if not isinstance(residue, aa.Amino):
                 continue
             # Initialize variables
-            conflict_names = self.find_residue_conflicts(residue, True)
+            conflict_names = self.find_residue_conflicts(
+                residue, write_conflict_info=True
+            )
             if not conflict_names:
                 continue
             # Otherwise debump the residue
@@ -177,7 +179,7 @@ class Debump:
                 _LOGGER.warning(text)
         _LOGGER.debug("Done checking if we must debump any residues.")
 
-    def find_residue_conflicts(self, residue, write_conflict_info=False):
+    def find_residue_conflicts(self, residue, *, write_conflict_info=False):
         """Find conflicts between residues.
 
         :param residue:  residue to check
@@ -269,7 +271,7 @@ class Debump:
                 if score == 0:
                     if not self.find_residue_conflicts(residue):
                         _LOGGER.debug(
-                            f"No conflicts found at angle {repr(newangle)}"
+                            f"No conflicts found at angle {newangle!r}"
                         )
                         return True
                     else:

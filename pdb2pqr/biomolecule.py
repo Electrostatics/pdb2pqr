@@ -55,23 +55,27 @@ class Biomolecule:
                 num_chains += 1
         for record in pdblist:
             if isinstance(record, (pdb.ATOM, pdb.HETATM)):
-                if record.chain_id == "":
-                    if num_chains > 1 and record.res_name not in [
+                if (
+                    record.chain_id == ""
+                    and num_chains > 1
+                    and record.res_name
+                    not in [
                         "WAT",
                         "HOH",
-                    ]:
-                        # Assign a chain ID
-                        try:
-                            record.chain_id = (
-                                string.ascii_uppercase
-                                + string.ascii_lowercase
-                                + string.digits
-                            )[count]
-                        except IndexError:
-                            raise Exception(
-                                "Too many chains exist in biomolecule. "
-                                "Consider preparing subsets."
-                            )
+                    ]
+                ):
+                    # Assign a chain ID
+                    try:
+                        record.chain_id = (
+                            string.ascii_uppercase
+                            + string.ascii_lowercase
+                            + string.digits
+                        )[count]
+                    except IndexError:
+                        raise Exception(
+                            "Too many chains exist in biomolecule. "
+                            "Consider preparing subsets."
+                        )
 
                 chain_id = record.chain_id
                 res_seq = record.res_seq
@@ -221,7 +225,7 @@ class Biomolecule:
             if isinstance(residue, aa.HIS):
                 self.apply_patch("HIP", residue)
 
-    def set_termini(self, neutraln=False, neutralc=False):
+    def set_termini(self, *, neutraln=False, neutralc=False):
         """Set the termini for a protein.
 
         First set all known termini by looking at the ends of the chain. Then
@@ -237,7 +241,7 @@ class Biomolecule:
         # First assign the known termini
         chain = None
         for chain in self.chains:
-            self.assign_termini(chain, neutraln, neutralc)
+            self.assign_termini(chain, neutraln=neutraln, neutralc=neutralc)
         # Now determine if there are any hidden chains
         letters = string.ascii_uppercase + string.ascii_lowercase
         ch_num = 0
@@ -255,11 +259,12 @@ class Biomolecule:
                 if isinstance(residue, aa.Amino):
                     if residue.has_atom("OXT") and not residue.is_c_term:
                         fixflag = 1
-                elif isinstance(residue, na.Nucleic):
-                    if (
-                        residue.has_atom("H3T") or residue.name.endswith("3")
-                    ) and not residue.is3term:
-                        fixflag = 1
+                elif (
+                    isinstance(residue, na.Nucleic)
+                    and (residue.has_atom("H3T") or residue.name.endswith("3"))
+                    and not residue.is3term
+                ):
+                    fixflag = 1
                 if fixflag:
                     # Get an available chain ID
                     chainid = letters[0]
@@ -284,8 +289,12 @@ class Biomolecule:
                         newchain.add_residue(res)
                         chain.residues.remove(res)
                         res.set_chain_id(chainid[0])
-                    self.assign_termini(chain, neutraln, neutralc)
-                    self.assign_termini(newchain, neutraln, neutralc)
+                    self.assign_termini(
+                        chain, neutraln=neutraln, neutralc=neutralc
+                    )
+                    self.assign_termini(
+                        newchain, neutraln=neutraln, neutralc=neutralc
+                    )
                     reslist = []
                     ch_num += 1
             ch_num += 1
@@ -459,9 +468,7 @@ class Biomolecule:
                     atom.refdistance = -1
                 elif residue.is_c_term and atom.name == "HO":
                     atom.refdistance = 3
-                elif residue.is_n_term and (
-                    atom.name == "H3" or atom.name == "H2"
-                ):
+                elif residue.is_n_term and (atom.name in ("H3", "H2")):
                     atom.refdistance = 2
                 else:
                     path = util.shortest_path(map_, atom, caatom)
@@ -482,7 +489,7 @@ class Biomolecule:
                 if atom.is_hydrogen:
                     residue.remove_atom(atom.name)
 
-    def assign_termini(self, chain, neutraln=False, neutralc=False):
+    def assign_termini(self, chain, *, neutraln=False, neutralc=False):
         """Assign the termini for the given chain.
 
         Assignment made by looking at the start and end residues.
@@ -612,7 +619,7 @@ class Biomolecule:
                     res2.peptide_c = None
                     res1.peptide_n = None
 
-    def apply_patch(self, patchname, residue):
+    def apply_patch(self, patchname: str, residue: residue_.Residue):
         """Apply a patch to the given residue.
 
         This is one of the key functions in PDB2PQR.  A similar function

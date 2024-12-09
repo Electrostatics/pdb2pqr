@@ -176,7 +176,6 @@ class HydrogenRoutines:
             # flag the added hydrogen
             residue.get_atom(hname).titratableH = True
             residue.get_atom(hname).addIntraBond(boundname)
-        return None
 
     @classmethod
     def pka_switchstate(cls, amb, state_id_):

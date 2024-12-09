@@ -44,7 +44,6 @@ select = [
   "RUF",  # ruff-specific
   "RET501",  # return
   "RET502",  # return
-  "RET503",  # return
   "PTH",  # path
   "NPY",  # numpy
   "PD",   # pandas

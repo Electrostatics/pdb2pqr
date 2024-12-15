@@ -5,7 +5,6 @@
 .. codeauthor::  Yong Huang
 """
 
-import contextlib
 import copy
 import logging
 import re
@@ -106,8 +105,10 @@ class DefinitionHandler(sax.ContentHandler):
             elif name == "name":
                 self.curobj.name = self.content
             elif self.curelement != "":
-                with contextlib.suppress(ValueError):
+                try:
                     self.content = float(self.content)
+                except ValueError:
+                    pass
                 setattr(self.curobj, self.curelement, self.content)
 
         self.content = ""

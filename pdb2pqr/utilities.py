@@ -14,7 +14,6 @@
 import logging
 import math
 
-# from pathlib import Path
 import numpy as np
 
 from .config import CHARGE_ERROR, RADIANS_TO_DEGREES, SMALL_NUMBER
@@ -73,7 +72,7 @@ def shortest_path(graph, start, end, path=[]):
         connected
     :rtype:  list
     """
-    path = path + [start]
+    path = [*path, start]
     if start == end:
         return path
     if start not in graph:

@@ -322,7 +322,7 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
         in header)
     :param bool is_cif:  flag indicating CIF format
     """
-    with open(args.output_pqr, "wt") as outfile:
+    with open(args.output_pqr, "w") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
             _LOGGER.warning(
@@ -365,7 +365,7 @@ def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
         header)
     :param bool is_cif:  flag indicating CIF format
     """
-    with open(args.pdb_output, "wt") as outfile:
+    with open(args.pdb_output, "w") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
             _LOGGER.warning(
@@ -417,7 +417,7 @@ def setup_molecule(pdblist, definition, ligand_path):
     """
     if ligand_path is not None:
         ligand = Mol2Molecule()
-        with open(ligand_path, "rt", encoding="utf-8") as ligand_file:
+        with open(ligand_path, encoding="utf-8") as ligand_file:
             ligand.read(ligand_file)
     else:
         ligand = None
@@ -785,7 +785,7 @@ def main_driver(args: argparse.Namespace):
         pdblist, definition, args.ligand
     )
     _LOGGER.info("Setting termini states for biomolecule chains.")
-    biomolecule.set_termini(args.neutraln, args.neutralc)
+    biomolecule.set_termini(neutraln=args.neutraln, neutralc=args.neutralc)
     biomolecule.update_bonds()
     if args.clean:
         _LOGGER.info(
@@ -890,11 +890,11 @@ def dx_to_cube():
     logging.basicConfig(level=log_level)
     _LOGGER.debug(f"Got arguments: {args}", args)
     _LOGGER.info(f"Reading PQR from {args.pqr_input}...")
-    with open(args.pqr_input, "rt") as pqr_file:
+    with open(args.pqr_input) as pqr_file:
         atom_list = io.read_pqr(pqr_file)
     _LOGGER.info(f"Reading DX from {args.dx_input}...")
-    with open(args.dx_input, "rt") as dx_file:
+    with open(args.dx_input) as dx_file:
         dx_dict = io.read_dx(dx_file)
     _LOGGER.info(f"Writing Cube to {args.output}...")
-    with open(args.output, "wt") as cube_file:
+    with open(args.output, "w") as cube_file:
         io.write_cube(cube_file, dx_dict, atom_list)

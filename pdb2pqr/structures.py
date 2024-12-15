@@ -175,10 +175,10 @@ class Atom:
             atom.type = token
         elif token[:4] == "ATOM":
             atom.type = "ATOM"
-            words = [token[4:]] + words
+            words = [token[4:], *words]
         elif token[:6] == "HETATM":
             atom.type = "HETATM"
-            words = [token[6:]] + words
+            words = [token[6:], *words]
         else:
             err = f"Unable to parse line: {line}"
             raise ValueError(err)
@@ -236,10 +236,10 @@ class Atom:
             atom.type = token
         elif token[:4] == "ATOM":
             atom.type = "ATOM"
-            words = [token[4:]] + words
+            words = [token[4:], *words]
         elif token[:6] == "HETATM":
             atom.type = "HETATM"
-            words = [token[6:]] + words
+            words = [token[6:], *words]
         else:
             err = f"Unable to parse line: {line}"
             raise ValueError(err)

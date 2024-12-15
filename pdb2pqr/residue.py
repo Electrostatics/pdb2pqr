@@ -4,6 +4,8 @@
 .. codeauthor:: Nathan Baker
 """
 
+from __future__ import annotations
+
 import logging
 
 from . import pdb, structures
@@ -24,7 +26,7 @@ class Residue:
     residue and other helper functions.
     """
 
-    def __init__(self, atoms):
+    def __init__(self, atoms: list[pdb.ATOM | pdb.HETATM]):
         """Initialize the class
 
         :param atoms:  list of atom-like (:class:`HETATM` or :class:`ATOM`)
@@ -32,12 +34,12 @@ class Residue:
         :type atoms:  list
         """
         sample_atom = atoms[-1]
-        self.atoms = []
+        self.atoms: list[structures.Atom] = []
         self.name = sample_atom.res_name
         self.chain_id = sample_atom.chain_id
         self.res_seq = sample_atom.res_seq
         self.ins_code = sample_atom.ins_code
-        self.map = {}
+        self.map: dict[str, structures.Atom] = {}
         self.naname = None
         self.reference = None
         self.is_n_term = None
@@ -164,13 +166,13 @@ class Residue:
         self.map[newname] = atom
         del self.map[oldname]
 
-    def get_atom(self, name):
+    def get_atom(self, name: str) -> structures.Atom | None:
         """Retrieve a residue atom based on its name.
 
         :param resname:  name of the residue to retrieve
         :type resname:  str
         :return:  residue
-        :rtype:  structures.Atom
+        :rtype:  structures.Atom | None
         """
         return self.map.get(name)
 
@@ -330,8 +332,7 @@ class Residue:
         # Change the list pointer
         self.atoms = templist[:]
 
-    @staticmethod
-    def letter_code():
+    def letter_code(self) -> str:
         """Default letter code for residue.
 
         :return:  letter code for residue

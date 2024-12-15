@@ -46,7 +46,7 @@ LONG_PROTEIN_SET = {
 LONG_NUCLEIC_SET = {"5V0O"}
 LONG_SET = LONG_PROTEIN_SET | LONG_NUCLEIC_SET
 #: Tests that should fail (broken backbones)
-BROKEN_SET = {"1EJG", "3U7T", "1EJG", "4MGP", "2V75"}
+BROKEN_SET = {"1EJG", "3U7T", "4MGP", "2V75"}
 #: Tests for naming residues with different protonation states
 NAMING_TESTS = []
 for ff in ["CHARMM", "AMBER", "PARSE", "SWANSON", "TYL06"]:

@@ -38,8 +38,7 @@ class ForcefieldHandler(sax.ContentHandler):
 
     @classmethod
     def update_map(cls, toname, fromname, map_):
-        """Update the given map by adding a pointer from a new name to an
-        object.
+        """Update the given map by adding a pointer from a new name to an object.
 
         .. todo:: Should this be a staticmethod instead of classmethod?
 
@@ -195,7 +194,7 @@ class Forcefield:
         self.name = str(ff_name)
         defpath = ""
         defpath = io.test_dat_file(ff_name) if userff is None else userff
-        with open(defpath, "rt", encoding="utf-8") as ff_file:
+        with open(defpath, encoding="utf-8") as ff_file:
             lines = ff_file.readlines()
             for line in lines:
                 if not line.startswith("#"):
@@ -243,7 +242,7 @@ class Forcefield:
             raise ValueError("Unable to identify .names file.")
         handler = ForcefieldHandler(self.map, definition.map)
         sax.make_parser()
-        with open(names_path, "rt", encoding="utf-8") as namesfile:
+        with open(names_path, encoding="utf-8") as namesfile:
             sax.parseString(namesfile.read(), handler)
 
     def has_residue(self, resname):
@@ -1048,11 +1047,11 @@ class ForcefieldAtom:
         """
         try:
             return getattr(self, name)
-        except AttributeError:
+        except AttributeError as e:
             message = (
                 f'Unable to access object "{name}" in class ForcefieldAtom'
             )
-            raise KeyError(message)
+            raise KeyError(message) from e
 
     def __str__(self):
         txt = f"{self.name}:\n"

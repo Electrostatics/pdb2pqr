@@ -94,6 +94,7 @@ ignore = [
   "UP017",   # datetime.timezone.utc -> datetime.UTC
   "SIM108",  # use ternary operator instead of if-else
   "TRY003",  # long message in except
+  "PLW2004", # magic value comparison
 ]
 
 [tool.ruff.lint.per-file-ignores]

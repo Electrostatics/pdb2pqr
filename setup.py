@@ -25,8 +25,6 @@ broaden the accessibility of biomolecular solvation and electrostatics analyses
 to the biomedical community.
 """
 
-from sys import version_info
-
 from setuptools import find_packages, setup
 
 # NOTE: The following reads the version number and makes
@@ -36,7 +34,7 @@ from setuptools import find_packages, setup
 with open("pdb2pqr/_version.py") as fobj:
     exec(fobj.read())
 
-with open("README.md", "r") as fobj:
+with open("README.md") as fobj:
     LONG_DESCRIPTION = fobj.read()
 
 setup(
@@ -57,6 +55,7 @@ setup(
         "propka >= 3.5",
         "requests",
         "docutils < 0.18",
+        "typing-extensions",
     ],
     url="http://www.poissonboltzmann.org",
     packages=find_packages(
@@ -94,6 +93,8 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Topic :: Scientific/Engineering :: Chemistry",
     ],

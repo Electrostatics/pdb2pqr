@@ -6,12 +6,16 @@ This module contains the base amino acid structures for pdb2pqr.
 .. codeauthor:: Nathan Baker
 """
 
+from __future__ import annotations
+
 import logging
 
 from . import quatfit as quat
 from . import residue
 from . import structures as struct
 from . import utilities as util
+from .definitions import DefinitionResidue
+from .pdb import ATOM, HETATM
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +26,7 @@ class Amino(residue.Residue):
     This class provides standard features of the amino acids.
     """
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms: list[ATOM | HETATM], ref: DefinitionResidue):
         """Initialize object.
 
         .. todo:: need to see whether :func:`super().__init__()` should be
@@ -34,16 +38,16 @@ class Amino(residue.Residue):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         sample_atom = atoms[-1]
-        self.atoms = []
+        self.atoms: list[struct.Atom] = []
         self.name = sample_atom.res_name
         self.chain_id = sample_atom.chain_id
         self.res_seq = sample_atom.res_seq
         self.ins_code = sample_atom.ins_code
         self.ffname = self.name
-        self.map = {}
+        self.map: dict[str, struct.Atom] = {}
         self.dihedrals = []
         self.patches = []
         self.peptide_c = None
@@ -66,7 +70,11 @@ class Amino(residue.Residue):
             else:
                 _LOGGER.debug(f"Ignoring atom {atom_.name}")
 
-    def create_atom(self, atomname, newcoords):
+    def create_atom(
+        self,
+        atomname: str,
+        newcoords: list[float] | tuple[float, float, float],
+    ):
         """Create an atom.
 
         .. todo:: Determine why this is different than superclass method.
@@ -90,7 +98,7 @@ class Amino(residue.Residue):
         newatom.added = 1
         self.add_atom(newatom)
 
-    def add_atom(self, atom):
+    def add_atom(self, atom: struct.Atom):
         """Add atom to residue.
 
         Override the existing add_atom; include the link to the reference
@@ -260,7 +268,7 @@ class Amino(residue.Residue):
 class ALA(Amino):
     """Alanine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -269,7 +277,7 @@ class ALA(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -286,7 +294,7 @@ class ALA(Amino):
 class ARG(Amino):
     """Arginine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -295,7 +303,7 @@ class ARG(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -318,7 +326,7 @@ class ARG(Amino):
 class ASN(Amino):
     """Asparagine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -327,7 +335,7 @@ class ASN(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -344,7 +352,7 @@ class ASN(Amino):
 class ASP(Amino):
     """Aspartic acid class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -353,7 +361,7 @@ class ASP(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -376,7 +384,7 @@ class ASP(Amino):
 class CYS(Amino):
     """Cysteine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -385,7 +393,7 @@ class CYS(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -418,7 +426,7 @@ class CYS(Amino):
 class GLN(Amino):
     """Glutamine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -427,7 +435,7 @@ class GLN(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -444,7 +452,7 @@ class GLN(Amino):
 class GLU(Amino):
     """Glutamic acid class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -453,7 +461,7 @@ class GLU(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -476,7 +484,7 @@ class GLU(Amino):
 class GLY(Amino):
     """Glycine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -485,7 +493,7 @@ class GLY(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -502,7 +510,7 @@ class GLY(Amino):
 class HIS(Amino):
     """Histidine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -511,7 +519,7 @@ class HIS(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -574,7 +582,7 @@ class HIS(Amino):
 class ILE(Amino):
     """Isoleucine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -583,7 +591,7 @@ class ILE(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -600,7 +608,7 @@ class ILE(Amino):
 class LEU(Amino):
     """Leucine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -609,7 +617,7 @@ class LEU(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -626,7 +634,7 @@ class LEU(Amino):
 class LYS(Amino):
     """Lysine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -635,7 +643,7 @@ class LYS(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -658,7 +666,7 @@ class LYS(Amino):
 class MET(Amino):
     """Methionine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -667,7 +675,7 @@ class MET(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -684,7 +692,7 @@ class MET(Amino):
 class PHE(Amino):
     """Phenylalanine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -693,7 +701,7 @@ class PHE(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -710,7 +718,7 @@ class PHE(Amino):
 class PRO(Amino):
     """Proline class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -719,7 +727,7 @@ class PRO(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -749,7 +757,7 @@ class PRO(Amino):
 class SER(Amino):
     """Serine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -758,7 +766,7 @@ class SER(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -775,7 +783,7 @@ class SER(Amino):
 class THR(Amino):
     """Threonine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -784,7 +792,7 @@ class THR(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -801,7 +809,7 @@ class THR(Amino):
 class TRP(Amino):
     """Tryptophan class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -810,7 +818,7 @@ class TRP(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -827,7 +835,7 @@ class TRP(Amino):
 class TYR(Amino):
     """Tyrosine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -836,7 +844,7 @@ class TYR(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -859,7 +867,7 @@ class TYR(Amino):
 class VAL(Amino):
     """Valine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -868,7 +876,7 @@ class VAL(Amino):
         :param ref:  The reference object for the amino acid.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         Amino.__init__(self, atoms, ref)
         self.reference = ref
@@ -891,7 +899,7 @@ class WAT(residue.Residue):
 
     water_residue_names = ["HOH", "WAT"]
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize object.
 
         :param atoms:  A list of :class:`Atom` objects to be stored in this
@@ -900,7 +908,7 @@ class WAT(residue.Residue):
         :param ref:  The reference object for the residue.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         sample_atom = atoms[-1]
         self.atoms = []
@@ -988,7 +996,7 @@ class LIG(residue.Residue):
         :param ref:  The reference object for the residue.
             Used to convert from the alternate naming scheme to the main naming
             scheme.
-        :type ref:  Residue
+        :type ref:  DefinitionResidue
         """
         sample_atom = atoms[-1]
         self.atoms = []

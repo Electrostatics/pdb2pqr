@@ -43,10 +43,10 @@ jobs:
       - name: Store coverage text results
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-text-my-${{ github.run_id }}-${{ github.run_number }}
+          name: coverage-text-my-${{ matrix.python-version }}
           path: coverage.txt
       - name: Store coverage HTML results
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-html-${{ github.run_id }}-${{ github.run_number }}
+          name: coverage-html-${{ matrix.python-version }}
           path: htmlcov/*

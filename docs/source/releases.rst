@@ -11,6 +11,11 @@ Fixes
 
 * Updated Sphinx versions (`#384 <https://github.com/Electrostatics/pdb2pqr/issues/384>`_)
 
+Changes
+=======
+
+* Updated Python versions to 3.11-3.13.
+
 ******************
 3.6.2 (2023-12-31)
 ******************

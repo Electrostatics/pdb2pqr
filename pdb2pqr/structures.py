@@ -7,9 +7,6 @@ associated methods.
 .. codeauthor:: Nathan Baker
 """
 
-# from . import pdb
-from __future__ import annotations
-
 from typing_extensions import Self
 
 from .config import BACKBONE

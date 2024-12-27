@@ -2,19 +2,26 @@
 Release history
 ###############
 
-***************
-Current version
-***************
-
-Fixes
-=====
-
-* Updated Sphinx versions (`#384 <https://github.com/Electrostatics/pdb2pqr/issues/384>`_)
+******************
+3.7.1 (2024-12-27)
+******************
 
 Changes
 =======
 
-* Updated Python versions to 3.11-3.13.
+* Updated Python versions to 3.11-3.13 (`#414 <https://github.com/Electrostatics/pdb2pqr/issues/414>`_)
+* Linting/formatting changes (`#409 <https://github.com/Electrostatics/pdb2pqr/issues/409>`_, `#411 <https://github.com/Electrostatics/pdb2pqr/issues/411>`_, `#412 <https://github.com/Electrostatics/pdb2pqr/issues/412>`_)
+* Simplified Python build system and test matrix (`#404 <https://github.com/Electrostatics/pdb2pqr/issues/404>`_, `#420 <https://github.com/Electrostatics/pdb2pqr/issues/420>`_)
+* Improved test suite (`#379 <https://github.com/Electrostatics/pdb2pqr/pull/379>`_, `#382 <https://github.com/Electrostatics/pdb2pqr/pull/382>`_, `#410 <https://github.com/Electrostatics/pdb2pqr/pull/410>`_, `#414 <https://github.com/Electrostatics/pdb2pqr/pull/414>`_)
+* Updated Sphinx versions (`#384 <https://github.com/Electrostatics/pdb2pqr/issues/384>`_)
+
+Fixes
+=====
+
+* Removed unnecessary binary (`#418 <https://github.com/Electrostatics/pdb2pqr/pull/418>`_)
+* Fix module shadowing (`#402 <https://github.com/Electrostatics/pdb2pqr/pull/402>`_)
+* Fixed editable installs (`#372 <https://github.com/Electrostatics/pdb2pqr/pull/372>`_)
+* Documentation updates (`#364 <https://github.com/Electrostatics/pdb2pqr/pull/364>`_, `#366 <https://github.com/Electrostatics/pdb2pqr/pull/366>`_)
 
 ******************
 3.6.2 (2023-12-31)

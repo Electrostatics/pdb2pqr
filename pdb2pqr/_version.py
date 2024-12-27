@@ -7,4 +7,4 @@ Store the version here so:
 * we can import it into your module
 """
 
-__version__ = "3.6.2"
+__version__ = "3.7.1"

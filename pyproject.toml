@@ -1,3 +1,90 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "code"
+path = "pdb2pqr/_version.py"
+# expression = "__version__"  # default
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "pdb2pqr",
+  "docs",
+  "examples",
+  "tests",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pdb2pqr"]
+
+[project]
+name = "pdb2pqr"
+dynamic = ["version"]
+description = """
+Automates many of the common tasks of preparing structures for \
+continuum solvation calculations as well as many other types of \
+biomolecular structure modeling, analysis, and simulation."""
+authors = [
+  { name = "Jens Erik Nielsen" },
+  { name = "Nathan Baker", email = "nathanandrewbaker@gmail.com" },
+]
+readme = "README.md"
+license = { file = "LICENSE.md" }
+# NOTE: make sure you change [tool.pyright] pythonVersion to match this
+requires-python = ">=3.11,<4"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: BSD License",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Scientific/Engineering :: Chemistry",
+]
+keywords = ["science", "chemistry", "molecular biology"]
+
+dependencies = [
+  "mmcif_pdbx>=1.1.2",
+  "numpy",
+  "propka >= 3.5",
+  "requests",
+  "docutils < 0.18",
+]
+
+[project.optional-dependencies]
+dev = ["check-manifest"]
+test = [
+  "ruff",
+  "coverage",
+  "pandas >= 1.0",
+  "pytest",
+  "testfixtures",
+]
+
+[project.urls]
+"Homepage" = "https://www.poissonboltzmann.org"
+"Documentation"= "https://pdb2pqr.readthedocs.io/"
+"Get help"= "https://github.com/Electrostatics/pdb2pqr/issues"
+"Publications"= "https://pubmed.ncbi.nlm.nih.gov/?term=R01+GM069702"
+"Funding"= "https://bit.ly/apbs-funding"
+"Source"= "https://github.com/Electrostatics/pdb2pqr"
+
+[project.scripts]
+pdb2pqr = "pdb2pqr.main:main"
+pdb2pqr30 = "pdb2pqr.main:main"
+dx2cube = "pdb2pqr.main:dx_to_cube"
+inputgen = "pdb2pqr.inputgen:main"
+
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 log_cli = true
@@ -19,7 +106,7 @@ typeCheckingMode = "standard"
 useLibraryCodeForTypes = true
 autoImportCompletions = true
 
-pythonVersion = "3.8"
+pythonVersion = "3.11"
 # pythonPlatform = "Linux"
 
 reportDuplicateImport = true
@@ -94,6 +181,7 @@ ignore = [
   "UP017",   # datetime.timezone.utc -> datetime.UTC
   "SIM108",  # use ternary operator instead of if-else
   "TRY003",  # long message in except
+  "PLR2004", # magic value comparison
 ]
 
 [tool.ruff.lint.per-file-ignores]

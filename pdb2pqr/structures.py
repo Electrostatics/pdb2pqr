@@ -7,9 +7,10 @@ associated methods.
 .. codeauthor:: Nathan Baker
 """
 
-# from . import pdb
+from typing import Self
 
 from .config import BACKBONE
+from .pdb import ATOM, HETATM
 
 
 class Chain:
@@ -19,7 +20,7 @@ class Chain:
     :class:`Biomolecule` object.
     """
 
-    def __init__(self, chain_id):
+    def __init__(self, chain_id: str):
         """Initialize the class.
 
         :param chain_id:  ID for this chain as denoted in the PDB
@@ -74,7 +75,12 @@ class Atom:
     :class:`HETATM` objects into a single class.
     """
 
-    def __init__(self, atom=None, type_="ATOM", residue=None):
+    def __init__(
+        self,
+        atom: ATOM | HETATM | Self | None = None,
+        type_="ATOM",
+        residue=None,
+    ):
         """Initialize the new Atom object by using the old object.
 
         :param atom:  the original ATOM object (could be None)
@@ -136,10 +142,11 @@ class Atom:
             self.element = atom.element
             self.charge = atom.charge
             self.residue = residue
-            try:
-                self.mol2charge = atom.mol2charge
-            except AttributeError:
+            if isinstance(atom, ATOM):
+                # ATOM class doesn't have mol2charge
                 self.mol2charge = None
+            else:
+                self.mol2charge = atom.mol2charge
 
     @classmethod
     def from_pqr_line(cls, line):

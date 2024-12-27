@@ -7,8 +7,6 @@ It was created to avoid cluttering the __init__.py file.
 .. codeauthor:: Nathan Baker (et al.)
 """
 
-from __future__ import annotations
-
 import argparse
 import logging
 import sys

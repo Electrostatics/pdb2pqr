@@ -8,22 +8,24 @@ This module contains the base nucleic acid structures for pdb2pqr.
 
 from . import residue
 from . import structures as struct
+from .definitions import DefinitionResidue
+from .pdb import ATOM, HETATM
 
 
 class Nucleic(residue.Residue):
     """This class provides standard features of the nucleic acids listed below."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms: list[ATOM | HETATM], ref: DefinitionResidue):
         sample_atom = atoms[-1]
 
-        self.atoms = []
+        self.atoms: list[struct.Atom] = []
         self.name = sample_atom.res_name
         self.chain_id = sample_atom.chain_id
         self.res_seq = sample_atom.res_seq
         self.ins_code = sample_atom.ins_code
 
         self.ffname = self.name
-        self.map = {}
+        self.map: dict[str, struct.Atom] = {}
         self.dihedrals = []
         self.patches = []
         self.is3term = 0
@@ -42,7 +44,11 @@ class Nucleic(residue.Residue):
                 atom_ = struct.Atom(atom, "ATOM", self)
                 self.add_atom(atom_)
 
-    def create_atom(self, atomname, newcoords):
+    def create_atom(
+        self,
+        atomname: str,
+        newcoords: list[float] | tuple[float, float, float],
+    ):
         """Create an atom.
 
         Overrides the generic residue's create_atom().
@@ -66,7 +72,7 @@ class Nucleic(residue.Residue):
         newatom.added = 1
         self.add_atom(newatom)
 
-    def add_atom(self, atom):
+    def add_atom(self, atom: struct.Atom):
         """Add existing atom to system.
 
         Override the existing add_atom - include the link to the reference
@@ -109,7 +115,7 @@ class Nucleic(residue.Residue):
 class ADE(Nucleic):
     """Adenosine class."""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize residue.
 
         :param atoms:  add atoms to residue
@@ -140,7 +146,7 @@ A = ADE
 class CYT(Nucleic):
     """Cytidine class"""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize residue.
 
         :param atoms:  add atoms to residue
@@ -171,7 +177,7 @@ C = CYT
 class GUA(Nucleic):
     """Guanosine class"""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize residue.
 
         :param atoms:  add atoms to residue
@@ -202,7 +208,7 @@ G = GUA
 class THY(Nucleic):
     """Thymine class"""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize residue.
 
         :param atoms:  add atoms to residue
@@ -231,7 +237,7 @@ DT = THY
 class URA(Nucleic):
     """Uridine class"""
 
-    def __init__(self, atoms, ref):
+    def __init__(self, atoms, ref: DefinitionResidue):
         """Initialize residue.
 
         :param atoms:  add atoms to residue

@@ -7,7 +7,7 @@ associated methods.
 .. codeauthor:: Nathan Baker
 """
 
-from typing_extensions import Self
+from typing import Self
 
 from .config import BACKBONE
 from .pdb import ATOM, HETATM

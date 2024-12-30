@@ -57,7 +57,7 @@ dependencies = [
   "numpy",
   "propka >= 3.5",
   "requests",
-  "docutils < 0.18",
+  "docutils",
 ]
 
 [project.optional-dependencies]
@@ -68,6 +68,8 @@ test = [
   "pandas >= 1.0",
   "pytest",
   "testfixtures",
+  "sphinx",
+  "sphinx-rtd-theme",
 ]
 
 [project.urls]

@@ -1,8 +1,8 @@
 """Test Sphinx compilation of documentation."""
 
 from pathlib import Path
-from sphinx.application import Sphinx
 
+from sphinx.application import Sphinx
 
 SOURCE_DIR = Path("docs/source")
 CONFIG_DIR = SOURCE_DIR

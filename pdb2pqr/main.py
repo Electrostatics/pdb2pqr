@@ -13,6 +13,7 @@ import sys
 from collections import OrderedDict
 from io import StringIO
 from pathlib import Path
+import requests
 import propka.lib
 import propka.output as pk_out
 import propka.input as pk_in
@@ -25,7 +26,6 @@ from . import forcefield
 from . import biomolecule as biomol
 from . import io
 from .ligand.mol2 import Mol2Molecule
-from .pkaani.pkaani import calculate_pka as calculate_pka_pkaani
 from .utilities import noninteger_charge
 from .config import VERSION, TITLE_STR, CITATIONS, FORCE_FIELDS
 from .config import REPAIR_LIMIT, IGNORED_PROPKA_OPTIONS
@@ -600,31 +600,25 @@ def run_pkaani(args, biomolecule):
                pKa information from pKa-ANI)
     :rtype:  list of OrderedDicts
     """
-    # pKa-ANI has its own way of parsing PDBs, will just pass the PDB
-    # file to that and have it handle the parsing and PDB calculation
-    lines = io.print_biomolecule_atoms(
-        atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
-    )
 
-    # converting the PDB representation to a file object, and then
-    # passing that file object into pKa-ANI
-    with StringIO() as fileObj:
-        fileObj.writelines(lines)
-        # returning buffer position to beginning so atom data can be read.
-        fileObj.seek(0)
-        pka = calculate_pka_pkaani(fileObj)
-        rows = []
-        for key in pka:
-            row_dict = OrderedDict()
-            row_dict["res_num"] = key[1]
-            row_dict["res_name"] = pka[key][0]
-            row_dict["chain_id"] = key[0]
-            row_dict["pKa"] = pka[key][1]
-            rows.append(row_dict)
+    url = "https://pkaani-web-67f7a110951d.herokuapp.com/upload"
+    files = {"file": open(args.input_path, "rb")}
+    response = requests.post(url, files=files)
 
-    # only for testing, getting all the pKas so we can see if things are being protonated properly
-    # for row in rows:
-    #     print(row)
+    pka = eval(response.text)
+
+    rows = []
+    for key in pka:
+        row_dict = OrderedDict()
+        row_dict["res_num"] = key[1]
+        row_dict["res_name"] = pka[key][0]
+        row_dict["chain_id"] = key[0]
+        row_dict["pKa"] = pka[key][1]
+        rows.append(row_dict)
+
+    for row in rows:
+        print(row)
+
     return rows
 
 

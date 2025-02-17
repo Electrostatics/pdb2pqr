@@ -926,7 +926,7 @@ class Biomolecule:
         if len(pkadic) > 0:
             warn = (
                 "PDB2PQR could not identify the following residues and residue"
-                " numbers as returned by PROPKA or PDB2PKA"
+                " numbers as returned by PROPKA, pKa-ANI or PDB2PKA"
             )
             _LOGGER.warning(warn)
             for item in pkadic:

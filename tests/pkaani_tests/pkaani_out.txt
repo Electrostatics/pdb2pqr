@@ -1,0 +1,8 @@
+OrderedDict([('res_num', '8'), ('res_name', 'ASP'), ('chain_id', 'A'), ('pKa', 4.233059999999996)])
+OrderedDict([('res_num', '12'), ('res_name', 'ASP'), ('chain_id', 'A'), ('pKa', 4.241589999999995)])
+OrderedDict([('res_num', '13'), ('res_name', 'TYR'), ('chain_id', 'A'), ('pKa', 10.881000000000018)])
+OrderedDict([('res_num', '17'), ('res_name', 'TYR'), ('chain_id', 'A'), ('pKa', 10.701360000000017)])
+OrderedDict([('res_num', '18'), ('res_name', 'HIS'), ('chain_id', 'A'), ('pKa', 6.323860000000001)])
+OrderedDict([('res_num', '19'), ('res_name', 'LYS'), ('chain_id', 'A'), ('pKa', 10.196569999999978)])
+OrderedDict([('res_num', '22'), ('res_name', 'ASP'), ('chain_id', 'A'), ('pKa', 4.202559999999998)])
+OrderedDict([('res_num', '24'), ('res_name', 'TYR'), ('chain_id', 'A'), ('pKa', 10.887580000000018)])

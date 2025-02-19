@@ -604,7 +604,7 @@ def run_pkaani(args, biomolecule):
     :rtype:  list of OrderedDicts
     """
 
-    url = "https://pkaani-web-67f7a110951d.herokuapp.com/upload"
+    url = "http://pka-ani-env.eba-rpcu3s9j.us-west-1.elasticbeanstalk.com/upload"
     files = {"file": open(args.input_path, "rb")}
     response = requests.post(url, files=files)
 

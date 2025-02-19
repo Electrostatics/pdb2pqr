@@ -608,7 +608,12 @@ def run_pkaani(args, biomolecule):
     files = {"file": open(args.input_path, "rb")}
     response = requests.post(url, files=files)
 
-    pka = eval(response.text)
+    if response.status_code == 200:
+        pka = eval(response.text)
+    else:
+        _LOGGER.info(f"{response.text}")
+        _LOGGER.info(f"pKa-ANI failed to assign pKas because of a server error. Please use another tool to assign pKas.")
+        sys.exit(1)
 
     rows = []
     for key in pka:

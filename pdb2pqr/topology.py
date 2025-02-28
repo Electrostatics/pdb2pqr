@@ -74,8 +74,7 @@ class TopologyHandler(sax.ContentHandler):
         elif tag_name == "titrationstate":
             if self.curr_titration_state is not None:
                 _LOGGER.info(
-                    "** Overwriting current topology_titration_state "
-                    "object!"
+                    "** Overwriting current topology_titration_state object!"
                 )
             self.curr_titration_state = TopologyTitrationState(
                 self.curr_residue

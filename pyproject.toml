@@ -32,7 +32,7 @@ authors = [
 readme = "README.md"
 license = { file = "LICENSE.md" }
 # NOTE: make sure you change [tool.pyright] pythonVersion to match this
-requires-python = ">=3.11,<4"
+requires-python = ">=3.10,<4"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
@@ -44,6 +44,7 @@ classifiers = [
   "Operating System :: POSIX",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -58,6 +59,7 @@ dependencies = [
   "propka >= 3.5",
   "requests",
   "docutils",
+  "typing-extensions",
 ]
 
 [project.optional-dependencies]
@@ -108,7 +110,7 @@ typeCheckingMode = "standard"
 useLibraryCodeForTypes = true
 autoImportCompletions = true
 
-pythonVersion = "3.11"
+pythonVersion = "3.10"
 # pythonPlatform = "Linux"
 
 reportDuplicateImport = true

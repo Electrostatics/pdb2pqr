@@ -34,6 +34,6 @@ def test_log_output_in_pqr_location(
         (
             "pdb2pqr.io",
             "INFO",
-            f'Logs stored: {tmp_path / output_file.split(".")[0]}.log',
+            f"Logs stored: {tmp_path / output_file.split('.')[0]}.log",
         )
     )

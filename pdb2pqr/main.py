@@ -14,6 +14,7 @@ from collections import OrderedDict
 from collections.abc import Sequence
 from io import StringIO
 from os import PathLike
+import os
 from pathlib import Path
 
 import propka.input as pk_in
@@ -21,6 +22,8 @@ import propka.lib
 import propka.output as pk_out
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
+from pkaani.pkaani import calculate_pka as calculate_pkaani
+from tabulate import tabulate
 
 from . import aa, debump, forcefield, hydrogens, io
 from . import biomolecule as biomol
@@ -208,7 +211,7 @@ def build_main_parser():
     grp3.add_argument(
         "--titration-state-method",
         dest="pka_method",
-        choices=(["propka"]),
+        choices=(["propka", "pkaani"]),
         help=(
             "Method used to calculate titration states. If a titration state "
             "method is selected, titratable residue charge states will be set "
@@ -591,6 +594,50 @@ def run_propka(args, biomolecule):
         rows.append(row_dict)
     return rows, pka_str
 
+def run_pkaani(args, biomolecule):
+    """Run a pKa-ANI calculation.
+
+    :param args:  command-line arguments
+    :type args:  argparse.Namespace
+    :param biomolecule:  biomolecule object
+    :type biomolecule:  Biomolecule
+    :return:  (DataFrame-convertible table of assigned pKa values,
+               pKa information from pKa-ANI)
+    :rtype:  list of OrderedDicts
+    """
+    # pKa-ANI has its own way of parsing PDBs, will just pass the PDB
+    # file to that and have it handle the parsing and PDB calculation
+    lines = io.print_biomolecule_atoms(
+        atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
+    )
+    
+    with open("temp_pkaani.pdb", "w") as f:
+        for line in lines:
+            f.write(f"{line}")
+    
+    
+    pka = calculate_pkaani(["temp_pkaani.pdb"])["temp_pkaani.pdb"]
+    rows = []
+    rows_2d_array = []
+
+    for key in pka:
+        row_dict = OrderedDict()
+        row_dict["res_num"] = key[1]
+        row_dict["res_name"] = pka[key][0]
+        row_dict["chain_id"] = key[0]
+        row_dict["pKa"] = pka[key][1]
+        rows.append(row_dict)
+        rows_2d_array.append([key[1], pka[key][0], key[0], pka[key][1]])
+
+    pkaani_output = tabulate(rows_2d_array, headers=["Res. Number", "Res. Name", "Chain ID", "pKa"], tablefmt="grid")
+    _LOGGER.info("pKa results from pKa-ANI\n%s", pkaani_output)
+
+    os.remove("temp_pkaani.pdb")
+    # only for testing, getting all the pKas so we can see if things are being protonated properly
+
+
+    
+    return rows
 
 def non_trivial(args, biomolecule, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
@@ -655,6 +702,22 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     ]
                     for row in pka_df
                     if row["group_label"].startswith(row["res_name"])
+                },
+            )
+        elif args.pka_method == "pkaani":
+            _LOGGER.info("Assigning titration states with pKa-ANI.")
+            biomolecule.remove_hydrogens()
+            pka_df = run_pkaani(args, biomolecule)
+            biomolecule.apply_pka_values(
+                forcefield_.name,
+                args.ph,
+                # no need for if clause, pka_df necessarily contains only the titratable residues
+                # as defined by pKa-ANI (HIS/ASP/GLU/TYR/LYS)
+                {
+                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
+                        "pKa"
+                    ]
+                    for row in pka_df
                 },
             )
 

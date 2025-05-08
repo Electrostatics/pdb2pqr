@@ -605,6 +605,12 @@ def run_pkaani(args, biomolecule):
                pKa information from pKa-ANI)
     :rtype:  list of OrderedDicts
     """
+    pkaani_citation = """
+    Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
+    Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
+    """
+    _LOGGER.info("If using pKa-ANI for titration state assignment, please cite: %s\n", pkaani_citation)
+
     # pKa-ANI has its own way of parsing PDBs, will just pass the PDB
     # file to that and have it handle the parsing and PDB calculation
     lines = io.print_biomolecule_atoms(
@@ -630,7 +636,7 @@ def run_pkaani(args, biomolecule):
         rows_2d_array.append([key[1], pka[key][0], key[0], pka[key][1]])
 
     pkaani_output = tabulate(rows_2d_array, headers=["Res. Number", "Res. Name", "Chain ID", "pKa"], tablefmt="grid")
-    _LOGGER.info("pKa results from pKa-ANI\n%s", pkaani_output)
+    _LOGGER.info("pKa results from pKa-ANI:\n%s", pkaani_output)
 
     os.remove("temp_pkaani.pdb")
     # only for testing, getting all the pKas so we can see if things are being protonated properly

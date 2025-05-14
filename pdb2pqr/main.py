@@ -9,20 +9,20 @@ It was created to avoid cluttering the __init__.py file.
 
 import argparse
 import logging
+import os
 import sys
 from collections import OrderedDict
 from collections.abc import Sequence
 from io import StringIO
 from os import PathLike
-import os
 from pathlib import Path
 
 import propka.input as pk_in
 import propka.lib
 import propka.output as pk_out
+from pkaani.pkaani import calculate_pka as calculate_pkaani
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
-from pkaani.pkaani import calculate_pka as calculate_pkaani
 from tabulate import tabulate
 
 from . import aa, debump, forcefield, hydrogens, io
@@ -594,6 +594,7 @@ def run_propka(args, biomolecule):
         rows.append(row_dict)
     return rows, pka_str
 
+
 def run_pkaani(args, biomolecule):
     """Run a pKa-ANI calculation.
 
@@ -609,19 +610,21 @@ def run_pkaani(args, biomolecule):
     Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
     Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
     """
-    _LOGGER.info("If using pKa-ANI for titration state assignment, please cite: %s\n", pkaani_citation)
+    _LOGGER.info(
+        "If using pKa-ANI for titration state assignment, please cite: %s\n",
+        pkaani_citation,
+    )
 
     # pKa-ANI has its own way of parsing PDBs, will just pass the PDB
     # file to that and have it handle the parsing and PDB calculation
     lines = io.print_biomolecule_atoms(
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
-    
+
     with open("temp_pkaani.pdb", "w") as f:
         for line in lines:
             f.write(f"{line}")
-    
-    
+
     pka = calculate_pkaani(["temp_pkaani.pdb"])["temp_pkaani.pdb"]
     rows = []
     rows_2d_array = []
@@ -635,15 +638,18 @@ def run_pkaani(args, biomolecule):
         rows.append(row_dict)
         rows_2d_array.append([key[1], pka[key][0], key[0], pka[key][1]])
 
-    pkaani_output = tabulate(rows_2d_array, headers=["Res. Number", "Res. Name", "Chain ID", "pKa"], tablefmt="grid")
+    pkaani_output = tabulate(
+        rows_2d_array,
+        headers=["Res. Number", "Res. Name", "Chain ID", "pKa"],
+        tablefmt="grid",
+    )
     _LOGGER.info("pKa results from pKa-ANI:\n%s", pkaani_output)
 
     os.remove("temp_pkaani.pdb")
     # only for testing, getting all the pKas so we can see if things are being protonated properly
 
-
-    
     return rows
+
 
 def non_trivial(args, biomolecule, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.

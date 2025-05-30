@@ -9,18 +9,18 @@ It was created to avoid cluttering the __init__.py file.
 
 import argparse
 import logging
-import os
 import sys
 from collections import OrderedDict
 from collections.abc import Sequence
 from io import StringIO
 from os import PathLike
 from pathlib import Path
+import tempfile
 
 import propka.input as pk_in
 import propka.lib
 import propka.output as pk_out
-from pkaani.pkaani import calculate_pka as calculate_pkaani
+
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
 from tabulate import tabulate
@@ -215,7 +215,10 @@ def build_main_parser():
         help=(
             "Method used to calculate titration states. If a titration state "
             "method is selected, titratable residue charge states will be set "
-            "by the pH value supplied by --with_ph"
+            "by the pH value supplied by --with_ph. pKa-ANI uses a learned quantum mechanical"
+            "representation of a residue's atomic environment from the ANI-2x neural network potential, and their pKa prediction model has been shown to surpass"
+            "the accuracy of PROPKA (https://doi.org/10.1039/D1SC05610G). Incidentally, the paper shows that even a null model (simply guessing the mean of the test"
+            "set repeatedly for each test case) also outperforms PROPKA (Figure 4)."
         ),
     )
     grp3.add_argument(
@@ -610,6 +613,14 @@ def run_pkaani(args, biomolecule):
     Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
     Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
     """
+    try:
+        from pkaani.pkaani import calculate_pka as calculate_pkaani
+    except ImportError as e:
+        raise ImportError(
+            "Optional module 'pkaani' is not installed. "
+            "You can install it with: pip install pdb2pqr[pkaani]"
+        ) from e
+
     _LOGGER.info(
         "If using pKa-ANI for titration state assignment, please cite: %s\n",
         pkaani_citation,
@@ -621,32 +632,32 @@ def run_pkaani(args, biomolecule):
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
 
-    with open("temp_pkaani.pdb", "w") as f:
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb", delete=True) as tmp:
         for line in lines:
-            f.write(f"{line}")
+            tmp.write(f"{line}")
+        tmp.flush()
+        tmp.seek(0)
 
-    pka = calculate_pkaani(["temp_pkaani.pdb"])["temp_pkaani.pdb"]
-    rows = []
-    rows_2d_array = []
+        pka = calculate_pkaani([tmp.name])[tmp.name]
+        rows = []
+        rows_2d_array = []
 
-    for key in pka:
-        row_dict = OrderedDict()
-        row_dict["res_num"] = key[1]
-        row_dict["res_name"] = pka[key][0]
-        row_dict["chain_id"] = key[0]
-        row_dict["pKa"] = pka[key][1]
-        rows.append(row_dict)
-        rows_2d_array.append([key[1], pka[key][0], key[0], pka[key][1]])
+        for key in pka:
+            row_dict = OrderedDict()
+            row_dict["res_num"] = key[1]
+            row_dict["res_name"] = pka[key][0]
+            row_dict["chain_id"] = key[0]
+            row_dict["pKa"] = pka[key][1]
+            rows.append(row_dict)
+            rows_2d_array.append([key[1], pka[key][0], key[0], pka[key][1]])
 
-    pkaani_output = tabulate(
-        rows_2d_array,
-        headers=["Res. Number", "Res. Name", "Chain ID", "pKa"],
-        tablefmt="grid",
-    )
-    _LOGGER.info("pKa results from pKa-ANI:\n%s", pkaani_output)
+        pkaani_output = tabulate(
+            rows_2d_array,
+            headers=["Res. Number", "Res. Name", "Chain ID", "pKa"],
+            tablefmt="grid",
+        )
+        _LOGGER.info("pKa results from pKa-ANI:\n%s", pkaani_output)
 
-    os.remove("temp_pkaani.pdb")
-    # only for testing, getting all the pKas so we can see if things are being protonated properly
 
     return rows
 

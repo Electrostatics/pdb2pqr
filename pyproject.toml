@@ -60,14 +60,6 @@ dependencies = [
   "requests",
   "docutils",
   "typing-extensions",
-  "ase",
-  "joblib",
-  "scipy",
-  "scikit-learn==1.6.1",
-  "torch",
-  "torchani",
-  "pkaani",
-  "tabulate"
 ]
 
 [project.optional-dependencies]
@@ -80,6 +72,16 @@ test = [
   "testfixtures",
   "sphinx",
   "sphinx-rtd-theme",
+]
+pkaani = [
+  "ase",
+  "joblib",
+  "scipy",
+  "scikit-learn>=1.6.1",
+  "torch",
+  "torchani",
+  "pkaani",
+  "tabulate"
 ]
 
 [project.urls]

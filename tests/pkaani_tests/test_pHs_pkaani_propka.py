@@ -1,7 +1,7 @@
-import sys
 import subprocess
-from pathlib import Path
+import sys
 from collections import Counter
+from pathlib import Path
 
 
 def count_residues(file_path):
@@ -9,6 +9,7 @@ def count_residues(file_path):
     Count residue types by reading lines directly.
     Only considers ATOM lines with alpha carbon (CA) atoms.
     """
+
     counts = Counter()
     with open(file_path) as f:
         for line in f:
@@ -18,15 +19,23 @@ def count_residues(file_path):
     return counts
 
 
-def run_pdb2pqr(pdb_file, method, pH):
+def run_pdb2pqr(pdb_file, method, ph):
     base_name = Path(pdb_file).stem
     output_file = f"{base_name}_{method}.pqr"
-    subprocess.run([
-        "pdb2pqr30", "--ffout", "AMBER",
-        "--titration-state-method", method,
-        "--with-ph", pH,
-        str(pdb_file), output_file
-    ], check=True)
+    subprocess.run(
+        [
+            "pdb2pqr30",
+            "--ffout",
+            "AMBER",
+            "--titration-state-method",
+            method,
+            "--with-ph",
+            ph,
+            str(pdb_file),
+            output_file,
+        ],
+        check=True,
+    )
     return output_file
 
 
@@ -36,17 +45,23 @@ def print_results(title, original_counts, pqr_counts):
 
     print(f"{title}")
     print("---------------------------------------")
-    print("Aspartates in pdb file: (most should not be protonated after pdb2pqr at pH 5.0)")
+    print(
+        "Aspartates in pdb file: (most should not be protonated after pdb2pqr at pH 5.0)"
+    )
     print(safe_get(original_counts, "ASP"))
     print("Protonated aspartates in pqr file:")
     print(safe_get(pqr_counts, "ASH"))
 
-    print("Glutamates in pdb file: (most should not be protonated after pdb2pqr at pH 5.0)")
+    print(
+        "Glutamates in pdb file: (most should not be protonated after pdb2pqr at pH 5.0)"
+    )
     print(safe_get(original_counts, "GLU"))
     print("Protonated glutamates in pqr file:")
     print(safe_get(pqr_counts, "GLH"))
 
-    print("Histidines in pdb file: (all should be protonated after pdb2pqr at pH 5.0)")
+    print(
+        "Histidines in pdb file: (all should be protonated after pdb2pqr at pH 5.0)"
+    )
     print(safe_get(original_counts, "HIS"))
     print("Protonated histidines in pqr file:")
     print(safe_get(pqr_counts, "HIP"))
@@ -86,7 +101,11 @@ def main():
     for method in ["propka", "pkaani"]:
         pqr_file = run_pdb2pqr(pdb_file, method, pH)
         pqr_counts = count_residues(pqr_file)
-        print_results(f"{method.upper()} RESULTS {pdb_file.name}", original_counts, pqr_counts)
+        print_results(
+            f"{method.upper()} RESULTS {pdb_file.name}",
+            original_counts,
+            pqr_counts,
+        )
 
 
 if __name__ == "__main__":

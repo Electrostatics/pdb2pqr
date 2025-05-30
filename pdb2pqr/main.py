@@ -10,17 +10,16 @@ It was created to avoid cluttering the __init__.py file.
 import argparse
 import logging
 import sys
+import tempfile
 from collections import OrderedDict
 from collections.abc import Sequence
 from io import StringIO
 from os import PathLike
 from pathlib import Path
-import tempfile
 
 import propka.input as pk_in
 import propka.lib
 import propka.output as pk_out
-
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
 from tabulate import tabulate
@@ -632,7 +631,9 @@ def run_pkaani(args, biomolecule):
         atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
     )
 
-    with tempfile.NamedTemporaryFile(mode="w+", suffix=".pdb", delete=True) as tmp:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", suffix=".pdb", delete=True
+    ) as tmp:
         for line in lines:
             tmp.write(f"{line}")
         tmp.flush()
@@ -657,7 +658,6 @@ def run_pkaani(args, biomolecule):
             tablefmt="grid",
         )
         _LOGGER.info("pKa results from pKa-ANI:\n%s", pkaani_output)
-
 
     return rows
 

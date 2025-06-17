@@ -22,7 +22,6 @@ import propka.lib
 import propka.output as pk_out
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
-from tabulate import tabulate
 
 from . import aa, debump, forcefield, hydrogens, io
 from . import biomolecule as biomol
@@ -613,7 +612,16 @@ def run_pkaani(args, biomolecule):
     Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
     """
     try:
+        import warnings
+        warnings.filterwarnings("ignore", category=UserWarning, message=".*cuaev not installed.*")
+        warnings.filterwarnings("ignore", category=UserWarning, message=".*pkg_resources is deprecated as an API.*")
+        warnings.filterwarnings("ignore", category=UserWarning, message=".*torchani.data will not be available.*")
+
         from pkaani.pkaani import calculate_pka as calculate_pkaani
+        from tabulate import tabulate
+        
+
+
     except ImportError as e:
         raise ImportError(
             "Optional module 'pkaani' is not installed. "

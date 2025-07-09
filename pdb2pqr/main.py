@@ -613,14 +613,23 @@ def run_pkaani(args, biomolecule):
     """
     try:
         import warnings
-        warnings.filterwarnings("ignore", category=UserWarning, message=".*cuaev not installed.*")
-        warnings.filterwarnings("ignore", category=UserWarning, message=".*pkg_resources is deprecated as an API.*")
-        warnings.filterwarnings("ignore", category=UserWarning, message=".*torchani.data will not be available.*")
+
+        warnings.filterwarnings(
+            "ignore", category=UserWarning, message=".*cuaev not installed.*"
+        )
+        warnings.filterwarnings(
+            "ignore",
+            category=UserWarning,
+            message=".*pkg_resources is deprecated as an API.*",
+        )
+        warnings.filterwarnings(
+            "ignore",
+            category=UserWarning,
+            message=".*torchani.data will not be available.*",
+        )
 
         from pkaani.pkaani import calculate_pka as calculate_pkaani
         from tabulate import tabulate
-        
-
 
     except ImportError as e:
         raise ImportError(

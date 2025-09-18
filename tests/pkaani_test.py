@@ -9,7 +9,7 @@ PKAANI_TEST_DIR = Path("pkaani_tests")
 
 @pytest.mark.parametrize(
     "input_pdb", 
-    [str(PKAANI_TEST_DIR / "1brs_clean.pdb"), str(PKAANI_TEST_DIR / "1zy8_clean.pdb"), str(PKAANI_TEST_DIR / "6oge_de.pdb")
+    [str(PKAANI_TEST_DIR / "1brs_clean.pdb"), str(PKAANI_TEST_DIR / "1zy8_clean.pdb"), str(PKAANI_TEST_DIR / "6oge_de.pdb"), "1FCC.pdb"
     ], ids=str
 )
 def test_pkaani_apo(input_pdb, tmp_path):
@@ -29,7 +29,7 @@ def test_pkaani_apo(input_pdb, tmp_path):
 
 @pytest.mark.parametrize(
     "input_pdb", 
-    [str(PKAANI_TEST_DIR / "1brs_clean.pdb"), str(PKAANI_TEST_DIR / "1zy8_clean.pdb"), str(PKAANI_TEST_DIR / "6oge_de.pdb")
+    [str(PKAANI_TEST_DIR / "1brs_clean.pdb"), str(PKAANI_TEST_DIR / "1zy8_clean.pdb"), str(PKAANI_TEST_DIR / "6oge_de.pdb"), "1FCC.pdb"
     ], ids=str
 )
 def test_pkaani_pka(input_pdb):

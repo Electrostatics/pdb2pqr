@@ -73,6 +73,16 @@ test = [
   "sphinx",
   "sphinx-rtd-theme",
 ]
+pkaani = [
+  "ase",
+  "joblib",
+  "scipy",
+  "scikit-learn>=1.6.1",
+  "torch",
+  "torchani",
+  "pkaani",
+  "tabulate"
+]
 
 [project.urls]
 "Homepage" = "https://www.poissonboltzmann.org"

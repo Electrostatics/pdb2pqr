@@ -5,8 +5,7 @@ from pathlib import Path
 import common
 import pytest
 
-PKAANI_TEST_DIR = Path("pkaani_tests")
-
+PKAANI_TEST_DIR = Path("tests/pkaani_tests")
 
 @pytest.mark.parametrize(
     "input_pdb",

@@ -29,7 +29,7 @@ jobs:
           # Use uv venv to activate a venv ready to be used by later steps
           activate-environment: "true"
       - name: Install dependencies
-        run: uv pip install -e '.[test,pkaani]'
+        run: uv pip install --no-cache -e '.[test,pkaani]'
         env:
           UV_TORCH_BACKEND: cpu
       - name: Lint with ruff

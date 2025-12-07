@@ -323,7 +323,6 @@ def run_pkaani_for_tests(input_pdb, compare_file, pH):
         for key, val in results.items():
             f.write(f"{key},{val}\n")
 
-
     compare = {}
     with open(compare_file) as f:
         for line in f.readlines()[1:]:
@@ -349,4 +348,3 @@ def run_pkaani_for_tests(input_pdb, compare_file, pH):
             raise RuntimeError(
                 f"pKa-ANI test error. pKa values changed more than 1e-3 for group {key}: new {results[key]} reference {compare[key]}"
             )
-

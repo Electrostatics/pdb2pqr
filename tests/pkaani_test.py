@@ -5,12 +5,18 @@ from pathlib import Path
 import common
 import pytest
 
-PKAANI_TEST_DIR = Path("pkaani_tests")
+PKAANI_TEST_DIR = Path("tests/pkaani_tests")
+
 
 @pytest.mark.parametrize(
-    "input_pdb", 
-    [str(PKAANI_TEST_DIR / "1brs_clean.pdb"), str(PKAANI_TEST_DIR / "1zy8_clean.pdb"), str(PKAANI_TEST_DIR / "6oge_de.pdb"), "1FCC.pdb"
-    ], ids=str
+    "input_pdb",
+    [
+        str(PKAANI_TEST_DIR / "1brs_clean.pdb"),
+        str(PKAANI_TEST_DIR / "1zy8_clean.pdb"),
+        str(PKAANI_TEST_DIR / "6oge_de.pdb"),
+        "1FCC.pdb",
+    ],
+    ids=str,
 )
 def test_pkaani_apo(input_pdb, tmp_path):
     """PKAANI non-regression tests on biomolecules without ligands."""
@@ -28,9 +34,14 @@ def test_pkaani_apo(input_pdb, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "input_pdb", 
-    [str(PKAANI_TEST_DIR / "1brs_clean.pdb"), str(PKAANI_TEST_DIR / "1zy8_clean.pdb"), str(PKAANI_TEST_DIR / "6oge_de.pdb"), "1FCC.pdb"
-    ], ids=str
+    "input_pdb",
+    [
+        str(PKAANI_TEST_DIR / "1brs_clean.pdb"),
+        str(PKAANI_TEST_DIR / "1zy8_clean.pdb"),
+        str(PKAANI_TEST_DIR / "6oge_de.pdb"),
+        "1FCC.pdb",
+    ],
+    ids=str,
 )
 def test_pkaani_pka(input_pdb):
     """PKAANI non-regression tests for pKa values on biomolecules without ligands."""

@@ -446,19 +446,28 @@ def header(block):
     struct_obj = block.get_object("struct_keywords")
     database_obj = block.get_object("pdbx_database_status")
     entry_obj = block.get_object("entry")
-    ridd = database_obj.get_value("recvd_initial_deposition_date")
-    if len(ridd) > 9:
-        ridd = datetime.strptime(ridd, "%Y-%m-%d").strftime("%d-%b-%y").upper()
     line = "HEADER"
     line += " " * 4
-    line += struct_obj.get_value("pdbx_keywords") + " " * (
-        40 - len(struct_obj.get_value("pdbx_keywords"))
-    )
-    line += " " * (9 - len(ridd)) + ridd
+    if struct_obj is not None:
+        line += struct_obj.get_value("pdbx_keywords") + " " * (
+            40 - len(struct_obj.get_value("pdbx_keywords"))
+        )
+    else:
+        line += " " * 40
+    if database_obj is not None:
+        ridd = database_obj.get_value("recvd_initial_deposition_date")
+        if len(ridd) > 9:
+            ridd = datetime.strptime(ridd, "%Y-%m-%d").strftime("%d-%b-%y").upper()
+        line += " " * (9 - len(ridd)) + ridd
+    else:
+        line += " " * 9
     line += " " * 3
-    line += " " * (4 - len(entry_obj.get_value("id"))) + entry_obj.get_value(
-        "id"
-    )
+    if entry_obj is not None:
+        line += " " * (4 - len(entry_obj.get_value("id"))) + entry_obj.get_value(
+            "id"
+        )
+    else:
+        line += " " * 4
     try:
         header_arr.append(pdb.HEADER(line))
     except KeyError:
@@ -619,6 +628,8 @@ def keywds(block):
     key_arr = []
     key_err = []
     key_obj = block.get_object("struct_keywords")
+    if key_obj is None:
+        return key_arr, key_err
     key_string = key_obj.get_value("text")
     key_chunk = int(ceil(len(key_string) / 69.0))
     for i in range(key_chunk):
@@ -644,6 +655,8 @@ def expdata(block):
     ex_arr = []
     ex_err = []
     ex_obj = block.get_object("exptl")
+    if ex_obj is None:
+        return ex_arr, ex_err
     line = "EXPDTA  "
     line += "  "
     line += ex_obj.get_value("method", 0)
@@ -666,6 +679,8 @@ def author(block):
     aut_arr = []
     aut_err = []
     aut_obj = block.get_object("audit_author")
+    if aut_obj is None:
+        return aut_arr, aut_err
     for i in range(aut_obj.row_count):
         line = "AUTHOR  "
         line += "  " * (
@@ -692,6 +707,8 @@ def cryst1(block):
     cry_err = []
     cry_obj = block.get_object("cell")
     sym_obj = block.get_object("symmetry")
+    if cry_obj is None:
+        return cry_arr, cry_err
     line = "CRYST1"
     line += " " * (
         9 - len(str(cry_obj.get_value("length_a", 0)))
@@ -711,9 +728,12 @@ def cryst1(block):
     line += " " * (
         7 - len(str(cry_obj.get_value("angle_gamma", 0)))
     ) + cry_obj.get_value("angle_gamma", 0)
-    line += " " * (
-        11 - len(str(sym_obj.get_value("space_group_name_H-M", 0)))
-    ) + sym_obj.get_value("space_group_name_H-M", 0)
+    if sym_obj is not None:
+        line += " " * (
+            11 - len(str(sym_obj.get_value("space_group_name_H-M", 0)))
+        ) + sym_obj.get_value("space_group_name_H-M", 0)
+    else:
+        line += " " * 11
     line += " " * (
         4 - len(str(cry_obj.get_value("Z_PDB", 0)))
     ) + cry_obj.get_value("Z_PDB", 0)
@@ -736,6 +756,8 @@ def scalen(block):
     sc_arr = []
     sc_err = []
     sc_obj = block.get_object("atom_sites")
+    if sc_obj is None:
+        return sc_arr, sc_err
     scale1 = ""
     scale1 += "SCALE1    "
     scale1 += " " * (
@@ -810,6 +832,8 @@ def origxn(block):
     or_arr = []
     or_err = []
     or_obj = block.get_object("database_PDB_matrix")
+    if or_obj is None:
+        return or_err, or_err
     orig1 = "ORIGX1    "
     orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][1]", 0)))) + str(
         or_obj.get_value("origx[1][1]", 0)

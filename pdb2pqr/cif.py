@@ -43,7 +43,8 @@ def atom_site(block: pdbx.containers.ContainerBase):
         # TODO - this part of the conditional should be a separate function
         for i in range(atoms.row_count):
             line = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
-            if line is None: continue
+            if line is None:
+                continue
             try:
                 if atoms.get_value("group_PDB", i) == "ATOM":
                     pdb_arr.append(pdb.ATOM(line))
@@ -67,15 +68,20 @@ def atom_site(block: pdbx.containers.ContainerBase):
 
             for i in range(atoms.row_count):
                 if atoms.get_value("pdbx_PDB_model_num", i) == j:
-                    line = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
-                    if line is None: continue
+                    line = convert_cif_atom_site_to_pdb_line(
+                        atoms=atoms, row_index=i
+                    )
+                    if line is None:
+                        continue
                     try:
                         if atoms.get_value("group_PDB", i) == "ATOM":
                             pdb_arr.append(pdb.ATOM(line))
                         elif atoms.get_value("group_PDB", i) == "HETATM":
                             pdb_arr.append(pdb.HETATM(line))
                     except (KeyError, ValueError):
-                        _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
+                        _LOGGER.error(
+                            f"atom_site: Error reading line: #{line}#\n"
+                        )
             try:
                 line = "ENDMDL"
                 pdb_arr.append(pdb.ENDMDL(line))
@@ -86,9 +92,9 @@ def atom_site(block: pdbx.containers.ContainerBase):
 
 
 def convert_cif_atom_site_to_pdb_line(
-        atoms: pdbx.containers.DataCategory,
-        row_index: int,
-        ) -> str | None:
+    atoms: pdbx.containers.DataCategory,
+    row_index: int,
+) -> str | None:
     """Converts cif data for one row into a pdb line.
 
     Extracts all the relevant fields from atoms, does basic formatting,
@@ -118,8 +124,13 @@ def convert_cif_atom_site_to_pdb_line(
 
     # Handle the '?' or '.' cases for alt_id and charge
     alt_id = alt_id if alt_id != "." else " "
-    charge = atoms.get_value("pdbx_formal_charge", row_index=row_index) if "pdbx_formal_charge" in atoms.attribute_list else "  "
-    if charge in ["?", None]: charge = "  "
+    charge = (
+        atoms.get_value("pdbx_formal_charge", row_index=row_index)
+        if "pdbx_formal_charge" in atoms.attribute_list
+        else "  "
+    )
+    if charge in ["?", None]:
+        charge = "  "
 
     # Format the Atom Name (4 chars, specifically aligned)
     # 1-2 char elements start at the 2nd position of the 4-char field
@@ -128,33 +139,35 @@ def convert_cif_atom_site_to_pdb_line(
     else:
         name = f"{name:<4}"
 
-    # THE PDB LINE MAPPING (Should be exactly 80 chars)
+    # THE PDB LINE MAPPING
     line = (
-        f"{group:<6}"       # 1-6   Record name
-        f"{serial:>5}"      # 7-11  Atom serial number
-        f" "                # 12    Space
-        f"{name}"           # 13-16 Atom name
-        f"{alt_id:1}"       # 17    Alternate location indicator
-        f"{res_name:>3}"    # 18-20 Residue name
-        f" "                # 21    Space
-        f"{chain:1}"        # 22    Chain Id
-        f"{res_seq:>4}"     # 23-26 Residue sequence number
-        f" "                # 27    Code for insertion of residues
-        f"   "              # 28-30 Spaces
-        f"{x:8.3f}"         # 31-38 X-coordinates
-        f"{y:8.3f}"         # 39-46 Y-coordinates
-        f"{z:8.3f}"         # 47-54 Z-coordinates
-        f"{occ:6.2f}"       # 55-60 Occupancy
-        f"{temp:6.2f}"      # 61-66 Temperature factor
-        f"          "       # 67-76
-        f"{element:>2}"     # 77-78 Element Symbol
-        f"{charge:>2}"      # 79-80 Charge of the atom
+        f"{group:<6}"  #    1-6 Record name
+        f"{serial:>5}"  #   7-11 Atom serial number
+        f" "  #             12 Space
+        f"{name}"  #        13-16 Atom name
+        f"{alt_id:1}"  #    17 Alternate location indicator
+        f"{res_name:>3}"  # 18-20 Residue name
+        f" "  #             21 Space
+        f"{chain:1}"  #     22 Chain Id
+        f"{res_seq:>4}"  #  23-26 Residue sequence number
+        f" "  #             27 Code for insertion of residues
+        f"   "  #           28-30 Spaces
+        f"{x:8.3f}"  #      31-38 X-coordinates
+        f"{y:8.3f}"  #      39-46 Y-coordinates
+        f"{z:8.3f}"  #      47-54 Z-coordinates
+        f"{occ:6.2f}"  #    55-60 Occupancy
+        f"{temp:6.2f}"  #   61-66 Temperature factor
+        f"          "  #    67-76 Spaces
+        f"{element:>2}"  #  77-78 Element Symbol
+        f"{charge:>2}"  #   79-80 Charge of the atom
     )
     if len(line) != 80:
         # This would happen if any of the values above are larger than the max space they are allocated, e.g.:
         # if x < -999.999
         # if name = LIG1
-        _LOGGER.error(f"atom_site: pdb line extracted from cif record is not exactly 80 char long, dropping line:\n{line}")
+        _LOGGER.error(
+            f"atom_site: pdb line extracted from cif record is not exactly 80 char long, dropping line:\n{line}"
+        )
         return None
     return line
 
@@ -247,15 +260,19 @@ def header(block):
     if database_obj is not None:
         ridd = database_obj.get_value("recvd_initial_deposition_date")
         if len(ridd) > 9:
-            ridd = datetime.strptime(ridd, "%Y-%m-%d").strftime("%d-%b-%y").upper()
+            ridd = (
+                datetime.strptime(ridd, "%Y-%m-%d")
+                .strftime("%d-%b-%y")
+                .upper()
+            )
         line += " " * (9 - len(ridd)) + ridd
     else:
         line += " " * 9
     line += " " * 3
     if entry_obj is not None:
-        line += " " * (4 - len(entry_obj.get_value("id"))) + entry_obj.get_value(
-            "id"
-        )
+        line += " " * (
+            4 - len(entry_obj.get_value("id"))
+        ) + entry_obj.get_value("id")
     else:
         line += " " * 4
     try:

@@ -18,7 +18,7 @@ from . import pdb
 _LOGGER = logging.getLogger(__name__)
 
 
-def atom_site(block):
+def atom_site(block: pdbx.containers.ContainerBase):
     """Handle ATOM_SITE block.
 
     Data items in the ATOM_SITE category record details about the atom sites
@@ -36,154 +36,21 @@ def atom_site(block):
     pdb_arr = []
     err_arr = []
     atoms = block.get_object("atom_site")
+    if not isinstance(atoms, pdbx.containers.DataCategory):
+        _LOGGER.error(f"atom_site: No lines were found\n")
     num_model_arr = count_models(block)
     if len(num_model_arr) == 1:
         # TODO - this part of the conditional should be a separate function
         for i in range(atoms.row_count):
-            if atoms.get_value("group_PDB", i) == "ATOM":
-                try:
-                    line = ""
-                    # 1  - 6 RECORD NAME (ATOM)
-                    line += atoms.get_value("group_PDB", i) + " " * (
-                        6 - len(atoms.get_value("group_PDB", i))
-                    )
-                    # 7  - 11 ATOM SERIAL
-                    line += " " * (
-                        5 - len(str(atoms.get_value("id", i)))
-                    ) + str(atoms.get_value("id", i))
-                    # 12 - 13
-                    line += "  "
-                    # 14 - 16 ATOM NAME
-                    line += atoms.get_value("label_atom_id", i) + " " * (
-                        3 - len(atoms.get_value("label_atom_id", i))
-                    )
-                    # 17 ALT LOCATION
-                    if atoms.get_value("label_alt_id", i) == ".":
-                        line += " "
-                    else:
-                        atoms.get_value("label_alt_id", i)
-                    # 18 - 20 RES NAME
-                    line += " " * (
-                        3 - len(atoms.get_value("label_comp_id", i))
-                    ) + atoms.get_value("label_comp_id", i)
-                    # 21
-                    line += " "
-                    # 22 CHAIN ID
-                    line += " " * (
-                        1 - len(atoms.get_value("label_asym_id", i))
-                    ) + atoms.get_value("label_asym_id", i)
-                    # 23 - 26 RES SEQ ID
-                    line += " " * (
-                        4 - len(str(atoms.get_value("auth_seq_id", i)))
-                    ) + str(atoms.get_value("auth_seq_id", i))
-                    # 27 - 30
-                    line += " " * 3
-                    # 31 - 38 X Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_x", i)))
-                    ) + str(atoms.get_value("Cartn_x", i))
-                    # 39 - 46 Y Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_y", i)))
-                    ) + str(atoms.get_value("Cartn_y", i))
-                    # 47 - 54 Z Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_z", i)))
-                    ) + str(atoms.get_value("Cartn_z", i))
-                    # 55 - 60 OCCUPANCY
-                    line += " " * (
-                        6 - len(str(atoms.get_value("occupancy", i)))
-                    ) + str(atoms.get_value("occupancy", i))
-                    # 61 - 66 TEMP FACTOR
-                    line += " " * (
-                        6 - len(str(atoms.get_value("B_iso_or_equiv", i)))
-                    ) + str(atoms.get_value("B_iso_or_equiv", i))
-                    # 67 - 76
-                    line += " " * 10
-                    # 77 - 78 ELEMENT SYMBOL
-                    line += " " * (
-                        2 - len(atoms.get_value("type_symbol", i))
-                    ) + atoms.get_value("type_symbol", i)
-                    # 79 - 80 CHARGE OF ATOM
-                    if atoms.get_value("pdbx_formal_charge", i) == "?":
-                        line += " " * 2
-                    else:
-                        atoms.get_value("pdbx_formal_charge", i)
+            line = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
+            if line is None: continue
+            try:
+                if atoms.get_value("group_PDB", i) == "ATOM":
                     pdb_arr.append(pdb.ATOM(line))
-                except KeyError:
-                    _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
-            elif atoms.get_value("group_PDB", i) == "HETATM":
-                try:
-                    line = ""
-                    # 1  - 6 RECORD NAME (HETATM)
-                    line += atoms.get_value("group_PDB", i) + "" * (
-                        6 - len(atoms.get_value("group_PDB", i))
-                    )
-                    # 7  - 11 ATOM SERIAL
-                    line += " " * (
-                        5 - len(str(atoms.get_value("id", i)))
-                    ) + str(atoms.get_value("id", i))
-                    # 12 - 13
-                    line += "  "
-                    # 14 - 16 ATOM NAME
-                    line += atoms.get_value("label_atom_id", i) + " " * (
-                        3 - len(atoms.get_value("label_atom_id", i))
-                    )
-                    # 17 ALT LOCATION
-                    if atoms.get_value("label_alt_id", i) == ".":
-                        line += " "
-                    else:
-                        atoms.get_value("label_alt_id", i)
-                    # 18 - 20 RES NAME
-                    line += " " * (
-                        3 - len(atoms.get_value("label_comp_id", i))
-                    ) + atoms.get_value("label_comp_id", i)
-                    # 21
-                    line += " "
-                    # 22 CHAIN ID
-                    line += " " * (
-                        1 - len(atoms.get_value("label_asym_id", i))
-                    ) + atoms.get_value("label_asym_id", i)
-                    # 23 - 26 RES SEQ ID
-                    line += " " * (
-                        4 - len(str(atoms.get_value("auth_seq_id", i)))
-                    ) + str(atoms.get_value("auth_seq_id", i))
-                    # 27 - 30
-                    line += " " * 3
-                    # 31 - 38 X Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_x", i)))
-                    ) + str(atoms.get_value("Cartn_x", i))
-                    # 39 - 46 Y Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_y", i)))
-                    ) + str(atoms.get_value("Cartn_y", i))
-                    # 47 - 54 Z Coords
-                    line += " " * (
-                        8 - len(str(atoms.get_value("Cartn_z", i)))
-                    ) + str(atoms.get_value("Cartn_z", i))
-                    # 55 - 60 OCCUPANCY
-                    line += " " * (
-                        6 - len(str(atoms.get_value("occupancy", i)))
-                    ) + str(atoms.get_value("occupancy", i))
-                    # 61 - 66 TEMP FACTOR
-                    line += " " * (
-                        6 - len(str(atoms.get_value("B_iso_or_equiv", i)))
-                    ) + str(atoms.get_value("B_iso_or_equiv", i))
-                    # 67 - 76
-                    line += " " * (10)
-                    # 77 - 78 ELEMENT SYMBOL
-                    line += " " * (
-                        2 - len(atoms.get_value("type_symbol", i))
-                    ) + atoms.get_value("type_symbol", i)
-                    # 79 - 80 CHARGE OF ATOM
-                    if atoms.get_value("pdbx_formal_charge", i) == "?":
-                        line += " " * 2
-                    else:
-                        atoms.get_value("pdbx_formal_charge", i)
+                elif atoms.get_value("group_PDB", i) == "HETATM":
                     pdb_arr.append(pdb.HETATM(line))
-                except KeyError:
-                    _LOGGER.error(f"atom_site: Error reading line:\n{line}")
+            except KeyError:
+                _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
         return pdb_arr, err_arr
     # TODO - Given the return statement above, is this "else" ever reached?
     else:
@@ -194,172 +61,21 @@ def atom_site(block):
                 line += " " * 4
                 line += " " * (4 - len(str(j))) + str(j)
                 pdb_arr.append(pdb.MODEL(line))
-            except ValueError:
+            except KeyError:
                 _LOGGER.error(f"atom_site: Error readline line:\n{line}")
                 err_arr.append("MODEL")
 
             for i in range(atoms.row_count):
                 if atoms.get_value("pdbx_PDB_model_num", i) == j:
-                    if atoms.get_value("group_PDB", i) == "ATOM":
-                        try:
-                            line = ""
-                            # 1  - 6 RECORD NAME (ATOM)
-                            line += atoms.get_value("group_PDB", i) + " " * (
-                                6 - len(atoms.get_value("group_PDB", i))
-                            )
-                            # 7  - 11 ATOM SERIAL
-                            line += " " * (
-                                5 - len(str(atoms.get_value("id", i)))
-                            ) + str(atoms.get_value("id", i))
-                            # 12 - 13
-                            line += "  "
-                            # 14 - 16 ATOM NAME
-                            line += atoms.get_value(
-                                "label_atom_id", i
-                            ) + " " * (
-                                3 - len(atoms.get_value("label_atom_id", i))
-                            )
-                            # 17 ALT LOCATION
-                            if atoms.get_value("label_alt_id", i) == ".":
-                                line += " "
-                            else:
-                                atoms.get_value("label_alt_id", i)
-                            # 18 - 20 RES NAME
-                            line += " " * (
-                                3 - len(atoms.get_value("label_comp_id", i))
-                            ) + atoms.get_value("label_comp_id", i)
-                            # 21
-                            line += " "
-                            # 22 CHAIN ID
-                            line += " " * (
-                                1 - len(atoms.get_value("label_asym_id", i))
-                            ) + atoms.get_value("label_asym_id", i)
-                            # 23 - 26 RES SEQ ID
-                            line += " " * (
-                                4 - len(str(atoms.get_value("auth_seq_id", i)))
-                            ) + str(atoms.get_value("auth_seq_id", i))
-                            # 27 - 30
-                            line += " " * 3
-                            # 31 - 38 X Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_x", i)))
-                            ) + str(atoms.get_value("Cartn_x", i))
-                            # 39 - 46 Y Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_y", i)))
-                            ) + str(atoms.get_value("Cartn_y", i))
-                            # 47 - 54 Z Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_z", i)))
-                            ) + str(atoms.get_value("Cartn_z", i))
-                            # 55 - 60 OCCUPANCY
-                            line += " " * (
-                                6 - len(str(atoms.get_value("occupancy", i)))
-                            ) + str(atoms.get_value("occupancy", i))
-                            # 61 - 66 TEMP FACTOR
-                            line += " " * (
-                                6
-                                - len(
-                                    str(atoms.get_value("B_iso_or_equiv", i))
-                                )
-                            ) + str(atoms.get_value("B_iso_or_equiv", i))
-                            # 67 - 76
-                            line += " " * 10
-                            # 77 - 78 ELEMENT SYMBOL
-                            line += " " * (
-                                2 - len(atoms.get_value("type_symbol", i))
-                            ) + atoms.get_value("type_symbol", i)
-                            # 79 - 80 CHARGE OF ATOM
-                            if atoms.get_value("pdbx_formal_charge", i) == "?":
-                                line += " " * 2
-                            else:
-                                atoms.get_value("pdbx_formal_charge", i)
+                    line = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
+                    if line is None: continue
+                    try:
+                        if atoms.get_value("group_PDB", i) == "ATOM":
                             pdb_arr.append(pdb.ATOM(line))
-                        except KeyError:
-                            _LOGGER.error(
-                                f"atom_site: Error reading line:\n{line}"
-                            )
-                            err_arr.append("ATOM")
-                    elif atoms.get_value("group_PDB", i) == "HETATM":
-                        try:
-                            line = ""
-                            # 1  - 6 RECORD NAME (HETATM)
-                            line += atoms.get_value("group_PDB", i) + "" * (
-                                6 - len(atoms.get_value("group_PDB", i))
-                            )
-                            # 7  - 11 ATOM SERIAL
-                            line += " " * (
-                                5 - len(str(atoms.get_value("id", i)))
-                            ) + str(atoms.get_value("id", i))
-                            # 12 - 13
-                            line += "  "
-                            # 14 - 16 ATOM NAME
-                            line += atoms.get_value(
-                                "label_atom_id", i
-                            ) + " " * (
-                                3 - len(atoms.get_value("label_atom_id", i))
-                            )
-                            # 17      ALT LOCATION
-                            if atoms.get_value("label_alt_id", i) == ".":
-                                line += " "
-                            else:
-                                atoms.get_value("label_alt_id", i)
-                            # 18 - 20 RES NAME
-                            line += " " * (
-                                3 - len(atoms.get_value("label_comp_id", i))
-                            ) + atoms.get_value("label_comp_id", i)
-                            # 21
-                            line += " "
-                            # 22      CHAIN ID
-                            line += " " * (
-                                1 - len(atoms.get_value("label_asym_id", i))
-                            ) + atoms.get_value("label_asym_id", i)
-                            # 23 - 26 RES SEQ ID
-                            line += " " * (
-                                4 - len(str(atoms.get_value("auth_seq_id", i)))
-                            ) + str(atoms.get_value("auth_seq_id", i))
-                            # 27 - 30
-                            line += " " * 3
-                            # 31 - 38 X Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_x", i)))
-                            ) + str(atoms.get_value("Cartn_x", i))
-                            # 39 - 46 Y Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_y", i)))
-                            ) + str(atoms.get_value("Cartn_y", i))
-                            # 47 - 54 Z Coords
-                            line += " " * (
-                                8 - len(str(atoms.get_value("Cartn_z", i)))
-                            ) + str(atoms.get_value("Cartn_z", i))
-                            # 55 - 60 OCCUPANCY
-                            line += " " * (
-                                6 - len(str(atoms.get_value("occupancy", i)))
-                            ) + str(atoms.get_value("occupancy", i))
-                            # 61 - 66 TEMP FACTOR
-                            line += " " * (
-                                6
-                                - len(
-                                    str(atoms.get_value("B_iso_or_equiv", i))
-                                )
-                            ) + str(atoms.get_value("B_iso_or_equiv", i))
-                            # 67 - 76
-                            line += " " * 10
-                            # 77 - 78 ELEMENT SYMBOL
-                            line += " " * (
-                                2 - len(atoms.get_value("type_symbol", i))
-                            ) + atoms.get_value("type_symbol", i)
-                            # 79 - 80 CHARGE OF ATOM
-                            if atoms.get_value("pdbx_formal_charge", i) == "?":
-                                line += " " * 2
-                            else:
-                                atoms.get_value("pdbx_formal_charge", i)
+                        elif atoms.get_value("group_PDB", i) == "HETATM":
                             pdb_arr.append(pdb.HETATM(line))
-                        except KeyError:
-                            _LOGGER.error(
-                                f"atom_site: Error reading line:\n{line}"
-                            )
-                            err_arr.append("HETATOM")
+                    except (KeyError, ValueError):
+                        _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
             try:
                 line = "ENDMDL"
                 pdb_arr.append(pdb.ENDMDL(line))
@@ -367,6 +83,80 @@ def atom_site(block):
                 _LOGGER.error(f"atom_site: Error reading line:\n{line}")
                 err_arr.append("ENDMDL")
         return pdb_arr, err_arr
+
+
+def convert_cif_atom_site_to_pdb_line(
+        atoms: pdbx.containers.DataCategory,
+        row_index: int,
+        ) -> str | None:
+    """Converts cif data for one row into a pdb line.
+
+    Extracts all the relevant fields from atoms, does basic formatting,
+    and converts them into a pdb line.
+
+    :param atoms: DataCategory containing all atoms.
+    :type atoms: pdbx.containers.DataCategory
+    :param row_index: Index corresponding to the cif line we want to convert to a pdb line
+    :type row_index: int
+    :return: Pdb line (exactly 80 chars long), will be None if it failed to process it properly
+    :rtype: str | None
+    """
+    # Extract and cast values
+    group = atoms.get_value("group_PDB", row_index=row_index)
+    serial = int(atoms.get_value("id", row_index=row_index))
+    name = atoms.get_value("label_atom_id", row_index=row_index)
+    alt_id = atoms.get_value("label_alt_id", row_index=row_index)
+    res_name = atoms.get_value("label_comp_id", row_index=row_index)
+    chain = atoms.get_value("label_asym_id", row_index=row_index)
+    res_seq = int(atoms.get_value("auth_seq_id", row_index=row_index))
+    x = float(atoms.get_value("Cartn_x", row_index=row_index))
+    y = float(atoms.get_value("Cartn_y", row_index=row_index))
+    z = float(atoms.get_value("Cartn_z", row_index=row_index))
+    occ = float(atoms.get_value("occupancy", row_index=row_index))
+    temp = float(atoms.get_value("B_iso_or_equiv", row_index=row_index))
+    element = atoms.get_value("type_symbol", row_index=row_index)
+
+    # Handle the '?' or '.' cases for alt_id and charge
+    alt_id = alt_id if alt_id != "." else " "
+    charge = atoms.get_value("pdbx_formal_charge", row_index=row_index) if "pdbx_formal_charge" in atoms.attribute_list else "  "
+    if charge in ["?", None]: charge = "  "
+
+    # Format the Atom Name (4 chars, specifically aligned)
+    # 1-2 char elements start at the 2nd position of the 4-char field
+    if len(element) < 2 and len(name) < 4:
+        name = f" {name:<3}"
+    else:
+        name = f"{name:<4}"
+
+    # THE PDB LINE MAPPING (Should be exactly 80 chars)
+    line = (
+        f"{group:<6}"       # 1-6   Record name
+        f"{serial:>5}"      # 7-11  Atom serial number
+        f" "                # 12    Space
+        f"{name}"           # 13-16 Atom name
+        f"{alt_id:1}"       # 17    Alternate location indicator
+        f"{res_name:>3}"    # 18-20 Residue name
+        f" "                # 21    Space
+        f"{chain:1}"        # 22    Chain Id
+        f"{res_seq:>4}"     # 23-26 Residue sequence number
+        f" "                # 27    Code for insertion of residues
+        f"   "              # 28-30 Spaces
+        f"{x:8.3f}"         # 31-38 X-coordinates
+        f"{y:8.3f}"         # 39-46 Y-coordinates
+        f"{z:8.3f}"         # 47-54 Z-coordinates
+        f"{occ:6.2f}"       # 55-60 Occupancy
+        f"{temp:6.2f}"      # 61-66 Temperature factor
+        f"          "       # 67-76
+        f"{element:>2}"     # 77-78 Element Symbol
+        f"{charge:>2}"      # 79-80 Charge of the atom
+    )
+    if len(line) != 80:
+        # This would happen if any of the values above are larger than the max space they are allocated, e.g.:
+        # if x < -999.999
+        # if name = LIG1
+        _LOGGER.error(f"atom_site: pdb line extracted from cif record is not exactly 80 char long, dropping line:\n{line}")
+        return None
+    return line
 
 
 def conect(block):

@@ -346,7 +346,7 @@ def compnd(block):
     return compnd_arr, compnd_err
 
 
-def source(block):
+def source(block: pdbx.containers.ContainerBase):
     """Handle SOURCE block.
 
     :param block:  PDBx data block
@@ -361,7 +361,9 @@ def source(block):
         return src_arr, src_err
     cont = 1
     for i in range(src_obj.row_count):
-        if src_obj.get_value("entity_id", 0) != "?":
+        if ("entity_id" in src_obj.attribute_list) and (
+            src_obj.get_value("entity_id", i) not in ["?", None]
+        ):
             line = "SOURCE "
             line += (
                 " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
@@ -373,7 +375,10 @@ def source(block):
             except KeyError:
                 _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
-        if src_obj.get_value("pdbx_gene_src_scientific_name", i) != "?":
+        if ("pdbx_gene_src_scientific_name" in src_obj.attribute_list) and (
+            src_obj.get_value("pdbx_gene_src_scientific_name", i)
+            not in ["?", None]
+        ):
             line = "SOURCE "
             line += (
                 " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
@@ -389,7 +394,9 @@ def source(block):
             except KeyError:
                 _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
-        if src_obj.get_value("gene_src_common_name", i) != "?":
+        if ("gene_src_common_name" in src_obj.attribute_list) and (
+            src_obj.get_value("gene_src_common_name", i) not in ["?", None]
+        ):
             line = "SOURCE "
             line += (
                 " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "
@@ -405,7 +412,10 @@ def source(block):
             except KeyError:
                 _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
-        if src_obj.get_value("pdbx_gene_src_ncbi_taxonomy_id", i) != "?":
+        if ("pdbx_gene_src_ncbi_taxonomi_id" in src_obj.attribute_list) and (
+            src_obj.get_value("pdbx_gene_src_ncbi_taxonomy_id", i)
+            not in ["?", None]
+        ):
             line = "SOURCE "
             line += (
                 " " * (3 - len(str(cont))) + str(cont) if cont > 1 else "   "

@@ -38,6 +38,9 @@ def atom_site(block: pdbx.containers.ContainerBase):
     atoms = block.get_object("atom_site")
     if not isinstance(atoms, pdbx.containers.DataCategory):
         _LOGGER.error(f"atom_site: No lines were found\n")
+        raise ValueError(
+            "Did not find atom_site in cif file, terminal failure."
+        )
     num_model_arr = count_models(block)
     if len(num_model_arr) == 1:
         # TODO - this part of the conditional should be a separate function
@@ -118,18 +121,34 @@ def convert_cif_atom_site_to_pdb_line(
     x = float(atoms.get_value("Cartn_x", row_index))
     y = float(atoms.get_value("Cartn_y", row_index))
     z = float(atoms.get_value("Cartn_z", row_index))
-    occ = float(atoms.get_value("occupancy", row_index))
-    temp = float(atoms.get_value("B_iso_or_equiv", row_index))
+    occ_raw = atoms.get_value("occupancy", row_index)
+    try:
+        occ = float(occ_raw)
+    except (TypeError, ValueError):
+        _LOGGER.error(
+            f"Invalid occupancy {occ_raw} at row {row_index}, setting to 1.0"
+        )
+        occ = 1.0
+    temp_raw = atoms.get_value("B_iso_or_equiv", row_index)
+    try:
+        temp = float(temp_raw)
+    except (TypeError, ValueError):
+        _LOGGER.error(
+            f"Invalid B-factor {temp_raw} at row {row_index}, setting to 0.0"
+        )
+        temp = 0.0
     element = atoms.get_value("type_symbol", row_index)
 
     # Handle the '?' or '.' cases for alt_id and charge
-    alt_id = alt_id if alt_id != "." else " "
+    alt_id = (
+        alt_id if (alt_id is not None and alt_id not in (".", "?")) else " "
+    )
     charge = (
         atoms.get_value("pdbx_formal_charge", row_index)
         if "pdbx_formal_charge" in atoms.attribute_list
         else "  "
     )
-    if charge in ["?", None]:
+    if charge in ["?", None, "."]:
         charge = "  "
 
     # Format the Atom Name (4 chars, specifically aligned)
@@ -259,13 +278,13 @@ def header(block):
         line += " " * 40
     if database_obj is not None:
         ridd = database_obj.get_value("recvd_initial_deposition_date")
-        if len(ridd) > 9:
+        if isinstance(ridd, str) and len(ridd) > 9:
             ridd = (
                 datetime.strptime(ridd, "%Y-%m-%d")
                 .strftime("%d-%b-%y")
                 .upper()
             )
-        line += " " * (9 - len(ridd)) + ridd
+            line += " " * (9 - len(ridd)) + ridd
     else:
         line += " " * 9
     line += " " * 3
@@ -412,7 +431,7 @@ def source(block: pdbx.containers.ContainerBase):
             except KeyError:
                 _LOGGER.error(f"source:  Error parsing line:\n{line}")
                 src_err.append("source")
-        if ("pdbx_gene_src_ncbi_taxonomi_id" in src_obj.attribute_list) and (
+        if ("pdbx_gene_src_ncbi_taxonomy_id" in src_obj.attribute_list) and (
             src_obj.get_value("pdbx_gene_src_ncbi_taxonomy_id", i)
             not in ["?", None]
         ):
@@ -650,7 +669,7 @@ def origxn(block):
     or_err = []
     or_obj = block.get_object("database_PDB_matrix")
     if or_obj is None:
-        return or_err, or_err
+        return or_arr, or_err
     orig1 = "ORIGX1    "
     orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][1]", 0)))) + str(
         or_obj.get_value("origx[1][1]", 0)

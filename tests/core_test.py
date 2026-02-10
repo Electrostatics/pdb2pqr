@@ -57,7 +57,6 @@ for ff in ["CHARMM", "AMBER", "PARSE", "SWANSON", "TYL06"]:
                 NAMING_TESTS.append(pytest.param(options, marks=pytest.mark.xfail(reason="CHARMM force field is broken!")))
             else:
                 NAMING_TESTS.append(pytest.param(options))
-TEST_CIF_READER = ["9X2O.cif"]
 # fmt: on
 
 
@@ -186,7 +185,7 @@ def test_ph_naming(naming_test, tmp_path):
     ["1FKI.cif", "9X2O.cif", "boltz2_olanzapine_P28335.cif"],
 )
 def test_read_cif(input_pdb, tmp_path):
-    """Tests for terminal residue protonation."""
+    """Tests for reading and converting CIF-format structures."""
     args = "--log-level=INFO --ff=AMBER --ffout AMBER"
     output_pqr = Path(input_pdb).stem + ".pqr"
     common.run_pdb2pqr_for_tests(

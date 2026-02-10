@@ -108,24 +108,24 @@ def convert_cif_atom_site_to_pdb_line(
     :rtype: str | None
     """
     # Extract and cast values
-    group = atoms.get_value("group_PDB", row_index=row_index)
-    serial = int(atoms.get_value("id", row_index=row_index))
-    name = atoms.get_value("label_atom_id", row_index=row_index)
-    alt_id = atoms.get_value("label_alt_id", row_index=row_index)
-    res_name = atoms.get_value("label_comp_id", row_index=row_index)
-    chain = atoms.get_value("label_asym_id", row_index=row_index)
-    res_seq = int(atoms.get_value("auth_seq_id", row_index=row_index))
-    x = float(atoms.get_value("Cartn_x", row_index=row_index))
-    y = float(atoms.get_value("Cartn_y", row_index=row_index))
-    z = float(atoms.get_value("Cartn_z", row_index=row_index))
-    occ = float(atoms.get_value("occupancy", row_index=row_index))
-    temp = float(atoms.get_value("B_iso_or_equiv", row_index=row_index))
-    element = atoms.get_value("type_symbol", row_index=row_index)
+    group = atoms.get_value("group_PDB", row_index)
+    serial = int(atoms.get_value("id", row_index))
+    name = atoms.get_value("label_atom_id", row_index)
+    alt_id = atoms.get_value("label_alt_id", row_index)
+    res_name = atoms.get_value("label_comp_id", row_index)
+    chain = atoms.get_value("label_asym_id", row_index)
+    res_seq = int(atoms.get_value("auth_seq_id", row_index))
+    x = float(atoms.get_value("Cartn_x", row_index))
+    y = float(atoms.get_value("Cartn_y", row_index))
+    z = float(atoms.get_value("Cartn_z", row_index))
+    occ = float(atoms.get_value("occupancy", row_index))
+    temp = float(atoms.get_value("B_iso_or_equiv", row_index))
+    element = atoms.get_value("type_symbol", row_index)
 
     # Handle the '?' or '.' cases for alt_id and charge
     alt_id = alt_id if alt_id != "." else " "
     charge = (
-        atoms.get_value("pdbx_formal_charge", row_index=row_index)
+        atoms.get_value("pdbx_formal_charge", row_index)
         if "pdbx_formal_charge" in atoms.attribute_list
         else "  "
     )

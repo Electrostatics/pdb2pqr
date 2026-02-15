@@ -6,6 +6,7 @@ import common
 import pytest
 
 # Skip all tests in this module if pkaani is not available
+# (e.g., on Python 3.13 where pkaani dependencies are not yet compatible)
 pytest.importorskip("pkaani")
 
 PKAANI_TEST_DIR = Path("tests/pkaani_tests")

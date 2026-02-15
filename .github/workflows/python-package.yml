@@ -29,7 +29,12 @@ jobs:
           # Use uv venv to activate a venv ready to be used by later steps
           activate-environment: "true"
       - name: Install dependencies
-        run: uv pip install -e '.[test,pkaani]'
+        run: |
+          if [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            uv pip install -e '.[test]'
+          else
+            uv pip install -e '.[test,pkaani]'
+          fi
         env:
           UV_TORCH_BACKEND: cpu
       - name: Lint with ruff

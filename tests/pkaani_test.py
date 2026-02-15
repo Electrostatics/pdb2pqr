@@ -5,6 +5,9 @@ from pathlib import Path
 import common
 import pytest
 
+# Skip all tests in this module if pkaani is not available
+pytest.importorskip("pkaani")
+
 PKAANI_TEST_DIR = Path("tests/pkaani_tests")
 
 

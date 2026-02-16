@@ -55,7 +55,7 @@ keywords = ["science", "chemistry", "molecular biology"]
 
 dependencies = [
   "mmcif_pdbx>=1.1.2",
-  "numpy",
+  "numpy<2.0",
   "propka >= 3.5",
   "requests",
   "docutils",
@@ -67,7 +67,7 @@ dev = ["check-manifest"]
 test = [
   "ruff",
   "coverage",
-  "pandas >= 1.0",
+  "pandas >= 1.0, <3.0",
   "pytest",
   "testfixtures",
   "sphinx",
@@ -76,8 +76,8 @@ test = [
 pkaani = [
   "ase",
   "joblib",
-  "scipy",
-  "scikit-learn>=1.6.1",
+  "scipy<1.14",
+  "scikit-learn>=1.5,<1.7",
   "torch",
   "torchani",
   "pkaani",

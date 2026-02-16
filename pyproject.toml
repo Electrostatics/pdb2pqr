@@ -76,8 +76,8 @@ test = [
 pkaani = [
   "ase",
   "joblib",
-  "scipy",
-  "scikit-learn>=1.6.1",
+  "scipy<1.14",
+  "scikit-learn>=1.5,<1.7",
   "torch",
   "torchani",
   "pkaani",

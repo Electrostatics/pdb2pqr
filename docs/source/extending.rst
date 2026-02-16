@@ -30,7 +30,7 @@ Adding new functionality
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 PDB2PQR welcomes new contributions; the software API is documented in :ref:`api-label`.
-To contribute code, submit a *pull request* against the master branch in the `PDB2PQR repository <https://github.com/Electrostatics/pdb2pqr>`_.
+To contribute code, submit a *pull request* against the main branch in the `PDB2PQR repository <https://github.com/Electrostatics/pdb2pqr>`_.
 Please be sure to run PDB2PQR tests, as described in :ref:`testing-label`, before submitting new code.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^

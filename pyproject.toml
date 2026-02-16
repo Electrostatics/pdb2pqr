@@ -67,7 +67,7 @@ dev = ["check-manifest"]
 test = [
   "ruff",
   "coverage",
-  "pandas >= 1.0",
+  "pandas >= 1.0, <3.0",
   "pytest",
   "testfixtures",
   "sphinx",

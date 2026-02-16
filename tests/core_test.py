@@ -178,3 +178,20 @@ def test_ph_naming(naming_test, tmp_path):
         tmp_path=tmp_path,
         compare_resnames=True,
     )
+
+
+@pytest.mark.parametrize(
+    "input_pdb",
+    ["1FKI.cif", "9X2O.cif", "boltz2_olanzapine_P28335.cif"],
+)
+def test_read_cif(input_pdb, tmp_path):
+    """Tests for reading and converting CIF-format structures."""
+    args = "--log-level=INFO --ff=AMBER --ffout AMBER"
+    output_pqr = Path(input_pdb).stem + ".pqr"
+    common.run_pdb2pqr_for_tests(
+        args=args,
+        input_pdb=common.DATA_DIR / input_pdb,
+        output_pqr=output_pqr,
+        tmp_path=tmp_path,
+        compare_resnames=True,
+    )

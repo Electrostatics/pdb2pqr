@@ -55,7 +55,7 @@ keywords = ["science", "chemistry", "molecular biology"]
 
 dependencies = [
   "mmcif_pdbx>=1.1.2",
-  "numpy",
+  "numpy<2.0",
   "propka >= 3.5",
   "requests",
   "docutils",
@@ -76,7 +76,6 @@ test = [
 pkaani = [
   "ase",
   "joblib",
-  "numpy<2.0",
   "scipy",
   "scikit-learn>=1.6.1",
   "torch",

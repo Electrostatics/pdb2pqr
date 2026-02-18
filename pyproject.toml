@@ -74,12 +74,13 @@ test = [
   "sphinx-rtd-theme",
 ]
 pkaani = [
+  "setuptools<=81",
   "ase",
   "joblib",
   "scipy",
   "scikit-learn>=1.6.1",
   "torch",
-  "torchani",
+  "torchani<=2.2.4",
   "pkaani",
   "tabulate"
 ]

@@ -74,11 +74,11 @@ test = [
   "sphinx-rtd-theme",
 ]
 pkaani = [
-  "setuptools<=81",
   "ase",
   "joblib",
   "scipy",
   "scikit-learn>=1.6.1",
+  "setuptools<=81",
   "torch",
   "torchani<=2.2.4",
   "pkaani",

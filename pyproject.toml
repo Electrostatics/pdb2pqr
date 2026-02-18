@@ -78,8 +78,9 @@ pkaani = [
   "joblib",
   "scipy",
   "scikit-learn>=1.6.1",
+  "setuptools<=81",
   "torch",
-  "torchani",
+  "torchani<=2.2.4",
   "pkaani",
   "tabulate"
 ]

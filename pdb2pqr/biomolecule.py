@@ -767,9 +767,13 @@ class Biomolecule:
                             rname != residue.name
                         ):
                             if len(rname) == 4 and rname[0] in ("C", "N"):
-                                # Remove the C/N prefix to keep the protonation state of the residue
-                                # in the terminal residues
-                                rname = rname[1:]
+                                if rname[1:] == "TER":
+                                    # Preserve explicit terminal names produced by the force field.
+                                    pass
+                                else:
+                                    # Remove the C/N prefix to keep the protonation state of the residue
+                                    # in the terminal residues.
+                                    rname = rname[1:]
                             elif rname.startswith("NEUTRAL-"):
                                 # Remove the NEUTRAL-C and NEUTRAL-N prefixes to keep protonation state
                                 rname = rname[9:]

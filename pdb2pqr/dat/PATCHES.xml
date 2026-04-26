@@ -579,7 +579,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   </patch>
   <patch>
      <name>DT5</name>
-     <applyto>T</applyto>
+     <applyto>DT</applyto>
      <remove>O1P</remove>
      <remove>P</remove>
      <remove>O2P</remove>

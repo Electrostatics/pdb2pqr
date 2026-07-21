@@ -26,7 +26,7 @@ def noninteger_charge(charge, error_tol=CHARGE_ERROR) -> str:
 
     :param float charge:  value to test
     :param float error_tol:  absolute error tolerance
-    :returns:  string with descripton of problem or empty string if no problem
+    :returns:  string with description of problem or empty string if no problem
     """
     abs_error = abs(charge - round(charge))
     if abs_error > abs(error_tol):

@@ -154,6 +154,19 @@ def build_main_parser():
         ),
     )
     grp2.add_argument(
+        "--output-format",
+        choices=["auto", "pdb", "cif"],
+        default="auto",
+        help=(
+            "Format for the output PQR file. 'auto' writes PDB-format PQR when "
+            "the structure fits the fixed PDB columns and falls back to mmCIF "
+            "otherwise (large assemblies: > 99999 atoms, multi-character chain "
+            "ids, or residue numbers outside [-999, 9999]). 'pdb' forces PDB "
+            "and errors if the structure exceeds those limits. 'cif' forces "
+            "mmCIF regardless of size."
+        ),
+    )
+    grp2.add_argument(
         "--ligand",
         help=(
             "Calculate the parameters for a single MOL2-format ligand at the "
@@ -312,7 +325,65 @@ def check_options(args):
         raise RuntimeError(err)
 
 
-def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
+def resolve_output_format(args, atomlist):
+    """Decide whether the output PQR is written as PDB or mmCIF.
+
+    The choice is driven by whether the structure fits the fixed PDB columns
+    (see :func:`io.exceeds_pdb_limits`) and the user's ``--output-format``:
+
+    - ``auto`` (default): PDB when it fits, otherwise fall back to mmCIF.
+    - ``pdb``: force PDB; raise if the structure exceeds PDB limits, since
+      writing it would silently corrupt serials/chains/residue numbers.
+    - ``cif``: force mmCIF regardless of size.
+
+    :param argparse.Namespace args:  command-line arguments
+    :param [Atom] atomlist:  the atoms that will be written
+    :return:  ``"pdb"`` or ``"cif"``
+    :rtype:  str
+    :raises RuntimeError:  if ``--output-format pdb`` cannot represent the
+        structure without truncation
+    """
+    if args.output_format == "cif":
+        return "cif"
+    exceeds, reasons = io.exceeds_pdb_limits(atomlist)
+    if args.output_format == "pdb":
+        if exceeds:
+            raise RuntimeError(
+                "Cannot write PDB-format output: "
+                + "; ".join(reasons)
+                + ". Use --output-format cif (or auto) instead."
+            )
+        return "pdb"
+    # auto
+    if exceeds:
+        _LOGGER.warning(
+            "Structure exceeds PDB fixed-column limits (%s); "
+            "writing mmCIF-format output instead of PDB.",
+            "; ".join(reasons),
+        )
+        return "cif"
+    return "pdb"
+
+
+def build_output_lines(args, atomlist):
+    """Resolve the output format and render the atom records accordingly.
+
+    :param argparse.Namespace args:  command-line arguments
+    :param [Atom] atomlist:  the atoms to write
+    :return:  (list of output lines, resolved format ``"pdb"``/``"cif"``)
+    :rtype:  ([str], str)
+    """
+    output_format = resolve_output_format(args, atomlist)
+    if output_format == "cif":
+        _LOGGER.info("Regenerating mmCIF atom_site records.")
+        lines = io.print_biomolecule_atoms_cif(atomlist)
+    else:
+        _LOGGER.info("Regenerating PDB lines.")
+        lines = io.print_biomolecule_atoms(atomlist, args.keep_chain)
+    return lines, output_format
+
+
+def print_pqr(args, pqr_lines, header_lines, missing_lines, output_format):
     """Print PQR-format output to specified file
 
     .. todo::  Move this to another module (io)
@@ -322,7 +393,8 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
     :param [str] header_lines:  header lines
     :param [str] missing_lines:  lines describing missing atoms (should go
         in header)
-    :param bool is_cif:  flag indicating CIF format
+    :param str output_format:  ``"pdb"`` or ``"cif"`` (see
+        :func:`resolve_output_format`)
     """
     with open(args.output_pqr, "w") as outfile:
         # Adding whitespaces if --whitespace is in the options
@@ -334,6 +406,10 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             _LOGGER.warning(
                 f"Ignoring {len(missing_lines)} missing lines in output."
             )
+        if output_format == "cif":
+            # pqr_lines is already a complete mmCIF _atom_site loop.
+            outfile.writelines(pqr_lines)
+            return
         for line in pqr_lines:
             if args.whitespace:
                 if line[0:4] == "ATOM" or line[0:6] == "HETATM":
@@ -349,10 +425,8 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
                         + line[46:]
                     )
                     outfile.write(newline)
-            elif line[0:3] != "TER" or not is_cif:
+            else:
                 outfile.write(line)
-        if is_cif:
-            outfile.write("#\n")
 
 
 def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
@@ -524,16 +598,47 @@ def run_propka(args, biomolecule):
                pKa information from PROPKA)
     :rtype:  (list, str)
     """
-    lines = io.print_biomolecule_atoms(
-        atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
-    )
+    # The PDB interchange format cannot carry a structure that exceeds its
+    # fixed columns without truncating serials/chains/residue numbers, so such
+    # structures must be fed to PROPKA as an mmCIF stream.  That requires a
+    # CIF-capable PROPKA (one exposing ``read_mmcif``); older/stock propka is
+    # PDB-only and would silently corrupt the round-trip, so we fail fast
+    # rather than truncate.
+    exceeds, reasons = io.exceeds_pdb_limits(biomolecule.atoms)
+    if exceeds and not hasattr(pk_in, "read_mmcif"):
+        raise RuntimeError(
+            "This structure exceeds PDB fixed-column limits ("
+            + "; ".join(reasons)
+            + ") and requires a CIF-capable PROPKA, but the installed propka "
+            "cannot read mmCIF. Please upgrade propka to a version with "
+            "native mmCIF support."
+        )
 
-    with StringIO() as fpdb:
-        fpdb.writelines(lines)
-        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
-        molecule = MolecularContainer(parameters, args)
-        # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
-        molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
+    parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+    molecule = MolecularContainer(parameters, args)
+
+    if exceeds:
+        _LOGGER.info(
+            "Structure exceeds PDB limits (%s); feeding PROPKA an mmCIF "
+            "stream.",
+            "; ".join(reasons),
+        )
+        lines = io.print_biomolecule_atoms_cif(biomolecule.atoms)
+        with StringIO() as fcif:
+            fcif.writelines(lines)
+            # mock name with .cif extension so PROPKA dispatches to its mmCIF
+            # reader (open_file_for_reading seeks the stream to 0 itself)
+            molecule = pk_in.read_molecule_file("input.cif", molecule, fcif)
+    else:
+        lines = io.print_biomolecule_atoms(
+            atomlist=biomolecule.atoms,
+            chainflag=args.keep_chain,
+            pdbfile=True,
+        )
+        with StringIO() as fpdb:
+            fpdb.writelines(lines)
+            # mock name with .pdb extension to work with stream data
+            molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
 
     molecule.calculate_pka()
 
@@ -606,7 +711,19 @@ def run_pkaani(args, biomolecule):
     :return:  (DataFrame-convertible table of assigned pKa values,
                pKa information from pKa-ANI)
     :rtype:  list of OrderedDicts
+    :raises RuntimeError:  if the structure exceeds PDB fixed-column limits
+        (pKa-ANI parses PDB files with its own reader and cannot represent
+        such assemblies)
     """
+    exceeds, reasons = io.exceeds_pdb_limits(biomolecule.atoms)
+    if exceeds:
+        raise RuntimeError(
+            "This structure exceeds PDB fixed-column limits ("
+            + "; ".join(reasons)
+            + ") and cannot be titrated with pKa-ANI, which parses PDB files "
+            "with its own reader. Use --titration-state-method=propka with a "
+            "CIF-capable PROPKA instead."
+        )
     pkaani_citation = """
     Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
     Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
@@ -850,13 +967,13 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
             args.ffout,
             include_old_header=args.include_header,
         )
-    _LOGGER.info("Regenerating PDB lines.")
-    lines = io.print_biomolecule_atoms(matched_atoms, args.keep_chain)
+    lines, output_format = build_output_lines(args, matched_atoms)
     return {
         "lines": lines,
         "header": header,
         "missed_residues": missing_atoms,
         "pka_df": pka_df,
+        "output_format": output_format,
     }
 
 
@@ -892,14 +1009,14 @@ def main_driver(args: argparse.Namespace):
         _LOGGER.info(
             "Arguments specified cleaning only; skipping remaining steps."
         )
+        lines, output_format = build_output_lines(args, biomolecule.atoms)
         results = {
             "header": "",
             "missed_residues": None,
             "biomolecule": biomolecule,
-            "lines": io.print_biomolecule_atoms(
-                biomolecule.atoms, args.keep_chain
-            ),
+            "lines": lines,
             "pka_df": None,
+            "output_format": output_format,
         }
     else:
         try:
@@ -919,7 +1036,7 @@ def main_driver(args: argparse.Namespace):
         pqr_lines=results["lines"],
         header_lines=results["header"],
         missing_lines=results["missed_residues"],
-        is_cif=is_cif,
+        output_format=results["output_format"],
     )
     if args.pdb_output:
         print_pdb(

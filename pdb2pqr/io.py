@@ -50,6 +50,90 @@ class DuplicateFilter(logging.Filter):
         return True
 
 
+#: Column order for the mmCIF ``_atom_site`` loop written by
+#: :func:`print_biomolecule_atoms_cif`.  The ``auth_*``/``label_*`` pairs and
+#: the geometry/identity columns match what a CIF-capable PROPKA reads (see
+#: ``propka.input._make_mmcif_atom``); the trailing ``pdb2pqr_*`` columns carry
+#: the PQR charge and radius for downstream consumers.
+CIF_ATOM_SITE_COLUMNS = [
+    "group_PDB",
+    "id",
+    "type_symbol",
+    "auth_atom_id",
+    "label_atom_id",
+    "auth_comp_id",
+    "label_comp_id",
+    "auth_asym_id",
+    "label_asym_id",
+    "auth_seq_id",
+    "label_seq_id",
+    "pdbx_PDB_ins_code",
+    "label_alt_id",
+    "pdbx_PDB_model_num",
+    "Cartn_x",
+    "Cartn_y",
+    "Cartn_z",
+    "occupancy",
+    "B_iso_or_equiv",
+    "pdb2pqr_charge",
+    "pdb2pqr_radius",
+]
+
+
+def exceeds_pdb_limits(atomlist):
+    """Determine whether atoms exceed the fixed-column PDB representable range.
+
+    The PDB format cannot faithfully represent atom serials > 99999,
+    multi-character chain ids, or residue sequence numbers outside
+    ``[-999, 9999]``.  This is the single predicate that drives both the
+    output-format choice (PDB vs. mmCIF) and the PROPKA-bridge choice.
+
+    :param [Atom] atomlist:  the atoms to check
+    :return:  (whether any atom exceeds PDB limits, list of human-readable
+        reasons)
+    :rtype:  (bool, [str])
+    """
+    reasons = []
+    serials = [a.serial for a in atomlist if a.serial is not None]
+    max_serial = max(serials, default=0)
+    # Output reserializes 1..N, so a large count also overflows the serial
+    # column even if the parsed serials happened to be small.
+    effective_max = max(max_serial, len(atomlist))
+    if effective_max > 99999:
+        reasons.append(f"atom count/serial {effective_max} exceeds 99999")
+    multichain = sorted(
+        {a.chain_id for a in atomlist if a.chain_id and len(a.chain_id) > 1}
+    )
+    if multichain:
+        reasons.append(
+            f"multi-character chain id(s): {', '.join(multichain)}"
+        )
+    seqs = [a.res_seq for a in atomlist if a.res_seq is not None]
+    if seqs and max(seqs) > 9999:
+        reasons.append(f"residue sequence number {max(seqs)} exceeds 9999")
+    if seqs and min(seqs) < -999:
+        reasons.append(f"residue sequence number {min(seqs)} below -999")
+    return (len(reasons) > 0, reasons)
+
+
+def _cif_token(value):
+    """Format a single value as an mmCIF data token.
+
+    Empty values become the mmCIF null token ``.``; values containing
+    whitespace (or a leading reserved character) are single-quoted.
+
+    :param value:  the value to format
+    :return:  mmCIF-safe token
+    :rtype:  str
+    """
+    text = str(value)
+    if text == "":
+        return "."
+    if any(char.isspace() for char in text) or text[0] in "_$[]#'\"":
+        return f"'{text}'"
+    return text
+
+
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """Get PDB-format text lines for specified atoms.
 
@@ -73,6 +157,30 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
         else:
             text.append(f"{atom.get_pqr_string(chainflag=chainflag)}\n")
     text.append("TER\nEND")
+    return text
+
+
+def print_biomolecule_atoms_cif(atomlist, block_name="pdb2pqr"):
+    """Get mmCIF ``_atom_site`` loop text lines for specified atoms.
+
+    Emits a genuine mmCIF atom_site loop with no fixed-column truncation, so it
+    faithfully represents CIF-scale assemblies (multi-character chains,
+    > 99999 atoms).  The same output serves as the PQR-CIF output file and as
+    the stream fed to a CIF-capable PROPKA.
+
+    :param [Atom] atomlist:  the list of atoms to include
+    :param str block_name:  mmCIF data block name
+    :return:  list of strings (newline-terminated lines)
+    :rtype:  [str]
+    """
+    text = [f"data_{block_name}\n", "#\n", "loop_\n"]
+    text.extend(f"_atom_site.{col}\n" for col in CIF_ATOM_SITE_COLUMNS)
+    for iatom, atom in enumerate(atomlist, start=1):
+        atom.serial = iatom
+        row = atom.get_cif_atom_dict()
+        values = [_cif_token(row[col]) for col in CIF_ATOM_SITE_COLUMNS]
+        text.append(" ".join(values) + "\n")
+    text.append("#\n")
     return text
 
 

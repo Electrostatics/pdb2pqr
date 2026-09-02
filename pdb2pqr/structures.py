@@ -341,6 +341,53 @@ class Atom:
         outstr += f"{self.seg_id:4.4s}{self.element:>2.2s}{self.charge:2.2s}"
         return outstr
 
+    def get_cif_atom_dict(self):
+        """Return this atom's ``_atom_site`` fields for mmCIF output.
+
+        Unlike :func:`get_pqr_string`, the returned values are not clamped to
+        fixed PDB column widths, so serials > 99999, multi-character chain ids,
+        and large residue sequence numbers are represented faithfully.
+
+        The ``auth_*`` and ``label_*`` variants are emitted with the *same*
+        internal value.  PROPKA's mmCIF reader prefers ``auth_*`` (falling back
+        to ``label_*``); emitting both identically guarantees the values it
+        reads back match this atom's identity so titration-state assignment
+        keys line up (see :func:`Biomolecule.apply_pka_values`).
+
+        :return:  mapping of ``_atom_site`` column name to string value
+        :rtype:  dict
+        """
+        element = self.element if self.element else (self.name or "X")[0]
+        ins_code = self.ins_code if self.ins_code else "?"
+        alt_loc = self.alt_loc if self.alt_loc else "."
+        occupancy = self.occupancy if self.occupancy is not None else 1.0
+        temp_factor = self.temp_factor if self.temp_factor is not None else 0.0
+        charge = self.ffcharge if self.ffcharge is not None else 0.0
+        radius = self.radius if self.radius is not None else 0.0
+        return {
+            "group_PDB": self.type,
+            "id": f"{self.serial:d}",
+            "type_symbol": element,
+            "auth_atom_id": self.name,
+            "label_atom_id": self.name,
+            "auth_comp_id": self.res_name,
+            "label_comp_id": self.res_name,
+            "auth_asym_id": self.chain_id if self.chain_id else "A",
+            "label_asym_id": self.chain_id if self.chain_id else "A",
+            "auth_seq_id": f"{self.res_seq:d}",
+            "label_seq_id": f"{self.res_seq:d}",
+            "pdbx_PDB_ins_code": ins_code,
+            "label_alt_id": alt_loc,
+            "pdbx_PDB_model_num": "1",
+            "Cartn_x": f"{self.x:.3f}",
+            "Cartn_y": f"{self.y:.3f}",
+            "Cartn_z": f"{self.z:.3f}",
+            "occupancy": f"{occupancy:.2f}",
+            "B_iso_or_equiv": f"{temp_factor:.2f}",
+            "pdb2pqr_charge": f"{charge:.4f}",
+            "pdb2pqr_radius": f"{radius:.4f}",
+        }
+
     @property
     def coords(self):
         """Return the x,y,z coordinates of the atom.

@@ -45,14 +45,23 @@ def atom_site(block: pdbx.containers.ContainerBase):
     if len(num_model_arr) == 1:
         # TODO - this part of the conditional should be a separate function
         for i in range(atoms.row_count):
-            line = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
-            if line is None:
+            result = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
+            if result is None:
                 continue
+            line, serial, chain, res_seq = result
             try:
                 if atoms.get_value("group_PDB", i) == "ATOM":
-                    pdb_arr.append(pdb.ATOM(line))
+                    record = pdb.ATOM(line)
                 elif atoms.get_value("group_PDB", i) == "HETATM":
-                    pdb_arr.append(pdb.HETATM(line))
+                    record = pdb.HETATM(line)
+                else:
+                    continue
+                # Restore the true, untruncated values that do not fit the
+                # fixed PDB columns.
+                record.serial = serial
+                record.chain_id = chain
+                record.res_seq = res_seq
+                pdb_arr.append(record)
             except KeyError:
                 _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
         return pdb_arr, err_arr
@@ -71,16 +80,25 @@ def atom_site(block: pdbx.containers.ContainerBase):
 
             for i in range(atoms.row_count):
                 if atoms.get_value("pdbx_PDB_model_num", i) == j:
-                    line = convert_cif_atom_site_to_pdb_line(
+                    result = convert_cif_atom_site_to_pdb_line(
                         atoms=atoms, row_index=i
                     )
-                    if line is None:
+                    if result is None:
                         continue
+                    line, serial, chain, res_seq = result
                     try:
                         if atoms.get_value("group_PDB", i) == "ATOM":
-                            pdb_arr.append(pdb.ATOM(line))
+                            record = pdb.ATOM(line)
                         elif atoms.get_value("group_PDB", i) == "HETATM":
-                            pdb_arr.append(pdb.HETATM(line))
+                            record = pdb.HETATM(line)
+                        else:
+                            continue
+                        # Restore the true, untruncated values that do not fit
+                        # the fixed PDB columns.
+                        record.serial = serial
+                        record.chain_id = chain
+                        record.res_seq = res_seq
+                        pdb_arr.append(record)
                     except (KeyError, ValueError):
                         _LOGGER.error(
                             f"atom_site: Error reading line: #{line}#\n"
@@ -97,18 +115,26 @@ def atom_site(block: pdbx.containers.ContainerBase):
 def convert_cif_atom_site_to_pdb_line(
     atoms: pdbx.containers.DataCategory,
     row_index: int,
-) -> str | None:
+) -> tuple[str, int, str, int] | None:
     """Converts cif data for one row into a pdb line.
 
     Extracts all the relevant fields from atoms, does basic formatting,
     and converts them into a pdb line.
 
+    The atom serial, chain id, and residue sequence number do not always fit
+    in the fixed PDB columns (serial > 99999, multi-character chain ids,
+    res_seq outside [-999, 9999]).  For those, the line carries a clamped
+    placeholder so it stays a valid 80-char record, and the true untruncated
+    values are returned alongside it so the caller can restore them on the
+    parsed :class:`pdb.ATOM`/:class:`pdb.HETATM` record.
+
     :param atoms: DataCategory containing all atoms.
     :type atoms: pdbx.containers.DataCategory
     :param row_index: Index corresponding to the cif line we want to convert to a pdb line
     :type row_index: int
-    :return: Pdb line (exactly 80 chars long), will be None if it failed to process it properly
-    :rtype: str | None
+    :return: tuple of (pdb line exactly 80 chars long, true serial, true chain
+        id, true res_seq), or None if the row failed to process properly
+    :rtype: tuple[str, int, str, int] | None
     """
     # Extract and cast values
     group = atoms.get_value("group_PDB", row_index)
@@ -158,17 +184,27 @@ def convert_cif_atom_site_to_pdb_line(
     else:
         name = f"{name:<4}"
 
+    # The PDB line is a fixed-column format that cannot represent serials
+    # > 99999, multi-character chain ids, or residue sequence numbers outside
+    # [-999, 9999].  We only need the line to parse cleanly for the remaining
+    # fields (name, coordinates, element, ...); the true, untruncated values
+    # for these three fields are returned alongside the line so the caller can
+    # overwrite them on the parsed record.  See atom_site().
+    line_serial = serial if 0 <= serial <= 99999 else 99999
+    line_chain = chain[0] if chain else " "
+    line_res_seq = res_seq if -999 <= res_seq <= 9999 else 9999
+
     # THE PDB LINE MAPPING
     line = (
         f"{group:<6}"  #    1-6 Record name
-        f"{serial:>5}"  #   7-11 Atom serial number
+        f"{line_serial:>5}"  #   7-11 Atom serial number
         f" "  #             12 Space
         f"{name}"  #        13-16 Atom name
         f"{alt_id:1}"  #    17 Alternate location indicator
         f"{res_name:>3}"  # 18-20 Residue name
         f" "  #             21 Space
-        f"{chain:1}"  #     22 Chain Id
-        f"{res_seq:>4}"  #  23-26 Residue sequence number
+        f"{line_chain:1}"  #     22 Chain Id
+        f"{line_res_seq:>4}"  #  23-26 Residue sequence number
         f" "  #             27 Code for insertion of residues
         f"   "  #           28-30 Spaces
         f"{x:8.3f}"  #      31-38 X-coordinates
@@ -188,7 +224,7 @@ def convert_cif_atom_site_to_pdb_line(
             f"atom_site: pdb line extracted from cif record is not exactly 80 char long, dropping line:\n{line}"
         )
         return None
-    return line
+    return line, serial, chain, res_seq
 
 
 def conect(block):

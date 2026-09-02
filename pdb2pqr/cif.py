@@ -227,69 +227,6 @@ def convert_cif_atom_site_to_pdb_line(
     return line, serial, chain, res_seq
 
 
-def conect(block):
-    """Handle CONECT block.
-
-    Data items in the STRUCT_CONN category record details about the connections
-    between portions of the structure.
-    These can be hydrogen bonds, salt bridges, disulfide bridges and so on.
-
-    The ``STRUCT_CONN_TYPE`` records define the criteria used to identify these
-    connections.
-    (Source: https://j.mp/3gPkJT5)
-
-    :param block:  PDBx data block
-    :type block:  [str]
-    :return:  (array of pdb.conect objects, array of things that did not parse)
-    :rtype:  ([pdb.CONECT], [str])
-    """
-    pdb_arr = []
-    err_arr = []
-    struct_conn = block.get_object("struct_conn")
-    atoms = block.get_object("atom_site")
-    if struct_conn is None or atoms is None:
-        return pdb_arr, err_arr
-    for index in range(struct_conn.row_count):
-        atom_pair = []
-        for partner in ["ptnr1_", "ptnr2_"]:
-            # Retrieve all the information necessary to uniquely identify atom4
-            atom_dict = {
-                "auth_seq_id": struct_conn.get_value(
-                    partner + "auth_seq_id", index
-                ),
-                "auth_comp_id": struct_conn.get_value(
-                    partner + "auth_comp_id", index
-                ),
-                "auth_asym_id": struct_conn.get_value(
-                    partner + "auth_asym_id", index
-                ),
-                "label_atom_id": struct_conn.get_value(
-                    partner + "label_atom_id", index
-                ),
-            }
-            for i in range(atoms.row_count):
-                found = all(
-                    atoms.get_value(key, i) == atom_dict[key]
-                    for key in atom_dict
-                )
-                if found:
-                    atom_pair.append(atoms.get_value("id", i))
-        if len(atom_pair) == 2:
-            pline = (
-                "CONECT"
-                + " " * (5 - len(str(atom_pair[0])))
-                + str(atom_pair[0])
-                + " " * (5 - len(str(atom_pair[1])))
-                + str(atom_pair[1])
-            )
-            try:
-                pdb_arr.append(pdb.CONECT(pline))
-            except KeyError:
-                _LOGGER.error(f"conect:   Error parsing line: \n{pline}")
-                err_arr.append("conect")
-    return pdb_arr, err_arr
-
-
 def header(block):
     """Handle HEADER block.
 
@@ -567,337 +504,6 @@ def author(block):
     return aut_arr, aut_err
 
 
-def cryst1(block):
-    """Handle CRYST1 block.
-
-    :param block:  PDBx data block
-    :type block:  [str]
-    :return:  (array of pdb.conect objects, array of things that did not parse)
-    :rtype:  ([pdb.CONECT], [str])
-    """
-    cry_arr = []
-    cry_err = []
-    cry_obj = block.get_object("cell")
-    sym_obj = block.get_object("symmetry")
-    if cry_obj is None:
-        return cry_arr, cry_err
-    line = "CRYST1"
-    line += " " * (
-        9 - len(str(cry_obj.get_value("length_a", 0)))
-    ) + cry_obj.get_value("length_a", 0)
-    line += " " * (
-        9 - len(str(cry_obj.get_value("length_b", 0)))
-    ) + cry_obj.get_value("length_b", 0)
-    line += " " * (
-        9 - len(str(cry_obj.get_value("length_c", 0)))
-    ) + cry_obj.get_value("length_c", 0)
-    line += " " * (
-        7 - len(str(cry_obj.get_value("angle_alpha", 0)))
-    ) + cry_obj.get_value("angle_alpha", 0)
-    line += " " * (
-        7 - len(str(cry_obj.get_value("angle_beta", 0)))
-    ) + cry_obj.get_value("angle_beta", 0)
-    line += " " * (
-        7 - len(str(cry_obj.get_value("angle_gamma", 0)))
-    ) + cry_obj.get_value("angle_gamma", 0)
-    if sym_obj is not None:
-        line += " " * (
-            11 - len(str(sym_obj.get_value("space_group_name_H-M", 0)))
-        ) + sym_obj.get_value("space_group_name_H-M", 0)
-    else:
-        line += " " * 11
-    line += " " * (
-        4 - len(str(cry_obj.get_value("Z_PDB", 0)))
-    ) + cry_obj.get_value("Z_PDB", 0)
-    try:
-        cry_arr.append(pdb.CRYST1(line))
-    except KeyError:
-        _LOGGER.error(f"cif.cryst1:    Error parsing line:\n{line}")
-        cry_err.append(cryst1)
-    return cry_arr, cry_err
-
-
-def scalen(block):
-    """Handle SCALEn block.
-
-    :param block:  PDBx data block
-    :type block:  [str]
-    :return:  (array of pdb.conect objects, array of things that did not parse)
-    :rtype:  ([pdb.CONECT], [str])
-    """
-    sc_arr = []
-    sc_err = []
-    sc_obj = block.get_object("atom_sites")
-    if sc_obj is None:
-        return sc_arr, sc_err
-    scale1 = ""
-    scale1 += "SCALE1    "
-    scale1 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[1][1]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[1][1]", 0))
-    scale1 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[1][2]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[1][2]", 0))
-    scale1 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[1][3]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[1][3]", 0))
-    scale1 += "     "
-    scale1 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_vector[1]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_vector[1]", 0))
-    scale2 = ""
-    scale2 += "SCALE2    "
-    scale2 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[2][1]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[2][1]", 0))
-    scale2 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[2][2]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[2][2]", 0))
-    scale2 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[2][3]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[2][3]", 0))
-    scale2 += "     "
-    scale2 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_vector[2]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_vector[2]", 0))
-    scale3 = ""
-    scale3 += "SCALE3    "
-    scale3 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[3][1]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[3][1]", 0))
-    scale3 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[3][2]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[3][2]", 0))
-    scale3 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_matrix[3][3]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_matrix[3][3]", 0))
-    scale3 += "     "
-    scale3 += " " * (
-        10 - len(str(sc_obj.get_value("fract_transf_vector[3]", 0)))
-    ) + str(sc_obj.get_value("fract_transf_vector[3]", 0))
-    try:
-        sc_arr.append(pdb.SCALE1(scale1))
-    except KeyError:
-        _LOGGER.error(f"cif.scalen:    Error parsing line:\n{scale1}")
-        sc_err.append("SCALE1")
-    try:
-        sc_arr.append(pdb.SCALE2(scale2))
-    except KeyError:
-        _LOGGER.error(f"cif.scalen:    Error parsing line:\n{scale2}")
-        sc_err.append("SCALE2")
-    try:
-        sc_arr.append(pdb.SCALE3(scale3))
-    except KeyError:
-        _LOGGER.error(f"cif.scalen:    Error parsing line:\n{scale3}")
-        sc_err.append("SCALE3")
-    return sc_arr, sc_err
-
-
-def origxn(block):
-    """Handle ORIGXn block.
-
-    :param block:  PDBx data block
-    :type block:  [str]
-    :return:  (array of pdb.conect objects, array of things that did not parse)
-    :rtype:  ([pdb.CONECT], [str])
-    """
-    or_arr = []
-    or_err = []
-    or_obj = block.get_object("database_PDB_matrix")
-    if or_obj is None:
-        return or_arr, or_err
-    orig1 = "ORIGX1    "
-    orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][1]", 0)))) + str(
-        or_obj.get_value("origx[1][1]", 0)
-    )
-    orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][2]", 0)))) + str(
-        or_obj.get_value("origx[1][2]", 0)
-    )
-    orig1 += " " * (10 - len(str(or_obj.get_value("origx[1][3]", 0)))) + str(
-        or_obj.get_value("origx[1][3]", 0)
-    )
-    orig1 += "     "
-    orig1 += " " * (
-        10 - len(str(or_obj.get_value("origx_vector[1]", 0)))
-    ) + str(or_obj.get_value("origx_vector[1]", 0))
-    orig2 = "ORIGX2    "
-    orig2 += " " * (10 - len(str(or_obj.get_value("origx[2][1]", 0)))) + str(
-        or_obj.get_value("origx[2][1]", 0)
-    )
-    orig2 += " " * (10 - len(str(or_obj.get_value("origx[2][2]", 0)))) + str(
-        or_obj.get_value("origx[2][2]", 0)
-    )
-    orig2 += " " * (10 - len(str(or_obj.get_value("origx[2][3]", 0)))) + str(
-        or_obj.get_value("origx[2][3]", 0)
-    )
-    orig2 += "     "
-    orig2 += " " * (
-        10 - len(str(or_obj.get_value("origx_vector[2]", 0)))
-    ) + str(or_obj.get_value("origx_vector[2]", 0))
-    orig3 = "ORIGX3    "
-    orig3 += " " * (10 - len(str(or_obj.get_value("origx[3][1]", 0)))) + str(
-        or_obj.get_value("origx[3][1]", 0)
-    )
-    orig3 += " " * (10 - len(str(or_obj.get_value("origx[3][2]", 0)))) + str(
-        or_obj.get_value("origx[3][2]", 0)
-    )
-    orig3 += " " * (10 - len(str(or_obj.get_value("origx[3][3]", 0)))) + str(
-        or_obj.get_value("origx[3][3]", 0)
-    )
-    orig3 += "     "
-    orig3 += " " * (
-        10 - len(str(or_obj.get_value("origx_vector[3]", 0)))
-    ) + str(or_obj.get_value("origx_vector[3]", 0))
-    try:
-        or_arr.append(pdb.ORIGX1(orig1))
-    except KeyError:
-        _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig1}")
-        or_err.append("ORIGX1")
-    try:
-        or_arr.append(pdb.ORIGX2(orig2))
-    except KeyError:
-        _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig2}")
-        or_err.append("ORIGX2")
-    try:
-        or_arr.append(pdb.ORIGX3(orig3))
-    except KeyError:
-        _LOGGER.error(f"cif.origxn:  Error parsing line:\n{orig3}")
-        or_err.append("ORIGX3")
-    return or_arr, or_err
-
-
-def cispep(block):
-    """Handle CISPEP block.
-
-    :param block:  PDBx data block
-    :type block:  [str]
-    :return:  (array of pdb.conect objects, array of things that did not parse)
-    :rtype:  ([pdb.CONECT], [str])
-    """
-    cis_arr = []
-    cis_err = []
-    cis_obj = block.get_object("struct_mon_prot_cis")
-    if cis_obj is None:
-        return cis_arr, cis_err
-    for i in range(cis_obj.row_count):
-        line = "CISPEP "
-        line += " " * (3 - len(str(cis_obj.get_value("pdbx_id", i)))) + str(
-            cis_obj.get_value("pdbx_id", i)
-        )
-        line += " "
-        line += " " * (
-            3 - len(cis_obj.get_value("auth_comp_id", i))
-        ) + cis_obj.get_value("auth_comp_id", i)
-        line += " "
-        line += cis_obj.get_value("auth_asym_id", i)
-        line += " "
-        line += " " * (
-            4 - len(str(cis_obj.get_value("auth_seq_id", i)))
-        ) + str(cis_obj.get_value("auth_seq_id", i))
-        value = cis_obj.get_value("pdbx_PDB_ins_code", i)
-        if value not in ["?", None]:
-            line += value
-        else:
-            line += " "
-        line += "   "
-        line += " " * (
-            3 - len(cis_obj.get_value("pdbx_auth_comp_id_2", i))
-        ) + cis_obj.get_value("pdbx_auth_comp_id_2", i)
-        line += " "
-        line += cis_obj.get_value("pdbx_auth_asym_id_2", i)
-        line += " "
-        line += " " * (
-            4 - len(str(cis_obj.get_value("pdbx_auth_seq_id_2", i)))
-        ) + str(cis_obj.get_value("pdbx_auth_seq_id_2", i))
-        value = cis_obj.get_value("pdbx_PDB_ins_code_2", i)
-        if value not in ["?", None]:
-            line += value
-        else:
-            line += " "
-        line += " " * 7
-        line += " " * (
-            3 - len(str(cis_obj.get_value("pdbx_PDB_model_num", i)))
-        ) + str(cis_obj.get_value("pdbx_PDB_model_num", i))
-        line += " " * 7
-        line += " " * (
-            6 - len(str(cis_obj.get_value("pdbx_omega_angle", i)))
-        ) + str(cis_obj.get_value("pdbx_omega_angle", i))
-        try:
-            cis_arr.append(pdb.CISPEP(line))
-        except KeyError:
-            _LOGGER.error(f"cif.cispep:    Erro parsing line:\n{line}")
-            cis_err.append("cispep")
-    return cis_arr, cis_err
-
-
-def ssbond(block):
-    """Handle SSBOND block.
-
-    :param block:  PDBx data block
-    :type block:  [str]
-    :return:  (array of pdb.conect objects, array of things that did not parse)
-    :rtype:  ([pdb.CONECT], [str])
-    """
-    ssb_arr = []
-    ssb_err = []
-    ssb_obj = block.get_object("struct_conn")
-    if ssb_obj is None:
-        return ssb_arr, ssb_err
-    for i in range(ssb_obj.row_count):
-        line = "SSBOND "
-        line += " " * (3 - len(str(ssb_obj.get_value("id", i)[-1]))) + str(
-            ssb_obj.get_value("id", i)[-1]
-        )
-        line += " "
-        line += " " * (
-            3 - len(ssb_obj.get_value("ptnr1_auth_comp_id", i))
-        ) + ssb_obj.get_value("ptnr1_auth_comp_id", i)
-        line += " "
-        line += ssb_obj.get_value("ptnr1_auth_asym_id", i)
-        line += " "
-        line += " " * (
-            4 - len(str(ssb_obj.get_value("ptnr1_auth_seq_id", i)))
-        ) + str(ssb_obj.get_value("ptnr1_auth_seq_id", i))
-        value = ssb_obj.get_value("pdbx_ptnr1_PDB_ins_code", i)
-        if value not in ["?", None]:
-            line += value
-        else:
-            line += " "
-        line += " " * 3
-        line += " " * (
-            3 - len(ssb_obj.get_value("ptnr2_auth_comp_id", i))
-        ) + ssb_obj.get_value("ptnr2_auth_comp_id", i)
-        line += " "
-        line += ssb_obj.get_value("ptnr2_auth_asym_id", i)
-        line += " "
-        line += " " * (
-            4 - len(str(ssb_obj.get_value("ptnr2_auth_seq_id", i)))
-        ) + str(ssb_obj.get_value("ptnr2_auth_seq_id", i))
-        value = ssb_obj.get_value("pdbx_ptnr2_PDB_ins_code", i)
-        if value not in ["?", None]:
-            line += value
-        else:
-            line += " "
-        line += " " * 23
-        line += " " * (
-            6 - len(ssb_obj.get_value("ptnr1_symmetry", i).replace("_", ""))
-        ) + ssb_obj.get_value("ptnr1_symmetry", i).replace("_", "")
-        line += " "
-        line += " " * (
-            6 - len(ssb_obj.get_value("ptnr2_symmetry", i).replace("_", ""))
-        ) + ssb_obj.get_value("ptnr2_symmetry", i).replace("_", "")
-        line += " "
-        line += " " * (
-            5 - len(str(ssb_obj.get_value("pdbx_dist_value", i)))
-        ) + str(ssb_obj.get_value("pdbx_dist_value", i))
-        try:
-            ssb_arr.append(pdb.SSBOND(line))
-        except KeyError:
-            _LOGGER.error(f"cif.ssbond:    Error parsing line:\n{line}")
-            ssb_err.append("ssbond")
-    return ssb_arr, ssb_err
-
-
 def count_models(block):
     """Count models in structure file block.
 
@@ -931,55 +537,35 @@ def read_cif(cif_file):
     if cif_file is None:
         return pdblist, errlist
     pdbdata = pdbx.load(cif_file)
-    if len(pdbdata) > 0:
-        for block in pdbdata:
-            head_pdb, head_err = header(block)
-            title_pdb, title_err = title(block)
-            cmpnd_pdb, cmpnd_err = compnd(block)
-            src_pdb, src_err = source(block)
-            key_pdb, key_err = keywds(block)
-            ex_pdb, ex_err = expdata(block)
-            aut_pdb, aut_err = author(block)
-            ssb_pdb, ssb_err = ssbond(block)
-            cis_pdb, cis_err = cispep(block)
-            cry_pdb, cry_err = cryst1(block)
-            or_pdb, or_err = origxn(block)
-            sc_pdb, sc_err = scalen(block)
-            ato_pdb, ato_err = atom_site(block)
-            con_pdb, con_err = conect(block)
-            pdblist = (
-                head_pdb
-                + title_pdb
-                + cmpnd_pdb
-                + src_pdb
-                + key_pdb
-                + ex_pdb
-                + aut_pdb
-                + ssb_pdb
-                + cis_pdb
-                + cry_pdb
-                + or_pdb
-                + sc_pdb
-                + ato_pdb
-                + con_pdb
-            )
-            errlist = (
-                head_err
-                + title_err
-                + cmpnd_err
-                + src_err
-                + key_err
-                + ex_err
-                + aut_err
-                + ssb_err
-                + cis_err
-                + cry_err
-                + or_err
-                + sc_err
-                + ato_err
-                + con_err
-            )
-    else:
+    if len(pdbdata) == 0:
         _LOGGER.error("Unknown error while reading CIF file.")
+        return pdblist, errlist
+
+    # Only ``atom_site`` is required to build the biomolecule.  The descriptive
+    # header categories are best-effort: they feed the optional regenerated
+    # output header and nothing in the calculation, so a missing or unusual
+    # category must not abort the read.
+    #
+    # Connectivity/geometry records (SSBOND/CISPEP/CONECT/CRYST1/SCALE/ORIGX)
+    # are intentionally NOT parsed.  pdb2pqr never consumes them -- disulfides
+    # are detected by distance in :func:`Biomolecule.update_ss_bridges`, bonds
+    # come from the reference topology, and none of these records are written
+    # back out.  Their fixed-column reconstruction also crashes on large
+    # assemblies (multi-character chains, residue numbers > 9999).
+    header_parsers = (header, title, compnd, source, keywds, expdata, author)
+    for block in pdbdata:
+        for parser in header_parsers:
+            try:
+                recs, errs = parser(block)
+            except Exception as exc:  # noqa: BLE001 - best-effort metadata
+                _LOGGER.warning(
+                    f"Skipping CIF header category '{parser.__name__}': {exc}"
+                )
+                continue
+            pdblist += recs
+            errlist += errs
+        atom_pdb, atom_err = atom_site(block)
+        pdblist += atom_pdb
+        errlist += atom_err
 
     return pdblist, errlist

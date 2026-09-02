@@ -155,15 +155,18 @@ def build_main_parser():
     )
     grp2.add_argument(
         "--output-format",
-        choices=["auto", "pdb", "cif"],
+        choices=["auto", "pdb", "free", "cif"],
         default="auto",
         help=(
             "Format for the output PQR file. 'auto' writes PDB-format PQR when "
-            "the structure fits the fixed PDB columns and falls back to mmCIF "
-            "otherwise (large assemblies: > 99999 atoms, multi-character chain "
-            "ids, or residue numbers outside [-999, 9999]). 'pdb' forces PDB "
-            "and errors if the structure exceeds those limits. 'cif' forces "
-            "mmCIF regardless of size."
+            "the structure fits the fixed PDB columns and falls back to "
+            "free-format (whitespace-delimited, APBS-readable) PQR otherwise "
+            "(large assemblies: > 99999 atoms, multi-character chain ids, or "
+            "residue numbers outside [-999, 9999]). 'pdb' forces fixed-column "
+            "PDB and errors if the structure exceeds those limits. 'free' "
+            "forces free-format PQR (untruncated, APBS-ready) regardless of "
+            "size. 'cif' forces mmCIF (faithful multi-character chains, for "
+            "PROPKA/interchange; NOT readable by APBS)."
         ),
     )
     grp2.add_argument(
@@ -331,37 +334,42 @@ def resolve_output_format(args, atomlist):
     The choice is driven by whether the structure fits the fixed PDB columns
     (see :func:`io.exceeds_pdb_limits`) and the user's ``--output-format``:
 
-    - ``auto`` (default): PDB when it fits, otherwise fall back to mmCIF.
-    - ``pdb``: force PDB; raise if the structure exceeds PDB limits, since
-      writing it would silently corrupt serials/chains/residue numbers.
-    - ``cif``: force mmCIF regardless of size.
+    - ``auto`` (default): fixed PDB when it fits, otherwise fall back to
+      free-format (whitespace-delimited, APBS-readable) PQR.
+    - ``pdb``: force fixed-column PDB; raise if the structure exceeds PDB
+      limits, since writing it would silently corrupt serials/chains/residue
+      numbers.
+    - ``free``: force free-format PQR regardless of size.
+    - ``cif``: force mmCIF regardless of size (NOT readable by APBS).
 
     :param argparse.Namespace args:  command-line arguments
     :param [Atom] atomlist:  the atoms that will be written
-    :return:  ``"pdb"`` or ``"cif"``
+    :return:  ``"pdb"``, ``"free"``, or ``"cif"``
     :rtype:  str
     :raises RuntimeError:  if ``--output-format pdb`` cannot represent the
         structure without truncation
     """
     if args.output_format == "cif":
         return "cif"
+    if args.output_format == "free":
+        return "free"
     exceeds, reasons = io.exceeds_pdb_limits(atomlist)
     if args.output_format == "pdb":
         if exceeds:
             raise RuntimeError(
                 "Cannot write PDB-format output: "
                 + "; ".join(reasons)
-                + ". Use --output-format cif (or auto) instead."
+                + ". Use --output-format free (APBS-ready) or cif instead."
             )
         return "pdb"
     # auto
     if exceeds:
         _LOGGER.warning(
             "Structure exceeds PDB fixed-column limits (%s); "
-            "writing mmCIF-format output instead of PDB.",
+            "writing free-format (APBS-readable) PQR instead of PDB.",
             "; ".join(reasons),
         )
-        return "cif"
+        return "free"
     return "pdb"
 
 
@@ -377,6 +385,11 @@ def build_output_lines(args, atomlist):
     if output_format == "cif":
         _LOGGER.info("Regenerating mmCIF atom_site records.")
         lines = io.print_biomolecule_atoms_cif(atomlist)
+    elif output_format == "free":
+        _LOGGER.info("Regenerating free-format (APBS-ready) PQR lines.")
+        lines = io.print_biomolecule_atoms_free(
+            atomlist, keep_chain=args.keep_chain
+        )
     else:
         _LOGGER.info("Regenerating PDB lines.")
         lines = io.print_biomolecule_atoms(atomlist, args.keep_chain)
@@ -406,8 +419,9 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, output_format):
             _LOGGER.warning(
                 f"Ignoring {len(missing_lines)} missing lines in output."
             )
-        if output_format == "cif":
-            # pqr_lines is already a complete mmCIF _atom_site loop.
+        if output_format in ("cif", "free"):
+            # pqr_lines is already complete (mmCIF _atom_site loop, or
+            # whitespace-delimited free-format PQR); write it verbatim.
             outfile.writelines(pqr_lines)
             return
         for line in pqr_lines:
@@ -1049,7 +1063,16 @@ def main_driver(args: argparse.Namespace):
             is_cif=is_cif,
         )
     if args.apbs_input:
-        io.dump_apbs(args.output_pqr, args.apbs_input)
+        if results["output_format"] == "cif":
+            # APBS reads only PQR/PDB, and psize cannot parse an mmCIF
+            # _atom_site loop; skip rather than emit a bogus grid.
+            _LOGGER.warning(
+                "Skipping APBS input generation: mmCIF output cannot be read "
+                "by APBS. Re-run with --output-format free (or auto) to "
+                "generate an APBS-ready PQR."
+            )
+        else:
+            io.dump_apbs(args.output_pqr, args.apbs_input)
     return results["missed_residues"], results["pka_df"], biomolecule
 
 

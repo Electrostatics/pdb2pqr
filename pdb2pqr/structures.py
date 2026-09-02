@@ -341,6 +341,39 @@ class Atom:
         outstr += f"{self.seg_id:4.4s}{self.element:>2.2s}{self.charge:2.2s}"
         return outstr
 
+    def get_free_pqr_string(self, include_chain=False):
+        """Return a whitespace-delimited (free-format) PQR record.
+
+        Unlike :func:`get_pqr_string` (fixed PDB columns), the fields are
+        space-separated with no width limits, so serials > 99999, residue
+        numbers > 9999, and large coordinates are written without truncation.
+        This is the representation APBS reads ("all fields are
+        whitespace-delimited... allows coordinates larger/smaller than
+        +/- 999 Angstrom").
+
+        The chain id is optional and only emitted when ``include_chain`` is
+        set: APBS's optional ``Chain_ID`` field cannot parse multi-character
+        ids, and chain is ignored by the PB calculation anyway.
+
+        :param bool include_chain:  whether to emit the chain id field
+        :return:  free-format PQR record (no trailing newline)
+        :rtype:  str
+        """
+        ffcharge = self.ffcharge if self.ffcharge is not None else 0.0
+        radius = self.radius if self.radius is not None else 0.0
+        fields = [self.type, f"{self.serial:d}", self.name, self.res_name]
+        if include_chain and self.chain_id:
+            fields.append(self.chain_id)
+        fields += [
+            f"{self.res_seq:d}",
+            f"{self.x:.3f}",
+            f"{self.y:.3f}",
+            f"{self.z:.3f}",
+            f"{ffcharge:.4f}",
+            f"{radius:.4f}",
+        ]
+        return " ".join(fields)
+
     def get_cif_atom_dict(self):
         """Return this atom's ``_atom_site`` fields for mmCIF output.
 

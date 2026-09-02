@@ -160,6 +160,47 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     return text
 
 
+def print_biomolecule_atoms_free(atomlist, keep_chain=False):
+    """Get free-format (whitespace-delimited) PQR lines for the atoms.
+
+    This is the APBS-consumable representation with no fixed-column
+    truncation, so it faithfully carries serials > 99999, residue numbers
+    > 9999, and large coordinates.  Chain ids are written only when
+    ``keep_chain`` is set *and* every id is a single character: APBS's optional
+    ``Chain_ID`` field cannot parse multi-character ids, and chain is ignored
+    by the PB calculation.  Otherwise the chain column is omitted uniformly.
+
+    :param [Atom] atomlist:  the list of atoms to include
+    :param bool keep_chain:  whether to try to emit chain ids
+    :return:  list of strings (newline-terminated lines)
+    :rtype:  [str]
+    """
+    include_chain = keep_chain and all(
+        (not atom.chain_id) or len(atom.chain_id) == 1 for atom in atomlist
+    )
+    if keep_chain and not include_chain:
+        _LOGGER.warning(
+            "Omitting chain ids from free-format PQR output: multi-character "
+            "chain id(s) present, which APBS cannot parse (chain is ignored "
+            "by the PB calculation)."
+        )
+    text = []
+    currentchain_id = None
+    for iatom, atom in enumerate(atomlist):
+        # Print the "TER" records between chains
+        if currentchain_id is None:
+            currentchain_id = atom.chain_id
+        elif atom.chain_id != currentchain_id:
+            currentchain_id = atom.chain_id
+            text.append("TER\n")
+        atom.serial = iatom + 1
+        text.append(
+            f"{atom.get_free_pqr_string(include_chain=include_chain)}\n"
+        )
+    text.append("TER\nEND")
+    return text
+
+
 def print_biomolecule_atoms_cif(atomlist, block_name="pdb2pqr"):
     """Get mmCIF ``_atom_site`` loop text lines for specified atoms.
 

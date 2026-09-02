@@ -131,13 +131,25 @@ class Psize:
                 self.gotatom += 1
             elif line.find("HETATM") == 0:
                 self.gothet = self.gothet + 1
-            subline = line[30:].replace("-", " -")
-            words = subline.split()
+            else:
+                # Skip non-atom records (REMARK/TER/END, headers, ...)
+                continue
+            # X, Y, Z, charge, and radius are always the last five fields of a
+            # PQR atom record, in BOTH fixed-column and free-format
+            # (whitespace-delimited) output.  Taking the trailing five tokens
+            # (after splitting merged negative numbers) parses both without
+            # relying on fixed column positions -- and free-format is what
+            # large assemblies (> 99999 atoms, big residue numbers) require.
+            words = line.replace("-", " -").split()
             if len(words) < 5:
                 continue
-            self.charge = self.charge + float(words[3])
-            rad = float(words[4])
-            center = [float(word) for word in words[0:3]]
+            try:
+                center = [float(word) for word in words[-5:-2]]
+                charge = float(words[-2])
+                rad = float(words[-1])
+            except ValueError:
+                continue
+            self.charge = self.charge + charge
             for i in range(3):
                 if self.minlen[i] is None or center[i] - rad < self.minlen[i]:
                     self.minlen[i] = center[i] - rad

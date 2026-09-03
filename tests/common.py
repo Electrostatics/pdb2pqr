@@ -229,6 +229,31 @@ def run_pdb2pqr_for_tests(
         )
 
 
+def propka_reference_csv(input_pdb):
+    """Return the pKa reference CSV matching the installed propka variant.
+
+    A CIF-capable propka (one exposing ``read_mmcif``) computes slightly
+    different pKa values than stock propka for some structures, because the
+    native-mmCIF fork lineage also carries desolvation-loop changes.  When such
+    a propka is installed and a ``*_pka_mmcif.csv`` reference exists, use it;
+    otherwise fall back to the shared stock reference.  This keeps the tests
+    green both in CI (stock ``propka >= 3.5`` from PyPI) and locally against the
+    mmCIF-capable fork.
+
+    :param str input_pdb:  PDB/CIF identifier
+    :return:  path to the appropriate reference CSV
+    :rtype:  pathlib.Path
+    """
+    import propka.input
+
+    stock = DATA_DIR / f"{input_pdb}_pka.csv"
+    if hasattr(propka.input, "read_mmcif"):
+        variant = DATA_DIR / f"{input_pdb}_pka_mmcif.csv"
+        if variant.exists():
+            return variant
+    return stock
+
+
 def run_propka_for_tests(input_pdb, compare_file, pH):
     from propka.lib import build_parser
 

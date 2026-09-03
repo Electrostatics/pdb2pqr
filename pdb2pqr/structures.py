@@ -369,8 +369,11 @@ class Atom:
             f"{self.x:.3f}",
             f"{self.y:.3f}",
             f"{self.z:.3f}",
-            f"{ffcharge:.4f}",
-            f"{radius:.4f}",
+            # 6 dp keeps the summed net charge integer to well under APBS's
+            # needs even for assemblies of hundreds of thousands of atoms
+            # (4 dp accumulates a visible rounding residual at that scale).
+            f"{ffcharge:.6f}",
+            f"{radius:.6f}",
         ]
         return " ".join(fields)
 
@@ -417,8 +420,8 @@ class Atom:
             "Cartn_z": f"{self.z:.3f}",
             "occupancy": f"{occupancy:.2f}",
             "B_iso_or_equiv": f"{temp_factor:.2f}",
-            "pdb2pqr_charge": f"{charge:.4f}",
-            "pdb2pqr_radius": f"{radius:.4f}",
+            "pdb2pqr_charge": f"{charge:.6f}",
+            "pdb2pqr_radius": f"{radius:.6f}",
         }
 
     @property

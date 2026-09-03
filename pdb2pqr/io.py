@@ -119,8 +119,14 @@ def exceeds_pdb_limits(atomlist):
 def _cif_token(value):
     """Format a single value as an mmCIF data token.
 
-    Empty values become the mmCIF null token ``.``; values containing
-    whitespace (or a leading reserved character) are single-quoted.
+    Empty values become the mmCIF null token ``.``.  A value that cannot be
+    written bare -- it contains whitespace, or begins with a character that is
+    reserved at the start of a data value (``;`` opens a text field at the
+    start of a line; ``_ $ [ ] # ' "`` are reserved leading delimiters) -- is
+    quoted with a delimiter it does not itself contain, so an embedded quote
+    (e.g. the ``'`` in nucleic-acid atom names like ``O5'``) never prematurely
+    closes the token.  Note a bare value *containing* a quote is valid CIF and
+    is left unquoted.
 
     :param value:  the value to format
     :return:  mmCIF-safe token
@@ -129,9 +135,16 @@ def _cif_token(value):
     text = str(value)
     if text == "":
         return "."
-    if any(char.isspace() for char in text) or text[0] in "_$[]#'\"":
+    if not (any(char.isspace() for char in text) or text[0] in "_$[];#'\""):
+        return text
+    # Needs quoting: pick a delimiter the value cannot prematurely close.
+    if "'" not in text:
         return f"'{text}'"
-    return text
+    if '"' not in text:
+        return f'"{text}"'
+    # Contains both quote styles (unreachable for _atom_site data); single
+    # quotes are the best single-line option.
+    return f"'{text}'"
 
 
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):

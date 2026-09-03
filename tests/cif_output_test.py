@@ -129,6 +129,42 @@ def test_cif_atom_dict_auth_label_equal_and_untruncated():
 
 
 # ---------------------------------------------------------------------------
+# _cif_token quoting
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("name", ["O5'", "C2'", "H5''", "N", "CA", "AA"])
+def test_cif_token_leaves_bare_values_bare(name):
+    # A value with no whitespace and no reserved leading character is valid
+    # bare -- including nucleic-acid atom names whose apostrophe is embedded
+    # (NOT leading).  It must not be quoted.
+    assert io._cif_token(name) == name
+
+
+def test_cif_token_quotes_with_nonconflicting_delimiter():
+    # Whitespace forces quoting; single quotes are fine when the value has none.
+    assert io._cif_token("a b") == "'a b'"
+    # A value *starting* with a quote must pick the other delimiter rather than
+    # emit a broken ''x' token.
+    assert io._cif_token("'x") == '"' + "'x" + '"'
+    # Leading ';' opens a text field at line start, so it must be quoted.
+    assert io._cif_token(";x") == "';x'"
+
+
+def test_cif_token_empty_is_null():
+    assert io._cif_token("") == "."
+
+
+def test_cif_prime_atom_name_roundtrips_via_gemmi():
+    # End-to-end: a bare O5' in the loop must read back unchanged.
+    gemmi = pytest.importorskip("gemmi")
+    atoms = [make_atom(name="O5'", res_name="G")]
+    text = "".join(io.print_biomolecule_atoms_cif(atoms))
+    block = gemmi.cif.read_string(text).sole_block()
+    assert list(block.find_values("_atom_site.label_atom_id")) == ["O5'"]
+
+
+# ---------------------------------------------------------------------------
 # io writers (loop emitters)
 # ---------------------------------------------------------------------------
 

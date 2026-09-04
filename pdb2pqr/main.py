@@ -229,9 +229,11 @@ def build_main_parser():
         help=(
             "Method used to calculate titration states. If a titration state "
             "method is selected, titratable residue charge states will be set "
-            "by the pH value supplied by --with_ph. pKa-ANI uses a learned quantum mechanical"
-            "representation of a residue's atomic environment from the ANI-2x neural network potential, and their pKa prediction model has been shown to surpass"
-            "the accuracy of PROPKA (https://doi.org/10.1039/D1SC05610G). Incidentally, the paper shows that even a null model (simply guessing the mean of the test"
+            "by the pH value supplied by --with_ph. pKa-ANI uses a learned quantum mechanical "
+            "representation of a residue's atomic environment from the ANI-2x neural network "
+            "potential, and their pKa prediction model has been shown to surpass "
+            "the accuracy of PROPKA (https://doi.org/10.1039/D1SC05610G). Incidentally, "
+            "the paper shows that even a null model (simply guessing the mean of the test "
             "set repeatedly for each test case) also outperforms PROPKA (Figure 4)."
         ),
     )
@@ -739,8 +741,8 @@ def run_pkaani(args, biomolecule):
             "CIF-capable PROPKA instead."
         )
     pkaani_citation = """
-    Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
-    Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
+    Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\',
+    Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g.
     """
     try:
         import warnings

@@ -37,7 +37,7 @@ def atom_site(block: pdbx.containers.ContainerBase):
     err_arr = []
     atoms = block.get_object("atom_site")
     if not isinstance(atoms, pdbx.containers.DataCategory):
-        _LOGGER.error(f"atom_site: No lines were found\n")
+        _LOGGER.error("atom_site: No lines were found\n")
         raise ValueError(
             "Did not find atom_site in cif file, terminal failure."
         )
@@ -557,7 +557,7 @@ def read_cif(cif_file):
         for parser in header_parsers:
             try:
                 recs, errs = parser(block)
-            except Exception as exc:  # noqa: BLE001 - best-effort metadata
+            except Exception as exc:
                 _LOGGER.warning(
                     f"Skipping CIF header category '{parser.__name__}': {exc}"
                 )

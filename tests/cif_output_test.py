@@ -119,7 +119,9 @@ def test_free_pqr_string_chain_toggle():
 
 
 def test_cif_atom_dict_auth_label_equal_and_untruncated():
-    row = make_atom(serial=123456, chain="AA", res_seq=10001).get_cif_atom_dict()
+    row = make_atom(
+        serial=123456, chain="AA", res_seq=10001
+    ).get_cif_atom_dict()
     # auth_* and label_* must agree so the PROPKA round-trip matches
     assert row["auth_asym_id"] == row["label_asym_id"] == "AA"
     assert row["auth_seq_id"] == row["label_seq_id"] == "10001"
@@ -170,7 +172,10 @@ def test_cif_prime_atom_name_roundtrips_via_gemmi():
 
 
 def test_print_free_omits_multichar_chain(caplog):
-    atoms = [make_atom(chain="AA", res_seq=1), make_atom(chain="AA", res_seq=2)]
+    atoms = [
+        make_atom(chain="AA", res_seq=1),
+        make_atom(chain="AA", res_seq=2),
+    ]
     import logging
 
     with caplog.at_level(logging.WARNING):
@@ -185,7 +190,8 @@ def test_print_free_keeps_single_char_chain():
     atoms = [make_atom(chain="A")]
     lines = io.print_biomolecule_atoms_free(atoms, keep_chain=True)
     atom_lines = [ln for ln in lines if ln.startswith("ATOM")]
-    assert atom_lines and atom_lines[0].split()[4] == "A"
+    assert atom_lines
+    assert atom_lines[0].split()[4] == "A"
 
 
 def test_print_cif_reparses_with_gemmi():
@@ -300,9 +306,7 @@ def test_reader_limit_free(tmp_path):
 def test_reader_ignores_struct_conn_trap(tmp_path):
     # Regression: a multi-character chain in struct_conn previously crashed
     # pdb.SSBOND parsing. The connectivity records are now not parsed at all.
-    pdblist, _ = _read_cif_text(
-        tmp_path, _BIG_ATOM_SITE + _STRUCT_CONN_TRAP
-    )
+    pdblist, _ = _read_cif_text(tmp_path, _BIG_ATOM_SITE + _STRUCT_CONN_TRAP)
     atoms = [a for a in pdblist if isinstance(a, (pdb.ATOM, pdb.HETATM))]
     assert len(atoms) == 2
     assert not any(isinstance(rec, pdb.SSBOND) for rec in pdblist)
@@ -321,8 +325,12 @@ def test_reader_missing_header_categories_nonfatal(tmp_path):
 
 def test_psize_parses_free_format_untruncated():
     atoms = [
-        make_atom(serial=100001, res_seq=10001, x=10.0, y=0.0, z=0.0, radius=2.0),
-        make_atom(serial=100002, res_seq=10001, x=-10.0, y=0.0, z=0.0, radius=2.0),
+        make_atom(
+            serial=100001, res_seq=10001, x=10.0, y=0.0, z=0.0, radius=2.0
+        ),
+        make_atom(
+            serial=100002, res_seq=10001, x=-10.0, y=0.0, z=0.0, radius=2.0
+        ),
     ]
     text = "".join(io.print_biomolecule_atoms_free(atoms, keep_chain=False))
     size = psize.Psize()

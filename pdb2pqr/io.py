@@ -105,9 +105,7 @@ def exceeds_pdb_limits(atomlist):
         {a.chain_id for a in atomlist if a.chain_id and len(a.chain_id) > 1}
     )
     if multichain:
-        reasons.append(
-            f"multi-character chain id(s): {', '.join(multichain)}"
-        )
+        reasons.append(f"multi-character chain id(s): {', '.join(multichain)}")
     seqs = [a.res_seq for a in atomlist if a.res_seq is not None]
     if seqs and max(seqs) > 9999:
         reasons.append(f"residue sequence number {max(seqs)} exceeds 9999")
@@ -602,9 +600,7 @@ def get_pdb_file(name):
     url_path = f"https://files.rcsb.org/download/{path.stem}.pdb"
     _LOGGER.debug(f"Attempting to fetch PDB from {url_path}")
     resp = requests.get(url_path)
-    if resp.status_code != requests.codes["ok"]:
-        errstr = f"Got code {resp.status_code} while retrieving {url_path}"
-        raise IOError(errstr)
+    resp.raise_for_status()
     return io.StringIO(resp.text)
 
 

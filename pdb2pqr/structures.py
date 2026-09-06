@@ -292,7 +292,9 @@ class Atom:
         outstr += str.ljust(tstr, 1)[:1]
         tstr = f"{self.res_seq:d}"
         outstr += str.rjust(tstr, 4)[:4]
-        outstr += f"{self.ins_code}   " if self.ins_code != "" else "    "
+        # Truthiness (not ``!= ""``) so a None ins_code is treated as blank
+        # rather than rendered as the literal string "None".
+        outstr += f"{self.ins_code}   " if self.ins_code else "    "
         tstr = f"{self.x:8.3f}"
         outstr += str.ljust(tstr, 8)[:8]
         tstr = f"{self.y:8.3f}"
@@ -340,6 +342,89 @@ class Atom:
         outstr += f"{self.occupancy:>6.2f}{self.temp_factor:>6.2f}      "
         outstr += f"{self.seg_id:4.4s}{self.element:>2.2s}{self.charge:2.2s}"
         return outstr
+
+    def get_free_pqr_string(self, include_chain=False):
+        """Return a whitespace-delimited (free-format) PQR record.
+
+        Unlike :func:`get_pqr_string` (fixed PDB columns), the fields are
+        space-separated with no width limits, so serials > 99999, residue
+        numbers > 9999, and large coordinates are written without truncation.
+        This is the representation APBS reads ("all fields are
+        whitespace-delimited... allows coordinates larger/smaller than
+        +/- 999 Angstrom").
+
+        The chain id is optional and only emitted when ``include_chain`` is
+        set: APBS's optional ``Chain_ID`` field cannot parse multi-character
+        ids, and chain is ignored by the PB calculation anyway.
+
+        :param bool include_chain:  whether to emit the chain id field
+        :return:  free-format PQR record (no trailing newline)
+        :rtype:  str
+        """
+        ffcharge = self.ffcharge if self.ffcharge is not None else 0.0
+        radius = self.radius if self.radius is not None else 0.0
+        fields = [self.type, f"{self.serial:d}", self.name, self.res_name]
+        if include_chain and self.chain_id:
+            fields.append(self.chain_id)
+        fields += [
+            f"{self.res_seq:d}",
+            f"{self.x:.3f}",
+            f"{self.y:.3f}",
+            f"{self.z:.3f}",
+            # 6 dp keeps the summed net charge integer to well under APBS's
+            # needs even for assemblies of hundreds of thousands of atoms
+            # (4 dp accumulates a visible rounding residual at that scale).
+            f"{ffcharge:.6f}",
+            f"{radius:.6f}",
+        ]
+        return " ".join(fields)
+
+    def get_cif_atom_dict(self):
+        """Return this atom's ``_atom_site`` fields for mmCIF output.
+
+        Unlike :func:`get_pqr_string`, the returned values are not clamped to
+        fixed PDB column widths, so serials > 99999, multi-character chain ids,
+        and large residue sequence numbers are represented faithfully.
+
+        The ``auth_*`` and ``label_*`` variants are emitted with the *same*
+        internal value.  PROPKA's mmCIF reader prefers ``auth_*`` (falling back
+        to ``label_*``); emitting both identically guarantees the values it
+        reads back match this atom's identity so titration-state assignment
+        keys line up (see :func:`Biomolecule.apply_pka_values`).
+
+        :return:  mapping of ``_atom_site`` column name to string value
+        :rtype:  dict
+        """
+        element = self.element if self.element else (self.name or "X")[0]
+        ins_code = self.ins_code if self.ins_code else "?"
+        alt_loc = self.alt_loc if self.alt_loc else "."
+        occupancy = self.occupancy if self.occupancy is not None else 1.0
+        temp_factor = self.temp_factor if self.temp_factor is not None else 0.0
+        charge = self.ffcharge if self.ffcharge is not None else 0.0
+        radius = self.radius if self.radius is not None else 0.0
+        return {
+            "group_PDB": self.type,
+            "id": f"{self.serial:d}",
+            "type_symbol": element,
+            "auth_atom_id": self.name,
+            "label_atom_id": self.name,
+            "auth_comp_id": self.res_name,
+            "label_comp_id": self.res_name,
+            "auth_asym_id": self.chain_id if self.chain_id else "A",
+            "label_asym_id": self.chain_id if self.chain_id else "A",
+            "auth_seq_id": f"{self.res_seq:d}",
+            "label_seq_id": f"{self.res_seq:d}",
+            "pdbx_PDB_ins_code": ins_code,
+            "label_alt_id": alt_loc,
+            "pdbx_PDB_model_num": "1",
+            "Cartn_x": f"{self.x:.3f}",
+            "Cartn_y": f"{self.y:.3f}",
+            "Cartn_z": f"{self.z:.3f}",
+            "occupancy": f"{occupancy:.2f}",
+            "B_iso_or_equiv": f"{temp_factor:.2f}",
+            "pdb2pqr_charge": f"{charge:.6f}",
+            "pdb2pqr_radius": f"{radius:.6f}",
+        }
 
     @property
     def coords(self):

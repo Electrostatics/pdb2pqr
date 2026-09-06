@@ -50,6 +50,101 @@ class DuplicateFilter(logging.Filter):
         return True
 
 
+#: Column order for the mmCIF ``_atom_site`` loop written by
+#: :func:`print_biomolecule_atoms_cif`.  The ``auth_*``/``label_*`` pairs and
+#: the geometry/identity columns match what a CIF-capable PROPKA reads (see
+#: ``propka.input._make_mmcif_atom``); the trailing ``pdb2pqr_*`` columns carry
+#: the PQR charge and radius for downstream consumers.
+CIF_ATOM_SITE_COLUMNS = [
+    "group_PDB",
+    "id",
+    "type_symbol",
+    "auth_atom_id",
+    "label_atom_id",
+    "auth_comp_id",
+    "label_comp_id",
+    "auth_asym_id",
+    "label_asym_id",
+    "auth_seq_id",
+    "label_seq_id",
+    "pdbx_PDB_ins_code",
+    "label_alt_id",
+    "pdbx_PDB_model_num",
+    "Cartn_x",
+    "Cartn_y",
+    "Cartn_z",
+    "occupancy",
+    "B_iso_or_equiv",
+    "pdb2pqr_charge",
+    "pdb2pqr_radius",
+]
+
+
+def exceeds_pdb_limits(atomlist):
+    """Determine whether atoms exceed the fixed-column PDB representable range.
+
+    The PDB format cannot faithfully represent atom serials > 99999,
+    multi-character chain ids, or residue sequence numbers outside
+    ``[-999, 9999]``.  This is the single predicate that drives both the
+    output-format choice (PDB vs. mmCIF) and the PROPKA-bridge choice.
+
+    :param [Atom] atomlist:  the atoms to check
+    :return:  (whether any atom exceeds PDB limits, list of human-readable
+        reasons)
+    :rtype:  (bool, [str])
+    """
+    reasons = []
+    serials = [a.serial for a in atomlist if a.serial is not None]
+    max_serial = max(serials, default=0)
+    # Output reserializes 1..N, so a large count also overflows the serial
+    # column even if the parsed serials happened to be small.
+    effective_max = max(max_serial, len(atomlist))
+    if effective_max > 99999:
+        reasons.append(f"atom count/serial {effective_max} exceeds 99999")
+    multichain = sorted(
+        {a.chain_id for a in atomlist if a.chain_id and len(a.chain_id) > 1}
+    )
+    if multichain:
+        reasons.append(f"multi-character chain id(s): {', '.join(multichain)}")
+    seqs = [a.res_seq for a in atomlist if a.res_seq is not None]
+    if seqs and max(seqs) > 9999:
+        reasons.append(f"residue sequence number {max(seqs)} exceeds 9999")
+    if seqs and min(seqs) < -999:
+        reasons.append(f"residue sequence number {min(seqs)} below -999")
+    return (len(reasons) > 0, reasons)
+
+
+def _cif_token(value):
+    """Format a single value as an mmCIF data token.
+
+    Empty values become the mmCIF null token ``.``.  A value that cannot be
+    written bare -- it contains whitespace, or begins with a character that is
+    reserved at the start of a data value (``;`` opens a text field at the
+    start of a line; ``_ $ [ ] # ' "`` are reserved leading delimiters) -- is
+    quoted with a delimiter it does not itself contain, so an embedded quote
+    (e.g. the ``'`` in nucleic-acid atom names like ``O5'``) never prematurely
+    closes the token.  Note a bare value *containing* a quote is valid CIF and
+    is left unquoted.
+
+    :param value:  the value to format
+    :return:  mmCIF-safe token
+    :rtype:  str
+    """
+    text = str(value)
+    if text == "":
+        return "."
+    if not (any(char.isspace() for char in text) or text[0] in "_$[];#'\""):
+        return text
+    # Needs quoting: pick a delimiter the value cannot prematurely close.
+    if "'" not in text:
+        return f"'{text}'"
+    if '"' not in text:
+        return f'"{text}"'
+    # Contains both quote styles (unreachable for _atom_site data); single
+    # quotes are the best single-line option.
+    return f"'{text}'"
+
+
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
     """Get PDB-format text lines for specified atoms.
 
@@ -73,6 +168,71 @@ def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):
         else:
             text.append(f"{atom.get_pqr_string(chainflag=chainflag)}\n")
     text.append("TER\nEND")
+    return text
+
+
+def print_biomolecule_atoms_free(atomlist, keep_chain=False):
+    """Get free-format (whitespace-delimited) PQR lines for the atoms.
+
+    This is the APBS-consumable representation with no fixed-column
+    truncation, so it faithfully carries serials > 99999, residue numbers
+    > 9999, and large coordinates.  Chain ids are written only when
+    ``keep_chain`` is set *and* every id is a single character: APBS's optional
+    ``Chain_ID`` field cannot parse multi-character ids, and chain is ignored
+    by the PB calculation.  Otherwise the chain column is omitted uniformly.
+
+    :param [Atom] atomlist:  the list of atoms to include
+    :param bool keep_chain:  whether to try to emit chain ids
+    :return:  list of strings (newline-terminated lines)
+    :rtype:  [str]
+    """
+    include_chain = keep_chain and all(
+        (not atom.chain_id) or len(atom.chain_id) == 1 for atom in atomlist
+    )
+    if keep_chain and not include_chain:
+        _LOGGER.warning(
+            "Omitting chain ids from free-format PQR output: multi-character "
+            "chain id(s) present, which APBS cannot parse (chain is ignored "
+            "by the PB calculation)."
+        )
+    text = []
+    currentchain_id = None
+    for iatom, atom in enumerate(atomlist):
+        # Print the "TER" records between chains
+        if currentchain_id is None:
+            currentchain_id = atom.chain_id
+        elif atom.chain_id != currentchain_id:
+            currentchain_id = atom.chain_id
+            text.append("TER\n")
+        atom.serial = iatom + 1
+        text.append(
+            f"{atom.get_free_pqr_string(include_chain=include_chain)}\n"
+        )
+    text.append("TER\nEND")
+    return text
+
+
+def print_biomolecule_atoms_cif(atomlist, block_name="pdb2pqr"):
+    """Get mmCIF ``_atom_site`` loop text lines for specified atoms.
+
+    Emits a genuine mmCIF atom_site loop with no fixed-column truncation, so it
+    faithfully represents CIF-scale assemblies (multi-character chains,
+    > 99999 atoms).  The same output serves as the PQR-CIF output file and as
+    the stream fed to a CIF-capable PROPKA.
+
+    :param [Atom] atomlist:  the list of atoms to include
+    :param str block_name:  mmCIF data block name
+    :return:  list of strings (newline-terminated lines)
+    :rtype:  [str]
+    """
+    text = [f"data_{block_name}\n", "#\n", "loop_\n"]
+    text.extend(f"_atom_site.{col}\n" for col in CIF_ATOM_SITE_COLUMNS)
+    for iatom, atom in enumerate(atomlist, start=1):
+        atom.serial = iatom
+        row = atom.get_cif_atom_dict()
+        values = [_cif_token(row[col]) for col in CIF_ATOM_SITE_COLUMNS]
+        text.append(" ".join(values) + "\n")
+    text.append("#\n")
     return text
 
 
@@ -440,9 +600,7 @@ def get_pdb_file(name):
     url_path = f"https://files.rcsb.org/download/{path.stem}.pdb"
     _LOGGER.debug(f"Attempting to fetch PDB from {url_path}")
     resp = requests.get(url_path)
-    if resp.status_code != requests.codes["ok"]:
-        errstr = f"Got code {resp.status_code} while retrieving {url_path}"
-        raise IOError(errstr)
+    resp.raise_for_status()
     return io.StringIO(resp.text)
 
 

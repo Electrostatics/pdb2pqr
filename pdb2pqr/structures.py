@@ -292,7 +292,9 @@ class Atom:
         outstr += str.ljust(tstr, 1)[:1]
         tstr = f"{self.res_seq:d}"
         outstr += str.rjust(tstr, 4)[:4]
-        outstr += f"{self.ins_code}   " if self.ins_code != "" else "    "
+        # Truthiness (not ``!= ""``) so a None ins_code is treated as blank
+        # rather than rendered as the literal string "None".
+        outstr += f"{self.ins_code}   " if self.ins_code else "    "
         tstr = f"{self.x:8.3f}"
         outstr += str.ljust(tstr, 8)[:8]
         tstr = f"{self.y:8.3f}"

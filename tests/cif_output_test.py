@@ -57,6 +57,10 @@ def make_atom(
     atom.occupancy = 1.0
     atom.temp_factor = 0.0
     atom.element = name[0]
+    # Real atoms carry empty-string (not None) insertion code / alt loc; the
+    # fixed-column writer renders a None ins_code as the literal "None".
+    atom.ins_code = ""
+    atom.alt_loc = ""
     return atom
 
 

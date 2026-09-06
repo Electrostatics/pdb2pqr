@@ -16,7 +16,6 @@ import logging
 from math import log
 
 from .config import TITLE_STR
-from .structures import Atom
 
 #: The number of Angstroms added to the molecular dimensions to determine the
 #: find grid dimensions
@@ -119,43 +118,68 @@ class Psize:
     def parse_lines(self, lines):
         """Parse the PDB/PQR lines.
 
-        Per-line parsing is delegated to :func:`Atom.from_pqr_line`, the same
-        routine used by :func:`io.read_pqr` (this resolves the long-standing
-        "parse the PQR manually" TODO).  It is whitespace-tokenized, so it
-        handles fixed-column PDB, fixed-column PQR, and free-format
-        (whitespace-delimited) PQR alike -- including the optional chain id and
-        insertion code -- without relying on fixed column positions.
-        Free-format is what large assemblies (> 99999 atoms, big residue
-        numbers) require.
+        Coordinates are read from the fixed PDB/PQR columns (31-54) rather than
+        by splitting on whitespace.  This is deliberate: adjacent 8-character
+        coordinate fields can collide with **no separator** -- both when a
+        value is <= -100 (``15.180-188.097``) and, with no ``-`` to split on,
+        when it is >= 1000 (``15.1801188.097``).  Whitespace tokenization
+        (e.g. :func:`Atom.from_pqr_line`) is therefore ambiguous or impossible
+        for such lines, so only the columns are reliable.
 
-        .. note::
-           A PDB file carries no atomic radii, so for PDB input the
-           temperature-factor column is used as the radius.  This matches the
-           historical behaviour of this routine (which read whatever sat in
-           the radius column position).
+        Free-format (whitespace-delimited) PQR -- used for large assemblies
+        (> 99999 atoms, big residue numbers) -- has no fixed columns, so when
+        the fixed-column read fails the line is parsed by whitespace instead;
+        there the trailing five numbers are x, y, z, charge, radius.
+
+        For PQR the two fields after the coordinates are charge and radius; for
+        PDB (which carries no radii) they are occupancy and temperature factor,
+        and the temperature factor is used as the radius (historical
+        behaviour).
 
         :param lines:  PDB/PQR lines to parse
         :type lines:  [str]
         """
         for line in lines:
-            try:
-                atom = Atom.from_pqr_line(line)
-            except (ValueError, IndexError):
-                # Non-atom or malformed record (REMARK/TER/END/CRYST1/...)
+            # The record type is the first whitespace-delimited token, which
+            # works for both fixed-column ("ATOM      1") and free-format
+            # ("ATOM 100001 ...") records.
+            words = line.split()
+            if not words:
                 continue
-            if atom is None:
-                continue
-            if atom.type == "ATOM":
+            if words[0] == "ATOM":
                 self.gotatom += 1
-            elif atom.type == "HETATM":
+            elif words[0] == "HETATM":
                 self.gothet += 1
-            self.charge = self.charge + atom.charge
-            rad = atom.radius
-            for i, coord in enumerate((atom.x, atom.y, atom.z)):
-                if self.minlen[i] is None or coord - rad < self.minlen[i]:
-                    self.minlen[i] = coord - rad
-                if self.maxlen[i] is None or coord + rad > self.maxlen[i]:
-                    self.maxlen[i] = coord + rad
+            else:
+                # Skip non-atom records (REMARK/TER/END/CRYST1/headers, ...)
+                continue
+            try:
+                # Fixed-column PDB/PQR: coordinates occupy columns 31-54.
+                center = [
+                    float(line[30:38]),
+                    float(line[38:46]),
+                    float(line[46:54]),
+                ]
+                tail = line[54:].split()
+                charge = float(tail[0])
+                rad = float(tail[1])
+            except (ValueError, IndexError):
+                # Free-format PQR: trailing five numbers are x y z charge rad.
+                try:
+                    nums = [float(word) for word in words[-5:]]
+                except ValueError:
+                    continue
+                if len(nums) < 5:
+                    continue
+                center = nums[0:3]
+                charge = nums[3]
+                rad = nums[4]
+            self.charge = self.charge + charge
+            for i in range(3):
+                if self.minlen[i] is None or center[i] - rad < self.minlen[i]:
+                    self.minlen[i] = center[i] - rad
+                if self.maxlen[i] is None or center[i] + rad > self.maxlen[i]:
+                    self.maxlen[i] = center[i] + rad
 
     def set_length(self, maxlen, minlen):
         """Compute molecular dimensions, adjusting for zero-length values.

@@ -359,6 +359,31 @@ def test_psize_fixed_and_free_agree():
     assert size_fixed.minlen == pytest.approx(size_free.minlen)
 
 
+@pytest.mark.parametrize(
+    "x, y, z",
+    [
+        (-22.340, 15.180, -188.097),  # value <= -100 fuses: "15.180-188.097"
+        (15.180, 1188.097, 2.104),  # value >= 1000 fuses: "15.1801188.097"
+    ],
+)
+def test_psize_parses_colliding_fixed_columns(x, y, z):
+    # Adjacent 8-char fixed-column coordinate fields collide with no separator;
+    # psize must read them by column, not by whitespace (regression for 1NH9).
+    atom = make_atom(x=x, y=y, z=z, radius=1.5)
+    text = "".join(io.print_biomolecule_atoms([atom], chainflag=False))
+    # Confirm the collision is real: a clean ATOM PQR line has 10 whitespace
+    # tokens (ATOM serial name res resseq x y z charge radius); a fused
+    # coordinate pair drops that to 9.
+    atom_line = next(ln for ln in text.splitlines() if ln.startswith("ATOM"))
+    assert len(atom_line.split()) == 9
+    size = psize.Psize()
+    size.parse_string(text)
+    assert size.gotatom == 1
+    assert size.maxlen[0] == pytest.approx(x + 1.5, abs=1e-3)
+    assert size.minlen[1] == pytest.approx(y - 1.5, abs=1e-3)
+    assert size.maxlen[2] == pytest.approx(z + 1.5, abs=1e-3)
+
+
 # ---------------------------------------------------------------------------
 # Overflow guards on the titration bridges
 # ---------------------------------------------------------------------------

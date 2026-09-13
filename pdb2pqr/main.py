@@ -23,6 +23,11 @@ import propka.output as pk_out
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
 
+try:
+    import annotationlib
+except ImportError:  # pragma: no cover - only available on Python 3.14+
+    annotationlib = None
+
 from . import aa, debump, forcefield, hydrogens, io
 from . import biomolecule as biomol
 from .config import (
@@ -530,7 +535,15 @@ def run_propka(args, biomolecule):
 
     with StringIO() as fpdb:
         fpdb.writelines(lines)
-        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+        parameters = Parameters()
+        if annotationlib is not None and not hasattr(
+            parameters, "__annotations__"
+        ):
+            # Work around https://github.com/jensengroup/propka/issues/198.
+            parameters.__annotations__ = annotationlib.get_annotations(
+                Parameters, format=annotationlib.Format.VALUE
+            )
+        parameters = pk_in.read_parameter_file(args.parameters, parameters)
         molecule = MolecularContainer(parameters, args)
         # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
         molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)

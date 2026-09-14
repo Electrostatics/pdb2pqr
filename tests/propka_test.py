@@ -28,8 +28,12 @@ def test_propka_apo(input_pdb, tmp_path):
     "input_pdb", ["1K1I", "1AFS", "1FAS", "5DV8", "5D8V"], ids=str
 )
 def test_propka_pka(input_pdb):
-    """PROPKA non-regression tests for pKa values on biomolecules without ligands."""
-    output_csv = Path("tests/data") / f"{input_pdb}_pka.csv"
+    """PROPKA non-regression tests for pKa values on biomolecules without ligands.
+
+    The reference CSV is selected to match the installed propka variant (stock
+    vs. mmCIF-capable fork); see :func:`common.propka_reference_csv`.
+    """
+    output_csv = common.propka_reference_csv(input_pdb)
     common.run_propka_for_tests(
         input_pdb=input_pdb, compare_file=output_csv, pH=7.4
     )

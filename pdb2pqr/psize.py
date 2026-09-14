@@ -116,28 +116,65 @@ class Psize:
             self.parse_lines(file_.readlines())
 
     def parse_lines(self, lines):
-        """Parse the PQR/PDB lines.
+        """Parse the PDB/PQR lines.
 
-        .. todo::
-           This is messed up. Why are we parsing the PQR manually here when
-           we already have other routines to do that?  This function should
-           be replaced by a call to existing routines.
+        Coordinates are read from the fixed PDB/PQR columns (31-54) rather than
+        by splitting on whitespace.  This is deliberate: adjacent 8-character
+        coordinate fields can collide with **no separator** -- both when a
+        value is <= -100 (``15.180-188.097``) and, with no ``-`` to split on,
+        when it is >= 1000 (``15.1801188.097``).  Whitespace tokenization
+        (e.g. :func:`Atom.from_pqr_line`) is therefore ambiguous or impossible
+        for such lines, so only the columns are reliable.
+
+        Free-format (whitespace-delimited) PQR -- used for large assemblies
+        (> 99999 atoms, big residue numbers) -- has no fixed columns, so when
+        the fixed-column read fails the line is parsed by whitespace instead;
+        there the trailing five numbers are x, y, z, charge, radius.
+
+        For PQR the two fields after the coordinates are charge and radius; for
+        PDB (which carries no radii) they are occupancy and temperature factor,
+        and the temperature factor is used as the radius (historical
+        behaviour).
 
         :param lines:  PDB/PQR lines to parse
         :type lines:  [str]
         """
         for line in lines:
-            if line.find("ATOM") == 0:
-                self.gotatom += 1
-            elif line.find("HETATM") == 0:
-                self.gothet = self.gothet + 1
-            subline = line[30:].replace("-", " -")
-            words = subline.split()
-            if len(words) < 5:
+            # The record type is the first whitespace-delimited token, which
+            # works for both fixed-column ("ATOM      1") and free-format
+            # ("ATOM 100001 ...") records.
+            words = line.split()
+            if not words:
                 continue
-            self.charge = self.charge + float(words[3])
-            rad = float(words[4])
-            center = [float(word) for word in words[0:3]]
+            if words[0] == "ATOM":
+                self.gotatom += 1
+            elif words[0] == "HETATM":
+                self.gothet += 1
+            else:
+                # Skip non-atom records (REMARK/TER/END/CRYST1/headers, ...)
+                continue
+            try:
+                # Fixed-column PDB/PQR: coordinates occupy columns 31-54.
+                center = [
+                    float(line[30:38]),
+                    float(line[38:46]),
+                    float(line[46:54]),
+                ]
+                tail = line[54:].split()
+                charge = float(tail[0])
+                rad = float(tail[1])
+            except (ValueError, IndexError):
+                # Free-format PQR: trailing five numbers are x y z charge rad.
+                try:
+                    nums = [float(word) for word in words[-5:]]
+                except ValueError:
+                    continue
+                if len(nums) < 5:
+                    continue
+                center = nums[0:3]
+                charge = nums[3]
+                rad = nums[4]
+            self.charge = self.charge + charge
             for i in range(3):
                 if self.minlen[i] is None or center[i] - rad < self.minlen[i]:
                     self.minlen[i] = center[i] - rad

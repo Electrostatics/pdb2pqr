@@ -1,0 +1,8 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Keep this revision in sync with the Ruff pin in requirements-ci.txt.
+    rev: v0.16.6
+    hooks:
+      - id: ruff-check
+        args: [--select, I, --fix]
+      - id: ruff-format

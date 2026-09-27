@@ -42,7 +42,21 @@ uv pip compile pyproject.toml requirements-ci.in \
 
 ## Do not submit messy code
 
-Run your code through the following steps:
+Install the development dependencies and Git pre-commit hook once per clone:
+
+```bash
+python -m pip install -e ".[dev,test]"
+pre-commit install
+```
+
+The hook automatically fixes import ordering and formats Python files before
+each commit. To run it across the repository manually:
+
+```bash
+pre-commit run --all-files
+```
+
+Run your code through the following additional steps:
 
 1. Formatting tools: [astral-sh/ruff](https://github.com/astral-sh/ruff)
 

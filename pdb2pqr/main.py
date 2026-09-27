@@ -360,18 +360,27 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             outfile.write("#\n")
 
 
-def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
+def print_pdb(args, atomlist, header_lines, missing_lines, is_cif):
     """Print PDB-format output to specified file
 
     .. todo::  Move this to another module (io)
 
     :param argparse.Namespace args:  command-line arguments
-    :param [str]] pdb_lines:  output lines (records)
+    :param [Atom] atomlist:  atoms to write as PDB records
     :param [str] header_lines:  header lines
     :param [str] missing_lines:  lines describing missing atoms (should go in
         header)
     :param bool is_cif:  flag indicating CIF format
+    :raises RuntimeError: if atom identities exceed fixed-column PDB limits
     """
+    exceeds, reasons = io.exceeds_pdb_limits(atomlist)
+    if exceeds:
+        raise RuntimeError(
+            "Cannot write PDB-format output: " + "; ".join(reasons)
+        )
+    pdb_lines = io.print_biomolecule_atoms(
+        atomlist, chainflag=args.keep_chain, pdbfile=True
+    )
     with open(args.pdb_output, "w") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
@@ -951,9 +960,7 @@ def main_driver(args: argparse.Namespace):
     if args.pdb_output:
         print_pdb(
             args=args,
-            pdb_lines=io.print_biomolecule_atoms(
-                biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
-            ),
+            atomlist=biomolecule.atoms,
             header_lines=results["header"],
             missing_lines=results["missed_residues"],
             is_cif=is_cif,

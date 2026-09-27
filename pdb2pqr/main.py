@@ -620,6 +620,14 @@ def run_pkaani(args, biomolecule):
                pKa information from pKa-ANI)
     :rtype:  list of OrderedDicts
     """
+    if any(
+        residue.ins_code not in (None, "", " ", ".", "?")
+        for residue in biomolecule.residues
+    ):
+        raise RuntimeError(
+            "pKa-ANI cannot distinguish residue insertion codes; "
+            "use PROPKA for this structure."
+        )
     pkaani_citation = """
     Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
     Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
@@ -750,9 +758,12 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 forcefield_.name,
                 args.ph,
                 {
-                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
-                        "pKa"
-                    ]
+                    biomol.pka_key(
+                        row["res_name"],
+                        row["res_num"],
+                        row["chain_id"],
+                        row.get("ins_code"),
+                    ): row["pKa"]
                     for row in pka_df
                     if row["group_label"].startswith(row["res_name"])
                 },
@@ -767,9 +778,12 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 # no need for if clause, pka_df necessarily contains only the titratable residues
                 # as defined by pKa-ANI (HIS/ASP/GLU/TYR/LYS)
                 {
-                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
-                        "pKa"
-                    ]
+                    biomol.pka_key(
+                        row["res_name"],
+                        row["res_num"],
+                        row["chain_id"],
+                        row.get("ins_code"),
+                    ): row["pKa"]
                     for row in pka_df
                 },
             )

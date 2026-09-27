@@ -23,14 +23,34 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.12.10"
+          activate-environment: "true"
+      - name: Verify dependency lock
+        run: |
+          uv pip compile pyproject.toml requirements-ci.in \
+            --extra test \
+            --extra pkaani \
+            --universal \
+            --python-version 3.10 \
+            --generate-hashes \
+            --torch-backend cpu \
+            --custom-compile-command 'uv pip compile pyproject.toml requirements-ci.in --extra test --extra pkaani --universal --python-version 3.10 --generate-hashes --torch-backend cpu --output-file requirements-ci.txt' \
+            --output-file requirements-ci.txt
+          git diff --exit-code -- requirements-ci.txt
       - name: Lint with ruff
         run: |
+          ruff_requirement=$(awk '/^ruff==/ {print $1; exit}' requirements-ci.txt)
           # stop the build if there are Python syntax errors or undefined names
-          uvx ruff check . --config=ruff_essential.toml --statistics
+          uvx --from "$ruff_requirement" ruff check . --config=ruff_essential.toml --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          uvx ruff check . --exit-zero --statistics
+          uvx --from "$ruff_requirement" ruff check . --exit-zero --statistics
 
   test-without-coverage:
     name: Test without coverage (Python ${{ matrix.python-version }})
@@ -50,9 +70,12 @@ jobs:
       - name: Install uv and activate environment
         uses: astral-sh/setup-uv@v7
         with:
+          version: "0.12.10"
           activate-environment: "true"
       - name: Install dependencies
-        run: uv pip install -e '.[test,pkaani]'
+        run: |
+          uv pip sync requirements-ci.txt
+          uv pip install --no-deps --no-build-isolation -e .
         env:
           UV_TORCH_BACKEND: cpu
       - name: Test full suite
@@ -75,9 +98,12 @@ jobs:
       - name: Install uv and activate environment
         uses: astral-sh/setup-uv@v7
         with:
+          version: "0.12.10"
           activate-environment: "true"
       - name: Install dependencies
-        run: uv pip install -e '.[test,pkaani]'
+        run: |
+          uv pip sync requirements-ci.txt
+          uv pip install --no-deps --no-build-isolation -e .
         env:
           UV_TORCH_BACKEND: cpu
       - name: Test with pytest and coverage

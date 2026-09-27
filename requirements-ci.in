@@ -1,0 +1,3 @@
+# Build requirements needed to install PDB2PQR without build isolation.
+hatchling
+editables

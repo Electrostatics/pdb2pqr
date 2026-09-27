@@ -22,6 +22,24 @@ Create a git branch using the convention of `github_user`/`issue_#` where `githu
 Create a test that replicates the problem/feature and fails and show how your fix results in a working test.
 Work on the code until your test, as well as all previous tests, pass.
 
+### Update CI dependencies
+
+Project and test dependencies are declared in `pyproject.toml`.
+`requirements-ci.in` adds build tools needed for editable installations in CI.
+Regenerate the exact, hashed CI environment rather than editing
+`requirements-ci.txt` directly:
+
+```bash
+uv pip compile pyproject.toml requirements-ci.in \
+  --extra test \
+  --extra pkaani \
+  --universal \
+  --python-version 3.10 \
+  --generate-hashes \
+  --torch-backend cpu \
+  --output-file requirements-ci.txt
+```
+
 ## Do not submit messy code
 
 Run your code through the following steps:

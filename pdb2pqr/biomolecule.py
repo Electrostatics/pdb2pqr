@@ -21,6 +21,12 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addFilter(io.DuplicateFilter())
 
 
+def pka_key(group, res_num, chain_id, ins_code=""):
+    """Return an unambiguous residue key for a calculated pKa value."""
+    ins_code = "" if ins_code in (None, ".", "?") else ins_code.strip()
+    return f"{group} {res_num}{ins_code} {chain_id or ''}".strip()
+
+
 class Biomolecule:
     """Biomolecule class.
 
@@ -803,9 +809,9 @@ class Biomolecule:
             resname = residue.name
             resnum = residue.res_seq
             chain_id = residue.chain_id
+            ins_code = residue.ins_code
             if residue.is_n_term:
-                key = f"N+  {resnum:>3} {chain_id}"
-                key = key.strip()
+                key = pka_key("N+", resnum, chain_id, ins_code)
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
@@ -822,8 +828,7 @@ class Biomolecule:
                         else:
                             self.apply_patch("NEUTRAL-NTERM", residue)
             if residue.is_c_term:
-                key = f"C-  {resnum:>3} {chain_id}"
-                key = key.strip()
+                key = pka_key("C-", resnum, chain_id, ins_code)
                 if key in pkadic:
                     value = pkadic[key]
                     del pkadic[key]
@@ -839,8 +844,7 @@ class Biomolecule:
                             _LOGGER.warning(warn)
                         else:
                             self.apply_patch("NEUTRAL-CTERM", residue)
-            key = f"{resname} {resnum} {chain_id}"
-            key = key.strip()
+            key = pka_key(resname, resnum, chain_id, ins_code)
             if key in pkadic:
                 value = pkadic[key]
                 del pkadic[key]

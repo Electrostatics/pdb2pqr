@@ -12,14 +12,16 @@ jobs:
   ruff-format:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Install ruff
-        run: |
-          pip3 install ruff --break-system-packages
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.12.10"
       - name: Run ruff
         run: |
+          ruff_requirement=$(awk '/^ruff==/ {print $1; exit}' requirements-ci.txt)
           set +e  # Do not exit shell on ruff failure
-          out=$(ruff format --check --diff . 2> app_stderr.txt)
+          out=$(uvx --from "$ruff_requirement" ruff format --check --diff . 2> app_stderr.txt)
 
           exit_code=$?
           err=$(<app_stderr.txt)
@@ -37,14 +39,16 @@ jobs:
   ruff-isort:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Install ruff
-        run: |
-          pip3 install ruff --break-system-packages
+      - uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.12.10"
       - name: Run ruff
         run: |
+          ruff_requirement=$(awk '/^ruff==/ {print $1; exit}' requirements-ci.txt)
           set +e  # Do not exit shell on ruff failure
-          out=$(ruff check --select I --diff . 2> app_stderr.txt)
+          out=$(uvx --from "$ruff_requirement" ruff check --select I --diff . 2> app_stderr.txt)
 
           exit_code=$?
           err=$(<app_stderr.txt)

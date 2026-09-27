@@ -63,7 +63,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["check-manifest"]
+dev = [
+  "check-manifest",
+  "pre-commit",
+]
 test = [
   "ruff",
   "coverage",

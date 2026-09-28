@@ -5,6 +5,9 @@ from pathlib import Path
 import common
 import pytest
 
+from pdb2pqr import aa
+from pdb2pqr.biomolecule import Biomolecule
+
 # fmt: off
 #: Protein-nucleic acid complexes
 PROTEIN_NUCLEIC_SET = {"4UN3"}
@@ -112,6 +115,38 @@ def test_broken_backbone(input_pdb, tmp_path):
         output_pqr=output_pqr,
         tmp_path=tmp_path,
     )
+
+
+@pytest.mark.parametrize(
+    ("forcefield_name", "expected_name"),
+    [
+        pytest.param("CTER", "CTER", id="preserve-cter"),
+        pytest.param("NTER", "NTER", id="preserve-nter"),
+        pytest.param("CGLU", "GLU", id="strip-c-prefix"),
+        pytest.param("NHIS", "HIS", id="strip-n-prefix"),
+    ],
+)
+def test_terminal_forcefield_names_preserve_termini(forcefield_name, expected_name):
+    """Terminal renaming keeps CTER/NTER intact while stripping residue prefixes."""
+
+    class DummyForcefield:
+        def get_names(self, resname, atomname):
+            return forcefield_name, atomname
+
+    atom = type("Atom", (), {"name": "CA", "res_name": None})()
+    residue = object.__new__(aa.Amino)
+    residue.name = "GLU"
+    residue.ffname = "GLU"
+    residue.is_n_term = True
+    residue.is_c_term = False
+    residue.atoms = [atom]
+
+    biomolecule = Biomolecule.__new__(Biomolecule)
+    biomolecule.residues = [residue]
+
+    biomolecule.apply_name_scheme(DummyForcefield())
+
+    assert atom.res_name == expected_name
 
 
 @pytest.mark.parametrize(

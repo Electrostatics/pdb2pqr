@@ -5,8 +5,6 @@ were left untested when the ``Psize.getSmallest()`` removal broke the
 parallel-focusing caller (see issue #492 and PR #474).
 """
 
-import pytest
-
 from pdb2pqr.inputgen import Elec
 from pdb2pqr.psize import Psize
 
@@ -30,26 +28,26 @@ def gmem(ngrid):
 def test_auto_selects_para_above_ceiling():
     size = make_size((161, 161, 161))
     assert gmem(size.ngrid) > size.gmemceil
-    elec = Elec("mol.pqr", size, "", False)
+    elec = Elec("mol.pqr", size, "", asyncflag=False)
     assert elec.method == "mg-para"
 
 
 def test_para_uses_nsmall_for_dime():
     size = make_size((161, 161, 161), nsmall=(97, 97, 97))
-    elec = Elec("mol.pqr", size, "mg-para", False)
+    elec = Elec("mol.pqr", size, "mg-para", asyncflag=False)
     assert elec.dime == [97, 97, 97]
 
 
 def test_para_uses_proc_grid_for_pdime():
     size = make_size((161, 161, 161))
-    elec = Elec("mol.pqr", size, "mg-para", False)
+    elec = Elec("mol.pqr", size, "mg-para", asyncflag=False)
     assert elec.pdime == [2.0, 2.0, 2.0]
 
 
 def test_explicit_para_kept_for_small_grid():
     size = make_size((65, 65, 65))
     assert gmem(size.ngrid) < size.gmemceil
-    elec = Elec("mol.pqr", size, "mg-para", False)
+    elec = Elec("mol.pqr", size, "mg-para", asyncflag=False)
     assert elec.method == "mg-para"
     assert elec.dime == [33, 33, 33]
 
@@ -57,14 +55,14 @@ def test_explicit_para_kept_for_small_grid():
 def test_auto_keeps_mg_auto_below_ceiling():
     size = make_size((65, 65, 65))
     assert gmem(size.ngrid) < size.gmemceil
-    elec = Elec("mol.pqr", size, "", False)
+    elec = Elec("mol.pqr", size, "", asyncflag=False)
     assert elec.method == "mg-auto"
     assert elec.dime == [65, 65, 65]
 
 
 def test_serialized_para_has_parallel_directives():
     size = make_size((161, 161, 161))
-    text = str(Elec("mol.pqr", size, "", False))
+    text = str(Elec("mol.pqr", size, "", asyncflag=False))
     assert "mg-para" in text
     assert "pdime 2 2 2" in text
     assert "ofrac 0.1" in text
@@ -73,7 +71,7 @@ def test_serialized_para_has_parallel_directives():
 
 def test_serialized_auto_has_focusing_directives():
     size = make_size((65, 65, 65))
-    text = str(Elec("mol.pqr", size, "", False))
+    text = str(Elec("mol.pqr", size, "", asyncflag=False))
     assert "mg-auto" in text
     assert "cglen" in text
     assert "fglen" in text

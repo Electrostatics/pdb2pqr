@@ -13,6 +13,7 @@
 
 import argparse
 import logging
+import re
 from math import log
 
 from .config import TITLE_STR
@@ -36,7 +37,56 @@ OFRAC = 0.1
 #: The maximum factor by which a domain can be "shrunk" during a focusing
 #: calculation
 REDFAC = 0.25
+#: A fixed-column PDB/PQR coordinate field: right-aligned ``%8.3f``
+_FIXED_COORD = re.compile(r" *-?\d+\.\d{3}")
 _LOGGER = logging.getLogger(__name__)
+
+
+def parse_atom_fields(line):
+    """Get the coordinates, charge, and radius from an ATOM/HETATM record.
+
+    Fixed-column records (coordinates in columns 31-54) are read by column,
+    because adjacent coordinates can run together with no separator (e.g.,
+    ``15.180-188.097`` or ``15.1801188.097``).  A record is only treated as
+    fixed-column if columns 28-30 are blank and each coordinate field is a
+    right-aligned ``%8.3f`` number; otherwise, numbers that happen to sit at
+    those columns in a whitespace-delimited record would be silently
+    misread.  All other records are parsed as whitespace-delimited, where the
+    last five fields are x, y, z, charge, and radius.
+
+    For PDB records, the two fields after the coordinates are occupancy and
+    temperature factor, which are returned as charge and radius.
+
+    :param str line:  ATOM or HETATM record
+    :return:  (center, charge, radius)
+    :rtype:  ([float, float, float], float, float)
+    :raises ValueError:  if the record cannot be parsed in either format
+    """
+    if not line[27:30].strip() and all(
+        _FIXED_COORD.fullmatch(line[col : col + 8]) for col in (30, 38, 46)
+    ):
+        center = [float(line[col : col + 8]) for col in (30, 38, 46)]
+        words = line[54:].split()
+        try:
+            return center, float(words[0]), float(words[1])
+        except (IndexError, ValueError):
+            pass
+        try:
+            # PDB occupancy and temperature factor can also run together
+            # (e.g., "1.00101.76"), so read them by column
+            return center, float(line[54:60]), float(line[60:66])
+        except ValueError as err:
+            raise ValueError(
+                f"Unable to parse atom record: {line.rstrip()}"
+            ) from err
+    words = line.split()
+    try:
+        values = [float(word) for word in words[-5:]]
+    except ValueError:
+        values = []
+    if len(words) < 6 or len(values) < 5:
+        raise ValueError(f"Unable to parse atom record: {line.rstrip()}")
+    return values[0:3], values[3], values[4]
 
 
 class Psize:
@@ -118,6 +168,9 @@ class Psize:
     def parse_lines(self, lines):
         """Parse the PQR/PDB lines.
 
+        Only ATOM and HETATM records are used; see
+        :func:`parse_atom_fields` for the supported record formats.
+
         .. todo::
            This is messed up. Why are we parsing the PQR manually here when
            we already have other routines to do that?  This function should
@@ -125,19 +178,17 @@ class Psize:
 
         :param lines:  PDB/PQR lines to parse
         :type lines:  [str]
+        :raises ValueError:  if an ATOM/HETATM record cannot be parsed
         """
         for line in lines:
-            if line.find("ATOM") == 0:
+            if line.startswith("ATOM"):
                 self.gotatom += 1
-            elif line.find("HETATM") == 0:
+            elif line.startswith("HETATM"):
                 self.gothet = self.gothet + 1
-            subline = line[30:].replace("-", " -")
-            words = subline.split()
-            if len(words) < 5:
+            else:
                 continue
-            self.charge = self.charge + float(words[3])
-            rad = float(words[4])
-            center = [float(word) for word in words[0:3]]
+            center, charge, rad = parse_atom_fields(line)
+            self.charge = self.charge + charge
             for i in range(3):
                 if self.minlen[i] is None or center[i] - rad < self.minlen[i]:
                     self.minlen[i] = center[i] - rad

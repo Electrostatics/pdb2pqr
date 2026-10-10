@@ -1,0 +1,36 @@
+name: Repair dependency lock
+
+on:
+  push:
+    branches:
+      - dependabot/pip/python-minor-and-patch-d65b59a44d
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.12.10"
+      - name: Compile targeted dependency updates
+        run: |
+          uv pip compile pyproject.toml requirements-ci.in \
+            --extra test \
+            --extra pkaani \
+            --universal \
+            --python-version 3.10 \
+            --generate-hashes \
+            --torch-backend cpu \
+            --upgrade-package scikit-learn==1.7.2 \
+            --upgrade-package hatchling==1.32.4 \
+            --custom-compile-command 'uv pip compile pyproject.toml requirements-ci.in --extra test --extra pkaani --universal --python-version 3.10 --generate-hashes --torch-backend cpu --output-file requirements-ci.txt' \
+            --output-file requirements-ci.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: repaired-dependency-lock
+          path: requirements-ci.txt
+          if-no-files-found: error

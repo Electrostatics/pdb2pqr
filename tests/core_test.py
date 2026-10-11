@@ -5,6 +5,8 @@ from pathlib import Path
 import common
 import pytest
 
+from pdb2pqr import io
+
 # fmt: off
 #: Protein-nucleic acid complexes
 PROTEIN_NUCLEIC_SET = {"4UN3"}
@@ -112,6 +114,54 @@ def test_broken_backbone(input_pdb, tmp_path):
         output_pqr=output_pqr,
         tmp_path=tmp_path,
     )
+
+
+def test_charmm_terminal_names_round_trip(tmp_path):
+    """CHARMM terminal names survive default and whitespace PQR output."""
+    outputs = []
+    args = "--log-level=INFO --ff=AMBER --ffout=CHARMM --drop-water"
+    for option in ("", " --whitespace"):
+        output_pqr = tmp_path / f"cterm_hid_{bool(option)}.pqr"
+        common.run_pdb2pqr_for_tests(
+            args=args + option,
+            input_pdb=common.DATA_DIR / "cterm_hid.pdb",
+            output_pqr=output_pqr.name,
+            tmp_path=tmp_path,
+        )
+        with output_pqr.open() as pqr_file:
+            outputs.append(io.read_pqr(pqr_file))
+
+    fields = ("name", "res_name", "res_seq", "x", "y", "z", "charge", "radius")
+    assert len(outputs[0]) == len(outputs[1]) == 230
+    assert [
+        [getattr(atom, field) for field in fields] for atom in outputs[0]
+    ] == [[getattr(atom, field) for field in fields] for atom in outputs[1]]
+    assert {("OT1", "CTER"), ("OT2", "CTER")} <= {
+        (atom.name, atom.res_name) for atom in outputs[0]
+    }
+
+    output_pqr = tmp_path / "1BX8.pqr"
+    common.run_pdb2pqr_for_tests(
+        args=args,
+        input_pdb=common.DATA_DIR / "1BX8.pdb",
+        output_pqr=output_pqr.name,
+        tmp_path=tmp_path,
+    )
+    fields_by_line = [
+        line.split() for line in output_pqr.read_text().splitlines()
+    ]
+    terminal_lines = [
+        " ".join(row)
+        for row in fields_by_line
+        if len(row) > 3 and row[2] in {"HT1", "HT2", "HT3"}
+    ]
+    nterm_atoms = io.read_pqr(terminal_lines)
+    assert {("HT1", "NTER"), ("HT2", "NTER"), ("HT3", "NTER")} <= {
+        (atom.name, atom.res_name) for atom in nterm_atoms
+    }
+    residue_names = {row[3] for row in fields_by_line if len(row) > 3}
+    assert {"THR", "ALA"} <= residue_names
+    assert {"NTHR", "CALA"}.isdisjoint(residue_names)
 
 
 @pytest.mark.parametrize(

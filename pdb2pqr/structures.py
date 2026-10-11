@@ -261,7 +261,7 @@ class Atom:
         atom.radius = float(words.pop(0))
         return atom
 
-    def get_common_string_rep(self, chainflag=False):
+    def get_common_string_rep(self, chainflag=False, pqr_safe=False):
         """Returns a string of the common column of the new atom type.
 
         Uses the :class:`ATOM` string output but changes the first field to
@@ -280,6 +280,10 @@ class Atom:
         tstr = self.name
         if len(tstr) == 4 or len(tstr.strip("FLIP")) == 4:
             outstr += str.ljust(tstr, 4)[:4]
+        elif pqr_safe and len(tstr) == 3 and len(self.res_name) == 4:
+            # Keep four-character PQR residue names whitespace-delimited while
+            # preserving the width of the atom-name field.
+            outstr += str.ljust(tstr, 3)[:3] + " "
         else:
             outstr += " " + str.ljust(tstr, 3)[:3]
         tstr = self.res_name
@@ -314,7 +318,7 @@ class Atom:
         :return:  string with ATOM/HETATM field set appropriately
         :rtype:  str
         """
-        outstr = self.get_common_string_rep(chainflag=chainflag)
+        outstr = self.get_common_string_rep(chainflag=chainflag, pqr_safe=True)
         ffcharge = (
             f"{self.ffcharge:.4f}" if self.ffcharge is not None else "0.0000"
         )

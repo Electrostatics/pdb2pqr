@@ -56,7 +56,7 @@ class Elec:
             else:
                 method = "mg-auto"
         if method == "mg-para":
-            self.dime = size.getSmallest()
+            self.dime = size.nsmall
         self.method = method
         self.istrng = istrng
         self.glen = size.coarse_length

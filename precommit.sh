@@ -1,21 +1,17 @@
 #!/bin/bash
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-tmpfile=$(mktemp)
+set -euo pipefail
 
-echo "ruff check --select I --fix '$SCRIPT_DIR'" > "$tmpfile"
-echo "ruff format '$SCRIPT_DIR'" >> "$tmpfile"
-cat .github/workflows/python-package.yml | grep 'ruff check' | sed -e "s/^\s+//" >> "$tmpfile"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+cd "$SCRIPT_DIR"
 
-echo "Run these commands:"
-cat "$tmpfile"
+if command -v pre-commit &> /dev/null; then
+  PRE_COMMIT=pre-commit
+elif [[ -x "$SCRIPT_DIR/.venv/bin/pre-commit" ]]; then
+  PRE_COMMIT="$SCRIPT_DIR/.venv/bin/pre-commit"
+else
+  echo "pre-commit is not installed; install the project's dev dependencies first." >&2
+  exit 1
+fi
 
-while IFS= read -r command
-do
-  echo "Command: #${command}#"
-  eval "$command"
-done < "$tmpfile"
-
-rm -f "$tmpfile"
-
-exit 0
+exec "$PRE_COMMIT" run --all-files

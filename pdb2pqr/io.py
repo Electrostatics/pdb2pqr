@@ -2,6 +2,7 @@
 
 import io
 import logging
+import math
 
 # import argparse
 from collections import Counter
@@ -48,6 +49,42 @@ class DuplicateFilter(logging.Filter):
                     else:
                         return True
         return True
+
+
+def exceeds_pdb_limits(atomlist):
+    """Return whether atom identities exceed fixed-column PDB limits."""
+    reasons = []
+    if len(atomlist) > 99999:
+        reasons.append(f"atom count {len(atomlist)} exceeds 99999")
+    chain_ids = sorted(
+        {
+            atom.chain_id
+            for atom in atomlist
+            if atom.chain_id and len(atom.chain_id) > 1
+        }
+    )
+    if chain_ids:
+        reasons.append(f"multi-character chain ID(s): {', '.join(chain_ids)}")
+    residue_numbers = [
+        atom.res_seq for atom in atomlist if atom.res_seq is not None
+    ]
+    if residue_numbers and (
+        min(residue_numbers) < -999 or max(residue_numbers) > 9999
+    ):
+        reasons.append("residue sequence number is outside -999 through 9999")
+    coordinates = [
+        coordinate
+        for atom in atomlist
+        for coordinate in (atom.x, atom.y, atom.z)
+    ]
+    if any(
+        coordinate is None
+        or not math.isfinite(coordinate)
+        or len(f"{coordinate:8.3f}") > 8
+        for coordinate in coordinates
+    ):
+        reasons.append("coordinate is non-finite or exceeds PDB field width")
+    return bool(reasons), reasons
 
 
 def print_biomolecule_atoms(atomlist, chainflag=False, pdbfile=False):

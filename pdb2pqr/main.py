@@ -23,6 +23,11 @@ import propka.output as pk_out
 from propka.molecular_container import MolecularContainer
 from propka.parameters import Parameters
 
+try:
+    import annotationlib
+except ImportError:  # pragma: no cover - only available on Python 3.14+
+    annotationlib = None
+
 from . import aa, debump, forcefield, hydrogens, io
 from . import biomolecule as biomol
 from .config import (
@@ -355,18 +360,27 @@ def print_pqr(args, pqr_lines, header_lines, missing_lines, is_cif):
             outfile.write("#\n")
 
 
-def print_pdb(args, pdb_lines, header_lines, missing_lines, is_cif):
+def print_pdb(args, atomlist, header_lines, missing_lines, is_cif):
     """Print PDB-format output to specified file
 
     .. todo::  Move this to another module (io)
 
     :param argparse.Namespace args:  command-line arguments
-    :param [str]] pdb_lines:  output lines (records)
+    :param [Atom] atomlist:  atoms to write as PDB records
     :param [str] header_lines:  header lines
     :param [str] missing_lines:  lines describing missing atoms (should go in
         header)
     :param bool is_cif:  flag indicating CIF format
+    :raises RuntimeError: if atom identities exceed fixed-column PDB limits
     """
+    exceeds, reasons = io.exceeds_pdb_limits(atomlist)
+    if exceeds:
+        raise RuntimeError(
+            "Cannot write PDB-format output: " + "; ".join(reasons)
+        )
+    pdb_lines = io.print_biomolecule_atoms(
+        atomlist, chainflag=args.keep_chain, pdbfile=True
+    )
     with open(args.pdb_output, "w") as outfile:
         # Adding whitespaces if --whitespace is in the options
         if header_lines:
@@ -530,7 +544,15 @@ def run_propka(args, biomolecule):
 
     with StringIO() as fpdb:
         fpdb.writelines(lines)
-        parameters = pk_in.read_parameter_file(args.parameters, Parameters())
+        parameters = Parameters()
+        if annotationlib is not None and not hasattr(
+            parameters, "__annotations__"
+        ):
+            # Work around https://github.com/jensengroup/propka/issues/198.
+            parameters.__annotations__ = annotationlib.get_annotations(
+                Parameters, format=annotationlib.Format.VALUE
+            )
+        parameters = pk_in.read_parameter_file(args.parameters, parameters)
         molecule = MolecularContainer(parameters, args)
         # needs a mock name with .pdb extension to work with stream data, hence the "input.pdb"
         molecule = pk_in.read_molecule_file("input.pdb", molecule, fpdb)
@@ -607,6 +629,14 @@ def run_pkaani(args, biomolecule):
                pKa information from pKa-ANI)
     :rtype:  list of OrderedDicts
     """
+    if any(
+        residue.ins_code not in (None, "", " ", ".", "?")
+        for residue in biomolecule.residues
+    ):
+        raise RuntimeError(
+            "pKa-ANI cannot distinguish residue insertion codes; "
+            "use PROPKA for this structure."
+        )
     pkaani_citation = """
     Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
     Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
@@ -737,9 +767,12 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 forcefield_.name,
                 args.ph,
                 {
-                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
-                        "pKa"
-                    ]
+                    biomol.pka_key(
+                        row["res_name"],
+                        row["res_num"],
+                        row["chain_id"],
+                        row.get("ins_code"),
+                    ): row["pKa"]
                     for row in pka_df
                     if row["group_label"].startswith(row["res_name"])
                 },
@@ -754,9 +787,12 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                 # no need for if clause, pka_df necessarily contains only the titratable residues
                 # as defined by pKa-ANI (HIS/ASP/GLU/TYR/LYS)
                 {
-                    f"{row['res_name']} {row['res_num']} {row['chain_id']}": row[
-                        "pKa"
-                    ]
+                    biomol.pka_key(
+                        row["res_name"],
+                        row["res_num"],
+                        row["chain_id"],
+                        row.get("ins_code"),
+                    ): row["pKa"]
                     for row in pka_df
                 },
             )
@@ -924,9 +960,7 @@ def main_driver(args: argparse.Namespace):
     if args.pdb_output:
         print_pdb(
             args=args,
-            pdb_lines=io.print_biomolecule_atoms(
-                biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
-            ),
+            atomlist=biomolecule.atoms,
             header_lines=results["header"],
             missing_lines=results["missed_residues"],
             is_cif=is_cif,

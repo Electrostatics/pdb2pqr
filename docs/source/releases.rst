@@ -3,6 +3,41 @@ Release history
 ###############
 
 ******************
+Unreleased
+******************
+
+.. _pka-ani-retirement:
+
+pKa-ANI retirement
+==================
+
+The built-in pKa-ANI backend has been retired because its dependency constraints
+prevent secure maintenance. See
+`issue #490 <https://github.com/Electrostatics/pdb2pqr/issues/490>`_ for details.
+The ``--titration-state-method=pkaani`` option now fails explicitly; it does not
+silently substitute another predictor. The internal ``run_pkaani`` function
+has also been removed.
+
+The ``pkaani`` installation extra has been removed. Installing
+``pdb2pqr[pkaani]`` no longer installs a backend and may only produce a
+missing-extra warning from pip. Use ``pip install pdb2pqr`` for the maintained
+installation.
+
+To use the maintained PROPKA backend, explicitly select
+``--titration-state-method=propka --with-ph=7.0`` with your desired pH.
+PROPKA is a different scientific model, so predictions and resulting protonation
+states may differ from pKa-ANI.
+
+For historical reproducibility, retain the exact older PDB2PQR release and
+dependency versions used for your calculation in an isolated legacy environment.
+Isolation does not fix vulnerabilities in those dependencies; this is not a
+supported or secure alternative for ongoing use.
+
+pKa-ANI can be run independently, but current PDB2PQR has no supported interface
+for importing external pKa predictions. Installing pKa-ANI separately does not
+restore the retired backend.
+
+******************
 3.7.1 (2024-12-27)
 ******************
 

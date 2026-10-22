@@ -37,7 +37,7 @@ def atom_site(block: pdbx.containers.ContainerBase):
     err_arr = []
     atoms = block.get_object("atom_site")
     if not isinstance(atoms, pdbx.containers.DataCategory):
-        _LOGGER.error(f"atom_site: No lines were found\n")
+        _LOGGER.error("atom_site: No lines were found\n")
         raise ValueError(
             "Did not find atom_site in cif file, terminal failure."
         )
@@ -45,16 +45,9 @@ def atom_site(block: pdbx.containers.ContainerBase):
     if len(num_model_arr) == 1:
         # TODO - this part of the conditional should be a separate function
         for i in range(atoms.row_count):
-            line = convert_cif_atom_site_to_pdb_line(atoms=atoms, row_index=i)
-            if line is None:
-                continue
-            try:
-                if atoms.get_value("group_PDB", i) == "ATOM":
-                    pdb_arr.append(pdb.ATOM(line))
-                elif atoms.get_value("group_PDB", i) == "HETATM":
-                    pdb_arr.append(pdb.HETATM(line))
-            except KeyError:
-                _LOGGER.error(f"atom_site: Error reading line: #{line}#\n")
+            record = atom_site_record(atoms=atoms, row_index=i)
+            if record is not None:
+                pdb_arr.append(record)
         return pdb_arr, err_arr
     # TODO - Given the return statement above, is this "else" ever reached?
     else:
@@ -71,20 +64,9 @@ def atom_site(block: pdbx.containers.ContainerBase):
 
             for i in range(atoms.row_count):
                 if atoms.get_value("pdbx_PDB_model_num", i) == j:
-                    line = convert_cif_atom_site_to_pdb_line(
-                        atoms=atoms, row_index=i
-                    )
-                    if line is None:
-                        continue
-                    try:
-                        if atoms.get_value("group_PDB", i) == "ATOM":
-                            pdb_arr.append(pdb.ATOM(line))
-                        elif atoms.get_value("group_PDB", i) == "HETATM":
-                            pdb_arr.append(pdb.HETATM(line))
-                    except (KeyError, ValueError):
-                        _LOGGER.error(
-                            f"atom_site: Error reading line: #{line}#\n"
-                        )
+                    record = atom_site_record(atoms=atoms, row_index=i)
+                    if record is not None:
+                        pdb_arr.append(record)
             try:
                 line = "ENDMDL"
                 pdb_arr.append(pdb.ENDMDL(line))
@@ -94,101 +76,109 @@ def atom_site(block: pdbx.containers.ContainerBase):
         return pdb_arr, err_arr
 
 
-def convert_cif_atom_site_to_pdb_line(
+#: Placeholder records parsed by :class:`pdb.ATOM` and :class:`pdb.HETATM`
+#: before their fields are set from the ``_atom_site`` row
+_PLACEHOLDER_RECORDS = {
+    "ATOM": "ATOM      1  X   UNK     1       0.000   0.000   0.000",
+    "HETATM": "HETATM    1  X   UNK     1       0.000   0.000   0.000",
+}
+
+
+def _get_value(atoms, names, row_index):
+    """Get the first non-null value from a list of ``_atom_site`` items.
+
+    The PDBx reader returns ``None`` for ``?`` (unknown) and ``""`` for
+    ``.`` (inapplicable); both are treated as null.
+
+    :param atoms:  DataCategory containing all atoms
+    :type atoms:  pdbx.containers.DataCategory
+    :param [str] names:  item names in order of preference
+    :param int row_index:  row of the atom
+    :return:  the value, or ``None`` if all items are absent or null
+    :rtype:  str | None
+    """
+    for name in names:
+        if name in atoms.attribute_list:
+            value = atoms.get_value(name, row_index)
+            if value not in (None, ""):
+                return value
+    return None
+
+
+def atom_site_record(
     atoms: pdbx.containers.DataCategory,
     row_index: int,
-) -> str | None:
-    """Converts cif data for one row into a pdb line.
+) -> pdb.ATOM | pdb.HETATM | None:
+    """Convert one ``_atom_site`` row into an ATOM or HETATM record.
 
-    Extracts all the relevant fields from atoms, does basic formatting,
-    and converts them into a pdb line.
+    The record fields are set directly from the row rather than through a
+    fixed-column PDB line, so serial numbers, chain IDs, residue numbers,
+    names, and coordinates are not limited by PDB column widths.
+
+    Atom identity is taken from the author-defined items (``auth_asym_id``,
+    ``auth_seq_id``, ``pdbx_PDB_ins_code``, ``auth_comp_id``,
+    ``auth_atom_id``), which correspond to the fields of a PDB-format file,
+    falling back to the ``label_*`` items when the author items are absent or
+    null.  A missing insertion code, alternate location, or chain ID is
+    stored as ``""``.
 
     :param atoms: DataCategory containing all atoms.
     :type atoms: pdbx.containers.DataCategory
-    :param row_index: Index corresponding to the cif line we want to convert to a pdb line
+    :param row_index: Index corresponding to the cif line we want to convert
     :type row_index: int
-    :return: Pdb line (exactly 80 chars long), will be None if it failed to process it properly
-    :rtype: str | None
+    :return: ATOM or HETATM record, or None if the row is neither
+    :rtype: pdb.ATOM | pdb.HETATM | None
+    :raises ValueError: if the row lacks a residue number or coordinates
     """
-    # Extract and cast values
     group = atoms.get_value("group_PDB", row_index)
-    serial = int(atoms.get_value("id", row_index))
-    name = atoms.get_value("label_atom_id", row_index)
-    alt_id = atoms.get_value("label_alt_id", row_index)
-    res_name = atoms.get_value("label_comp_id", row_index)
-    chain = atoms.get_value("label_asym_id", row_index)
-    res_seq = int(atoms.get_value("auth_seq_id", row_index))
-    x = float(atoms.get_value("Cartn_x", row_index))
-    y = float(atoms.get_value("Cartn_y", row_index))
-    z = float(atoms.get_value("Cartn_z", row_index))
+    if group not in _PLACEHOLDER_RECORDS:
+        return None
+    record = getattr(pdb, group)(_PLACEHOLDER_RECORDS[group])
+    res_seq = _get_value(atoms, ["auth_seq_id", "label_seq_id"], row_index)
+    try:
+        record.serial = int(atoms.get_value("id", row_index))
+        record.res_seq = int(res_seq)
+        # Round as a PDB-format file would, so results do not depend on
+        # whether the structure was read from PDB or CIF.
+        record.x = round(float(atoms.get_value("Cartn_x", row_index)), 3)
+        record.y = round(float(atoms.get_value("Cartn_y", row_index)), 3)
+        record.z = round(float(atoms.get_value("Cartn_z", row_index)), 3)
+    except (TypeError, ValueError) as err:
+        raise ValueError(
+            f"atom_site: unable to read row {row_index} (atom id "
+            f"{atoms.get_value('id', row_index)}): {err}"
+        ) from err
+    record.name = (
+        _get_value(atoms, ["auth_atom_id", "label_atom_id"], row_index) or ""
+    )
+    record.res_name = (
+        _get_value(atoms, ["auth_comp_id", "label_comp_id"], row_index) or ""
+    )
+    record.chain_id = (
+        _get_value(atoms, ["auth_asym_id", "label_asym_id"], row_index) or ""
+    )
+    record.ins_code = _get_value(atoms, ["pdbx_PDB_ins_code"], row_index) or ""
+    record.alt_loc = _get_value(atoms, ["label_alt_id"], row_index) or ""
     occ_raw = atoms.get_value("occupancy", row_index)
     try:
-        occ = float(occ_raw)
+        record.occupancy = round(float(occ_raw), 2)
     except (TypeError, ValueError):
         _LOGGER.error(
             f"Invalid occupancy {occ_raw} at row {row_index}, setting to 1.0"
         )
-        occ = 1.0
+        record.occupancy = 1.0
     temp_raw = atoms.get_value("B_iso_or_equiv", row_index)
     try:
-        temp = float(temp_raw)
+        record.temp_factor = round(float(temp_raw), 2)
     except (TypeError, ValueError):
         _LOGGER.error(
             f"Invalid B-factor {temp_raw} at row {row_index}, setting to 0.0"
         )
-        temp = 0.0
-    element = atoms.get_value("type_symbol", row_index)
-
-    # Handle the '?' or '.' cases for alt_id and charge
-    alt_id = (
-        alt_id if (alt_id is not None and alt_id not in (".", "?")) else " "
-    )
-    charge = (
-        atoms.get_value("pdbx_formal_charge", row_index)
-        if "pdbx_formal_charge" in atoms.attribute_list
-        else "  "
-    )
-    if charge in ["?", None, "."]:
-        charge = "  "
-
-    # Format the Atom Name (4 chars, specifically aligned)
-    # 1-2 char elements start at the 2nd position of the 4-char field
-    if len(element) < 2 and len(name) < 4:
-        name = f" {name:<3}"
-    else:
-        name = f"{name:<4}"
-
-    # THE PDB LINE MAPPING
-    line = (
-        f"{group:<6}"  #    1-6 Record name
-        f"{serial:>5}"  #   7-11 Atom serial number
-        f" "  #             12 Space
-        f"{name}"  #        13-16 Atom name
-        f"{alt_id:1}"  #    17 Alternate location indicator
-        f"{res_name:>3}"  # 18-20 Residue name
-        f" "  #             21 Space
-        f"{chain:1}"  #     22 Chain Id
-        f"{res_seq:>4}"  #  23-26 Residue sequence number
-        f" "  #             27 Code for insertion of residues
-        f"   "  #           28-30 Spaces
-        f"{x:8.3f}"  #      31-38 X-coordinates
-        f"{y:8.3f}"  #      39-46 Y-coordinates
-        f"{z:8.3f}"  #      47-54 Z-coordinates
-        f"{occ:6.2f}"  #    55-60 Occupancy
-        f"{temp:6.2f}"  #   61-66 Temperature factor
-        f"          "  #    67-76 Spaces
-        f"{element:>2}"  #  77-78 Element Symbol
-        f"{charge:>2}"  #   79-80 Charge of the atom
-    )
-    if len(line) != 80:
-        # This would happen if any of the values above are larger than the max space they are allocated, e.g.:
-        # if x < -999.999
-        # if name = LIG1
-        _LOGGER.error(
-            f"atom_site: pdb line extracted from cif record is not exactly 80 char long, dropping line:\n{line}"
-        )
-        return None
-    return line
+        record.temp_factor = 0.0
+    record.seg_id = ""
+    record.element = _get_value(atoms, ["type_symbol"], row_index) or ""
+    record.charge = _get_value(atoms, ["pdbx_formal_charge"], row_index) or ""
+    return record
 
 
 def conect(block):

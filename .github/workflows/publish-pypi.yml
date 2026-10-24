@@ -1,0 +1,49 @@
+name: Publish release to PyPI
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published GitHub release tag to upload
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-pypi
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download published release artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Expected a stable release tag such as v3.8.0"
+            exit 1
+          fi
+          mkdir dist
+          gh release download "$RELEASE_TAG" \
+            --pattern "pdb2pqr-${RELEASE_TAG#v}-py3-none-any.whl" \
+            --pattern "pdb2pqr-${RELEASE_TAG#v}.tar.gz" \
+            --pattern SHA256SUMS \
+            --dir dist
+          cd dist
+          sha256sum --check --strict SHA256SUMS
+          rm SHA256SUMS
+      - name: Publish verified distributions
+        uses: pypa/gh-action-pypi-publish@release/v1

@@ -32,11 +32,9 @@ Regenerate the exact, hashed CI environment rather than editing
 ```bash
 uv pip compile pyproject.toml requirements-ci.in \
   --extra test \
-  --extra pkaani \
   --universal \
   --python-version 3.10 \
   --generate-hashes \
-  --torch-backend cpu \
   --output-file requirements-ci.txt
 ```
 

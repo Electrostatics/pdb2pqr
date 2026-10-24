@@ -34,8 +34,6 @@ jobs:
           version: "0.12.10"
           activate-environment: "true"
       - name: Install dependencies
-        run: uv pip install -e '.[test,pkaani]'
-        env:
-          UV_TORCH_BACKEND: cpu
+        run: uv pip install -e '.[test]'
       - name: Test full suite
         run: pytest

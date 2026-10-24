@@ -46,8 +46,8 @@ _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
 def _titration_state_method(value):
     if value == "pkaani":
         raise argparse.ArgumentTypeError(
-            "pKa-ANI support has been retired because its dependency stack "
-            "cannot be maintained securely. To use PROPKA instead, explicitly "
+            "pKa-ANI support has been retired for licensing-policy and "
+            "security maintenance reasons. To use PROPKA instead, explicitly "
             "select --titration-state-method=propka; predictions may differ. "
             "Migration guidance: "
             "https://pdb2pqr.readthedocs.io/en/latest/releases.html"

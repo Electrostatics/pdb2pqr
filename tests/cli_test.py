@@ -34,6 +34,7 @@ def test_retired_pkaani_fails_before_processing(
     assert exc.value.code == 2
     error = capsys.readouterr().err
     assert "pKa-ANI support has been retired" in error
+    assert "licensing-policy" in error
     assert "--titration-state-method=propka" in error
     assert "https://pdb2pqr.readthedocs.io/en/latest/releases.html" in error
     assert list(tmp_path.iterdir()) == []

@@ -85,3 +85,21 @@ Enable type inlay hints in your editor and write typed code. Types don't need to
 3. If the pull request passes [Github Actions](https://github.com/features/actions) and peer review, then the branch will be merged with `main`, your branch will be deleted, and the development team will be very grateful for your contribution!
 
 Thank you for considering to contribute to our code!
+
+## Publishing releases
+
+The `publish-pypi.yml` workflow uploads the wheel and source distribution attached
+to a published GitHub release after verifying its `SHA256SUMS` file. It does not
+rebuild the packages. Stable release tags must have the form `v3.8.0`.
+
+A PyPI project owner must configure a GitHub trusted publisher for:
+
+* Repository: `Electrostatics/pdb2pqr`
+* Workflow: `publish-pypi.yml`
+* Environment: `pypi`
+
+Configure required reviewers on the GitHub `pypi` environment to gate publication.
+No long-lived PyPI token is required. Publishing a GitHub release triggers the
+workflow; for an existing release, run it manually with the release tag as input.
+Do not rerun an upload that already succeeded: PyPI does not permit replacing
+published distribution files.

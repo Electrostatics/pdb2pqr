@@ -6,6 +6,71 @@ Release history
 Unreleased
 ******************
 
+Highlights
+==========
+
+* Support Python 3.10 through 3.14, including a compatibility workaround for
+  PROPKA on Python 3.14
+  (`#430 <https://github.com/Electrostatics/pdb2pqr/pull/430>`_,
+  `#469 <https://github.com/Electrostatics/pdb2pqr/pull/469>`_).
+* Remove the unused docutils runtime dependency
+  (`#459 <https://github.com/Electrostatics/pdb2pqr/pull/459>`_).
+* Use a hash-pinned CI dependency environment, test all supported Python versions,
+  and separately test the latest allowed dependencies on a schedule
+  (`#470 <https://github.com/Electrostatics/pdb2pqr/pull/470>`_,
+  `#473 <https://github.com/Electrostatics/pdb2pqr/pull/473>`_).
+* Add Dependabot updates and automatic Ruff pre-commit hooks, update documentation
+  tooling, and remove the unused sphinx-sitemap dependency
+  (`#472 <https://github.com/Electrostatics/pdb2pqr/pull/472>`_,
+  `#491 <https://github.com/Electrostatics/pdb2pqr/pull/491>`_,
+  `#493 <https://github.com/Electrostatics/pdb2pqr/pull/493>`_).
+
+Fixes
+=====
+
+* Handle missing optional CIF metadata and format high-precision coordinates
+  consistently when converting CIF input
+  (`#446 <https://github.com/Electrostatics/pdb2pqr/pull/446>`_).
+* Correct the DT5 patch target for DNA thymidine residues
+  (`#457 <https://github.com/Electrostatics/pdb2pqr/pull/457>`_).
+* Preserve NTER and CTER residue names while keeping terminal PQR records readable
+  (`#461 <https://github.com/Electrostatics/pdb2pqr/pull/461>`_).
+* Distinguish residue insertion codes when applying calculated pKa values
+  (`#486 <https://github.com/Electrostatics/pdb2pqr/pull/486>`_).
+* Reject structures that cannot fit fixed-column PDB output before opening the
+  requested output file, including coordinate field overflow
+  (`#487 <https://github.com/Electrostatics/pdb2pqr/pull/487>`_).
+* Repair parallel APBS input generation and add method-selection regression tests
+  (`#474 <https://github.com/Electrostatics/pdb2pqr/pull/474>`_,
+  `#497 <https://github.com/Electrostatics/pdb2pqr/pull/497>`_).
+* Parse fixed-column and whitespace-delimited PQR coordinates without silently
+  shifting fields when sizing APBS grids
+  (`#499 <https://github.com/Electrostatics/pdb2pqr/pull/499>`_).
+* Update Hatchling in the CI build environment
+  (`#500 <https://github.com/Electrostatics/pdb2pqr/pull/500>`_).
+
+Security maintenance
+====================
+
+* Update urllib3 and certifi in the CI dependency lock to address reported
+  vulnerabilities. These lock changes do not impose new minimum versions on
+  downstream installations
+  (`#501 <https://github.com/Electrostatics/pdb2pqr/pull/501>`_,
+  `#507 <https://github.com/Electrostatics/pdb2pqr/pull/507>`_).
+* Remove the optional pKa-ANI dependency stack rather than retain its blocked
+  security updates
+  (`#503 <https://github.com/Electrostatics/pdb2pqr/pull/503>`_).
+  See the migration guidance below.
+
+Known limitations
+=================
+
+* Large-CIF and unrestricted identifier/output-format support remain deferred;
+  this release does not claim to implement the work proposed in
+  `#468 <https://github.com/Electrostatics/pdb2pqr/pull/468>`_.
+* Existing CHARMM naming limitations remain tracked in
+  `#358 <https://github.com/Electrostatics/pdb2pqr/issues/358>`_.
+
 .. _pka-ani-retirement:
 
 pKa-ANI retirement

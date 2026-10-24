@@ -10,7 +10,6 @@ It was created to avoid cluttering the __init__.py file.
 import argparse
 import logging
 import sys
-import tempfile
 from collections import OrderedDict
 from collections.abc import Sequence
 from io import StringIO
@@ -42,6 +41,19 @@ from .ligand.mol2 import Mol2Molecule
 from .utilities import noninteger_charge
 
 _LOGGER = logging.getLogger(f"PDB2PQR{VERSION}")
+
+
+def _titration_state_method(value):
+    if value == "pkaani":
+        raise argparse.ArgumentTypeError(
+            "pKa-ANI support has been retired for licensing-policy and "
+            "security maintenance reasons. To use PROPKA instead, explicitly "
+            "select --titration-state-method=propka; predictions may differ. "
+            "Migration guidance: "
+            "https://pdb2pqr.readthedocs.io/en/latest/releases.html"
+            "#pka-ani-retirement"
+        )
+    return value
 
 
 def build_main_parser():
@@ -214,14 +226,12 @@ def build_main_parser():
     grp3.add_argument(
         "--titration-state-method",
         dest="pka_method",
-        choices=(["propka", "pkaani"]),
+        type=_titration_state_method,
+        choices=["propka"],
         help=(
             "Method used to calculate titration states. If a titration state "
             "method is selected, titratable residue charge states will be set "
-            "by the pH value supplied by --with_ph. pKa-ANI uses a learned quantum mechanical"
-            "representation of a residue's atomic environment from the ANI-2x neural network potential, and their pKa prediction model has been shown to surpass"
-            "the accuracy of PROPKA (https://doi.org/10.1039/D1SC05610G). Incidentally, the paper shows that even a null model (simply guessing the mean of the test"
-            "set repeatedly for each test case) also outperforms PROPKA (Figure 4)."
+            "by the pH value supplied by --with-ph."
         ),
     )
     grp3.add_argument(
@@ -618,97 +628,6 @@ def run_propka(args, biomolecule):
     return rows, pka_str
 
 
-def run_pkaani(args, biomolecule):
-    """Run a pKa-ANI calculation.
-
-    :param args:  command-line arguments
-    :type args:  argparse.Namespace
-    :param biomolecule:  biomolecule object
-    :type biomolecule:  Biomolecule
-    :return:  (DataFrame-convertible table of assigned pKa values,
-               pKa information from pKa-ANI)
-    :rtype:  list of OrderedDicts
-    """
-    if any(
-        residue.ins_code not in (None, "", " ", ".", "?")
-        for residue in biomolecule.residues
-    ):
-        raise RuntimeError(
-            "pKa-ANI cannot distinguish residue insertion codes; "
-            "use PROPKA for this structure."
-        )
-    pkaani_citation = """
-    Gokcan, H. and Isayev, O. (2022) \'Prediction of protein pKa with representation learning\', 
-    Chemical Science, 13(8), pp. 2462–2474. doi:10.1039/d1sc05610g. 
-    """
-    try:
-        import warnings
-
-        warnings.filterwarnings(
-            "ignore", category=UserWarning, message=".*cuaev not installed.*"
-        )
-        warnings.filterwarnings(
-            "ignore",
-            category=UserWarning,
-            message=".*pkg_resources is deprecated as an API.*",
-        )
-        warnings.filterwarnings(
-            "ignore",
-            category=UserWarning,
-            message=".*torchani.data will not be available.*",
-        )
-
-        from pkaani.pkaani import calculate_pka as calculate_pkaani
-        from tabulate import tabulate
-
-    except ImportError as e:
-        raise ImportError(
-            "Optional module 'pkaani' is not installed. "
-            "You can install it with: pip install pdb2pqr[pkaani]"
-        ) from e
-
-    _LOGGER.info(
-        "If using pKa-ANI for titration state assignment, please cite: %s\n",
-        pkaani_citation,
-    )
-
-    # pKa-ANI has its own way of parsing PDBs, will just pass the PDB
-    # file to that and have it handle the parsing and PDB calculation
-    lines = io.print_biomolecule_atoms(
-        atomlist=biomolecule.atoms, chainflag=args.keep_chain, pdbfile=True
-    )
-
-    with tempfile.NamedTemporaryFile(
-        mode="w+", suffix=".pdb", delete=True
-    ) as tmp:
-        for line in lines:
-            tmp.write(f"{line}")
-        tmp.flush()
-        tmp.seek(0)
-
-        pka = calculate_pkaani([tmp.name])[tmp.name]
-        rows = []
-        rows_2d_array = []
-
-        for key in pka:
-            row_dict = OrderedDict()
-            row_dict["res_num"] = key[1]
-            row_dict["res_name"] = pka[key][0]
-            row_dict["chain_id"] = key[0]
-            row_dict["pKa"] = pka[key][1]
-            rows.append(row_dict)
-            rows_2d_array.append([key[1], pka[key][0], key[0], pka[key][1]])
-
-        pkaani_output = tabulate(
-            rows_2d_array,
-            headers=["Res. Number", "Res. Name", "Chain ID", "pKa"],
-            tablefmt="grid",
-        )
-        _LOGGER.info("pKa results from pKa-ANI:\n%s", pkaani_output)
-
-    return rows
-
-
 def non_trivial(args, biomolecule, ligand, definition, is_cif):
     """Perform a non-trivial PDB2PQR run.
 
@@ -777,26 +696,6 @@ def non_trivial(args, biomolecule, ligand, definition, is_cif):
                     if row["group_label"].startswith(row["res_name"])
                 },
             )
-        elif args.pka_method == "pkaani":
-            _LOGGER.info("Assigning titration states with pKa-ANI.")
-            biomolecule.remove_hydrogens()
-            pka_df = run_pkaani(args, biomolecule)
-            biomolecule.apply_pka_values(
-                forcefield_.name,
-                args.ph,
-                # no need for if clause, pka_df necessarily contains only the titratable residues
-                # as defined by pKa-ANI (HIS/ASP/GLU/TYR/LYS)
-                {
-                    biomol.pka_key(
-                        row["res_name"],
-                        row["res_num"],
-                        row["chain_id"],
-                        row.get("ins_code"),
-                    ): row["pKa"]
-                    for row in pka_df
-                },
-            )
-
         _LOGGER.info("Adding hydrogens to biomolecule.")
         biomolecule.add_hydrogens()
         if args.debump:

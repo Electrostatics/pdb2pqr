@@ -3,6 +3,53 @@ Release history
 ###############
 
 ******************
+Unreleased
+******************
+
+.. _pka-ani-retirement:
+
+pKa-ANI retirement
+==================
+
+The built-in pKa-ANI backend has been retired for licensing-policy and security
+maintenance reasons. Its license restricts use to noncommercial internal research
+and restricts redistribution and third-party access. Those restrictions conflict
+with PDB2PQR's permissive BSD-3-Clause licensing goals. Its dependency constraints
+also prevent secure maintenance. See
+`issue #490 <https://github.com/Electrostatics/pdb2pqr/issues/490>`_ for details.
+
+The applicable terms are recorded in the
+`upstream license <https://github.com/isayevlab/pKa-ANI/blob/6352706fd655d2a579e3612cb4f131be7220f894/LICENSE>`_
+and the
+`published-package source license <https://github.com/adnaksskanda/pKa-ANI/blob/ad5d7fbcff4cc9e44e6b546494bee43762d75454/LICENSE>`_.
+This is a project support and distribution policy decision, not a determination
+that using an optional, separately installed dependency alone violates a license.
+
+The ``--titration-state-method=pkaani`` option now fails explicitly; it does not
+silently substitute another predictor. The internal ``run_pkaani`` function
+has also been removed.
+
+The ``pkaani`` installation extra has been removed. Installing
+``pdb2pqr[pkaani]`` no longer installs a backend and may only produce a
+missing-extra warning from pip. Use ``pip install pdb2pqr`` for the maintained
+installation.
+
+To use the maintained PROPKA backend, explicitly select
+``--titration-state-method=propka --with-ph=7.0`` with your desired pH.
+PROPKA is a different scientific model, so predictions and resulting protonation
+states may differ from pKa-ANI.
+
+Historical reproduction with older PDB2PQR and pKa-ANI releases requires reviewing
+the applicable license terms and recording the exact dependency versions used.
+An isolated legacy environment does not grant permission to use or redistribute
+the software and does not fix dependency vulnerabilities. Such environments are
+unsupported and are not a secure alternative for ongoing use.
+
+Any independent use or redistribution of pKa-ANI remains subject to its license.
+Current PDB2PQR has no supported interface for importing external pKa predictions.
+Installing pKa-ANI separately does not restore the retired backend.
+
+******************
 3.7.1 (2024-12-27)
 ******************
 

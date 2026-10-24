@@ -1,10 +1,6 @@
 """Tests for biomolecule behavior."""
 
-from types import SimpleNamespace
-
-import pytest
-
-from pdb2pqr import aa, biomolecule, main
+from pdb2pqr import aa, biomolecule
 
 
 def _make_asp(ins_code):
@@ -46,11 +42,3 @@ def test_pka_key_preserves_legacy_format_without_insertion_code():
     assert biomolecule.pka_key("ASP", 100, "A", " ") == expected
     assert biomolecule.pka_key("ASP", 100, "A", ".") == expected
     assert biomolecule.pka_key("ASP", 100, "A", "?") == expected
-
-
-def test_pkaani_rejects_residue_insertion_codes():
-    """pKa-ANI fails before collapsing insertion-coded residue identities."""
-    molecule = SimpleNamespace(residues=[_make_asp("A")])
-
-    with pytest.raises(RuntimeError, match="cannot distinguish"):
-        main.run_pkaani(SimpleNamespace(), molecule)

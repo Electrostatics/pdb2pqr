@@ -387,7 +387,16 @@ class Mol2Molecule:
         n = path.index(min(path))
         return path[n:] + path[:n]
 
-    def find_new_rings(self, path, rings, level=0):
+    def _build_bond_adjacency(self) -> dict[str, list[str]]:
+        """Build neighbor lists in bond scan order."""
+        adj: dict[str, list[str]] = {}
+        for bond in self.bonds:
+            atom1, atom2 = bond.atoms[0].name, bond.atoms[1].name
+            adj.setdefault(atom1, []).append(atom2)
+            adj.setdefault(atom2, []).append(atom1)
+        return adj
+
+    def find_new_rings(self, path, rings, level=0, adj=None):
         """Find new rings in molecule.
 
         This was borrowed from StackOverflow: https://j.mp/2AHaukj
@@ -398,26 +407,26 @@ class Mol2Molecule:
         :type rings:  list of str
         :param level:  recursion level
         :type level:  int
+        :param adj:  optional bond adjacency map
+        :type adj:  dict
         :return:  new list of rings
         :rtype:  int
         """
+        if adj is None:
+            adj = self._build_bond_adjacency()
         start_node = path[0]
-        next_node = None
-        sub_path = []
-        for bond in self.bonds:
-            atom1 = bond.atoms[0].name
-            atom2 = bond.atoms[1].name
-            if start_node in (atom1, atom2):
-                next_node = atom2 if atom1 == start_node else atom1
-                if next_node not in path:
-                    sub_path = [next_node, *path]
-                    rings = self.find_new_rings(sub_path, rings, level + 1)
-                elif len(path) > 2 and next_node == path[-1]:
-                    path_ = self.rotate_to_smallest(path)
-                    inv_path = tuple(self.rotate_to_smallest(path_[::-1]))
-                    path_ = tuple(path_)
-                    if (path_ not in rings) and (inv_path not in rings):
-                        rings.add(tuple(path_))
+        for next_node in adj.get(start_node, ()):
+            if next_node not in path:
+                if len(adj[next_node]) >= 2:
+                    rings = self.find_new_rings(
+                        [next_node, *path], rings, level + 1, adj
+                    )
+            elif len(path) > 2 and next_node == path[-1]:
+                path_ = self.rotate_to_smallest(path)
+                inv_path = tuple(self.rotate_to_smallest(path_[::-1]))
+                path_ = tuple(path_)
+                if (path_ not in rings) and (inv_path not in rings):
+                    rings.add(tuple(path_))
         return rings
 
     def set_rings(self):
@@ -428,9 +437,10 @@ class Mol2Molecule:
         self.rings = set()
         rings = set()
         # Generate all rings
-        for bond in self.bonds:
-            for atom_name in bond.atom_names:
-                rings = self.find_new_rings([atom_name], rings)
+        adj = self._build_bond_adjacency()
+        for atom_name, nbrs in adj.items():
+            if len(nbrs) >= 2:
+                rings = self.find_new_rings([atom_name], rings, adj=adj)
         # Prune rings that are products of other rings
         # TODO - testing on molecules like phenalene shows that this is broken
         ring_sets = []

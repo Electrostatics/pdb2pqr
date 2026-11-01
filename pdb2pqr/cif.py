@@ -84,6 +84,69 @@ _PLACEHOLDER_RECORDS = {
 }
 
 
+def _pdb_atom_line(record):
+    """Format an ATOM or HETATM record as a fixed-column PDB line.
+
+    :param record:  the record to format
+    :type record:  pdb.ATOM | pdb.HETATM
+    :return:  (the 80-character line, or ``None`` if a field does not fit its
+        PDB columns; description of the fields that do not fit)
+    :rtype:  (str | None, str | None)
+    """
+    # Formatted value and PDB column width of each field
+    fields = {
+        "serial": (f"{record.serial}", 5),
+        "name": (record.name, 4),
+        "alt_loc": (record.alt_loc, 1),
+        "res_name": (record.res_name, 3),
+        "chain_id": (record.chain_id, 1),
+        "res_seq": (f"{record.res_seq}", 4),
+        "ins_code": (record.ins_code, 1),
+        "x": (f"{record.x:.3f}", 8),
+        "y": (f"{record.y:.3f}", 8),
+        "z": (f"{record.z:.3f}", 8),
+        "occupancy": (f"{record.occupancy:.2f}", 6),
+        "temp_factor": (f"{record.temp_factor:.2f}", 6),
+        "element": (record.element, 2),
+        "charge": (record.charge, 2),
+    }
+    reasons = [
+        f"{field} {text!r}"
+        for field, (text, width) in fields.items()
+        if len(text) > width
+    ]
+    if reasons:
+        return None, ", ".join(reasons)
+    text = {field: value for field, (value, _) in fields.items()}
+    # 1-2 char elements start at the 2nd position of the 4-char field
+    if len(record.element) < 2 and len(record.name) < 4:
+        name = f" {record.name:<3}"
+    else:
+        name = f"{record.name:<4}"
+    line = (
+        f"{type(record).__name__:<6}"  #  1-6 Record name
+        f"{text['serial']:>5}"  #  7-11 Atom serial number
+        " "  #  12 Space
+        f"{name}"  #  13-16 Atom name
+        f"{text['alt_loc']:1}"  #  17 Alternate location indicator
+        f"{text['res_name']:>3}"  #  18-20 Residue name
+        " "  #  21 Space
+        f"{text['chain_id']:1}"  #  22 Chain Id
+        f"{text['res_seq']:>4}"  #  23-26 Residue sequence number
+        f"{text['ins_code']:1}"  #  27 Code for insertion of residues
+        "   "  #  28-30 Spaces
+        f"{text['x']:>8}"  #  31-38 X coordinate
+        f"{text['y']:>8}"  #  39-46 Y coordinate
+        f"{text['z']:>8}"  #  47-54 Z coordinate
+        f"{text['occupancy']:>6}"  #  55-60 Occupancy
+        f"{text['temp_factor']:>6}"  #  61-66 Temperature factor
+        "          "  #  67-76 Spaces
+        f"{text['element']:>2}"  #  77-78 Element symbol
+        f"{text['charge']:>2}"  #  79-80 Charge of the atom
+    )
+    return line, None
+
+
 def _get_value(atoms, names, row_index):
     """Get the first non-null value from a list of ``_atom_site`` items.
 
@@ -178,6 +241,10 @@ def atom_site_record(
     record.seg_id = ""
     record.element = _get_value(atoms, ["type_symbol"], row_index) or ""
     record.charge = _get_value(atoms, ["pdbx_formal_charge"], row_index) or ""
+    # Replace the placeholder text so str(record) describes this atom, or
+    # raises if the atom cannot be written in PDB format without truncation.
+    line, record.pdb_format_error = _pdb_atom_line(record)
+    record.original_text = line if line is not None else group
     return record
 
 

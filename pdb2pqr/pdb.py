@@ -33,6 +33,10 @@ class BaseRecord:
     Verifies the received record type.
     """
 
+    #: Why the record cannot be written in fixed-column PDB format, or
+    #: ``None`` if it can
+    pdb_format_error = None
+
     def __init__(self, line):
         record = line[0:6].strip()
         if record != self.__class__.__name__:
@@ -40,6 +44,11 @@ class BaseRecord:
         self.original_text = line.rstrip("\r\n")
 
     def __str__(self):
+        if self.pdb_format_error is not None:
+            raise ValueError(
+                f"{self.__class__.__name__} record cannot be written in "
+                f"PDB format: {self.pdb_format_error}"
+            )
         return self.original_text
 
     def record_type(self):

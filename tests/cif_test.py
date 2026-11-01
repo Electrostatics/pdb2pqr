@@ -1,11 +1,30 @@
 """Tests of mmCIF reading in :mod:`pdb2pqr.cif`."""
 
 from io import StringIO
+from pathlib import Path
 
 import pdbx
 import pytest
 
 from pdb2pqr import cif, pdb
+
+DATA_DIR = Path("tests/data")
+RECORD_FIELDS = [
+    "serial",
+    "name",
+    "alt_loc",
+    "res_name",
+    "chain_id",
+    "res_seq",
+    "ins_code",
+    "x",
+    "y",
+    "z",
+    "occupancy",
+    "temp_factor",
+    "element",
+    "charge",
+]
 
 ATOM_SITE_HEADER = """data_test
 loop_
@@ -145,3 +164,73 @@ def test_multiple_models_preserve_identity():
         for record in records
         if isinstance(record, pdb.ATOM)
     ] == [("AA", 100, "A", 1.0), ("AA", 100, "A", 1.5)]
+
+
+def test_representable_record_serializes_as_pdb():
+    """A record that fits PDB columns serializes as its PDB line."""
+    with open(DATA_DIR / "1FAS.cif") as cif_file:
+        (block,) = pdbx.load(cif_file)
+    records, _ = cif.atom_site(block)
+    assert str(records[0]) == (
+        "ATOM      1  N   THR A   1      46.148  16.581   2.104"
+        "  1.00 20.55           N  "
+    )
+    for record in records:
+        parsed = type(record)(str(record))
+        assert [getattr(parsed, field) for field in RECORD_FIELDS] == [
+            getattr(record, field) for field in RECORD_FIELDS
+        ]
+
+
+def test_insertion_code_is_serialized():
+    """The insertion code is written in column 27."""
+    atoms = read_atoms(
+        ["ATOM 1 C CA . GLY A 2 A 4.0 5.0 6.0 1.00 10.00 100 GLY A CA 1"]
+    )
+    assert str(atoms[0])[22:27] == " 100A"
+
+
+@pytest.mark.parametrize(
+    "row, attribute, value",
+    [
+        (
+            "HETATM 100000 C C1 . LIG A 1 . 1.0 2.0 3.0 1.00 10.00 1 LIG A C1 1",
+            "serial",
+            100000,
+        ),
+        (
+            "HETATM 1 C C1 . LIG A 1 . 1.0 2.0 3.0 1.00 10.00 1 LIG AA C1 1",
+            "chain_id",
+            "AA",
+        ),
+        (
+            "HETATM 1 C C1 . LIG A 1 . 1.0 2.0 3.0 1.00 10.00 10000 LIG A C1 1",
+            "res_seq",
+            10000,
+        ),
+        (
+            "HETATM 1 C C1 . LIG1 A 1 . 1.0 2.0 3.0 1.00 10.00 1 LIG1 A C1 1",
+            "res_name",
+            "LIG1",
+        ),
+        (
+            "HETATM 1 C C1 . LIG A 1 . 1.0 2.0 3.0 1.00 10.00 1 LIG A C1011 1",
+            "name",
+            "C1011",
+        ),
+        (
+            "HETATM 1 C C1 . LIG A 1 . -1000.0 2.0 3.0 1.00 10.00 1 LIG A C1 1",
+            "x",
+            -1000.0,
+        ),
+    ],
+)
+def test_unrepresentable_record_rejects_pdb_serialization(
+    row, attribute, value
+):
+    """A record that does not fit PDB columns is not truncated."""
+    (atom,) = read_atoms([row])
+    with pytest.raises(ValueError, match="cannot be written in PDB format"):
+        str(atom)
+    assert atom.record_type() == "HETATM"
+    assert getattr(atom, attribute) == value

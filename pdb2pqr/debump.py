@@ -380,10 +380,17 @@ class Debump:
         nearatoms = {}
         residue = atom.residue
         atom_size = BUMP_HYDROGEN_SIZE if atom.is_hydrogen else BUMP_HEAVY_SIZE
+        max_cutoff = atom_size + BUMP_HEAVY_SIZE
+        max_cutoff_sq = max_cutoff * max_cutoff
         # Get atoms from nearby cells
         closeatoms = self.cells.get_near_cells(atom)
         # Loop through and see if any are within the cutoff
         for closeatom in closeatoms:
+            dx = atom.x - closeatom.x
+            dy = atom.y - closeatom.y
+            dz = atom.z - closeatom.z
+            if dx * dx + dy * dy + dz * dz >= max_cutoff_sq:
+                continue
             closeresidue = closeatom.residue
             if closeresidue == residue and (
                 closeatom in atom.bonds or atom in closeatom.bonds

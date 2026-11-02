@@ -9,6 +9,7 @@ import copy
 import logging
 import pprint
 import string
+from collections import deque
 
 from . import aa, forcefield, io, na, pdb
 from . import quatfit as quat
@@ -449,8 +450,8 @@ class Biomolecule:
         """Set the distance to the CA atom in the residue.
 
         This is necessary for determining which atoms are allowed to move
-        during rotations.  Uses the :func:`shortest_path` algorithm found in
-        :mod:`utilities`.
+        during rotations.  Uses breadth-first search from the ``CA`` atom
+        across intra-residue bonds.
 
         :raises ValueError:  if shortest path cannot be found (e.g., if the
             atoms are not connected)
@@ -458,17 +459,21 @@ class Biomolecule:
         for residue in self.residues:
             if not isinstance(residue, aa.Amino):
                 continue
-            # Initialize some variables
-            map_ = {}
             caatom = residue.get_atom("CA")
             if caatom is None:
                 # TODO: What does the %s mean? Is it the residue name?
                 text = "Cannot set references to %s without CA atom!"
                 raise ValueError(text)
-            # Set up the linked map
-            for atom in residue.atoms:
-                map_[atom] = atom.bonds
-            # Run the algorithm
+            res_atoms = set(residue.atoms)
+            dist = {caatom: 0}
+            queue = deque([caatom])
+            while queue:
+                curr = queue.popleft()
+                next_dist = dist[curr] + 1
+                for nbr in curr.bonds:
+                    if nbr not in dist and nbr in res_atoms:
+                        dist[nbr] = next_dist
+                        queue.append(nbr)
             for atom in residue.atoms:
                 if atom.is_backbone:
                     atom.refdistance = -1
@@ -476,15 +481,12 @@ class Biomolecule:
                     atom.refdistance = 3
                 elif residue.is_n_term and (atom.name in ("H3", "H2")):
                     atom.refdistance = 2
+                elif atom in dist:
+                    atom.refdistance = dist[atom]
                 else:
-                    path = util.shortest_path(map_, atom, caatom)
-                    if path is not None:
-                        atom.refdistance = len(path) - 1
-                    else:
-                        raise ValueError(
-                            "Found gap in biomolecule structure for atom "
-                            f"{atom}"
-                        )
+                    raise ValueError(
+                        f"Found gap in biomolecule structure for atom {atom}"
+                    )
 
     def remove_hydrogens(self):
         """Remove hydrogens from the biomolecule."""

@@ -149,9 +149,10 @@ def distance(coords1, coords2):
     :return:  distance between the two coordinates
     :rtype:  float
     """
-    coords1 = np.array(coords1)
-    coords2 = np.array(coords2)
-    return np.linalg.norm(coords1 - coords2)
+    dx = coords1[0] - coords2[0]
+    dy = coords1[1] - coords2[1]
+    dz = coords1[2] - coords2[2]
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
 
 
 def add(coords1, coords2):
@@ -175,9 +176,13 @@ def subtract(coords1, coords2):
     :param coords2:  coordinates of form [x,y,z]
     :type coords2:  [float, float, float]
     :return:  list of coordinates equal to coords2 - coords1
-    :rtype:  numpy.ndarray
+    :rtype:  list
     """
-    return np.array(coords1) - np.array(coords2)
+    return [
+        coords1[0] - coords2[0],
+        coords1[1] - coords2[1],
+        coords1[2] - coords2[2],
+    ]
 
 
 def cross(coords1, coords2):
@@ -188,9 +193,13 @@ def cross(coords1, coords2):
     :param coords2:  coordinates of form [x,y,z]
     :type coords2:  [float, float, float]
     :return:  list of coordinates equal to coords2 cross coords1
-    :rtype:  numpy.ndarray
+    :rtype:  list
     """
-    return np.cross(np.array(coords1), np.array(coords2))
+    return [
+        coords1[1] * coords2[2] - coords1[2] * coords2[1],
+        coords1[2] * coords2[0] - coords1[0] * coords2[2],
+        coords1[0] * coords2[1] - coords1[1] * coords2[0],
+    ]
 
 
 def dot(coords1, coords2):
@@ -200,11 +209,14 @@ def dot(coords1, coords2):
     :type coords1:  [float, float, float]
     :param coords2:  coordinates of form [x,y,z]
     :type coords2:  [float, float, float]
-    :return:  list of coordinates equal to the inner product of coords2 with
-        coords1
-    :rtype:  numpy.ndarray
+    :return:  inner product of coords2 with coords1
+    :rtype:  float
     """
-    return np.inner(np.array(coords1), np.array(coords2))
+    return (
+        coords1[0] * coords2[0]
+        + coords1[1] * coords2[1]
+        + coords1[2] * coords2[2]
+    )
 
 
 def normalize(coords):
@@ -213,9 +225,14 @@ def normalize(coords):
     :param coords:  coordinates of form [x,y,z]
     :type coords:  [float, float, float]
     :return: normalized coordinates
-    :rtype:  numpy.ndarray
+    :rtype:  list
     """
-    return coords / np.linalg.norm(coords)
+    x, y, z = coords[0], coords[1], coords[2]
+    norm = math.sqrt(x * x + y * y + z * z)
+    if norm == 0.0:
+        nan = float("nan")
+        return [nan, nan, nan]
+    return [x / norm, y / norm, z / norm]
 
 
 def factorial(num):
@@ -245,21 +262,19 @@ def dihedral(coords1, coords2, coords3, coords4):
     :return:  the angle (in degrees)
     :rtype:  float
     """
-    diff43 = np.array(coords4) - np.array(coords3)
-    diff32 = np.array(coords3) - np.array(coords2)
-    diff12 = np.array(coords1) - np.array(coords2)
-    c12_32 = np.cross(diff12, diff32)
-    c12_32 = normalize(c12_32)
-    c43_32 = np.cross(diff43, diff32)
-    c43_32 = normalize(c43_32)
-    scal = np.inner(c12_32, c43_32)
-    if np.absolute(scal + 1.0) < SMALL_NUMBER:
+    diff43 = subtract(coords4, coords3)
+    diff32 = subtract(coords3, coords2)
+    diff12 = subtract(coords1, coords2)
+    c12_32 = normalize(cross(diff12, diff32))
+    c43_32 = normalize(cross(diff43, diff32))
+    scal = dot(c12_32, c43_32)
+    if abs(scal + 1.0) < SMALL_NUMBER:
         value = 180.0
-    elif np.absolute(scal - 1.0) < SMALL_NUMBER:
+    elif abs(scal - 1.0) < SMALL_NUMBER:
         value = 0.0
     else:
         value = RADIANS_TO_DEGREES * math.acos(scal)
-    chiral = np.inner(np.cross(c12_32, c43_32), diff32)
+    chiral = dot(cross(c12_32, c43_32), diff32)
     if chiral < 0:
         value *= -1.0
     return value

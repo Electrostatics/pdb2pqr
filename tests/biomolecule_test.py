@@ -1,5 +1,7 @@
 """Tests for biomolecule behavior."""
 
+import pytest
+
 from pdb2pqr import aa, biomolecule
 
 
@@ -12,6 +14,55 @@ def _make_asp(ins_code):
     residue.is_n_term = False
     residue.is_c_term = False
     return residue
+
+
+def test_set_reference_distance_matches_shortest_path():
+    """Intra-residue bonds are symmetric and CA BFS matches shortest_path."""
+    defn = biomolecule.io.get_definitions()
+    for res in defn.map.values():
+        if "CA" in res.map:
+            for name, atom in res.map.items():
+                for bond in atom.bonds:
+                    if bond in res.map:
+                        assert name in res.map[bond].bonds
+
+    pdb_path = biomolecule.io.Path(__file__).resolve().parent / "data/1AFS.pdb"
+    pdblist, _ = biomolecule.io.get_molecule(pdb_path)
+    mol = biomolecule.Biomolecule(pdblist, defn)
+    mol.set_termini()
+    mol.update_bonds()
+    mol.add_hydrogens()
+    mol.set_reference_distance()
+    for residue in mol.residues:
+        if not isinstance(residue, aa.Amino):
+            continue
+        caatom = residue.get_atom("CA")
+        map_ = {atom: atom.bonds for atom in residue.atoms}
+        for atom in residue.atoms:
+            for nbr in atom.bonds:
+                assert atom in nbr.bonds
+            if atom.is_backbone or (residue.is_c_term and atom.name == "HO"):
+                continue
+            if residue.is_n_term and atom.name in ("H3", "H2"):
+                continue
+            path = biomolecule.util.shortest_path(map_, atom, caatom)
+            assert path is not None
+            assert atom.refdistance == len(path) - 1
+
+    target_atom = next(
+        atom
+        for residue in mol.residues
+        if isinstance(residue, aa.Amino)
+        for atom in residue.atoms
+        if not atom.is_backbone
+        and not (residue.is_c_term and atom.name == "HO")
+        and not (residue.is_n_term and atom.name in ("H3", "H2"))
+    )
+    for nbr in list(target_atom.bonds):
+        nbr.bonds.remove(target_atom)
+    target_atom.bonds.clear()
+    with pytest.raises(ValueError, match="Found gap in biomolecule structure"):
+        mol.set_reference_distance()
 
 
 def test_apply_pka_values_distinguishes_insertion_codes():

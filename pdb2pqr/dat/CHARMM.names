@@ -247,6 +247,18 @@
        <name>D[ACGT][35]?$</name>
        <useresname>DEO1</useresname>
     </residue>
+    <!-- RNA: CHARMM names the O2' hydrogen H2' and the C2' hydrogen H2''. -->
+    <residue>
+       <name>R[ACGU][35]?$</name>
+       <atom>
+          <name>H2'</name>
+          <useatomname>H2''</useatomname>
+       </atom>
+       <atom>
+          <name>H2''</name>
+          <useatomname>H2'</useatomname>
+       </atom>
+    </residue>
     <residue>
        <name>[RD][ACGTU]3$</name>
        <useresname>3TER</useresname>

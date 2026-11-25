@@ -3,5 +3,8 @@ sphinx_rtd_theme==3.1.0
 readthedocs-sphinx-search==0.3.2
 propka >= 3.5
 numpy
-pdbx
 mmcif_pdbx>=1.1.2
+# docs/source/conf.py imports pdb2pqr (for the release string and autodoc), so
+# the package's import-time dependencies must be present here as well.
+requests
+typing_extensions

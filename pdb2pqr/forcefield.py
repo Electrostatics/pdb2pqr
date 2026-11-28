@@ -124,11 +124,14 @@ class ForcefieldHandler(sax.ContentHandler):
             resmatchlist = self.find_matching_names(self.newresname, self.map)
             for resitem in resmatchlist:
                 residue = self.map[resitem.string]
-                for newname in self.atommap:
-                    oldname = self.atommap[newname]
-                    if oldname not in residue.atoms:
-                        continue
-                    self.update_map(newname, oldname, residue.atoms)
+                # Look up every old atom before renaming any of them, so that
+                # a names file can swap two names (e.g., RNA H2' and H2'')
+                renamed = {
+                    newname: residue.atoms[oldname]
+                    for newname, oldname in self.atommap.items()
+                    if oldname in residue.atoms
+                }
+                residue.atoms.update(renamed)
             # Clean up
             self.oldresname = None
             self.newresname = None

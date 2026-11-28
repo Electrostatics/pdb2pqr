@@ -1,0 +1,52 @@
+# Build the Sphinx documentation against the dependencies Read the Docs
+# installs (docs/requirements.txt) rather than the CI lockfile used by the
+# Python test jobs.  The two are maintained separately: dependabot updates
+# docs/requirements.txt for the /docs directory, and tests/sphinx_test.py builds
+# with the Sphinx version pinned in requirements-ci.txt.  Without this job a
+# documentation dependency bump can pass CI and still break the Read the Docs
+# build.
+
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/**
+      - pdb2pqr/**
+      - pyproject.toml
+      - .github/workflows/docs.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - docs/**
+      - pdb2pqr/**
+      - pyproject.toml
+      - .github/workflows/docs.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sphinx-build:
+    name: Build documentation (Python 3.12)
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'noci')"
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r docs/requirements.txt
+      - name: Build HTML documentation
+        run: |
+          python -m sphinx -b html docs/source "${RUNNER_TEMP}/html" -W
